@@ -1,0 +1,38 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:01.141 --> 00:03.011
+Congratulations on completing this course.
+
+00:03.419 --> 00:06.131
+You've learned how to use Pydantic to bring structure,
+
+00:06.131 --> 00:10.150
+reliability, and validation to all your LLM powered applications.
+
+00:10.740 --> 00:12.634
+And beyond that, you've learned some core
+
+00:12.634 --> 00:14.531
+data validation skills that can be helpful
+
+00:14.531 --> 00:16.548
+in whatever software system you're building.
+
+00:16.548 --> 00:19.449
+where you need to pass data from one component to the next.
+
+00:19.449 --> 00:22.548
+With this course, you've built a really solid foundation.
+
+00:22.548 --> 00:25.068
+And with that being said, there's a lot more
+
+00:25.068 --> 00:27.778
+to pydantic than we were able to cover in this course.
+
+00:27.778 --> 00:30.458
+So, I hope you'll continue to learn and grow your skills
+
+00:30.458 --> 00:32.478
+and I look forward to seeing what you build.

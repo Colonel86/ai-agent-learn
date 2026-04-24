@@ -1,0 +1,199 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.941 --> 00:00:04.480
+I think the one biggest benefit of agentic workflows is that it allows you to do many
+
+2
+00:00:04.480 --> 00:00:10.000
+tasks effectively that just previously were not possible. But there are other benefits as well,
+
+3
+00:00:10.000 --> 00:00:14.800
+including parallelism that lets you do certain things quite fast, as well as modularity that
+
+4
+00:00:14.800 --> 00:00:19.600
+lets you combine the best of three components from many different places to build an effective
+
+5
+00:00:19.600 --> 00:00:26.159
+workflow. Let's take a look. My team collected some data on a coding benchmark that tests the
+
+6
+00:00:26.159 --> 00:00:32.400
+ability of different LLMs to write code to carry out certain tasks. The benchmark used in this case
+
+7
+00:00:32.400 --> 00:00:38.000
+is called Human Eval, and it turns out that GPT 3.5, this is a model that the first publicly
+
+8
+00:00:38.000 --> 00:00:42.720
+available version of Chat GPT was based on, if asked to write the code directly, to just type
+
+9
+00:00:42.720 --> 00:00:49.200
+out the computer program, gets 40% right on this benchmark. This is a positive k-metric. GPT 4 is
+
+10
+00:00:49.200 --> 00:00:56.400
+a much better model. Its performance leaps to 67% with this also non-agentic workflow. But it turns
+
+11
+00:00:56.400 --> 00:01:03.360
+out that as large as the improvement was from GPT 3.5 to GPT 4, that improvement is dwarfed by what
+
+12
+00:01:03.360 --> 00:01:10.559
+you can achieve by wrapping GPT 3.5 within an agentic workflow. Using different agentic techniques,
+
+13
+00:01:10.559 --> 00:01:15.919
+which you'll learn about later in this course, you can prompt GPT 3.5 to write code and then maybe
+
+14
+00:01:15.919 --> 00:01:20.559
+reflect on the code and figure out if you can improve it. And using techniques like that, you can
+
+15
+00:01:20.559 --> 00:01:26.639
+actually get GPT 3.5 to get much higher levels of performance. And similarly, GPT 4 used in the
+
+16
+00:01:26.639 --> 00:01:33.919
+context of an agentic workflow also does much better. So even with today's best LLMs, an agentic
+
+17
+00:01:33.919 --> 00:01:39.839
+workflow lets you get much better performance. And in fact, what we saw in this example was the
+
+18
+00:01:39.839 --> 00:01:45.519
+improvement from one generation of model to another, which is huge, is still not as big a difference
+
+19
+00:01:45.519 --> 00:01:51.199
+as implementing an agentic workflow on the previous generation of model. Another benefit of
+
+20
+00:01:51.199 --> 00:01:57.839
+using agentic workflows is that they can parallelize some tasks and thus do certain things much faster
+
+21
+00:01:57.839 --> 00:02:04.000
+than a human. For example, if you ask an agentic workflow to write an essay about black holes, you
+
+22
+00:02:04.000 --> 00:02:10.320
+might be able to have three LLMs run in parallel to generate ideas for web search terms to type
+
+23
+00:02:10.320 --> 00:02:16.559
+into the search engine. Based on the first web search, it may identify, say, three top results to
+
+24
+00:02:16.559 --> 00:02:22.559
+fetch. And based on the second web search, it may identify a second set of web pages to fetch and so
+
+25
+00:02:22.559 --> 00:02:28.479
+on. And it turns out that whereas a human doing this research would have to read these nine web
+
+26
+00:02:28.479 --> 00:02:33.520
+pages sequentially or one at a time, when you're using an agentic workflow, you can actually
+
+27
+00:02:33.520 --> 00:02:39.600
+parallelize all nine web page downloads and then finally feed all these things into an LLM to write
+
+28
+00:02:39.600 --> 00:02:45.919
+an essay. So even though agentic workflows do take longer than truly non-agentic workflows or by
+
+29
+00:02:45.919 --> 00:02:51.039
+direct generation by just prompting a single time, if you were to compare this type of agentic
+
+30
+00:02:51.039 --> 00:02:56.240
+workflow to how a human would have to go about the task, the ability to parallelize downloading lots
+
+31
+00:02:56.240 --> 00:03:02.399
+of web pages can actually let it do certain tasks much faster than the non-parallel sequential way
+
+32
+00:03:02.399 --> 00:03:08.000
+that a single human might process this data. To build on this example, it turns out one of the
+
+33
+00:03:08.000 --> 00:03:14.000
+things I often do when building agentic workflows is look at the individual components like the LLM
+
+34
+00:03:14.000 --> 00:03:20.160
+and add or swap out components. So for example, maybe I look at the web search engine I use up
+
+35
+00:03:20.160 --> 00:03:24.800
+here and I might decide that I want to soften a new web search engine. When building agentic
+
+36
+00:03:24.800 --> 00:03:29.119
+workflows, there are actually multiple web search engines including Google, which you can access
+
+37
+00:03:29.119 --> 00:03:35.600
+by a server, as well as others like Bing, DuckDuckGo, Tavily, u.com. There are actually quite a lot of
+
+38
+00:03:35.600 --> 00:03:40.880
+options for web search engines designed for LLMs to use. Or maybe instead of just doing three web
+
+39
+00:03:40.880 --> 00:03:47.039
+searches, maybe on this step we can swap in a new news search engine so we can find out what's the
+
+40
+00:03:47.039 --> 00:03:55.279
+latest news on recent breakthroughs on black hole science. And lastly, instead of using the same LLM
+
+41
+00:03:55.279 --> 00:04:01.119
+for all of the different steps, I will often try out different large language models and maybe try
+
+42
+00:04:01.199 --> 00:04:07.919
+out different LLM providers to see which one gives the best result for different steps of this system.
+
+43
+00:04:07.919 --> 00:04:13.360
+So to summarize, the main reason I use agentic workflows is it just gives much better performance
+
+44
+00:04:13.360 --> 00:04:20.320
+on many different applications. But in addition, it can also paralyze some tasks that humans would
+
+45
+00:04:20.320 --> 00:04:27.119
+otherwise have to do sequentially. And the modular design of many agentic workflows also lets us
+
+46
+00:04:27.119 --> 00:04:33.119
+add or update tools and sometimes swap out models. We've talked a lot about the key components of
+
+47
+00:04:33.119 --> 00:04:39.279
+building agentic workflows. Let's now take a look at a range of Agentic AI applications to give you
+
+48
+00:04:39.279 --> 00:04:43.359
+a sense of the sorts of things people are already building and the sorts of things
+
+49
+00:04:43.359 --> 00:04:47.679
+you'll build yourself. Let's go on to the next video.
+

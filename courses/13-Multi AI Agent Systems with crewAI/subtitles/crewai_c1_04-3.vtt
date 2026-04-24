@@ -1,0 +1,344 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.100 --> 00:00:03.737
+So I want to share a mental framework
+with you for the agent creation.
+
+2
+00:00:03.770 --> 00:00:06.773
+I think it's super helpful
+because if you look at the agents
+
+3
+00:00:06.773 --> 00:00:09.242
+that we put together right
+now, it'll work at great.
+
+4
+00:00:09.242 --> 00:00:10.810
+But what about when you decide
+
+5
+00:00:10.810 --> 00:00:14.647
+to put together other agents
+in other multi-agent systems?
+
+6
+00:00:14.948 --> 00:00:19.319
+How do you make sure that you're creating
+agents that are the best they could be?
+
+7
+00:00:19.352 --> 00:00:22.322
+So I have a mental framework
+that I like to share and I think
+
+8
+00:00:22.322 --> 00:00:23.690
+will be super helpful to you.
+
+9
+00:00:23.690 --> 00:00:28.161
+So the framework is
+to think as a manager, honestly,
+
+10
+00:00:28.561 --> 00:00:31.664
+there is a very high correlation
+between being a good manager
+
+11
+00:00:31.664 --> 00:00:35.235
+and being able to create
+great multi-agent systems,
+
+12
+00:00:35.668 --> 00:00:39.572
+because managers are conditioned
+to think about
+
+13
+00:00:39.572 --> 00:00:43.143
+what is the goal and what is the process.
+
+14
+00:00:43.176 --> 00:00:46.346
+So whenever you are creating
+multiple agents crews
+
+15
+00:00:46.346 --> 00:00:51.017
+or your multiple agent systems,
+I would say think about exactly
+
+16
+00:00:51.017 --> 00:00:53.319
+what is the goal
+that you are trying to accomplish,
+
+17
+00:00:53.319 --> 00:00:56.623
+and then what is the process
+that you're trying them to follow?
+
+18
+00:00:56.689 --> 00:01:00.393
+If you think like that, you're going to
+then start to think about
+
+19
+00:01:00.593 --> 00:01:05.031
+what are the people
+I would hire to get this job done?
+
+20
+00:01:05.065 --> 00:01:07.834
+So that's the thing
+you want to be asking yourself.
+
+21
+00:01:07.834 --> 00:01:10.770
+If I had to hire people to do this,
+what would it be
+
+22
+00:01:10.770 --> 00:01:12.105
+the people that I would hire?
+
+23
+00:01:12.105 --> 00:01:16.242
+So once that you get that answer,
+you need to know what agency need to be.
+
+24
+00:01:16.576 --> 00:01:19.979
+And more than that, you're going to know
+exactly what should be their roles.
+
+25
+00:01:20.180 --> 00:01:21.881
+What should be their backstories?
+
+26
+00:01:21.881 --> 00:01:23.316
+What should be their goals?
+
+27
+00:01:23.316 --> 00:01:27.053
+Because, you know, who would
+you want to be working on these things?
+
+28
+00:01:27.387 --> 00:01:30.123
+So let's talk about some examples.
+
+29
+00:01:30.123 --> 00:01:33.860
+These are some examples
+that are not necessarily the best.
+
+30
+00:01:34.427 --> 00:01:36.963
+Like if you want to create, for example
+
+31
+00:01:36.963 --> 00:01:40.700
+a use case related to HR,
+you don't want necessarily
+
+32
+00:01:40.700 --> 00:01:44.737
+you only a researcher,
+you want an HR specialist.
+
+33
+00:01:44.737 --> 00:01:48.675
+And that place across all the examples
+that we're going to see
+
+34
+00:01:48.675 --> 00:01:50.110
+throughout this course.
+
+35
+00:01:50.110 --> 00:01:52.979
+So, better examples would be
+
+36
+00:01:52.979 --> 00:01:56.549
+an HR research specialist,
+instead of just a researcher
+
+37
+00:01:56.783 --> 00:01:59.953
+or a senior copywriter,
+instead of just a writer,
+
+38
+00:02:00.153 --> 00:02:03.690
+or a FINRA approved analyst
+instead of a financial analyst.
+
+39
+00:02:03.990 --> 00:02:08.895
+So I would recommend you really think
+about what are the keywords.
+
+40
+00:02:09.129 --> 00:02:12.098
+What are the actual people
+that you would hire to do this?
+
+41
+00:02:12.098 --> 00:02:12.699
+And then once
+
+42
+00:02:12.699 --> 00:02:16.436
+that you have those people in mind,
+think about what would be their goals.
+
+43
+00:02:16.469 --> 00:02:19.439
+What would be their roles?
+What would be their backstories?
+
+44
+00:02:19.439 --> 00:02:24.439
+Those are the agents that you want imbued
+in in the community that uses for AI,
+
+45
+00:02:24.511 --> 00:02:26.813
+we noticed that the people that get
+the best
+
+46
+00:02:26.813 --> 00:02:30.884
+results are the people that really think
+about agents in that way.
+
+47
+00:02:31.017 --> 00:02:31.918
+They think about
+
+48
+00:02:31.918 --> 00:02:35.321
+what would be the people that they would
+hire to do this job for them.
+
+49
+00:02:35.822 --> 00:02:40.460
+All right, let's do a quick recap to see
+everything that we learned this lesson.
+
+50
+00:02:40.527 --> 00:02:44.430
+First thing we learned
+that agents do a better job
+
+51
+00:02:44.430 --> 00:02:48.201
+if they have a few things:
+they are doing role-playing.
+
+52
+00:02:48.201 --> 00:02:49.602
+They have focus.
+
+53
+00:02:49.602 --> 00:02:51.638
+They have the appropriate tools.
+
+54
+00:02:51.638 --> 00:02:53.640
+They're allowed to cooperate.
+
+55
+00:02:53.640 --> 00:02:55.608
+They have some guardrails.
+
+56
+00:02:55.608 --> 00:02:57.477
+They also can leverage memory.
+
+57
+00:02:57.477 --> 00:02:59.679
+All right.
+We also learned some other stuff.
+
+58
+00:02:59.679 --> 00:03:04.417
+We've learned that agents are able to self
+improve by using memory.
+
+59
+00:03:04.817 --> 00:03:08.655
+We also learned that
+crewAI prevents our agents
+
+60
+00:03:08.655 --> 00:03:12.892
+to get into rabbit roles by making sure
+to steer them in the right way.
+
+61
+00:03:12.926 --> 00:03:16.029
+We also learned that the agents
+we always attempt to get you
+
+62
+00:03:16.029 --> 00:03:20.867
+an answer, and we also learn
+that smaller tasks in focused agents,
+
+63
+00:03:20.867 --> 00:03:25.867
+perform better than bigger tasks in agents
+that have too much on their hands.
+
+64
+00:03:26.472 --> 00:03:29.475
+Also,
+focused use plays a huge role on that,
+
+65
+00:03:29.776 --> 00:03:31.945
+and we are going
+to be talking about tools next.
+
+66
+00:03:31.945 --> 00:03:35.181
+So thank you so much for sticking around
+for this lesson.
+
+67
+00:03:35.215 --> 00:03:38.952
+Honestly, it has been incredible
+to go over this with you.
+
+68
+00:03:38.952 --> 00:03:43.556
+I hope you're having as much fun
+as I am and stick around for the next one.
+
+69
+00:03:43.556 --> 00:03:44.724
+It's going to be super fun.
+
+70
+00:03:44.724 --> 00:03:47.727
+We're going to start talking about tools
+and guess what?
+
+71
+00:03:47.894 --> 00:03:51.431
+Tools is what unlocks
+a lot of the fun use cases.
+
+72
+00:03:51.664 --> 00:03:53.466
+So I'll see you in the next lesson.
+

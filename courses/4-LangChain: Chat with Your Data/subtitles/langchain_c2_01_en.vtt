@@ -1,0 +1,279 @@
+WEBVTT
+
+1
+00:00:00.237 --> 00:00:04.014
+Hi, I'm excited to share with
+you this new course
+
+2
+00:00:04.014 --> 00:00:07.412
+on using LangChain to
+chat with your data. This
+
+3
+00:00:07.412 --> 00:00:10.433
+is built in collaboration
+with Harrison Chase, co-founder
+
+4
+00:00:10.433 --> 00:00:11.944
+and CEO of LangChain.
+
+5
+00:00:13.097 --> 00:00:16.153
+Large language models or
+LLMs such as ChatGPT
+
+6
+00:00:16.153 --> 00:00:19.209
+can answer questions about
+a lot of topics,
+
+7
+00:00:19.209 --> 00:00:23.792
+but an LLM in isolation knows
+only what it was trained on,
+
+8
+00:00:23.792 --> 00:00:26.466
+which doesn't
+include your personal data, such
+
+9
+00:00:26.466 --> 00:00:31.050
+as if you're in a company and have
+proprietary documents not on
+
+10
+00:00:31.050 --> 00:00:35.633
+the internet, as well as data or articles
+that were written after
+
+11
+00:00:35.633 --> 00:00:37.161
+the LLM was trained.
+
+12
+00:00:37.201 --> 00:00:42.615
+So wouldn't it be useful if you or
+others such as your customers can
+
+13
+00:00:42.615 --> 00:00:46.095
+have a conversation with your own
+documents and get
+
+14
+00:00:46.095 --> 00:00:48.415
+questions answered using
+information from those
+
+15
+00:00:48.415 --> 00:00:50.348
+documents and using an LLM?
+
+16
+00:00:50.348 --> 00:00:54.061
+In this short course,
+we will cover how to use
+
+17
+00:00:54.061 --> 00:00:57.773
+LangChain to chat with your data.
+LangChain is an open-source
+
+18
+00:00:57.773 --> 00:01:00.371
+developer framework for
+building LLM applications. LangChain
+
+19
+00:01:00.371 --> 00:01:02.599
+consists of several
+modular components as
+
+20
+00:01:02.599 --> 00:01:05.568
+well as more end-to-end templates. The
+modular components
+
+21
+00:01:05.568 --> 00:01:08.167
+in LangChain include
+prompts, models, indexes, chains,
+
+22
+00:01:08.167 --> 00:01:11.508
+and agents. For
+a more detailed look at these
+
+23
+00:01:11.508 --> 00:01:14.849
+components, you can see
+our first course that I
+
+24
+00:01:14.849 --> 00:01:15.962
+taught with Andrew.
+
+25
+00:01:16.021 --> 00:01:20.166
+In this course, we will zoom in and
+focus on one of the
+
+26
+00:01:20.166 --> 00:01:23.354
+more popular use cases of LangChain,
+how to use LangChain
+
+27
+00:01:23.354 --> 00:01:26.861
+to chat with your data.
+We will first cover how to
+
+28
+00:01:26.861 --> 00:01:29.731
+use LangChain document
+loaders to load data from a
+
+29
+00:01:29.731 --> 00:01:32.919
+variety of exciting sources.
+We will then touch on how
+
+30
+00:01:32.919 --> 00:01:34.832
+to split these
+documents into semantically
+
+31
+00:01:34.832 --> 00:01:37.702
+meaningful chunks. This pre-processing
+step may seem simple but
+
+32
+00:01:37.702 --> 00:01:39.296
+has a lot of nuance.
+
+33
+00:01:39.354 --> 00:01:42.354
+Next, we'll
+give an overview of semantic search, a
+
+34
+00:01:42.354 --> 00:01:44.354
+basic method for
+fetching relevant information
+
+35
+00:01:44.354 --> 00:01:47.354
+given a user question. This
+is the easiest method
+
+36
+00:01:47.354 --> 00:01:50.021
+to get started with
+but there are several
+
+37
+00:01:50.021 --> 00:01:54.687
+cases where it fails. We'll go
+over these cases and then we'll go over
+
+38
+00:01:54.687 --> 00:01:59.354
+how to fix them. We'll then show how
+to use those retrieved documents to
+
+39
+00:01:59.354 --> 00:02:02.354
+enable an LLM
+to answer questions about a document
+
+40
+00:02:02.354 --> 00:02:06.021
+but show that you're still missing
+one key piece in order
+
+41
+00:02:06.021 --> 00:02:09.021
+to fully recreate that chatbot experience.
+Finally, we'll cover
+
+42
+00:02:09.021 --> 00:02:12.354
+that missing piece, memory,
+and show how to build a
+
+43
+00:02:12.354 --> 00:02:15.021
+fully functioning chatbot through
+which you can chat
+
+44
+00:02:15.021 --> 00:02:16.021
+with your data.
+
+
+45
+00:02:16.079 --> 00:02:21.464
+This will be an exciting short course.
+We're grateful to Ankush Gola as well
+
+46
+00:02:21.464 --> 00:02:26.080
+as Lance Martin from the LangChain
+team for working on all the
+
+47
+00:02:26.080 --> 00:02:29.157
+materials that you
+hear Harrison present later, as
+
+48
+00:02:29.157 --> 00:02:32.234
+well as on the deeplearning.ai side,
+Geoff Ladwig
+
+49
+00:02:32.234 --> 00:02:33.388
+and Diala Ezzeddine.
+
+50
+00:02:33.388 --> 00:02:37.249
+In case you're going through this course
+and decide you'd like
+
+51
+00:02:37.249 --> 00:02:41.461
+a refresher on the basics of LangChain, I
+encourage you to also
+
+52
+00:02:41.461 --> 00:02:44.620
+take that earlier short course on
+LangChain for LLM
+
+53
+00:02:44.620 --> 00:02:46.726
+application development that
+Harrison had mentioned
+
+54
+00:02:46.726 --> 00:02:50.587
+as well. But with
+that, let us now go on to
+
+55
+00:02:50.587 --> 00:02:53.394
+the next video where
+Harrison will show you
+
+56
+00:02:53.394 --> 00:02:56.553
+how to use LangChain's very convenient
+collection of document
+
+57
+00:02:56.553 --> 00:02:56.904
+loaders.

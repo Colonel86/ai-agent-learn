@@ -1,0 +1,416 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.202 --> 00:00:03.803
+Okay, in this lesson,
+
+2
+00:00:03.803 --> 00:00:06.906
+we're going to dive
+into agenetic collaboration.
+
+3
+00:00:07.640 --> 00:00:11.378
+Multiple agent systems are great,
+but they really shine
+
+4
+00:00:11.378 --> 00:00:15.281
+when you can get the ability
+for these agents to talk to each other.
+
+5
+00:00:15.682 --> 00:00:18.952
+There's so many different ways
+that you can get agents to collaborate
+
+6
+00:00:18.952 --> 00:00:21.654
+when you're
+trying to achieve certain goals.
+
+7
+00:00:21.654 --> 00:00:25.892
+And you got to pick and choose
+what are the right ways to assemble
+
+8
+00:00:25.892 --> 00:00:27.260
+your team together.
+
+9
+00:00:27.260 --> 00:00:29.262
+Again, think like a manager.
+
+10
+00:00:29.262 --> 00:00:32.265
+You want to always to structure your team
+the same way.
+
+11
+00:00:32.332 --> 00:00:35.402
+So right now we're going to dig into that
+and understanding
+
+12
+00:00:35.602 --> 00:00:39.706
+how you can get these agents
+to collaborate in so many different ways.
+
+13
+00:00:40.040 --> 00:00:43.043
+Welcome to our new lesson.
+
+14
+00:00:43.076 --> 00:00:45.345
+I'm so excited that you got to this point.
+
+15
+00:00:45.345 --> 00:00:48.982
+We're going to be talking
+about agenetic collaboration,
+
+16
+00:00:49.149 --> 00:00:52.886
+and we're going to talk about
+one specific sample that is so cool,
+
+17
+00:00:53.019 --> 00:00:55.055
+and that's financial analysis.
+
+18
+00:00:55.055 --> 00:00:57.090
+We have big companies.
+
+19
+00:00:57.090 --> 00:01:01.094
+I'm talking about fortune 500 companies,
+that are using
+
+20
+00:01:01.594 --> 00:01:04.064
+CrewAI to do financial analysis.
+
+21
+00:01:04.064 --> 00:01:06.933
+So this is a very common use case
+where you're going
+
+22
+00:01:06.933 --> 00:01:10.236
+to probably see out there
+as you start to interact with more people
+
+23
+00:01:10.236 --> 00:01:13.706
+that are doing multi-agent systems
+in the real world.
+
+24
+00:01:14.074 --> 00:01:16.142
+So let's dive into that.
+
+25
+00:01:16.142 --> 00:01:18.745
+How multi-agents collaborate.
+
+26
+00:01:18.745 --> 00:01:20.447
+We already saw this happenning
+
+27
+00:01:20.447 --> 00:01:25.447
+The true like crews by seeing like one
+agent passed the test to another.
+
+28
+00:01:25.985 --> 00:01:27.654
+But there is just one way.
+
+29
+00:01:27.654 --> 00:01:31.224
+There's so many other ways
+that multi-agents can collaborate.
+
+30
+00:01:31.791 --> 00:01:35.261
+So let's go back to when we started.
+
+31
+00:01:35.395 --> 00:01:40.066
+We described the initial steps throughout
+agent collaboration where you didn't
+
+32
+00:01:40.133 --> 00:01:45.133
+have one agent finish a task
+and then pass its output into the next.
+
+33
+00:01:46.139 --> 00:01:49.142
+And we already know that we could do that
+in parallel as well.
+
+34
+00:01:49.309 --> 00:01:52.312
+And this is great for certain
+kind of workflows,
+
+35
+00:01:52.445 --> 00:01:56.082
+but similar to how you wouldn't
+necessarily arrange
+
+36
+00:01:56.282 --> 00:02:00.053
+the same team
+the same way for all the tasks.
+
+37
+00:02:00.453 --> 00:02:02.856
+That's also true for agents.
+
+38
+00:02:02.856 --> 00:02:05.592
+So depending on what you're
+trying to achieve,
+
+39
+00:02:05.592 --> 00:02:08.528
+you might want to organize your agents
+differently.
+
+40
+00:02:08.528 --> 00:02:10.363
+You might still have the same agents.
+
+41
+00:02:10.363 --> 00:02:13.833
+You might still have even the same tasks,
+but you might want them
+
+42
+00:02:13.833 --> 00:02:16.836
+to operate through a different process.
+
+43
+00:02:16.870 --> 00:02:21.040
+Because of this, process
+bring some consequences, for example.
+
+44
+00:02:21.107 --> 00:02:24.244
+So for this process,
+and specifically if you're talking about
+
+45
+00:02:24.244 --> 00:02:27.881
+doing things sequentially,
+you have some consequences.
+
+46
+00:02:28.081 --> 00:02:33.081
+The most common is the fact
+that the initial context moves slowly
+
+47
+00:02:33.119 --> 00:02:38.119
+fade away as the tasks
+get passed from one agent to another.
+
+48
+00:02:38.491 --> 00:02:42.529
+And again, that's okay for some cases,
+but not for all of them.
+
+49
+00:02:43.029 --> 00:02:46.199
+So CrewAI
+offers some flexibility around that.
+
+50
+00:02:46.299 --> 00:02:51.299
+Similar to other framework but
+in this case, it's very explicit about it.
+
+51
+00:02:51.905 --> 00:02:54.274
+So let's talk about processes.
+
+52
+00:02:54.274 --> 00:02:59.245
+All of our agents so far have been working
+mainly in a sequential process.
+
+53
+00:02:59.579 --> 00:03:02.615
+We did a experiment with parallel execution,
+
+54
+00:03:02.882 --> 00:03:07.120
+but most of them are just performing
+tasks sequentially.
+
+55
+00:03:07.220 --> 00:03:10.690
+But there are other ways that you can
+perform tasks using CrewAI.
+
+56
+00:03:11.024 --> 00:03:15.695
+Another big one, is hierarchical.
+And there's a lot of benefits for it.
+
+57
+00:03:16.229 --> 00:03:18.531
+First is that you get a single point.
+
+58
+00:03:18.531 --> 00:03:23.531
+You got a manager that always remembers
+the initial goal, and that automatically
+
+59
+00:03:23.736 --> 00:03:28.241
+delegates the work to the other members
+and the other agents in this crew.
+
+60
+00:03:28.474 --> 00:03:33.474
+And not only that, but also reviews
+the result as these agents wrap their work,
+
+61
+00:03:33.746 --> 00:03:37.016
+it can ask for further improvements
+if necessary.
+
+62
+00:03:37.050 --> 00:03:41.221
+And the cool thing is that you get
+to create this agent manager yourself.
+
+63
+00:03:41.421 --> 00:03:44.524
+So you can see here how different process
+
+64
+00:03:44.524 --> 00:03:48.494
+gives you a completely different way
+to perform the same actions
+
+65
+00:03:48.494 --> 00:03:52.365
+if you really want to. And it's just a
+one single line change
+
+66
+00:03:52.532 --> 00:03:54.234
+that it would allow you to do that.
+
+67
+00:03:54.234 --> 00:03:55.969
+But you don't need to stop there.
+
+68
+00:03:55.969 --> 00:04:00.940
+You can also do some of what we did
+with asynchronous execution.
+
+69
+00:04:01.140 --> 00:04:04.244
+So independently of the process, CrewAI
+
+70
+00:04:04.310 --> 00:04:08.615
+will also offer you the ability to execute
+certain tasks in parallel.
+
+71
+00:04:08.881 --> 00:04:10.383
+You have other tasks.
+
+72
+00:04:10.383 --> 00:04:13.353
+Wait for them to be finished if necessary.
+
+73
+00:04:13.353 --> 00:04:18.353
+So despite of the original schemas, crew
+allows for agents
+
+74
+00:04:18.591 --> 00:04:23.196
+to fully cooperate
+and go off any predefined paths
+
+75
+00:04:23.396 --> 00:04:28.201
+if necessary to fulfill the tasks at hand
+so they can delegate to each other,
+
+76
+00:04:28.201 --> 00:04:30.103
+ask questions to each other.
+
+77
+00:04:30.103 --> 00:04:32.505
+You can have a manager
+that reviews to work.
+
+78
+00:04:32.505 --> 00:04:34.774
+You can have tasks
+that happen in parallel.
+
+79
+00:04:34.774 --> 00:04:38.811
+There's just so many options.
+In terms of the collaboration itself,
+
+80
+00:04:38.878 --> 00:04:42.949
+you can have agents ask questions, vaguely
+talk to each other.
+
+81
+00:04:42.949 --> 00:04:44.717
+We already talked a bit about this,
+
+82
+00:04:44.717 --> 00:04:48.788
+but this happens independently
+of the process that you choose.
+
+83
+00:04:48.821 --> 00:04:52.925
+Meaning that even if you choose
+to use hierarchical processes
+
+84
+00:04:53.092 --> 00:04:57.630
+where you have one manager,
+delegating work, that still means that
+
+85
+00:04:57.664 --> 00:05:02.001
+the agents benefit can delegated work
+between themselves.
+
+86
+00:05:02.302 --> 00:05:06.272
+So that's still true and allows
+for a more diverse outcome.
+
+87
+00:05:06.506 --> 00:05:09.475
+So let's see some practical examples
+of this.
+
+88
+00:05:09.475 --> 00:05:12.045
+Let's jump
+into our Jupyter notebook real quick.
+

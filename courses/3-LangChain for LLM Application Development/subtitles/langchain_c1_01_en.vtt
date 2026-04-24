@@ -1,0 +1,301 @@
+WEBVTT
+
+1
+00:00:04.520 --> 00:00:08.112
+Welcome to this short course on
+LangChain for large
+
+2
+00:00:08.112 --> 00:00:09.709
+language model application
+development.
+
+3
+00:00:10.430 --> 00:00:13.408
+By prompting an LLM
+or large language model,
+
+4
+00:00:13.408 --> 00:00:16.386
+it is now possible
+to develop AI applications
+
+5
+00:00:16.386 --> 00:00:18.248
+much faster than ever before.
+
+6
+00:00:18.949 --> 00:00:20.931
+But an application
+can require prompting
+
+7
+00:00:20.931 --> 00:00:24.565
+an LLM multiple times and parsing
+its output, and so there's
+
+8
+00:00:24.565 --> 00:00:27.869
+a lot of glue code
+that needs to be written.
+
+9
+00:00:28.591 --> 00:00:31.396
+LangChain, created by Harrison
+Chase makes this
+
+10
+00:00:31.396 --> 00:00:35.805
+development process much easier. I'm
+thrilled to have Harrison here, who
+
+11
+00:00:35.805 --> 00:00:39.814
+had built this short course in
+collaboration with DeepLearning.ai to
+
+12
+00:00:39.814 --> 00:00:42.620
+teach how to use this amazing tool.
+
+
+13
+00:00:42.620 --> 00:00:45.961
+Thanks for having me. I'm
+really excited to be here. LangChain
+
+14
+00:00:45.961 --> 00:00:48.695
+started as an open source framework
+for building LLM
+
+15
+00:00:48.695 --> 00:00:52.036
+applications. It came about when
+I was talking to a bunch
+
+16
+00:00:52.036 --> 00:00:54.770
+of folks in the field who
+were building more
+
+17
+00:00:54.770 --> 00:00:57.504
+complex applications and
+saw some common abstractions in terms
+
+18
+00:00:57.504 --> 00:00:59.326
+of how they were being developed.
+
+
+19
+00:00:59.887 --> 00:01:02.969
+And we've been really thrilled at
+the community adoption of
+
+20
+00:01:02.969 --> 00:01:03.894
+LangChain so far.
+
+21
+00:01:04.395 --> 00:01:06.005
+And so look forward
+to sharing it with
+
+22
+00:01:06.005 --> 00:01:07.615
+everyone here and look
+forward to seeing what
+
+23
+00:01:07.615 --> 00:01:08.420
+people build with it.
+
+24
+00:01:08.420 --> 00:01:11.960
+And in fact, as a sign of LangChain's
+momentum, not
+
+25
+00:01:11.960 --> 00:01:15.856
+only does it have numerous users, but
+there are also many
+
+26
+00:01:15.856 --> 00:01:19.751
+hundreds of contributors to
+the open source, and this has been
+
+27
+00:01:19.751 --> 00:01:22.583
+instrumental for its
+rapid rate of development. This
+
+28
+00:01:22.583 --> 00:01:26.124
+team really ships code and features
+at an amazing pace.
+
+29
+00:01:26.866 --> 00:01:29.537
+So hopefully,
+after this short course, you'll
+
+30
+00:01:29.537 --> 00:01:32.971
+be able to quickly put together
+some really cool
+
+31
+00:01:32.971 --> 00:01:35.641
+applications using LangChain, and
+who knows, maybe
+
+32
+00:01:35.641 --> 00:01:38.693
+you even decide to
+contribute back to the
+
+33
+00:01:38.693 --> 00:01:40.220
+open source LangChain effort.
+
+34
+00:01:40.220 --> 00:01:42.875
+LangChain is an
+open source development
+
+35
+00:01:42.875 --> 00:01:45.088
+framework for building
+LLM applications.
+
+36
+00:01:45.629 --> 00:01:49.257
+We have two different packages,
+a Python one and a JavaScript one.
+
+37
+00:01:49.798 --> 00:01:51.947
+They're focused on composition
+and modularity. So
+
+38
+00:01:51.947 --> 00:01:54.403
+they have a lot
+of individual components that
+
+39
+00:01:54.403 --> 00:01:56.859
+can be used in
+conjunction with each other
+
+40
+00:01:56.859 --> 00:02:01.157
+or by themselves. And so that's one
+of the key value adds. And then
+
+41
+00:02:01.157 --> 00:02:05.455
+the other key value add is a bunch
+of different use cases. So chains
+
+42
+00:02:05.455 --> 00:02:07.911
+of ways of combining
+these modular components into
+
+43
+00:02:07.911 --> 00:02:10.675
+more end-to-end applications making it
+very easy to get
+
+44
+00:02:10.675 --> 00:02:13.438
+started with those use
+cases. In this class, we'll
+
+45
+00:02:13.438 --> 00:02:16.815
+cover the common components of LangChain. So
+we'll talk about models.
+
+46
+00:02:16.815 --> 00:02:20.192
+We'll talk about prompts, which are how
+you get models to
+
+47
+00:02:20.192 --> 00:02:21.727
+do useful and interesting things.
+
+
+48
+00:02:22.368 --> 00:02:25.095
+We'll talk about indexes, which
+are ways of ingesting
+
+49
+00:02:25.095 --> 00:02:28.125
+data so that you
+can combine it with models. And
+
+50
+00:02:28.125 --> 00:02:31.760
+then we'll talk about chains, which are
+more end-to-end use cases along
+
+51
+00:02:31.760 --> 00:02:36.002
+with agents, which are a very
+exciting type of end-to-end use case which uses
+
+52
+00:02:36.002 --> 00:02:37.820
+the model as a reasoning engine.
+
+
+53
+00:02:37.820 --> 00:02:42.951
+We're also grateful to Ankush Gola, who
+is a co-founder of LangChain alongside Harrison
+
+54
+00:02:42.951 --> 00:02:46.250
+Chase, for also
+putting a lot of thought into
+
+55
+00:02:46.250 --> 00:02:48.449
+these materials and
+helping with the
+
+56
+00:02:48.449 --> 00:02:50.282
+creation of this short course.
+
+
+57
+00:02:50.803 --> 00:02:54.822
+And on the DeepLearning.AI side, Geoff
+Ludwig, Eddy Shyu, and
+
+58
+00:02:54.822 --> 00:02:57.233
+Diala Ezzeddine have
+also contributed to
+
+59
+00:02:57.233 --> 00:02:58.037
+these materials.
+
+60
+00:02:59.540 --> 00:03:03.761
+And so with that, let's
+go on to the next video, where we'll learn
+
+61
+00:03:03.761 --> 00:03:05.570
+about LangChain's models, prompts, and parsers.
+

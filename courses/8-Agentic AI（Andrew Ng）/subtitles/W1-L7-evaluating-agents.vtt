@@ -1,0 +1,319 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.117 --> 00:00:05.199
+I've worked with many different teams on building agentic workflows, and I've found that one
+
+2
+00:00:05.199 --> 00:00:10.680
+of the biggest predictors for whether someone is able to do it really well versus be less
+
+3
+00:00:10.680 --> 00:00:16.040
+efficient at it is whether or not they're able to drive a really disciplined evaluation
+
+4
+00:00:16.040 --> 00:00:17.040
+process.
+
+5
+00:00:17.040 --> 00:00:23.920
+So, your ability to drive evals for your agentic workflow makes a huge difference in your ability
+
+6
+00:00:23.920 --> 00:00:26.399
+to build them effectively.
+
+7
+00:00:26.399 --> 00:00:30.959
+In this video, we'll take a quick overview of how to build evals, and this is a subject
+
+8
+00:00:30.959 --> 00:00:35.240
+that we'll actually go into much deeper in a later module in this course.
+
+9
+00:00:35.240 --> 00:00:37.240
+So, let's take a look.
+
+10
+00:00:37.240 --> 00:00:43.200
+After building an agentic workflow like this one for responding to customer order inquiries,
+
+11
+00:00:43.200 --> 00:00:47.720
+it turns out that it's very difficult to know in advance what are the things that could
+
+12
+00:00:47.720 --> 00:00:48.720
+go wrong.
+
+13
+00:00:48.720 --> 00:00:53.759
+And so, rather than trying to build evaluations in advance, what I recommend is you just look
+
+14
+00:00:53.759 --> 00:01:00.200
+for the outputs and manually look for things that you wish it was doing better.
+
+15
+00:01:00.200 --> 00:01:05.360
+For example, maybe you read a lot of outputs and find that it is unexpectedly mentioning
+
+16
+00:01:05.360 --> 00:01:08.000
+your competitors more than it should.
+
+17
+00:01:08.000 --> 00:01:12.519
+Many businesses don't want their agents to mention competitors because it just creates
+
+18
+00:01:12.519 --> 00:01:14.080
+an awkward situation.
+
+19
+00:01:14.080 --> 00:01:17.639
+And if you read some of these outputs, maybe you find that it sometimes says, I'm glad
+
+20
+00:01:17.639 --> 00:01:18.639
+you shopped with us.
+
+21
+00:01:18.639 --> 00:01:21.040
+We're much better than our competitor, ComproCo.
+
+22
+00:01:21.040 --> 00:01:23.319
+Or maybe sometimes they say, sure, it should be fun.
+
+23
+00:01:23.319 --> 00:01:25.800
+Unlike RivalCo, we make returns easy.
+
+24
+00:01:25.800 --> 00:01:30.919
+And you may look at this and go, gee, I really don't want this to mention competitors.
+
+25
+00:01:30.919 --> 00:01:36.000
+This is an example of a problem that is really hard to anticipate in advance of building
+
+26
+00:01:36.000 --> 00:01:37.000
+this agentic workflow.
+
+27
+00:01:37.000 --> 00:01:42.000
+So, the best practice is really to build it first and then examine it to figure out where
+
+28
+00:01:42.000 --> 00:01:47.599
+it is not yet satisfactory, and then to find ways to evaluate as well as improve the system
+
+29
+00:01:47.599 --> 00:01:51.839
+to eliminate the ways that it is still not yet satisfactory.
+
+30
+00:01:51.839 --> 00:01:57.319
+Assuming your business considers it an error or a mistake to mention competitors
+
+31
+00:01:57.319 --> 00:02:02.680
+in this way, then as you work on eliminating these competitor mentions, one way to track
+
+32
+00:02:02.680 --> 00:02:08.720
+progress is to add an evaluation or an eval to track how often this error occurs.
+
+33
+00:02:08.720 --> 00:02:14.279
+So, if you have a named list of competitors like ComproCo, RivalCo, the other co, then
+
+34
+00:02:14.279 --> 00:02:20.199
+you can actually write code to just search in your own output for how often it mentions
+
+35
+00:02:20.199 --> 00:02:26.199
+these competitors by name and count up as a number, as a fraction of the overall responses,
+
+36
+00:02:26.199 --> 00:02:29.759
+how frequently it mistakenly mentions competitors.
+
+37
+00:02:29.759 --> 00:02:35.880
+One nice thing about the problem of competitor mentions is it's an objective metric, meaning
+
+38
+00:02:35.880 --> 00:02:38.199
+either the competitor was mentioned or not.
+
+39
+00:02:38.199 --> 00:02:44.839
+And for objective criteria, you can write code to check for how often this specific
+
+40
+00:02:44.839 --> 00:02:46.759
+error occurs.
+
+41
+00:02:46.759 --> 00:02:51.639
+But because LLMs output free text, there are also going to be criteria by which you want
+
+42
+00:02:51.639 --> 00:02:57.440
+to evaluate this output that may be more subjective and where it's harder to just write code
+
+43
+00:02:57.440 --> 00:02:59.399
+to output a black and white score.
+
+44
+00:02:59.399 --> 00:03:05.639
+In this case, using a LLM as a judge is a common technique to evaluate the output.
+
+45
+00:03:05.639 --> 00:03:10.960
+So, for example, if you're building a research agent to do research on different topics,
+
+46
+00:03:10.960 --> 00:03:16.279
+then you can use another LLM and prompt it to maybe, say, assign the following essay
+
+47
+00:03:16.279 --> 00:03:21.720
+a quality score between 1 and 5, where 1 is the worst and 5 is the best essay.
+
+48
+00:03:21.720 --> 00:03:27.679
+Here, I'm using a Python expression to mean copy-paste the generated essay into this.
+
+49
+00:03:27.679 --> 00:03:32.960
+So, you can prompt the LLM to read the essay and assign it a quality score.
+
+50
+00:03:32.960 --> 00:03:37.080
+Then I'm going to ask the research agent to write a number of different research reports,
+
+51
+00:03:37.080 --> 00:03:43.199
+for example, on recent developments in black hole science or using robots to harvest fruit.
+
+52
+00:03:43.199 --> 00:03:48.839
+And then in this example, maybe the judge LLM assigns the essay on black holes a score
+
+53
+00:03:48.839 --> 00:03:54.360
+of 3, the essay on robot harvesting a score of 4, and as you work on improving your research
+
+54
+00:03:54.360 --> 00:03:58.080
+agent, hopefully you see these scores go up over time.
+
+55
+00:03:58.080 --> 00:04:03.720
+It turns out, by the way, that LLMs are actually not that good at these 1 to 5 scale ratings.
+
+56
+00:04:03.960 --> 00:04:08.160
+You can give it a shot, but I personally tend not to use this technique that much myself.
+
+57
+00:04:08.160 --> 00:04:13.479
+But in a later module, you'll learn some better techniques to have an LLM output more accurate
+
+58
+00:04:13.479 --> 00:04:17.760
+scores than asking it to output scores on a 1 to 5 scale, although some people will
+
+59
+00:04:17.760 --> 00:04:22.519
+do this, maybe an initial cut as an LLM as judge type of eval.
+
+60
+00:04:22.519 --> 00:04:28.239
+Just to give a preview of some of the Agentic AI evals you'll learn about later in this course,
+
+61
+00:04:28.239 --> 00:04:33.000
+you've already heard me talk about how you can write codes to evaluate objective criteria,
+
+62
+00:04:33.000 --> 00:04:37.000
+such as did it mention a competitor or not, or use an LLM as a judge for more subjective
+
+63
+00:04:37.000 --> 00:04:39.640
+criteria such as what's the quality of this essay.
+
+64
+00:04:39.640 --> 00:04:42.480
+But later, you learn about two major types of evals.
+
+65
+00:04:42.480 --> 00:04:48.160
+One is end-to-end, where you measure the output quality of the entire agent, as well as component
+
+66
+00:04:48.160 --> 00:04:53.239
+level evals, where you might measure the quality of the output of a single step in the agentic
+
+67
+00:04:53.239 --> 00:04:54.239
+workflow.
+
+68
+00:04:54.239 --> 00:04:58.799
+It turns out that these are useful for driving different parts of your development process.
+
+69
+00:04:58.920 --> 00:05:03.920
+One thing I do a lot as well is just examine the intermediate outputs, or sometimes we
+
+70
+00:05:03.920 --> 00:05:09.079
+call these the traces of the LLM, in order to understand where it is falling short of
+
+71
+00:05:09.079 --> 00:05:10.079
+my expectations.
+
+72
+00:05:10.079 --> 00:05:14.359
+And we call this error analysis, where we just read through the intermediate outputs
+
+73
+00:05:14.359 --> 00:05:17.880
+of every single step to try to spot opportunities for improvement.
+
+74
+00:05:17.880 --> 00:05:22.320
+And it turns out being able to do evals and error analysis is a really key skill.
+
+75
+00:05:22.320 --> 00:05:27.160
+So we have much more to say about this in the fourth module in this course.
+
+76
+00:05:27.160 --> 00:05:29.839
+We're nearly to the end of this first module.
+
+77
+00:05:29.839 --> 00:05:33.480
+Before moving on, I just want to share with you what I think are the most important design
+
+78
+00:05:33.480 --> 00:05:35.880
+patterns for building agentic workflows.
+
+79
+00:05:35.880 --> 00:05:38.559
+Let's go take a look at that in the next video.
+

@@ -1,0 +1,1103 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00.280 --> 00:02.004
+In this lesson, you're going to be
+
+00:02.004 --> 00:03.730
+prompting an LLM to give you back
+
+00:03.730 --> 00:05.918
+a structured response in JSON format.
+
+00:05.918 --> 00:08.939
+And then you'll use a Pydantic data model
+
+00:08.939 --> 00:12.830
+to validate whether or not the JSON contains exactly what you need.
+
+00:13.339 --> 00:15.424
+And what you'll see is that you
+
+00:15.424 --> 00:17.510
+can often get pretty close by just
+
+00:17.510 --> 00:20.239
+asking the LLM to give you the structure that you want.
+
+00:20.609 --> 00:22.149
+And then what you can do
+
+00:22.149 --> 00:23.949
+with Pydantic is catch any validation errors
+
+00:23.949 --> 00:26.230
+and pass them back to the LLM.
+
+00:26.230 --> 00:29.370
+And with this, you're creating a feedback loop so that even if
+
+00:29.370 --> 00:33.161
+the initial response from the LLM has issues that are causing errors.
+
+00:33.161 --> 00:36.011
+You can ultimately get the LLM to correct its mistakes
+
+00:36.011 --> 00:37.701
+and give you exactly what you need.
+
+00:37.701 --> 00:39.404
+And so this is sort of what you
+
+00:39.404 --> 00:41.320
+might call a traditional approach for prompting for structure.
+
+00:41.320 --> 00:44.381
+You set up a retry feedback loop
+
+00:44.381 --> 00:47.430
+and kind of assume that you're going to get there eventually,
+
+00:47.430 --> 00:50.261
+even if the LLM didn't get it right the first time.
+
+00:50.261 --> 00:52.320
+Like I said before, we're going to look at
+
+00:52.320 --> 00:54.581
+some more elegant methods after this.
+
+00:54.581 --> 00:58.661
+But it's interesting to build this feedback mechanism once yourself, so that
+
+00:58.841 --> 01:00.365
+you can get a sense for
+
+01:00.365 --> 01:02.142
+what some of those more elegant methods
+
+01:02.142 --> 01:04.242
+are handling automatically for you behind the scenes.
+
+01:04.441 --> 01:06.242
+So, let's jump into the code.
+
+01:06.941 --> 01:09.042
+Okay, so starting off with some imports,
+
+01:09.042 --> 01:10.841
+mostly stuff you've seen from the previous lesson,
+
+01:10.841 --> 01:14.341
+and you've got a couple extras here from typing,
+
+01:14.341 --> 01:16.542
+List and Literal you're going to use
+
+01:16.542 --> 01:18.542
+in the definition of a new pydantic data model.
+
+01:19.042 --> 01:21.542
+And then you're adding load_dotenv and openai
+
+01:21.542 --> 01:23.141
+to set up an openai client.
+
+01:23.542 --> 01:26.841
+Next, you can go ahead and initialize your OpenAI client.
+
+01:28.403 --> 01:31.302
+then you can set up some sample user input data.
+
+01:31.763 --> 01:35.052
+So here you have a user_input_json
+
+01:35.052 --> 01:38.852
+that contains all the fields in your user input model.
+
+01:39.162 --> 01:42.653
+And just note here that you're defining order_id and purchase_date as null
+
+01:42.653 --> 01:44.748
+in the JSON form here and those will be
+
+01:44.748 --> 01:46.843
+read in as the defaults None in your model.
+
+01:48.322 --> 01:51.022
+And then you can define the same UserInput model
+
+01:51.022 --> 01:53.470
+that you had from the previous lesson.
+
+01:53.470 --> 01:55.918
+And then just like you did at
+
+01:55.918 --> 01:57.483
+the end of the previous lesson, you
+
+01:57.483 --> 02:01.364
+can create an instance of your UserInput model using the model_validate_json
+
+02:01.364 --> 02:04.364
+method on that user_input_json.
+
+02:05.974 --> 02:09.503
+Next, you're going to define a new Pydantic model called CustomerQuery.
+
+02:09.503 --> 02:12.283
+So now this is a class called CustomerQuery
+
+02:12.283 --> 02:15.554
+and in this case, you're inheriting from UserInput.
+
+02:15.554 --> 02:19.294
+Just like any other Python class, when you inherit from another class,
+
+02:19.294 --> 02:20.834
+you get all the attributes of that
+
+02:20.834 --> 02:22.593
+class and whatever you add on to it.
+
+02:22.593 --> 02:24.633
+So this is going to be
+
+02:24.633 --> 02:27.014
+a new Pydantic data model that gets
+
+02:27.014 --> 02:28.824
+all of these fields
+
+02:28.824 --> 02:31.764
+from UserInput and you're adding on four additional fields of priority,
+
+02:31.764 --> 02:34.405
+category, is_complaint, and tags.
+
+02:34.805 --> 02:36.555
+And here priority is a string,
+
+02:36.555 --> 02:38.460
+and you have a description of what
+
+02:38.460 --> 02:40.365
+this is, priority level low, medium, high.
+
+02:40.764 --> 02:43.814
+Then category is a literal type which means it has to be
+
+02:43.814 --> 02:47.525
+one of these three options, refund_request, information_request, or other.
+
+02:47.865 --> 02:49.414
+and then is_complaint is just a Boolean
+
+02:49.414 --> 02:50.965
+that's going to be true or false.
+
+02:50.965 --> 02:52.754
+and tags is a list of strings.
+
+02:53.115 --> 02:56.185
+So let's define that. And the next thing you're going to
+
+02:56.390 --> 02:59.431
+do is construct a prompt. So first,
+
+03:00.371 --> 03:02.670
+you'll define an example response structure.
+
+03:02.670 --> 03:05.401
+So this is giving an example that you'll put in the prompt
+
+03:05.401 --> 03:07.346
+to let the LLM know the structure
+
+03:07.346 --> 03:09.290
+that you're hoping for in the response.
+
+03:10.768 --> 03:12.937
+Then, you can construct a prompt
+
+03:12.937 --> 03:16.207
+where you're saying, please analyze this user query
+
+03:16.207 --> 03:20.307
+and you're passing in this validated instance of your user input model,
+
+03:20.307 --> 03:22.578
+the JSON representation of what's in the model.
+
+03:22.768 --> 03:25.377
+And you're saying return your analysis as a JSON object
+
+03:25.597 --> 03:27.796
+matching this exact structure and data types,
+
+03:27.796 --> 03:31.697
+and then passing this example structure as the example in the prompt.
+
+03:31.697 --> 03:33.697
+And then respond only with valid JSON,
+
+03:33.697 --> 03:36.046
+do not include any other explanations or other
+
+03:36.046 --> 03:38.396
+text formatting before or after the JSON object.
+
+03:38.396 --> 03:39.747
+and then we'll just print that out.
+
+03:39.747 --> 03:41.097
+So let's go ahead and run that.
+
+03:41.887 --> 03:43.597
+So you constructed a prompt that has
+
+03:43.597 --> 03:45.796
+this format. Please analyze this user query.
+
+03:45.796 --> 03:48.097
+Here's the user input that came in.
+
+03:48.097 --> 03:50.097
+Return your analysis as a JSON object
+
+03:50.097 --> 03:52.197
+matching this structure and here's the example.
+
+03:52.197 --> 03:54.223
+and then respond only with valid
+
+03:54.223 --> 03:56.587
+JSON. you can then define a function
+
+03:56.587 --> 03:58.957
+to call the LLM.
+
+03:58.957 --> 04:01.818
+In this case setting the model as gpt-4o,
+
+04:02.337 --> 04:04.117
+then passing in your prompt
+
+04:04.117 --> 04:07.298
+and returning the content of the response.
+
+04:08.487 --> 04:10.027
+And then you can try it out.
+
+04:12.548 --> 04:14.258
+So here we called the LLM
+
+04:14.258 --> 04:16.117
+and got back this response,
+
+04:16.117 --> 04:17.858
+which looks like a
+
+04:17.858 --> 04:20.827
+fairly close to accurate response, although
+
+04:20.827 --> 04:22.576
+what you can note is that
+
+04:22.576 --> 04:25.488
+we do have some extra formatting outside. of the JSON string here
+
+04:25.488 --> 04:27.658
+and that's going to be an issue.
+
+04:28.478 --> 04:31.307
+The next thing to do is to go ahead and try
+
+04:31.307 --> 04:33.209
+and validate that response you got by
+
+04:33.209 --> 04:36.000
+attempting to create an instance of
+
+04:36.000 --> 04:39.259
+your CustomerQuery model using the model_validate_json method
+
+04:39.259 --> 04:42.199
+on that response_content. So let's see what happens when you run that.
+
+04:43.918 --> 04:47.331
+Okay, a validation error. and down here you can see that
+
+04:47.331 --> 04:49.598
+it's a validation error for CustomerQuery, invalid JSON,
+
+04:50.019 --> 04:53.709
+expected, blah, blah, blah, and you can see that it's identified
+
+04:53.709 --> 04:57.100
+what the problem is in the response format.
+
+04:57.699 --> 04:59.629
+And then just like you did in the last lesson,
+
+05:00.019 --> 05:01.620
+you're going to define a function to
+
+05:03.480 --> 05:05.954
+capture errors a little more gracefully than just having this
+
+05:05.954 --> 05:08.430
+validation error get spewed out onto the screen like this.
+
+05:08.680 --> 05:11.499
+And so you'll pass in the data_model that you want
+
+05:11.499 --> 05:14.600
+to use for validation, the llm_response that you want to validate.
+
+05:14.759 --> 05:19.939
+You'll try validating that response with the model_validate_json method of your model.
+
+05:20.250 --> 05:22.990
+And if that works, great. Otherwise, you'll capture that validation
+
+05:23.081 --> 05:25.290
+error and and print it out.
+
+05:25.290 --> 05:28.831
+And what you're going to return is either the validated_data, and None,
+
+05:28.831 --> 05:31.170
+or None and the error_message.
+
+05:31.170 --> 05:33.230
+So it's basically a tuple that you're returning
+
+05:33.230 --> 05:36.990
+that either contains the valid data and nothing for the error,
+
+05:36.990 --> 05:39.230
+or nothing for the valid data and the
+
+05:39.230 --> 05:41.471
+error. And then you can try that out.
+
+05:41.471 --> 05:47.031
+So here you captured just the tail end of that validation error,
+
+05:47.031 --> 05:50.040
+explaining what went wrong and the issue with the JSON.
+
+05:50.040 --> 05:52.310
+And then what you're going to do with this
+
+05:52.552 --> 05:55.211
+error that you've captured is to construct a new prompt
+
+05:55.211 --> 05:57.096
+to send this back to the LLM
+
+05:57.096 --> 05:58.982
+and ask it to fix its mistake.
+
+05:59.822 --> 06:02.221
+And to do that, you're going to define a new function.
+
+06:02.221 --> 06:04.351
+This function is called create_retry_prompt
+
+06:04.351 --> 06:06.012
+where you're passing in the original_prompt,
+
+06:06.012 --> 06:09.651
+the original_response from the LLM and the error_message you got back.
+
+06:10.002 --> 06:13.141
+And then your retry_prompt that you're constructing is a message that says,
+
+06:13.141 --> 06:14.761
+this is a request to fix an
+
+06:14.761 --> 06:17.911
+error in the structure of an LLM response. Here's the original prompt.
+
+06:17.911 --> 06:20.012
+Here's the original LLM response,
+
+06:20.012 --> 06:21.822
+and here's the error message that
+
+06:21.822 --> 06:24.023
+was generated when trying to parse this into the model.
+
+06:24.023 --> 06:25.853
+Compare the error message and the llm_response and
+
+06:25.853 --> 06:27.682
+identify what needs to be fixed or removed
+
+06:27.682 --> 06:29.673
+in the llm_response to resolve this error.
+
+06:29.673 --> 06:31.642
+And again, respond ONLY with valid JSON.
+
+06:31.642 --> 06:33.163
+Do not include any explanations or other text
+
+06:33.163 --> 06:34.682
+or formatting before or after the JSON string.
+
+06:34.682 --> 06:36.598
+And then you're returning this as something that
+
+06:36.598 --> 06:38.512
+you can use in a new LLM call.
+
+06:38.512 --> 06:40.612
+So let's run that to define the function.
+
+06:40.612 --> 06:42.668
+And then you can try running this
+
+06:42.668 --> 06:44.723
+function to construct a validation retry prompt
+
+06:44.723 --> 06:46.963
+and print it out.
+
+06:46.963 --> 06:49.103
+So when you do that, you can
+
+06:49.103 --> 06:51.244
+see what you're going to send off.
+
+06:51.244 --> 06:53.903
+now to the LLM as a follow-up request.
+
+06:53.903 --> 06:55.588
+and it says, here's a request to
+
+06:55.588 --> 06:57.274
+fix an error. Here's the original prompt,
+
+06:57.274 --> 07:01.134
+and so this includes the entire original prompt down to here.
+
+07:01.494 --> 07:03.024
+And then here's the original response,
+
+07:03.524 --> 07:06.514
+just to show the LLM what was returned the first time.
+
+07:07.434 --> 07:09.805
+and then this generated the error. This is your validation
+
+07:09.805 --> 07:12.413
+error that came back from attempting to populate your pydantic model.
+
+07:12.413 --> 07:14.533
+and then try to go ahead and fix this.
+
+07:14.533 --> 07:16.353
+So that's the prompt we're going to send off now.
+
+07:17.233 --> 07:20.103
+So you can go ahead and call the LLM again.
+
+07:21.214 --> 07:22.668
+Now passing in the validation retry
+
+07:22.668 --> 07:24.365
+prompt and see what you get back.
+
+07:25.514 --> 07:27.935
+Okay, cool. Looks like it cleaned it up.
+
+07:27.935 --> 07:30.845
+Now you've got none of that markdown formatting
+
+07:30.845 --> 07:33.754
+outside and what looks to be valid JSON.
+
+07:34.185 --> 07:38.444
+So next, you can go ahead and attempt to validate with model,
+
+07:38.444 --> 07:40.735
+that new response that you've got, the
+
+07:40.735 --> 07:43.024
+validation retry response, and see what happens.
+
+07:43.464 --> 07:47.254
+Huh, another validation error. Okay. But this is different.
+
+07:47.774 --> 07:49.326
+So now it says one validation
+
+07:49.326 --> 07:51.136
+error for CustomerQuery query, input should be
+
+07:51.136 --> 07:55.636
+uh in category, input should be refund_request, information_request or other.
+
+07:55.935 --> 07:59.735
+So up here, this is a category of account_issue, which,
+
+07:59.935 --> 08:03.836
+if you recall back up here in the definition of your model,
+
+08:04.636 --> 08:06.735
+you have category defined as a literal,
+
+08:07.435 --> 08:10.935
+which can only take the values of refund_request, information_request or other.
+
+08:11.435 --> 08:13.836
+And now what you've done in the
+
+08:13.836 --> 08:16.235
+example_response_structure is provide one of those, but
+
+08:16.735 --> 08:17.889
+this is a problem arising from
+
+08:17.889 --> 08:19.235
+the fact that the LLM doesn't know
+
+08:19.476 --> 08:20.451
+what the other ones are. So this
+
+08:20.451 --> 08:21.427
+was not quite set up for success,
+
+08:21.427 --> 08:22.382
+but let's go ahead and see
+
+08:22.382 --> 08:23.497
+what happens if you capture this error
+
+08:23.497 --> 08:26.197
+and create another retry prompt.
+
+08:26.197 --> 08:28.067
+So you can use
+
+08:28.067 --> 08:30.050
+your create retry prompt function again
+
+08:30.050 --> 08:32.366
+to create a second validation retry prompt.
+
+08:32.366 --> 08:34.956
+And now you're passing in
+
+08:34.956 --> 08:37.366
+the validation_retry_prompt
+
+08:37.366 --> 08:39.572
+as the original_prompt and the validation
+
+08:39.572 --> 08:42.147
+retry and the validation_retry_response as the original_response
+
+08:42.147 --> 08:44.197
+and the validation_error.
+
+08:44.197 --> 08:46.287
+So you can run that to see what you get.
+
+08:46.287 --> 08:48.017
+And now this is getting to be a bit
+
+08:48.677 --> 08:50.388
+bit of a cumbersome prompt,
+
+08:50.388 --> 08:52.638
+but you can see this is a request to fix an error
+
+08:52.638 --> 08:54.041
+and then the original prompt was
+
+08:54.041 --> 08:55.677
+also a request to fix an error
+
+08:56.227 --> 08:59.628
+and so you can read through the entire original retry prompt
+
+08:59.628 --> 09:04.498
+and eventually you'll get down to where you had a new llm_response
+
+09:04.498 --> 09:07.577
+and this generated a new validation error,
+
+09:07.577 --> 09:09.628
+and now we need to fix that.
+
+09:09.628 --> 09:11.312
+So, you have a new prompt that
+
+09:11.312 --> 09:13.043
+you can send off to the LLM
+
+09:13.043 --> 09:15.023
+and you can use that to call the
+
+09:15.023 --> 09:16.587
+LLM again now with the second validation retry
+
+09:18.129 --> 09:22.578
+retry prompt and see what you get back. Okay, well,
+
+09:22.989 --> 09:25.999
+so now it's a valid category, information_request,
+
+09:26.249 --> 09:29.828
+but unfortunately, you got back this JSON markdown formatting again.
+
+09:30.068 --> 09:31.940
+So the purpose of this lesson is
+
+09:31.940 --> 09:34.078
+in some sense to have you experience firsthand
+
+09:34.078 --> 09:36.092
+the challenge of getting back a structured response
+
+09:36.092 --> 09:38.359
+in exactly the format you want from an LLM,
+
+09:38.359 --> 09:41.999
+and just some of the common issues that arise from that.
+
+09:42.639 --> 09:44.589
+And what you'll do next
+
+09:44.589 --> 09:47.178
+is to set up a complete retry cycle.
+
+09:47.419 --> 09:50.250
+system so that you can send an initial prompt
+
+09:50.250 --> 09:51.879
+If you have a problem with the
+
+09:51.879 --> 09:53.509
+JSON or with populating your data model,
+
+09:53.509 --> 09:55.259
+capture that validation error,
+
+09:55.259 --> 09:58.679
+construct a retry prompt and do it again and
+
+09:58.679 --> 10:00.529
+give yourself some number of retries.
+
+10:00.529 --> 10:03.100
+In this case, we're setting the default number of retries to five,
+
+10:03.100 --> 10:04.606
+to see if you can get to
+
+10:04.606 --> 10:06.330
+a valid response after some number of retries.
+
+10:06.330 --> 10:09.429
+So here you're defining a function called validate_llm_response
+
+10:09.429 --> 10:11.635
+passing in a prompt, a data_model,
+
+10:11.635 --> 10:14.210
+number of retries and a LLM model.
+
+10:14.690 --> 10:16.419
+setting up an initial LLM call
+
+10:16.791 --> 10:19.291
+to get back a response.
+
+10:19.291 --> 10:23.091
+And then for as many attempts as you're giving yourself in retries,
+
+10:23.091 --> 10:26.270
+you'll try first just validating the LLM response you got.
+
+10:26.270 --> 10:28.259
+If there's a problem with that,
+
+10:28.259 --> 10:30.581
+then first just print out some information.
+
+10:30.770 --> 10:34.640
+and then construct a validation retry prompt and try it again.
+
+10:34.640 --> 10:37.850
+call the LLM. If you get back valid data, that's great.
+
+10:37.850 --> 10:41.139
+If not, you'll run this loop as many times as you either
+
+10:41.139 --> 10:42.783
+need to to get valid data
+
+10:42.783 --> 10:44.701
+or until you run out of retries.
+
+10:45.061 --> 10:46.663
+So you can go ahead and
+
+10:46.663 --> 10:48.532
+define that. and then try it out.
+
+10:48.532 --> 10:50.595
+So here you're just starting with
+
+10:50.595 --> 10:53.001
+the same original prompt that you constructed
+
+10:53.001 --> 10:55.369
+at the top of the lesson
+
+10:55.369 --> 10:58.131
+and passing in your CustomerQuery data model.
+
+10:59.221 --> 11:02.192
+And when you run that, you see you've got
+
+11:02.192 --> 11:04.527
+one validation error to do with
+
+11:04.527 --> 11:07.251
+CustomerQuery, running into JSON problems like before.
+
+11:07.251 --> 11:11.062
+And so retry zero or what was the initial attempt failed,
+
+11:11.062 --> 11:13.287
+and you're trying again. And then it turns
+
+11:13.287 --> 11:15.511
+out on the first retry, you got more
+
+11:15.533 --> 11:17.653
+invalid JSON, the problem was not corrected
+
+11:17.653 --> 11:19.283
+and so that retry failed.
+
+11:19.283 --> 11:22.182
+And then eventually you get to the issue with category
+
+11:22.182 --> 11:25.003
+that it should be refund_request, information_request or other,
+
+11:25.003 --> 11:27.072
+and so retry 2 of 5 failed,
+
+11:27.072 --> 11:28.857
+but then in running a third retry,
+
+11:28.857 --> 11:30.643
+you actually got to an LLM response
+
+11:30.643 --> 11:33.143
+that was able to be validated in your model.
+
+11:33.682 --> 11:35.773
+And what you'll see if you run this multiple times
+
+11:35.773 --> 11:37.523
+is that it's a little different every time,
+
+11:37.523 --> 11:41.322
+because LLMs never quite do the same thing every time
+
+11:41.322 --> 11:43.503
+and you never know quite what to expect.
+
+11:43.503 --> 11:47.104
+So here again, you've got got a JSON issue, a JSON issue,
+
+11:47.504 --> 11:51.504
+then uh validation error with the category field, then another JSON issue,
+
+11:52.303 --> 11:54.604
+and then finally you've got to valid data.
+
+11:55.104 --> 11:59.004
+So sometimes it takes you three failed attempts, sometimes two.
+
+11:59.604 --> 12:01.703
+If you run this enough times, you might go through
+
+12:01.703 --> 12:03.803
+all five attempts and actually never get to valid data.
+
+12:03.803 --> 12:06.004
+And so you might be thinking at this point
+
+12:06.004 --> 12:07.388
+that this looks like kind of
+
+12:07.388 --> 12:09.004
+a flaky system. And you'd be right.
+
+12:09.403 --> 12:11.794
+The fact of the matter is, I've kind of set this
+
+12:11.794 --> 12:13.845
+up in such a way that you're bound
+
+12:13.845 --> 12:15.894
+to experience these errors. errors and retry requests,
+
+12:15.894 --> 12:19.184
+and there are certainly ways to construct your initial prompts to
+
+12:19.184 --> 12:22.434
+set yourself up for a better likelihood of success.
+
+12:22.434 --> 12:25.475
+But what you're experiencing here is actually what's going
+
+12:25.475 --> 12:28.855
+on behind the scenes when you're using a retry library
+
+12:28.855 --> 12:31.184
+that handles all this on the back end for you.
+
+12:31.184 --> 12:33.274
+And in the next lesson, you'll try that out.
+
+12:33.274 --> 12:36.024
+But I wanted to give you the first-hand experience here of
+
+12:36.024 --> 12:37.898
+seeing what's happening when you're asking
+
+12:37.898 --> 12:40.085
+for a structured response from an LLM,
+
+12:40.085 --> 12:41.845
+getting something that doesn't quite match,
+
+12:41.845 --> 12:45.125
+and going back and retrying. by passing back the error messages.
+
+12:45.405 --> 12:46.966
+This is exactly how this situation is handled
+
+12:46.966 --> 12:48.525
+in the back-end logic of some of these
+
+12:49.566 --> 12:51.233
+libraries that'll do it for you. So
+
+12:51.233 --> 12:52.900
+before we go on to the next
+
+12:52.900 --> 12:54.605
+lesson, I just want to show you one more
+
+12:54.605 --> 12:56.571
+trick you can use with pydantic models
+
+12:56.571 --> 12:58.535
+that'll help you construct a better prompt
+
+12:58.535 --> 13:00.586
+initially, if you want to set up a
+
+13:00.586 --> 13:02.635
+retry and feedback loop like we just did.
+
+13:03.025 --> 13:05.725
+So here what you're going to do is to print out the
+
+13:06.485 --> 13:09.905
+model JSON schema of your CustomerQuery data model.
+
+13:10.186 --> 13:11.885
+And when you do that, what you
+
+13:11.885 --> 13:13.826
+see is that even this relatively simple model
+
+13:13.826 --> 13:16.797
+has a complicated looking JSON schema.
+
+13:16.797 --> 13:18.351
+And while this is a little
+
+13:18.351 --> 13:20.167
+bit difficult for a human to parse,
+
+13:20.167 --> 13:23.547
+this is exactly the thing that will let an LLM know
+
+13:23.547 --> 13:26.927
+much more clearly what you're looking for in your structured response.
+
+13:26.927 --> 13:29.392
+So, rather than providing an example, like we did
+
+13:29.392 --> 13:31.856
+in the prompt at the top of the lesson,
+
+13:31.856 --> 13:35.956
+if you instead provide the model schema of your pydantic data model,
+
+13:35.956 --> 13:37.850
+you'll often get to the structured response
+
+13:37.850 --> 13:40.017
+you need from the LLM much more quickly.
+
+13:40.017 --> 13:41.537
+So, as a reminder,
+
+13:41.537 --> 13:43.837
+the prompt that we started with
+
+13:43.837 --> 13:46.118
+is one that looks like this.
+
+13:46.118 --> 13:48.518
+where you pass in the user input
+
+13:48.518 --> 13:50.035
+and then gave an example of
+
+13:50.035 --> 13:51.807
+the kind of output you're looking for.
+
+13:51.807 --> 13:52.980
+And this is really common, a
+
+13:52.980 --> 13:54.347
+lot of people use this approach for
+
+13:54.347 --> 13:56.717
+whatever kind of output you're trying to get from the LLM,
+
+13:56.717 --> 13:58.702
+providing examples in the prompt can be a
+
+13:58.702 --> 14:00.687
+way to get to the response you want.
+
+14:00.687 --> 14:04.427
+However, a better starting point would actually be
+
+14:04.427 --> 14:06.337
+providing a prompt like this
+
+14:06.337 --> 14:09.238
+where you pass in the user_input as before,
+
+14:09.238 --> 14:10.759
+but instead of that example, pass in
+
+14:10.759 --> 14:12.499
+your data_model_schema. schema that you defined up here,
+
+14:12.499 --> 14:15.548
+this long JSON schema
+
+14:15.548 --> 14:18.448
+that describes exactly what your model expects.
+
+14:18.698 --> 14:20.828
+When you create a prompt like that,
+
+14:20.828 --> 14:23.433
+you're giving better instructions to the LLM as
+
+14:23.433 --> 14:26.038
+to what you're hoping for in the response.
+
+14:26.528 --> 14:29.989
+And you can try out that new prompt in your validate_llm_response
+
+14:29.989 --> 14:33.558
+retry function and see what you get.
+
+14:35.969 --> 14:39.519
+So in this case, you had one issue still with Invalid JSON,
+
+14:39.519 --> 14:41.574
+but after that, a single re retry
+
+14:41.574 --> 14:43.629
+allowed you to get to valid data.
+
+14:44.629 --> 14:47.330
+And this is another example of what's happening behind the scenes when,
+
+14:47.330 --> 14:50.029
+as you'll see in the next lesson, you can pass your
+
+14:50.429 --> 14:52.230
+pydantic data model in your API
+
+14:52.230 --> 14:54.330
+call and what's often happening is the
+
+14:54.629 --> 14:56.981
+data_model_schema is being extracted from your model and
+
+14:56.981 --> 14:59.629
+used as part of the prompt to the LLM.
+
+15:00.129 --> 15:01.422
+And with that, you have a
+
+15:01.422 --> 15:02.929
+new set of tools in your toolkit
+
+15:03.330 --> 15:05.929
+for getting the structure that you want from an LLM.
+
+15:06.629 --> 15:08.629
+Even when it doesn't get it right the first time.
+
+15:09.029 --> 15:10.700
+It turns out that this exact mechanism
+
+15:10.700 --> 15:12.370
+mechanism is at work behind the scenes
+
+15:12.370 --> 15:13.800
+in some of the frameworks that allow
+
+15:13.800 --> 15:15.230
+you to pass your pydantic data model
+
+15:15.230 --> 15:18.020
+in directly in your API call.
+
+15:18.020 --> 15:22.451
+Namely, that mechanism of extracting the JSON schema from your pydantic model,
+
+15:22.451 --> 15:24.571
+using that to construct a prompt,
+
+15:24.921 --> 15:28.390
+and then handling validation and retrying in a feedback loop.
+
+15:29.240 --> 15:30.747
+And that's where we're going next.
+
+15:30.747 --> 15:32.504
+In the next lesson, we'll look at
+
+15:32.504 --> 15:34.270
+a variety of frameworks for getting the structure
+
+15:34.270 --> 15:36.951
+you want by passing your pydantic model directly
+
+15:36.951 --> 15:39.630
+in your API call. I'll see you there.

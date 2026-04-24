@@ -1,0 +1,251 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.016 --> 00:00:06.000
+Agents can be autonomous to different degrees. A few years ago, I noticed within the AI community
+
+2
+00:00:06.000 --> 00:00:10.960
+that there was a growing controversial debate about what is an agent, and some people are
+
+3
+00:00:10.960 --> 00:00:14.960
+writing a paper saying I built an agent, and others will say, no, that's not really a true
+
+4
+00:00:14.960 --> 00:00:21.360
+agent. And I felt this debate was unnecessary, which is why I started using the term agentic,
+
+5
+00:00:21.360 --> 00:00:26.959
+because I thought if we use it as an adjective rather than a binary, it's either an agent or not,
+
+6
+00:00:26.959 --> 00:00:31.760
+then we're going to have to acknowledge that systems can be agentic to different degrees.
+
+7
+00:00:31.760 --> 00:00:36.080
+And let's just call it all agentic and move on with the real work of building these systems
+
+8
+00:00:36.080 --> 00:00:40.880
+rather than debating, you know, is this sufficiently autonomous to be an agent or not?
+
+9
+00:00:40.880 --> 00:00:46.000
+I remember when I prepared a talk on agentic reasoning, one of my team members actually
+
+10
+00:00:46.000 --> 00:00:50.000
+came to me and said, hey, Andrew, we don't need yet another word. You know, we have agent,
+
+11
+00:00:50.000 --> 00:00:55.119
+why are you making up another word, agentic? But I decided to use it anyway. And then later on,
+
+12
+00:00:55.119 --> 00:01:01.200
+wrote an article in a given newsletter, The Batch, and then also posted on social media,
+
+13
+00:01:01.200 --> 00:01:06.239
+saying that instead of arguing over which word to include or exclude as being a true agent,
+
+14
+00:01:06.239 --> 00:01:11.599
+let's acknowledge that different degrees to which systems can be agentic. And I think this helped
+
+15
+00:01:11.599 --> 00:01:18.160
+move past the debate on what is a true agent and let us just focus on actually building them.
+
+16
+00:01:18.160 --> 00:01:25.120
+Some agents can be less autonomous. So take the example of writing an essay about black holes.
+
+17
+00:01:25.120 --> 00:01:31.760
+You can have a relatively simple agent to come up with a few web search terms or web search queries.
+
+18
+00:01:31.760 --> 00:01:37.199
+Then you can hard code in that you call a web search engine, fetch some web pages,
+
+19
+00:01:37.199 --> 00:01:41.839
+and then use that to write an essay. And this is an example of a less autonomous agent
+
+20
+00:01:41.839 --> 00:01:46.720
+with a fully deterministic sequence of steps. And this will work okay.
+
+21
+00:01:46.720 --> 00:01:50.879
+In terms of notational convention, throughout this course, I'll use the red color,
+
+22
+00:01:50.879 --> 00:01:56.080
+as you see here on the left, to denote the user input, such as a user query in this case,
+
+23
+00:01:56.080 --> 00:02:00.559
+or in later examples, maybe the input document into an agentic workflow.
+
+24
+00:02:00.559 --> 00:02:07.599
+The gray boxes denote calls to an LLM, and the green boxes, like the web search and the web
+
+25
+00:02:07.599 --> 00:02:13.039
+fetch boxes that you see here, indicate steps where other software is being used to carry out
+
+26
+00:02:13.039 --> 00:02:18.559
+an action, such as a web search API call or executing code to fetch the contents of a website.
+
+27
+00:02:18.559 --> 00:02:24.080
+Then an agent can be more autonomous, where, given a request to write an essay about black holes,
+
+28
+00:02:24.080 --> 00:02:29.119
+perhaps you let the LLM decide, does it want to do a web search, or does it want to search
+
+29
+00:02:29.119 --> 00:02:34.320
+recent news sources, or does it want to search for recent research papers on the website archive?
+
+30
+00:02:34.320 --> 00:02:39.600
+Based on that, maybe in this example, the LLM, not the human engineer, but the LLM chooses,
+
+31
+00:02:39.600 --> 00:02:44.720
+in this case, to call a web search engine, and then after that, you may let the LLM decide
+
+32
+00:02:44.720 --> 00:02:50.000
+how many web pages does it want to fetch, or if it fetches the PDF, does it need to
+
+33
+00:02:50.000 --> 00:02:53.839
+call a function, or also call a tool, to convert the PDF to text?
+
+34
+00:02:53.839 --> 00:02:59.600
+And in this case, maybe it fetches its top few web pages, then it can write an essay,
+
+35
+00:02:59.600 --> 00:03:03.919
+decide whether to reflect and improve, and maybe even go back to fetch more web pages,
+
+36
+00:03:03.919 --> 00:03:06.399
+and then to finally produce an output.
+
+37
+00:03:06.399 --> 00:03:13.039
+And so even for this example of a research agent, we can see that some agents can be
+
+38
+00:03:13.039 --> 00:03:18.160
+less autonomous, with a linear sequence of steps to be executed, determined by a programmer,
+
+39
+00:03:18.160 --> 00:03:22.559
+and some can be more autonomous, where you trust the LLM to make more decisions,
+
+40
+00:03:22.559 --> 00:03:26.800
+and the exact sequence of steps that happens may be even determined by the LLM, rather than
+
+41
+00:03:26.800 --> 00:03:28.720
+in advance by the programmer.
+
+42
+00:03:28.720 --> 00:03:34.399
+So for less autonomous systems, you will usually have all the steps predetermined in advance,
+
+43
+00:03:34.399 --> 00:03:38.960
+and any functions it calls, like web search, and we'll call that tool use, as you learn
+
+44
+00:03:38.960 --> 00:03:43.119
+in the third module in this course, might be hard-coded by the human engineer, by you
+
+45
+00:03:43.119 --> 00:03:47.279
+or me, and most of the autonomy is in what text the LLM generates.
+
+46
+00:03:47.279 --> 00:03:51.600
+At the end of the spectrum would be highly autonomous agents, where the agent makes many
+
+47
+00:03:51.600 --> 00:03:56.160
+decisions autonomously, including, for example, deciding what is the sequence of steps it
+
+48
+00:03:56.160 --> 00:03:59.360
+will carry out in order to write the essay.
+
+49
+00:03:59.360 --> 00:04:03.520
+And there's some highly autonomous agents that can even write new functions, or sometimes
+
+50
+00:04:04.000 --> 00:04:06.800
+create new tools that it can then execute.
+
+51
+00:04:06.800 --> 00:04:11.279
+And somewhere in between are semi-autonomous agents, where it can make some decisions,
+
+52
+00:04:11.279 --> 00:04:14.479
+choose tools, but the tools are usually more predefined.
+
+53
+00:04:14.479 --> 00:04:18.320
+As you look at different examples in this course, you learn how to build applications
+
+54
+00:04:18.320 --> 00:04:22.880
+anywhere on this spectrum of less to more highly autonomous, and you find that there
+
+55
+00:04:22.880 --> 00:04:26.959
+are tons of applications in the less autonomous end of the spectrum that are very valuable
+
+56
+00:04:26.959 --> 00:04:31.679
+being built for tons of businesses today, and at the same time, there are also applications
+
+57
+00:04:31.679 --> 00:04:36.399
+being worked on at the more highly autonomous end of the spectrum, but those are usually
+
+58
+00:04:36.399 --> 00:04:42.559
+less easily controllable, a little bit more unpredictable, and also a lot of active research
+
+59
+00:04:42.559 --> 00:04:46.079
+as well to figure out how to build these more highly autonomous agents.
+
+60
+00:04:46.959 --> 00:04:53.359
+And with that, let's go on to the next video to dive deeper into this and to hear about
+
+61
+00:04:53.359 --> 00:04:57.839
+some of the benefits of using agents and why they allow us to do things that just were
+
+62
+00:04:57.839 --> 00:05:03.200
+not possible with earlier generations of base applications.
+

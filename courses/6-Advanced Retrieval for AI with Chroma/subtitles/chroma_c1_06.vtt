@@ -1,0 +1,970 @@
+WEBVTT
+1
+00:00:00.000 --> 00:00:02.380
+In the last couple of lessons, we've
+looked at how we can
+
+2
+00:00:02.380 --> 00:00:06.140
+use query augmentation and cross-encoder
+re-ranking to improve
+
+3
+00:00:06.140 --> 00:00:07.120
+retrieval results.
+
+4
+00:00:07.900 --> 00:00:10.740
+In this lesson, I'm going to show
+you how we can use user
+
+5
+00:00:10.740 --> 00:00:13.040
+feedback about the
+relevancy of retrieved
+
+6
+00:00:13.040 --> 00:00:16.600
+results to automatically
+improve the performance
+
+7
+00:00:16.600 --> 00:00:18.620
+of the retrieval
+system using a
+
+8
+00:00:18.620 --> 00:00:20.780
+technique called embedding
+adapters.
+
+9
+00:00:21.760 --> 00:00:22.940
+Let me show you how it works.
+
+10
+00:00:23.040 --> 00:00:25.480
+Embedding adapters are a
+way to alter the
+
+11
+00:00:25.480 --> 00:00:27.320
+embedding of a query
+directly in order to
+
+12
+00:00:27.320 --> 00:00:30.320
+produce better retrieval results.
+In effect, we insert an
+
+13
+00:00:30.320 --> 00:00:32.320
+additional stage in
+the retrieval system
+
+14
+00:00:32.320 --> 00:00:34.580
+called an embedding adapter,
+which happens after
+
+15
+00:00:34.580 --> 00:00:36.320
+the embedding model,
+but before we retrieve
+
+16
+00:00:36.320 --> 00:00:37.540
+the most relevant results.
+
+17
+00:00:37.780 --> 00:00:40.540
+We train the embedding
+adapter using user feedback
+
+18
+00:00:40.540 --> 00:00:43.400
+on the relevancy of
+our retrieved results for
+
+19
+00:00:43.400 --> 00:00:44.440
+a set of queries.
+
+20
+00:00:44.580 --> 00:00:45.480
+Let's get into it.
+
+21
+00:00:45.800 --> 00:00:48.440
+So the first thing we do is grab
+our helper functions as before.
+
+22
+00:00:50.400 --> 00:00:52.880
+One special thing here is we're
+going to need Torch because we're going
+
+23
+00:00:52.880 --> 00:00:55.580
+to effectively train a model, but a
+very lightweight one.
+
+24
+00:00:55.940 --> 00:00:57.440
+And we create
+our embedding function
+
+25
+00:00:57.440 --> 00:00:58.680
+and load everything into Corma.
+
+26
+00:00:58.940 --> 00:01:00.960
+And again,
+we project all of our data.
+
+27
+00:01:07.150 --> 00:01:10.390
+So the first thing we need
+for this approach is a data set.
+
+28
+00:01:10.530 --> 00:01:12.890
+We don't
+have one ready because we haven't really
+
+29
+00:01:12.890 --> 00:01:15.170
+had users using our
+RAG application.
+
+30
+00:01:15.330 --> 00:01:18.390
+But we can use a model
+to generate a data set for us.
+
+31
+00:01:18.390 --> 00:01:20.610
+And once again, this is all about
+creating the right prompt.
+
+32
+00:01:20.950 --> 00:01:24.530
+So we're going to use GPT again. And
+essentially, we're prompting
+
+33
+00:01:24.530 --> 00:01:27.570
+the model as an expert, helpful financial
+research assistant. And it
+
+34
+00:01:27.570 --> 00:01:29.990
+should suggest 10 to 15 short
+questions that are
+
+35
+00:01:29.990 --> 00:01:33.570
+important to ask when analyzing an
+annual report and with some guidelines
+
+36
+00:01:33.570 --> 00:01:35.150
+about what the
+output should be like.
+
+37
+00:01:35.350 --> 00:01:37.810
+And this will generate some queries
+that users might actually have run
+
+38
+00:01:37.810 --> 00:01:38.910
+against our system.
+
+39
+00:01:39.610 --> 00:01:41.210
+So let's
+ask it to generate those queries.
+
+40
+00:01:41.650 --> 00:01:43.510
+We see that these
+are fairly reasonable questions
+
+41
+00:01:43.510 --> 00:01:46.870
+to ask about any company's
+financial statements.
+
+42
+00:01:50.250 --> 00:01:52.270
+So we're
+going to get the results from Chrome.
+
+43
+00:01:52.430 --> 00:01:55.390
+And what we're going to do, and we'll get
+the retrieved documents associated
+
+44
+00:01:55.390 --> 00:01:56.030
+with the results.
+
+45
+00:01:56.190 --> 00:01:58.110
+And what we're going to do is
+also ask the model
+
+46
+00:01:58.110 --> 00:02:00.930
+to evaluate the results. In
+a real RAG system, you
+
+47
+00:02:00.930 --> 00:02:03.110
+can easily ask your
+users to give a thumbs up or thumbs
+
+48
+00:02:03.110 --> 00:02:06.370
+down on the generated output, and
+then reference that with the retrieved
+
+49
+00:02:06.370 --> 00:02:09.190
+results to give a signal about
+what results were
+
+50
+00:02:09.190 --> 00:02:11.370
+actually relevant and
+which weren't. In this case, we don't
+
+51
+00:02:11.370 --> 00:02:14.990
+quite have that, but we can
+use a model to evaluate the relevancy of
+
+52
+00:02:14.990 --> 00:02:17.170
+the retrieved results for
+each query. And again, this
+
+53
+00:02:17.170 --> 00:02:18.390
+is just
+about prompting the model.
+
+54
+00:02:18.530 --> 00:02:21.310
+So we're going to ask our helpful expert
+financial assistant to
+
+55
+00:02:21.310 --> 00:02:24.130
+tell us whether a given statement
+is relevant to the given query.
+
+56
+00:02:24.130 --> 00:02:27.250
+And we're going to ask it to output
+only yes or no. And then
+
+57
+00:02:27.250 --> 00:02:29.390
+we're going to
+essentially transform yes to
+
+58
+00:02:29.390 --> 00:02:32.730
+one's and no to
+negative one's. And I'll explain why in just a
+
+59
+00:02:32.730 --> 00:02:35.370
+minute, but that's the prompt. And then
+what we're going to do
+
+60
+00:02:35.370 --> 00:02:38.730
+is we are going to get our retrieved
+embeddings and our query
+
+61
+00:02:38.730 --> 00:02:39.330
+embeddings.
+
+62
+00:02:39.610 --> 00:02:41.870
+And we're going to start making
+a dataset to train
+
+63
+00:02:41.870 --> 00:02:42.810
+our embedding adapter.
+
+64
+00:02:42.970 --> 00:02:44.610
+And the way we're
+going to do it is like this.
+
+65
+00:02:44.710 --> 00:02:46.910
+We're going to have our
+adapter query embeddings, adapter
+
+66
+00:02:46.910 --> 00:02:48.870
+doc embeddings, and
+our adapter labels.
+
+67
+00:02:49.050 --> 00:02:52.210
+Now the adapter prefix just means we're
+going to use this in a dataset. They're
+
+68
+00:02:52.210 --> 00:02:55.490
+not special in any way. they're just
+the embeddings of our queries
+
+69
+00:02:55.490 --> 00:02:58.130
+and the embeddings of
+our documents. The labels we're
+
+70
+00:02:58.130 --> 00:03:01.330
+going to get from our evaluation model,
+the label is going
+
+71
+00:03:01.330 --> 00:03:04.970
+to be plus one or minus one depending
+on whether the document
+
+72
+00:03:04.970 --> 00:03:07.130
+is relevant or not
+to the given query.
+
+73
+00:03:07.130 --> 00:03:09.650
+So we're just going to loop
+over everything to create these triples.
+
+74
+00:03:10.070 --> 00:03:12.210
+So the model is
+performing an evaluation for us.
+
+75
+00:03:12.210 --> 00:03:14.370
+Now it's
+no mistake that our labels are
+
+76
+00:03:14.370 --> 00:03:16.830
+plus one and minus one, because
+what we're going
+
+77
+00:03:16.830 --> 00:03:19.130
+to do when when we're training our
+embedding adapter model
+
+78
+00:03:19.130 --> 00:03:23.030
+is use these
+values as our loss function for
+
+79
+00:03:23.030 --> 00:03:23.670
+cosine distance.
+
+80
+00:03:23.850 --> 00:03:27.230
+When two vectors are identical,
+the cosine similarity
+
+81
+00:03:27.230 --> 00:03:28.690
+between them is one.
+
+82
+00:03:29.030 --> 00:03:31.430
+When two vectors are opposite,
+the cosine similarity between
+
+83
+00:03:31.430 --> 00:03:33.030
+them is negative one.
+In other words,
+
+84
+00:03:33.030 --> 00:03:35.230
+we want relevant results
+to point in the
+
+85
+00:03:35.230 --> 00:03:37.810
+same direction as vectors,
+and we want irrelevant results to
+
+86
+00:03:37.810 --> 00:03:39.250
+point in the
+opposite direction from
+
+87
+00:03:39.250 --> 00:03:40.030
+a given query.
+
+88
+00:03:40.490 --> 00:03:42.350
+And this is the model that we're
+going to train.
+
+89
+00:03:42.870 --> 00:03:44.770
+That's exactly what it's going
+to try to do.
+
+90
+00:03:46.710 --> 00:03:48.710
+All right, and let's
+check out the length of our data set.
+
+91
+00:03:49.590 --> 00:03:51.050
+Great, 150.
+
+92
+00:03:51.370 --> 00:03:54.070
+So that's
+15 queries with 10 results each, each
+
+93
+00:03:54.070 --> 00:03:55.730
+one labeled for relevancy.
+
+94
+00:03:56.430 --> 00:03:59.150
+So the next thing we need to do,
+because we're using Torch to train
+
+95
+00:03:59.150 --> 00:04:00.170
+our embedding adopter,
+
+96
+00:04:00.370 --> 00:04:02.150
+is we need to
+transform our data set
+
+97
+00:04:02.150 --> 00:04:04.810
+into a Torch tensor data set.
+
+98
+00:04:05.330 --> 00:04:07.610
+So we're just going to do
+some data manipulation here
+
+99
+00:04:07.610 --> 00:04:10.310
+to transform these into
+Torch tensor types. And
+
+100
+00:04:10.310 --> 00:04:12.070
+finally, we're going
+to pack everything into a
+
+101
+00:04:12.070 --> 00:04:13.930
+Torch data set.
+
+102
+00:04:19.010 --> 00:04:20.850
+So let's
+set up our embedding adapter model.
+
+103
+00:04:21.190 --> 00:04:23.090
+The first thing is to
+set up the model itself,
+
+104
+00:04:23.090 --> 00:04:24.810
+and the model
+is fairly straightforward.
+
+105
+00:04:24.970 --> 00:04:27.790
+It takes as input a query embedding,
+a document embedding,
+
+106
+00:04:27.790 --> 00:04:31.930
+and an adapter matrix. We compute an
+updated query embedding
+
+107
+00:04:31.930 --> 00:04:34.110
+by multiplying our
+original query embedding
+
+108
+00:04:34.110 --> 00:04:36.910
+by the adapter matrix, and then we
+compute the cosine
+
+109
+00:04:36.910 --> 00:04:39.230
+similarity between our
+updated query embedding
+
+110
+00:04:39.230 --> 00:04:42.070
+and our document embedding. Next,
+let's define our loss function.
+
+111
+00:04:42.290 --> 00:04:43.750
+Again,
+our loss takes a query embedding,
+
+112
+00:04:43.750 --> 00:04:46.750
+document embedding, adapter matrix,
+and label. And we run the model
+
+113
+00:04:46.750 --> 00:04:49.430
+to compute the cosine similarity,
+and we compute the mean squared
+
+114
+00:04:49.430 --> 00:04:51.830
+error between the
+cosine similarity and the label.
+
+115
+00:04:51.830 --> 00:04:54.590
+And you'll notice again that
+the plus one label means that
+
+116
+00:04:54.590 --> 00:04:56.670
+the cosine similarity
+says that the
+
+117
+00:04:56.670 --> 00:04:59.150
+vectors are pointing in the same
+direction, and a negative one
+
+118
+00:04:59.150 --> 00:05:01.470
+label means they should be pointing
+in the opposite direction. In
+
+119
+00:05:01.470 --> 00:05:04.750
+this way, we want our queries to
+be pointing in the
+
+120
+00:05:04.750 --> 00:05:06.630
+same direction as relevant
+documents, and
+
+121
+00:05:06.630 --> 00:05:08.970
+in the opposite direction
+to irrelevant documents. And
+
+122
+00:05:08.970 --> 00:05:11.690
+this is what we're training
+our adapter matrix to do. We initialize
+
+123
+00:05:11.690 --> 00:05:13.390
+our adapter matrix
+for training. You might
+
+124
+00:05:13.390 --> 00:05:15.210
+recognize this is very
+similar to a linear
+
+125
+00:05:15.210 --> 00:05:17.670
+layer in a traditional
+neural network. And that's
+
+126
+00:05:17.670 --> 00:05:18.610
+really all we're doing.
+
+127
+00:05:22.830 --> 00:05:24.450
+Next, let's
+set up our training loop. We
+
+128
+00:05:24.450 --> 00:05:26.890
+set our minimum loss and
+our best matrix as things
+
+129
+00:05:26.890 --> 00:05:29.290
+to keep track of. Let's train
+for 100 epochs.
+
+130
+00:05:29.490 --> 00:05:31.190
+For each query embedding,
+document embedding,
+
+131
+00:05:31.190 --> 00:05:34.090
+and label in our Torch data set,
+we compute our loss.
+
+132
+00:05:34.290 --> 00:05:36.330
+If the loss that
+we computed is better
+
+133
+00:05:36.330 --> 00:05:38.550
+than our previous loss,
+We will keep track of that
+
+134
+00:05:38.550 --> 00:05:39.770
+as the best matrix so far.
+
+135
+00:05:40.470 --> 00:05:41.650
+And then we back propagate.
+
+136
+00:05:44.440 --> 00:05:45.700
+And let's run our training loop.
+
+137
+00:05:47.680 --> 00:05:50.020
+And you can see it's very, very
+fast, because again, this
+
+138
+00:05:50.020 --> 00:05:52.640
+is exactly the same
+thing as if we were training a single
+
+139
+00:05:52.640 --> 00:05:54.680
+linear layer of a
+traditional neural network. So
+
+140
+00:05:54.680 --> 00:05:56.240
+let's take a look at the best
+loss that we got.
+
+141
+00:05:56.640 --> 00:05:59.180
+This is pretty good. A loss of 0.5
+is pretty good. It means we've got
+
+142
+00:05:59.180 --> 00:06:02.200
+pretty much a halfway
+improvement in terms of
+
+143
+00:06:02.200 --> 00:06:03.180
+where we started from.
+
+144
+00:06:03.380 --> 00:06:06.480
+So one thing we'd like to take a look
+at as how the adapter
+
+145
+00:06:06.480 --> 00:06:10.300
+matrix influences our query vector.
+To do that, we
+
+146
+00:06:10.300 --> 00:06:13.280
+can construct a test vector
+consisting of all ones, and
+
+147
+00:06:13.280 --> 00:06:16.640
+we can multiply that test
+vector by our best matrix. And
+
+148
+00:06:16.640 --> 00:06:20.380
+what this will tell us is which dimensions
+of our vectors get
+
+149
+00:06:20.380 --> 00:06:23.340
+scaled by what amount. You
+can think of an embedding adapter
+
+150
+00:06:23.340 --> 00:06:27.120
+as stretching space
+and squeezing space for the dimensions
+
+151
+00:06:27.120 --> 00:06:28.540
+which are most
+relevant to the
+
+152
+00:06:28.540 --> 00:06:31.220
+particular queries that we have while
+reducing the dimensions
+
+153
+00:06:31.220 --> 00:06:33.880
+that are not relevant to our
+query. You'll also notice that it can
+
+154
+00:06:33.880 --> 00:06:34.740
+reverse dimensions.
+
+155
+00:06:35.160 --> 00:06:36.540
+So let's plot what that looks like.
+
+156
+00:06:36.980 --> 00:06:40.740
+And here you can see how
+each dimension of our test vector,
+
+157
+00:06:40.740 --> 00:06:42.800
+which consists only of ones,
+has been stretched and squeezed.
+
+158
+00:06:42.800 --> 00:06:45.380
+Some have been elongated a lot,
+while others have been
+
+159
+00:06:45.380 --> 00:06:47.460
+made to be almost zero.
+And so what this
+
+160
+00:06:47.460 --> 00:06:49.920
+means is our embedding
+adapter has basically decided, okay,
+
+161
+00:06:49.920 --> 00:06:52.340
+these dimensions are more relevant,
+these are less relevant.
+
+162
+00:06:52.340 --> 00:06:54.880
+These are actually opposite
+to the things that we want to find,
+
+163
+00:06:54.880 --> 00:06:57.240
+and these things are actually
+more relevant to the things
+
+164
+00:06:57.240 --> 00:06:58.040
+that we want to find.
+
+165
+00:06:58.200 --> 00:07:00.020
+Now let's take a look at
+what effect this actually
+
+166
+00:07:00.020 --> 00:07:00.980
+has on our queries.
+
+167
+00:07:01.540 --> 00:07:05.160
+So let's do as we did before. We'll take
+our generated queries and
+
+168
+00:07:05.160 --> 00:07:09.000
+embed them, and let's compute also
+our adapted query embeddings, and then
+
+169
+00:07:09.000 --> 00:07:09.780
+we project them.
+
+170
+00:07:11.880 --> 00:07:14.120
+Now let's
+plot what we get against our dataset.
+
+171
+00:07:18.120 --> 00:07:20.260
+And as you can see,
+our original queries
+
+172
+00:07:20.260 --> 00:07:22.920
+were quite scattered around,
+but our new queries concentrate in
+
+173
+00:07:22.920 --> 00:07:24.960
+a certain part of the dataset
+which is most relevant to our
+
+174
+00:07:24.960 --> 00:07:27.760
+queries. You can see how the red
+queries have been
+
+175
+00:07:27.760 --> 00:07:29.200
+adapted through the
+embedding adapter to
+
+176
+00:07:29.200 --> 00:07:30.620
+transform them into
+the green queries,
+
+177
+00:07:30.620 --> 00:07:32.600
+to push them into a
+particular part of the space.
+
+178
+00:07:32.740 --> 00:07:34.820
+So as you can see,
+an embedding adapter is a simple
+
+179
+00:07:34.820 --> 00:07:37.420
+but powerful technique
+for customizing query
+
+180
+00:07:37.420 --> 00:07:39.800
+embeddings to your
+specific application.
+
+181
+00:07:39.800 --> 00:07:42.140
+In order to make this work,
+you need to collect a dataset,
+
+182
+00:07:42.140 --> 00:07:46.080
+either a synthetic one like the one we've
+generated here, or else one that's based
+
+183
+00:07:46.080 --> 00:07:48.300
+on user data. User data
+usually works best
+
+184
+00:07:48.300 --> 00:07:51.120
+because it actually
+means that people are using your
+
+185
+00:07:51.120 --> 00:07:53.760
+retrieval system for
+their specific tasks. Again, because
+
+186
+00:07:53.760 --> 00:07:55.560
+this
+approach involves prompting and
+
+187
+00:07:55.560 --> 00:07:57.580
+because it involves the
+use of a large
+
+188
+00:07:57.580 --> 00:07:59.800
+language model, it's worth experimenting
+with the prompts and
+
+189
+00:07:59.800 --> 00:08:02.720
+it's also worth experimenting with different initializations
+of the adapter
+
+190
+00:08:02.720 --> 00:08:03.380
+matrix.
+
+191
+00:08:03.500 --> 00:08:06.540
+Even maybe consider using a full
+lightweight neural network
+
+192
+00:08:06.540 --> 00:08:08.860
+and training that instead of a
+simple matrix instead.
+
+193
+00:08:08.860 --> 00:08:10.900
+You might want to tune the
+hyperparameters of the
+
+194
+00:08:10.900 --> 00:08:14.060
+embedding adapter training
+process or you might want to
+
+195
+00:08:14.060 --> 00:08:16.940
+collect more specific data and try
+this out with
+
+196
+00:08:16.940 --> 00:08:20.160
+a specific application
+in mind rather than our very
+
+197
+00:08:20.160 --> 00:08:22.560
+general one of trying to understand
+a financial statement.
+
+198
+00:08:22.560 --> 00:08:26.240
+In the next lesson we'll cover some other
+techniques which are just now emerging
+
+199
+00:08:26.240 --> 00:08:28.780
+from research to
+improve embedding-based retrieval
+
+200
+00:08:28.780 --> 00:08:29.340
+systems.

@@ -1,0 +1,117 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.400
+Congratulations and thank you
+for getting to the
+
+2
+00:00:02.400 --> 00:00:03.900
+end of this short course.
+
+3
+00:00:03.900 --> 00:00:07.500
+As we conclude the course, let's
+recap the main topics we covered.
+
+4
+00:00:07.500 --> 00:00:12.570
+We went over details of how an LLM
+works, including subtleties like the
+
+5
+00:00:12.570 --> 00:00:15.300
+tokenizer and why it can't
+reverse lollipop.
+
+6
+00:00:15.300 --> 00:00:18.060
+We learned methods for
+evaluating user inputs to
+
+7
+00:00:18.060 --> 00:00:20.820
+ensure the quality and
+safety of the system,
+
+8
+00:00:20.820 --> 00:00:23.925
+processing inputs using
+both chain of thought reasoning and
+
+9
+00:00:23.925 --> 00:00:26.340
+splitting tasks into
+subtasks with chain prompts,
+
+10
+00:00:26.340 --> 00:00:29.100
+and checking outputs before
+showing them to users.
+
+11
+00:00:29.100 --> 00:00:33.900
+We also took a look at methods for
+evaluating the system over
+
+12
+00:00:33.900 --> 00:00:37.500
+time so as to
+monitor and improve its performance.
+
+13
+00:00:37.500 --> 00:00:37.500
+
+
+14
+00:00:37.500 --> 00:00:40.150
+Throughout the course,
+we also discussed the importance of
+
+15
+00:00:40.150 --> 00:00:42.507
+building responsibly with
+these tools, ensuring that the
+
+16
+00:00:42.507 --> 00:00:44.274
+model is safe
+and provides appropriate
+
+17
+00:00:44.274 --> 00:00:47.514
+responses that are accurate,
+relevant and in the tone you want.
+
+18
+00:00:47.514 --> 00:00:50.165
+As always, practice is key
+to mastering these concepts,
+
+19
+00:00:50.165 --> 00:00:53.700
+so we hope you'll apply what you've learned
+in your own projects.
+
+20
+00:00:53.700 --> 00:00:58.164
+And so, that's it. There are so many exciting
+applications that are yet
+
+21
+00:00:58.164 --> 00:00:59.194
+to be built.
+
+22
+00:00:59.736 --> 00:01:03.419
+The world needs more people like
+you building useful applications.
+
+23
+00:01:03.419 --> 00:01:06.365
+And we look forward
+to hearing about the
+
+24
+00:01:06.365 --> 00:01:07.839
+amazing things you build.

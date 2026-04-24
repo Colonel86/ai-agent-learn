@@ -1,0 +1,483 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:03.103
+Nice work completing all the video lessons
+for this course.
+
+2
+00:00:03.403 --> 00:00:06.272
+Next step,
+I've got something special for you.
+
+3
+00:00:06.272 --> 00:00:09.609
+In fact, you might notice I'm suddenly
+in a slightly different background and
+
+4
+00:00:09.776 --> 00:00:11.945
+I got a haircut.
+And that's because this is new.
+
+5
+00:00:11.945 --> 00:00:14.948
+What's coming
+next is a new addition to this course.
+
+6
+00:00:15.081 --> 00:00:18.551
+It's an optional project workspace
+where you can get a chance
+
+7
+00:00:18.551 --> 00:00:21.421
+to build something
+with what you've learned in the course.
+
+8
+00:00:21.421 --> 00:00:26.421
+So I'll show you how you can build
+a simple LLM response validation workflow.
+
+9
+00:00:27.327 --> 00:00:29.562
+And you can follow along
+with that example.
+
+10
+00:00:29.562 --> 00:00:31.898
+Or you can build whatever you want.
+
+11
+00:00:31.898 --> 00:00:35.168
+In this video I'll show you how
+the project environment is set up.
+
+12
+00:00:35.402 --> 00:00:38.238
+So you have everything
+you need to start building.
+
+13
+00:00:38.238 --> 00:00:42.542
+When you open up the project, you'll be in
+Jupyter Lab where you have the project
+
+14
+00:00:42.542 --> 00:00:46.813
+notebook open on the right here,
+and this side panel on the left,
+
+15
+00:00:46.813 --> 00:00:50.784
+where you can look at other files
+in this project and open up a chat.
+
+16
+00:00:50.817 --> 00:00:52.052
+Things can start to feel
+
+17
+00:00:52.052 --> 00:00:55.121
+a little cluttered here with this lesson
+sidebar open as well,
+
+18
+00:00:55.121 --> 00:00:57.323
+so I'll just go ahead and minimize
+that for now.
+
+19
+00:00:57.323 --> 00:01:01.694
+This lab environment is set up
+with Jupyter AI, which is a framework
+
+20
+00:01:01.694 --> 00:01:05.432
+that allows you to do AI assisted
+coding right here in JupyterLab.
+
+21
+00:01:05.565 --> 00:01:09.369
+To open the Jupyter AI chat interface,
+you need to click over here
+
+22
+00:01:09.369 --> 00:01:14.274
+on the chat icon, then click Plus Chat up
+top here and you're ready to go.
+
+23
+00:01:14.340 --> 00:01:18.912
+Now I can start chatting with Jupyternaut,
+which is going to be my coding assistant
+
+24
+00:01:18.912 --> 00:01:19.679
+for this project.
+
+25
+00:01:19.679 --> 00:01:22.715
+So I can say hi, Jupyternaut,
+and Jupyternaut says
+
+26
+00:01:22.749 --> 00:01:24.017
+Hey, how's it going?
+
+27
+00:01:24.017 --> 00:01:27.253
+In this lab environment, you'll use
+Jupyternaut as a coding assistant,
+
+28
+00:01:27.353 --> 00:01:30.790
+and you can think of it as quite similar
+to how you use the
+
+29
+00:01:30.790 --> 00:01:33.960
+AI chat in Cursor,
+or Windsurf or Antigravity.
+
+30
+00:01:33.960 --> 00:01:36.663
+If you've used any of those AI powered IDEs.
+
+31
+00:01:36.663 --> 00:01:38.465
+But if not, no worries, I'll show you
+
+32
+00:01:38.465 --> 00:01:41.000
+how you can collaborate with Jupyternaut
+to build your project.
+
+33
+00:01:41.000 --> 00:01:44.637
+So for example,
+I can say write me a hello world
+
+34
+00:01:44.637 --> 00:01:47.740
+script that I can run in my notebook
+and Jupyternaut generates some code.
+
+35
+00:01:48.508 --> 00:01:52.445
+And then the cool thing with Jupyter
+AI is that I can go over here
+
+36
+00:01:52.445 --> 00:01:56.082
+to my notebook, select a cell,
+and then just click this little icon
+
+37
+00:01:56.082 --> 00:01:59.085
+in the chat
+that says insert below active cell.
+
+38
+00:01:59.185 --> 00:02:02.388
+And just like that, I have a new code cell
+with my Hello World script
+
+39
+00:02:02.622 --> 00:02:03.456
+and I can run it.
+
+40
+00:02:03.456 --> 00:02:06.459
+There are actually a lot of cool features
+in Jupyter AI,
+
+41
+00:02:06.459 --> 00:02:10.296
+and we have a whole other short course
+that we built with Brian Granger and folks
+
+42
+00:02:10.296 --> 00:02:12.031
+from Project Jupyter,
+and you can check that out
+
+43
+00:02:12.031 --> 00:02:14.167
+if you're interested in learning
+more about Jupyter AI.
+
+44
+00:02:14.167 --> 00:02:16.336
+The way, you're going to use Jupyter AI
+
+45
+00:02:16.336 --> 00:02:19.772
+in this project is by providing
+context to Jupyternaut,
+
+46
+00:02:19.772 --> 00:02:23.209
+about what the course is all about
+and what you want to build in the project.
+
+47
+00:02:23.209 --> 00:02:26.646
+So if you click over here
+to view other files in the project
+
+48
+00:02:27.013 --> 00:02:31.184
+and open up docs.md and I'll open it
+with the markdown preview.
+
+49
+00:02:31.184 --> 00:02:35.388
+Here you'll see that this file contains
+concise documentation for what
+
+50
+00:02:35.388 --> 00:02:37.290
+you've learned
+in the lessons of this course.
+
+51
+00:02:37.290 --> 00:02:42.028
+So here you've got all the basic things
+for creating a pydantic model
+
+52
+00:02:42.028 --> 00:02:45.498
+to more complex validation techniques,
+and even tool calling and LLM
+
+53
+00:02:45.598 --> 00:02:46.499
+response validation.
+
+54
+00:02:46.499 --> 00:02:50.503
+So this file is actually a pretty handy
+set of notes for taking with you
+
+55
+00:02:50.503 --> 00:02:51.171
+after the course.
+
+56
+00:02:51.171 --> 00:02:54.541
+And it's also a great context
+for an AI coding assist
+
+57
+00:02:54.707 --> 00:02:57.877
+when it comes to building
+with what you've learned in the course.
+
+58
+00:02:58.011 --> 00:03:02.582
+So what you're going to do is use this
+documentation as context for your project.
+
+59
+00:03:02.649 --> 00:03:03.783
+So going back
+
+60
+00:03:03.783 --> 00:03:07.554
+to the start of the notebook over here,
+you can read through the introduction
+
+61
+00:03:07.554 --> 00:03:09.522
+and instructions
+at the top of the notebook
+
+62
+00:03:09.522 --> 00:03:12.425
+to get some orientation
+to how the project works.
+
+63
+00:03:12.425 --> 00:03:16.729
+And then you'll find examples
+you can follow along with to build an LLM
+
+64
+00:03:16.729 --> 00:03:20.233
+response validation workflow, or something
+else if you want to get creative.
+
+65
+00:03:20.233 --> 00:03:23.436
+So here's how it works,
+just like you did in the course, you're
+
+66
+00:03:23.436 --> 00:03:27.574
+going to start by defining a pydantic data
+model, and here you'll find
+
+67
+00:03:27.574 --> 00:03:31.177
+some refresher content on the ins
+and outs of pydantic models.
+
+68
+00:03:31.377 --> 00:03:35.515
+And then you'll find a couple example
+prompts you can use right out of the box.
+
+69
+00:03:35.515 --> 00:03:38.651
+Or just use for inspiration
+to build something different.
+
+70
+00:03:38.851 --> 00:03:41.921
+And so you can generate code
+by prompting Jupyternaut,
+
+71
+00:03:41.921 --> 00:03:46.326
+and attaching your notebook
+and docs.md as context for each task.
+
+72
+00:03:46.326 --> 00:03:49.996
+So let's take a look at this prompt
+for the movie recommendation generator.
+
+73
+00:03:50.029 --> 00:03:52.832
+It's a fairly simple prompt,
+starting out with a statement
+
+74
+00:03:52.832 --> 00:03:56.102
+that you're a coding assistant,
+and that it has a detailed set
+
+75
+00:03:56.102 --> 00:03:59.872
+of requirements for the structure
+of the pydantic model you want to create.
+
+76
+00:03:59.872 --> 00:04:03.810
+And then just a bit more context
+on the files that I'm going to attach.
+
+77
+00:04:03.810 --> 00:04:07.680
+And so you can use this prompt
+as a template to modify
+
+78
+00:04:07.680 --> 00:04:09.616
+for whatever
+type of system you'd like to create.
+
+79
+00:04:09.616 --> 00:04:13.052
+Or you can just use this prompt as is
+and see how it goes.
+
+80
+00:04:13.119 --> 00:04:16.522
+So what I'm going to do here
+is open up my chat again.
+
+81
+00:04:16.522 --> 00:04:19.525
+Then I'm going to copy
+and paste this prompt into the chat.
+
+82
+00:04:19.626 --> 00:04:23.263
+And then with this paperclip
+icon here I'm going to attach files.
+
+83
+00:04:23.363 --> 00:04:28.067
+And I'm going to select docs.md
+and my notebook project.ipynb
+
+84
+00:04:28.067 --> 00:04:30.903
+And then I'm going to run it okay cool.
+
+85
+00:04:30.903 --> 00:04:33.439
+So Jupyternaut wrote me a whole bunch of code here.
+
+86
+00:04:33.439 --> 00:04:36.843
+And I can go over to my notebook
+and select this next cell.
+
+87
+00:04:36.843 --> 00:04:39.579
+Then click here
+where it says replace selection.
+
+88
+00:04:39.579 --> 00:04:41.514
+And then I can run that.
+
+89
+00:04:41.514 --> 00:04:42.982
+And that's all there is to it.
+
+90
+00:04:42.982 --> 00:04:44.217
+Step one is done.
+
+91
+00:04:44.217 --> 00:04:46.219
+I've got my response model defined.
+
+92
+00:04:46.219 --> 00:04:49.188
+Now I don't want to spoil
+the whole project for you,
+
+93
+00:04:49.188 --> 00:04:52.225
+so I won't complete the rest of the steps,
+but you can follow
+
+94
+00:04:52.225 --> 00:04:55.428
+along with the same process
+for those steps as I did here.
+
+95
+00:04:55.428 --> 00:04:56.663
+And like I said before,
+
+96
+00:04:56.663 --> 00:05:00.333
+you can use the prompts
+provided in the examples or modify them
+
+97
+00:05:00.333 --> 00:05:03.936
+to your liking, or just throw them out
+and create something completely different.
+
+98
+00:05:04.470 --> 00:05:07.240
+So that's a little intro
+to the upcoming project.
+
+99
+00:05:07.240 --> 00:05:08.608
+I hope you try it out
+
+100
+00:05:08.608 --> 00:05:11.744
+and I hope you have some fun building
+with what you've learned in the course.

@@ -1,0 +1,1130 @@
+WEBVTT
+
+1
+00:00:03.338 --> 00:00:05.834
+In the last lesson,
+we covered the basics
+
+2
+00:00:05.834 --> 00:00:08.330
+of semantic search and
+saw that it worked
+
+3
+00:00:08.330 --> 00:00:11.138
+pretty well for a
+good amount of use cases.
+
+4
+00:00:11.138 --> 00:00:14.258
+But we also saw some
+edge cases and saw how
+
+5
+00:00:14.258 --> 00:00:18.627
+things could go a little bit wrong.
+In this lesson, we're going to deep
+
+6
+00:00:18.627 --> 00:00:22.371
+dive on retrieval and cover a
+few more advanced methods for overcoming
+
+7
+00:00:22.371 --> 00:00:23.307
+those edge cases.
+
+8
+00:00:24.408 --> 00:00:27.025
+I'm really excited by this
+because I think retrieval
+
+9
+00:00:27.025 --> 00:00:30.514
+is something that is
+new and a lot of the techniques we're
+
+10
+00:00:30.514 --> 00:00:34.294
+talking about have popped up
+in the past few months or so. And
+
+11
+00:00:34.294 --> 00:00:36.911
+this is a cutting edge
+topic and so you
+
+12
+00:00:36.911 --> 00:00:40.401
+guys are going to be right at the
+forefront. Let's have some
+
+13
+00:00:40.401 --> 00:00:40.692
+fun.
+
+14
+00:00:40.712 --> 00:00:43.683
+In this lesson, we're
+going to talk about retrieval. This
+
+15
+00:00:43.683 --> 00:00:47.545
+is important at query time, when
+you've got a query that comes in
+
+16
+00:00:47.545 --> 00:00:50.516
+and you want to retrieved
+the most relevant splits. We
+
+17
+00:00:50.516 --> 00:00:52.596
+talked in the previous
+lesson about semantic
+
+18
+00:00:52.596 --> 00:00:55.567
+similarity search, but we're
+going to talk about a few
+
+19
+00:00:55.567 --> 00:00:58.241
+different and more advanced
+methods here. The first one
+
+20
+00:00:58.241 --> 00:01:01.806
+we're going to cover is Maximum Marginal Relevance,
+or MMR. And so
+
+21
+00:01:01.806 --> 00:01:04.777
+the idea behind this is that
+if you just always
+
+22
+00:01:04.777 --> 00:01:07.154
+take the documents that
+are most similar to
+
+23
+00:01:07.154 --> 00:01:10.125
+the query in the
+embedding space, you may actually miss
+
+24
+00:01:10.125 --> 00:01:12.502
+out on diverse information,
+as we saw in
+
+25
+00:01:12.502 --> 00:01:17.553
+one of the edge cases. In this example, we've
+got a chef asking about all white mushrooms.
+
+26
+00:01:17.553 --> 00:01:20.821
+And so if we take
+a look at the most similar
+
+27
+00:01:20.821 --> 00:01:24.683
+results, those would be the first
+two documents, where they have a lot
+
+28
+00:01:24.683 --> 00:01:27.357
+of information similar to the query
+about a fruiting
+
+29
+00:01:27.357 --> 00:01:30.328
+body and being all white. But
+we really want to
+
+30
+00:01:30.328 --> 00:01:33.893
+make sure that we
+also get other information, like the fact that
+
+31
+00:01:33.893 --> 00:01:36.567
+it's really poisonous. And so this
+is where using
+
+32
+00:01:36.567 --> 00:01:39.538
+MMR comes into play, as
+it will select for a
+
+33
+00:01:39.538 --> 00:01:40.727
+diverse set of documents.
+
+
+34
+00:01:42.980 --> 00:01:46.689
+The idea behind MMR is
+that we send a query in,
+
+35
+00:01:46.689 --> 00:01:50.398
+and then we initially get
+back a set of responses, with
+
+36
+00:01:50.398 --> 00:01:53.769
+"fetch_k" being a parameter that we
+can control in order
+
+37
+00:01:53.769 --> 00:01:57.478
+to determine how many
+responses we get. This is based solely
+
+38
+00:01:57.478 --> 00:02:00.849
+on semantic similarity. From
+there, we then work with that
+
+39
+00:02:00.849 --> 00:02:03.547
+smaller set of documents
+and optimize for not
+
+40
+00:02:03.547 --> 00:02:06.918
+only the most relevant ones, based
+on semantic similarity, but
+
+41
+00:02:06.918 --> 00:02:10.964
+also ones that are diverse. And
+from that set of documents, we
+
+42
+00:02:10.964 --> 00:02:13.998
+choose a final "k" to
+return to the user.
+
+43
+00:02:14.741 --> 00:02:18.898
+Another type of retrieval we can
+do is what we call self-query. So
+
+44
+00:02:18.898 --> 00:02:22.095
+this is useful when you
+get questions that aren't solely
+
+45
+00:02:22.095 --> 00:02:24.652
+about the content that
+you want to look
+
+46
+00:02:24.652 --> 00:02:27.530
+up semantically, but also
+include some mention of some
+
+47
+00:02:27.530 --> 00:02:31.686
+metadata that you want to
+do a filter on. So let's take the
+
+48
+00:02:31.686 --> 00:02:34.244
+question, what are some
+movies about aliens made
+
+49
+00:02:34.244 --> 00:02:38.080
+in 1980? This really has
+two components to it. It's got a
+
+50
+00:02:38.080 --> 00:02:40.958
+semantic part, the aliens bit. So
+we want to
+
+51
+00:02:40.958 --> 00:02:44.794
+look up aliens in our database
+of movies. But it's also got
+
+52
+00:02:44.794 --> 00:02:47.991
+a piece that really refers to
+the metadata about each
+
+53
+00:02:47.991 --> 00:02:51.508
+movie, which is the fact that
+the year should be 1980.
+
+54
+00:02:51.508 --> 00:02:55.664
+What we can do is
+we can use a language model itself to
+
+55
+00:02:55.664 --> 00:02:58.222
+split that original question
+into two separate things,
+
+56
+00:02:58.222 --> 00:03:01.739
+a filter and a search
+term. Most vector stores support a
+
+57
+00:03:01.739 --> 00:03:03.977
+metadata filter. So
+you can easily filter
+
+58
+00:03:03.977 --> 00:03:06.854
+records based on metadata,
+like the year being 1980.
+
+59
+00:03:06.854 --> 00:03:06.854
+
+
+60
+00:03:10.196 --> 00:03:12.350
+Finally, we'll
+talk about compression. This
+
+61
+00:03:12.350 --> 00:03:15.223
+can be useful to
+really pull out only
+
+62
+00:03:15.223 --> 00:03:18.454
+the most relevant bits
+of the retrieved passages. For
+
+63
+00:03:18.454 --> 00:03:22.044
+example, when asking a question, you
+get back the whole
+
+64
+00:03:22.044 --> 00:03:26.712
+document that was stored, even
+if only the first one or two sentences
+
+65
+00:03:26.712 --> 00:03:30.302
+are the relevant parts. With
+compression, you can then run
+
+66
+00:03:30.302 --> 00:03:34.611
+all those documents through a language
+model and extract the most relevant
+
+67
+00:03:34.611 --> 00:03:37.842
+segments and then
+pass only the most relevant segments
+
+68
+00:03:37.842 --> 00:03:40.355
+into a final
+language model call. This
+
+69
+00:03:40.355 --> 00:03:43.228
+comes at the cost
+of making more calls
+
+70
+00:03:43.228 --> 00:03:47.895
+to the language model, but it's also
+really good for focusing the final
+
+71
+00:03:47.895 --> 00:03:52.204
+answer on only the most important
+things. And so it's a bit
+
+72
+00:03:52.204 --> 00:03:56.871
+of a tradeoff. Let's see these different
+techniques in action. We're going to
+
+73
+00:03:56.871 --> 00:04:00.462
+start by loading the environment variables
+as we always do.
+
+74
+00:04:00.462 --> 00:04:00.462
+
+
+75
+00:04:00.462 --> 00:04:05.391
+Let's then import Chroma and OpenAI
+as we used them before. And
+
+76
+00:04:05.391 --> 00:04:10.319
+we can see by looking at
+the collection count that it's got
+
+77
+00:04:10.319 --> 00:04:14.838
+the 209 documents that we
+loaded in before. Let's now go
+
+78
+00:04:14.838 --> 00:04:18.945
+over the example of max
+marginal relevance. And so we'll
+
+79
+00:04:18.945 --> 00:04:25.106
+load in the text from the example where we
+have the information about mushrooms. For
+
+80
+00:04:25.106 --> 00:04:27.981
+this example, we'll
+create a small database
+
+81
+00:04:27.981 --> 00:04:32.910
+that we can just
+use as a toy example. We've got our
+
+82
+00:04:32.910 --> 00:04:36.607
+question, and now we can run a
+similarity search.
+
+83
+00:04:42.926 --> 00:04:46.871
+We'll set "k=2" to only return the two most
+relevant documents. And we
+
+84
+00:04:46.871 --> 00:04:49.906
+can see that there is
+no mention of the fact
+
+85
+00:04:49.906 --> 00:04:51.120
+that it is poisonous.
+
+86
+00:04:51.120 --> 00:04:58.559
+Let's now run it with MMR. While it's passing
+"k=2", we still want
+
+87
+00:04:58.559 --> 00:05:06.570
+to return two documents, but let's set
+"fetch_k=3", where we fetch all three documents
+
+88
+00:05:06.570 --> 00:05:07.142
+originally.
+
+
+89
+00:05:07.142 --> 00:05:10.730
+We can now see that the
+information that is
+
+90
+00:05:10.730 --> 00:05:13.122
+poisonous is returned
+among the documents
+
+91
+00:05:13.122 --> 00:05:14.318
+that we retrieved.
+
+92
+00:05:14.318 --> 00:05:17.226
+Let's go back to one
+of the examples from
+
+93
+00:05:17.226 --> 00:05:19.812
+the previous lesson when
+we asked about MATLAB
+
+94
+00:05:19.812 --> 00:05:22.397
+and got back documents
+that had repeated information.
+
+95
+00:05:22.397 --> 00:05:25.629
+To refresh your memory, we
+can take a look at
+
+96
+00:05:25.629 --> 00:05:28.538
+the first two documents, just
+looking at the first
+
+97
+00:05:28.538 --> 00:05:31.446
+few characters because they're pretty
+long otherwise, and we
+
+98
+00:05:31.446 --> 00:05:34.355
+can see that they're the same.
+When we run
+
+99
+00:05:34.355 --> 00:05:39.203
+MMR on these results, we can see
+that the first one is the same as
+
+100
+00:05:39.203 --> 00:05:41.142
+before because that's the most similar.
+
+
+101
+00:05:42.238 --> 00:05:45.933
+But when we go on to the second one,
+we can see that it's different. It's getting
+
+102
+00:05:45.933 --> 00:05:47.020
+some diversity in the responses.
+
+
+103
+00:05:50.664 --> 00:05:54.146
+Let's now move on to the self-query example.
+This is the one where we
+
+104
+00:05:54.146 --> 00:05:56.633
+had the question, what did
+they say about regression in
+
+105
+00:05:56.633 --> 00:05:57.379
+the third lecture?
+
+106
+00:05:58.541 --> 00:06:01.476
+And it returned results from
+not just the third lecture,
+
+107
+00:06:01.476 --> 00:06:05.585
+but also the first and the second.
+If we were fixing this by hand,
+
+108
+00:06:05.585 --> 00:06:08.519
+what we would do is we'd
+specify a metadata filter.
+
+109
+00:06:09.338 --> 00:06:12.498
+So we'd pass in this information
+that we want the
+
+110
+00:06:12.498 --> 00:06:15.342
+source to be equal to the third lecture
+PDF.
+
+111
+00:06:17.558 --> 00:06:19.555
+And then if we
+look at the documents
+
+112
+00:06:19.555 --> 00:06:22.300
+that would be retrieved, they'd
+all be from exactly that lecture.
+
+113
+00:06:24.859 --> 00:06:27.867
+We can use a language
+model to do this for us, so we don't
+
+114
+00:06:27.867 --> 00:06:28.942
+have to manually specify that.
+
+115
+00:06:30.058 --> 00:06:33.290
+To do this, we'll
+import a language model, OpenAI. We'll
+
+116
+00:06:33.290 --> 00:06:35.876
+import
+a retriever called the self-query retriever, and
+
+117
+00:06:35.876 --> 00:06:38.785
+then we'll import attribute info,
+which is where we
+
+118
+00:06:38.785 --> 00:06:41.370
+can specify different fields
+in the metadata and
+
+119
+00:06:41.370 --> 00:06:42.663
+what they correspond to.
+
+
+120
+00:06:44.798 --> 00:06:47.522
+We only have two fields in the metadata,
+source and page.
+
+121
+00:06:48.758 --> 00:06:51.699
+We fill out a description of the name,
+the description, and the type for
+
+122
+00:06:51.699 --> 00:06:52.540
+each of these attributes.
+
+123
+00:06:53.318 --> 00:06:55.145
+This information is actually
+going to be passed
+
+124
+00:06:55.145 --> 00:06:57.428
+to the language model, so it's
+important to make it
+
+125
+00:06:57.428 --> 00:06:58.342
+as descriptive as possible.
+
+126
+00:07:00.538 --> 00:07:02.981
+We'll then specify some
+information about what's actually
+
+127
+00:07:02.981 --> 00:07:04.202
+in this document store.
+
+128
+00:07:04.900 --> 00:07:09.588
+We'll initialize the language model, and
+then we'll initialize the self-query retriever using
+
+129
+00:07:09.588 --> 00:07:13.915
+the "from_llm" method and passing in
+the language model, the underlying vector
+
+130
+00:07:13.915 --> 00:07:16.439
+database
+that we're going to query, the
+
+131
+00:07:16.439 --> 00:07:19.324
+information about the description
+and the metadata, and
+
+132
+00:07:19.324 --> 00:07:21.487
+then we'll also pass
+in "verbose=True".
+
+133
+00:07:21.487 --> 00:07:21.487
+
+
+134
+00:07:23.243 --> 00:07:25.785
+Setting "verbose=True" will
+let us see what's going
+
+135
+00:07:25.785 --> 00:07:28.327
+on underneath the hood
+when the LLM infers
+
+136
+00:07:28.327 --> 00:07:30.869
+the query that should
+be passed along with
+
+137
+00:07:30.869 --> 00:07:31.822
+any metadata filters.
+
+138
+00:07:33.725 --> 00:07:36.754
+When we run the self-query
+retriever with this question, we
+
+139
+00:07:36.754 --> 00:07:40.692
+can see, thanks to "verbose=True", that
+we're printing out what's going on under
+
+140
+00:07:40.692 --> 00:07:41.298
+the hood.
+
+141
+00:07:41.298 --> 00:07:44.402
+We get a query of regression,
+this is the semantic bit,
+
+142
+00:07:44.402 --> 00:07:47.789
+and then we get a filter where we
+have a comparator of
+
+143
+00:07:47.789 --> 00:07:50.047
+equals between the source
+attribute and a value
+
+144
+00:07:50.047 --> 00:07:53.151
+of docs and then this path,
+which is the path to
+
+145
+00:07:53.151 --> 00:07:54.562
+the third machine learning lecture.
+
+
+146
+00:07:55.658 --> 00:07:58.821
+So this is basically
+telling us to do a lookup in the
+
+147
+00:07:58.821 --> 00:08:01.983
+semantic space on regression
+and then do a filter where we only
+
+148
+00:08:01.983 --> 00:08:04.883
+look at documents that
+have a source value of this value.
+
+149
+00:08:05.439 --> 00:08:07.373
+And so if we
+loop over the documents
+
+150
+00:08:07.373 --> 00:08:09.791
+and print out the metadata,
+we should see that they're
+
+151
+00:08:09.791 --> 00:08:10.999
+all from this third lecture.
+
+152
+00:08:14.539 --> 00:08:17.716
+And indeed they are.
+So this is an example where the self-query
+
+153
+00:08:17.716 --> 00:08:20.100
+retriever can be used to
+filter exactly on metadata.
+
+154
+00:08:21.201 --> 00:08:23.400
+A final retrieval technique
+that we can talk
+
+155
+00:08:23.400 --> 00:08:24.499
+about is contextual compression.
+
+156
+00:08:25.398 --> 00:08:28.347
+And so let's
+load in some relevant modules here, the
+
+157
+00:08:28.347 --> 00:08:31.002
+contextual compression retriever
+and then an LLM chain extractor.
+
+158
+00:08:31.002 --> 00:08:31.002
+
+
+159
+00:08:31.540 --> 00:08:34.669
+And what this is going to do is
+this is going to
+
+160
+00:08:34.669 --> 00:08:36.756
+extract only the relevant
+bits from each document
+
+161
+00:08:36.756 --> 00:08:39.103
+and then pass those
+as the final return response.
+
+162
+00:08:40.038 --> 00:08:42.061
+We'll define a nice little
+function to pretty print
+
+163
+00:08:42.061 --> 00:08:44.084
+out docs because they're often
+long and confusing and
+
+164
+00:08:44.084 --> 00:08:46.332
+this will make it
+easier to see what's going on.
+
+165
+00:08:46.332 --> 00:08:46.332
+
+
+166
+00:08:47.402 --> 00:08:51.017
+We can then create a compressor
+with the LLM chain extractor and
+
+167
+00:08:51.017 --> 00:08:53.729
+then we can create the contextual
+compression retriever passing
+
+168
+00:08:53.729 --> 00:08:57.344
+in the compressor and then the
+base retriever of the vector store.
+
+169
+00:08:57.344 --> 00:08:57.344
+
+
+170
+00:08:58.381 --> 00:09:01.202
+When we now pass in the question,
+what did they say
+
+171
+00:09:01.202 --> 00:09:03.510
+about MATLAB and we
+look at the compressed docs,
+
+172
+00:09:03.510 --> 00:09:07.100
+if we look at the documents we get
+back, we can see two things.
+
+173
+00:09:07.703 --> 00:09:10.726
+One, they are a lot
+shorter than the normal documents.
+
+174
+00:09:10.726 --> 00:09:14.051
+But two, we've still got some of
+this repeated stuff going
+
+175
+00:09:14.051 --> 00:09:17.074
+on and this is
+because under the hood we're using
+
+176
+00:09:17.074 --> 00:09:18.283
+the semantic search algorithm.
+
+
+177
+00:09:19.603 --> 00:09:22.679
+This is what we solved by using MMR
+from earlier in this lesson.
+
+178
+00:09:24.241 --> 00:09:27.480
+This is a good example of where you
+can combine various techniques
+
+179
+00:09:27.480 --> 00:09:29.099
+to get the best possible results.
+
+180
+00:09:31.624 --> 00:09:34.662
+In order to do that, when we're
+creating the retriever from
+
+181
+00:09:34.662 --> 00:09:37.699
+the vector database, we
+can set the search type to MMR.
+
+182
+00:09:39.282 --> 00:09:42.338
+We can then rerun this and see that
+we get back a
+
+183
+00:09:42.338 --> 00:09:44.375
+filtered set of results
+that do not contain
+
+184
+00:09:44.375 --> 00:09:45.139
+any duplicate information.
+
+185
+00:09:47.462 --> 00:09:49.959
+So far, all the additional
+retrieval techniques that we've
+
+186
+00:09:49.959 --> 00:09:52.179
+mentioned build on top
+of a vector database.
+
+187
+00:09:53.362 --> 00:09:57.543
+It's worth mentioning that there's other
+types of retrieval that don't use a
+
+188
+00:09:57.543 --> 00:10:01.403
+vector database at all and instead
+uses other more traditional NLP techniques.
+
+189
+00:10:01.403 --> 00:10:01.403
+
+
+190
+00:10:03.682 --> 00:10:06.234
+Here, we're going to recreate
+a retrieval pipeline
+
+191
+00:10:06.234 --> 00:10:08.467
+with two different
+types of retrievers, an
+
+192
+00:10:08.467 --> 00:10:10.382
+SVM retriever and a TF-IDF retriever.
+
+
+193
+00:10:11.081 --> 00:10:13.678
+If you recognize these terms from
+traditional NLP or
+
+194
+00:10:13.678 --> 00:10:15.121
+traditional machine learning, that's
+great.
+
+195
+00:10:16.082 --> 00:10:18.657
+If you don't, it's also fine. This is
+just an example of
+
+196
+00:10:18.657 --> 00:10:20.159
+some other techniques that
+are out there.
+
+197
+00:10:20.598 --> 00:10:22.115
+There are plenty more
+besides these and I
+
+198
+00:10:22.115 --> 00:10:23.822
+encourage you to go
+check out some of them.
+
+199
+00:10:26.178 --> 00:10:28.421
+We can run through
+the usual pipeline of
+
+200
+00:10:28.421 --> 00:10:29.822
+loading and splitting pretty
+quickly.
+
+201
+00:10:32.078 --> 00:10:34.372
+And then both of these
+retrievers expose a from text
+
+202
+00:10:34.372 --> 00:10:34.602
+method.
+
+203
+00:10:35.538 --> 00:10:38.949
+One takes in an embedding module,
+that's the SVM retriever, and
+
+204
+00:10:38.949 --> 00:10:41.119
+the TF-IDF retriever
+just takes in the
+
+205
+00:10:41.119 --> 00:10:41.740
+splits directly.
+
+206
+00:10:44.587 --> 00:10:45.799
+Now we can use the other retrievers.
+
+207
+00:10:46.538 --> 00:10:48.435
+Let's pass in what did
+they say about MATLAB
+
+208
+00:10:48.435 --> 00:10:50.121
+to the SVM retriever
+and we can look
+
+209
+00:10:50.121 --> 00:10:52.651
+at the top document
+we get back and we can see that
+
+210
+00:10:52.651 --> 00:10:54.970
+it mentions a lot
+of stuff about MATLAB, so it's picking
+
+211
+00:10:54.970 --> 00:10:56.024
+up some good results there.
+
+212
+00:10:57.618 --> 00:11:00.563
+We can also try this out on the TF-IDF
+retriever and we can
+
+213
+00:11:00.563 --> 00:11:02.602
+see that the results
+look a little bit worse.
+
+214
+00:11:04.078 --> 00:11:07.329
+Now's a good time to pause and try out
+all these different retrieval
+
+215
+00:11:07.329 --> 00:11:07.580
+techniques.
+
+216
+00:11:08.378 --> 00:11:10.828
+I think you'll notice that some of
+them are better than
+
+217
+00:11:10.828 --> 00:11:11.720
+others at various things.
+
+218
+00:11:13.018 --> 00:11:16.420
+And so I'd encourage you to try
+it out on a wide variety of questions.
+
+219
+00:11:16.420 --> 00:11:16.420
+
+
+220
+00:11:18.739 --> 00:11:21.360
+The self query retriever
+in particular is my favorite.
+
+221
+00:11:21.961 --> 00:11:24.064
+So I would suggest
+trying that out with
+
+222
+00:11:24.064 --> 00:11:25.641
+more and more complex
+metadata filters.
+
+223
+00:11:26.323 --> 00:11:28.590
+Even maybe making up
+some metadata where there's
+
+224
+00:11:28.590 --> 00:11:30.858
+really nested metadata structures
+and you can try
+
+225
+00:11:30.858 --> 00:11:32.842
+to get the LLM to infer that.
+
+226
+00:11:33.165 --> 00:11:34.979
+I think that's a lot of fun. I
+think that's some
+
+227
+00:11:34.979 --> 00:11:36.957
+of the more advanced stuff out
+there and so I'm really excited
+
+228
+00:11:36.957 --> 00:11:38.440
+to have been able to share
+it with you.
+
+229
+00:11:40.138 --> 00:11:42.203
+Now that we've
+talked about retrieval, we're going
+
+230
+00:11:42.203 --> 00:11:45.041
+to talk about the next
+step in the process, which is
+
+231
+00:11:45.041 --> 00:11:46.590
+using these retrieved
+documents to answer
+
+232
+00:11:46.590 --> 00:11:47.364
+the user question.

@@ -1,0 +1,178 @@
+WEBVTT
+
+1
+00:00:04.440 --> 00:00:08.129
+In this short course,
+you saw a range of applications,
+
+2
+00:00:08.129 --> 00:00:10.711
+including processing customer reviews,
+and building an
+
+3
+00:00:10.711 --> 00:00:12.925
+application to answer
+questions over documents,
+
+4
+00:00:12.925 --> 00:00:16.614
+and even using an LLM
+to decide when to make
+
+5
+00:00:16.614 --> 00:00:19.934
+a call to an external tool,
+like web search,
+
+6
+00:00:19.934 --> 00:00:21.410
+to answer complex questions.
+
+7
+00:00:22.011 --> 00:00:24.616
+If a week or two ago,
+someone had asked you,
+
+8
+00:00:24.616 --> 00:00:27.742
+how much work would it be to build
+all of these applications?
+
+9
+00:00:27.742 --> 00:00:30.347
+I think a lot of people would have
+thought, "Boy,
+
+10
+00:00:30.347 --> 00:00:33.212
+this sounds like weeks, you know,
+maybe even longer of work.".
+
+11
+00:00:33.212 --> 00:00:36.338
+But you saw in this short course,
+how with just a pretty
+
+12
+00:00:36.338 --> 00:00:38.943
+reasonable number of lines of code,
+you can use LangChain
+
+13
+00:00:38.943 --> 00:00:41.027
+to build all of
+these applications pretty efficiently.
+
+14
+00:00:41.027 --> 00:00:41.027
+
+
+15
+00:00:41.528 --> 00:00:44.385
+As I hope you take these ideas,
+maybe even take some
+
+16
+00:00:44.385 --> 00:00:46.462
+code snippets that you
+saw in the Jupyter
+
+17
+00:00:46.462 --> 00:00:48.540
+Notebooks and use them
+in your own applications.
+
+18
+00:00:48.540 --> 00:00:51.701
+And these ideas are
+really just the start. There's
+
+19
+00:00:51.701 --> 00:00:54.511
+a lot of other
+applications that you can
+
+20
+00:00:54.511 --> 00:00:57.322
+use language models for. These
+models are so
+
+21
+00:00:57.322 --> 00:01:00.132
+powerful because they're applicable
+to such a wide
+
+22
+00:01:00.132 --> 00:01:04.347
+range of tasks, whether it be answering questions
+about CSVs, querying SQL
+
+23
+00:01:04.347 --> 00:01:05.752
+databases, interacting with
+APIs.
+
+24
+00:01:06.474 --> 00:01:08.988
+There's a lot of different
+examples of using chains
+
+25
+00:01:08.988 --> 00:01:11.223
+and the combinations of
+prompts and output parsers
+
+26
+00:01:11.223 --> 00:01:13.458
+and then more chains
+to do all these
+
+27
+00:01:13.458 --> 00:01:15.972
+things in LangChain. And
+most of that is due
+
+28
+00:01:15.972 --> 00:01:18.765
+to the LangChain community. So
+I want to also give
+
+29
+00:01:18.765 --> 00:01:21.559
+a really big thank out
+to everyone in the community
+
+30
+00:01:21.559 --> 00:01:24.352
+who's contributed, whether it
+be improvements in the documentation, making
+
+31
+00:01:24.352 --> 00:01:26.867
+it easier for others to
+get started, or new
+
+32
+00:01:26.867 --> 00:01:29.940
+types of chains opening up a whole new
+world of possibilities.
+
+33
+00:01:29.940 --> 00:01:33.936
+And so, with that,
+if you have not yet already done so,
+
+34
+00:01:33.936 --> 00:01:37.933
+I hope you go to your laptop or
+your desktop and run
+
+35
+00:01:37.933 --> 00:01:41.930
+pip install LangChain and
+then go use this tool to go build
+
+36
+00:01:41.930 --> 00:01:42.930
+some amazing applications.

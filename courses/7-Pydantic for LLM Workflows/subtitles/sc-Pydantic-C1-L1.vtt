@@ -1,0 +1,752 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00.300 --> 00:01.796
+In this video, I want to give you
+
+00:01.796 --> 00:03.730
+some context for where we're going with this course.
+
+00:04.290 --> 00:06.908
+And in short, where we're going is
+
+00:06.908 --> 00:09.900
+getting structured output from an LLM using Pydantic.
+
+00:10.368 --> 00:12.323
+So, the simplest way you might think
+
+00:12.323 --> 00:14.278
+about getting structured output from an LLM
+
+00:14.589 --> 00:16.710
+is we'll just ask for it. And
+
+00:16.960 --> 00:18.804
+what I mean by that is that
+
+00:18.804 --> 00:20.911
+you can indicate in the prompt that you're
+
+00:20.911 --> 00:23.020
+passing to the LLM that you want the
+
+00:23.020 --> 00:25.129
+response to be formatted in a particular way.
+
+00:25.640 --> 00:27.230
+So, one really common approach
+
+00:27.570 --> 00:29.765
+is to ask for a response in what's called JavaScript
+
+00:29.765 --> 00:32.795
+object notation or JSON format.
+
+00:33.496 --> 00:35.129
+And if you're not already familiar
+
+00:35.129 --> 00:37.036
+with JSON format, no need to worry.
+
+00:37.396 --> 00:39.930
+You'll learn everything you need to know in this
+
+00:39.930 --> 00:42.466
+course about working with LLM responses in JSON format.
+
+00:43.106 --> 00:45.036
+So in this course, you're going to
+
+00:45.036 --> 00:46.966
+be building up a customer support system
+
+00:46.966 --> 00:49.256
+that we were looking at in the last video.
+
+00:49.435 --> 00:50.525
+And so to get a sense
+
+00:50.525 --> 00:51.795
+of how this is going to work,
+
+00:51.795 --> 00:53.845
+you can imagine you have a system where
+
+00:53.845 --> 00:55.496
+the user can fill out a form,
+
+00:55.756 --> 00:58.731
+indicating their name and email, and a request.
+
+00:59.392 --> 01:01.642
+So, in this case, you have Joe User
+
+01:01.642 --> 01:03.981
+here who ordered a remote control plane kit,
+
+01:03.981 --> 01:05.906
+but found that it arrived missing some
+
+01:05.906 --> 01:07.831
+parts. And now wants to return it.
+
+01:08.281 --> 01:10.781
+You can then construct a prompt that looks like this,
+
+01:10.781 --> 01:14.391
+where you're asking the LLM to analyze the user query.
+
+01:14.391 --> 01:16.691
+And then here in curly braces,
+
+01:16.691 --> 01:19.231
+you're passing the user input into the prompt.
+
+01:19.231 --> 01:21.852
+And then you ask for a response in JSON format
+
+01:21.852 --> 01:23.772
+that follows this example
+
+01:23.772 --> 01:25.231
+where you have all the fields you
+
+01:25.231 --> 01:26.691
+want to have filled out, like name
+
+01:26.867 --> 01:29.668
+email and query from the user input,
+
+01:29.668 --> 01:31.668
+and then a priority, category, whether or
+
+01:31.668 --> 01:33.668
+not it's a complaint and some tags.
+
+01:33.668 --> 01:35.567
+And so this is just a hypothetical set
+
+01:35.567 --> 01:37.468
+of things that you might be asking for.
+
+01:37.468 --> 01:40.768
+You could be asking for whatever JSON structure you want here.
+
+01:40.768 --> 01:43.867
+And then you pass that prompt to an LLM,
+
+01:43.867 --> 01:46.219
+and what you would be hoping for, in
+
+01:46.219 --> 01:48.867
+this case, is a response that looks like this,
+
+01:48.867 --> 01:53.067
+where the name, email, and query fields contain the user input.
+
+01:53.067 --> 01:55.823
+And then you have your priority, category, is_complaint,
+
+01:55.823 --> 01:58.924
+complaint and tags all filled out based on that user input.
+
+01:59.263 --> 02:02.144
+So, JSON structure is similar to a Python dictionary,
+
+02:02.563 --> 02:04.924
+where you open and close with these curly braces
+
+02:05.243 --> 02:08.403
+and then inside, you have this key value pair format.
+
+02:08.804 --> 02:11.024
+So in the prompt in this case, you've just said,
+
+02:11.343 --> 02:12.883
+here's the input from the user
+
+02:13.024 --> 02:16.984
+and I want you to provide a response in exactly this format,
+
+02:17.183 --> 02:20.063
+including the name, email, query and so on.
+
+02:20.663 --> 02:22.663
+And then with this structured output,
+
+02:22.824 --> 02:25.941
+you can automatically create a support ticket in your system.
+
+02:25.941 --> 02:28.941
+or decide whether to call a tool or what to do next.
+
+02:29.580 --> 02:31.786
+It turns out that when you ask an LLM
+
+02:31.786 --> 02:33.991
+to give you back a structured response like this,
+
+02:33.991 --> 02:35.767
+in many cases it can come
+
+02:35.767 --> 02:37.841
+pretty close. But it's not always perfect.
+
+02:38.191 --> 02:41.700
+For example, it might add additional text in the response, like
+
+02:41.931 --> 02:43.911
+here's the JSON output you requested.
+
+02:44.131 --> 02:46.099
+Or it might add some other formatting
+
+02:46.099 --> 02:48.069
+like this triple back tick markdown formatting
+
+02:48.069 --> 02:51.961
+is really common in LLM responses when you're asking for JSON.
+
+02:52.289 --> 02:53.736
+And beyond that, it might not
+
+02:53.736 --> 02:55.556
+give you all the fields you expect.
+
+02:55.556 --> 02:57.116
+or it could end up formatting the
+
+02:57.116 --> 02:58.676
+fields in a way that's not usable.
+
+02:58.676 --> 03:01.637
+Like maybe here getting the email format wrong.
+
+03:01.637 --> 03:03.562
+And it's this unpredictability of the response
+
+03:03.562 --> 03:05.486
+format that makes it hard to rely
+
+03:05.486 --> 03:08.467
+on LLMs to directly provide you with structured output.
+
+03:08.467 --> 03:10.676
+And this is where Pydantic comes in.
+
+03:10.676 --> 03:13.681
+With Pydantic, you define data models that specify
+
+03:13.681 --> 03:16.687
+the structure and types of data you expect.
+
+03:16.687 --> 03:19.689
+So in Python, this is what it would look like to define
+
+03:19.689 --> 03:22.693
+a pydantic data model for the request we were just looking at.
+
+03:22.693 --> 03:26.552
+where you have fields for name, email, query, and all the rest.
+
+03:27.552 --> 03:29.502
+What you're doing with a pydantic model like this
+
+03:29.603 --> 03:32.562
+is defining both the field names and the data types
+
+03:32.562 --> 03:34.143
+for each field in your model.
+
+03:34.752 --> 03:38.513
+So here, name, query, and priority are defined to be strings.
+
+03:38.962 --> 03:40.600
+The email field is defined as
+
+03:40.600 --> 03:42.513
+a special pydantic data type of EmailStr
+
+03:43.062 --> 03:44.693
+that's looking for a specific email formatting.
+
+03:45.062 --> 03:47.562
+And then the category field is defined as a Literal type
+
+03:47.562 --> 03:49.932
+that can only take on one of a few specific values.
+
+03:49.932 --> 03:53.848
+In this case, refund_request, request, information_request, or 'other'.
+
+03:54.408 --> 03:57.778
+And then is_complaint is a bool, that'll just be true or false.
+
+03:58.188 --> 04:00.519
+and tags is defined as a List[str].
+
+04:01.848 --> 04:04.060
+You can then use this pydantic data model
+
+04:04.060 --> 04:06.549
+to validate the response you receive from an LLM
+
+04:06.899 --> 04:09.158
+to ensure that it matches your expectations.
+
+04:09.528 --> 04:12.371
+In this course, you'll learn about two ways to
+
+04:12.371 --> 04:15.528
+get structured output from an LLM using pydantic data models.
+
+04:15.818 --> 04:17.899
+The first, and perhaps simplest way,
+
+04:18.119 --> 04:20.605
+is to just prompt the LLM to give you structured
+
+04:20.605 --> 04:22.665
+output, giving an example in the prompt
+
+04:22.665 --> 04:24.725
+of what kind of structure you want.
+
+04:24.725 --> 04:26.838
+And then take that LLM response,
+
+04:26.838 --> 04:29.305
+which you're hoping is in JSON format,
+
+04:29.305 --> 04:31.834
+and attempt to create an instance of your data model.
+
+04:31.834 --> 04:35.485
+In this case, your CustomerQuery data model that you've defined up here.
+
+04:35.485 --> 04:38.185
+using that LLM response as input.
+
+04:38.185 --> 04:40.425
+So, that's what this line of code
+
+04:40.425 --> 04:42.985
+is doing right here with this model_validate_json method.
+
+04:42.985 --> 04:47.214
+If the LLM response contains extra unexpected text or formatting,
+
+04:47.214 --> 04:49.562
+or if the JSON itself is not properly
+
+04:49.562 --> 04:52.461
+formatted, then this step will fail with a validation error
+
+04:52.461 --> 04:56.362
+letting you know that there was a problem with the JSON input.
+
+04:56.711 --> 04:59.052
+If on the other hand, the JSON format is valid,
+
+04:59.331 --> 05:02.101
+but the data contained in the JSON doesn't match your model,
+
+05:02.372 --> 05:04.047
+then this step will fail with
+
+05:04.047 --> 05:06.002
+a validation error letting you know that
+
+05:06.002 --> 05:07.956
+there's a mismatch between your model expectations
+
+05:07.956 --> 05:09.911
+and the JSON that you put in.
+
+05:10.531 --> 05:13.661
+So if this model validate JSON step is successful,
+
+05:13.971 --> 05:16.882
+and it's really kind of two steps happening behind the scenes.
+
+05:17.081 --> 05:20.237
+First parsing the JSON, and then using that to create
+
+05:20.237 --> 05:21.918
+an instance of your Pydantic data model.
+
+05:21.918 --> 05:23.658
+If all that runs without error,
+
+05:23.658 --> 05:26.218
+then you're working with validated data.
+
+05:26.218 --> 05:27.879
+and you're ready to pass that data
+
+05:27.879 --> 05:29.778
+on to the next component in your system.
+
+05:30.418 --> 05:33.007
+But if the validation of your LLM response fails,
+
+05:33.007 --> 05:35.987
+then what you can do is simply catch that validation error
+
+05:37.108 --> 05:39.408
+and pass it back to the LLM in a follow-up request,
+
+05:39.408 --> 05:41.987
+asking it to correct the problem that caused the error.
+
+05:42.487 --> 05:43.903
+Often this works pretty well. And
+
+05:43.903 --> 05:45.555
+you can even run through multiple error
+
+05:45.555 --> 05:47.027
+catching and correction cycles if you
+
+05:47.027 --> 05:48.744
+don't get a good result straight away.
+
+05:49.043 --> 05:51.634
+But it turns out that there's an even more reliable approach.
+
+05:51.634 --> 05:54.004
+You can now use with many of the
+
+05:54.004 --> 05:56.374
+current LLM APIs and agent frameworks out there.
+
+05:56.744 --> 05:59.069
+And that's to pass your Pydantic data model in
+
+05:59.069 --> 06:01.394
+as part of the initial request to the LLM.
+
+06:01.843 --> 06:05.394
+That way you're expressing exactly what you want in your API call.
+
+06:05.394 --> 06:07.737
+and you can more reliably get the data
+
+06:07.737 --> 06:10.374
+that you need in a format that you expect.
+
+06:10.483 --> 06:13.269
+In some cases, what's happening behind the scenes when you're
+
+06:13.269 --> 06:16.053
+passing your Pydantic model in the API call is that
+
+06:16.600 --> 06:18.521
+that this prompting and retry and validation
+
+06:18.521 --> 06:20.720
+logic is just being handled automatically for you.
+
+06:21.329 --> 06:24.860
+And in other cases, the LLM provider is using an approach known
+
+06:24.860 --> 06:28.389
+as constrained generation to make sure you get valid JSON every time.
+
+06:28.819 --> 06:30.786
+And you'll get a chance to play with
+
+06:30.786 --> 06:33.000
+frameworks using both of these approaches in the lessons.
+
+06:33.220 --> 06:37.319
+Another important use case for Pydantic and LLM workflows is tool calling.
+
+06:38.029 --> 06:40.250
+For example, with that user query we looked
+
+06:40.250 --> 06:42.470
+at before that says I forgot my password,
+
+06:42.899 --> 06:45.339
+you could pass that input to an LLM and have it
+
+06:45.456 --> 06:48.136
+provide a structured JSON response that looks like this.
+
+06:48.776 --> 06:51.855
+And then you might want to pass that JSON to another LLM
+
+06:52.295 --> 06:54.276
+and give it the option to call
+
+06:54.276 --> 06:56.255
+a tool based on the user's query.
+
+06:56.615 --> 06:58.379
+So in this case, you might want
+
+06:58.379 --> 07:00.396
+the LLM to call an FAQ lookup tool,
+
+07:00.745 --> 07:02.536
+which you can think of as just another
+
+07:02.536 --> 07:04.326
+Python function that you've defined in your code.
+
+07:04.685 --> 07:06.456
+that can return the appropriate response.
+
+07:06.456 --> 07:08.218
+Like, here maybe a password reset
+
+07:08.218 --> 07:10.276
+link and some instructions for the user.
+
+07:10.495 --> 07:12.360
+And so the way Pydantic comes into play
+
+07:12.360 --> 07:14.225
+for tool calling like this is that you
+
+07:14.341 --> 07:16.081
+So first define a pydantic data model
+
+07:16.081 --> 07:19.742
+that specifies the parameters for that function call.
+
+07:20.201 --> 07:24.211
+So here you're defining a pydantic model called FAQLookupArgs.
+
+07:24.762 --> 07:26.721
+And this model has two fields, one
+
+07:26.721 --> 07:28.682
+for the user query and the other
+
+07:28.682 --> 07:30.477
+for the tags associated with that
+
+07:30.477 --> 07:32.572
+user query. And this is just hypothetical.
+
+07:32.891 --> 07:35.891
+The types of things you might be passing in if
+
+07:35.891 --> 07:39.192
+you're trying to search for a particular frequently asked question response.
+
+07:39.882 --> 07:43.041
+And then you have your lookup_faq_answer function,
+
+07:43.298 --> 07:46.778
+that's defined to take those FAQLookupArgs as input.
+
+07:47.059 --> 07:49.399
+So, this is just a regular old Python function
+
+07:49.399 --> 07:52.629
+that looks up an FAQ answer by matching tags
+
+07:52.629 --> 07:55.858
+and keywords in a query to FAQ entry keywords.
+
+07:56.358 --> 07:57.789
+And I don't have the body of
+
+07:57.789 --> 07:59.221
+the function filled out here, but you'll
+
+07:59.221 --> 08:00.652
+see how all this works when we
+
+08:00.652 --> 08:02.288
+get into the code later in the lessons.
+
+08:02.798 --> 08:04.670
+And then you can define a tool
+
+08:04.670 --> 08:06.809
+you can use in your LLM API call.
+
+08:07.249 --> 08:09.579
+And the way that looks, at least for
+
+08:09.579 --> 08:11.908
+an API call to OpenAI in this case,
+
+08:12.254 --> 08:14.475
+is that you specify a type of function
+
+08:14.475 --> 08:16.584
+and then provide the name of the
+
+08:16.584 --> 08:18.694
+function, the description of what it does,
+
+08:18.694 --> 08:21.095
+and then the input parameters it takes.
+
+08:21.095 --> 08:24.264
+And this is where your Pydantic data model comes in.
+
+08:24.264 --> 08:27.225
+By passing in this model JSON schema
+
+08:27.225 --> 08:29.035
+from your Pydantic model,
+
+08:29.035 --> 08:31.509
+you're telling the LLM exactly what type
+
+08:31.509 --> 08:33.985
+of input parameters your function tool takes.
+
+08:33.985 --> 08:35.443
+And with that, you can make
+
+08:35.443 --> 08:37.144
+an API call that looks like this,
+
+08:37.144 --> 08:39.495
+where you're passing your tool definition
+
+08:39.495 --> 08:42.610
+in the tools parameter. And that tells the LLM
+
+08:42.980 --> 08:44.455
+that it has the option to use
+
+08:44.455 --> 08:46.140
+that tool if the messages in the prompt
+
+08:46.140 --> 08:49.780
+indicate that would be a good next step.
+
+08:50.110 --> 08:52.110
+If the LLM decides to call the tool,
+
+08:52.471 --> 08:56.061
+then it will return the parameters needed to call that function.
+
+08:56.270 --> 09:00.091
+You can then use your FAQLookupArgs pydantic model
+
+09:00.091 --> 09:03.520
+to validate that the parameters provided by the LLM
+
+09:03.520 --> 09:05.311
+are indeed what the function expects.
+
+09:05.850 --> 09:08.041
+And then you can call that function with those parameters
+
+09:08.041 --> 09:10.167
+and pass the result on to the next step in your
+
+09:10.167 --> 09:11.855
+system or back to the LLM
+
+09:11.855 --> 09:13.826
+to complete the rest of the response.
+
+09:14.307 --> 09:16.631
+So in this course, you'll learn these different
+
+09:16.631 --> 09:18.956
+methods for getting structured output from an LLM,
+
+09:18.956 --> 09:21.116
+in the form of a JSON response
+
+09:21.116 --> 09:23.277
+or the parameters to call a function.
+
+09:23.576 --> 09:26.067
+And you'll do this using pydantic data models.
+
+09:26.647 --> 09:29.287
+But before diving into validating LLM responses,
+
+09:29.287 --> 09:31.376
+to get started, we're going to take a
+
+09:31.376 --> 09:33.466
+look at the basics of pydantic models themselves.
+
+09:33.986 --> 09:36.226
+And to do that, we're going to zoom in
+
+09:36.726 --> 09:39.006
+first on the user input portion of this.
+
+09:39.124 --> 09:40.884
+customer support system you're going to build.
+
+09:41.344 --> 09:42.874
+So in the next lesson, you're going to start
+
+09:43.302 --> 09:46.687
+by looking at how you can take user input that's coming to
+
+09:46.687 --> 09:48.379
+you in the form of a
+
+09:48.379 --> 09:50.354
+Python dictionary or as a JSON string.
+
+09:50.354 --> 09:53.489
+and what you'll do is define a Pydantic data model to
+
+09:53.489 --> 09:56.624
+validate that your user input is in the format you expect,
+
+09:56.884 --> 09:59.124
+and that it contains the data you expect.
+
+09:59.453 --> 10:01.033
+So to start with, you'll just have
+
+10:01.374 --> 10:04.083
+a name and query fields defined as strings
+
+10:04.423 --> 10:06.754
+and an email field defined as an EmailStr.
+
+10:07.234 --> 10:09.700
+And then you'll use that Python dictionary or JSON string
+
+10:09.700 --> 10:12.240
+that contains the user input to create an instance
+
+10:12.240 --> 10:14.679
+of your user input data model.
+
+10:15.120 --> 10:17.000
+And with this, you'll get a sense of how
+
+10:17.000 --> 10:19.629
+pydantic data models work and how you can use them
+
+10:19.629 --> 10:22.259
+to validate, in this case, user input data.
+
+10:22.850 --> 10:25.149
+As I said before, where we're ultimately going
+
+10:25.149 --> 10:27.879
+with this course is using pydantic
+
+10:27.879 --> 10:30.539
+to get validated structured output from an LLM.
+
+10:31.029 --> 10:32.165
+But before we get to that,
+
+10:32.165 --> 10:33.490
+I'll see you in the next lesson
+
+10:33.490 --> 10:36.710
+to look at the basics of pydantic data models.

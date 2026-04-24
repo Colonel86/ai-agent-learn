@@ -1,0 +1,961 @@
+WEBVTT
+
+1
+00:00:03.638 --> 00:00:06.116
+We're so close to having
+a functional chatbot. We
+
+2
+00:00:06.116 --> 00:00:08.595
+started with loading documents, then
+we split them, then
+
+3
+00:00:08.595 --> 00:00:11.900
+we created a vector store, we
+talked about different types of retrieval,
+
+4
+00:00:11.900 --> 00:00:14.378
+we've shown
+that we can answer questions, but we
+
+5
+00:00:14.378 --> 00:00:17.408
+just can't handle follow-up questions, we can't
+have a real conversation
+
+6
+00:00:17.408 --> 00:00:20.712
+with it. The good news is, we're
+going to fix that in
+
+7
+00:00:20.712 --> 00:00:22.365
+this lesson. Let's figure out how.
+
+
+8
+00:00:24.719 --> 00:00:27.228
+We're now going to finish
+up by creating a
+
+9
+00:00:27.228 --> 00:00:30.575
+question answering chatbot. What
+this is going to do is, it's going
+
+10
+00:00:30.575 --> 00:00:34.757
+to look very similar to before, but we're
+going to add in this concept of
+
+11
+00:00:34.757 --> 00:00:36.988
+chat history. And this is
+any previous conversations
+
+12
+00:00:36.988 --> 00:00:38.940
+or messages that
+you've exchanged with the
+
+13
+00:00:38.940 --> 00:00:39.219
+chain.
+
+14
+00:00:40.180 --> 00:00:43.612
+What that's going to allow it to do, is
+it's going to allow it to
+
+15
+00:00:43.612 --> 00:00:45.899
+take that chat history
+into context when it's trying to
+
+16
+00:00:45.899 --> 00:00:48.873
+answer the question. So if you're
+asking a follow-up question, it'll know what
+
+17
+00:00:48.873 --> 00:00:49.559
+you're talking about.
+
+
+18
+00:00:51.118 --> 00:00:53.529
+An important thing to
+note here is that
+
+19
+00:00:53.529 --> 00:00:55.941
+all the cool types
+of retrieval that we
+
+20
+00:00:55.941 --> 00:00:59.256
+talked about up to this point,
+like self-query or compression or
+
+21
+00:00:59.256 --> 00:01:02.270
+anything like that, you
+can absolutely use them here. All
+
+22
+00:01:02.270 --> 00:01:05.887
+the components we talked about are
+very modular and can fit together
+
+23
+00:01:05.887 --> 00:01:07.997
+nicely. We're just
+adding in this concept
+
+24
+00:01:07.997 --> 00:01:08.901
+of chat history.
+
+25
+00:01:10.358 --> 00:01:15.329
+Let's see what it looks like. First, as
+always, we're going to load our
+
+26
+00:01:15.329 --> 00:01:16.040
+environment variables.
+
+27
+00:01:18.727 --> 00:01:20.966
+If you have the platform set up,
+it might also be nice to
+
+28
+00:01:20.966 --> 00:01:21.999
+turn it on from the beginning.
+
+29
+00:01:22.598 --> 00:01:24.300
+There'll
+be a lot of cool things that we'll want
+
+30
+00:01:24.300 --> 00:01:25.662
+to see what's going on
+under the hood.
+
+31
+00:01:29.840 --> 00:01:31.724
+We're going to load our
+vector store that has
+
+32
+00:01:31.724 --> 00:01:33.400
+all the embeddings for
+all the class materials.
+
+33
+00:01:36.338 --> 00:01:40.282
+We can run through basic similarity
+search on the vector store.
+
+34
+00:01:40.282 --> 00:01:43.151
+We can initialize the
+language model that we're
+
+35
+00:01:43.151 --> 00:01:46.377
+going to use as our chatbot. And
+then, and
+
+36
+00:01:46.377 --> 00:01:49.963
+this is all from before, which
+is why I'm skimming
+
+37
+00:01:49.963 --> 00:01:54.265
+through it so quickly. We can
+initialize a prompt template, create a
+
+38
+00:01:54.265 --> 00:01:57.850
+retrieval QA chain, and then
+pass in a question and
+
+39
+00:01:57.850 --> 00:01:59.284
+get back a result.
+
+40
+00:02:02.125 --> 00:02:06.431
+But now let's do more. Let's add
+some memory to it. So we're going to
+
+41
+00:02:06.431 --> 00:02:08.727
+be working with conversation
+buffer memory. And what
+
+42
+00:02:08.727 --> 00:02:13.033
+this does is it's just going to
+simply keep a list, a buffer of chat
+
+43
+00:02:13.033 --> 00:02:16.765
+messages in history, and it's going to
+pass those along with the question
+
+44
+00:02:16.765 --> 00:02:18.200
+to the chatbot every
+time.
+
+45
+00:02:18.200 --> 00:02:18.200
+
+
+46
+00:02:19.161 --> 00:02:22.829
+We're going to specify memory key, chat
+history. This is just going to line
+
+47
+00:02:22.829 --> 00:02:25.448
+it up with an input
+variable on the prompt. And
+
+48
+00:02:25.448 --> 00:02:28.330
+then we're going to specify return messages
+equal true. This is
+
+49
+00:02:28.330 --> 00:02:30.426
+going to return the
+chat history as a
+
+50
+00:02:30.426 --> 00:02:33.308
+list of messages as opposed to a single
+string. This is
+
+51
+00:02:33.308 --> 00:02:37.238
+the simplest type of memory. For a
+more in-depth look at memory, go back to
+
+52
+00:02:37.238 --> 00:02:40.120
+the first class that I
+taught with Andrew. We covered it
+
+53
+00:02:40.120 --> 00:02:40.906
+in detail then.
+
+54
+00:02:43.541 --> 00:02:46.515
+Let's
+now create a new type of chain, the
+
+55
+00:02:46.515 --> 00:02:49.820
+conversational retrieval chain. We
+pass in the language model, we
+
+56
+00:02:49.820 --> 00:02:53.124
+pass in the retriever, and
+we pass in memory. The
+
+57
+00:02:53.124 --> 00:02:57.089
+conversational retrieval chain
+adds a new bit on top of the retrieval
+
+58
+00:02:57.089 --> 00:02:58.741
+QA chain, not just memory.
+
+
+59
+00:02:59.001 --> 00:03:02.176
+Specifically, what it adds is
+it adds a step
+
+60
+00:03:02.176 --> 00:03:04.997
+that takes the history
+and the new question
+
+61
+00:03:04.997 --> 00:03:08.524
+and condenses it into a stand-alone
+question to pass to
+
+62
+00:03:08.524 --> 00:03:11.346
+the vector store to
+look up relevant documents.
+
+63
+00:03:12.160 --> 00:03:16.168
+We'll take a look at this in
+the UI after we run it
+
+64
+00:03:16.168 --> 00:03:20.792
+and see what effect it has. But
+for now, let's try it out. We can
+
+65
+00:03:20.792 --> 00:03:23.875
+ask a question. This is
+without any history, and see
+
+66
+00:03:23.875 --> 00:03:28.191
+the result we get back. And then
+we can ask a follow-up question to
+
+67
+00:03:28.191 --> 00:03:32.199
+that answer. This is the
+same as before. So we're asking, is probability
+
+68
+00:03:32.199 --> 00:03:34.357
+a class
+topic? We get some answer.
+
+69
+00:03:34.357 --> 00:03:36.515
+The instructor assumes that
+students have basic
+
+70
+00:03:36.515 --> 00:03:38.365
+understanding of probability
+and statistics. And
+
+71
+00:03:38.365 --> 00:03:40.523
+then we ask,
+why are those prerequisites
+
+72
+00:03:40.523 --> 00:03:44.222
+needed? We get back a
+result, and let's take a look at
+
+73
+00:03:44.222 --> 00:03:48.539
+it. We get back an answer,
+and now we can see that the answer
+
+74
+00:03:48.539 --> 00:03:51.313
+is referring to basic probability and
+statistics as prerequisites
+
+75
+00:03:51.313 --> 00:03:53.163
+and expanding upon
+that, not getting
+
+76
+00:03:53.163 --> 00:03:55.013
+confused with computer
+science as it
+
+77
+00:03:55.013 --> 00:03:55.629
+had before.
+
+
+78
+00:03:55.669 --> 00:04:00.834
+Let's take a look at what's going
+on under the hood in the UI. So here,
+
+79
+00:04:00.834 --> 00:04:03.417
+we can
+already see that there's a bit
+
+80
+00:04:03.417 --> 00:04:06.645
+more complexity. We can see
+that the input to the
+
+81
+00:04:06.645 --> 00:04:09.873
+chain now has not only
+the question, but also chat
+
+82
+00:04:09.873 --> 00:04:13.424
+history. Chat history is
+coming from the memory, and this gets
+
+83
+00:04:13.424 --> 00:04:17.298
+applied before the chain is invoked
+and logged in this logging system.
+
+84
+00:04:17.298 --> 00:04:20.204
+If we look
+at the trace, we can see
+
+85
+00:04:20.204 --> 00:04:23.755
+that there's two separate things
+going on. There's first a call
+
+86
+00:04:23.755 --> 00:04:27.306
+to an LLM, and then there's a call
+to the stuff
+
+87
+00:04:27.306 --> 00:04:27.951
+documents chain.
+
+
+88
+00:04:28.792 --> 00:04:34.447
+Let's take a look at the first call. We
+can see here a prompt with some instructions.
+
+89
+00:04:34.447 --> 00:04:36.110
+Given
+the following conversation, a
+
+90
+00:04:36.110 --> 00:04:38.438
+follow-up question, rephrase the
+follow-up question to
+
+91
+00:04:38.438 --> 00:04:41.432
+be a stand-alone question. Here, we
+have the history
+
+92
+00:04:41.432 --> 00:04:46.088
+from before. So we have the
+question we asked first, is probability a class
+
+93
+00:04:46.088 --> 00:04:49.747
+topic? We then have the
+assistance answers. And then out here,
+
+94
+00:04:49.747 --> 00:04:53.073
+we have the stand-alone
+question. What is the reason for
+
+95
+00:04:53.073 --> 00:04:56.067
+requiring basic probability and statistics as
+prerequisites for the
+
+96
+00:04:56.067 --> 00:04:56.400
+class?
+
+
+97
+00:04:58.238 --> 00:05:01.229
+What happens is that stand-alone
+answer is then passed
+
+98
+00:05:01.229 --> 00:05:03.887
+into the retriever, and
+we retrieve four documents
+
+99
+00:05:03.887 --> 00:05:06.879
+or three documents or
+however many we specify. We
+
+100
+00:05:06.879 --> 00:05:09.537
+then pass those documents
+to the stuff documents
+
+101
+00:05:09.537 --> 00:05:12.528
+chain and try to
+answer the original question. So
+
+102
+00:05:12.528 --> 00:05:17.181
+if we look into that, we
+can see that we have the system answer,
+
+103
+00:05:17.181 --> 00:05:20.837
+use the following pieces of context
+to answer the user's question.
+
+104
+00:05:20.837 --> 00:05:23.828
+We've got a
+bunch of context. And then we
+
+105
+00:05:23.828 --> 00:05:27.151
+have the stand-alone question down below.
+And then we get
+
+106
+00:05:27.151 --> 00:05:31.472
+an answer. And here's the answer that is
+relevant for the question at
+
+107
+00:05:31.472 --> 00:05:34.463
+hand, which is about probability and
+statistics as prerequisites.
+
+108
+00:05:34.463 --> 00:05:34.463
+
+
+109
+00:05:34.483 --> 00:05:37.346
+This is a good time
+to pause and try out
+
+110
+00:05:37.346 --> 00:05:40.496
+different options for this chain.
+You can pass in different prompt
+
+111
+00:05:40.496 --> 00:05:42.500
+templates,
+not only for answering the question,
+
+112
+00:05:42.500 --> 00:05:45.364
+but also for rephrasing
+that into a stand-alone question. You
+
+113
+00:05:45.364 --> 00:05:48.514
+can try different types of memory, lots
+of different options to
+
+114
+00:05:48.514 --> 00:05:51.950
+pull out here. After this, we're going
+to put it all together
+
+115
+00:05:51.950 --> 00:05:55.672
+in a nice UI. There's going to
+be a lot of code for
+
+116
+00:05:55.672 --> 00:05:58.536
+creating this UI, but this is
+the main important bit
+
+117
+00:05:58.536 --> 00:06:00.254
+right here. Specifically, this is
+a
+
+118
+00:06:00.254 --> 00:06:03.118
+full walkthrough of basically this
+whole class. So we're going
+
+119
+00:06:03.118 --> 00:06:06.554
+to load a database and retriever
+chain. We're going to pass in
+
+120
+00:06:06.554 --> 00:06:11.422
+a file. We're going to load it with
+the PDF loader. We're then going to load it
+
+121
+00:06:11.422 --> 00:06:13.999
+into
+documents. We're going to split those documents. We're
+
+122
+00:06:13.999 --> 00:06:16.003
+going
+to create some embeddings and put
+
+123
+00:06:16.003 --> 00:06:17.435
+it in a vector store.
+
+
+124
+00:06:17.435 --> 00:06:17.435
+
+
+125
+00:06:17.435 --> 00:06:21.902
+We're then going to turn that
+vector store into a retriever. We're
+
+126
+00:06:21.902 --> 00:06:25.625
+going to use similarity here
+with some "search_kwargs=k", which we're
+
+127
+00:06:25.625 --> 00:06:29.347
+going to set equal
+to a parameter that we can
+
+128
+00:06:29.347 --> 00:06:34.559
+pass in. And then we're going to
+create the conversational retrieval chain. One important
+
+129
+00:06:34.559 --> 00:06:37.537
+thing to note here
+is that we're not
+
+130
+00:06:37.537 --> 00:06:41.631
+passing in memory. We're going
+to manage memory externally for the
+
+131
+00:06:41.631 --> 00:06:44.610
+convenience of the GUI
+below. That means that
+
+132
+00:06:44.610 --> 00:06:47.960
+chat history will have to
+be managed outside the
+
+133
+00:06:47.960 --> 00:06:48.332
+chain.
+
+
+134
+00:06:48.397 --> 00:06:53.054
+We then have a lot more code here.
+We're not going to spend too
+
+135
+00:06:53.054 --> 00:06:56.714
+much time on it, but
+pointing out that here we're passing
+
+136
+00:06:56.714 --> 00:07:00.040
+in chat history into
+the chain. And again, that's because
+
+137
+00:07:00.040 --> 00:07:03.700
+we don't have memory attached
+to it. And then here we're
+
+138
+00:07:03.700 --> 00:07:07.359
+extending chat history with the result. We
+can then put it
+
+139
+00:07:07.359 --> 00:07:12.682
+all together and run this to get a
+nice UI through which we can interact with
+
+140
+00:07:12.682 --> 00:07:13.347
+our chatbot.
+
+
+141
+00:07:13.412 --> 00:07:16.765
+Let's ask it a question. Who
+are the TAs? The
+
+142
+00:07:16.765 --> 00:07:18.777
+TAs are Paul Baumstarck, Catie
+Chang.
+
+143
+00:07:18.777 --> 00:07:23.152
+You'll notice here that there's a
+few tabs that we can also click
+
+144
+00:07:23.152 --> 00:07:27.863
+on to see other things. So if
+we click on the database, we can
+
+145
+00:07:27.863 --> 00:07:31.565
+see the last question we
+asked of the database, as well
+
+146
+00:07:31.565 --> 00:07:35.604
+as the sources we got back
+from the lookup there. So these
+
+147
+00:07:35.604 --> 00:07:38.296
+are the documents. These are
+after the splittings
+
+148
+00:07:38.296 --> 00:07:41.325
+happened. These are
+each chunk that we've retrieved. We
+
+149
+00:07:41.325 --> 00:07:44.017
+can see
+the chat history with the input
+
+150
+00:07:44.017 --> 00:07:47.046
+and the output. And then there's
+also a place
+
+151
+00:07:47.046 --> 00:07:49.738
+to configure it where you can
+upload files.
+
+152
+00:07:49.803 --> 00:07:55.017
+We can also ask follow-ups. So let's ask,
+what are their majors? And we
+
+153
+00:07:55.017 --> 00:07:59.114
+get back an answer about the
+previously mentioned TAs. So we
+
+154
+00:07:59.114 --> 00:08:03.583
+can see that Paul is studying machine learning
+and computer vision, while
+
+155
+00:08:03.583 --> 00:08:05.446
+Catie is actually a
+neuroscientist.
+
+156
+00:08:05.510 --> 00:08:11.397
+This is basically the end of the class.
+So now's a great time to pause, ask
+
+157
+00:08:11.397 --> 00:08:15.445
+it a bunch more questions, upload
+your own documents here, and
+
+158
+00:08:15.445 --> 00:08:18.756
+enjoy this end-to-end question answering
+bot, complete with an
+
+159
+00:08:18.756 --> 00:08:19.860
+amazing notebook UI.
+
+
+160
+00:08:19.860 --> 00:08:24.493
+And that brings this class on LangChain,
+chat with your data, to an end.
+
+161
+00:08:24.493 --> 00:08:27.141
+In this class, we've
+covered how to use
+
+162
+00:08:27.141 --> 00:08:29.789
+LangChain to load data
+from a variety of
+
+163
+00:08:29.789 --> 00:08:32.105
+document sources using LangChain's 80-plus
+different document
+
+164
+00:08:32.105 --> 00:08:35.415
+loaders. From there, we
+split the documents into chunks and
+
+165
+00:08:35.415 --> 00:08:39.387
+talk about a lot of the nuances that
+arrive when doing so.
+
+166
+00:08:39.387 --> 00:08:39.387
+
+
+167
+00:08:40.588 --> 00:08:43.463
+After that, we take those chunks,
+create embeddings for them,
+
+168
+00:08:43.463 --> 00:08:46.339
+and put them into a vector store,
+showing how that
+
+169
+00:08:46.339 --> 00:08:49.790
+easily enables semantic search.
+But we also talk about some of the
+
+170
+00:08:49.790 --> 00:08:52.090
+downsides of semantic search
+and where it can
+
+171
+00:08:52.090 --> 00:08:54.391
+fail on the certain
+edge cases that arise.
+
+172
+00:08:55.852 --> 00:08:58.197
+The next thing that
+we cover is retrieval,
+
+173
+00:08:58.197 --> 00:09:02.594
+maybe my favorite part of the class,
+where we talk about a lot of new
+
+174
+00:09:02.594 --> 00:09:04.939
+and advanced and really
+fun retrieval algorithms for
+
+175
+00:09:04.939 --> 00:09:07.285
+overcoming those edge cases.
+We combine that with
+
+176
+00:09:07.285 --> 00:09:09.630
+LLMs in the next session,
+where we take
+
+177
+00:09:09.630 --> 00:09:11.975
+those retrieved documents,
+we take the user question,
+
+178
+00:09:11.975 --> 00:09:14.906
+we pass it to an LLM,
+and we generate an
+
+179
+00:09:14.906 --> 00:09:16.959
+answer to the original question.
+But there's
+
+180
+00:09:16.959 --> 00:09:19.304
+still one thing missing, which
+is the conversational
+
+181
+00:09:19.304 --> 00:09:20.183
+aspect of it.
+
+182
+00:09:20.784 --> 00:09:23.420
+And that's
+where we finish out the class, by
+
+183
+00:09:23.420 --> 00:09:27.229
+creating a fully functioning end-to-end chatbot
+over your data. I've really enjoyed teaching
+
+184
+00:09:27.229 --> 00:09:31.331
+this class. I hope you guys
+have enjoyed taking it. And I want to
+
+185
+00:09:31.331 --> 00:09:34.846
+thank everyone in the open source who has
+contributed a lot of
+
+186
+00:09:34.846 --> 00:09:37.190
+the things that make
+this class possible, like
+
+187
+00:09:37.190 --> 00:09:40.413
+all the prompts
+and a lot of the functionality that you
+
+188
+00:09:40.413 --> 00:09:40.706
+see.
+
+189
+00:09:40.806 --> 00:09:42.994
+As you guys build
+with LangChain and discover
+
+190
+00:09:42.994 --> 00:09:45.729
+new ways of doing
+things and new tips and techniques,
+
+191
+00:09:45.729 --> 00:09:49.285
+I hope that you share what you'll
+learn on Twitter or even open
+
+192
+00:09:49.285 --> 00:09:50.652
+up a PR in LangChain.
+
+193
+00:09:51.030 --> 00:09:53.387
+It's a really fast-moving field, and it's
+an exciting
+
+194
+00:09:53.387 --> 00:09:54.434
+time to be building.
+
+195
+00:09:55.268 --> 00:09:56.179
+Look forward to seeing everything.

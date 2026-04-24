@@ -1,0 +1,570 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.068 --> 00:00:03.503
+All right. So what was that?
+
+2
+00:00:03.503 --> 00:00:06.773
+We just built a super
+interesting crew for support.
+
+3
+00:00:07.173 --> 00:00:10.377
+But things can get even more interesting.
+On this lesson,
+
+4
+00:00:10.377 --> 00:00:14.748
+we are going to use tools
+to build a customer outreach campaign.
+
+5
+00:00:15.048 --> 00:00:16.449
+That's going to be super interesting
+
+6
+00:00:16.449 --> 00:00:20.153
+because sales is a very common
+use case for multi-agent systems.
+
+7
+00:00:20.387 --> 00:00:23.089
+So let's look into that real quick.
+
+8
+00:00:23.089 --> 00:00:25.558
+Welcome back to our new lesson.
+
+9
+00:00:25.558 --> 00:00:27.994
+We are talking about tools.
+
+10
+00:00:27.994 --> 00:00:32.532
+Tools are such an important part of crewAI
+
+11
+00:00:32.799 --> 00:00:35.802
+and of any multiple-agent system out
+there.
+
+12
+00:00:36.102 --> 00:00:40.073
+Tools want to allow your agents
+to communicate with the external world,
+
+13
+00:00:40.273 --> 00:00:43.576
+to get out of their bubble,
+of just chatting with themselves
+
+14
+00:00:43.843 --> 00:00:48.843
+and actually perform actions
+have an actual impact on your flows,
+
+15
+00:00:49.115 --> 00:00:52.685
+on your systems, on your users,
+and on your company.
+
+16
+00:00:53.019 --> 00:00:57.323
+So it's a super key part
+that makes agents great.
+
+17
+00:00:57.924 --> 00:01:00.693
+So what makes a great tool?
+
+18
+00:01:00.693 --> 00:01:03.863
+What makes a tool set itself
+apart from another?
+
+19
+00:01:04.297 --> 00:01:07.400
+Well, there is at least three things
+that we found
+
+20
+00:01:07.700 --> 00:01:12.539
+from the many users that use crewAI
+that set tools apart from each other.
+
+21
+00:01:12.772 --> 00:01:14.674
+The tools that are versatile,
+
+22
+00:01:14.674 --> 00:01:18.878
+the tools, that are fault-tolerant,
+and the tools that implement caching.
+
+23
+00:01:18.912 --> 00:01:22.916
+We're going to talk
+about each of those topics right now.
+
+24
+00:01:23.149 --> 00:01:26.152
+So what it means for a tool
+to be versatile.
+
+25
+00:01:26.453 --> 00:01:28.888
+Well first thing: the tool needs
+
+26
+00:01:28.888 --> 00:01:32.025
+to be able
+to accept different kind of requests.
+
+27
+00:01:32.058 --> 00:01:34.694
+The tool is the connection between
+
+28
+00:01:34.694 --> 00:01:38.631
+the AI apps that have fuzzy inputs
+
+29
+00:01:38.865 --> 00:01:43.236
+with the external world
+that have strong typed inputs.
+
+30
+00:01:43.269 --> 00:01:47.407
+So your tool needs to be versatile enough
+so that it can handle
+
+31
+00:01:47.407 --> 00:01:50.877
+the different things
+that the LLM might throw at them.
+
+32
+00:01:50.910 --> 00:01:55.910
+So crewAI supports converting
+this arguments into the correct types,
+
+33
+00:01:56.783 --> 00:02:00.320
+and they can handle the different nuances
+coming out of your agent.
+
+34
+00:02:00.687 --> 00:02:04.491
+But if you're building it to yourself,
+you want to be sure that
+
+35
+00:02:04.824 --> 00:02:08.428
+whatever the LLM sends your way,
+you want to treat it properly.
+
+36
+00:02:08.428 --> 00:02:12.132
+You want to convert it to the appropriate
+type so that you can actually use it.
+
+37
+00:02:12.165 --> 00:02:17.165
+So one big piece of making a great tool
+is making sure that it's versatile.
+
+38
+00:02:17.504 --> 00:02:20.273
+It can handle different types of inputs.
+
+39
+00:02:20.273 --> 00:02:22.475
+The second thing: is being fault-tolerant.
+
+40
+00:02:22.475 --> 00:02:26.479
+This is a thing that a lot of people
+that were using AI agents early
+
+41
+00:02:26.479 --> 00:02:31.479
+on realized that as your agent passes
+information to your tools,
+
+42
+00:02:32.085 --> 00:02:35.421
+things might break
+and you going to get exceptions.
+
+43
+00:02:35.755 --> 00:02:39.692
+If you get exceptions out of nowhere
+and you don't treat them right,
+
+44
+00:02:40.293 --> 00:02:44.697
+you stop your crew right there
+because it stops the execution.
+
+45
+00:02:44.931 --> 00:02:46.199
+And you don't want to do that.
+
+46
+00:02:46.199 --> 00:02:51.037
+So you want to make sure that your tools
+can fail gracefully.
+
+47
+00:02:51.271 --> 00:02:54.440
+So in case something goes wrong
+they can kind of
+
+48
+00:02:54.440 --> 00:02:58.545
+self-heal crewAI actually implements
+that by default for you.
+
+49
+00:02:58.778 --> 00:03:02.282
+So even if an exception happens
+when running a tool,
+
+50
+00:03:02.515 --> 00:03:06.252
+instead of stopping the execution,
+it sends that message
+
+51
+00:03:06.252 --> 00:03:09.956
+back to the agent
+so the agent can take action on that.
+
+52
+00:03:10.023 --> 00:03:11.791
+Maybe it's the input.
+
+53
+00:03:11.791 --> 00:03:15.161
+Maybe the agent should have sent
+a different kind of input.
+
+54
+00:03:15.195 --> 00:03:16.996
+Maybe the agent had missed
+
+55
+00:03:16.996 --> 00:03:20.900
+on a required argument,
+or maybe there was just another problem.
+
+56
+00:03:20.967 --> 00:03:25.967
+But the important thing is that your tools
+should be self-healing
+
+57
+00:03:26.239 --> 00:03:31.010
+and should fail gracefully in a way
+that doesn't stop your agent execution.
+
+58
+00:03:31.110 --> 00:03:33.279
+This is something that we see
+a lot out there.
+
+59
+00:03:33.279 --> 00:03:37.951
+When you deploy these agents at scale,
+especially in enterprise companies,
+
+60
+00:03:38.251 --> 00:03:41.554
+you're going to have agents
+dealing with all sorts of documents
+
+61
+00:03:41.554 --> 00:03:45.024
+and all sorts of sources
+for files and information.
+
+62
+00:03:45.258 --> 00:03:49.562
+So you want to make sure that the tools
+are able to handle all that
+
+63
+00:03:49.862 --> 00:03:53.533
+and able to handle when seeing something
+that they don't expect.
+
+64
+00:03:53.900 --> 00:03:57.604
+We actually have seen this in
+some of our biggest users,
+
+65
+00:03:57.604 --> 00:04:01.040
+where you're analyzing
+huge amounts of financial documents
+
+66
+00:04:01.374 --> 00:04:05.912
+and sometimes the numbers
+might not be the easiest ones to read,
+
+67
+00:04:06.112 --> 00:04:09.582
+or the text might not be the easiest one
+to parse. That aside,
+
+68
+00:04:09.616 --> 00:04:12.885
+you want to make sure that your tools
+kind of work around that a little bit.
+
+69
+00:04:13.119 --> 00:04:13.586
+All right.
+
+70
+00:04:13.586 --> 00:04:17.790
+So you have a tool that is versatile and
+you have a tool that is fault-tolerant.
+
+71
+00:04:18.057 --> 00:04:20.493
+That means that you got a lot of that job
+done.
+
+72
+00:04:20.493 --> 00:04:22.061
+What about caching?
+
+73
+00:04:22.061 --> 00:04:27.061
+Caching is key to making these tools
+worth it and usable in the real world.
+
+74
+00:04:27.634 --> 00:04:30.737
+Whenever you have a tool,
+most of the times,
+
+75
+00:04:31.004 --> 00:04:34.607
+that you is using
+to communicate it with the web.
+
+76
+00:04:34.907 --> 00:04:37.343
+So it's going to call
+different APIs.
+
+77
+00:04:37.577 --> 00:04:39.612
+It's going to call different services.
+
+78
+00:04:39.612 --> 00:04:41.848
+Sometimes it's going to be internal
+services.
+
+79
+00:04:41.848 --> 00:04:44.384
+Others are going to be external services.
+
+80
+00:04:44.384 --> 00:04:47.987
+And whenever that call happens,
+you want to make sure that you're
+
+81
+00:04:47.987 --> 00:04:51.424
+being mindful
+about taking the time to do the request
+
+82
+00:04:51.424 --> 00:04:54.827
+and also not doing the request
+unless necessary.
+
+83
+00:04:55.295 --> 00:05:00.295
+So having a caching layer
+that prevents unnecessary requests
+
+84
+00:05:00.500 --> 00:05:05.204
+from happening is crucial
+to make sure that you're building
+
+85
+00:05:05.204 --> 00:05:06.172
+optimal crews.
+
+86
+00:05:06.172 --> 00:05:10.543
+So you want to make sure that you have
+not only cache but you have a smart cache.
+
+87
+00:05:10.643 --> 00:05:14.647
+So in crewAI we offer cross-agent caching.
+
+88
+00:05:15.148 --> 00:05:20.019
+What that means is that
+if one agent tried to use a tool
+
+89
+00:05:20.386 --> 00:05:23.022
+with a given set of arguments,
+
+90
+00:05:23.022 --> 00:05:28.022
+and another agent try to use the same tool
+with the same set of arguments,
+
+91
+00:05:28.227 --> 00:05:32.699
+even if they're different agents, they're
+going to actually use a cache layer.
+
+92
+00:05:32.732 --> 00:05:37.732
+So the second time they try to use a tool,
+they're not going to do that API call.
+
+93
+00:05:38.204 --> 00:05:40.206
+That makes a lot of difference.
+
+94
+00:05:40.206 --> 00:05:44.877
+That prevents unnecessary requests,
+that prevents hitting rate limits,
+
+95
+00:05:45.078 --> 00:05:49.115
+unnecessary consumptions,
+and also saving the execution time.
+
+96
+00:05:49.248 --> 00:05:53.953
+Making sure that you're crews
+in your multiple agent systems run faster.
+
+97
+00:05:53.953 --> 00:05:57.223
+So caching is super important
+when you're building
+
+98
+00:05:57.223 --> 00:06:00.259
+crews that you need to run at scale.
+
+99
+00:06:00.727 --> 00:06:02.829
+What are some examples of tools?
+
+100
+00:06:02.829 --> 00:06:05.098
+Well,
+there's a bunch that we can talk about.
+
+101
+00:06:05.098 --> 00:06:09.569
+There are the simple ones like
+search the internet or scrape a website, tools
+
+102
+00:06:09.569 --> 00:06:13.005
+that we actually have used ourselves
+but goes beyond that.
+
+103
+00:06:13.206 --> 00:06:15.575
+You also can connect to a database.
+
+104
+00:06:15.575 --> 00:06:20.012
+You can call an API, you can send
+notification and many, many more.
+
+105
+00:06:20.146 --> 00:06:24.584
+So you can see here
+how tools are such a cornerstone.
+
+106
+00:06:24.717 --> 00:06:25.852
+And that is the case
+
+107
+00:06:25.852 --> 00:06:30.056
+for all the frameworks out there,
+including crewAI. Showing, crewAI
+
+108
+00:06:30.089 --> 00:06:33.226
+tools are such an important piece
+
+109
+00:06:33.459 --> 00:06:37.930
+that crew offers a bunch of them
+out of the gate that you can use.
+
+110
+00:06:38.364 --> 00:06:40.900
+So whenever you have
+the time in the future
+
+111
+00:06:40.900 --> 00:06:45.238
+when building your own tools, make sure
+to check crewAI's documentation
+
+112
+00:06:45.405 --> 00:06:46.372
+where you're going to find
+
+113
+00:06:46.372 --> 00:06:49.442
+all the documentation
+for all the existing tools in there.
+
+114
+00:06:49.709 --> 00:06:52.779
+Also, another thing that's important
+to highlight is that crewAI
+
+115
+00:06:52.845 --> 00:06:56.849
+supports all LangChain tools,
+so LangChain can also offer
+
+116
+00:06:56.849 --> 00:07:00.720
+a huge set of existing tools
+and you can use them right away.
+
+117
+00:07:00.987 --> 00:07:03.589
+We share crews using crewAI.
+
+118
+00:07:03.589 --> 00:07:05.391
+So just another thing to highlight.
+
+119
+00:07:05.391 --> 00:07:06.526
+But enough of that.
+
+120
+00:07:06.526 --> 00:07:10.563
+Let's jump into some code and see how
+we can build some tools together.
+

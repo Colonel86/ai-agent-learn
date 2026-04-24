@@ -1,0 +1,148 @@
+WEBVTT
+1
+00:00:00.140 --> 00:00:04.025
+Congrats on finishing the course!
+Hopefully you have picked up
+
+2
+00:00:04.025 --> 00:00:07.410
+some skills on how to build,
+evaluate, and iterate on
+
+3
+00:00:07.410 --> 00:00:11.546
+your RAG application to make it
+more production-ready. Regardless
+
+4
+00:00:11.546 --> 00:00:14.555
+of whether you come from a
+data science machine
+
+5
+00:00:14.555 --> 00:00:17.438
+learning background or
+a traditional software
+
+6
+00:00:17.438 --> 00:00:22.138
+background, you'll need
+to learn some of these core development principles
+
+7
+00:00:22.138 --> 00:00:24.833
+so that you can
+be a rock-star AI engineer
+
+8
+00:00:24.833 --> 00:00:27.528
+who can build robust LLM
+software systems.
+
+9
+00:00:27.591 --> 00:00:30.411
+Reducing LLM hallucination is
+going to be the
+
+10
+00:00:30.411 --> 00:00:33.859
+top priority for every
+developer as the field evolves.
+
+11
+00:00:33.859 --> 00:00:36.240
+We are excited to
+see the base models
+
+12
+00:00:36.240 --> 00:00:39.687
+get better and larger-scale
+evaluations become cheaper
+
+13
+00:00:39.687 --> 00:00:42.633
+and more accessible
+for everyone to set up and
+
+14
+00:00:42.633 --> 00:00:42.946
+run.
+
+15
+00:00:43.009 --> 00:00:45.641
+As a next step, I'd
+recommend looking more
+
+16
+00:00:45.641 --> 00:00:49.151
+deeply into understanding
+your data pipeline, retrieval
+
+17
+00:00:49.151 --> 00:00:51.282
+strategy, and
+LLM prompts to help
+
+18
+00:00:51.282 --> 00:00:54.792
+improve RAG performance. These
+two techniques we showed
+
+19
+00:00:54.792 --> 00:00:57.174
+were just the tip
+of the iceberg. You
+
+20
+00:00:57.174 --> 00:01:00.182
+should look into everything
+from chunk sizes to
+
+21
+00:01:00.182 --> 00:01:04.131
+retrieval techniques like hybrid
+search to LLM-based reasoning
+
+22
+00:01:04.131 --> 00:01:05.572
+like chain of thought.
+
+23
+00:01:05.635 --> 00:01:08.016
+The RAG triad is
+an excellent place to
+
+24
+00:01:08.016 --> 00:01:12.090
+start with evaluating your RAG-based
+LLM apps. As a next step, I
+
+25
+00:01:12.090 --> 00:01:14.723
+encourage you to dig
+deeper into the area
+
+26
+00:01:14.723 --> 00:01:18.107
+of evaluating LLMs and
+the apps that they power. This
+
+27
+00:01:18.107 --> 00:01:22.181
+includes topics such as
+assessing model confidence, calibration,
+
+28
+00:01:22.181 --> 00:01:25.440
+uncertainty, explainability,
+privacy, fairness, and
+
+29
+00:01:25.440 --> 00:01:28.574
+toxicity in both benign
+and adversarial settings.
+
+30
+00:01:28.636 --> 00:01:31.520
+We look forward to
+seeing what you build next.

@@ -1,0 +1,121 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.033 --> 00:00:02.902
+Okay, let's recap what we learned so far.
+
+2
+00:00:02.902 --> 00:00:07.640
+We talked about
+how tools are such a key part of agents,
+
+3
+00:00:07.874 --> 00:00:12.874
+because they are what allow you to connect
+your agents to the external world.
+
+4
+00:00:13.113 --> 00:00:18.113
+So you're going to view tools
+and use existing tools to call APIs
+
+5
+00:00:18.918 --> 00:00:23.523
+to integrate with our internal systems,
+to do some computational.
+
+6
+00:00:23.757 --> 00:00:26.526
+It's a translation layer
+that allows your agents
+
+7
+00:00:26.526 --> 00:00:30.397
+to communicate with existing programs
+that you might have.
+
+8
+00:00:30.563 --> 00:00:32.766
+But in order for these tools to work
+
+9
+00:00:32.766 --> 00:00:35.769
+properly,
+you need to make sure they're versatile.
+
+10
+00:00:35.902 --> 00:00:37.504
+You need to make sure they're fault
+
+11
+00:00:37.504 --> 00:00:41.841
+tolerant and need to make sure
+that they have a caching strategy.
+
+12
+00:00:41.875 --> 00:00:46.179
+If you make sure that you're using
+those three qualities on all the tools
+
+13
+00:00:46.179 --> 00:00:50.150
+that you use, you
+then have a system that is more reliable.
+
+14
+00:00:50.150 --> 00:00:52.952
+So make sure to watch out for that
+when you're choosing
+
+15
+00:00:52.952 --> 00:00:55.955
+what tools are going to use
+or building our own tools.
+
+16
+00:00:56.122 --> 00:00:59.125
+Keep in mind again
+that because are using crewAI,
+
+17
+00:00:59.225 --> 00:01:03.229
+you can not only use the tools
+that crewAI offers itself,
+
+18
+00:01:03.463 --> 00:01:06.833
+but you can also use all the tools
+that LangChain offers.
+
+19
+00:01:07.067 --> 00:01:10.904
+So you have a huge range
+of tools that you can start with.
+
+20
+00:01:11.071 --> 00:01:11.838
+All right.
+
+21
+00:01:11.838 --> 00:01:14.007
+We're going to wrap this lesson here.
+
+22
+00:01:14.007 --> 00:01:16.209
+You're doing amazing. Keep at it.
+
+23
+00:01:16.209 --> 00:01:19.612
+You're going to love our next lesson
+because you're going to talk about
+
+24
+00:01:19.612 --> 00:01:24.150
+even more interesting stuff
+that is going to unlock more use cases.
+
+25
+00:01:24.451 --> 00:01:26.886
+So I'll see you on your next lesson.
+

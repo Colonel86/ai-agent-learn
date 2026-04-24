@@ -1,0 +1,463 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:01.434 --> 00:00:04.137
+A frequently used tool in agents is search.
+
+2
+00:00:04.137 --> 00:00:06.806
+This lesson is going to dive into
+how agentic
+
+3
+00:00:06.806 --> 00:00:09.976
+search is different from standard search
+and how to use it.
+
+4
+00:00:10.443 --> 00:00:13.213
+Let's try it out.
+
+5
+00:00:13.213 --> 00:00:15.949
+All right,
+so before diving into what an agentic search
+
+6
+00:00:15.949 --> 00:00:19.819
+does, let's understand
+how an agent might use it. In a zero
+
+7
+00:00:19.819 --> 00:00:23.356
+shot learning an agent
+would receive a prompt and will produce
+
+8
+00:00:23.356 --> 00:00:26.359
+an answer
+based on its static weights of the model.
+
+9
+00:00:26.426 --> 00:00:28.495
+As powerful as it's proven to be,
+
+10
+00:00:28.495 --> 00:00:31.431
+there are many limitations
+to this process.
+
+11
+00:00:31.431 --> 00:00:34.200
+First, the data on this is dynamic.
+
+12
+00:00:34.200 --> 00:00:38.505
+So we couldn't, for instance, ask
+about the scores from the game last night.
+
+13
+00:00:39.105 --> 00:00:42.475
+Secondly, in many use cases,
+we would want to know
+
+14
+00:00:42.475 --> 00:00:45.478
+the sources of the information provided in
+the result.
+
+15
+00:00:45.578 --> 00:00:48.214
+This can reduce hallucinations and smooth
+
+16
+00:00:48.214 --> 00:00:51.217
+the friction of this human-computer
+interaction.
+
+17
+00:00:51.551 --> 00:00:53.787
+Looking at the slide, we can see
+the prompt
+
+18
+00:00:53.787 --> 00:00:57.090
+is received by the agent,
+which then decides to call the search tool.
+
+19
+00:00:57.090 --> 00:01:00.460
+Then the information found
+is returned to the agent.
+
+20
+00:01:00.860 --> 00:01:03.396
+Now, let me show you what happens inside.
+
+21
+00:01:04.497 --> 00:01:05.098
+This is an
+
+22
+00:01:05.098 --> 00:01:08.101
+example of a very basic search
+tool implementation.
+
+23
+00:01:08.168 --> 00:01:10.503
+Let's go over it step by step.
+
+24
+00:01:10.503 --> 00:01:13.673
+If the agent decides
+it will send the query to the search tool,
+
+25
+00:01:14.107 --> 00:01:17.143
+the first step would work on
+understanding the question
+
+26
+00:01:17.510 --> 00:01:20.513
+and divide it to sub-questions if needed.
+
+27
+00:01:20.713 --> 00:01:24.717
+This is an important step
+because it can handle complex queries.
+
+28
+00:01:25.318 --> 00:01:29.489
+Then, for each subquery, the search tool
+will have to find the best source.
+
+29
+00:01:29.789 --> 00:01:32.158
+Choosing from multiple integrations.
+
+30
+00:01:32.158 --> 00:01:36.696
+For example, if an agent would ask
+"How is the weather in San Francisco?"
+
+31
+00:01:37.163 --> 00:01:40.733
+The search tool should use the weather API
+for best results.
+
+32
+00:01:41.434 --> 00:01:44.170
+the job doesn't end
+with finding the correct source.
+
+33
+00:01:44.170 --> 00:01:45.505
+The search tool would
+
+34
+00:01:45.505 --> 00:01:49.242
+then have to extract only the relevant
+information to the subquery.
+
+35
+00:01:49.609 --> 00:01:53.213
+A basic implementation of this
+can be achieved through a process
+
+36
+00:01:53.213 --> 00:01:57.283
+of chunking the source, and run
+a quick vector search to retrieve the top-K
+
+37
+00:01:57.283 --> 00:02:01.087
+chunks.
+After retrieving the data from its source,
+
+38
+00:02:01.287 --> 00:02:04.357
+the search tool would then
+score the results and filter
+
+39
+00:02:04.357 --> 00:02:07.360
+out the less relevant information.
+
+40
+00:02:07.494 --> 00:02:08.895
+Okay, so let's test it out.
+
+41
+00:02:10.063 --> 00:02:10.430
+Okay.
+
+42
+00:02:10.430 --> 00:02:12.632
+So first, let's import some libraries
+
+43
+00:02:12.632 --> 00:02:15.602
+and do the initial connection
+to the search tool.
+
+44
+00:02:16.169 --> 00:02:20.006
+Here we loaded Tavily
+API key from the environment variable.
+
+45
+00:02:20.673 --> 00:02:23.576
+And then we created the Tavily client
+
+46
+00:02:23.576 --> 00:02:26.579
+which we imported from the Tavily library.
+
+47
+00:02:26.779 --> 00:02:30.583
+All right, so after creating
+the initial connection, let's test it out.
+
+48
+00:02:31.184 --> 00:02:35.421
+Here, I'm going to run this search
+asking about Nvidia's new Blackwell GPU.
+
+49
+00:02:35.989 --> 00:02:38.958
+And let's see what's the answer.
+
+50
+00:02:39.526 --> 00:02:39.826
+All right.
+
+51
+00:02:39.826 --> 00:02:43.396
+As you can see there's
+a pretty simple answer but very accurate.
+
+52
+00:02:45.732 --> 00:02:48.968
+Okay, so let's do a simple example
+to see the difference
+
+53
+00:02:48.968 --> 00:02:52.272
+between a regular search tool
+and an agentic search tool.
+
+54
+00:02:52.805 --> 00:02:57.510
+I'm going to create a simple query
+about the weather in a certain location.
+
+55
+00:02:58.211 --> 00:03:01.214
+Feel free
+to change the location to your location.
+
+56
+00:03:01.514 --> 00:03:04.083
+I'm going to do it with San Francisco.
+
+57
+00:03:04.083 --> 00:03:07.120
+So, the query is "What is the current
+weather in San Francisco?
+
+58
+00:03:07.420 --> 00:03:09.522
+Should I travel there today?"
+
+59
+00:03:09.522 --> 00:03:12.158
+Now, let's try to attempt
+it with regular search.
+
+60
+00:03:16.029 --> 00:03:19.165
+Here, I'm going to import the DuckDuckGo
+search.
+
+61
+00:03:19.699 --> 00:03:22.735
+I'll try to run a regular search
+and get the links.
+
+62
+00:03:23.069 --> 00:03:26.072
+The links
+that might lead me to the answer.
+
+63
+00:03:27.273 --> 00:03:27.640
+Okay.
+
+64
+00:03:27.640 --> 00:03:31.778
+So as you can see, we did get the results,
+but it's not what the agent meant.
+
+65
+00:03:32.111 --> 00:03:35.815
+Now we're going to have to get
+some answers from these results.
+
+66
+00:03:36.382 --> 00:03:39.385
+Let's do that.
+
+67
+00:03:41.287 --> 00:03:41.588
+Okay.
+
+68
+00:03:41.588 --> 00:03:43.723
+So now we're going to create the function
+
+69
+00:03:43.723 --> 00:03:46.159
+that can scrape the data
+from the first URL.
+
+70
+00:03:46.159 --> 00:03:49.162
+We're going to use Beautifulsoup
+to extract the html.
+
+71
+00:03:53.933 --> 00:03:56.102
+As you can see that's a beautiful output.
+
+72
+00:03:56.102 --> 00:03:59.105
+And if you want
+you can keep scrolling down.
+
+73
+00:03:59.706 --> 00:04:02.575
+But let's try to clear it up.
+
+74
+00:04:02.575 --> 00:04:03.176
+Okay.
+
+75
+00:04:03.176 --> 00:04:05.612
+To clear it out,
+I'm going to use some parsing.
+
+76
+00:04:05.612 --> 00:04:08.615
+I'm going to extract the headers
+and some content.
+
+77
+00:04:08.848 --> 00:04:12.685
+I'm going to strip it down
+and use a join to get the text.
+
+78
+00:04:14.287 --> 00:04:17.257
+As you can see, the output is much,
+much better,
+
+79
+00:04:17.257 --> 00:04:20.226
+but still not concise enough.
+
+80
+00:04:20.660 --> 00:04:21.127
+Okay.
+
+81
+00:04:21.127 --> 00:04:25.565
+After seeing this let's try to run
+it using the agentic search tool.
+
+82
+00:04:25.965 --> 00:04:29.002
+We're going to do the same query
+and call the Tavily
+
+83
+00:04:29.102 --> 00:04:31.304
+to get the results.
+
+84
+00:04:31.304 --> 00:04:34.307
+As you can see, we got a simple json
+
+85
+00:04:34.874 --> 00:04:38.645
+with a lot of information
+about the weather in San Francisco.
+
+86
+00:04:39.145 --> 00:04:42.148
+Let's clear it out
+so we can see a formatted json.
+
+87
+00:04:42.815 --> 00:04:45.351
+Okay, now we'll parse it and highlight
+
+88
+00:04:45.351 --> 00:04:48.321
+the json just so we can see it clearly.
+
+89
+00:04:49.756 --> 00:04:53.192
+As you can see, this is not the answer
+I would want to see as a human.
+
+90
+00:04:53.726 --> 00:04:55.395
+But this is the exact answer
+
+91
+00:04:55.395 --> 00:04:58.398
+an agent would want, a structured
+data.
+
+92
+00:04:59.365 --> 00:05:03.036
+Okay I'm going to load the sample from Google Search so you can see the difference.
+
+93
+00:05:05.772 --> 00:05:06.406
+Here.
+
+94
+00:05:06.406 --> 00:05:09.309
+I get exactly what I want to see as a human.
+
+95
+00:05:09.309 --> 00:05:13.379
+A nice image showing me the temperature,
+the humidity, the wind.
+
+96
+00:05:13.980 --> 00:05:16.616
+But not unnecessary data.
+
+97
+00:05:16.616 --> 00:05:20.453
+That's exactly the difference between
+what a human needs and what an agent needs.
+
+98
+00:05:21.521 --> 00:05:22.088
+Okay.
+
+99
+00:05:22.088 --> 00:05:24.757
+That was an introduction
+to agentic search.
+
+100
+00:05:24.757 --> 00:05:28.695
+In the next lesson, Harrison will discuss
+persistence and streaming.
+

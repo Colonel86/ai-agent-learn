@@ -1,0 +1,327 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.937 --> 00:00:04.400
+Let's take a look at some examples of Agentic AI applications.
+
+2
+00:00:04.400 --> 00:00:09.439
+One task that many businesses carry out is invoice processing.
+
+3
+00:00:09.439 --> 00:00:14.479
+So given an invoice like this, you might want to write software to extract the most important
+
+4
+00:00:14.479 --> 00:00:19.440
+fields, which for this application, let's say is the biller, that would be tech flow solutions,
+
+5
+00:00:19.440 --> 00:00:25.520
+the biller address, the amount due, which is $3,000, and the due date, which looks like it is
+
+6
+00:00:25.520 --> 00:00:33.680
+August 20th, 2025. So in many finance departments, maybe a human would look at invoices and identify
+
+7
+00:00:33.680 --> 00:00:39.279
+the most important fields, who do we need to pay by when, and record these in a database to make
+
+8
+00:00:39.279 --> 00:00:44.479
+sure that payment is issued in time. If you were to implement this with an agentic workflow,
+
+9
+00:00:44.479 --> 00:00:51.360
+you might do so like this. You write input an invoice, then call a PDF to text conversion API
+
+10
+00:00:51.360 --> 00:00:57.520
+to turn the PDF into maybe formatted text, such as markdown text for the LLM to ingest. Then the LLM
+
+11
+00:00:57.520 --> 00:01:02.639
+will look at the PDF and figure out, is this actually an invoice or is this some other type
+
+12
+00:01:02.639 --> 00:01:07.919
+of document that they should just ignore? And if it is an invoice, then it will pull up the required
+
+13
+00:01:07.919 --> 00:01:14.639
+fields as well as use an API or use a tool to update the database in order to save the most
+
+14
+00:01:14.639 --> 00:01:20.559
+important fields in the database records. So one aspect of this agentic workflow is that
+
+15
+00:01:20.559 --> 00:01:26.239
+there is a clear process to follow, is identify the required fields and record in the database.
+
+16
+00:01:26.239 --> 00:01:31.440
+Tasks like these with a clear process you want followed tend to be maybe easier for agentic
+
+17
+00:01:31.440 --> 00:01:36.720
+workflows to carry out because it leads to a relatively step-by-step way to reliably carry
+
+18
+00:01:36.720 --> 00:01:41.839
+out this task. Here's another example, maybe just a little bit harder. So if you want to build an
+
+19
+00:01:41.839 --> 00:01:48.000
+agent to respond to basic customer order inquiries, then the steps might be to extract the key
+
+20
+00:01:48.000 --> 00:01:53.199
+information, so figure out what exactly did the customer order, what's the customer's name, then
+
+21
+00:01:53.199 --> 00:02:00.080
+look up the relevant customer records, and then finally draft a response for human to review before
+
+22
+00:02:00.080 --> 00:02:04.800
+the email response is sent to the customer. So again, there's a clear process here and we
+
+23
+00:02:04.800 --> 00:02:10.720
+will implement this step-by-step, where we take the email, feed it to an LLM to verify or to extract
+
+24
+00:02:10.720 --> 00:02:16.479
+the order details, and assuming the customer email is about an order, the LLM might then choose to
+
+25
+00:02:16.559 --> 00:02:22.479
+call an order's database to then pull up that information. That information then goes to the LLM
+
+26
+00:02:22.479 --> 00:02:29.279
+to then draft an email response, and the LLM might choose to use a request review tool that, say, puts
+
+27
+00:02:29.279 --> 00:02:34.720
+this draft email from the LLM into queue for humans to review, so they can then be sent out after a
+
+28
+00:02:34.720 --> 00:02:40.559
+human has reviewed and approved it. So customer order inquiry agents like these are being built
+
+29
+00:02:40.559 --> 00:02:45.839
+and deployed in many businesses today. To look at a more challenging example, if you want to build a
+
+30
+00:02:45.839 --> 00:02:51.039
+customer service agent to respond not just to questions about an order they place, but to respond
+
+31
+00:02:51.039 --> 00:02:57.520
+to a more general set of questions, anything a customer may ask, and maybe the customer will ask,
+
+32
+00:02:57.520 --> 00:03:03.919
+do you have any black jeans or blue jeans? And to answer this question, you need to maybe make
+
+33
+00:03:03.919 --> 00:03:08.880
+multiple API calls to your database to first check the inventory for black jeans, then check inventory
+
+34
+00:03:08.880 --> 00:03:14.240
+for blue jeans, and then respond to the customer. So this is an example of a more challenging query,
+
+35
+00:03:14.240 --> 00:03:19.279
+where given a user input, you actually have to plan out what is the sequence of database queries
+
+36
+00:03:19.279 --> 00:03:25.600
+to check for inventory. Or if a user asks, I'd like to return the beach towel I bought, then to answer
+
+37
+00:03:25.600 --> 00:03:31.039
+this, maybe we need to verify that the customer actually bought a beach towel, and then double
+
+38
+00:03:31.039 --> 00:03:36.080
+check the return policy. Maybe our set returns only 30 days within the date of purchase, and only the
+
+39
+00:03:36.080 --> 00:03:42.160
+towel was unused. And if return is allowed, then have the agent issue a return packing slip, and
+
+40
+00:03:42.160 --> 00:03:48.960
+also set the database record to return pending. So in this example, if the required steps to process
+
+41
+00:03:48.960 --> 00:03:54.399
+the customer requests are not known ahead of time, then it results in a more challenging process,
+
+42
+00:03:54.399 --> 00:04:00.080
+where the LLM base application has to decide for itself that these are the three steps needed in
+
+43
+00:04:00.080 --> 00:04:06.800
+order to respond appropriately to this task. But you learn about some of the latest work on how to
+
+44
+00:04:06.800 --> 00:04:12.320
+approach this type of problem too. And to give one last example of maybe an especially difficult
+
+45
+00:04:12.320 --> 00:04:17.920
+type of agent to build, there's a lot of work on computer use by agents, in which agents will
+
+46
+00:04:17.920 --> 00:04:24.320
+attempt to use a web browser and read a web page to figure out how to carry out a complex task.
+
+47
+00:04:24.320 --> 00:04:30.079
+In this example, I've asked an agent to check whether seats are available on two specific United
+
+48
+00:04:30.079 --> 00:04:36.480
+Airlines flights from San Francisco to Washington DC, or the DCA airport. The agent has access to
+
+49
+00:04:36.480 --> 00:04:41.920
+a web browser they can use to carry out this task. And in the video here, you can see it navigating
+
+50
+00:04:41.920 --> 00:04:46.880
+the United website independently, clicking on page elements and filling in the text fields on the page
+
+51
+00:04:46.880 --> 00:04:52.480
+to carry out the search that I requested. As it works, the agent reasons over the content of the
+
+52
+00:04:52.480 --> 00:04:57.600
+page to figure out the actions it needs to take to complete the task, and what it should do next.
+
+53
+00:04:57.600 --> 00:05:02.720
+In this case, there's some trouble checking flights on the United site, and instead decides to
+
+54
+00:05:02.720 --> 00:05:08.000
+navigate to the Google Flights website to search for available flights. On the Google Flight, you
+
+55
+00:05:08.000 --> 00:05:13.920
+see here it finds several flight options that match the user's query, and the agent then picks one and
+
+56
+00:05:13.920 --> 00:05:20.000
+is taken back to the United website, where it looks like it's now on the correct web page, and so is
+
+57
+00:05:20.000 --> 00:05:26.320
+able to determine that yes, there are seats available on the flights that I asked about. So computer use
+
+58
+00:05:26.320 --> 00:05:30.959
+is an exciting cutting-edge area of research right now, and many companies are trying to get computer
+
+59
+00:05:30.959 --> 00:05:36.480
+use agents to work. While the agent you saw here did eventually figure out the answer, I often see
+
+60
+00:05:36.480 --> 00:05:42.079
+agents having trouble using web browsers well. For example, if a web page is slow to load, an agent
+
+61
+00:05:42.079 --> 00:05:47.279
+may fail to understand what's going on, and many web pages are still beyond agents' abilities to
+
+62
+00:05:47.279 --> 00:05:53.359
+pause or to read accurately. But I think computer use agents, even though not yet reliable enough
+
+63
+00:05:53.359 --> 00:05:58.640
+to use mission-critical applications today, are an exciting and important area of future development.
+
+64
+00:05:58.640 --> 00:06:05.839
+So when I'm considering building Agentic AI workflows, the tasks that are easier will tend to be ones
+
+65
+00:06:05.839 --> 00:06:11.279
+where there is a clear step-by-step process, or if a business already has a standard procedure, a
+
+66
+00:06:11.279 --> 00:06:15.839
+standard offering procedure to follow, and then it can be quite a lot of work to take that procedure
+
+67
+00:06:15.839 --> 00:06:21.839
+and codify it up in an AI agent, but that tends to lead to easier implementations. One thing that
+
+68
+00:06:21.839 --> 00:06:27.679
+makes it easier is if you are using text-only assets, because LLM/language models have
+
+69
+00:06:27.679 --> 00:06:33.200
+grown up really processing text, and if you need to process other input modalities, it may well be
+
+70
+00:06:33.200 --> 00:06:38.480
+doable, but it maybe gets a little bit harder. And on the harder end of the spectrum, if the steps are
+
+71
+00:06:38.480 --> 00:06:42.720
+not known ahead of time of what's needed to carry out a task, like you saw for the more advanced
+
+72
+00:06:42.720 --> 00:06:47.760
+customer service agent, then the agent may need to plan or solve as you go, and this tends to be
+
+73
+00:06:47.760 --> 00:06:52.559
+harder and more unpredictable and less reliable. And then as mentioned, if it needs to accept rich
+
+74
+00:06:52.559 --> 00:06:58.880
+multi-modal inputs such as sound, vision, audio, that also tends to be less reliable than the
+
+75
+00:06:58.880 --> 00:07:05.200
+only header process text. So I hope that gives you a sense of the types of applications you might build
+
+76
+00:07:05.200 --> 00:07:10.640
+with agentic workflows. When implementing one of these things yourself, one of the most important
+
+77
+00:07:10.640 --> 00:07:16.480
+skills is to look at a complex workflow and figure out what are the individual steps so you can
+
+78
+00:07:16.480 --> 00:07:22.559
+implement an agentic workflow to execute those steps one at a time. In the next video, we'll talk
+
+79
+00:07:22.559 --> 00:07:28.880
+about task decomposition, that is, given a complex thing you want to do, like write a research report
+
+80
+00:07:28.880 --> 00:07:34.559
+or have a customer agent get back to customers, how do you break that down into discrete steps
+
+81
+00:07:34.559 --> 00:07:39.200
+to try to implement an agentic workflow? Let's go see that in the next video.
+

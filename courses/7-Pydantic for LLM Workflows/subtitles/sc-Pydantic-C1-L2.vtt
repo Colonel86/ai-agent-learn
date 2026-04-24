@@ -1,0 +1,989 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00.580 --> 00:03.008
+In this lesson, you'll be taking a look at the basics of
+
+00:03.008 --> 00:05.918
+Pydantic data models, which is to say
+
+00:05.918 --> 00:08.080
+how you can create them and how they work.
+
+00:08.519 --> 00:12.080
+You'll be doing this in the context of validating user input.
+
+00:12.080 --> 00:14.339
+So we're going to run with that same scenario
+
+00:14.339 --> 00:17.338
+we've been talking about already, the customer support system,
+
+00:17.338 --> 00:19.219
+where the first thing that happens
+
+00:19.219 --> 00:21.280
+is a user fills out a form
+
+00:21.280 --> 00:24.280
+that includes their name, their email, and the text of their request.
+
+00:24.789 --> 00:27.690
+And then the first step in your system is to validate
+
+00:27.690 --> 00:30.471
+that the user input matches your expectations.
+
+00:30.800 --> 00:33.481
+For example, that the email address is formatted correctly.
+
+00:33.481 --> 00:35.500
+So, let's take a look at how that works.
+
+00:36.360 --> 00:38.131
+All right, so to get started, you're
+
+00:38.131 --> 00:39.901
+going to do some imports from pydantic.
+
+00:39.901 --> 00:42.125
+you're importing BaseModel, which is going to be
+
+00:42.125 --> 00:44.631
+your starting point for really any pydantic data model.
+
+00:44.631 --> 00:48.710
+BaseModel has all kinds of built-in functionality for data validation
+
+00:48.710 --> 00:50.801
+and then you can build on top of it to customize
+
+00:50.801 --> 00:53.081
+your data models, and then you'll see how we're going to use
+
+00:53.081 --> 00:55.176
+ValidationError to catch errors and EmailStr
+
+00:55.176 --> 00:57.621
+is a data type in your models.
+
+00:58.040 --> 01:01.002
+And then you're importing json to do some JSON parsing later on.
+
+01:02.601 --> 01:05.501
+Next, you're going to define a Pydantic data model.
+
+01:05.501 --> 01:08.201
+In this case, a user input model.
+
+01:08.201 --> 01:12.001
+So this is a class called UserInput that inherits from BaseModel.
+
+01:12.001 --> 01:14.802
+And then you have three fields, name, email and query,
+
+01:14.802 --> 01:17.402
+where name and query are set to be strings,
+
+01:17.701 --> 01:20.701
+and email is this EmailStr type from Pydantic.
+
+01:21.602 --> 01:25.402
+And with that, you can create an instance of your UserInput model.
+
+01:25.701 --> 01:29.253
+like this, where you say user_input equals your
+
+01:29.253 --> 01:31.352
+class UserInput where name is set to Joe User,
+
+01:31.352 --> 01:34.052
+email is set to joe.user@example.com
+
+01:34.052 --> 01:36.153
+and query is I forgot my password.
+
+01:36.453 --> 01:38.153
+And then you can print that out.
+
+01:39.052 --> 01:41.753
+So, here, you have something that doesn't look very exciting,
+
+01:41.753 --> 01:44.153
+but the cool thing that's happened behind the scenes here,
+
+01:44.153 --> 01:47.453
+when you create an instance of your Pydantic data model like this
+
+01:47.453 --> 01:49.646
+is that Pydantic has validated that the
+
+01:49.646 --> 01:52.153
+data you put in matches the model expectations.
+
+01:52.153 --> 01:54.153
+In this case that the name is a string,
+
+01:54.453 --> 01:58.352
+email matches this EmailStr format, and query is also a string.
+
+01:59.134 --> 02:01.034
+you're working with valid data.
+
+02:01.304 --> 02:04.864
+Now, you can try creating another instance of your model
+
+02:04.864 --> 02:07.353
+where you have email set to not-an-email,
+
+02:07.353 --> 02:08.943
+so invalid data in this case.
+
+02:09.304 --> 02:10.963
+What happens when you run that?
+
+02:11.593 --> 02:14.683
+You get a ValidationError. So if you scroll all the way
+
+02:14.683 --> 02:16.667
+down to the bottom of this mess,
+
+02:16.667 --> 02:18.933
+you see ValidationError, one validation error for UserInput,
+
+02:18.933 --> 02:21.804
+email, value is not a valid email address.
+
+02:21.804 --> 02:23.993
+An email address must have an at sign.
+
+02:24.473 --> 02:26.367
+Okay, so apparently Pydantic is looking for
+
+02:26.367 --> 02:28.533
+an at sign here in this email string.
+
+02:28.754 --> 02:30.199
+format. So you can try putting in
+
+02:30.199 --> 02:31.645
+an at sign and see what happens.
+
+02:31.645 --> 02:33.294
+Let's run that.
+
+02:33.294 --> 02:35.594
+You get another validation error. Okay.
+
+02:35.594 --> 02:39.685
+value for email is still not a valid email address.
+
+02:39.685 --> 02:41.689
+The part after the @-sign is not
+
+02:41.689 --> 02:43.694
+valid, it should have a period. Okay.
+
+02:43.694 --> 02:45.375
+So, here's another clue as to what's
+
+02:45.375 --> 02:47.055
+going on inside the email string format.
+
+02:47.055 --> 02:49.764
+So let's add a period somewhere here after the at sign.
+
+02:49.764 --> 02:52.865
+and run that. Okay, yet another validation error.
+
+02:52.865 --> 02:54.512
+And now it says an email
+
+02:54.512 --> 02:56.435
+address cannot end with a period. Okay.
+
+02:56.435 --> 02:58.375
+But we're making progress here.
+
+02:58.686 --> 03:02.286
+Let's try putting something after the period.
+
+03:02.816 --> 03:05.445
+and running that. Okay, that worked.
+
+03:06.006 --> 03:08.485
+So this little experiment gives you a sense of
+
+03:08.485 --> 03:11.015
+in this case, what pydantic is doing behind the scenes
+
+03:11.015 --> 03:13.131
+to check that your email field matches
+
+03:13.131 --> 03:15.246
+the expectations of that email string format.
+
+03:15.665 --> 03:16.972
+So now you can see that it's
+
+03:16.972 --> 03:18.466
+looking for an at sign somewhere in there.
+
+03:18.466 --> 03:20.300
+It's looking for a period somewhere after the at
+
+03:20.300 --> 03:22.135
+sign and then something that comes after the period.
+
+03:22.325 --> 03:24.149
+So this is not saying that now you have
+
+03:24.149 --> 03:26.175
+a valid email address that's actually going to go somewhere.
+
+03:26.175 --> 03:28.258
+It's just saying, okay, this matches the
+
+03:28.258 --> 03:30.337
+basic expectations for an email string format.
+
+03:30.837 --> 03:32.578
+And so email string is a built-in
+
+03:32.578 --> 03:34.568
+data type in pydantic, but you can define
+
+03:34.568 --> 03:37.467
+your own string patterns or other specific data types
+
+03:37.467 --> 03:39.777
+for whatever specific field you want in your model.
+
+03:40.318 --> 03:43.043
+And so rather than running head first into validation
+
+03:43.043 --> 03:45.768
+errors like we were just doing with email string,
+
+03:45.768 --> 03:48.397
+the next thing you're going to do is create a function.
+
+03:48.788 --> 03:51.078
+Here you have a function called validate_user_input
+
+03:51.078 --> 03:53.207
+where you're going to pass in input_data. In this
+
+03:53.207 --> 03:55.337
+case, this is going to be a Python dictionary.
+
+03:55.337 --> 03:58.008
+And then you're going to try parsing that input
+
+03:58.008 --> 04:01.538
+data into your UserInput model. And so this is just unpacking
+
+04:01.538 --> 04:03.929
+that Python dictionary into your UserInput model.
+
+04:03.929 --> 04:06.456
+If that works, you'll say valid user input created and
+
+04:06.456 --> 04:09.239
+dump out the JSON representation of the contents of your model.
+
+04:09.239 --> 04:11.639
+And if there's a problem, you'll say Validation error
+
+04:11.639 --> 04:14.038
+occurred and print out the contents of the error.
+
+04:14.038 --> 04:16.637
+And so this is more like what you might be doing
+
+04:16.637 --> 04:19.235
+inside of a software application where you're trying to create an
+
+04:19.235 --> 04:21.833
+instance of your model and if there's an issue with that,
+
+04:21.833 --> 04:24.668
+you want to capture that error and decide what to do next.
+
+04:24.668 --> 04:27.759
+So let's define that. And then you can
+
+04:27.759 --> 04:31.199
+try using that function to create an instance of your data model.
+
+04:31.199 --> 04:33.980
+So here you have input data defined as a Python dictionary.
+
+04:33.980 --> 04:36.800
+This is just the same input that we started with up top.
+
+04:36.800 --> 04:38.865
+And then you're using the validate user input
+
+04:38.865 --> 04:41.189
+model to print out the contents of the model,
+
+04:41.189 --> 04:44.240
+to validate the input data that you've got here.
+
+04:45.139 --> 04:47.930
+when you run that, it says valid user input created and
+
+04:47.930 --> 04:50.139
+prints out the contents of the model.
+
+04:50.550 --> 04:52.812
+Great. So then you can start experimenting
+
+04:52.812 --> 04:54.939
+with some other versions of user input.
+
+04:55.290 --> 04:57.511
+In this case, you have input data that contains name,
+
+04:57.511 --> 04:59.221
+and email, but not a query field.
+
+04:59.221 --> 05:01.000
+So what happens when you run that?
+
+05:01.920 --> 05:03.581
+Well, you get a validation error that's occurred.
+
+05:03.581 --> 05:05.360
+query field is required.
+
+05:05.360 --> 05:07.870
+So it turns out that when you define a pydantic
+
+05:07.870 --> 05:10.380
+data model as you did above with these three fields,
+
+05:10.380 --> 05:13.440
+each of those fields are going to be required in your model.
+
+05:13.440 --> 05:16.740
+And it turns out you can include optional fields as well.
+
+05:16.740 --> 05:19.401
+So that's what we're going to do next here.
+
+05:20.261 --> 05:22.100
+So here you're going to do a few more imports.
+
+05:22.100 --> 05:24.391
+from pydantic you're importing Field.
+
+05:24.391 --> 05:27.262
+from typing you're importing Optional and then from datetime you're importing
+
+05:27.262 --> 05:29.002
+date and these are what you're going to
+
+05:29.002 --> 05:30.742
+use to customize your model a bit further.
+
+05:30.742 --> 05:34.201
+Now you're going to define a new version of UserInput
+
+05:34.201 --> 05:36.432
+that has the same three fields at the top here.
+
+05:36.432 --> 05:38.492
+But now a new field called order_id
+
+05:38.492 --> 05:40.180
+that's defined to be an optional
+
+05:40.180 --> 05:42.151
+field. It's going to be an integer.
+
+05:42.151 --> 05:45.232
+And then with this Field object, you can add some
+
+05:45.232 --> 05:48.622
+more customization and definition to in this case, the order_id field.
+
+05:48.622 --> 05:51.161
+So you're saying the default value is going to be None.
+
+05:51.161 --> 05:53.108
+This is a description of what this field is
+
+05:53.108 --> 05:55.271
+all about. It's going to be a 5-digit order number.
+
+05:55.271 --> 05:57.072
+cannot start with 0, and then
+
+05:57.322 --> 05:59.648
+these are a couple of rules that you're setting in
+
+05:59.648 --> 06:01.973
+order to put constraints around what the input can be.
+
+06:01.973 --> 06:04.833
+So it's saying this has to be an integer greater than 10,000,
+
+06:04.833 --> 06:08.242
+less than or equal to 99,999.
+
+06:08.242 --> 06:09.964
+So that enforces this rule of it being
+
+06:09.964 --> 06:11.903
+a five-digit order number that cannot start with zero.
+
+06:11.903 --> 06:14.083
+And then you have purchase_date, which is another optional field,
+
+06:14.083 --> 06:15.865
+and it's going to be this date
+
+06:15.865 --> 06:19.012
+object from datetime with a default of None. So let's define that.
+
+06:20.483 --> 06:22.762
+And then you can try out this new UserInput model
+
+06:23.242 --> 06:24.822
+with some new input.
+
+06:25.103 --> 06:26.483
+So here you have the exact same
+
+06:26.483 --> 06:27.863
+input. that you started with up top
+
+06:27.863 --> 06:30.663
+and you're running it through validate user input data again with that.
+
+06:30.663 --> 06:33.163
+Now with your new model of user input.
+
+06:33.663 --> 06:35.663
+And you get no problem at all.
+
+06:35.663 --> 06:38.764
+The optional fields were omitted in the input data.
+
+06:38.764 --> 06:40.764
+And so you have valid user input
+
+06:40.764 --> 06:42.764
+created with name, email and query populated
+
+06:42.764 --> 06:45.663
+and order ID and purchase date as null.
+
+06:45.663 --> 06:47.499
+So, one thing that might look confusing here
+
+06:47.499 --> 06:49.564
+is that these are printed out as null here
+
+06:49.564 --> 06:51.863
+when up here you've defined the default to be None.
+
+06:51.863 --> 06:53.963
+It turns out that this is just the
+
+06:53.963 --> 06:56.516
+JSON representation of the contents of your model. So,
+
+06:56.516 --> 06:59.995
+if you go back up here and have a look at validate_user_input.
+
+07:00.305 --> 07:02.670
+So you see that what you're doing
+
+07:02.670 --> 07:05.036
+here is using this built-in model_dump_json method
+
+07:05.456 --> 07:07.377
+of your pydantic data model, and that
+
+07:07.377 --> 07:09.576
+prints out the JSON representation of your model.
+
+07:10.136 --> 07:12.355
+If you go back down here and print
+
+07:12.355 --> 07:14.576
+out the actual contents of the model itself.
+
+07:14.586 --> 07:18.505
+So user_input, printing that out, you see that in fact
+
+07:19.295 --> 07:21.636
+order_id is None and purchase_date is None.
+
+07:21.935 --> 07:23.755
+So this is the Python representation
+
+07:23.755 --> 07:26.315
+and this is the JSON representation of the same data.
+
+07:26.403 --> 07:29.132
+your model. And so now you can play around
+
+07:29.132 --> 07:31.153
+with this new user input model a bit.
+
+07:31.153 --> 07:34.434
+Let's try user input data that includes all five fields.
+
+07:34.434 --> 07:37.504
+And in this case, valid instances of order ID and purchase date.
+
+07:37.504 --> 07:39.944
+And run that. Okay, great.
+
+07:39.944 --> 07:43.343
+So now you have valid user input that contains all five fields.
+
+07:43.343 --> 07:45.696
+And it's also interesting to take a look
+
+07:45.696 --> 07:48.343
+at what happens when you have some additional fields.
+
+07:48.343 --> 07:51.252
+So now you have input data that contains all five
+
+07:51.252 --> 07:54.454
+fields you expect and a couple of fields you don't expect.
+
+07:54.454 --> 07:56.017
+system message and
+
+07:56.017 --> 07:58.468
+iteration. What happens when you run that?
+
+07:59.028 --> 08:01.108
+Well, no problem. Valid user input created,
+
+08:01.108 --> 08:04.017
+and Pydantic just ignored these extra fields.
+
+08:04.017 --> 08:06.997
+So, this is a feature of Pydantic and it's actually
+
+08:06.997 --> 08:09.137
+a really common way in which people use Pydantic.
+
+08:09.137 --> 08:11.571
+You might have data in your system that's coming to
+
+08:11.571 --> 08:14.247
+you in the form of a Python dictionary or JSON data
+
+08:14.247 --> 08:16.153
+that has a zillion different fields, some of which
+
+08:16.153 --> 08:18.057
+you care about and some of which you don't,
+
+08:18.057 --> 08:19.928
+and you can define a Pydantic data
+
+08:19.928 --> 08:22.067
+model that grabs the fields you care about
+
+08:22.067 --> 08:23.314
+and validates those and just ignores
+
+08:23.314 --> 08:24.767
+the fields that you don't care about.
+
+08:24.767 --> 08:27.540
+So in this case, you have valid user input where
+
+08:27.540 --> 08:29.608
+you just ignored system message and iteration.
+
+08:29.869 --> 08:31.166
+One thing that you might have noticed
+
+08:31.166 --> 08:32.649
+here is that purchase_date is getting printed out
+
+08:32.649 --> 08:34.808
+as a string representation of the date.
+
+08:35.009 --> 08:37.869
+Here again, purchase_date is the string representation of the date
+
+08:37.869 --> 08:39.816
+and this looks different from the
+
+08:39.816 --> 08:43.658
+date time object that you're putting in. So, what's going on there?
+
+08:43.769 --> 08:46.499
+Well, it turns out this is just another example
+
+08:46.499 --> 08:49.068
+of the JSON representation versus the Python representation.
+
+08:49.278 --> 08:51.033
+So, if in this case, you go
+
+08:51.033 --> 08:54.708
+ahead and print out what user_input model contains,
+
+08:55.690 --> 08:57.500
+then you have purchase date is a
+
+08:57.500 --> 08:59.309
+datetime object just like you put in.
+
+08:59.710 --> 09:01.473
+And so then it can be
+
+09:01.473 --> 09:03.529
+interesting to look at what happens when
+
+09:03.529 --> 09:06.306
+you put in input where the purchase date
+
+09:06.306 --> 09:09.429
+is that string representation instead. Turns out, no problem.
+
+09:09.429 --> 09:13.490
+You can put in a date that looks like this or a
+
+09:13.490 --> 09:15.520
+datetime object and what's happening behind
+
+09:15.520 --> 09:17.889
+the scenes here is that Pydantic is
+
+09:18.470 --> 09:21.649
+converting that string into a datetime object.
+
+09:21.649 --> 09:25.591
+And this is an example of what's called data type coercion.
+
+09:25.591 --> 09:29.421
+So, pydantic in this case is handling multiple different formats for date,
+
+09:29.421 --> 09:31.630
+and this is a feature of pydantic that allows you
+
+09:31.630 --> 09:33.385
+to be a little bit more flexible
+
+09:33.385 --> 09:35.140
+with what the inputs can look like.
+
+09:35.140 --> 09:37.019
+So pydantic has a number of
+
+09:37.019 --> 09:39.211
+different data types where there's automatic coercion
+
+09:39.211 --> 09:41.931
+of, in this case, dates in different formats,
+
+09:41.931 --> 09:44.100
+and you can try this for
+
+09:44.100 --> 09:46.630
+other data types as well. For example,
+
+09:47.331 --> 09:51.100
+if you put in your order_id as a string
+
+09:51.100 --> 09:55.203
+and run that, you see also, no problem at all. pydantic
+
+09:55.203 --> 09:56.903
+can handle a string representation of an
+
+09:56.903 --> 09:58.604
+integer and automatically convert that for you.
+
+09:59.163 --> 10:01.649
+So data type coercion is something that happens
+
+10:01.649 --> 10:04.134
+automatically for certain data types and certain formats,
+
+10:04.453 --> 10:06.080
+and it's something that you can
+
+10:06.080 --> 10:07.979
+customize yourself if you want to have
+
+10:07.979 --> 10:09.605
+a specific set of formats be
+
+10:09.605 --> 10:11.504
+acceptable for a field in your model.
+
+10:11.653 --> 10:13.392
+With pydantic you also have the option
+
+10:13.392 --> 10:15.379
+of turning off data type coercion if you
+
+10:15.379 --> 10:17.117
+want to be very strict about the
+
+10:17.117 --> 10:19.104
+format that you're accepting in a particular field.
+
+10:19.734 --> 10:22.254
+So in this case, you've seen that you can put
+
+10:22.254 --> 10:24.774
+in an integer as a string, but what about putting
+
+10:24.774 --> 10:26.543
+in a string as an integer.
+
+10:26.543 --> 10:29.073
+So in the name field here, this is defined to
+
+10:29.073 --> 10:31.604
+be a string field and if you try with 99999,
+
+10:31.604 --> 10:33.976
+then you'll find that you get a validation error
+
+10:33.976 --> 10:36.614
+and that's name, the input should be a valid string.
+
+10:36.614 --> 10:40.453
+So in this case integers can be coerced from strings,
+
+10:40.453 --> 10:43.403
+but strings will not be coerced from integers.
+
+10:43.403 --> 10:47.004
+And next, you can take a step in the direction of
+
+10:47.004 --> 10:50.933
+where we're going with validating LLM output and start with JSON data.
+
+10:50.933 --> 10:54.524
+So in this case you're defining a JSON string that contains
+
+10:54.524 --> 10:57.414
+means the fields for your model and
+
+10:57.414 --> 10:58.908
+then you can parse that into a
+
+10:58.908 --> 11:00.615
+Python dictionary and print out what you get.
+
+11:01.674 --> 11:05.544
+So in this case, you've parsed the JSON into a Python dictionary,
+
+11:05.544 --> 11:07.407
+and then you can go ahead and
+
+11:07.407 --> 11:09.534
+run your validate_user_input function on that Python dictionary
+
+11:09.875 --> 11:12.375
+and see that you have valid user input.
+
+11:12.375 --> 11:14.990
+So when we move on to looking at LLM responses,
+
+11:14.990 --> 11:17.605
+you'll be getting data as a string from the LLM
+
+11:17.605 --> 11:21.024
+and you'll be using that to populate your pydantic data model.
+
+11:21.554 --> 11:24.275
+And so you can play around with different JSON input data.
+
+11:24.275 --> 11:26.273
+up. For example, in this case, data
+
+11:26.273 --> 11:28.556
+that contains order ID that starts with zero.
+
+11:28.556 --> 11:30.385
+So if you recall the rules for order
+
+11:30.385 --> 11:32.216
+ID that it must not start with zero.
+
+11:32.216 --> 11:34.505
+You can go ahead and parse that into a Python dictionary
+
+11:34.505 --> 11:36.456
+and see that there's no problem with that.
+
+11:36.456 --> 11:38.811
+Of course, this is valid JSON data and so
+
+11:38.811 --> 11:41.166
+there's no problem loading it into a Python dictionary,
+
+11:41.166 --> 11:43.360
+but then when you try to populate
+
+11:43.360 --> 11:45.556
+an instance of your user input model,
+
+11:45.556 --> 11:47.711
+you run into a validation error that order_id
+
+11:47.711 --> 11:49.865
+should be greater than or equal to 10,000.
+
+11:50.135 --> 11:52.081
+So it's sort of a two-step process when
+
+11:52.081 --> 11:53.793
+you're starting with a string representation of
+
+11:53.793 --> 11:55.506
+JSON. data, first you parse that JSON,
+
+11:55.506 --> 11:58.567
+and then you populate an instance of your model.
+
+11:59.086 --> 12:01.866
+But the way you're going to do that in practice
+
+12:02.267 --> 12:06.326
+is to use this model_validate_json built-in method from pydantic.
+
+12:06.326 --> 12:09.136
+So here you're taking your UserInput model
+
+12:09.376 --> 12:12.917
+and applying the model_validate_json method directly on that json_data.
+
+12:12.917 --> 12:14.809
+And of course, when you run
+
+12:14.809 --> 12:17.017
+that, you get a validation error because
+
+12:17.397 --> 12:19.866
+you have a problem with the order_id field.
+
+12:20.407 --> 12:21.937
+But what's happening behind the scenes here
+
+12:21.937 --> 12:24.538
+is you're doing this two-step process of first parsing the JSON
+
+12:24.538 --> 12:27.967
+and then populating your data model with the contents of the JSON.
+
+12:28.317 --> 12:30.378
+So you can go up and fix the issue.
+
+12:30.717 --> 12:32.878
+In this case, I could just turn this to a one,
+
+12:33.927 --> 12:35.707
+redefine that JSON string
+
+12:35.707 --> 12:38.172
+and run this last cell again to
+
+12:38.172 --> 12:40.988
+validate the data that's in that JSON string.
+
+12:41.638 --> 12:44.128
+You can also play around with what happens in
+
+12:44.128 --> 12:46.618
+this case if the JSON itself is not valid.
+
+12:46.618 --> 12:48.768
+So for example, if you're missing one of these brackets,
+
+12:49.278 --> 12:50.827
+and I'm just going to comment
+
+12:50.827 --> 12:52.699
+out these other lines for the moment. and run
+
+12:52.699 --> 12:54.778
+that to define new JSON data that has a problem.
+
+12:54.778 --> 12:56.778
+Then, when you run
+
+12:58.198 --> 13:00.399
+model_validate_json down here,
+
+13:00.859 --> 13:03.009
+you get a different type of validation error.
+
+13:03.009 --> 13:06.328
+In this case, a JSON end of file problem,
+
+13:06.328 --> 13:07.929
+and it tries to describe what
+
+13:07.929 --> 13:09.798
+happened with the problem loading the JSON.
+
+13:09.798 --> 13:12.188
+So, you'll get different types of validation errors
+
+13:12.188 --> 13:15.149
+depending on whether you have issues with the JSON input
+
+13:15.149 --> 13:18.109
+or issues with the data that's contained in the JSON.
+
+13:18.109 --> 13:19.739
+And that's where we're going next.
+
+13:19.739 --> 13:23.280
+Validating the responses you get back from an LLM using this model.
+
+13:23.280 --> 13:25.480
+model_validate_json method from pydantic.
+
+13:25.770 --> 13:27.432
+And there you have it. Those
+
+13:27.432 --> 13:29.370
+are the basics of Pydantic data models.
+
+13:29.890 --> 13:31.921
+You saw how you can create a data model
+
+13:31.921 --> 13:35.110
+by defining a class that inherits from BaseModel,
+
+13:35.671 --> 13:38.880
+and then defining the fields and the data types for that class.
+
+13:39.551 --> 13:41.571
+And how you can populate an instance of your data model
+
+13:41.571 --> 13:45.120
+using either a Python dictionary or JSON data as input.
+
+13:45.650 --> 13:48.240
+In the next lesson, you're going to take these skills
+
+13:48.240 --> 13:49.813
+and validate the output you're getting
+
+13:49.813 --> 13:51.650
+back in the response from an LLM.
+
+13:51.990 --> 13:53.571
+I'll see you there.

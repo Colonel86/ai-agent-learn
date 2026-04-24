@@ -1,0 +1,122 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:01.935 --> 00:00:06.272
+So let's do a quick recap
+on everything that we learned so far.
+
+2
+00:00:06.573 --> 00:00:08.308
+So we learned that
+
+3
+00:00:08.308 --> 00:00:12.979
+this mental framework for creating agents
+is super helpful. Because it
+
+4
+00:00:12.979 --> 00:00:16.649
+helps us to understand what are the agents
+that are going to create.
+
+5
+00:00:16.649 --> 00:00:19.419
+Also, what are the tasks
+that we expect them to do?
+
+6
+00:00:19.419 --> 00:00:22.922
+We also learn that
+when we're thinking about these tasks,
+
+7
+00:00:23.089 --> 00:00:27.694
+we should be very much thinking about
+what are the clear descriptions and
+
+8
+00:00:27.694 --> 00:00:31.564
+what is the clear expected output
+that we want to get for each
+
+9
+00:00:31.831 --> 00:00:33.066
+and every one of them.
+
+10
+00:00:33.066 --> 00:00:37.704
+And we also got the chance to mess around
+with a lot of those individual attributes
+
+11
+00:00:37.704 --> 00:00:42.704
+that the tasks offer,
+from parallel execution to output json
+
+12
+00:00:43.076 --> 00:00:46.613
+to use pydantic
+in a lot of different interesting stuff.
+
+13
+00:00:46.846 --> 00:00:50.250
+You're going to get the chance
+to play around with how those different
+
+14
+00:00:50.250 --> 00:00:54.054
+arguments are as you build
+the systems yourself in the future.
+
+15
+00:00:54.320 --> 00:00:58.892
+But I hope this was a good way to showcase
+how powerful these systems can be.
+
+16
+00:00:58.925 --> 00:01:03.925
+So I really appreciate you sticking by
+in this lesson and going through this.
+
+17
+00:01:04.264 --> 00:01:08.001
+I think this is a turning point
+where you kind of start to build really
+
+18
+00:01:08.501 --> 00:01:12.772
+production case agents
+where you understand how they work,
+
+19
+00:01:13.273 --> 00:01:15.809
+and it's only going to get better
+from here forward.
+
+20
+00:01:15.809 --> 00:01:19.779
+So, congratulations for sticking
+around and learning about this.
+
+21
+00:01:20.146 --> 00:01:22.782
+I would say pause the video a little bit,
+
+22
+00:01:22.782 --> 00:01:26.352
+go back into the Jupyter
+notebook, change it a little bit.
+
+23
+00:01:26.553 --> 00:01:29.222
+See what results you can get from it.
+
+24
+00:01:29.222 --> 00:01:30.657
+It's going to be a lot of fun.
+
+25
+00:01:30.657 --> 00:01:32.459
+And I'll see you in the next lesson.
+

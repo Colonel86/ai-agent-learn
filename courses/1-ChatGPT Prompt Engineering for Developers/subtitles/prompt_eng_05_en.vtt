@@ -1,0 +1,994 @@
+WEBVTT
+
+1
+00:00:04.680 --> 00:00:07.668
+This next video is on inferring.
+I like to think
+
+2
+00:00:07.668 --> 00:00:11.254
+of these tasks where
+the model takes a text as input and
+
+3
+00:00:11.254 --> 00:00:14.541
+performs some kind of analysis.
+So this could be extracting labels,
+
+4
+00:00:14.541 --> 00:00:16.334
+extracting names,
+kind of understanding the
+
+5
+00:00:16.334 --> 00:00:18.725
+sentiment of a text,
+that kind of thing.
+
+6
+00:00:19.907 --> 00:00:23.237
+So if you want to extract a sentiment,
+positive or negative,
+
+7
+00:00:23.237 --> 00:00:25.658
+of a piece of text,
+in the traditional
+
+8
+00:00:25.658 --> 00:00:29.290
+machine learning workflow, you'd
+have to collect the label data set, train
+
+9
+00:00:29.290 --> 00:00:32.620
+a model, figure out how to deploy
+the model somewhere in
+
+10
+00:00:32.620 --> 00:00:36.252
+the cloud and make inferences. And
+that could work pretty well, but
+
+11
+00:00:36.252 --> 00:00:39.278
+it was, you know, just
+a lot of work to
+
+12
+00:00:39.278 --> 00:00:42.305
+go through that process. And
+also for every task, such
+
+13
+00:00:42.305 --> 00:00:44.121
+as sentiment versus
+extracting names versus
+
+14
+00:00:44.121 --> 00:00:46.240
+something else, you
+have to train and
+
+15
+00:00:46.240 --> 00:00:48.964
+deploy a separate model. One
+of the really nice
+
+16
+00:00:48.964 --> 00:00:51.385
+things about large language
+model is that for
+
+17
+00:00:51.385 --> 00:00:54.109
+many tasks like these, you
+can just write a
+
+18
+00:00:54.109 --> 00:00:56.531
+prompt and have it
+start generating results pretty
+
+19
+00:00:56.531 --> 00:00:59.558
+much right away. And
+that gives tremendous speed in terms
+
+20
+00:00:59.558 --> 00:01:03.190
+of application development. And
+you can also just use one model, one
+
+21
+00:01:03.190 --> 00:01:05.611
+API to do many
+different tasks rather than
+
+22
+00:01:05.611 --> 00:01:09.243
+needing to figure out
+how to train and deploy a lot of
+
+23
+00:01:09.243 --> 00:01:11.665
+different models. And
+so with that, let's jump
+
+24
+00:01:11.665 --> 00:01:15.902
+into the code to see how you can
+take advantage of this. So here's
+
+25
+00:01:15.902 --> 00:01:18.323
+our usual starter code. I'll just run
+that.
+
+26
+00:01:19.466 --> 00:01:24.285
+And the most fitting example I'm
+going to use is a review for a lamp. So,
+
+27
+00:01:24.285 --> 00:01:26.996
+"Needed a nice lamp for
+the bedroom and this
+
+28
+00:01:26.996 --> 00:01:29.105
+one had additional storage" and
+so on.
+
+29
+00:01:30.127 --> 00:01:35.817
+So, let me write a prompt
+to classify the sentiment of this.
+
+30
+00:01:35.817 --> 00:01:42.930
+And if I want the system to tell me,
+you know, what is the sentiment.
+
+31
+00:01:46.419 --> 00:01:51.114
+I can just write,
+"What is the sentiment
+
+32
+00:01:51.114 --> 00:01:56.395
+of the following product review"
+with the usual delimiter
+
+33
+00:01:56.395 --> 00:02:02.850
+and the review text and so on and
+let's run that.
+
+34
+00:02:03.560 --> 00:02:05.705
+And this says,
+"The sentiment of the
+
+35
+00:02:05.705 --> 00:02:07.850
+product review is positive.",
+which is actually,
+
+36
+00:02:07.850 --> 00:02:10.301
+seems pretty right. This lamp isn't
+perfect, but
+
+37
+00:02:10.301 --> 00:02:13.365
+this customer seems pretty happy. Seems
+to be a great
+
+38
+00:02:13.365 --> 00:02:16.123
+company that cares about
+the customers and products. I
+
+39
+00:02:16.123 --> 00:02:19.187
+think positive sentiment seems to
+be the right answer. Now
+
+40
+00:02:19.187 --> 00:02:22.558
+this prints out the entire sentence,
+"The sentiment of the product
+
+41
+00:02:22.558 --> 00:02:23.478
+review is positive."
+
+42
+00:02:24.760 --> 00:02:27.925
+If you wanted to give
+a more concise response to
+
+43
+00:02:27.925 --> 00:02:31.089
+make it easier for post-processing, I
+can take this prompt
+
+44
+00:02:31.089 --> 00:02:33.621
+and add another instruction
+to give you answers
+
+45
+00:02:33.621 --> 00:02:36.469
+to a single word, either
+positive or negative. So
+
+46
+00:02:36.469 --> 00:02:39.000
+it just prints out
+positive like this, which
+
+47
+00:02:39.000 --> 00:02:42.798
+makes it easier for
+a piece of text to take this output
+
+48
+00:02:42.798 --> 00:02:45.330
+and process it and
+do something with it.
+
+49
+00:02:46.424 --> 00:02:50.112
+Let's look at another prompt, again
+still using the lamp review.
+
+50
+00:02:51.715 --> 00:02:55.555
+Here, I have ,it "Identify a list
+of emotions that the writer of
+
+51
+00:02:55.555 --> 00:02:58.214
+the following review is expressing.
+Include no more than
+
+52
+00:02:58.214 --> 00:02:59.691
+five items in this list."
+
+53
+00:03:00.733 --> 00:03:04.056
+So, large language models are
+pretty good at extracting
+
+54
+00:03:04.056 --> 00:03:08.487
+specific things out of
+a piece of text. In this case, we're
+
+55
+00:03:08.487 --> 00:03:11.810
+expressing the emotions and this could
+be useful for
+
+56
+00:03:11.810 --> 00:03:14.025
+understanding how your
+customers think about
+
+57
+00:03:14.025 --> 00:03:17.718
+a particular product. For
+a lot of customer support organizations,
+
+58
+00:03:17.718 --> 00:03:21.779
+it's important to understand if
+a particular user is extremely upset.
+
+59
+00:03:21.779 --> 00:03:25.102
+So, you might have a different
+classification problem like
+
+60
+00:03:25.102 --> 00:03:27.687
+this, "Is the
+writer of the following
+
+61
+00:03:27.687 --> 00:03:29.533
+review expressing anger?". Because
+if
+
+62
+00:03:29.533 --> 00:03:32.856
+someone is really angry, it might
+merit paying extra
+
+63
+00:03:32.856 --> 00:03:36.917
+attention to have a customer review,
+to have customer support or
+
+64
+00:03:36.917 --> 00:03:40.241
+customer success, reach out
+to figure what's going on
+
+65
+00:03:40.241 --> 00:03:43.933
+and make things right for
+the customer. In this case,
+
+66
+00:03:43.933 --> 00:03:46.887
+the customer is
+not angry. And notice that
+
+67
+00:03:46.887 --> 00:03:49.102
+with supervised learning,
+if I had
+
+68
+00:03:49.102 --> 00:03:52.794
+wanted to build all of
+these classifiers, there's no way
+
+69
+00:03:52.794 --> 00:03:56.117
+I would have been able
+to do this with
+
+70
+00:03:56.117 --> 00:03:59.071
+supervised learning in the
+just a few minutes
+
+71
+00:03:59.071 --> 00:04:04.240
+that you saw me do so in this
+video. I'd encourage you to pause
+
+72
+00:04:04.240 --> 00:04:07.194
+this video and try
+changing some of these
+
+73
+00:04:07.194 --> 00:04:11.625
+prompts. Maybe ask if the customer
+is expressing delight or ask if
+
+74
+00:04:11.625 --> 00:04:16.056
+there are any missing parts and
+see if you can a prompt
+
+75
+00:04:16.056 --> 00:04:19.010
+to make different inferences about this
+lamp review.
+
+76
+00:04:19.010 --> 00:04:19.010
+
+
+77
+00:04:20.040 --> 00:04:24.749
+Let me show some
+more things that you
+
+78
+00:04:24.749 --> 00:04:28.870
+can do with this system,
+specifically extracting
+
+79
+00:04:28.870 --> 00:04:32.402
+richer information from a
+customer review.
+
+80
+00:04:33.685 --> 00:04:36.750
+So, information extraction is
+the part of NLP,
+
+81
+00:04:36.750 --> 00:04:39.816
+of Natural Language Processing,
+that relates to taking
+
+82
+00:04:39.816 --> 00:04:42.882
+a piece of text
+and extracting certain things
+
+83
+00:04:42.882 --> 00:04:47.864
+that you want to know from the text.
+So in this prompt, I'm
+
+84
+00:04:47.864 --> 00:04:50.929
+asking it to identify
+the following items, the
+
+85
+00:04:50.929 --> 00:04:53.995
+item purchase, and
+the name of the company
+
+86
+00:04:53.995 --> 00:04:57.827
+that made the item. Again, if
+you are trying to
+
+87
+00:04:57.827 --> 00:05:01.276
+summarize many reviews from
+an online shopping e-commerce website,
+
+88
+00:05:01.276 --> 00:05:05.108
+it might be useful for your
+large collection of reviews
+
+89
+00:05:05.108 --> 00:05:08.557
+to figure out what
+were the items, who made
+
+90
+00:05:08.557 --> 00:05:11.240
+the item, figure out
+positive and negative
+
+91
+00:05:11.240 --> 00:05:14.689
+sentiment, to track
+trends about positive or negative sentiment
+
+92
+00:05:14.689 --> 00:05:16.988
+for specific items
+or for specific
+
+93
+00:05:16.988 --> 00:05:20.054
+manufacturers. And in
+this example, I'm going to
+
+94
+00:05:20.054 --> 00:05:25.802
+ask it to format your response as a
+JSON object with "Item" and "Brand" as
+
+95
+00:05:25.802 --> 00:05:30.017
+the keys. And so if
+I do that, it says the
+
+96
+00:05:30.017 --> 00:05:35.382
+item is a lamp, the brand is
+Lumina, and you can easily load this
+
+97
+00:05:35.382 --> 00:05:38.831
+into the Python dictionary to then
+do additional processing
+
+98
+00:05:38.831 --> 00:05:42.663
+on this output.
+In the examples we've gone through, you
+
+99
+00:05:42.663 --> 00:05:45.729
+saw how to
+write a prompt to recognize
+
+100
+00:05:45.729 --> 00:05:50.328
+the sentiment, figure out if someone
+is angry, and then also extract
+
+101
+00:05:50.328 --> 00:05:52.244
+the item and the
+brand.
+
+102
+00:05:53.426 --> 00:05:56.741
+One way to extract
+all of this information
+
+103
+00:05:56.741 --> 00:06:01.299
+would be to use
+three or four prompts and call "get_completion",
+
+104
+00:06:01.299 --> 00:06:04.199
+you know, three
+times or four times
+
+105
+00:06:04.199 --> 00:06:08.342
+to extract these different
+views one at a time. But
+
+106
+00:06:08.342 --> 00:06:11.657
+it turns out you
+can actually write a
+
+107
+00:06:11.657 --> 00:06:14.972
+single prompt to extract
+all of this information
+
+108
+00:06:14.972 --> 00:06:18.701
+at the same time. So
+let's say "identify the
+
+109
+00:06:18.701 --> 00:06:21.187
+following items, extract sentiment,
+is the
+
+110
+00:06:21.187 --> 00:06:24.087
+reviewer expressing anger, item purchased,
+company that
+
+111
+00:06:24.087 --> 00:06:27.402
+made it". And then
+here I'm also going
+
+112
+00:06:27.402 --> 00:06:31.545
+to tell it to format
+the anger value as a
+
+113
+00:06:31.545 --> 00:06:35.688
+boolean value, and let me
+run that. And this outputs
+
+114
+00:06:35.688 --> 00:06:39.417
+a JSON where sentiment
+is positive, anger, and then
+
+115
+00:06:39.417 --> 00:06:43.146
+no quotes around false because
+it asked it to
+
+116
+00:06:43.146 --> 00:06:48.947
+just output it as a boolean value. Extracted
+the item as "lamp with additional
+
+117
+00:06:48.947 --> 00:06:51.433
+storage" instead of lamp,
+seems okay.
+
+118
+00:06:52.515 --> 00:06:55.755
+But this way you
+can extract multiple fields
+
+119
+00:06:55.755 --> 00:07:00.210
+out of a piece of text with just
+a single prompt.
+
+120
+00:07:00.760 --> 00:07:03.991
+And, as usual, please feel free
+to pause the video and play
+
+121
+00:07:03.991 --> 00:07:05.607
+with different variations
+on this yourself.
+
+122
+00:07:07.050 --> 00:07:10.136
+Or maybe even try
+typing in a totally
+
+123
+00:07:10.136 --> 00:07:13.223
+different review to see
+if you can still
+
+124
+00:07:13.223 --> 00:07:17.466
+extract these things accurately.
+Now, one of the cool applications I've
+
+125
+00:07:17.466 --> 00:07:20.939
+seen of large language
+models is inferring topics. Given
+
+126
+00:07:20.939 --> 00:07:24.025
+a long piece of text, you
+know, what
+
+127
+00:07:24.025 --> 00:07:28.655
+is this piece of text about? What
+are the topics? Here's a
+
+128
+00:07:28.655 --> 00:07:31.741
+fictitious newspaper article about
+how government workers feel
+
+129
+00:07:31.741 --> 00:07:35.213
+about the agency they
+work for. So, the recent
+
+130
+00:07:35.213 --> 00:07:38.300
+survey conducted by
+government, you know, and so
+
+131
+00:07:38.300 --> 00:07:42.930
+on. "Results revealed that NASA was
+a popular department with a high
+
+132
+00:07:42.930 --> 00:07:46.788
+satisfaction rating." I am
+a fan of NASA, I love
+
+133
+00:07:46.788 --> 00:07:51.417
+the work they do, but this
+is a fictitious article. And so,
+
+134
+00:07:51.417 --> 00:07:56.819
+given an article like this, we can
+ask it, with this prompt, to determine
+
+135
+00:07:56.819 --> 00:07:59.905
+five topics that are
+being discussed in the
+
+136
+00:07:59.905 --> 00:08:00.677
+following text.
+
+137
+00:08:01.779 --> 00:08:05.531
+Let's
+make each item one or two words long, for
+
+138
+00:08:05.531 --> 00:08:09.284
+my response, in a comma-separated list.
+And so, if we
+
+139
+00:08:09.284 --> 00:08:13.412
+run that, you know, we get
+this article. It's about a
+
+140
+00:08:13.412 --> 00:08:17.539
+government survey, it's about job satisfaction,
+it's about NASA, and so
+
+141
+00:08:17.539 --> 00:08:21.292
+on. So, overall, I think, pretty nice
+extraction of a
+
+142
+00:08:21.292 --> 00:08:25.419
+list of topics. And,
+of course, you can also, you know,
+
+143
+00:08:25.419 --> 00:08:30.298
+split it so you get
+a Python list with the five topics that
+
+144
+00:08:30.298 --> 00:08:31.799
+this article was about.
+
+
+145
+00:08:32.861 --> 00:08:36.695
+And if you have a
+collection of articles and extract
+
+146
+00:08:36.695 --> 00:08:40.145
+topics, you can then also
+use a large language
+
+147
+00:08:40.145 --> 00:08:43.596
+model to help you
+index into different topics. So,
+
+148
+00:08:43.596 --> 00:08:47.046
+let me use a
+slightly different topic list. Let's
+
+149
+00:08:47.046 --> 00:08:51.263
+say that we're a
+news website or something, and, you know,
+
+150
+00:08:51.263 --> 00:08:54.330
+these are
+the topics we track. "NASA, local
+
+151
+00:08:54.330 --> 00:08:56.631
+government, engineering, employee satisfaction,
+federal government".
+
+152
+00:08:56.631 --> 00:09:00.848
+And let's say you
+want to figure out, given a news
+
+153
+00:09:00.848 --> 00:09:04.298
+article, which of these
+topics are covered in that
+
+154
+00:09:04.298 --> 00:09:05.065
+news article.
+
+155
+00:09:06.267 --> 00:09:08.131
+So, here's a prompt that I can use.
+
+156
+00:09:09.313 --> 00:09:11.512
+I'm going to say, determine
+whether each item in
+
+157
+00:09:11.512 --> 00:09:14.444
+the final list of topics is a topic
+in the text below.
+
+158
+00:09:15.446 --> 00:09:17.951
+Give your answer as a list
+of 0 or 1 for each topic.
+
+159
+00:09:19.414 --> 00:09:23.712
+And so, great. So,
+this is the same story text as before.
+
+160
+00:09:23.712 --> 00:09:27.653
+So, this thing is a story.
+It is about NASA. It's
+
+161
+00:09:27.653 --> 00:09:31.235
+not about local government. It's not
+about engineering. It is
+
+162
+00:09:31.235 --> 00:09:35.175
+about employee satisfaction, and it
+is about federal government. So, with
+
+163
+00:09:35.175 --> 00:09:39.474
+this, in machine learning, this is
+sometimes called a "Zero-Shot Learning Algorithm",
+
+164
+00:09:39.474 --> 00:09:43.056
+because we didn't
+give it any training data that was
+
+165
+00:09:43.056 --> 00:09:46.638
+labeled, so that's Zero-Shot. And
+with just a prompt, it
+
+166
+00:09:46.638 --> 00:09:51.653
+was able to determine which of these topics
+are covered in that news article.
+
+167
+00:09:51.653 --> 00:09:54.519
+And so, if you want to
+generate a
+
+168
+00:09:54.519 --> 00:09:59.175
+news alert, say, so that process news, and
+I really like a lot
+
+169
+00:09:59.175 --> 00:10:03.474
+of work that NASA does.
+So, if you want to build a
+
+170
+00:10:03.474 --> 00:10:07.414
+system that can take this,
+put this information into a dictionary,
+
+171
+00:10:07.414 --> 00:10:11.713
+and whenever NASA news pops up,
+print "ALERT: New NASA story!", they
+
+172
+00:10:11.713 --> 00:10:15.295
+can use this to very
+quickly take any article, figure
+
+173
+00:10:15.295 --> 00:10:19.594
+out what topics it is
+about, and if the topic includes NASA,
+
+174
+00:10:19.594 --> 00:10:23.534
+have it print out "ALERT: New
+NASA story!". Oh, just one
+
+175
+00:10:23.534 --> 00:10:28.549
+thing. I use this topic dictionary down
+here. This prompt that I use up
+
+176
+00:10:28.549 --> 00:10:32.489
+here isn't very robust. If I wanted a
+production system, I
+
+177
+00:10:32.489 --> 00:10:36.430
+would probably have it output the
+answer in JSON format, rather
+
+178
+00:10:36.430 --> 00:10:40.370
+than as a list, because the
+output of the large language
+
+179
+00:10:40.370 --> 00:10:44.669
+model can be a little bit
+inconsistent. So, this is actually a
+
+180
+00:10:44.669 --> 00:10:47.176
+pretty brittle piece
+of code. But if
+
+181
+00:10:47.176 --> 00:10:51.116
+you want, when you're done
+watching this video, feel free to
+
+182
+00:10:51.116 --> 00:10:55.773
+see if you can figure
+out how to modify this prompt, to have
+
+183
+00:10:55.773 --> 00:10:59.714
+it output JSON instead of a
+list like this, and then
+
+184
+00:10:59.714 --> 00:11:04.729
+have a more robust way to
+tell if a particular article is a story
+
+185
+00:11:04.729 --> 00:11:05.445
+about NASA.
+
+
+186
+00:11:06.447 --> 00:11:10.952
+So, that's it for inferring. And
+in just a few minutes, you
+
+187
+00:11:10.952 --> 00:11:14.331
+can build multiple systems for making
+inferences about text
+
+188
+00:11:14.331 --> 00:11:17.710
+that previously just
+would have taken days or even
+
+189
+00:11:17.710 --> 00:11:21.465
+weeks for a skilled machine learning
+developer. And so, I
+
+190
+00:11:21.465 --> 00:11:24.468
+find this very exciting
+that both for skilled
+
+191
+00:11:24.468 --> 00:11:27.847
+machine learning developers, as
+well as for people that
+
+192
+00:11:27.847 --> 00:11:32.353
+are newer to machine learning, you
+can now use prompting to very
+
+193
+00:11:32.353 --> 00:11:35.732
+quickly build and start making inferences
+on pretty complicated
+
+194
+00:11:35.732 --> 00:11:38.360
+natural language processing
+tasks like these. In
+
+195
+00:11:38.360 --> 00:11:42.490
+the next video, we'll continue
+to talk about exciting things you
+
+196
+00:11:42.490 --> 00:11:46.244
+could do with large language models,
+and we'll go on
+
+197
+00:11:46.244 --> 00:11:51.125
+to "Transforming". How can you
+take one piece of text and transform it
+
+198
+00:11:51.125 --> 00:11:54.504
+into a different piece
+of text, such as translate
+
+199
+00:11:54.504 --> 00:11:57.883
+it to a different
+language. Let's go on to
+
+200
+00:11:57.883 --> 00:11:59.010
+the next video.

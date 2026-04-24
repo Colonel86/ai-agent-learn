@@ -1,0 +1,1684 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.867 --> 00:00:04.571
+In this lesson, you'll build a project
+with a bit more scope.
+
+2
+00:00:05.071 --> 00:00:10.071
+We'll build a compact version of an AI
+researcher, in this case, an essay writer.
+
+3
+00:00:11.478 --> 00:00:13.880
+Let's get to it.
+
+4
+00:00:13.880 --> 00:00:16.516
+So we're going to create an essay writer.
+
+5
+00:00:16.516 --> 00:00:20.086
+This is going to be broken down
+into a few different substeps.
+
+6
+00:00:20.787 --> 00:00:23.490
+So first we're going to generate a plan
+for the essay.
+
+7
+00:00:23.490 --> 00:00:25.859
+This is going to happen once upfront.
+
+8
+00:00:25.859 --> 00:00:28.862
+Then based on that plan
+we're going to do some research.
+
+9
+00:00:29.062 --> 00:00:32.365
+This involves calling Tavily
+and getting back some documents.
+
+10
+00:00:33.066 --> 00:00:36.269
+From there we're going to go into generate,
+and then generate.
+
+11
+00:00:36.503 --> 00:00:40.473
+We're going to follow the plan
+using the documents that we researched.
+
+12
+00:00:40.707 --> 00:00:42.742
+And we're going to write the essay.
+
+13
+00:00:42.742 --> 00:00:46.379
+From there, we're either going to finish
+or we're going to continue.
+
+14
+00:00:46.379 --> 00:00:49.449
+If we continue, we're
+going to go into a reflect node where
+
+15
+00:00:49.449 --> 00:00:52.452
+we're going to generate
+a critique of the current essay.
+
+16
+00:00:52.685 --> 00:00:56.156
+Then based on that critique,
+we're going to do another research step
+
+17
+00:00:56.322 --> 00:00:59.526
+with Tavily,
+and get another set of documents.
+
+18
+00:01:00.026 --> 00:01:03.229
+We're going to append those
+to the existing set of documents
+
+19
+00:01:03.596 --> 00:01:06.566
+and go all the way
+back to the generate step,
+
+20
+00:01:06.866 --> 00:01:09.869
+where we're going to once again
+try to write this essay.
+
+21
+00:01:10.236 --> 00:01:14.641
+And we're going to continue this
+until some criteria is met and we exit.
+
+22
+00:01:15.542 --> 00:01:16.543
+Let's see this in code.
+
+23
+00:01:19.779 --> 00:01:20.880
+We're going to start with again
+
+24
+00:01:20.880 --> 00:01:23.883
+importing all our environment variables.
+
+25
+00:01:26.086 --> 00:01:27.954
+We're
+then going to make some standard imports
+
+26
+00:01:27.954 --> 00:01:30.957
+and set up our in-memory
+SQLite checkpointers.
+
+27
+00:01:31.458 --> 00:01:33.626
+Now we're going to create the agent state.
+
+28
+00:01:33.626 --> 00:01:36.830
+And it's going to be a little bit
+more complicated than before.
+
+29
+00:01:38.198 --> 00:01:41.201
+So we're going to want to keep track
+of a bunch of different things.
+
+30
+00:01:41.868 --> 00:01:44.270
+First, we're going
+to keep track of the task.
+
+31
+00:01:44.270 --> 00:01:45.405
+This is the human input.
+
+32
+00:01:45.405 --> 00:01:47.807
+This is what we're trying
+to write an essay about.
+
+33
+00:01:47.807 --> 00:01:50.777
+Then we're going to have a key
+to keep track of the plan.
+
+34
+00:01:50.777 --> 00:01:53.780
+This is the plan
+that the planning agent will generate.
+
+35
+00:01:54.013 --> 00:01:56.249
+Then we've got a key for the draft.
+
+36
+00:01:56.249 --> 00:01:58.184
+This is a draft of the essay.
+
+37
+00:01:58.184 --> 00:02:00.820
+And then we've got a key
+for the critique part.
+
+38
+00:02:00.820 --> 00:02:03.723
+So the critique agent will populate
+this key.
+
+39
+00:02:03.723 --> 00:02:05.925
+We're also going to add in content.
+
+40
+00:02:05.925 --> 00:02:08.328
+This is a key to keep track
+of the list of documents
+
+41
+00:02:08.328 --> 00:02:11.197
+that Tavily has researched
+and come back with.
+
+42
+00:02:11.197 --> 00:02:14.334
+And then we're going to have two arguments
+that keep track of
+
+43
+00:02:14.334 --> 00:02:16.269
+how many times we've gone through this.
+
+44
+00:02:16.269 --> 00:02:19.405
+So revision number,
+which is going to keep track of the number
+
+45
+00:02:19.405 --> 00:02:23.276
+of revisions we've made and max revisions,
+which is keeping
+
+46
+00:02:23.276 --> 00:02:26.379
+track of the maximum revisions
+that we want to make.
+
+47
+00:02:27.480 --> 00:02:29.549
+We're going to use those last two things
+
+48
+00:02:29.549 --> 00:02:32.552
+and the criteria to decide
+whether to stop or not.
+
+49
+00:02:35.021 --> 00:02:36.089
+Let's create our model.
+
+50
+00:02:36.089 --> 00:02:38.091
+We're going to be using OpenAI.
+
+51
+00:02:38.091 --> 00:02:41.094
+And now let's write some prompts
+for our agents.
+
+52
+00:02:42.729 --> 00:02:44.898
+First, we have this planning prompt.
+
+53
+00:02:44.898 --> 00:02:48.034
+This is the prompt for the LLM
+that's going to write out a plan
+
+54
+00:02:48.034 --> 00:02:51.037
+for our essay.
+
+55
+00:02:51.538 --> 00:02:53.473
+Next, we have the writer prompt.
+
+56
+00:02:53.473 --> 00:02:55.642
+This is the one who's writing the essay.
+
+57
+00:02:55.642 --> 00:02:58.645
+Given all the content that was researched.
+
+58
+00:03:02.048 --> 00:03:04.317
+We now have the reflection prompt.
+
+59
+00:03:04.317 --> 00:03:07.253
+This is the prompt that's going to control
+how we're critiquing
+
+60
+00:03:07.253 --> 00:03:10.256
+the draft of the essay.
+
+61
+00:03:11.057 --> 00:03:13.159
+We now have a prompt
+that we're going to use
+
+62
+00:03:13.159 --> 00:03:16.396
+for the agents that's doing research
+after the planning step.
+
+63
+00:03:16.629 --> 00:03:21.000
+So given a plan, we're going to generate
+a bunch of queries and pass these to
+
+64
+00:03:21.034 --> 00:03:23.303
+Tavily.
+So this is the prompt that does that.
+
+65
+00:03:25.405 --> 00:03:28.308
+And then we also have this research
+critique prompt.
+
+66
+00:03:28.308 --> 00:03:31.978
+So after we've made the critique
+we're going to generate a list of queries
+
+67
+00:03:32.178 --> 00:03:33.713
+to pass it to Tavily.
+
+68
+00:03:33.713 --> 00:03:35.682
+So this is slightly different
+than the planning prompt
+
+69
+00:03:35.682 --> 00:03:38.685
+just because it's working on a critique
+versus a plan.
+
+70
+00:03:38.685 --> 00:03:41.187
+But it serves a similar purpose.
+
+71
+00:03:41.187 --> 00:03:44.190
+For generating these lists of queries
+to pass to Tavily.
+
+72
+00:03:44.324 --> 00:03:47.360
+We're going to use function
+calling to ensure that we get back
+
+73
+00:03:47.360 --> 00:03:50.363
+a list of strings from the language
+model.
+
+74
+00:03:52.232 --> 00:03:55.468
+In order to do that,
+we're going to set up this pydantic model
+
+75
+00:03:55.468 --> 00:03:58.972
+that just represents the result
+that we want to get back from the language
+
+76
+00:03:58.972 --> 00:04:02.208
+model,
+which in this case, is a list of strings.
+
+77
+00:04:04.577 --> 00:04:07.647
+We're going to import the Tavily client
+instead of the tool,
+
+78
+00:04:07.680 --> 00:04:10.383
+because we're working with it
+in a slightly unconventional way.
+
+79
+00:04:11.784 --> 00:04:12.719
+Now we can start to
+
+80
+00:04:12.719 --> 00:04:15.822
+create all our different agents,
+all our different nodes.
+
+81
+00:04:15.855 --> 00:04:16.756
+Let's go in order.
+
+82
+00:04:16.756 --> 00:04:20.860
+So first we're going to start with
+the node or agent that does the planning.
+
+83
+00:04:21.961 --> 00:04:24.964
+What this node is going to do
+it's going to take in the state.
+
+84
+00:04:25.298 --> 00:04:27.133
+It's then
+going to create a list of messages.
+
+85
+00:04:27.133 --> 00:04:28.868
+One of them is going to be
+the planning prompt.
+
+86
+00:04:28.868 --> 00:04:31.170
+That's going to be the system message.
+We're then going
+
+87
+00:04:31.170 --> 00:04:32.605
+to create a human message.
+
+88
+00:04:32.605 --> 00:04:34.607
+That is the task that we want to do.
+
+89
+00:04:34.607 --> 00:04:36.342
+We're going to pass that to the model.
+
+90
+00:04:36.342 --> 00:04:37.944
+We're going to get back a message.
+
+91
+00:04:37.944 --> 00:04:38.378
+And then we're
+
+92
+00:04:38.378 --> 00:04:41.881
+going to take the content of that message
+and set that equal to plan.
+
+93
+00:04:42.215 --> 00:04:46.286
+And so this is going to update the
+plan key to be this response.
+
+94
+00:04:47.620 --> 00:04:49.889
+The next
+node that we're going to want to do
+
+95
+00:04:49.889 --> 00:04:53.826
+is the agent that takes in the plan
+and does some research.
+
+96
+00:04:54.694 --> 00:04:57.196
+So for this, we're going to create
+the research plan node.
+
+97
+00:04:57.196 --> 00:04:59.165
+This is going to take in the agent state.
+
+98
+00:04:59.165 --> 00:05:01.267
+And we're first going to generate
+some queries.
+
+99
+00:05:01.267 --> 00:05:02.769
+So we're going to do model.
+
+100
+00:05:02.769 --> 00:05:04.504
+And this is the OpenAI model.
+
+101
+00:05:04.504 --> 00:05:06.839
+And then we're going to say
+with structured output
+
+102
+00:05:06.839 --> 00:05:08.241
+and put queries right there.
+
+103
+00:05:08.241 --> 00:05:10.743
+And so this is basically saying
+that the response
+
+104
+00:05:10.743 --> 00:05:13.813
+of what we're going to invoke
+this with is going to be
+
+105
+00:05:13.880 --> 00:05:17.684
+that pydantic object that we had,
+which has that list of queries.
+
+106
+00:05:17.950 --> 00:05:20.253
+So we're going to call invoke
+and we're going to call invoke
+
+107
+00:05:20.253 --> 00:05:21.621
+on a list of messages.
+
+108
+00:05:21.621 --> 00:05:23.823
+We've got this research planning prompt.
+
+109
+00:05:23.823 --> 00:05:26.592
+And then we pass in this human message
+this task.
+
+110
+00:05:26.592 --> 00:05:30.430
+And so for this part, we're generating
+the queries based on the task.
+
+111
+00:05:30.997 --> 00:05:34.000
+We're then going to get our list
+of current documents,
+
+112
+00:05:34.133 --> 00:05:37.804
+the content documents that we're going
+to use to write this essay.
+
+113
+00:05:38.471 --> 00:05:40.673
+So we're going to look in the state
+for content
+
+114
+00:05:40.673 --> 00:05:42.942
+if it exists or if it doesn't exist.
+
+115
+00:05:42.942 --> 00:05:45.945
+We're just going to create
+an empty list of documents.
+
+116
+00:05:46.012 --> 00:05:49.349
+We're then going to loop over the queries
+that we generated and search
+
+117
+00:05:49.349 --> 00:05:50.450
+for them in Tavily.
+
+118
+00:05:50.450 --> 00:05:54.053
+We're going to get back the results and
+we're going to append them to the content.
+
+119
+00:05:54.754 --> 00:05:59.459
+We're then going to return this content
+key equal to the content that is
+
+120
+00:05:59.459 --> 00:06:03.296
+the result of the original content,
+plus the accumulated content.
+
+121
+00:06:05.098 --> 00:06:05.365
+Okay.
+
+122
+00:06:05.365 --> 00:06:08.368
+So we've made a
+plan and we've done some initial research.
+
+123
+00:06:08.468 --> 00:06:11.471
+Now it's time to write the first draft.
+
+124
+00:06:12.205 --> 00:06:14.907
+So for the generation node,
+the first thing we're going to do
+
+125
+00:06:14.907 --> 00:06:15.975
+is to prepare the content.
+
+126
+00:06:15.975 --> 00:06:20.012
+So we're going to take this list
+of strings and join them into one big one.
+
+127
+00:06:21.180 --> 00:06:23.383
+We're
+then going to create the user message,
+
+128
+00:06:23.383 --> 00:06:26.152
+where we're going to combine the task
+and the plan.
+
+129
+00:06:26.152 --> 00:06:30.790
+So we create a user message,
+that's basically like "this is my task.
+
+130
+00:06:30.790 --> 00:06:32.425
+And then here is my plan."
+
+131
+00:06:32.425 --> 00:06:33.025
+The plan,
+
+132
+00:06:33.025 --> 00:06:36.028
+remember,
+this is what we generated two steps before.
+
+133
+00:06:36.329 --> 00:06:39.265
+The task is the original user input.
+
+134
+00:06:39.265 --> 00:06:41.534
+We're then going
+to create a list of messages.
+
+135
+00:06:41.534 --> 00:06:46.272
+This is a system message with the writer
+prompt where we format in this content.
+
+136
+00:06:46.272 --> 00:06:48.574
+We format in the documents
+that we fetched.
+
+137
+00:06:48.574 --> 00:06:50.643
+And then we're going to pass
+in this user message,
+
+138
+00:06:50.643 --> 00:06:53.246
+which is a combination of the task
+and the plan.
+
+139
+00:06:53.246 --> 00:06:56.749
+We're going to pass this to the model
+and get back a response.
+
+140
+00:06:56.749 --> 00:06:59.485
+We're then going to update two things
+in the state.
+
+141
+00:06:59.485 --> 00:07:01.254
+First, we're going to update the draft.
+
+142
+00:07:01.254 --> 00:07:03.289
+So we're going to take the response
+from the model
+
+143
+00:07:03.289 --> 00:07:05.892
+and use that as the new draft version.
+
+144
+00:07:05.892 --> 00:07:07.593
+Then we're going to update
+the revision number.
+
+145
+00:07:07.593 --> 00:07:10.596
+So this keeps track
+of how many revisions we've made.
+
+146
+00:07:10.997 --> 00:07:13.433
+And so here we're going to add one
+
+147
+00:07:13.433 --> 00:07:16.369
+to the current
+revision number in the state.
+
+148
+00:07:18.638 --> 00:07:19.872
+After generating
+
+149
+00:07:19.872 --> 00:07:22.875
+we now need a reflection node.
+
+150
+00:07:23.276 --> 00:07:24.610
+This reflection node
+
+151
+00:07:24.610 --> 00:07:28.047
+is going to take the reflection prompt
+as a system prompt.
+
+152
+00:07:28.281 --> 00:07:29.615
+And it's going to take the draft.
+
+153
+00:07:29.615 --> 00:07:31.250
+This is what we just generated.
+
+154
+00:07:31.250 --> 00:07:32.718
+We're going to have these two messages.
+
+155
+00:07:32.718 --> 00:07:35.488
+And we're going to pass them
+into the model and get back a response.
+
+156
+00:07:35.488 --> 00:07:38.858
+And this is going to generate the critique
+that we're going to update the state.
+
+157
+00:07:41.627 --> 00:07:43.362
+The last agent we need,
+
+158
+00:07:43.362 --> 00:07:47.099
+is the agent that's going
+to take the critique and do some research.
+
+159
+00:07:47.400 --> 00:07:50.937
+So we're going to do a very similar thing
+that we did with the research plan node.
+
+160
+00:07:50.970 --> 00:07:54.841
+We're going to take this model we're going
+to do with structured output with query.
+
+161
+00:07:54.874 --> 00:07:57.477
+So that's returning
+queries. We're going to invoke it.
+
+162
+00:07:57.477 --> 00:08:00.279
+This time we're passing in the research
+critique prompt.
+
+163
+00:08:00.279 --> 00:08:03.282
+And we're also passing in the critique
+from before.
+
+164
+00:08:03.749 --> 00:08:06.586
+Based on that we're going to get
+the current content list.
+
+165
+00:08:06.586 --> 00:08:09.655
+And we're going to start appending to it
+the Tavily searches.
+
+166
+00:08:09.956 --> 00:08:12.258
+We're then going to return
+this updated content key.
+
+167
+00:08:14.260 --> 00:08:17.263
+The final thing
+we need is this 'should continue' condition.
+
+168
+00:08:17.530 --> 00:08:19.565
+This is going to look
+at the revision number.
+
+169
+00:08:19.565 --> 00:08:22.969
+And if it's greater than the number of max
+revisions, we're going to end.
+
+170
+00:08:23.503 --> 00:08:25.705
+If not, we're going to go on to reflect.
+
+171
+00:08:25.705 --> 00:08:28.774
+Remember this is getting run
+after the generation step.
+
+172
+00:08:29.141 --> 00:08:31.844
+So after the generation step
+we're either going to finish
+
+173
+00:08:31.844 --> 00:08:34.847
+or we're going to go into this critique
+loop.
+
+174
+00:08:35.147 --> 00:08:35.548
+Okay.
+
+175
+00:08:35.548 --> 00:08:38.551
+We made all our agents
+all our little nodes.
+
+176
+00:08:38.751 --> 00:08:40.753
+We made our conditional edge.
+
+177
+00:08:40.753 --> 00:08:43.723
+Now let's put it together into one
+big graph.
+
+178
+00:08:45.324 --> 00:08:47.293
+First, let's initialize the graph
+
+179
+00:08:47.293 --> 00:08:50.296
+with the agent state.
+
+180
+00:08:51.063 --> 00:08:51.898
+Let's then add
+
+181
+00:08:51.898 --> 00:08:54.901
+in all the nodes that we created.
+
+182
+00:08:55.334 --> 00:08:57.036
+We then need to set an entry point.
+
+183
+00:08:57.036 --> 00:08:59.272
+So the entry point here is going
+to be the planning node.
+
+184
+00:09:01.774 --> 00:09:03.976
+Let's then add in our conditional edge.
+
+185
+00:09:03.976 --> 00:09:07.013
+So after generate, we're going to call
+the should continue function.
+
+186
+00:09:07.013 --> 00:09:09.348
+And we're either going to end
+or we're going to reflect.
+
+187
+00:09:09.348 --> 00:09:12.985
+And so here, if the should continue
+condition returns and we're going to end.
+
+188
+00:09:12.985 --> 00:09:15.988
+If it returns reflect
+we're going to go to the reflect node.
+
+189
+00:09:16.622 --> 00:09:19.025
+We now need to add in the basic edges.
+
+190
+00:09:19.025 --> 00:09:22.228
+So after planning, we're going
+to go to the research plan node.
+
+191
+00:09:22.261 --> 00:09:26.232
+After research plan, we're going to go to
+generate generates already covered above.
+
+192
+00:09:26.632 --> 00:09:29.302
+then after reflect
+we're going to go to research critique.
+
+193
+00:09:29.302 --> 00:09:32.705
+And after research critique
+we're going to go back to generate.
+
+194
+00:09:35.875 --> 00:09:36.809
+Let's now compile it.
+
+195
+00:09:36.809 --> 00:09:39.812
+And we'll pass in the checkpointer
+that we created before.
+
+196
+00:09:40.947 --> 00:09:42.148
+We can visualize this.
+
+197
+00:09:42.148 --> 00:09:43.449
+Same as before.
+
+198
+00:09:43.449 --> 00:09:45.217
+It's a much more complex graph.
+
+199
+00:09:49.989 --> 00:09:50.756
+All right.
+
+200
+00:09:50.756 --> 00:09:53.292
+So let's use this writing agent.
+
+201
+00:09:53.292 --> 00:09:54.927
+Let's call graph.stream.
+
+202
+00:09:54.927 --> 00:09:56.696
+So we can see all the steps
+that are happening.
+
+203
+00:09:56.696 --> 00:09:57.863
+Because this is going to take a while.
+
+204
+00:09:57.863 --> 00:10:00.866
+And we really want that visibility.
+Let's pass in a task.
+
+205
+00:10:00.866 --> 00:10:04.937
+Let's ask it what is the difference
+between LangChain and LangSmith.
+
+206
+00:10:05.271 --> 00:10:08.274
+I don't think GPT-3.5
+knows about any of these.
+
+207
+00:10:08.374 --> 00:10:11.077
+And then let's pass in max revisions
+equals two.
+
+208
+00:10:11.077 --> 00:10:13.579
+And let's passion
+revision number equals one.
+
+209
+00:10:13.579 --> 00:10:15.114
+So it is starting on the first revision.
+
+210
+00:10:15.114 --> 00:10:18.117
+And we want it to make two revisions
+of what it's going to do.
+
+211
+00:10:19.118 --> 00:10:22.188
+Let's call this and it's going to start
+getting to work.
+
+212
+00:10:22.822 --> 00:10:24.824
+So we can see that it generates a plan.
+
+213
+00:10:24.824 --> 00:10:27.059
+First.
+
+214
+00:10:27.059 --> 00:10:28.461
+It then does some research.
+
+215
+00:10:28.461 --> 00:10:30.196
+It gets back a bunch of documents.
+
+216
+00:10:31.931 --> 00:10:33.466
+It's now got a first draft.
+
+217
+00:10:33.466 --> 00:10:37.370
+So we can see that it generated a title
+unveiling the distinctions LangChain
+
+218
+00:10:37.370 --> 00:10:38.571
+versus LangSmith.
+
+219
+00:10:38.571 --> 00:10:41.574
+And it started writing.
+
+220
+00:10:42.008 --> 00:10:45.044
+Here we can see the critiquing
+that the agent did.
+
+221
+00:10:45.544 --> 00:10:48.848
+The essay provides
+a clear overview blah blah blah, with
+
+222
+00:10:48.848 --> 00:10:50.549
+here are some recommendations.
+
+223
+00:10:50.549 --> 00:10:53.619
+It would benefit from a deeper analysis
+of the strengths and weaknesses.
+
+224
+00:10:53.653 --> 00:10:54.620
+Okay, great.
+
+225
+00:10:54.620 --> 00:10:55.821
+Now we can go to planning.
+
+226
+00:10:55.821 --> 00:10:57.857
+So here
+we have the research critique node.
+
+227
+00:10:57.857 --> 00:11:00.926
+This is done research
+based on the critique of the agent.
+
+228
+00:11:02.328 --> 00:11:04.096
+Here we get to generate again.
+
+229
+00:11:04.096 --> 00:11:05.164
+This is the second draft.
+
+230
+00:11:05.164 --> 00:11:07.867
+And we've only told it to do two drafts.
+So this is the final one.
+
+231
+00:11:07.867 --> 00:11:08.901
+It ends after this.
+
+232
+00:11:08.901 --> 00:11:11.203
+And we can see the final essay
+that we get.
+
+233
+00:11:11.203 --> 00:11:13.105
+LangChain versus LangSmith.
+
+234
+00:11:13.105 --> 00:11:17.576
+We can see some more details on what LangChain
+is, what LangSmith is.
+
+235
+00:11:17.943 --> 00:11:22.415
+Some talk about scalability,
+incorruptibility, performance.
+
+236
+00:11:23.716 --> 00:11:26.085
+We've now created this writer agent.
+
+237
+00:11:26.085 --> 00:11:29.388
+This is a great time to go back
+and try it out with different questions.
+
+238
+00:11:29.388 --> 00:11:32.058
+Maybe have it
+write a few different revisions,
+
+239
+00:11:32.058 --> 00:11:34.660
+see how it performs, mess
+around with the prompts.
+
+240
+00:11:34.660 --> 00:11:38.731
+There's a lot that you can change here
+to see how this overall
+
+241
+00:11:38.731 --> 00:11:41.734
+writing agent responds.
+
+242
+00:11:41.867 --> 00:11:46.572
+We built a little GUI that you can use
+to try out the Essay Generator.
+
+243
+00:11:47.306 --> 00:11:50.176
+Here's how it works.
+
+244
+00:11:50.176 --> 00:11:52.611
+You can put in a topic here,
+
+245
+00:11:52.611 --> 00:11:55.614
+and then you can hit this
+button, Generate Essay.
+
+246
+00:11:58.117 --> 00:12:01.120
+That will invoke your graph.
+
+247
+00:12:01.187 --> 00:12:04.857
+And it will go and it will run off
+and it'll start the generation process.
+
+248
+00:12:05.658 --> 00:12:07.727
+And as you can see we stopped.
+
+249
+00:12:07.727 --> 00:12:09.995
+We stopped at the planner node.
+
+250
+00:12:09.995 --> 00:12:11.964
+Last node was planner.
+
+251
+00:12:11.964 --> 00:12:14.366
+Next node was research.
+
+252
+00:12:14.366 --> 00:12:16.602
+We're in thread zero.
+
+253
+00:12:16.602 --> 00:12:19.038
+We're doing our first draft
+with a count of one.
+
+254
+00:12:19.038 --> 00:12:21.907
+We've taken one step in our graph.
+
+255
+00:12:21.907 --> 00:12:23.275
+So why do we stop?
+
+256
+00:12:23.275 --> 00:12:27.847
+Well if you look in "manage agent"
+we have this interrupt after state set.
+
+257
+00:12:28.347 --> 00:12:31.350
+So you may recall from code
+what that looks like.
+
+258
+00:12:31.851 --> 00:12:34.854
+So when we're compiling the graph,
+
+259
+00:12:34.987 --> 00:12:39.625
+we have "interrupt
+after set" for each of the states.
+
+260
+00:12:39.892 --> 00:12:41.627
+after each state it'll stop.
+
+261
+00:12:42.695 --> 00:12:45.331
+And what we'll do is in the GUI logic
+
+262
+00:12:45.331 --> 00:12:48.801
+it'll come back
+and it'll to see if that state is checked.
+
+263
+00:12:49.635 --> 00:12:52.638
+And if it is, it will stop.
+
+264
+00:12:52.738 --> 00:12:54.440
+And if it's not, then it will continue.
+
+265
+00:12:54.440 --> 00:12:58.010
+And so you can uncheck these and continue
+all the way through the process.
+
+266
+00:12:59.445 --> 00:13:00.446
+Now we stopped the planner.
+
+267
+00:13:00.446 --> 00:13:02.314
+So we should have a plan at this point.
+
+268
+00:13:02.314 --> 00:13:03.182
+Let's take a look.
+
+269
+00:13:03.182 --> 00:13:05.718
+Sure enough there's our introduction.
+
+270
+00:13:05.718 --> 00:13:07.953
+But if we look at our research content
+for example
+
+271
+00:13:07.953 --> 00:13:10.956
+we don't have any. And same for draft
+and for critique.
+
+272
+00:13:11.457 --> 00:13:14.326
+There's also this tab the state snapshot.
+
+273
+00:13:14.326 --> 00:13:17.863
+So this is giving us a view
+into the current memory.
+
+274
+00:13:18.631 --> 00:13:21.634
+This just lists all the things in memory.
+
+275
+00:13:22.201 --> 00:13:26.038
+We can see that there were two initial
+states inserted by the graph logic.
+
+276
+00:13:26.338 --> 00:13:29.341
+And then there was this state
+that we just inserted.
+
+277
+00:13:29.408 --> 00:13:32.044
+It was the tasks, the pizza shop.
+
+278
+00:13:32.044 --> 00:13:36.715
+The last node we're in and the values
+of the agent state at this point in time.
+
+279
+00:13:37.149 --> 00:13:39.251
+The last node is planner.
+
+280
+00:13:39.251 --> 00:13:41.253
+Our plan was "briefly introduce
+
+281
+00:13:41.253 --> 00:13:44.256
+the topic of pizza shops
+and the popularity" and so on.
+
+282
+00:13:44.557 --> 00:13:46.158
+We don't have any drafts, etc.
+
+283
+00:13:47.326 --> 00:13:49.128
+So that's our current state.
+
+284
+00:13:49.128 --> 00:13:53.232
+Now you may want to do something a little
+bit different than this introduction.
+
+285
+00:13:53.966 --> 00:13:56.969
+Let's say
+what you really wanted to talk about
+
+286
+00:13:57.203 --> 00:14:00.206
+was discuss
+
+287
+00:14:00.539 --> 00:14:04.710
+the importance of jelly donuts
+
+288
+00:14:05.177 --> 00:14:07.746
+in pizza making.
+
+289
+00:14:07.746 --> 00:14:10.716
+Now, this is a bit nonsensical,
+but you can now update the state
+
+290
+00:14:10.883 --> 00:14:13.118
+if you hit this modify button,
+
+291
+00:14:13.118 --> 00:14:17.223
+that will run the update state command
+that we had seen earlier.
+
+292
+00:14:18.290 --> 00:14:21.293
+And we can go in and take a look
+and see what happened.
+
+293
+00:14:21.327 --> 00:14:24.129
+So we can refresh our state snapshots.
+
+294
+00:14:24.129 --> 00:14:26.365
+And here's the state
+we were in previously.
+
+295
+00:14:26.365 --> 00:14:28.133
+And now we have a new state.
+
+296
+00:14:28.133 --> 00:14:30.369
+The current state.
+
+297
+00:14:30.369 --> 00:14:33.138
+And here we have
+
+298
+00:14:33.138 --> 00:14:34.473
+our plan is "discuss
+
+299
+00:14:34.473 --> 00:14:37.476
+The importance of jelly donuts
+in pizza making".
+
+300
+00:14:37.476 --> 00:14:40.479
+And so we can continue from here
+if we go back to the front end,
+
+301
+00:14:40.746 --> 00:14:42.715
+and if we hit Continue Essay.
+
+302
+00:14:42.715 --> 00:14:44.550
+as opposed to generate,
+
+303
+00:14:44.550 --> 00:14:47.620
+then we continue on the path of the thread
+that we've already started.
+
+304
+00:14:48.954 --> 00:14:49.955
+Okay.
+
+305
+00:14:49.955 --> 00:14:51.624
+So now we're at the research plan.
+
+306
+00:14:51.624 --> 00:14:52.892
+The next note is generate.
+
+307
+00:14:52.892 --> 00:14:56.362
+Let's go ahead and click continue
+and we'll generate a draft.
+
+308
+00:14:57.129 --> 00:14:59.164
+Let's take a look at the draft.
+
+309
+00:14:59.164 --> 00:15:01.800
+And if we refresh we can see
+
+310
+00:15:01.800 --> 00:15:05.671
+the last node which generate
+the thread IDs zero there in one.
+
+311
+00:15:05.671 --> 00:15:07.206
+Step four.
+
+312
+00:15:07.206 --> 00:15:10.042
+And so if we read this
+we can see "Jelly donuts.
+
+313
+00:15:10.042 --> 00:15:13.779
+A beloved treat in many cultures
+hold a surprising significance
+
+314
+00:15:13.779 --> 00:15:16.749
+in the world of pizza making.
+
+315
+00:15:17.850 --> 00:15:20.853
+What a surprise".
+
+316
+00:15:23.689 --> 00:15:26.692
+Let's go back to our agents.
+
+317
+00:15:27.726 --> 00:15:30.496
+Well, we could continue this,
+
+318
+00:15:30.496 --> 00:15:32.865
+but you may have had second thoughts
+
+319
+00:15:32.865 --> 00:15:36.402
+about this whole pizza
+making and jelly donuts connection.
+
+320
+00:15:37.236 --> 00:15:40.239
+So maybe we want to go back
+to the beginning.
+
+321
+00:15:40.506 --> 00:15:43.509
+So with this update state from Tab,
+
+322
+00:15:43.642 --> 00:15:46.211
+you can go back
+to the original planner state.
+
+323
+00:15:47.947 --> 00:15:49.448
+And that just didn't update the state.
+
+324
+00:15:49.448 --> 00:15:52.451
+So if we go take a look at our state
+snapshot,
+
+325
+00:15:55.321 --> 00:15:58.324
+that pushes onto the memory,
+
+326
+00:15:58.390 --> 00:16:01.260
+the state that we had selected.
+
+327
+00:16:01.260 --> 00:16:04.163
+And that's back to our original
+
+328
+00:16:04.163 --> 00:16:04.730
+plan.
+
+329
+00:16:04.730 --> 00:16:08.167
+"The briefly introduced the topic
+of pizza shops and their popularity".
+
+330
+00:16:08.968 --> 00:16:11.136
+So we can go back to there and then we can
+
+331
+00:16:11.136 --> 00:16:14.139
+then run from there.
+
+332
+00:16:14.340 --> 00:16:18.010
+And so let's unclick those two things
+and run all the way to generate.
+
+333
+00:16:18.010 --> 00:16:20.479
+Click continue essay
+
+334
+00:16:20.479 --> 00:16:23.482
+and see what happens.
+
+335
+00:16:25.250 --> 00:16:25.918
+All right.
+
+336
+00:16:25.918 --> 00:16:27.886
+So the last note is generate.
+
+337
+00:16:27.886 --> 00:16:29.088
+So now we can look at a draft.
+
+338
+00:16:29.088 --> 00:16:31.590
+Let's refresh.
+
+339
+00:16:31.590 --> 00:16:33.225
+"Pizza shops have become a staple
+
+340
+00:16:33.225 --> 00:16:36.829
+in the food industry
+offering a wide variety of options".
+
+341
+00:16:37.129 --> 00:16:37.696
+Blah blah blah.
+
+342
+00:16:37.696 --> 00:16:40.866
+And so we don't have any more references
+to jelly donuts and pizza making.
+
+343
+00:16:43.502 --> 00:16:44.103
+If you decide
+
+344
+00:16:44.103 --> 00:16:47.106
+to do a different topic, for example,
+
+345
+00:16:47.873 --> 00:16:51.577
+let's say you want to do a topic
+on New England IPAs.
+
+346
+00:16:52.211 --> 00:16:55.614
+So you can change that value
+and then hit Generate Essay.
+
+347
+00:16:56.215 --> 00:16:58.117
+Now you're starting a new topic.
+
+348
+00:16:58.117 --> 00:17:01.120
+So you start a new essay.
+
+349
+00:17:01.220 --> 00:17:03.389
+What happens here,
+
+350
+00:17:03.389 --> 00:17:06.392
+is we get the live agent output down here.
+
+351
+00:17:07.092 --> 00:17:09.428
+And we're going to go
+all the way to generate,
+
+352
+00:17:09.428 --> 00:17:11.330
+because we didn't have those to interrupt.
+
+353
+00:17:11.330 --> 00:17:14.333
+After states selected.
+
+354
+00:17:14.900 --> 00:17:15.534
+Now you'll notice
+
+355
+00:17:15.534 --> 00:17:18.537
+that we have two different
+threads to choose from.
+
+356
+00:17:18.637 --> 00:17:21.640
+We have thread zero
+which is a pizza shop, and then one
+
+357
+00:17:22.107 --> 00:17:24.843
+which is the New England IPA topic.
+
+358
+00:17:24.843 --> 00:17:27.946
+And our New England
+IPA, only has a couple of states here.
+
+359
+00:17:29.882 --> 00:17:32.885
+So you can explore essay
+making with this GUI.
+
+360
+00:17:33.419 --> 00:17:36.955
+More importantly, is to understand
+what's happening to memory state
+
+361
+00:17:37.089 --> 00:17:38.557
+and how the graph is being run.
+
+362
+00:17:39.892 --> 00:17:41.427
+If you want the details, you
+
+363
+00:17:41.427 --> 00:17:44.763
+can go into the helper.py file
+and all the code is there.
+
+364
+00:17:45.798 --> 00:17:47.566
+It's a little long,
+
+365
+00:17:47.566 --> 00:17:50.436
+but you can use that as the
+basis for your own project.
+
+366
+00:17:52.171 --> 00:17:55.174
+We've covered a lot in these past
+six lessons,
+
+367
+00:17:55.674 --> 00:17:58.677
+but it's honestly
+just the start of building agents.
+
+368
+00:17:59.078 --> 00:18:02.047
+In the next section,
+we'll do a quick overview
+
+369
+00:18:02.081 --> 00:18:05.617
+of some resources that you can peruse
+in your own time after the course
+
+370
+00:18:05.818 --> 00:18:07.453
+to get an even deeper understanding.
+

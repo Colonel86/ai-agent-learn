@@ -1,0 +1,1460 @@
+WEBVTT
+1
+00:00:00.390 --> 00:00:03.605
+In this lesson, we'll
+do a deep dive into
+
+2
+00:00:03.605 --> 00:00:09.801
+another advanced RAG technique, auto-merging.
+An issue with the naive approach
+
+3
+00:00:09.801 --> 00:00:14.978
+is that you're retrieving a
+bunch of fragmented context chunks to
+
+4
+00:00:14.978 --> 00:00:19.135
+put into the LLM context menu,
+and the fragmentation
+
+5
+00:00:19.135 --> 00:00:23.370
+is worse the smaller your
+chunk size. Here, we use an
+
+6
+00:00:23.370 --> 00:00:27.449
+auto-merging heuristic to merge
+smaller chunks into
+
+7
+00:00:27.449 --> 00:00:33.096
+a bigger parent chunk to help
+ensure more coherent context. Let's check
+
+8
+00:00:33.096 --> 00:00:37.017
+out how to
+set it up. In this section, we'll talk
+
+9
+00:00:37.017 --> 00:00:41.488
+about auto-merging retrieval. An
+issue with the standard
+
+10
+00:00:41.488 --> 00:00:44.704
+RAG pipeline
+is that you're retrieving a
+
+11
+00:00:44.704 --> 00:00:50.037
+bunch of fragmented context chunks
+put into the LLM context window,
+
+12
+00:00:50.037 --> 00:00:21.174
+and the fragmentation is worse the
+smaller your
+
+13
+00:00:21.174 --> 00:00:57.880
+chunk size. For instance, you
+might get back two or
+
+14
+00:00:57.880 --> 00:01:03.449
+more retrieved context chunks in
+roughly the same section, but there's
+
+15
+00:01:03.449 --> 00:01:07.214
+actually no guarantees on the ordering
+of these
+
+16
+00:01:07.214 --> 00:01:12.625
+chunks. This can potentially hamper
+the alum's ability to synthesize
+
+17
+00:01:12.625 --> 00:01:17.567
+over this retrieved context within its
+context window. So what
+
+18
+00:01:17.567 --> 00:01:22.273
+auto-merging retrieval does is
+the following. First, define
+
+19
+00:01:22.273 --> 00:01:26.586
+a hierarchy of
+smaller chunks linking to bigger parent
+
+20
+00:01:26.586 --> 00:01:30.978
+chunks, where each parent
+chunk can have some number of
+
+21
+00:01:30.978 --> 00:01:34.665
+children. Second,
+during retrieval, if the set
+
+22
+00:01:34.665 --> 00:01:38.116
+of smaller chunks linking to
+a parent chunk
+
+23
+00:01:38.116 --> 00:01:44.390
+exceeds some percentage threshold, then we
+merge smaller chunks into the bigger
+
+24
+00:01:44.390 --> 00:01:48.077
+parent chunk. So
+we retrieve the bigger parent
+
+25
+00:01:48.077 --> 00:01:53.410
+chunk instead to help ensure
+more coherent context. Now let's check
+
+26
+00:01:53.410 --> 00:01:57.567
+out how to set this up.
+This notebook will introduce
+
+27
+00:01:57.567 --> 00:02:03.841
+the various components needed to construct an auto-merging
+retriever with Llama
+
+28
+00:02:03.841 --> 00:02:06.822
+index. The various
+components will be
+
+29
+00:02:06.822 --> 00:02:10.508
+covered in detail.
+And similar to the previous
+
+30
+00:02:10.508 --> 00:02:13.802
+section, at the end,
+Adupam will show you
+
+31
+00:02:13.802 --> 00:02:20.155
+how to experiment with parameters and
+evaluation with TruEra. Similar to before,
+
+32
+00:02:20.155 --> 00:02:22.430
+we'll load in
+the OpenAI API
+
+33
+00:02:22.430 --> 00:02:25.959
+key, and we'll load
+this using a convenience
+
+34
+00:02:25.959 --> 00:02:31.920
+helper function in our utils file. As
+with the previous lessons, we'll also
+
+35
+00:02:31.920 --> 00:02:34.508
+use the how to
+build a career in
+
+36
+00:02:34.508 --> 00:02:38.901
+AI PDF. And as before, we
+also encourage you to try out
+
+37
+00:02:38.901 --> 00:02:41.959
+your own PDF files as well.
+We load in
+
+38
+00:02:41.959 --> 00:02:47.607
+41 document objects, and
+we'll merge them into a single large document,
+
+39
+00:02:47.607 --> 00:02:54.352
+which makes this more amenable for text
+blending with our advanced retrieval methods.
+
+40
+00:02:54.352 --> 00:02:58.979
+Now we're ready to
+set up our auto-merging retriever. This
+
+41
+00:02:58.979 --> 00:03:02.430
+will consist of
+a few different components,
+
+42
+00:03:02.430 --> 00:03:06.116
+and the first step is to define what we
+call a
+
+43
+00:03:06.116 --> 00:03:09.646
+hierarchical node parser. In
+order to use an
+
+44
+00:03:09.646 --> 00:03:13.646
+auto-version retriever, we need
+to parse our nodes
+
+45
+00:03:13.646 --> 00:03:19.450
+in a hierarchical fashion. This means
+that nodes are parsed in decreasing
+
+46
+00:03:19.450 --> 00:03:23.215
+sizes and
+contain relationships to their parent
+
+47
+00:03:23.215 --> 00:03:27.842
+node. Here we demonstrate how
+the node parser works with a
+
+48
+00:03:27.842 --> 00:03:30.274
+small example. We
+create a toy
+
+49
+00:03:30.274 --> 00:03:34.274
+parser with small chunk
+sizes to demonstrate. Note
+
+50
+00:03:34.274 --> 00:03:37.960
+that the chunk sizes
+we use are 20, 48, 5, 12,
+
+51
+00:03:37.960 --> 00:03:42.274
+and 128. You can change the
+chunk sizes to any sort of
+
+52
+00:03:42.274 --> 00:03:47.685
+decreasing order that you'd like. Here we do
+it by a factor of four.
+
+53
+00:03:47.685 --> 00:03:51.607
+Now let's get the
+set of nodes from the document.
+
+54
+00:03:51.607 --> 00:03:56.627
+What this
+does is this actually returns all nodes. This returns
+
+55
+00:03:56.627 --> 00:04:01.646
+all leaf nodes, intermediate nodes, as
+well as parent nodes. So
+
+56
+00:04:01.646 --> 00:04:05.333
+there's going to be
+a decent amount of overlap
+
+57
+00:04:05.333 --> 00:04:08.862
+of information and content between
+the leaf,
+
+58
+00:04:08.862 --> 00:04:15.372
+intermediate, and parent nodes. If we only
+want to retrieve the leaf nodes, we can
+
+59
+00:04:15.372 --> 00:04:19.058
+call a function within
+Llama index called "gat
+
+60
+00:04:19.058 --> 00:04:21.882
+leaf nodes," and we
+can take a look
+
+61
+00:04:21.882 --> 00:04:25.411
+at what that looks like.
+In this example, we
+
+62
+00:04:25.411 --> 00:04:30.274
+call gat leaf nodes on
+the original set of nodes. And we take
+
+63
+00:04:30.274 --> 00:04:33.019
+a look at the 31st node
+to look at
+
+64
+00:04:33.019 --> 00:04:37.411
+the text. We see that
+the text trunk is actually fairly
+
+65
+00:04:37.411 --> 00:04:42.588
+small. And this is an example of
+a leaf node, because a leaf node
+
+66
+00:04:42.588 --> 00:04:46.745
+is the smallest chunk size
+of 128 tokens. Here's how
+
+67
+00:04:46.745 --> 00:04:53.411
+you might go about strengthening your math background to
+figure out what's important
+
+68
+00:04:53.411 --> 00:04:56.706
+to know, etc. Now
+that we've shown what a
+
+69
+00:04:56.706 --> 00:05:00.000
+leaf node looks like,
+we can also explore
+
+70
+00:05:00.000 --> 00:05:04.784
+the relationships. We can print the
+parent of the above node
+
+71
+00:05:04.784 --> 00:05:09.490
+and observe that
+it's a larger chunk containing the text of
+
+72
+00:05:09.490 --> 00:05:14.039
+the leaf node, but also more.
+More concretely, the parent
+
+73
+00:05:14.039 --> 00:05:18.353
+node contains 512 tokens,
+while having four leaf nodes
+
+74
+00:05:18.353 --> 00:05:23.608
+that contain 128 tokens. There's
+four leaf nodes because the chunk
+
+75
+00:05:23.608 --> 00:05:27.843
+sizes are divided by a
+factor of four each time. This
+
+76
+00:05:27.843 --> 00:05:09.490
+is an example of
+what the parent node of
+
+77
+00:05:09.490 --> 00:05:34.667
+the 31st leaf node looks
+like. Now that we've
+
+78
+00:05:34.667 --> 00:05:38.510
+shown you what the
+node hierarchy looks like, we
+
+79
+00:05:38.510 --> 00:05:42.745
+can now construct our index.
+We'll use the OpenAI LLM
+
+80
+00:05:42.745 --> 00:05:49.490
+and specifically GPT 3.5 Turbo. We'll
+also define a service context object containing
+
+81
+00:05:49.490 --> 00:05:54.981
+the LLM embedding model and
+the hierarchical node parser. As with the
+
+82
+00:05:54.981 --> 00:06:00.471
+previous notebooks, we'll use
+the "bge small en embedding model." The
+
+83
+00:06:00.471 --> 00:06:03.373
+next step is to
+construct our index.
+
+84
+00:06:03.373 --> 00:06:05.490
+The way the
+index works is
+
+85
+00:06:05.490 --> 00:06:10.745
+that we actually construct a
+vector index on specifically the leaf
+
+86
+00:06:10.745 --> 00:06:14.745
+nodes. All other
+intermediate and parent nodes are
+
+87
+00:06:14.745 --> 00:06:20.236
+stored in a doc
+store and are retrieved dynamically during retrieval.
+
+88
+00:06:20.236 --> 00:06:24.157
+But what we actually fetch during
+the initial top
+
+89
+00:06:24.157 --> 00:06:27.216
+K embedding lookup
+is specifically the
+
+90
+00:06:27.216 --> 00:06:30.824
+leaf nodes, and
+that's what we embed. You see
+
+91
+00:06:30.824 --> 00:06:34.432
+in this code that we define
+a storage context
+
+92
+00:06:34.432 --> 00:06:40.550
+object, which by default is initialized
+with an in-memory document store. And
+
+93
+00:06:40.550 --> 00:06:47.373
+we call "storage_context.docstore.addDocuments "to add
+all nodes to this in-memory doc
+
+94
+00:06:47.373 --> 00:06:53.805
+store. However, when we create our vector store
+index, called auto-merging index,
+
+95
+00:06:53.805 --> 00:06:56.707
+right here, we only
+pass in the leaf
+
+96
+00:06:56.707 --> 00:07:01.569
+nodes for vector indexing. This means
+that, specifically, the
+
+97
+00:07:01.569 --> 00:07:05.491
+leaf
+nodes are embedded using the embedding model
+
+98
+00:07:05.491 --> 00:07:10.040
+and also indexed. But
+we also pass in the storage context
+
+99
+00:07:10.040 --> 00:07:14.432
+as well as the
+service context. And so the vector index
+
+100
+00:07:14.432 --> 00:07:18.589
+does have knowledge of the
+underlying doc store that
+
+101
+00:07:18.589 --> 00:07:22.354
+contains all the nodes.
+And finally, we persist
+
+102
+00:07:22.354 --> 00:07:26.040
+this index. If you've
+already built this index
+
+103
+00:07:26.040 --> 00:07:29.648
+and you want to
+load it from storage, you can
+
+104
+00:07:29.648 --> 00:07:33.256
+just copy and paste this block
+of code, which
+
+105
+00:07:33.256 --> 00:07:36.864
+will rebuild the
+index if it doesn't exist or
+
+106
+00:07:36.864 --> 00:07:41.805
+load it from storage. The last
+step now that we've defined the
+
+107
+00:07:41.805 --> 00:07:47.766
+auto-merging index is to set up the retriever
+and run the query engine. The
+
+108
+00:07:47.766 --> 00:07:52.629
+auto-merging retriever is what controls
+the merging logic. If
+
+109
+00:07:52.629 --> 00:07:57.570
+a majority of children
+nodes are retrieved for a given parent,
+
+110
+00:07:57.570 --> 00:08:01.805
+they are swapped out for the
+parent instead. In order
+
+111
+00:08:01.805 --> 00:08:04.786
+for this merging to
+work well, we set
+
+112
+00:08:04.786 --> 00:08:09.256
+a large top-k for the leaf nodes.
+And remember, the leaf
+
+113
+00:08:09.256 --> 00:08:12.393
+nodes also have a
+smaller chunk size of
+
+114
+00:08:12.393 --> 00:08:15.531
+128. In order to
+reduce token usage, we
+
+115
+00:08:15.531 --> 00:08:19.139
+apply a re-ranker after
+the merging has taken
+
+116
+00:08:19.139 --> 00:08:24.394
+place. For example, we might retrieve the top
+12, merge and have a
+
+117
+00:08:24.394 --> 00:08:28.394
+top 10, and then re-rank into a
+top 6. The top end
+
+118
+00:08:28.394 --> 00:08:33.727
+for the re-ranker may seem larger,
+but remember that the base chunk
+
+119
+00:08:33.727 --> 00:08:38.119
+size is only 128 tokens, and then
+the next parent above
+
+120
+00:08:38.119 --> 00:08:41.100
+that is
+512 tokens. We import a class
+
+121
+00:08:41.100 --> 00:08:48.943
+called auto-merging retriever, and then we
+define a sentence transformer re-rank module. We combine
+
+122
+00:08:48.943 --> 00:08:53.962
+both the auto-merging retriever and the
+re-rank module into our
+
+123
+00:08:53.962 --> 00:09:00.002
+retriever query engine, which handles
+both retrieval and synthesis. Now that
+
+124
+00:09:00.002 --> 00:09:04.864
+we've set this whole thing
+up end-to-end, let's actually test
+
+125
+00:09:04.864 --> 00:09:08.237
+what is the importance of networking
+in AI
+
+126
+00:09:08.237 --> 00:09:11.217
+as an example question,
+we get back a
+
+127
+00:09:11.217 --> 00:09:14.433
+response. We
+see that it says networking
+
+128
+00:09:14.433 --> 00:09:18.276
+is important in AI because
+it allows individuals
+
+129
+00:09:18.276 --> 00:09:21.649
+to build a strong
+professional network and
+
+130
+00:09:21.649 --> 00:06:01.726
+more. The next
+step is to
+
+131
+00:06:01.726 --> 00:09:30.747
+put it all together. And we'll create two
+high-level functions, build auto-merging index,
+
+132
+00:09:30.747 --> 00:09:34.747
+as well as
+get auto-merging query engine. And this
+
+133
+00:09:34.747 --> 00:09:39.453
+basically captures all
+the steps that we just showed you in
+
+134
+00:09:39.453 --> 00:09:46.120
+the first function, build auto-merging index.
+We'll use the hierarchical node parser
+
+135
+00:09:46.120 --> 00:09:48.943
+to parse out
+the hierarchy of child
+
+136
+00:09:48.943 --> 00:09:55.767
+to parent nodes we'll define the service context
+and we'll create a vector store index
+
+137
+00:09:55.767 --> 00:10:00.394
+from the leaf nodes
+but also linking to the document store
+
+138
+00:10:00.394 --> 00:10:03.375
+of all the
+nodes the second function,
+
+139
+00:10:03.375 --> 00:10:07.924
+get auto-merging query engine,
+leverages our auto merging
+
+140
+00:10:07.924 --> 00:10:12.316
+retriever which is able to dynamically
+merge leaf nodes
+
+141
+00:10:12.316 --> 00:08:26.354
+into parent nodes and
+also use our re-rank
+
+142
+00:08:26.354 --> 00:10:19.924
+module and then combine
+it with the overall retriever
+
+143
+00:10:19.924 --> 00:10:25.022
+query engine. So we build the index
+using the build auto-merging
+
+144
+00:10:25.022 --> 00:10:29.336
+index function using the
+original source document, the
+
+145
+00:10:29.336 --> 00:10:32.002
+LLM set to GPT
+3.5 turbo, as well
+
+146
+00:10:32.002 --> 00:10:35.610
+as the merging index as a
+save directory. And
+
+147
+00:10:35.610 --> 00:10:39.061
+then for the
+query engine, we call get auto
+
+148
+00:10:39.061 --> 00:10:42.904
+merging query engine
+based on the index, as well
+
+149
+00:10:42.904 --> 00:10:46.512
+as we set a similarity top K
+of equal to six.
+
+150
+00:10:46.512 --> 00:10:49.414
+As a next step,
+Anupam will show you
+
+151
+00:10:49.414 --> 00:10:54.120
+how to evaluate the auto-merging
+retriever and also iterate
+
+152
+00:10:54.120 --> 00:10:59.218
+on parameters using TruEra.
+We encourage you to try out your own
+
+153
+00:10:59.218 --> 00:11:03.611
+questions as well and also
+iterate on the parameters of
+
+154
+00:11:03.611 --> 00:11:09.650
+auto-merging retrieval. For instance, what happens
+when you change the trunk
+
+155
+00:11:09.650 --> 00:11:13.650
+sizes or the top K or
+the top N for the re-ranker?
+
+156
+00:11:13.650 --> 00:11:17.885
+Play around with it and tell us
+what the results are.
+
+157
+00:11:17.964 --> 00:11:23.140
+That was awesome, Jerry.
+Now that you have set up the auto-merging
+
+158
+00:11:23.140 --> 00:11:27.611
+retriever, let's see how we can evaluate
+it with the RAG
+
+159
+00:11:27.611 --> 00:11:31.297
+triad and compare its
+performance to the basic
+
+160
+00:11:31.297 --> 00:11:34.670
+RAG with experiment tracking.
+Let's set up
+
+161
+00:11:34.670 --> 00:11:39.140
+this auto-merging new index. You'll
+notice that it's two
+
+162
+00:11:39.140 --> 00:11:43.846
+layers. The lowest layer chunk, the leaf
+nodes, will have a
+
+163
+00:11:43.846 --> 00:11:47.297
+chunk size of
+512, and the next layer up in
+
+164
+00:11:47.297 --> 00:11:51.925
+the hierarchy is a
+chunk size of 2048, in the hierarchy is
+
+165
+00:11:51.925 --> 00:11:56.395
+a chunk size of 2048, meaning
+that each parent will have
+
+166
+00:11:56.395 --> 00:11:59.533
+four leaf nodes of
+512 tokens each. The
+
+167
+00:11:59.533 --> 00:12:03.297
+other pieces of setting this
+up are exactly the
+
+168
+00:12:03.297 --> 00:12:06.591
+same as what Jerry
+has shown you earlier.
+
+169
+00:12:06.591 --> 00:12:12.082
+One reason you may want to
+experiment with the two-layer auto-merging
+
+170
+00:12:12.082 --> 00:12:15.376
+structure is that it's simpler.
+Less work
+
+171
+00:12:15.376 --> 00:12:19.219
+is needed to create the
+index, as well as in the
+
+172
+00:12:19.219 --> 00:12:24.709
+retrieval step, there is
+less work needed because all the third-layer
+
+173
+00:12:24.709 --> 00:12:28.866
+checks go away. If
+it performs comparably well, then
+
+174
+00:12:28.866 --> 00:12:32.788
+ideally we want to
+work with a simpler structure.
+
+175
+00:12:32.788 --> 00:12:37.101
+Now that we have created
+the index with this two-layer
+
+176
+00:12:37.101 --> 00:12:43.454
+auto-merging structure. Let's set up
+the auto-merging engine for this setup. I'm
+
+177
+00:12:43.454 --> 00:12:46.278
+keeping the top
+K at the same value
+
+178
+00:12:46.278 --> 00:12:50.827
+as before, which is 12. And
+the re-ranking step will also
+
+179
+00:12:50.827 --> 00:12:54.827
+have the same and equal six.
+This will let us do a
+
+180
+00:12:54.827 --> 00:13:00.082
+more direct head to head
+comparison between this application setup
+
+181
+00:13:00.082 --> 00:13:06.200
+and the three-layer auto-merging hierarchy app
+that Jerry had set up earlier.
+
+182
+00:13:06.200 --> 00:13:09.651
+Now let's set
+up the Tru Recorder with this
+
+183
+00:13:09.651 --> 00:13:13.965
+auto-merging engine and we
+will give this an app ID of
+
+184
+00:13:13.965 --> 00:13:18.043
+app 0. Let's now load some questions for
+evaluation
+
+185
+00:13:18.043 --> 00:13:24.161
+from the generated questions.txt file that
+we have set up earlier, now we can
+
+186
+00:13:24.161 --> 00:13:28.710
+define the running of these evaluation
+questions for each
+
+187
+00:13:28.710 --> 00:13:32.474
+question in
+eval, we are going to set things up
+
+188
+00:13:32.474 --> 00:13:36.475
+so that the Tru Recorder object,
+when invoked with
+
+189
+00:13:36.475 --> 00:13:43.847
+the run evals, will record the
+prompts, responses, and the evaluation results, leveraging the
+
+190
+00:13:43.847 --> 00:13:49.181
+query engine. Now that our
+evaluations have completed, let's take a
+
+191
+00:13:49.181 --> 00:13:52.710
+look at the leaderboard. We
+can see that app
+
+192
+00:13:52.710 --> 00:13:56.239
+0 metrics here. Context
+relevance seems low.
+
+193
+00:13:56.239 --> 00:14:01.024
+The other two metrics
+are better. This is with our two-level
+
+194
+00:14:01.024 --> 00:14:05.887
+hierarchy with 512 as the leaf node chunk
+size and the parent
+
+195
+00:14:05.887 --> 00:14:10.436
+being 2048 tokens, so four leaf
+nodes per parent node now
+
+196
+00:14:10.436 --> 00:14:14.592
+we can run the
+true dashboard and take a look at the
+
+197
+00:14:14.592 --> 00:14:18.200
+evaluation results at the
+record level at the
+
+198
+00:14:18.200 --> 00:14:23.612
+next layer of detail. Let's examine the app
+leaderboard. You can see
+
+199
+00:14:23.612 --> 00:14:27.612
+here that after processing
+24 records, the context
+
+200
+00:14:27.612 --> 00:14:31.926
+relevance at an aggregate
+level is quite low, although
+
+201
+00:14:31.926 --> 00:14:35.691
+the app is doing better
+on answer relevance and
+
+202
+00:14:35.691 --> 00:14:39.926
+groundedness. I can select the
+app. Let's now look at
+
+203
+00:14:39.926 --> 00:14:44.554
+the individual records of app
+0 and see how the evaluation
+
+204
+00:14:44.554 --> 00:14:46.671
+scores are for
+the various
+
+205
+00:14:46.671 --> 00:14:50.671
+records. You can scroll to the
+right here and look
+
+206
+00:14:50.671 --> 00:14:54.985
+at the scores for
+answer relevance, context relevance,
+
+207
+00:14:54.985 --> 00:14:59.220
+and groundedness. Let's pick
+one that has low context
+
+208
+00:14:59.220 --> 00:15:03.377
+relevance. So here's one. If
+you click on it, you'll
+
+209
+00:15:03.377 --> 00:15:06.436
+see the more detailed view
+down below.
+
+210
+00:15:06.436 --> 00:15:09.730
+The question is
+discuss the importance of
+
+211
+00:15:09.730 --> 00:15:16.554
+budgeting for resources and the successful
+execution of AI projects. On the right here
+
+212
+00:15:16.554 --> 00:15:19.691
+is the response. And
+if you scroll down
+
+213
+00:15:19.691 --> 00:15:21.887
+further, you can
+see a more
+
+214
+00:15:21.887 --> 00:15:27.456
+detailed view for context relevance. There
+were six pieces of retrieve
+
+215
+00:15:27.456 --> 00:15:33.338
+context. Each of them is scored to
+be particularly low in their evaluation
+
+216
+00:15:33.338 --> 00:15:37.103
+scores. It's between 0 and
+0.2. And if you pick
+
+217
+00:15:37.103 --> 00:15:40.632
+any of them and click on
+it you can see that
+
+218
+00:15:40.632 --> 00:15:45.574
+the response is not
+particularly relevant to the question that
+
+219
+00:15:45.574 --> 00:15:52.632
+was asked. You can also scroll back up and explore
+some of the other records you can pick
+
+220
+00:15:52.632 --> 00:15:56.240
+ones, for example, where
+the scores are good,
+
+221
+00:15:56.240 --> 00:16:01.025
+like this one here,
+and explore how the application is doing
+
+222
+00:16:01.025 --> 00:16:05.025
+on various questions, and
+where its strengths are,
+
+223
+00:16:05.025 --> 00:16:08.005
+where its failure modes are,
+to build
+
+224
+00:16:08.005 --> 00:16:13.888
+some intuition around what's working
+and what's not. Let's now compare the
+
+225
+00:16:13.888 --> 00:16:17.339
+previous app to the auto-merging setup
+that
+
+226
+00:16:17.339 --> 00:16:21.966
+Jerry introduced earlier. We will
+have three layers now in
+
+227
+00:16:21.966 --> 00:16:27.613
+the hierarchy, starting with 128 tokens
+at the leaf node level 512, one
+
+228
+00:16:27.613 --> 00:16:31.064
+layer up, and 2048
+at the highest layer, so
+
+229
+00:16:31.064 --> 00:16:33.417
+at each layer
+each parent has
+
+230
+00:16:33.417 --> 00:16:37.182
+four children. Now let's
+set up the query engine
+
+231
+00:16:37.182 --> 00:16:41.809
+for this app setup, the
+True Recorder, all identical steps
+
+232
+00:16:41.809 --> 00:16:45.417
+as the one
+for the previous app. And finally,
+
+233
+00:16:45.417 --> 00:16:48.947
+we are in a
+position to run the evaluations.
+
+234
+00:16:48.947 --> 00:16:52.633
+Now that we have app 1 set
+up, we can take a
+
+235
+00:16:52.633 --> 00:16:55.692
+quick look. And
+the total cost is also
+
+236
+00:16:55.692 --> 00:17:00.790
+about half. And that's because,
+recall, this has three layers in
+
+237
+00:17:00.790 --> 00:17:06.045
+the hierarchy and the chunk
+size is 128 tokens instead of the 512,
+
+238
+00:17:06.045 --> 00:17:11.535
+which is the smallest leaf node
+token size for app 0. So that results
+
+239
+00:17:11.535 --> 00:17:15.927
+in a cost reduction. Notice
+also that context relevance
+
+240
+00:17:15.927 --> 00:17:19.065
+has increased by about
+20%. And part of
+
+241
+00:17:19.065 --> 00:17:23.692
+the reason that's happening is that
+And part of the reason
+
+242
+00:17:23.692 --> 00:17:29.574
+that's happening is that the merging
+is likely happening a lot better with
+
+243
+00:17:29.574 --> 00:17:31.692
+this new app
+setup. We can
+
+244
+00:17:31.692 --> 00:17:35.378
+also drill down and
+look at app one in greater
+
+245
+00:17:35.378 --> 00:17:40.241
+detail. Like before, we can
+look at individual records. Let's
+
+246
+00:17:40.241 --> 00:17:43.065
+pick the same one
+that we looked at
+
+247
+00:17:43.065 --> 00:17:46.829
+earlier, the tab 0.
+It's the question about the
+
+248
+00:17:46.829 --> 00:17:53.104
+importance of budgeting. And now you can see
+context relevance is doing better.
+
+249
+00:17:53.104 --> 00:17:57.183
+Groundedness is
+also considerably higher. And if we
+
+250
+00:17:57.183 --> 00:18:02.124
+pick a sample example response here,
+you'll see that, in fact,
+
+251
+00:18:02.124 --> 00:18:08.006
+it is talking very specifically about budgeting for
+resources. So there is
+
+252
+00:18:08.006 --> 00:18:13.104
+improvement in this particular instance
+and also at an aggregate
+
+253
+00:18:13.104 --> 00:18:16.555
+level. Let me now
+summarize some of the key
+
+254
+00:18:16.555 --> 00:18:23.065
+takeaways from Lesson 4. We walked
+you through an approach to evaluate and iterate
+
+255
+00:18:23.065 --> 00:18:28.320
+with the auto-retrieval
+advanced RAG technique. And in particular,
+
+256
+00:18:28.320 --> 00:18:32.791
+we showed you
+how to iterate with different hierarchical
+
+257
+00:18:32.791 --> 00:18:35.771
+structures, the
+number of levels, the
+
+258
+00:18:35.771 --> 00:18:39.222
+number of child nodes,
+and chunk sizes. And
+
+259
+00:18:39.222 --> 00:18:43.379
+for these different app
+versions, you could evaluate
+
+260
+00:18:43.379 --> 00:18:47.222
+them with the RAG triad
+and track experiments to
+
+261
+00:18:47.222 --> 00:18:50.830
+pick the best structure for your
+use case. One
+
+262
+00:18:50.830 --> 00:18:53.810
+thing to notice
+is that not only are
+
+263
+00:18:53.810 --> 00:18:57.575
+you getting the metrics associated
+with the RAG
+
+264
+00:18:57.575 --> 00:19:01.654
+triad as part of the evaluation,
+but the drill down
+
+265
+00:19:01.654 --> 00:19:04.791
+into the record level
+can help you gain
+
+266
+00:19:04.791 --> 00:19:10.673
+intuition about hyperparameters that
+work best with certain doc types. For
+
+267
+00:19:10.673 --> 00:19:14.987
+example, depending on the nature of
+the document, such
+
+268
+00:19:14.987 --> 00:19:19.771
+as employment contracts
+versus invoices, you might find that
+
+269
+00:19:19.771 --> 00:19:26.046
+different chunk sizes and hierarchical
+structures work best. Finally, one other
+
+270
+00:19:26.046 --> 00:19:28.713
+thing to note
+is that auto-merging
+
+271
+00:19:28.713 --> 00:19:34.595
+is complementary to sentence window retrieval.
+And one way to think about
+
+272
+00:19:34.595 --> 00:19:37.183
+that is, let's say
+you have four
+
+273
+00:19:37.183 --> 00:19:41.419
+child nodes of
+a parent. With auto-merging, you might
+
+274
+00:19:41.419 --> 00:19:44.321
+find that child
+number one and child
+
+275
+00:19:44.321 --> 00:19:48.948
+number four are very relevant to the query
+that was asked.
+
+276
+00:19:48.948 --> 00:19:55.301
+And these then get
+merged under the auto-merging paradigm. In contrast, sentence
+
+277
+00:19:55.301 --> 00:20:00.791
+windowing may not result in this
+kind of merging because they are not
+
+278
+00:20:00.791 --> 00:20:04.635
+in a contiguous section of
+the text. That brings
+
+279
+00:20:04.635 --> 00:20:06.987
+us to the end
+of Lesson 4. We
+
+280
+00:20:06.987 --> 00:20:11.144
+have observed that with
+advanced rag techniques such
+
+281
+00:20:11.144 --> 00:20:16.164
+as sentence windowing and
+auto-merging retrieval augmented with
+
+282
+00:20:16.164 --> 00:20:20.870
+the power of evaluation,
+experiment tracking, and iteration,
+
+283
+00:20:20.870 --> 00:20:25.654
+you can significantly improve
+your rag applications. Improve
+
+284
+00:20:25.654 --> 00:20:32.635
+your RAG applications. In addition,
+while the course has focused on these two techniques
+
+285
+00:20:32.635 --> 00:20:36.949
+and the associated RAG triad for
+evaluation, there are
+
+286
+00:20:36.949 --> 00:20:40.713
+a number of other evaluations
+that you can play
+
+287
+00:20:40.713 --> 00:20:43.694
+with in order to
+ensure that your LLM
+
+288
+00:20:43.694 --> 00:20:47.851
+applications are honest,
+harmless, and helpful. This
+
+289
+00:20:47.851 --> 00:20:51.145
+slide has a list
+of some of the ones that
+
+290
+00:20:51.145 --> 00:20:54.439
+are available out of
+the box in TrueLens.
+
+291
+00:20:54.439 --> 00:20:58.753
+We encourage you to
+go play with TrueLens, explore the
+
+292
+00:20:58.753 --> 00:21:02.910
+notebooks, and take your learning to
+the next level.

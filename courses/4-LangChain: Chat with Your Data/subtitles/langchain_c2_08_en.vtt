@@ -1,0 +1,176 @@
+WEBVTT
+
+1
+00:00:01.198 --> 00:00:05.002
+And that brings this class on LangChain,
+Chat with Your Data, to an end.
+
+2
+00:00:05.903 --> 00:00:09.893
+In this class, we've covered how to use
+LangChain to load data
+
+3
+00:00:09.893 --> 00:00:12.886
+from a variety of
+document sources using LangChain's 80-plus
+
+4
+00:00:12.886 --> 00:00:13.883
+different document
+loaders.
+
+5
+00:00:14.900 --> 00:00:17.102
+From there,
+we split the documents into chunks,
+
+6
+00:00:17.102 --> 00:00:20.682
+and talk about a lot of the nuances
+that arrive when doing so.
+
+7
+00:00:21.938 --> 00:00:24.799
+After that, we take those chunks,
+create embeddings for them,
+
+8
+00:00:24.799 --> 00:00:27.660
+and put them into a vector store,
+showing how that
+
+9
+00:00:27.660 --> 00:00:28.804
+easily enables semantic search.
+
+10
+00:00:29.523 --> 00:00:32.615
+But we also talk about some of the
+downsides of semantic search,
+
+11
+00:00:32.615 --> 00:00:35.707
+and where it can fail in
+the certain edge cases that arise.
+
+12
+00:00:37.203 --> 00:00:39.420
+The next thing that
+we cover is retrieval,
+
+13
+00:00:39.420 --> 00:00:43.576
+maybe my favorite part of the class,
+where we talk about a lot of new
+
+14
+00:00:43.576 --> 00:00:45.793
+and advanced and really
+fun retrieval algorithms for
+
+15
+00:00:45.793 --> 00:00:46.901
+overcoming those edge cases.
+
+16
+00:00:48.382 --> 00:00:50.857
+We combine that with
+LLMs in the next session,
+
+17
+00:00:50.857 --> 00:00:52.508
+where we take
+those retrieved documents,
+
+18
+00:00:52.508 --> 00:00:55.533
+we take the user question,
+we pass it to an LLM,
+
+19
+00:00:55.533 --> 00:00:58.008
+and we generate an
+answer to the original question.
+
+20
+00:00:58.008 --> 00:00:59.933
+But there's
+still one thing missing, which
+
+21
+00:00:59.933 --> 00:01:01.583
+is the conversational
+aspect of it.
+
+22
+00:01:02.221 --> 00:01:04.814
+And that's
+where we finish out the class, by
+
+23
+00:01:04.814 --> 00:01:07.406
+creating a fully functioning end-to-end chatbot
+over your data.
+
+24
+00:01:08.959 --> 00:01:10.580
+I've
+really enjoyed teaching this class. I
+
+25
+00:01:10.580 --> 00:01:12.202
+hope you guys have enjoyed taking it.
+
+26
+00:01:12.878 --> 00:01:15.599
+And I want to thank everyone in the
+open source who has
+
+27
+00:01:15.599 --> 00:01:17.413
+contributed a lot of
+the things that make
+
+28
+00:01:17.413 --> 00:01:19.908
+this class possible,
+like all the prompts and a lot of
+
+29
+00:01:19.908 --> 00:01:21.041
+the functionality that you see.
+
+30
+00:01:22.682 --> 00:01:24.797
+As you guys build
+with LangChain and discover
+
+31
+00:01:24.797 --> 00:01:27.439
+new ways of doing
+things and new tips and techniques,
+
+32
+00:01:28.057 --> 00:01:31.765
+I hope that you share what you'll
+learn on Twitter or even open
+
+33
+00:01:31.765 --> 00:01:35.473
+up a PR in LangChain. It's a
+really fast-moving field, and it's an
+
+34
+00:01:35.473 --> 00:01:36.043
+exciting time.
+
+35
+00:01:36.602 --> 00:01:38.284
+I really look forward
+to seeing how you
+
+36
+00:01:38.284 --> 00:01:39.966
+apply everything that you
+learned in this class.

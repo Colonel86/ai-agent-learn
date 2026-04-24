@@ -1,0 +1,203 @@
+WEBVTT
+1
+00:00:02.950 --> 00:00:07.110
+Hello and welcome to our course,
+Functions, Tools and Agents with LanChain.
+
+2
+00:00:07.690 --> 00:00:10.150
+LLMs have demonstrated
+an amazing ability to
+
+3
+00:00:10.150 --> 00:00:12.410
+interact with humans
+using natural language,
+
+4
+00:00:12.910 --> 00:00:14.890
+which has opened the door
+to many new applications.
+
+5
+00:00:16.050 --> 00:00:19.910
+But how can LLMs also interact with
+our existing software infrastructure?
+
+6
+00:00:20.570 --> 00:00:22.350
+For example, by letting
+it decide when to make
+
+7
+00:00:22.350 --> 00:00:24.140
+a function call to a
+different program to get
+
+8
+00:00:24.140 --> 00:00:25.530
+more information call
+to a different program
+
+9
+00:00:25.530 --> 00:00:27.309
+to get more information
+or to take an action.
+
+10
+00:00:28.309 --> 00:00:31.480
+LLMs were originally designed
+to generate text for humans,
+
+11
+00:00:31.480 --> 00:00:35.340
+but some LLMs have now been
+trained to output formatted data,
+
+12
+00:00:35.340 --> 00:00:37.450
+such as values stored as JSON,
+
+13
+00:00:37.450 --> 00:00:43.429
+to make it easy to let the LLM decide
+when to call other code as a subroutine.
+
+14
+00:00:44.490 --> 00:00:47.369
+This significantly expands
+what you can do with LMs,
+
+15
+00:00:47.710 --> 00:00:51.329
+such as let them extract
+information from structured or
+
+16
+00:00:51.329 --> 00:00:54.710
+tabular data which LMs have
+typically struggled with.
+
+17
+00:00:55.090 --> 00:00:58.289
+Here to tell you more
+about this is Harrison Chase,
+
+18
+00:00:58.289 --> 00:01:02.450
+co-founder and CEO of Landchain, who has
+also taught two previous short courses.
+
+19
+00:01:03.130 --> 00:01:03.729
+Welcome back, Harrison.
+
+20
+00:01:04.310 --> 00:01:05.950
+Thanks, Andrew. So great to be back.
+
+21
+00:01:06.530 --> 00:01:07.069
+You're right, this new capability
+which OpenAI has named function
+
+22
+00:01:13.969 --> 00:01:16.810
+Harrison, you've described
+Langchain in other courses,
+
+23
+00:01:17.370 --> 00:01:19.129
+but maybe you could
+describe what has changed
+
+24
+00:01:19.129 --> 00:01:21.129
+and what you'd be covering in this course.
+
+25
+00:01:21.569 --> 00:01:21.989
+Absolutely.
+
+26
+00:01:22.549 --> 00:01:26.450
+As you know, Langchain is an open
+source library that helps developers
+
+27
+00:01:26.450 --> 00:01:29.049
+bridge the gap between
+traditional software and LLMs.
+
+28
+00:01:29.769 --> 00:01:33.689
+It allows developers to support
+any number of different LLMs and
+
+29
+00:01:33.689 --> 00:01:36.549
+provides over 500 integrations
+to different language models,
+
+30
+00:01:36.549 --> 00:01:40.829
+vector stores, and tools, as well as
+supporting memory chains and agents.
+
+31
+00:01:41.849 --> 00:01:44.810
+There are two significant changes that
+you will be getting into during the course.
+
+32
+00:01:54.730 --> 00:01:57.510
+The second is changes to take advantage
+of the new function calling capability.
+
+33
+00:01:58.430 --> 00:02:01.469
+You'll learn how to use that
+directly and we'll also show how
+
+34
+00:02:01.469 --> 00:02:04.230
+it can be used to do tasks
+like tagging or extracting data.
+
+35
+00:02:05.189 --> 00:02:09.150
+Function Calling makes building tools
+for LLMs simpler and more reliable.
+
+36
+00:02:09.870 --> 00:02:10.289
+You'll build some tools, and then, use
+them to build a conversational agent.
+
+37
+00:02:19.590 --> 00:02:22.389
+You get to use all of those elements
+in the course and in the final project.
+
+38
+00:02:23.830 --> 00:02:24.689
+That sounds great, Harrison. And I think,
+
+39
+00:02:32.169 --> 00:02:35.009
+Many people have worked to
+make this course possible.
+
+40
+00:02:35.370 --> 00:02:39.870
+We're grateful to Lance Martin
+and Nuno Kampas from Landchain.
+
+41
+00:02:40.729 --> 00:02:42.439
+And on the deeplearning.ai side,
+
+42
+00:02:42.439 --> 00:02:45.849
+Jeff Lodwick and Eshmel Gagari
+also contributed to this course.

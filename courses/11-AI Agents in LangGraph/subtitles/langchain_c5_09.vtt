@@ -1,0 +1,401 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.066 --> 00:00:01.434
+Congratulations.
+
+2
+00:00:01.434 --> 00:00:04.437
+You now have a good hand
+on how to build your own agents.
+
+3
+00:00:04.704 --> 00:00:06.339
+With what you have learned today,
+
+4
+00:00:06.339 --> 00:00:09.342
+you can build simple
+or quite complex agents.
+
+5
+00:00:09.743 --> 00:00:12.812
+But before we go,
+I wanted to cover some of the agent flows
+
+6
+00:00:13.079 --> 00:00:14.848
+that we couldn't build today,
+
+7
+00:00:14.848 --> 00:00:17.851
+but I think you should know about.
+
+8
+00:00:19.319 --> 00:00:21.221
+The first architecture I want to talk
+
+9
+00:00:21.221 --> 00:00:24.224
+about is a multi-agent architecture.
+
+10
+00:00:24.257 --> 00:00:26.826
+And we covered this a little bit
+with the writing agent.
+
+11
+00:00:26.826 --> 00:00:29.829
+But just to make it a little bit
+more concrete.
+
+12
+00:00:29.863 --> 00:00:33.099
+A multi-agent architecture
+is when multiple different
+
+13
+00:00:33.199 --> 00:00:36.202
+agents work on the same shared state.
+
+14
+00:00:36.336 --> 00:00:40.507
+And so these agents could be just a prompt
+and a language model
+
+15
+00:00:40.507 --> 00:00:41.975
+as they were in the writer.
+
+16
+00:00:41.975 --> 00:00:45.078
+They could also have different tools
+that they could call this.
+
+17
+00:00:45.078 --> 00:00:47.781
+And that could be a prompt,
+a language model and tools.
+
+18
+00:00:47.781 --> 00:00:50.784
+And they could actually have
+their own loops inside them.
+
+19
+00:00:51.317 --> 00:00:52.819
+The crucial thing here,
+
+20
+00:00:52.819 --> 00:00:55.221
+and the differentiator
+between the next thing that we'll see
+
+21
+00:00:55.221 --> 00:00:58.224
+is that they all work
+on the same shared state.
+
+22
+00:00:58.658 --> 00:01:02.128
+So they're passing that around from one
+agent to the next.
+
+23
+00:01:02.896 --> 00:01:05.899
+Let's contrast
+that with a supervisor agent.
+
+24
+00:01:06.166 --> 00:01:10.437
+So here we have a supervisor
+which is calling into some sub-agents.
+
+25
+00:01:10.870 --> 00:01:14.207
+And here the supervisor will actually
+determine what the input to that agent is.
+
+26
+00:01:14.240 --> 00:01:18.278
+And those agents themselves
+could have different states inside them.
+
+27
+00:01:18.678 --> 00:01:20.046
+There are graphs.
+
+28
+00:01:20.046 --> 00:01:24.150
+And so there's not necessarily
+the same concept of a shared state.
+
+29
+00:01:24.484 --> 00:01:28.121
+Other than that this is pretty similar
+to the multi-agent framework.
+
+30
+00:01:28.421 --> 00:01:31.658
+It just really emphasizes
+that there's this one supervisor
+
+31
+00:01:31.925 --> 00:01:35.462
+that's in charge of routing
+and coordinating these other agents.
+
+32
+00:01:36.196 --> 00:01:37.130
+This is often good
+
+33
+00:01:37.130 --> 00:01:40.767
+when you can use a really powerful
+language model as the supervisor.
+
+34
+00:01:41.034 --> 00:01:45.505
+Because doing this supervision, doing this
+planning requires a lot of intelligence.
+
+35
+00:01:46.306 --> 00:01:49.576
+One term that's popped up
+a bunch recently is flow engineering.
+
+36
+00:01:50.343 --> 00:01:52.745
+This comes from an AlphaCodium paper,
+
+37
+00:01:52.745 --> 00:01:56.082
+where they achieve
+state of the art coding performance.
+
+38
+00:01:56.382 --> 00:02:00.854
+And they do it with a very graphical
+like solution like this.
+
+39
+00:02:01.387 --> 00:02:05.492
+And so looking at it you can see that
+it's basically a pipeline.
+
+40
+00:02:05.792 --> 00:02:09.395
+But there are a few key nodes
+where there's actually a loop.
+
+41
+00:02:10.096 --> 00:02:13.066
+So there's loops on the initial code
+solution.
+
+42
+00:02:13.066 --> 00:02:15.468
+There's loops
+when you iterate on public tests
+
+43
+00:02:15.468 --> 00:02:18.204
+and there's loops
+when you iterate on AI tasks.
+
+44
+00:02:18.204 --> 00:02:21.341
+And so this is an interesting graph
+because you have
+
+45
+00:02:21.341 --> 00:02:24.310
+this very directed flow
+up until a certain point.
+
+46
+00:02:24.577 --> 00:02:27.580
+And then you have these iterations.
+
+47
+00:02:27.780 --> 00:02:30.049
+This is a really bespoke
+
+48
+00:02:30.049 --> 00:02:33.052
+architecture
+for a particular coding problem.
+
+49
+00:02:33.419 --> 00:02:37.190
+But the concept of flow engineering
+extends more broadly,
+
+50
+00:02:37.557 --> 00:02:40.927
+and it generally refers to thinking of
+what is the right information
+
+51
+00:02:40.927 --> 00:02:44.230
+flow for your agents
+to take action and think.
+
+52
+00:02:45.832 --> 00:02:47.700
+In that vein.
+
+53
+00:02:47.700 --> 00:02:50.036
+A common paradigm is to have
+
+54
+00:02:50.036 --> 00:02:53.039
+a plan and execute style flow
+
+55
+00:02:53.072 --> 00:02:56.376
+where first, you do an explicit planning,
+step upfront
+
+56
+00:02:57.043 --> 00:03:00.046
+and then you start to execute
+on that plan.
+
+57
+00:03:00.180 --> 00:03:03.917
+So you may come up with a few steps
+that a sub-agent should go do.
+
+58
+00:03:04.517 --> 00:03:06.719
+It can then go do one come back.
+
+59
+00:03:06.719 --> 00:03:08.421
+Maybe you update the plan,
+maybe you don't.
+
+60
+00:03:08.421 --> 00:03:10.657
+This is where
+there are some different variants,
+
+61
+00:03:10.657 --> 00:03:13.159
+but then it goes on to the next thing
+and it does that
+
+62
+00:03:13.159 --> 00:03:16.162
+and it comes back
+until it finishes the plan.
+
+63
+00:03:16.329 --> 00:03:17.931
+Then you maybe check to see
+
+64
+00:03:17.931 --> 00:03:21.301
+if the plan is successfully accomplished
+or whether you need to replan.
+
+65
+00:03:22.035 --> 00:03:25.038
+And then if all is good,
+you return to the user.
+
+66
+00:03:25.038 --> 00:03:27.740
+The final one I want to touch on
+is a really interesting
+
+67
+00:03:27.740 --> 00:03:30.777
+paper called Language Agent Tree Search.
+
+68
+00:03:31.678 --> 00:03:35.415
+So this basically does a tree
+search over the state of possible actions.
+
+69
+00:03:35.848 --> 00:03:37.483
+And so it first generates an action.
+
+70
+00:03:37.483 --> 00:03:40.920
+It then reflects and then goes down
+based on that action
+
+71
+00:03:40.920 --> 00:03:43.923
+and generates
+some other sub-actions reflects on that.
+
+72
+00:03:44.057 --> 00:03:47.193
+And throughout all these reflections
+it can basically reflect
+
+73
+00:03:47.527 --> 00:03:51.664
+on where in the tree of action states
+it wants to jump back to.
+
+74
+00:03:52.398 --> 00:03:56.469
+So it can backpropagate and update
+parent nodes to have more information,
+
+75
+00:03:56.469 --> 00:04:00.873
+which may inform future directions
+from that previous state.
+
+76
+00:04:01.274 --> 00:04:05.578
+For this in particular, you can really see
+why persistence is really important,
+
+77
+00:04:05.979 --> 00:04:09.749
+because you need to be able
+to go back in time to previous states.
+
+78
+00:04:11.017 --> 00:04:12.385
+These are just some of the
+
+79
+00:04:12.385 --> 00:04:16.389
+emerging paradigms
+for creating more complex agentic flows
+
+80
+00:04:16.823 --> 00:04:20.226
+LangGraph is really aimed
+at being highly controllable
+
+81
+00:04:20.426 --> 00:04:24.731
+and allowing you to create these cyclical
+or non cyclical flows.
+
+82
+00:04:25.231 --> 00:04:28.901
+This degree of controllability
+is really what differentiates it
+
+83
+00:04:29.202 --> 00:04:33.573
+from other frameworks, and it's what
+we're really excited about going forward
+
+84
+00:04:33.873 --> 00:04:37.777
+as we view this to be crucial
+to creating agents that actually work.
+

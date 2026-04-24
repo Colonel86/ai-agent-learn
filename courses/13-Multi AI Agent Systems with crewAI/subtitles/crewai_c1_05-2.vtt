@@ -1,0 +1,1333 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.102 --> 00:00:02.502
+All right.
+
+2
+00:00:02.502 --> 00:00:06.039
+To get things started, let's
+get some of the boilerplate code in here.
+
+3
+00:00:06.106 --> 00:00:08.341
+And let's start build our crew.
+
+4
+00:00:08.341 --> 00:00:10.910
+So, first thing that you want to do
+
+5
+00:00:10.910 --> 00:00:15.749
+is make sure that you import
+the agent task and the crew class again.
+
+6
+00:00:16.216 --> 00:00:20.720
+Once that you import that, you're good
+to go and ready to get started.
+
+7
+00:00:20.754 --> 00:00:21.187
+All right.
+
+8
+00:00:21.187 --> 00:00:25.058
+So now that you imported the agent,
+the task, and the crew class,
+
+9
+00:00:25.425 --> 00:00:27.794
+we can set up
+the model that we're going to be using.
+
+10
+00:00:28.061 --> 00:00:31.031
+So for
+this one we're going to be using GPT-4.
+
+11
+00:00:31.131 --> 00:00:34.734
+So you have been using
+GPT-3.5 up to this point.
+
+12
+00:00:34.968 --> 00:00:38.671
+But we are moving to four now because
+we're going to be handling with more data.
+
+13
+00:00:38.972 --> 00:00:42.108
+So you want to make sure that you have
+that extra context window
+
+14
+00:00:42.275 --> 00:00:45.612
+to handle all the information that we are
+going to be sending to this agent.
+
+15
+00:00:45.612 --> 00:00:48.915
+So let me just copy and paste in here.
+
+16
+00:00:48.915 --> 00:00:53.086
+Another thing that you're going to notice
+is that we are using serper API here.
+
+17
+00:00:53.086 --> 00:00:57.390
+So serper is basically an API
+that allows you to search Google.
+
+18
+00:00:57.424 --> 00:01:00.693
+And you're going to be provided
+with AI key that you can use.
+
+19
+00:01:00.860 --> 00:01:04.998
+But you can also go into their website
+and sign up and they offer free credits.
+
+20
+00:01:05.298 --> 00:01:09.302
+But honestly, there's a lot of other like
+search tools that we could use as well.
+
+21
+00:01:09.402 --> 00:01:12.072
+We just choose to use serper
+in this example.
+
+22
+00:01:12.072 --> 00:01:15.075
+So let's go ahead and just execute that.
+
+23
+00:01:15.375 --> 00:01:16.242
+All right.
+
+24
+00:01:16.242 --> 00:01:18.445
+So now we're ready to dive into tools.
+
+25
+00:01:18.445 --> 00:01:21.748
+We basically want to make sure
+that we use some of the crewAI tools.
+
+26
+00:01:21.748 --> 00:01:23.383
+And we also want to make sure
+
+27
+00:01:23.383 --> 00:01:27.087
+that we create a simple custom
+tool to show you how that looks.
+
+28
+00:01:27.253 --> 00:01:29.789
+So let's
+go ahead and start creating our agents.
+
+29
+00:01:29.789 --> 00:01:32.058
+We are going to have two agents for this.
+
+30
+00:01:32.058 --> 00:01:35.028
+The first one is going to be a sales
+wrap agent,
+
+31
+00:01:35.028 --> 00:01:37.997
+because we are going to be doing a sales
+use case this time.
+
+32
+00:01:37.997 --> 00:01:41.835
+The sales rep has one goal,
+and that is identify
+
+33
+00:01:41.835 --> 00:01:46.306
+high value leads
+that match our ideal customer profile.
+
+34
+00:01:46.306 --> 00:01:51.306
+People like to call that ICP in sales
+is a big use case for multi-agent systems.
+
+35
+00:01:52.112 --> 00:01:55.381
+So probably you're going to see
+a lot of that around the internet as well.
+
+36
+00:01:55.548 --> 00:01:57.784
+You can see that in the back story.
+
+37
+00:01:57.784 --> 00:02:02.122
+We set some context around the fact
+that the sales agent works
+
+38
+00:02:02.122 --> 00:02:05.859
+at crewAI in some of the mission around it
+and everything.
+
+39
+00:02:05.892 --> 00:02:06.826
+You also going to notice
+
+40
+00:02:06.826 --> 00:02:10.563
+that this agent is not allowed
+to delegate any work or ask any questions.
+
+41
+00:02:10.563 --> 00:02:13.466
+It's just supposed to do what it's told.
+
+42
+00:02:13.466 --> 00:02:15.468
+We're also going to create a new agent.
+
+43
+00:02:15.468 --> 00:02:19.572
+and that's going to be our lead sales
+rep agent.
+
+44
+00:02:20.006 --> 00:02:24.644
+So let's execute this
+and then create a new one.
+
+45
+00:02:24.777 --> 00:02:27.347
+So this leads sales rep agent.
+
+46
+00:02:27.347 --> 00:02:30.917
+You're going to see
+that it builds on top of our previous one.
+
+47
+00:02:31.050 --> 00:02:32.418
+It has a different go.
+
+48
+00:02:32.418 --> 00:02:36.723
+This go is kind of
+the actual personalized content.
+
+49
+00:02:36.990 --> 00:02:40.627
+And build a personalized communication
+with this lead
+
+50
+00:02:40.627 --> 00:02:41.928
+that we're going to be working on.
+
+51
+00:02:41.928 --> 00:02:45.365
+So the idea of this crew
+at the end of the day, it's
+
+52
+00:02:45.365 --> 00:02:49.035
+given a lead,
+find out a way to communicate
+
+53
+00:02:49.035 --> 00:02:52.205
+with them that helps them
+to get an interest on through crewAI.
+
+54
+00:02:52.472 --> 00:02:55.108
+So let's see how that's going to play out.
+
+55
+00:02:55.108 --> 00:02:57.977
+So let's first execute this agent.
+
+56
+00:02:57.977 --> 00:02:58.945
+All right.
+
+57
+00:02:58.945 --> 00:03:01.414
+So now we have those two agents created.
+
+58
+00:03:01.414 --> 00:03:04.884
+Now it's time for us to look into
+the tools that we are going to use.
+
+59
+00:03:05.285 --> 00:03:08.388
+We are going to be using the crewAI
+tools package again.
+
+60
+00:03:08.388 --> 00:03:12.625
+So you can go ahead and type
+that out and import those tools.
+
+61
+00:03:12.725 --> 00:03:15.628
+You're going to see that we are using three
+tools this time.
+
+62
+00:03:15.628 --> 00:03:20.628
+We are using a directory read
+tool we're using a file read tool,
+
+63
+00:03:21.134 --> 00:03:25.305
+and we are using a serper
+dev tool. So the directory read tool
+
+64
+00:03:25.305 --> 00:03:29.275
+allows your agent
+to read any directory that it wants.
+
+65
+00:03:29.275 --> 00:03:32.946
+Or again
+you can kind of like confine its options
+
+66
+00:03:32.946 --> 00:03:35.949
+by seeing a specific directory
+that you want wanted to run.
+
+67
+00:03:35.949 --> 00:03:38.418
+Then the file read to the same thing.
+
+68
+00:03:38.418 --> 00:03:39.786
+And the Serp tool
+
+69
+00:03:39.786 --> 00:03:42.021
+we already talked about that
+in another lesson.
+
+70
+00:03:42.021 --> 00:03:44.057
+It allows you to search the internet.
+
+71
+00:03:44.057 --> 00:03:47.860
+So let's go ahead and instantiate
+those three tools.
+
+72
+00:03:48.228 --> 00:03:51.197
+So you can create a directory
+
+73
+00:03:51.197 --> 00:03:54.200
+read tool, the file read tool
+and the search tool.
+
+74
+00:03:54.200 --> 00:03:56.069
+And the one thing
+that you're going to notice
+
+75
+00:03:56.069 --> 00:04:01.069
+is that on the directory read tool,
+we are specifying that we want it
+
+76
+00:04:01.074 --> 00:04:05.845
+to be able to read
+only this local instructions directory.
+
+77
+00:04:05.878 --> 00:04:09.449
+So in this directory,
+there are a series of instructions
+
+78
+00:04:09.649 --> 00:04:13.987
+as markdown files on how to handle
+companies from different sizes.
+
+79
+00:04:14.220 --> 00:04:17.991
+So we're going to have big companies,
+small companies
+
+80
+00:04:18.358 --> 00:04:21.961
+and medium companies, instructions
+on how to handle them.
+
+81
+00:04:22.095 --> 00:04:27.095
+And we're letting our agents
+being able to read these files
+
+82
+00:04:27.934 --> 00:04:32.405
+by setting up these tools that allow them
+to actually, look at that folder.
+
+83
+00:04:32.438 --> 00:04:36.643
+So as you can see,
+we now have three tools that we're using
+
+84
+00:04:36.643 --> 00:04:41.281
+here: are directory read tool or file
+read tool, indoor search tool.
+
+85
+00:04:41.981 --> 00:04:44.384
+And you can see there are all similar
+
+86
+00:04:44.384 --> 00:04:48.488
+but the directory read
+tool is actually passing
+
+87
+00:04:48.488 --> 00:04:51.190
+one attribute called
+directory. This attributes
+
+88
+00:04:51.190 --> 00:04:55.395
+forcing this tool
+to only allow the agent to read this one
+
+89
+00:04:55.395 --> 00:05:00.033
+single directory in this case is a local
+directly called instructions.
+
+90
+00:05:00.433 --> 00:05:03.236
+So this local directory
+basically holds a set
+
+91
+00:05:03.236 --> 00:05:06.939
+of instructions
+on how to handle some of those customers.
+
+92
+00:05:07.106 --> 00:05:09.976
+If it's a big customer or a small customer
+or whatever
+
+93
+00:05:09.976 --> 00:05:13.012
+it might be. Let's look at those files
+real quick.
+
+94
+00:05:13.513 --> 00:05:17.917
+So here you can see that
+there are three files inside that directory,
+
+95
+00:05:18.151 --> 00:05:21.788
+a file that has a set of instructions
+to how to handle
+
+96
+00:05:21.821 --> 00:05:24.991
+a small business,
+and how to handle tech startups,
+
+97
+00:05:25.224 --> 00:05:28.227
+and on how to handle, like,
+more enterprise deals.
+
+98
+00:05:28.394 --> 00:05:31.564
+And you can see here
+there's like a specific template.
+
+99
+00:05:31.764 --> 00:05:34.000
+There is key strategic points to address.
+
+100
+00:05:34.000 --> 00:05:36.402
+There is there is introduction.
+
+101
+00:05:36.402 --> 00:05:39.739
+So everything that our agent
+might need in order
+
+102
+00:05:39.739 --> 00:05:42.742
+to actually engage
+with like a specific company.
+
+103
+00:05:42.875 --> 00:05:46.346
+So now that we have our tools here,
+we can create
+
+104
+00:05:46.346 --> 00:05:49.349
+a custom tool
+just to see what that would look like.
+
+105
+00:05:49.916 --> 00:05:53.486
+So every framework out there
+it's going to give you a pattern
+
+106
+00:05:53.486 --> 00:05:56.222
+to create a custom crew, and crewAI
+
+107
+00:05:56.222 --> 00:05:57.023
+is no different.
+
+108
+00:05:57.023 --> 00:06:00.560
+It offers a couple different ways
+that you can use to create a custom tool.
+
+109
+00:06:00.593 --> 00:06:04.163
+So in this case,
+the way that we are going to be using is
+
+110
+00:06:04.163 --> 00:06:09.163
+by inheriting from a class inside
+crewAI, we can import this class.
+
+111
+00:06:10.269 --> 00:06:12.872
+It's called BaseTool.
+
+112
+00:06:12.872 --> 00:06:16.309
+And now that we've imported it,
+we can create our own class,
+
+113
+00:06:16.309 --> 00:06:19.679
+that's going to be our tool,
+that inherits from that.
+
+114
+00:06:19.679 --> 00:06:24.679
+So in this case our class will be called
+Sentiment analysis tool.
+
+115
+00:06:25.485 --> 00:06:30.485
+So you can envision that at least you
+would do some sort of sentiment analysis.
+
+116
+00:06:30.857 --> 00:06:32.091
+But this could be anything.
+
+117
+00:06:32.091 --> 00:06:35.862
+This could be an external API call
+or whatever you want.
+
+118
+00:06:36.229 --> 00:06:37.296
+But in this case
+
+119
+00:06:37.296 --> 00:06:41.234
+we're just going to fake it a little bit
+to make sure that we build a custom tool.
+
+120
+00:06:41.234 --> 00:06:42.668
+And we learned how to do it.
+
+121
+00:06:42.668 --> 00:06:47.668
+So one thing that every tool needs to have
+inquiry crewAI is a name and a description.
+
+122
+00:06:49.275 --> 00:06:53.546
+So in here we are setting the name of this
+tool to sentiment analysis tool.
+
+123
+00:06:53.713 --> 00:06:58.184
+And the description tells the agent
+when it should use this tool.
+
+124
+00:06:58.184 --> 00:07:00.186
+And what is its purpose.
+
+125
+00:07:00.186 --> 00:07:03.856
+So in here we're saying that it analyzes
+the sentiment of a text.
+
+126
+00:07:04.023 --> 00:07:07.427
+And then in order to actually implement
+the tool,
+
+127
+00:07:07.727 --> 00:07:12.727
+all you got to do is create this run
+function inside that class.
+
+128
+00:07:14.000 --> 00:07:18.638
+So, as long as you have this underscore
+run function in there,
+
+129
+00:07:18.805 --> 00:07:21.674
+you can add any code that you want.
+
+130
+00:07:21.674 --> 00:07:24.677
+So, in here is where you would
+
+131
+00:07:24.777 --> 00:07:28.414
+call an API
+or where you would take an action or
+
+132
+00:07:28.414 --> 00:07:32.385
+send an email
+or anything you wish your tool to do.
+
+133
+00:07:32.485 --> 00:07:36.322
+In this case, we're keeping it very simple
+because it's just an example
+
+134
+00:07:36.456 --> 00:07:39.358
+and we are just
+returning the word positive.
+
+135
+00:07:39.358 --> 00:07:41.594
+So this is a sentiment analysis tool
+
+136
+00:07:41.594 --> 00:07:45.364
+that always returns
+that the sentiment is positive.
+
+137
+00:07:45.398 --> 00:07:49.068
+So now that we create a stew
+we can actually instantiated.
+
+138
+00:07:49.235 --> 00:07:53.239
+So that we can use it. The same way
+that we did with the tools of both
+
+139
+00:07:53.272 --> 00:07:56.275
+we said, the directory,
+the file, and the search tool.
+
+140
+00:07:56.409 --> 00:07:58.744
+So you can go ahead and just do that.
+
+141
+00:07:58.744 --> 00:08:01.314
+And now you have the sentiment
+analysis tool
+
+142
+00:08:01.314 --> 00:08:04.317
+and you can pass that to your agents
+and tasks.
+
+143
+00:08:04.484 --> 00:08:07.186
+So, now that we use our tools
+
+144
+00:08:07.186 --> 00:08:10.189
+let's create
+our tasks and assign them properly.
+
+145
+00:08:10.223 --> 00:08:14.827
+Here we are going to be able to see
+how we can focus in specific
+
+146
+00:08:14.827 --> 00:08:18.965
+and clear goals on what we want to achieve
+by using this tool.
+
+147
+00:08:19.165 --> 00:08:24.165
+So the first task that we are going to
+create is a lead profiling task.
+
+148
+00:08:25.137 --> 00:08:29.175
+So the lead profiling task
+basically conducts an analysis
+
+149
+00:08:29.175 --> 00:08:32.178
+on a given lead in order to understand
+
+150
+00:08:32.278 --> 00:08:36.282
+its sector, how big it is, information
+
+151
+00:08:36.282 --> 00:08:39.886
+that might be useful for us to engage
+with this potential customer.
+
+152
+00:08:39.919 --> 00:08:44.156
+So, in here you can see that
+we are providing it with a set of tools,
+
+153
+00:08:44.156 --> 00:08:48.227
+are directly read tool our file
+or read tool and our search tool.
+
+154
+00:08:48.261 --> 00:08:51.697
+So with these tools, this agent
+when performing this task
+
+155
+00:08:51.697 --> 00:08:54.867
+are going to be able
+to look at those instruction files
+
+156
+00:08:54.867 --> 00:08:56.969
+that we saw before,
+read them
+
+157
+00:08:56.969 --> 00:08:59.872
+and then using the surfer API,
+
+158
+00:08:59.872 --> 00:09:03.075
+search the internet
+for more information about this lead.
+
+159
+00:09:03.175 --> 00:09:05.144
+So let's go ahead and create this task.
+
+160
+00:09:05.144 --> 00:09:07.947
+Now we're going to need a new task.
+
+161
+00:09:07.947 --> 00:09:11.918
+This new task is going to help
+with creating
+
+162
+00:09:11.918 --> 00:09:16.918
+a personalized message
+to outreach for this specific lead.
+
+163
+00:09:17.390 --> 00:09:19.458
+So I can paste it in here.
+
+164
+00:09:19.458 --> 00:09:23.729
+And you're going to see that
+this task has a different set of tools.
+
+165
+00:09:23.763 --> 00:09:28.401
+It doesn't need to read the directory any
+longer, because by now it already knows
+
+166
+00:09:28.401 --> 00:09:33.072
+it is a big or small company
+and already has done some research on them.
+
+167
+00:09:33.339 --> 00:09:38.010
+This task is focuses
+specifically on doing a sentiment analysis
+
+168
+00:09:38.010 --> 00:09:41.814
+and doing any further search
+that might be necessary in order
+
+169
+00:09:41.814 --> 00:09:45.952
+to make sure that we talk with this
+customer in an appropriate manner.
+
+170
+00:09:46.152 --> 00:09:49.255
+So you can go ahead and also create this.
+
+171
+00:09:49.622 --> 00:09:50.156
+Okay.
+
+172
+00:09:50.156 --> 00:09:54.026
+So now that we created the two tasks,
+you can create your crew.
+
+173
+00:09:54.594 --> 00:09:57.296
+The crew is pretty straightforward
+the same way
+
+174
+00:09:57.296 --> 00:09:59.065
+that we have been doing so far.
+
+175
+00:09:59.065 --> 00:10:02.068
+We pass in the agents.
+We pass in the tasks.
+
+176
+00:10:02.068 --> 00:10:06.038
+You can set the verbose mode to two,
+and you also set the memory
+
+177
+00:10:06.038 --> 00:10:10.076
+so that this crew is using
+the memory functionality and features.
+
+178
+00:10:10.376 --> 00:10:13.045
+You don't necessarily need to
+if you don't need,
+
+179
+00:10:13.045 --> 00:10:15.848
+but I think it might be a good use case.
+
+180
+00:10:15.848 --> 00:10:18.384
+So let's go ahead and run this.
+
+181
+00:10:18.384 --> 00:10:20.620
+Now you can kick off this crew,
+
+182
+00:10:20.620 --> 00:10:23.422
+and kicking it off
+should be pretty straightforward.
+
+183
+00:10:23.422 --> 00:10:26.626
+So in this case
+we're passing a set of inputs.
+
+184
+00:10:26.659 --> 00:10:30.863
+Remember that these inputs
+are going to be interpolated in any place
+
+185
+00:10:30.863 --> 00:10:34.500
+that we use them, both in the tasks
+and in the agents.
+
+186
+00:10:34.767 --> 00:10:38.904
+So these inputs are going to be used
+into any place
+
+187
+00:10:38.904 --> 00:10:42.408
+in the tasks
+descriptions or the agents definitions.
+
+188
+00:10:42.408 --> 00:10:43.643
+Anywhere where we try
+
+189
+00:10:43.643 --> 00:10:47.380
+to interpolate these variables
+we can now pass their values in here.
+
+190
+00:10:47.413 --> 00:10:51.584
+So in this case we're simulating
+that the lead name is Deep Learning
+
+191
+00:10:51.584 --> 00:10:53.953
+and AI. In there,
+
+192
+00:10:53.953 --> 00:10:56.822
+the industry is online learning platform.
+
+193
+00:10:56.822 --> 00:10:59.759
+The key decision maker is Andrew.
+
+194
+00:10:59.759 --> 00:11:01.994
+And he is the CEO of the company.
+
+195
+00:11:01.994 --> 00:11:05.898
+And the basic milestone
+that they have is a product launch.
+
+196
+00:11:05.898 --> 00:11:08.801
+So we can go ahead now
+and kickoff this crew.
+
+197
+00:11:08.801 --> 00:11:12.471
+So everything starts with a first sales
+representative.
+
+198
+00:11:12.705 --> 00:11:17.705
+And it's going to start by conducting
+this in-depth analysis of the DeepLearning.AI
+
+199
+00:11:17.743 --> 00:11:22.214
+company and basically
+trying to learn more about it.
+
+200
+00:11:22.348 --> 00:11:25.518
+So you can see here that it started
+by searching the internet,
+
+201
+00:11:25.518 --> 00:11:28.120
+trying to understand
+more about DeepLearning.AI.
+
+202
+00:11:28.120 --> 00:11:33.120
+So in here you can see all this
+search results that it got from Google.
+
+203
+00:11:33.225 --> 00:11:38.030
+And if you scroll further
+you're going to see that it by mistake
+
+204
+00:11:38.030 --> 00:11:42.535
+decided to try to read one of the websites
+as a file.
+
+205
+00:11:42.735 --> 00:11:47.735
+And you know that we just talked about
+how tools need to gracefully fail.
+
+206
+00:11:48.340 --> 00:11:50.509
+This is a great example of this.
+
+207
+00:11:50.509 --> 00:11:53.279
+This file content read tool
+
+208
+00:11:53.279 --> 00:11:58.279
+is not meant to read a website,
+but actually a file from your file system.
+
+209
+00:11:58.718 --> 00:12:01.754
+So if you didn't plan for that,
+you would throw
+
+210
+00:12:01.754 --> 00:12:04.757
+an exception in your execution would stop.
+
+211
+00:12:05.091 --> 00:12:09.762
+But crewAI automatically handles data
+so that it fails gracefully.
+
+212
+00:12:09.762 --> 00:12:13.332
+So you can see that despite of it
+showing an exception,
+
+213
+00:12:13.532 --> 00:12:16.836
+it tells the agent that it got this error.
+
+214
+00:12:17.103 --> 00:12:21.040
+So the agent kind of like now understands
+that it can directly
+
+215
+00:12:21.040 --> 00:12:24.810
+access the external links
+using the read files content.
+
+216
+00:12:24.810 --> 00:12:29.081
+So it's it's learning
+from the tool that it tried to use.
+
+217
+00:12:29.181 --> 00:12:32.151
+So it then
+go back into search the internet
+
+218
+00:12:32.151 --> 00:12:35.955
+to try to find more information
+about DeepLearning.AI.
+
+219
+00:12:36.021 --> 00:12:41.021
+So if you're building your own thing,
+or depending on your choices or framework,
+
+220
+00:12:41.827 --> 00:12:45.498
+you might notice
+that if your tool finds an exception,
+
+221
+00:12:46.532 --> 00:12:47.466
+the decision there
+
+222
+00:12:47.466 --> 00:12:50.469
+is let that exception actually blow up.
+
+223
+00:12:50.536 --> 00:12:54.874
+And when that exception wblows up,
+it stops the execution of your agent.
+
+224
+00:12:55.241 --> 00:12:59.578
+So that means that hours
+that it was completed so far is gone,
+
+225
+00:13:00.012 --> 00:13:03.883
+and your agent execution stops,
+so you can't move forward.
+
+226
+00:13:04.517 --> 00:13:08.053
+That means that you would
+then need to add an extra layer
+
+227
+00:13:08.053 --> 00:13:11.891
+so that you can treat for that, either
+kind of like kickoff your agent
+
+228
+00:13:11.891 --> 00:13:15.628
+from the scratch
+or do something else with that error.
+
+229
+00:13:16.095 --> 00:13:21.095
+So for crew,
+it was a conscious decision early on that
+
+230
+00:13:21.734 --> 00:13:25.604
+we would prevent exceptions
+from stopping execution.
+
+231
+00:13:25.805 --> 00:13:28.974
+But you might find other frameworks
+that choose it
+
+232
+00:13:28.974 --> 00:13:33.779
+otherwise and choose to allow exceptions,
+actually stop executions.
+
+233
+00:13:33.979 --> 00:13:36.315
+And that is the commission's choices
+that you can make.
+
+234
+00:13:36.315 --> 00:13:39.251
+And if you're doing something
+from scratch, because, again,
+
+235
+00:13:39.251 --> 00:13:43.155
+you don't need to be using a framework,
+you can be building these agents yourself.
+
+236
+00:13:43.155 --> 00:13:45.424
+It's just going to be a lot of more coding.
+
+237
+00:13:45.424 --> 00:13:48.427
+But it's something that you need
+to be mindful of.
+
+238
+00:13:48.527 --> 00:13:52.731
+How you want to handle exceptions
+when using tools is a big thing as agents,
+
+239
+00:13:54.033 --> 00:13:54.366
+So you
+
+240
+00:13:54.366 --> 00:13:55.534
+can see that again, it
+
+241
+00:13:55.534 --> 00:13:59.605
+finds a bunch of different research
+and put together a DeepLearning.AI
+
+242
+00:13:59.638 --> 00:14:04.543
+company profiles
+with a background of 1 or 2 key personnel,
+
+243
+00:14:04.777 --> 00:14:09.548
+recent business development
+potential needs, engagement strategy,
+
+244
+00:14:09.715 --> 00:14:13.652
+everything that we need to know
+about the company. Now our next
+
+245
+00:14:13.652 --> 00:14:16.722
+agent kicks in, the lead sales
+representative.
+
+246
+00:14:16.956 --> 00:14:21.627
+We're using the research
+that your agent did before, it's
+
+247
+00:14:21.627 --> 00:14:25.631
+going to try to come up with a good way
+to engage with DeepLearning.AI.
+
+248
+00:14:25.731 --> 00:14:30.302
+So in here you can see that again,
+it's doing some research online.
+
+249
+00:14:30.336 --> 00:14:32.404
+Keep in mind then this is where
+
+250
+00:14:32.404 --> 00:14:36.108
+some of that caching strategy
+that we talked about comes in.
+
+251
+00:14:36.575 --> 00:14:40.913
+If this agent tries
+to do the same research or the same
+
+252
+00:14:40.913 --> 00:14:43.983
+search online that another agent did,
+
+253
+00:14:44.149 --> 00:14:47.052
+it's gonna hit a caching layer.
+
+254
+00:14:47.052 --> 00:14:49.321
+And instead of actually doing the search.
+
+255
+00:14:49.321 --> 00:14:51.590
+So you're going to be saving
+and rate limits
+
+256
+00:14:51.590 --> 00:14:55.494
+and and the request in basically
+is going to just work faster.
+
+257
+00:14:55.494 --> 00:15:00.065
+And here you can see that it comes up
+with an email where we can send to Andrew.
+
+258
+00:15:00.165 --> 00:15:02.234
+The subject is: "Enhance
+
+259
+00:15:02.234 --> 00:15:07.234
+DeepLearning.AI's Educational
+Impact with crewAI's Advanced Analytics."
+
+260
+00:15:07.273 --> 00:15:11.610
+And then it goes on explaining.
+And you can see that even references
+
+261
+00:15:11.610 --> 00:15:12.578
+The Batch.
+
+262
+00:15:12.578 --> 00:15:16.181
+The Batch is actually a newsletter
+from DeepLearning.AI.
+
+263
+00:15:16.315 --> 00:15:19.051
+And we never told these agents
+anything about it.
+
+264
+00:15:19.051 --> 00:15:22.755
+They learn about it automatically
+through the research that they made.
+
+265
+00:15:23.222 --> 00:15:26.191
+So now we have an email
+that we could engage.
+
+266
+00:15:26.191 --> 00:15:28.794
+And we actually have a few other options here.
+
+267
+00:15:28.794 --> 00:15:31.196
+So you can see that
+it gives another option.
+
+268
+00:15:31.196 --> 00:15:34.199
+Now a little bit more focus on
+AI drive tools.
+
+269
+00:15:34.500 --> 00:15:37.703
+And another one
+talking more about a partnership.
+
+270
+00:15:37.703 --> 00:15:42.241
+So you can choose what email you want to
+use to actually engage with this company.
+
+271
+00:15:42.308 --> 00:15:46.011
+This is such a great use case.
+Throughout or interactions
+
+272
+00:15:46.011 --> 00:15:49.748
+with the community
+that has been building multi-agent systems
+
+273
+00:15:49.915 --> 00:15:52.885
+independently of what framework
+they are using,
+
+274
+00:15:52.918 --> 00:15:55.521
+we realize that there is a few verticals
+
+275
+00:15:55.521 --> 00:15:58.524
+they are very common,
+and sales is a big one
+
+276
+00:15:58.757 --> 00:16:03.757
+because a lot of the sales process
+involves reporting, involves researching,
+
+277
+00:16:04.830 --> 00:16:07.733
+involves engaging in all that are
+
+278
+00:16:07.733 --> 00:16:10.703
+things that can now
+be automated through agents.
+
+279
+00:16:10.736 --> 00:16:14.907
+So it's going to be common for you going
+out there and talking with other people.
+
+280
+00:16:14.907 --> 00:16:19.044
+There are building agents to see that
+they are doing things in this verticals.
+
+281
+00:16:19.211 --> 00:16:22.848
+And this is honestly
+a very interesting space in general.
+

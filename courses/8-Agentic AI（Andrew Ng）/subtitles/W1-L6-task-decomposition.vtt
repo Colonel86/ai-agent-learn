@@ -1,0 +1,379 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.957 --> 00:00:06.960
+People and businesses do a lot of stuff. How do you take this useful stuff that we do
+
+2
+00:00:06.960 --> 00:00:12.800
+and break it down into discrete steps for the agentic workflow to follow? Let's take a look.
+
+3
+00:00:12.800 --> 00:00:18.719
+Take the example of building a research agent. If you want an AI system to write an essay on
+
+4
+00:00:18.719 --> 00:00:24.159
+a topic X, one thing you could do is prompt an LLM to have it generate an output directly.
+
+5
+00:00:24.159 --> 00:00:28.399
+But if you were to do this for topics that you want deeply researched,
+
+6
+00:00:28.399 --> 00:00:33.599
+you may find that the LLM output covers only the surface level points, or maybe covers only the
+
+7
+00:00:33.599 --> 00:00:39.520
+obvious facts, but doesn't go as deep into the subject as you want it to. In this case, you
+
+8
+00:00:39.520 --> 00:00:45.439
+might then reflect on how you as a human would write an essay on a certain topic. Would you just
+
+9
+00:00:45.439 --> 00:00:50.159
+sit down and start writing, or would you take multiple steps, such as first write an essay
+
+10
+00:00:50.159 --> 00:00:55.200
+outline, and then search the rep, and then based on the input from the web search, write the essay.
+
+11
+00:00:55.599 --> 00:01:00.880
+As I take a task and decompose it into steps, one question I'm always asking myself is,
+
+12
+00:01:00.880 --> 00:01:07.279
+if I look at these steps one, two, and three, can each of them be done either by an LLM, or
+
+13
+00:01:07.279 --> 00:01:13.680
+by a short piece of code, or by a function call, or by a tool. In this case, I think an LLM can
+
+14
+00:01:13.680 --> 00:01:20.080
+maybe write a decent outline on many topics that I would want it to help me think through. So,
+
+15
+00:01:20.080 --> 00:01:26.160
+say probably okay on the first step, and then I know how to use an LLM to generate search terms
+
+16
+00:01:26.160 --> 00:01:31.199
+to search the web. So, I would say the second step is also doable, and then based on web search,
+
+17
+00:01:31.199 --> 00:01:35.440
+I think an LLM could input the web search results and write an essay. And so, this would be a
+
+18
+00:01:35.440 --> 00:01:41.440
+reasonable first attempt at an agentic workflow for writing an essay that goes deeper than just
+
+19
+00:01:41.440 --> 00:01:47.040
+direct generation. But if I were to then implement this agentic workflow and look at the results,
+
+20
+00:01:47.040 --> 00:01:51.760
+maybe you find that the results still aren't good enough. It's still not yet as deeply thoughtful.
+
+21
+00:01:51.760 --> 00:01:56.000
+Maybe the essays feel a little bit disjointed. This has actually happened to me. I once built
+
+22
+00:01:56.000 --> 00:02:00.639
+a research agent using this workflow, but when I read the output, it felt a bit disjointed.
+
+23
+00:02:00.639 --> 00:02:04.239
+You know, the start of the article didn't feel completely consistent with the middle,
+
+24
+00:02:04.239 --> 00:02:09.440
+didn't feel completely consistent with the end. In this case, what you might do is then reflect
+
+25
+00:02:09.440 --> 00:02:13.919
+on how you would change the workflow if you as a human found that the essay is a little bit
+
+26
+00:02:13.919 --> 00:02:21.039
+disjointed. One thing you could do is take the third step and further decompose, write the essay
+
+27
+00:02:21.039 --> 00:02:27.199
+into additional steps. So, instead of writing the essay on one go, you might instead have it
+
+28
+00:02:27.199 --> 00:02:32.240
+write the first draft, and then consider what parts need revision, and then revise the draft.
+
+29
+00:02:32.240 --> 00:02:39.039
+And this would be how I as a human might go about it, to not just write the final essay at my first
+
+30
+00:02:39.039 --> 00:02:44.479
+attempt, but write the first draft and then read over it, which is another step that the LLM is
+
+31
+00:02:44.479 --> 00:02:49.520
+pretty decent at. And then based on my own critique of my own essay, I'll revise the draft.
+
+32
+00:02:49.520 --> 00:02:55.839
+So to recap, I started off with direct generation, just one step, decided it wasn't good enough,
+
+33
+00:02:55.839 --> 00:03:00.000
+and so broke that down into three steps, and then maybe decided that still isn't good enough,
+
+34
+00:03:00.000 --> 00:03:05.600
+and took one of the steps and further broken it down or decomposed it into three more steps,
+
+35
+00:03:05.600 --> 00:03:12.960
+resulting in this more complex, richer process for generating an essay. And depending on how
+
+36
+00:03:12.960 --> 00:03:18.000
+satisfied you are with the results of this process, you may choose to even modify this essay
+
+37
+00:03:18.000 --> 00:03:23.839
+generation process further. Let's look at the second example of how to decompose complex tasks
+
+38
+00:03:23.839 --> 00:03:30.720
+into smaller steps. Take the example of responding to basic customer order inquiries. The first step
+
+39
+00:03:30.720 --> 00:03:36.000
+that a human customer specialization might carry out might be to first extract the key information,
+
+40
+00:03:36.000 --> 00:03:41.520
+such as who is this email from, what did they order, and what is the order number. And these
+
+41
+00:03:41.520 --> 00:03:46.160
+are things that an LLM could do. So I could just say, let's have an LLM do that. The second step
+
+42
+00:03:46.160 --> 00:03:51.440
+would be to then find the relevant customer records. So to write and generate the relevant
+
+43
+00:03:51.440 --> 00:03:56.399
+database queries to pull up the order of what the customer had ordered and when I shipped and so on.
+
+44
+00:03:56.399 --> 00:04:04.000
+I think an LLM with the ability to call a function to query the orders database should be able to do
+
+45
+00:04:04.000 --> 00:04:09.119
+that. And lastly, having pulled up the customer record or the customer order record, I might then
+
+46
+00:04:09.119 --> 00:04:13.199
+write and send a response back to the customer. And I think with the information we pulled up,
+
+47
+00:04:13.199 --> 00:04:19.440
+this third step is also doable with an LLM if I give the option to call an API to send an email.
+
+48
+00:04:19.440 --> 00:04:25.359
+So this would be another example of taking a task of responding to customer email and breaking it
+
+49
+00:04:25.359 --> 00:04:30.480
+down into three individual steps where I can look at each of these steps and say, yep, I think an LLM
+
+50
+00:04:30.480 --> 00:04:35.600
+or one LLM with the ability to call a function to query a database or send an email should be able
+
+51
+00:04:35.600 --> 00:04:42.000
+to do that. Just one last example for the invoice processing. After a PDF invoice has been converted
+
+52
+00:04:42.000 --> 00:04:47.679
+to text, the first step is to pull out the required information, the name of the biller, the address,
+
+53
+00:04:47.679 --> 00:04:53.200
+the due date, the amount due, and so on. And now I should be able to do that. And then if I want to
+
+54
+00:04:53.200 --> 00:04:58.959
+check that the information was extracted and save it in a new database entry, then I think an LLM
+
+55
+00:04:58.959 --> 00:05:04.000
+should be able to help me call a function to update the database record. And so to implement this,
+
+56
+00:05:04.000 --> 00:05:09.920
+we implement an agentic workflow to carry out basically these two steps. When building agentic
+
+57
+00:05:09.920 --> 00:05:15.760
+workflows, I think of myself as having a number of building blocks. One important building block
+
+58
+00:05:15.760 --> 00:05:20.959
+would be large language models or maybe large multimodal models if I want to try to process
+
+59
+00:05:20.959 --> 00:05:25.839
+images or audio as well. And LLMs are good at generating text, deciding what to call,
+
+60
+00:05:25.839 --> 00:05:31.839
+maybe extracting information. For some highly specialized tasks, I might also use some other
+
+61
+00:05:31.839 --> 00:05:38.239
+AI models, such as an AI model for converting a PDF to text or for text-to-speech or for image
+
+62
+00:05:38.239 --> 00:05:45.760
+analysis. In addition to AI models, I also have access to a number of software tools, including
+
+63
+00:05:45.760 --> 00:05:51.119
+different APIs that I can call to do voice search, to get maybe real-time weather data,
+
+64
+00:05:51.119 --> 00:05:57.600
+to send emails, check calendar, and so on. And I might also have tools to retrieve information,
+
+65
+00:05:57.600 --> 00:06:03.279
+to pull up data from a database, or to invent RAG or retrieval augmented generation,
+
+66
+00:06:03.279 --> 00:06:07.839
+where I can look up a large text database and find the most relevant text. Or I might also
+
+67
+00:06:07.839 --> 00:06:13.760
+have tools to execute code. And this is a tool that lets an LLM write code and then run the code
+
+68
+00:06:13.760 --> 00:06:18.959
+on your computer to do a huge range of things. In case some of these tools seem a bit foreign to
+
+69
+00:06:18.959 --> 00:06:23.760
+you, don't worry about it. We'll go through the most important tools in much greater detail in
+
+70
+00:06:23.760 --> 00:06:29.279
+a later module. But I think of a lot of my work when I'm building an agent workflow as looking at
+
+71
+00:06:29.279 --> 00:06:33.679
+the work that the person or business is doing and then trying to figure out with these building
+
+72
+00:06:33.679 --> 00:06:39.040
+blocks, how can I sequence these building blocks together in order to carry out the tasks that I
+
+73
+00:06:39.040 --> 00:06:44.000
+want my system to carry out. And this is why having a good understanding of what building
+
+74
+00:06:44.000 --> 00:06:49.519
+blocks are available, which I hope you have a better sense of by the end of this course as well,
+
+75
+00:06:49.519 --> 00:06:54.079
+will allow you to better envision what agentic workflows you can build by combining these
+
+76
+00:06:54.079 --> 00:06:59.440
+building blocks together. So to summarize, one of the key skills in building agentic workflows is
+
+77
+00:06:59.440 --> 00:07:06.079
+to look at a bunch of stuff that maybe someone does and to identify the discrete steps that
+
+78
+00:07:06.079 --> 00:07:10.799
+it could be implemented with. And when I'm looking at the individual discrete steps,
+
+79
+00:07:10.799 --> 00:07:16.239
+one question I'm always asking myself is, can this step be implemented with either an
+
+80
+00:07:16.239 --> 00:07:22.559
+LLM or with one of the tools such as an API or a function call that I have access to? And in case
+
+81
+00:07:22.559 --> 00:07:28.160
+the answer is no, I'll then often ask myself, how would I as a human do this step? And is it
+
+82
+00:07:28.160 --> 00:07:34.480
+possible to decompose this further or break this down into even smaller steps that then maybe is
+
+83
+00:07:34.480 --> 00:07:40.239
+more amenable to implementation with an LLM or with one of the software tools that I have?
+
+84
+00:07:40.239 --> 00:07:45.920
+So I hope this gives you a rough sense of how to think about task decomposition. In case you feel
+
+85
+00:07:45.920 --> 00:07:50.239
+like you don't fully have it yet, don't worry about it. We'll go through many more examples
+
+86
+00:07:50.239 --> 00:07:54.079
+in this course and you have a much better understanding of this by the end of this
+
+87
+00:07:54.079 --> 00:07:59.119
+course. But it turns out that as you build agentic workflows, you find that often you
+
+88
+00:07:59.119 --> 00:08:05.040
+build an initial task decomposition, initial agentic workflow, and then you want to keep
+
+89
+00:08:05.040 --> 00:08:10.399
+on iterating and improving on it quite a few times until it delivers the level of performance
+
+90
+00:08:10.399 --> 00:08:15.279
+that you want. And to drive this improvement process, which I found important for many
+
+91
+00:08:15.279 --> 00:08:21.839
+projects, one of the key skills is to know how to evaluate your agentic workflow. So in the next
+
+92
+00:08:21.839 --> 00:08:28.079
+video, we'll talk about evaluations or evals and discrete key components, how you can build,
+
+93
+00:08:28.079 --> 00:08:31.679
+and then also keep on improving your workflows to get the performance
+
+94
+00:08:31.679 --> 00:08:36.239
+that you want. Let's talk about evals in the next video.
+

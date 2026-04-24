@@ -1,0 +1,520 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.700 --> 00:00:03.570
+Welcome to AI Agents and LangGraph.
+
+2
+00:00:03.570 --> 00:00:05.205
+Built in partnership with LangChain
+
+3
+00:00:05.205 --> 00:00:09.175
+and Tivoli. Taught by Harrison Chase,
+co-founder and CEO of LangChain,
+
+4
+00:00:09.442 --> 00:00:13.146
+as well as Rotem Weiss
+who is the co-founder and CEO of Tavily.
+
+5
+00:00:13.613 --> 00:00:16.416
+Harrison, it was not quite a year ago
+that we're working
+
+6
+00:00:16.416 --> 00:00:19.919
+on our first course on LLM frameworks.
+
+7
+00:00:19.919 --> 00:00:23.590
+And back, then we had an ancient
+example, but, you know,
+
+8
+00:00:23.623 --> 00:00:25.925
+it was a little bit of a struggle
+to get it to work.
+
+9
+00:00:25.925 --> 00:00:30.563
+Since then, I've seen many teams
+successfully build AI agents.
+
+10
+00:00:30.597 --> 00:00:32.332
+What was your view on that?
+
+11
+00:00:32.332 --> 00:00:34.467
+Yeah, that's exactly right, Andrew.
+
+12
+00:00:34.467 --> 00:00:38.371
+We've seen many people successfully
+building agentic applications now,
+
+13
+00:00:38.671 --> 00:00:41.741
+and I think there were a couple of key
+improvements over the last year.
+
+14
+00:00:42.208 --> 00:00:47.208
+First, function calling LLMs have made
+tool use much more predictable and stable.
+
+15
+00:00:47.781 --> 00:00:52.781
+And also specific tools like search
+have been adapted for agentic use. Yes.
+
+16
+00:00:53.453 --> 00:00:56.823
+If you think about it,
+when you do a query on a search engine,
+
+17
+00:00:57.090 --> 00:01:00.560
+it will return multiple links that you can
+then follow to find answers.
+
+18
+00:01:00.827 --> 00:01:02.796
+However, what an agent really wants
+
+19
+00:01:02.796 --> 00:01:05.799
+are answered that you can
+then reference to the link.
+
+20
+00:01:06.199 --> 00:01:09.369
+Also, the agent needs predictable
+formats for its results.
+
+21
+00:01:10.003 --> 00:01:12.639
+This is exactly what Agentic Search
+provides.
+
+22
+00:01:12.639 --> 00:01:13.373
+That makes sense.
+
+23
+00:01:13.373 --> 00:01:17.143
+And by the way, I'm
+personally a user of LangChain and Tavily.
+
+24
+00:01:17.143 --> 00:01:20.647
+And the reason for being excited
+is of both of you here.
+
+25
+00:01:20.947 --> 00:01:25.947
+And let me start by
+describing agents and agentic workflows.
+
+26
+00:01:26.252 --> 00:01:29.255
+let's say that the three of us
+are going to write a paper together.
+
+27
+00:01:29.422 --> 00:01:32.525
+Maybe I would start with some planning
+
+28
+00:01:32.525 --> 00:01:35.962
+and try to put together
+an initial outline of the paper.
+
+29
+00:01:36.162 --> 00:01:36.496
+Yeah.
+
+30
+00:01:36.496 --> 00:01:39.599
+And I can take it from there
+and do some research, maybe run
+
+31
+00:01:39.599 --> 00:01:43.703
+some queries and compile documents
+related to our topic.
+
+32
+00:01:44.337 --> 00:01:47.240
+Okay, I guess that leaves me
+to write the first draft.
+
+33
+00:01:47.240 --> 00:01:49.075
+I hope it's not a long paper.
+
+34
+00:01:49.075 --> 00:01:50.243
+Yeah, yeah. Short paper. Hopefully.
+
+35
+00:01:51.744 --> 00:01:54.314
+And then
+after that, I might veto the paper.
+
+36
+00:01:54.314 --> 00:01:58.918
+Try to make some constructive suggestions
+and hand it back to Harrison to see if he wants to
+
+37
+00:01:58.918 --> 00:02:02.856
+make some changes or to Rotem to see
+if he wants to do some more research.
+
+38
+00:02:03.523 --> 00:02:04.958
+and so on.
+
+39
+00:02:04.958 --> 00:02:09.262
+And this would be an example of an agentic
+or an agent
+
+40
+00:02:09.262 --> 00:02:13.199
+like workflow, in which we iterate
+to produce a work product.
+
+41
+00:02:13.833 --> 00:02:17.937
+And, in contrast
+to how people often use LLMs
+
+42
+00:02:17.937 --> 00:02:21.174
+to write essays today,
+which is served by the prompt and the,
+
+43
+00:02:21.174 --> 00:02:24.477
+write the essay for the first work
+to the last word in one shot.
+
+44
+00:02:25.745 --> 00:02:29.115
+This type of iterative workflow
+gives a much better work product.
+
+45
+00:02:29.115 --> 00:02:31.284
+In fact, as a person,
+I don't write that well.
+
+46
+00:02:31.284 --> 00:02:35.155
+If you force me to just write from start
+to finish with no backspacing allowed.
+
+47
+00:02:35.989 --> 00:02:38.858
+So concretely, you can similarly
+
+48
+00:02:38.858 --> 00:02:43.530
+prompt an LLM
+to tell it to write an outline, prompt an LLM
+
+49
+00:02:43.530 --> 00:02:48.530
+to write a draft or revise
+prompt an LLM to do research and so on.
+
+50
+00:02:48.868 --> 00:02:51.905
+But to dive a bit deeper, let me share
+what I think are some of the key
+
+51
+00:02:51.905 --> 00:02:54.908
+design patterns of agentic workflows.
+
+52
+00:02:55.375 --> 00:02:58.745
+First, I think there's planning,
+which is thinking through the steps
+
+53
+00:02:58.745 --> 00:03:01.748
+to take like the outline
+and what to do after that.
+
+54
+00:03:02.081 --> 00:03:05.251
+Then tool use.
+Knowing what tools are available
+
+55
+00:03:05.251 --> 00:03:10.156
+and how to use them, like our search tool.
+Reflection, which refers
+
+56
+00:03:10.156 --> 00:03:14.561
+to iteratively improve a result,
+possibly with multiple LLMs
+
+57
+00:03:14.794 --> 00:03:18.631
+critiquing and making useful suggestions
+to drive that type of editing cycle.
+
+58
+00:03:18.831 --> 00:03:20.433
+Multi-agent communication.
+
+59
+00:03:20.433 --> 00:03:24.237
+So you can think of each of us
+as playing a role again to an LLM
+
+60
+00:03:24.237 --> 00:03:29.237
+with a unique prompt to play a unique role
+in this process. And then memory,
+
+61
+00:03:29.642 --> 00:03:33.046
+that is tracking the progress and results
+over the multiple steps.
+
+62
+00:03:33.780 --> 00:03:36.082
+Now, some of these capabilities
+are related
+
+63
+00:03:36.082 --> 00:03:39.285
+to the LLM itself,
+like function calling for tool use.
+
+64
+00:03:39.619 --> 00:03:43.356
+But many of these capabilities
+are actually implemented outside the LLM
+
+65
+00:03:43.523 --> 00:03:45.758
+by the framework that they operate in.
+
+66
+00:03:45.758 --> 00:03:46.359
+Exactly.
+
+67
+00:03:46.359 --> 00:03:50.129
+And the LangChain framework has
+had many of these elements for some time.
+
+68
+00:03:50.396 --> 00:03:53.600
+Memory is available in multiple forms.
+Supporting
+
+69
+00:03:53.600 --> 00:03:56.836
+function calling,
+LLMs and tool execution are available.
+
+70
+00:03:56.836 --> 00:03:59.806
+And we talked about this in the last DeepLearning class
+
+71
+00:03:59.806 --> 00:04:02.775
+we did, functions tools and Agents course.
+
+72
+00:04:02.942 --> 00:04:06.579
+But LangChain has recently updated
+its support for agentic workflows.
+
+73
+00:04:07.113 --> 00:04:10.116
+Here's some examples of agents
+that we now better support.
+
+74
+00:04:10.450 --> 00:04:13.953
+So, ReAct agents was an early paradigm
+for building
+
+75
+00:04:13.953 --> 00:04:16.956
+agents,
+and ReAct stands for reasoning and action.
+
+76
+00:04:17.724 --> 00:04:20.593
+Another example
+that we recently added support for
+
+77
+00:04:20.593 --> 00:04:23.329
+is the example presented in the Self
+Refine paper,
+
+78
+00:04:23.329 --> 00:04:26.332
+where it does the iterative refinement
+that you were talking about.
+
+79
+00:04:26.799 --> 00:04:29.936
+And most recently,
+you can see the alpha coding example.
+
+80
+00:04:30.270 --> 00:04:33.273
+Which creates a coding agent
+using flow engineering.
+
+81
+00:04:33.606 --> 00:04:37.277
+And from all these diagrams
+you can see that these agents
+
+82
+00:04:37.277 --> 00:04:42.048
+and their behavior is defined
+by a cyclical graph. And to support
+
+83
+00:04:42.048 --> 00:04:47.048
+directly building agents like this, LangChain
+has extended to support LangGraph.
+
+84
+00:04:48.621 --> 00:04:49.622
+In this course,
+
+85
+00:04:49.622 --> 00:04:53.226
+you will start by building
+an agent from scratch with just an LLM
+
+86
+00:04:53.493 --> 00:04:54.727
+and Python.
+
+87
+00:04:54.727 --> 00:04:57.363
+Then, you'll learn about the components
+of LangGraph
+
+88
+00:04:57.363 --> 00:05:01.401
+by rebuilding that same agent
+using the LangGraph components directly.
+
+89
+00:05:02.435 --> 00:05:06.406
+Since search tools are such an important
+part of many agent applications,
+
+90
+00:05:06.739 --> 00:05:10.209
+you will learn the capabilities
+of agentic search and how to use it.
+
+91
+00:05:11.077 --> 00:05:14.747
+There are two additional capabilities
+that are helpful when building agents.
+
+92
+00:05:15.014 --> 00:05:17.517
+First,
+is being able to receive human input.
+
+93
+00:05:17.517 --> 00:05:20.653
+This allows you to guide an agent
+at critical points.
+
+94
+00:05:21.220 --> 00:05:23.423
+The second is persistence.
+
+95
+00:05:23.423 --> 00:05:26.492
+This is the ability to store
+the current state of information
+
+96
+00:05:26.759 --> 00:05:28.895
+so that you can return to it later.
+
+97
+00:05:28.895 --> 00:05:32.231
+This is great for both debugging agents
+and for
+
+98
+00:05:32.231 --> 00:05:32.899
+productionalizing them.
+
+99
+00:05:33.900 --> 00:05:36.269
+We will build a project using LangGraph,
+
+100
+00:05:36.269 --> 00:05:39.272
+but you'll have to reach the last lesson
+to figure out what it is.
+
+101
+00:05:39.539 --> 00:05:42.175
+And at the end, I'll describe
+some of the cool applications
+
+102
+00:05:42.175 --> 00:05:45.178
+and future directions
+I see for this technology.
+
+103
+00:05:45.645 --> 00:05:49.248
+Many people have worked
+to create this course from LangChain.
+
+104
+00:05:49.248 --> 00:05:53.720
+I'd like to thank Lance
+Martin and Nuno Campos. From Tavily,
+
+105
+00:05:53.953 --> 00:05:56.956
+Assaf Elovic And from DeepLearning.AI.
+
+106
+00:05:57.090 --> 00:05:58.458
+Geoff Ladwig.
+
+107
+00:05:58.458 --> 00:05:58.991
+All right.
+
+108
+00:05:58.991 --> 00:06:01.060
+We don't want to keep those agents
+waiting.
+
+109
+00:06:01.060 --> 00:06:03.496
+Let's
+go on to the next video to get started.
+

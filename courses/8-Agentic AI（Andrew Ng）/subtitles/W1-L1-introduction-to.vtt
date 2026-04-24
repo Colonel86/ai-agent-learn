@@ -1,0 +1,87 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.605 --> 00:00:05.519
+Welcome to this course on Agentic AI. When I coined the term agentic to describe what I saw
+
+2
+00:00:05.519 --> 00:00:10.640
+as an important and rapidly growing trend in how people were building on-base applications,
+
+3
+00:00:10.640 --> 00:00:14.880
+what I did not realize was that a bunch of marketers would get hold of this term
+
+4
+00:00:14.880 --> 00:00:20.399
+and use it as a sticker and put this on almost everything in sight. And that has caused hype
+
+5
+00:00:20.399 --> 00:00:27.440
+on Agentic AI to skyrocket. The good news though is that ignoring the hype, the number of truly
+
+6
+00:00:27.440 --> 00:00:33.439
+valuable and useful applications built using Agentic AI has also grown very rapidly, even if
+
+7
+00:00:33.439 --> 00:00:38.560
+not quite as rapidly as the hype. And in this course, what I'd like to do is show you best
+
+8
+00:00:38.560 --> 00:00:44.639
+practices for building Agentic AI applications. And this will open up a lot of new opportunities
+
+9
+00:00:44.639 --> 00:00:49.119
+to you in terms of what you can now build. Today, agentic workflows are being used to build
+
+10
+00:00:49.119 --> 00:00:55.840
+applications like customer support agents, or to do deep research to help write deeply insightful
+
+11
+00:00:55.840 --> 00:01:02.400
+research reports, or to process tricky legal documents, or to look at patient input and render
+
+12
+00:01:02.400 --> 00:01:08.559
+or to suggest possible medical diagnoses. On many of my teams, a lot of the projects we built just
+
+13
+00:01:08.559 --> 00:01:14.239
+would be impossible without agentic workflows. And so knowing how to build applications with them
+
+14
+00:01:14.239 --> 00:01:20.480
+is one of the most important and valuable skills in AI today. It turns out that one of the biggest
+
+15
+00:01:20.480 --> 00:01:24.800
+differences I've seen between people that really know how to build agentic workflows compared to
+
+16
+00:01:24.800 --> 00:01:30.080
+people that are less effective at it is the ability to drive a disciplined development process,
+
+17
+00:01:30.080 --> 00:01:35.040
+specifically one focused on evals and error analysis. And in this course, I'll tell you what
+
+18
+00:01:35.040 --> 00:01:40.319
+that means and show you what allows you to be really good at building these agentic workflows.
+
+19
+00:01:41.120 --> 00:01:46.480
+Being able to do this is one of the most important skills in AI today and will open up a lot more
+
+20
+00:01:46.480 --> 00:01:51.440
+opportunities, be it job opportunities or opportunities to just build amazing software
+
+21
+00:01:51.440 --> 00:01:57.440
+yourself. With that, let's go on to the next video to dive more into what are agentic workflows.
+

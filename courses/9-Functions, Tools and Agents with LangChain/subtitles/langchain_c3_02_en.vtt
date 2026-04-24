@@ -1,0 +1,682 @@
+WEBVTT
+1
+00:00:02.390 --> 00:00:04.469
+In this lesson, we will
+go over function calling,
+
+2
+00:00:04.929 --> 00:00:08.830
+a new capability added to the
+OpenAI API a few months ago.
+
+3
+00:00:09.769 --> 00:00:11.589
+We'll go over how exactly to use this,
+
+4
+00:00:11.990 --> 00:00:13.830
+and some tips and tricks
+for getting best results.
+
+5
+00:00:14.949 --> 00:00:17.829
+OpenAI has fine-tuned some
+of their most recent models
+
+6
+00:00:17.829 --> 00:00:20.870
+to accept additional
+parameters for function calling.
+
+7
+00:00:21.390 --> 00:00:23.780
+These models are
+fine-tuned to determine if it's
+
+8
+00:00:23.780 --> 00:00:25.570
+relevant to call one of these functions,
+
+9
+00:00:29.649 --> 00:00:29.910
+In this lesson, we'll use
+the OpenAI SDK directly,
+
+10
+00:00:42.649 --> 00:00:46.750
+To walk through this example we're
+going to imagine that we have a function
+
+11
+00:00:46.750 --> 00:00:49.969
+that we think is interesting to
+provide to the language model.
+
+12
+00:00:50.390 --> 00:00:52.619
+And we'll go over what
+interesting means later on,
+
+13
+00:00:52.619 --> 00:00:55.829
+because there are a bunch of
+different use cases for this new parameter.
+
+14
+00:00:57.229 --> 00:01:00.130
+Here, we're going to define a
+getCurrentWeather function.
+
+15
+00:01:00.929 --> 00:01:03.039
+This is an example from OpenAI themselves,
+
+16
+00:01:03.039 --> 00:01:04.849
+when they first
+released this functionality.
+
+17
+00:01:05.829 --> 00:01:09.760
+This is a good example to use
+because getting the current weather is
+
+18
+00:01:09.760 --> 00:01:12.790
+something that the language model
+can't necessarily do by itself.
+
+19
+00:01:13.430 --> 00:01:13.719
+And so, we often want to
+connect language models to functions
+
+20
+00:01:22.510 --> 00:01:25.730
+In this example, we hard code
+the information that's returned,
+
+21
+00:01:26.250 --> 00:01:28.549
+but in production this
+could be hitting a weather
+
+22
+00:01:28.549 --> 00:01:31.189
+API or some external source of knowledge.
+
+23
+00:01:35.870 --> 00:01:39.790
+OpenAI has exposed a new
+parameter called functions through
+
+24
+00:01:39.790 --> 00:01:42.950
+which you can pass a list
+of function definitions.
+
+25
+00:01:44.290 --> 00:01:47.170
+The full function definition
+for the above is right here.
+
+26
+00:01:47.950 --> 00:01:51.090
+As you can see it's a
+list and then the element
+
+27
+00:01:51.090 --> 00:01:53.379
+in the list there's only one because we're
+
+28
+00:01:53.379 --> 00:01:55.950
+only passing one
+function and here it is this
+
+29
+00:01:55.950 --> 00:01:57.950
+JSON object with a few
+different parameters.
+
+30
+00:01:59.010 --> 00:01:59.489
+You've got a name paramete,r and
+this is the name of the function.
+
+31
+00:02:02.769 --> 00:02:03.609
+You've then got a description parameter,
+
+32
+00:02:08.389 --> 00:02:08.759
+And then, next you have
+this parameter object.
+
+33
+00:02:12.449 --> 00:02:13.009
+And in here, there's properties.
+
+34
+00:02:14.349 --> 00:02:15.849
+Properties is itself
+another object, and we can see
+
+35
+00:02:22.030 --> 00:02:25.009
+Each of these elements has a type,
+string, and then, a description.
+
+36
+00:02:27.270 --> 00:02:30.909
+Unit is an enum, because we want it
+to be either Celsius or Fahrenheit.
+
+37
+00:02:31.229 --> 00:02:32.250
+And so we can reflect that here.
+
+38
+00:02:33.330 --> 00:02:36.979
+We can also convey that the only
+required parameter is location,
+
+39
+00:02:36.979 --> 00:02:40.620
+we're going to pass these
+functions directly to the language model,
+
+40
+00:02:40.620 --> 00:02:41.620
+the description parameter here. And then,
+
+41
+00:02:49.430 --> 00:02:49.710
+And so, the language model
+will use these descriptions
+
+42
+00:02:54.770 --> 00:02:59.509
+Any information you want the language
+model to have in order to determine whether to
+
+43
+00:02:59.509 --> 00:03:04.889
+call a function or how to call a function
+should be in the description here or here.
+
+44
+00:03:38.599 --> 00:03:42.439
+Let's then import the OpenAI SDK and
+call the chat completion endpoint.
+
+45
+00:03:49.659 --> 00:03:51.159
+First, we're going to specify the model.
+
+46
+00:03:51.860 --> 00:03:53.400
+We're going to make
+sure to specify one of the
+
+47
+00:03:53.400 --> 00:03:54.879
+more recent ones that has this capability.
+
+48
+00:04:00.449 --> 00:04:02.969
+Next, we're going to pass in
+our messages defined above.
+
+49
+00:04:13.060 --> 00:04:14.379
+Let's run this and see what we get.
+
+50
+00:04:17.860 --> 00:04:18.779
+Let's look at the full response.
+
+51
+00:04:19.680 --> 00:04:24.980
+We can see that the message we
+get back has role of assistant,
+
+52
+00:04:24.980 --> 00:04:28.649
+has null for content, and
+instead has this function
+
+53
+00:04:28.649 --> 00:04:32.319
+call parameter which has two
+objects, name and arguments.
+
+54
+00:04:33.139 --> 00:04:34.339
+Name is get current weather.
+
+55
+00:04:35.000 --> 00:04:38.269
+This is the same name as the
+function that we passed in,
+
+56
+00:04:38.269 --> 00:04:40.180
+and then arguments is this JSON blob.
+
+57
+00:04:50.579 --> 00:04:52.699
+Let's take a closer look
+at the response message.
+
+58
+00:05:01.399 --> 00:05:02.959
+Again, content is now empty.
+
+59
+00:05:09.110 --> 00:05:10.550
+And function call is this dictionary.
+
+60
+00:05:20.009 --> 00:05:23.949
+The arguments parameter in function
+call is a JSON dictionary itself,
+
+61
+00:05:24.350 --> 00:05:27.990
+so we can use JSON.loads to load
+this into a Python dictionary.
+
+62
+00:05:41.079 --> 00:05:41.480
+The arguments that it passed
+back can be directly passed
+
+63
+00:05:41.079 --> 00:05:48.860
+into OpenAI doesn't
+directly call the function.
+
+64
+00:05:49.040 --> 00:05:50.199
+We still have to do that ourselves.
+
+65
+00:05:51.079 --> 00:05:54.339
+Rather, it just tells us what
+function to call, that's the name,
+
+66
+00:05:54.680 --> 00:05:56.899
+and what the arguments to
+that function should be.
+
+67
+00:05:57.680 --> 00:06:01.720
+It's also worth noting that although
+this is trained to return a JSON blob,
+
+68
+00:06:02.060 --> 00:06:03.600
+it's actually not strictly enforced.
+
+69
+00:06:15.800 --> 00:06:19.980
+What happens if the message that you pass
+in isn't related to the function at all?
+
+70
+00:06:20.920 --> 00:06:22.639
+Let's try it out and
+see what happens then.
+
+71
+00:06:45.560 --> 00:06:45.959
+Let's create a new set of messages,
+
+72
+00:06:45.560 --> 00:06:51.240
+this time ones that can see that the
+message that's returned has content as normal,
+
+73
+00:06:51.600 --> 00:06:54.339
+and it doesn't have that
+function call parameter.
+
+74
+00:06:55.100 --> 00:06:57.040
+What's going on under
+the hood is that the model
+
+75
+00:06:57.040 --> 00:06:59.879
+is determining whether
+to use a function or not.
+
+76
+00:07:01.199 --> 00:07:03.600
+There are additional
+parameters that we can pass in
+
+77
+00:07:03.600 --> 00:07:07.259
+to force the model to use
+or not to use a function.
+
+78
+00:07:08.000 --> 00:07:08.660
+Let's take a look at those.
+
+79
+00:07:11.709 --> 00:07:14.170
+That additional parameter is
+the function call parameter.
+
+80
+00:07:14.870 --> 00:07:16.709
+By default, it's set to auto.
+
+81
+00:07:17.290 --> 00:07:20.470
+This means that the language model
+chooses. This is what we've been doing so far.
+
+82
+00:07:25.129 --> 00:07:27.110
+There's two other modes
+that we can use it in.
+
+83
+00:07:27.610 --> 00:07:30.310
+In the first mode, we can
+force it to call a function.
+
+84
+00:07:31.449 --> 00:07:33.759
+This is good if we always
+want to return the function,
+
+85
+00:07:33.759 --> 00:07:36.490
+and we'll see some use cases
+for that later on in the lesson.
+
+86
+00:07:37.569 --> 00:07:40.430
+As you can see, because
+we're using auto and we're
+
+87
+00:07:40.430 --> 00:07:41.870
+letting the language
+model choose what to do,
+
+88
+00:07:42.509 --> 00:07:45.410
+here it recognizes that it
+doesn't need to call the function
+
+89
+00:07:45.410 --> 00:07:49.110
+and so it's responding as
+before with role and content only.
+
+90
+00:07:51.149 --> 00:07:53.529
+Another mode for function
+call that we can use is none.
+
+91
+00:07:54.589 --> 00:07:58.089
+This forces the language model not
+to use any of the functions provided.
+
+92
+00:07:59.529 --> 00:08:02.459
+In this example it doesn't
+really matter because the
+
+93
+00:08:02.459 --> 00:08:05.069
+content high doesn't need
+the function call anyways.
+
+94
+00:08:07.250 --> 00:08:10.829
+But what happens when the
+messages should call function here?
+
+95
+00:08:20.470 --> 00:08:22.029
+It should call the get
+current weather function.
+
+96
+00:08:22.829 --> 00:08:26.589
+But when we look down, we still
+see the usual role and content.
+
+97
+00:08:27.129 --> 00:08:29.779
+That's because we're forcing it
+not to call the function. And so,
+
+98
+00:08:39.070 --> 00:08:42.990
+The final option for the function call
+parameter is forcing it to call a function.
+
+99
+00:08:43.529 --> 00:08:44.289
+Let's see how to do that.
+
+100
+00:08:58.860 --> 00:09:03.730
+And if we look at the response we can
+see that in fact we do get this function
+
+101
+00:09:03.730 --> 00:09:07.240
+call object returned and it's got name
+get current weather with some arguments.
+
+102
+00:09:08.639 --> 00:09:12.009
+Just for fun let's see what
+happens if we pass in a message
+
+103
+00:09:12.009 --> 00:09:15.120
+that doesn't need to call the
+function but we force it to.
+
+104
+00:09:31.909 --> 00:09:32.190
+So here, it's making up
+San Francisco, California.
+
+105
+00:09:35.029 --> 00:09:39.029
+If we run it again, it keeps on
+calling San Francisco, California.
+
+106
+00:09:54.350 --> 00:09:55.269
+Some final things to note.
+
+107
+00:09:55.970 --> 00:09:59.250
+First, the functions
+themselves and the descriptions count
+
+108
+00:09:59.250 --> 00:10:02.370
+against the token usage
+limit that you pass to OpenAI.
+
+109
+00:10:09.610 --> 00:10:13.159
+If we comment out
+functions and function call,
+
+110
+00:10:13.159 --> 00:10:17.590
+we can see that prompt
+tokens goes down to 15.
+
+111
+00:10:18.889 --> 00:10:20.090
+In this particular example,
+
+112
+00:10:20.529 --> 00:10:22.950
+the function definition
+and the function description
+
+113
+00:10:22.950 --> 00:10:24.970
+are taking up a lot of the tokens.
+
+114
+00:10:25.450 --> 00:10:29.690
+This is important to note because
+OpenAI models have a token limit on them.
+
+115
+00:10:30.269 --> 00:10:30.529
+And so, as you're constructing
+your messages to pass to OpenAI,
+
+116
+00:10:40.710 --> 00:10:44.850
+Finally, let's now take a look at how you
+can pass some of these function calls and
+
+117
+00:10:44.850 --> 00:10:48.830
+the results of actually doing the
+function calls back into the language model.
+
+118
+00:10:49.929 --> 00:10:52.840
+This is important because
+oftentimes you want to use the
+
+119
+00:10:52.840 --> 00:10:55.169
+language model to
+determine what function to call,
+
+120
+00:10:55.169 --> 00:10:58.080
+then run that function,
+but then pass it back into
+
+121
+00:10:58.080 --> 00:11:00.409
+the language model to
+get a final response.
+
+122
+00:11:20.330 --> 00:11:24.409
+We'll then take this message and
+we'll append it to our list of messages.
+
+123
+00:11:49.629 --> 00:11:52.590
+We can then simulate calling
+the getCurrentWeather function
+
+124
+00:11:52.590 --> 00:11:55.549
+with the arguments that
+the language model provides.
+
+125
+00:12:00.669 --> 00:12:04.250
+Let's save this to a variable and
+then we can append a new message to the
+
+126
+00:12:04.250 --> 00:12:08.309
+list representing the response
+from the function that we just call.
+
+127
+00:12:16.340 --> 00:12:17.740
+We do this with a new type of message.
+
+128
+00:12:18.559 --> 00:12:21.059
+Notice that it has a
+role equal to function.
+
+129
+00:12:21.700 --> 00:12:23.500
+This is used to convey
+to the language model
+
+130
+00:12:23.500 --> 00:12:25.799
+that it's the response
+of calling a function.
+
+131
+00:12:26.620 --> 00:12:30.000
+We then also pass in the name,
+which is the name of the function,
+
+132
+00:12:30.000 --> 00:12:32.889
+and a content variable, which we
+can set up equal to observation,
+
+133
+00:12:32.889 --> 00:12:33.860
+which we calculated above.
+
+134
+00:12:40.539 --> 00:12:44.389
+If we then call the language
+model with this list of messages,
+
+135
+00:12:44.389 --> 00:12:48.570
+we can see that the language model
+takes the response of the observation
+
+136
+00:12:48.570 --> 00:12:51.460
+and converts it into a nice
+natural language response.
+
+137
+00:12:51.879 --> 00:12:53.860
+The current weather in
+Boston is 72 degrees
+
+138
+00:12:53.860 --> 00:12:56.179
+Fahrenheit with a
+sunny and windy forecast.
+
+139
+00:13:13.299 --> 00:13:16.120
+That's all for this lesson
+where we introduced OpenAI function
+
+140
+00:13:16.120 --> 00:13:19.820
+calling and how to use it
+with the OpenAI SDK directly.
+
+141
+00:13:20.639 --> 00:13:24.679
+In the next lessons, we're gonna
+cover how to combine this with langchain
+
+142
+00:13:24.679 --> 00:13:29.379
+primitives to make it easier and
+faster to use this functionality.

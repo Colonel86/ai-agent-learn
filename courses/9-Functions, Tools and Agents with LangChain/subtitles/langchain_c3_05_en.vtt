@@ -1,0 +1,1759 @@
+WEBVTT
+1
+00:00:02.240 --> 00:00:05.259
+In this lesson, we'll go
+over one of the main use cases
+
+2
+00:00:05.259 --> 00:00:09.460
+that we see developers using OpenAI
+functions for, tagging and extraction.
+
+3
+00:00:10.419 --> 00:00:14.279
+This allows us to extract
+structured data from unstructured text.
+
+4
+00:00:15.119 --> 00:00:15.619
+Let's have some fun.
+
+5
+00:00:17.260 --> 00:00:19.600
+The first use case that
+we'll cover is tagging.
+
+6
+00:00:20.239 --> 00:00:23.379
+In tagging, we pass in
+an unstructured piece of
+
+7
+00:00:23.379 --> 00:00:25.469
+text along with some
+structured description,
+
+8
+00:00:25.469 --> 00:00:28.949
+and then we use the LLM to
+generate some structured
+
+9
+00:00:28.949 --> 00:00:31.390
+output to reason over that input text
+
+10
+00:00:31.390 --> 00:00:34.530
+and create some
+response in the format of the
+
+11
+00:00:34.530 --> 00:00:36.619
+structured description that we pass in.
+
+12
+00:00:37.759 --> 00:00:41.740
+So here in this example, we know that
+we want to be generating an object that
+
+13
+00:00:41.740 --> 00:00:45.979
+has a sentiment of the text and also
+has a tag for the language of the text.
+
+14
+00:00:46.859 --> 00:00:51.200
+And so when we pass in a piece
+of text we'll pass in a structure
+
+15
+00:00:51.200 --> 00:00:52.929
+description saying hey
+extract some sentiment,
+
+16
+00:00:52.929 --> 00:00:56.689
+extract some language, and the LLM
+will reason over that text and respond
+
+17
+00:00:56.689 --> 00:01:00.159
+with an object that has a
+sentiment tag and a language tag.
+
+18
+00:01:00.840 --> 00:01:03.060
+This is similar but
+slightly different from the second
+
+19
+00:01:03.060 --> 00:01:05.180
+use case that we'll
+cover, which is extraction.
+
+20
+00:01:06.680 --> 00:01:11.400
+In extraction, we're going to be
+extracting specific entities from the text.
+
+21
+00:01:12.700 --> 00:01:15.500
+These entities are also
+represented by a structure description.
+
+22
+00:01:16.620 --> 00:01:21.030
+But rather than using the LLM to
+reason over the text and respond
+
+23
+00:01:21.030 --> 00:01:23.739
+with a single output in
+this structure description.
+
+24
+00:01:24.299 --> 00:01:29.459
+We're using the LLM to look over the
+text and extract a list of these elements.
+
+25
+00:01:30.159 --> 00:01:33.719
+So we might ask it to look
+over an article and extract a
+
+26
+00:01:33.719 --> 00:01:35.819
+list of the papers that were
+mentioned in that article.
+
+27
+00:01:36.739 --> 00:01:38.280
+Let's take a look at doing this in code.
+
+28
+00:01:40.780 --> 00:01:43.260
+First we're going to
+import our standard setup.
+
+29
+00:01:46.370 --> 00:01:48.349
+We're then going to import
+some of the functions and
+
+30
+00:01:48.349 --> 00:01:50.129
+classes that we learned
+about in the last lesson.
+
+31
+00:01:50.349 --> 00:01:53.409
+So we're going to import list from
+typing to help us with type hints.
+
+32
+00:01:53.530 --> 00:01:55.870
+We're going to import base
+model and field from Pydantic.
+
+33
+00:01:56.489 --> 00:01:59.450
+And then we're going to import our
+convert Pydantic to open AI function.
+
+34
+00:02:01.810 --> 00:02:05.409
+Let's now create a Pydantic model
+that we're going to use for tagging.
+
+35
+00:02:05.609 --> 00:02:07.010
+So we're going to call it tagging,
+
+36
+00:02:07.010 --> 00:02:08.800
+we're going to have a
+description where we just
+
+37
+00:02:08.800 --> 00:02:10.599
+say tag the piece of
+text with particular info,
+
+38
+00:02:10.599 --> 00:02:12.789
+and then we're going to
+have a list of the attributes
+
+39
+00:02:12.789 --> 00:02:14.389
+that we want to tag the text with.
+
+40
+00:02:14.849 --> 00:02:17.080
+So first sentiment, and
+we're going to have the
+
+41
+00:02:17.080 --> 00:02:18.819
+description be the sentiment of the text,
+
+42
+00:02:18.819 --> 00:02:20.310
+should be pause, neg, or neutral.
+
+43
+00:02:20.750 --> 00:02:23.259
+So we're defining some values
+that the sentiment field should be,
+
+44
+00:02:23.259 --> 00:02:25.319
+and remember this gets
+passed into the language model,
+
+45
+00:02:25.319 --> 00:02:27.830
+so this is how we're telling
+the language model what the
+
+46
+00:02:27.830 --> 00:02:29.889
+shape of the data that
+we're extracting should be.
+
+47
+00:02:29.990 --> 00:02:31.509
+And then we also have a language tag.
+
+48
+00:02:32.129 --> 00:02:35.139
+And here we have the
+language of the text and we're
+
+49
+00:02:35.139 --> 00:02:37.870
+again saying it should be
+in this ISO 639-1 code.
+
+50
+00:02:39.150 --> 00:02:40.939
+If we then call our
+"convert_pydantic_to_openai_function" method on this class,
+
+51
+00:02:55.370 --> 00:02:58.590
+So let's now use this to actually do
+the tagging. What are we going to need?
+
+52
+00:02:58.849 --> 00:03:00.069
+We're going to need two more things.
+
+53
+00:03:00.310 --> 00:03:01.870
+We're going to need a
+prompt in a language model.
+
+54
+00:03:14.889 --> 00:03:17.400
+So we're going to import a chat
+prompt template in our chat OpenAI model.
+
+55
+00:03:19.110 --> 00:03:24.930
+We'll create our model really simply
+by setting temperature equals to zero.
+
+56
+00:03:25.270 --> 00:03:27.379
+And we're going to do this
+because when we're tagging things
+
+57
+00:03:27.379 --> 00:03:28.909
+we generally want it to
+be pretty deterministic.
+
+58
+00:03:31.780 --> 00:03:35.139
+We're then going to create
+our tagging functions which
+
+59
+00:03:35.139 --> 00:03:38.870
+are just going to be a
+single one at this point,
+
+60
+00:04:01.550 --> 00:04:01.949
+We're going to add in a pretty
+simple system message to start.
+
+61
+00:04:13.439 --> 00:04:15.900
+And then we'll add in a spot where
+we're going to pass in the user input.
+
+62
+00:04:18.920 --> 00:04:24.670
+We're then going to create a
+model with functions so we're
+
+63
+00:04:24.670 --> 00:04:28.860
+going to bind the model
+to the tagging functions,
+
+64
+00:05:07.980 --> 00:05:08.379
+We can then create a
+tagging chain by just combining
+
+65
+00:05:07.980 --> 00:05:08.779
+the prompt with this model
+and then we can call this.
+
+66
+00:05:09.060 --> 00:05:12.779
+And then we can call this on a piece
+of text and we can get back a response.
+
+67
+00:05:13.139 --> 00:05:14.399
+And so we're calling the tagging function.
+
+68
+00:05:14.620 --> 00:05:18.230
+We can see that the function call is
+there and then we can see the arguments that
+
+69
+00:05:18.230 --> 00:05:21.420
+are passed in and we can see that
+sentiment is positive and language is English.
+
+70
+00:05:22.120 --> 00:05:23.600
+We can do this for another piece of text.
+
+71
+00:05:24.000 --> 00:05:26.560
+We can vary it up and try a different
+language and a different sentiment.
+
+72
+00:05:30.779 --> 00:05:32.060
+So let's do some Italian.
+
+73
+00:05:44.089 --> 00:05:49.920
+So as you can see we're getting the
+language model to respond in this format but it's still kind of nested here in
+
+74
+00:05:49.920 --> 00:05:52.699
+this additional quarks bit and
+we know that we're always going
+
+75
+00:05:52.699 --> 00:05:55.230
+to be extracting the
+structure and so what we really
+
+76
+00:05:55.230 --> 00:05:58.529
+want to do is add an output
+parser that takes in this AI
+
+77
+00:05:58.529 --> 00:06:01.060
+message and basically parses
+out the JSON and just says
+
+78
+00:06:01.060 --> 00:06:03.589
+that because that's the only
+interesting thing here we already
+
+79
+00:06:03.589 --> 00:06:05.870
+know that we're going to
+be calling this function.
+
+80
+00:06:06.490 --> 00:06:09.170
+So the fact that content is
+null, that's not interesting to us.
+
+81
+00:06:09.329 --> 00:06:11.930
+The fact that there's a function call
+that's made, that's not interesting to us.
+
+82
+00:06:12.089 --> 00:06:14.490
+We're forcing it to do that. The fact
+that it's calling the tagging function,
+
+83
+00:06:14.490 --> 00:06:16.689
+also not interesting to us
+because we know that it's going
+
+84
+00:06:16.689 --> 00:06:18.889
+to be calling the tagging
+function because we forced it to.
+
+85
+00:06:19.649 --> 00:06:23.600
+And so here what we really want is just
+the value of arguments, which is JSON blob,
+
+86
+00:06:23.600 --> 00:06:26.379
+and it'll be really convenient if
+that was parsed into JSON because
+
+87
+00:06:26.379 --> 00:06:29.399
+it's JSON in this JSON blob
+and we want to be able to
+
+88
+00:06:29.399 --> 00:06:32.189
+use the individual elements and
+so we have a nice little output
+
+89
+00:06:32.189 --> 00:06:34.509
+parser in link chain that
+can help with exactly that.
+
+90
+00:06:38.180 --> 00:06:42.339
+It's called JSON output functions parser
+and so we'll import it from LangChain output parsers open AI functions
+
+91
+00:07:09.600 --> 00:07:12.060
+And so this is much more nice and
+convenient to work with downstream.
+
+92
+00:07:13.560 --> 00:07:16.279
+Let's now go into extraction. And
+extraction is similar to tagging,
+
+93
+00:07:16.279 --> 00:07:19.439
+but we want to use it to extract
+multiple pieces of information.
+
+94
+00:07:21.579 --> 00:07:24.680
+First, we'll define the piece of
+information that we want to extract.
+
+95
+00:07:25.019 --> 00:07:25.939
+And this is a person schema. So,
+we'll have information about a person,
+
+96
+00:07:35.980 --> 00:07:39.589
+What we want to do is we want to
+extract a list of these objects,
+
+97
+00:07:39.589 --> 00:07:41.509
+and so we'll define another
+class called information,
+
+98
+00:07:41.509 --> 00:07:43.920
+which is just the
+information that we want to extract.
+
+99
+00:07:44.639 --> 00:07:46.759
+We'll add an attribute
+which is people and then
+
+100
+00:07:46.759 --> 00:07:49.980
+this will be a list of the person type.
+
+101
+00:07:50.800 --> 00:07:53.089
+This information class
+is going to be the one
+
+102
+00:07:53.089 --> 00:07:55.379
+that we're passing in
+as the open AI function.
+
+103
+00:07:57.850 --> 00:08:01.050
+So here we can convert that
+class to open AI functions
+
+104
+00:08:01.050 --> 00:08:03.910
+and we can see that we
+have information properties.
+
+105
+00:08:04.930 --> 00:08:06.790
+The main property is people and
+then if we look at the description
+
+106
+00:08:06.790 --> 00:08:11.949
+of people we can see that we now
+have the person description here.
+
+107
+00:08:12.829 --> 00:08:15.660
+So under the hood in this
+convert Pydantic to Open AI
+
+108
+00:08:23.790 --> 00:08:25.709
+So now we're going to set up
+our extraction chain. First,
+
+109
+00:08:32.830 --> 00:08:34.590
+Next we're going to set
+up the extraction model.
+
+110
+00:08:35.509 --> 00:08:38.419
+So we're going to bind functions
+equal to extraction functions because
+
+111
+00:08:38.419 --> 00:08:41.590
+we want to use those and then
+we're going to bind function
+
+112
+00:08:41.590 --> 00:08:44.759
+call with name set equal to
+information because the name of the
+
+113
+00:08:44.759 --> 00:08:47.929
+function that we want to force
+the model to call is information.
+
+114
+00:08:50.580 --> 00:08:51.440
+After that we can try it out.
+
+115
+00:08:53.750 --> 00:08:57.659
+So let's try it out on a simple sentence,
+
+116
+00:09:11.820 --> 00:09:13.220
+His mom is Martha.
+
+117
+00:09:13.720 --> 00:09:14.820
+So now there's two people here.
+
+118
+00:09:15.639 --> 00:09:19.639
+And we can see that what it
+extracts is name Joe, age 30.
+
+119
+00:09:20.179 --> 00:09:30.779
+Gets a second person this
+time, name Martha, age 0.
+
+120
+00:09:31.559 --> 00:09:33.039
+Which probably we can do better.
+
+121
+00:09:33.240 --> 00:09:35.580
+We can force the model to
+respond in a more educated way.
+
+122
+00:09:36.220 --> 00:09:39.100
+And so what we're going to do
+is we're going to add a prompt
+
+123
+00:09:39.100 --> 00:09:40.899
+that's going to tell the
+language model to do that.
+
+124
+00:09:41.980 --> 00:09:47.039
+So now we're adding a prompt and we have
+a system message where we say extract the
+
+125
+00:09:47.039 --> 00:09:50.620
+relevant information if not explicitly
+provided do not guess extract partial info.
+
+126
+00:09:51.600 --> 00:09:54.159
+So hopefully what this
+should do is this should force
+
+127
+00:09:54.159 --> 00:09:56.210
+the language model or
+this should allow the
+
+128
+00:09:56.210 --> 00:09:58.519
+language model to not
+respond always with an age
+
+129
+00:09:58.519 --> 00:10:01.080
+it's not going to make
+up this age equals zero.
+
+130
+00:10:01.700 --> 00:10:09.460
+So we can create a new
+extraction chain as this prompt,
+
+131
+00:10:09.820 --> 00:10:11.200
+and then the extraction model.
+
+132
+00:10:16.110 --> 00:10:19.139
+And if we call this
+extraction chain on the same thing,
+
+133
+00:10:19.139 --> 00:10:22.440
+we can now see that in the
+arguments, we have name Martha,
+
+134
+00:10:22.440 --> 00:10:25.200
+and there's nothing mentioned
+about age so it's correctly reasoning
+
+135
+00:10:25.200 --> 00:10:27.950
+that it doesn't need to
+pass in information about age.
+
+136
+00:10:28.929 --> 00:10:31.610
+Again we can probably do
+better than just this AI message
+
+137
+00:10:31.610 --> 00:10:33.809
+we can try to parse it
+into some structure.
+
+138
+00:10:34.629 --> 00:10:39.190
+So let's add back in that JSON
+output parser that we had before.
+
+139
+00:10:40.110 --> 00:10:40.950
+If we call it again, we can
+see that it's parsed into this
+
+140
+00:10:47.629 --> 00:10:49.610
+For extraction, though,
+there's again some extraneous
+
+141
+00:10:49.610 --> 00:10:51.590
+information here that
+we don't really need.
+
+142
+00:10:51.750 --> 00:10:55.070
+We don't really care that
+there's this list of people here.
+
+143
+00:10:55.710 --> 00:10:57.789
+Because remember, when we defined it,
+
+144
+00:10:57.789 --> 00:11:01.250
+information is just a
+vehicle to allow us to extract
+
+145
+00:11:01.250 --> 00:11:03.330
+multiple elements of this person field.
+
+146
+00:11:03.470 --> 00:11:06.549
+What we really care about
+is just this list of person.
+
+147
+00:11:07.870 --> 00:11:09.769
+So we can use a different
+output parser for that.
+
+148
+00:11:10.870 --> 00:11:13.730
+We can import JSON key
+output functions parser.
+
+149
+00:11:14.330 --> 00:11:17.190
+And what this will
+basically do is it will look for a
+
+150
+00:11:17.190 --> 00:11:19.330
+particular key in the
+output and extract only that.
+
+151
+00:11:20.330 --> 00:11:22.370
+So now we modify our
+extraction chain slightly.
+
+152
+00:11:23.710 --> 00:11:28.970
+We pass in this new output parser
+and we pass it in with a key name
+
+153
+00:11:28.970 --> 00:11:32.529
+equal to people because this is
+the field that we want to extract.
+
+154
+00:11:33.309 --> 00:11:39.169
+Now if we call this on the input again,
+we can see that now we just have this list.
+
+155
+00:11:39.950 --> 00:11:43.090
+So it's a minor improvement but it
+will make it easier to use downstream
+
+156
+00:11:43.090 --> 00:11:45.549
+if extraction is truly what we
+care about for this purpose.
+
+157
+00:11:46.490 --> 00:11:50.110
+Now is a good time to pause and play
+around with both tagging and extraction.
+
+158
+00:11:51.269 --> 00:11:53.509
+Add some different models,
+try some different input text.
+
+159
+00:11:54.149 --> 00:11:55.490
+There's a lot of cool
+things you can do here.
+
+160
+00:11:57.009 --> 00:12:00.029
+We're going to put this all together
+into a slightly more real world example.
+
+161
+00:12:01.070 --> 00:12:03.549
+So what we're going to
+do is we're first going
+
+162
+00:12:03.549 --> 00:12:07.090
+to load a real article from the internet.
+
+163
+00:12:07.929 --> 00:12:10.000
+So we're going to use a
+web-based loader which
+
+164
+00:12:10.000 --> 00:12:10.460
+comes from LangChain Document Loaders,
+
+165
+00:12:14.470 --> 00:12:16.990
+And so we're going to
+pass in this URL here,
+
+166
+00:12:16.990 --> 00:12:19.250
+which is a great blog post
+about autonomous agents.
+
+167
+00:12:20.029 --> 00:12:22.990
+We're going to call.load, and this
+is going to load a few documents.
+
+168
+00:12:23.610 --> 00:12:23.909
+It's going to load 1
+document in particular,
+
+169
+00:12:41.139 --> 00:12:43.110
+So what we're first
+going to do is we're going
+
+170
+00:12:43.110 --> 00:12:44.679
+to get the first
+10,000 characters of this.
+
+171
+00:12:45.379 --> 00:12:48.450
+If we print out the first few
+bit of this page content, again,
+
+172
+00:12:48.450 --> 00:12:51.279
+we're not going to print it all
+out because it's pretty long.
+
+173
+00:12:52.720 --> 00:12:54.610
+But if we print out the beginning,
+
+174
+00:12:54.610 --> 00:12:57.860
+we can see that it's an article
+about LLM powered autonomous agents.
+
+175
+00:12:59.639 --> 00:13:02.639
+And then we could probably do a
+little bit better cleanup of this,
+
+176
+00:13:02.779 --> 00:13:04.399
+but we'll work with this text as is.
+
+177
+00:13:04.559 --> 00:13:07.370
+So we can see that it
+starts to finally get down
+
+178
+00:13:07.370 --> 00:13:09.159
+into some introduction
+or some overview section.
+
+179
+00:13:09.980 --> 00:13:13.460
+And so we're going to work with this
+text to do both tagging and extraction.
+
+180
+00:13:17.230 --> 00:13:20.090
+First, we're going to create a
+class describing what we want to tag.
+
+181
+00:13:20.950 --> 00:13:25.710
+So we want to get an overview of this
+article. And so we want to extract a summary,
+
+182
+00:13:26.190 --> 00:13:28.289
+the language that's
+used, and any keywords.
+
+183
+00:13:28.769 --> 00:13:33.009
+And so we're going to create this nice
+model that we can use to describe all that.
+
+184
+00:13:34.990 --> 00:13:37.509
+We're then going to set up the chain
+and this is all very similar to above.
+
+185
+00:13:37.909 --> 00:13:40.840
+So we're going to create the
+overview tagging functions
+
+186
+00:13:40.840 --> 00:13:43.450
+and this is just
+converting one base model,
+
+187
+00:13:43.450 --> 00:13:47.029
+the overview base model, to open
+AI functions using this method.
+
+188
+00:13:47.830 --> 00:13:49.269
+We're then going to
+create our tagging model.
+
+189
+00:13:49.490 --> 00:13:51.909
+So we're going to bind the
+functions that we created
+
+190
+00:13:51.909 --> 00:13:53.850
+above and force it to call this overview.
+
+191
+00:13:54.629 --> 00:13:57.710
+And then we're going to create a
+tagging chain. So we're doing a prompt,
+
+192
+00:13:58.090 --> 00:14:00.970
+which is the prompt that we
+used above, a tagging model,
+
+193
+00:14:01.250 --> 00:14:03.129
+and then JSON output functions parser.
+
+194
+00:14:04.490 --> 00:14:06.210
+Putting that all together,
+
+195
+00:14:06.210 --> 00:14:07.919
+we can now call
+"tagging_chain.invoke" and we can
+
+196
+00:14:17.610 --> 00:14:19.450
+And so we can see that it
+extracts a summary of the article.
+
+197
+00:14:19.669 --> 00:14:23.129
+This article discusses the concept of
+building autonomous agents powered by LLMs.
+
+198
+00:14:24.129 --> 00:14:27.529
+It's in English and extracted a bunch
+of keywords. LLM, autonomous agents,
+
+199
+00:14:27.809 --> 00:14:30.730
+planning, memory, tool use, task,
+decomposition, self-reflection.
+
+200
+00:14:32.049 --> 00:14:35.669
+Now we're going to try to extract all
+papers that are mentioned by this article.
+
+201
+00:14:35.929 --> 00:14:37.659
+And this article is very
+good and very academic,
+
+202
+00:14:37.659 --> 00:14:39.190
+and so it mentions a lot of papers.
+
+203
+00:14:39.570 --> 00:14:42.230
+And we're really interested what
+the papers that it mentioned are.
+
+204
+00:14:43.889 --> 00:14:45.870
+So we'll create some base
+models here. First up is paper.
+
+205
+00:14:46.210 --> 00:14:48.299
+We want to know the title
+of the paper and then the
+
+206
+00:14:48.299 --> 00:14:49.870
+author of the paper as
+well if it's provided.
+
+207
+00:14:50.990 --> 00:14:54.000
+And then we are going to put this inside
+another class called info and we're going
+
+208
+00:14:54.000 --> 00:14:57.389
+to have papers be a list of paper so
+that we can get a lot of them back.
+
+209
+00:15:01.009 --> 00:15:03.629
+We're then going to set up our
+extraction chain and so here we're
+
+210
+00:15:03.629 --> 00:15:06.250
+creating the functions that we
+want to pass in which is just info.
+
+211
+00:15:06.970 --> 00:15:09.750
+We're then binding that to
+the functions parameter or then
+
+212
+00:15:09.750 --> 00:15:12.250
+binding function call and
+setting name equal to info.
+
+213
+00:15:12.450 --> 00:15:14.950
+We're going to force it to
+call this info function,
+
+214
+00:15:23.570 --> 00:15:27.710
+So we're going to create that and then we
+can run it on the page content once again.
+
+215
+00:15:31.639 --> 00:15:34.899
+And so we can see that we
+get one result back title
+
+216
+00:15:34.899 --> 00:15:36.529
+LLM powered autonomous
+agents author Lillian Weng.
+
+217
+00:15:37.879 --> 00:15:40.379
+And so this is a little
+bit confusing because
+
+218
+00:15:40.379 --> 00:15:42.600
+this is actually the title of the article
+
+219
+00:15:42.600 --> 00:15:46.480
+that we're passing in and the author
+of the article that we're passing in.
+
+220
+00:15:46.679 --> 00:15:49.580
+It's not the papers that are mentioned
+within the article, it's the article itself.
+
+221
+00:15:49.659 --> 00:15:53.000
+And so the language model is
+probably getting confused because if you
+
+222
+00:15:53.000 --> 00:15:56.889
+remember the the initial page is a
+lot of this is the article title,
+
+223
+00:15:56.889 --> 00:16:00.779
+this is the author, and we haven't really
+instructed the language model too clearly
+
+224
+00:16:00.779 --> 00:16:04.399
+that it should be extracting rather than
+the information about the article itself,
+
+225
+00:16:04.399 --> 00:16:07.179
+it should be extracting the
+papers that are mentioned within.
+
+226
+00:16:07.899 --> 00:16:09.509
+And so in order to fix that,
+
+227
+00:16:09.509 --> 00:16:11.799
+we're going to give it a
+slightly better system message.
+
+228
+00:16:14.279 --> 00:16:17.220
+So we're going to tell it more
+explicitly, an article will be passed to you.
+
+229
+00:16:17.580 --> 00:16:19.500
+Extract from it all papers that
+are mentioned by this article.
+
+230
+00:16:20.120 --> 00:16:21.820
+Do not extract the name
+of the article itself.
+
+231
+00:16:22.399 --> 00:16:25.049
+If no papers are mentioned, that's
+fine. You don't need to extract any,
+
+232
+00:16:25.049 --> 00:16:25.940
+just return an empty list.
+
+233
+00:16:26.740 --> 00:16:29.340
+Do not make up or guess
+any extra information,
+
+234
+00:16:29.559 --> 00:16:32.000
+only extract exactly what is in the text.
+
+235
+00:16:32.820 --> 00:16:35.340
+And so we're going to create
+this prompt that is much more
+
+236
+00:16:35.340 --> 00:16:37.019
+descriptive in how the
+language model should behave.
+
+237
+00:16:37.659 --> 00:16:41.159
+We're going to use this prompt in our
+new chain. Other than that, it's the same.
+
+238
+00:16:41.340 --> 00:16:43.580
+So it's got the same extraction
+model, the same output parser.
+
+239
+00:16:44.159 --> 00:16:49.759
+And then we're going to call this new
+chain on that page content and we're going
+
+240
+00:16:49.759 --> 00:16:55.009
+to get back a list of articles with
+titles and authors and these look much
+
+241
+00:16:55.009 --> 00:17:00.269
+more reasonable and so these are all
+great papers in this space that are not
+
+242
+00:17:00.269 --> 00:17:04.819
+the article itself but rather the
+author is using to make some points.
+
+243
+00:17:05.759 --> 00:17:08.799
+We can also do some sanity checks to
+make sure that it's performing okay.
+
+244
+00:17:09.240 --> 00:17:12.990
+So we can pass in a simple
+message like hi we'd expect this
+
+245
+00:17:12.990 --> 00:17:16.740
+to return an empty list and
+indeed it does and so here are
+
+246
+00:17:16.740 --> 00:17:19.049
+instructions about just
+returning empty lists if there's
+
+247
+00:17:19.049 --> 00:17:21.640
+no papers that are mentioned
+that they're working okay.
+
+248
+00:17:22.119 --> 00:17:24.420
+So it seems to be doing
+a reasonable pass here.
+
+249
+00:17:25.460 --> 00:17:28.799
+Remember though, this is just the
+first 10,000 characters of the article.
+
+250
+00:17:29.180 --> 00:17:31.210
+What if we want to do it on
+the whole article and extract
+
+251
+00:17:31.210 --> 00:17:32.779
+all the papers that are
+mentioned in the whole article?
+
+252
+00:17:33.920 --> 00:17:38.160
+In order to do that, we'll use some more
+concepts, this time around text splitting.
+
+253
+00:17:38.440 --> 00:17:39.759
+So we're going to define a text splitter,
+
+254
+00:17:40.279 --> 00:17:42.779
+and we're going to use the
+recursive character text splitter.
+
+255
+00:17:42.900 --> 00:17:46.519
+We covered this in the
+previous course on deep learning.
+
+256
+00:17:47.380 --> 00:17:49.119
+So if this is unfamiliar,
+I would check that out.
+
+257
+00:17:49.799 --> 00:17:51.539
+And the reason that we need
+to do this text splitting
+
+258
+00:17:51.539 --> 00:17:52.799
+is that this article
+is really really long.
+
+259
+00:17:52.980 --> 00:17:55.980
+And so if we try to pass that
+article to the language model directly,
+
+260
+00:17:55.980 --> 00:17:58.339
+it's actually going to be
+too big for the token window.
+
+261
+00:17:58.779 --> 00:18:01.920
+And so what we're going to do
+is we're going to split it into
+
+262
+00:18:01.920 --> 00:18:04.380
+smaller pieces of text and
+then we're going to pass those
+
+263
+00:18:04.380 --> 00:18:06.619
+pieces of text to the
+language model individually and then
+
+264
+00:18:06.619 --> 00:18:08.859
+we're going to combine
+all the results at the end.
+
+265
+00:18:09.920 --> 00:18:11.990
+So let's create some
+splits by calling split
+
+266
+00:18:11.990 --> 00:18:14.059
+text on the page content of the document.
+
+267
+00:18:15.279 --> 00:18:18.049
+And if we look at how many splits we have,
+
+268
+00:18:18.049 --> 00:18:20.539
+we can see that we
+have 14 different splits.
+
+269
+00:18:21.180 --> 00:18:24.980
+And so what we're going to try to do now
+is we're going to create an entire chain
+
+270
+00:18:24.980 --> 00:18:25.190
+using LangChain Expression Language
+that does everything that I just said.
+
+271
+00:18:28.200 --> 00:18:29.400
+We're going to take in this page content,
+
+272
+00:18:29.740 --> 00:18:32.440
+we're then going to
+split it up into splits.
+
+273
+00:18:33.420 --> 00:18:37.900
+We're then going to pass all those
+individual splits to the extraction chain that
+
+274
+00:18:37.900 --> 00:18:41.200
+we've defined above and then we're
+going to join all the results together.
+
+275
+00:18:41.920 --> 00:18:44.589
+And so one thing that we'll
+definitely need to do is we'll
+
+276
+00:18:44.589 --> 00:18:47.039
+need to create a function
+that can join lists of lists.
+
+277
+00:18:48.180 --> 00:18:50.039
+And so we're going to create
+this flatten function here.
+
+278
+00:18:50.720 --> 00:18:53.440
+And this just very simply takes in
+a list of lists and flattens them.
+
+279
+00:18:53.640 --> 00:18:58.329
+So if we do flatten on,
+let's do a list of 1, 2.
+
+280
+00:19:00.400 --> 00:19:05.619
+And then we have a second
+element, which is a list of 3, 4,
+
+281
+00:19:06.440 --> 00:19:09.559
+And this is useful because we're
+going to extract a list of papers
+
+282
+00:19:09.559 --> 00:19:11.960
+mentioned for each split and
+then merge them all together.
+
+283
+00:19:12.680 --> 00:19:16.180
+The other thing that we're
+going to need to do is have some
+
+284
+00:19:16.180 --> 00:19:19.140
+method of preparing the splits
+to be passed into the chain.
+
+285
+00:19:20.000 --> 00:19:23.109
+So remember the chain
+takes in an input variable and
+
+286
+00:19:23.109 --> 00:19:25.900
+specifically you need a
+dictionary with an input key.
+
+287
+00:19:34.839 --> 00:19:35.240
+This list of splits if we look
+at the first one, its just text.
+
+288
+00:19:38.119 --> 00:19:42.200
+So we're going to need some way of
+taking this list of text and converting
+
+289
+00:19:42.200 --> 00:19:46.000
+it into a list of dictionaries
+where that text is now the input key.
+
+290
+00:19:46.960 --> 00:19:49.150
+We're going to do that
+by defining a function
+
+291
+00:19:49.150 --> 00:19:51.329
+for that because this is going to be the
+
+292
+00:19:51.329 --> 00:19:53.279
+first function that
+happens in the chain we're
+
+293
+00:19:53.279 --> 00:19:55.220
+going to wrap it in a runnable lambda.
+
+294
+00:19:55.940 --> 00:19:58.500
+So a runnable lambda is just a
+simple wrapper in LangChain that takes in
+
+295
+00:20:21.109 --> 00:20:23.049
+So we're going to define this
+pre-processing function here.
+
+296
+00:20:24.190 --> 00:20:28.630
+So this is constructing a lambda where
+it takes as input and we want to pass
+
+297
+00:20:28.630 --> 00:20:32.509
+the document as input or rather the
+page content of the document as input.
+
+298
+00:20:32.710 --> 00:20:37.250
+So the x here is going to be
+a string and what we're doing
+
+299
+00:20:37.250 --> 00:20:40.170
+is we're creating a
+function that takes that string,
+
+300
+00:20:40.170 --> 00:20:43.089
+splits and constructs a list
+of dictionaries where each
+
+301
+00:20:43.089 --> 00:20:45.690
+dictionary is an input
+corresponding to the split.
+
+302
+00:20:47.250 --> 00:20:50.799
+If we play around with
+this and see what it does,
+
+303
+00:20:50.799 --> 00:20:55.630
+we can call it on a string and we
+get back a list of dictionaries.
+
+304
+00:20:55.630 --> 00:20:58.039
+Here there's just one
+dictionary because the text splitter
+
+305
+00:20:58.039 --> 00:21:00.720
+doesn't split it up
+because this text is very short,
+
+306
+00:21:00.720 --> 00:21:03.400
+but basically it's taking in
+this string, splitting it up,
+
+307
+00:21:03.400 --> 00:21:05.819
+and creating a list of
+dictionaries and the reason
+
+308
+00:21:05.819 --> 00:21:08.500
+that this is necessary is
+because this is going to
+
+309
+00:21:08.500 --> 00:21:11.180
+be the input to the next
+part the extraction chain
+
+310
+00:21:11.180 --> 00:21:14.130
+and so we want to create
+a bunch of inputs there.
+
+311
+00:21:15.390 --> 00:21:16.809
+So now we can create our chain.
+
+312
+00:21:18.089 --> 00:21:20.970
+So we're going to have this prep function.
+
+313
+00:21:21.789 --> 00:21:25.750
+We then want to pass this
+to the extraction chain.
+
+314
+00:21:26.349 --> 00:21:27.630
+But remember, the extraction
+chain operates over a single element.
+
+315
+00:21:28.309 --> 00:21:30.690
+And here we have a list of
+elements that we want to pass in.
+
+316
+00:21:31.329 --> 00:21:32.410
+So what we can do is we can
+call .map on the extraction chain.
+
+317
+00:21:34.869 --> 00:21:37.480
+And this is basically
+saying, take the previous input,
+
+318
+00:21:37.480 --> 00:21:42.109
+which here is going to be a list of
+elements, and map this chain over them.
+
+319
+00:21:43.049 --> 00:21:47.359
+And so that's going to lead to a list of
+lists because again this extraction chain
+
+320
+00:21:47.359 --> 00:21:51.930
+is returning a list as we defined it
+and so we're going to call flatten on it.
+
+321
+00:21:52.109 --> 00:21:54.990
+And fly in here this can just be the
+normal function that we defined above.
+
+322
+00:21:55.589 --> 00:21:57.539
+We don't need to wrap it in
+a runnable lambda because
+
+323
+00:21:57.539 --> 00:21:58.950
+it's not the first one in the sequence.
+
+324
+00:21:59.210 --> 00:22:00.970
+We could if we wanted to
+but it's not necessary.
+
+325
+00:22:02.349 --> 00:22:05.849
+So here we have this chain
+and if we call chain.invoke and
+
+326
+00:22:05.849 --> 00:22:08.470
+we'll pass in the whole
+page content of the document,
+
+327
+00:22:20.089 --> 00:22:22.980
+When it passes it to the
+extraction chain it's actually
+
+328
+00:22:22.980 --> 00:22:25.009
+parallelizing a lot of
+those calls automatically.
+
+329
+00:22:25.890 --> 00:22:27.759
+The default that it
+parallelizes by is 5 calls.
+
+330
+00:22:28.910 --> 00:22:32.230
+So it's not fully parallelizing, but
+it's speeding up a significant amount.
+
+331
+00:22:33.230 --> 00:22:34.980
+When all of those calls are done,
+
+332
+00:22:34.980 --> 00:22:37.470
+it will then get passed into
+the final flatten function.
+
+333
+00:22:38.950 --> 00:22:43.210
+And there we go. It returns a
+list of papers that it extracted.
+
+334
+00:22:43.450 --> 00:22:45.089
+So it's got the title
+and it's got the author.
+
+335
+00:22:45.750 --> 00:22:50.289
+If we skim through, we can see that it's
+leaving the author empty for some of them.
+
+336
+00:22:50.490 --> 00:22:52.779
+If we really wanted to tell it
+to just omit that completely,
+
+337
+00:22:52.779 --> 00:22:54.309
+we could go back and change the prompt.
+
+338
+00:22:55.390 --> 00:22:56.109
+We can scroll down.
+
+339
+00:22:57.329 --> 00:23:02.980
+We can see here that it seems to be
+making some up. So there's paper A, author A.
+
+340
+00:23:02.980 --> 00:23:04.829
+This appears to be incorrect,
+
+341
+00:23:04.829 --> 00:23:09.289
+but if you actually look at the
+article that this is referencing,
+
+342
+00:23:09.289 --> 00:23:13.750
+this article is itself an article
+about prompting and about, and covers,
+
+343
+00:23:13.750 --> 00:23:17.829
+among other things, extraction and
+retrieval augmented generation and citing things.
+
+344
+00:23:18.190 --> 00:23:21.359
+And so there's actually a bunch of
+language in there that's imitating
+
+345
+00:23:21.359 --> 00:23:23.740
+some fake papers and
+having the response cite those,
+
+346
+00:23:23.740 --> 00:23:25.849
+and so it's actually
+picking this up correctly.
+
+347
+00:23:26.410 --> 00:23:29.140
+One really interesting thing
+is that when you do extraction
+
+348
+00:23:29.140 --> 00:23:31.319
+or even when you do
+question answering over
+
+349
+00:23:31.319 --> 00:23:33.779
+articles that talk about
+prompting or talk about language
+
+350
+00:23:33.779 --> 00:23:35.960
+models and have
+examples of prompts in there,
+
+351
+00:23:35.960 --> 00:23:37.869
+sometimes the language
+model can get confused
+
+352
+00:23:37.869 --> 00:23:40.049
+and mess things up, but that's an aside.
+
+353
+00:23:41.150 --> 00:23:43.049
+That wraps up the end-to-end example here.
+
+354
+00:23:43.730 --> 00:23:46.809
+This is a good time to pause and try
+it out on other real-world examples.
+
+355
+00:23:48.130 --> 00:23:50.829
+Try it out on a PDF and
+extract some information from that.
+
+356
+00:23:51.589 --> 00:23:55.049
+Try it out on another web page, mess
+around with what you want to extract.
+
+357
+00:23:55.930 --> 00:24:00.009
+Tagging and extraction are some of the
+most popular use cases for this structured
+
+358
+00:24:00.009 --> 00:24:04.049
+data extraction and so gaining
+familiarity with this will go a long way.
+
+359
+00:24:04.829 --> 00:24:07.750
+In the next class, we'll talk
+about something slightly different.
+
+360
+00:24:07.970 --> 00:24:10.940
+We'll talk about using OpenAI
+functions not for extraction
+
+361
+00:24:10.940 --> 00:24:13.250
+but for deciding what functions to call.
+
+362
+00:24:13.869 --> 00:24:14.029
+See you there.

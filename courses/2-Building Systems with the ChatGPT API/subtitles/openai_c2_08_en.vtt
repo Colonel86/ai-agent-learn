@@ -1,0 +1,444 @@
+WEBVTT
+
+1
+00:00:04.200 --> 00:00:06.656
+In this video we'll
+put together everything we've learned
+
+2
+00:00:06.656 --> 00:00:09.657
+in the previous videos to
+create an end-to-end example of a
+
+3
+00:00:09.657 --> 00:00:11.841
+customer service assistant. We'll go through
+the following
+
+4
+00:00:11.841 --> 00:00:14.024
+steps. First, we'll check the input
+to see
+
+5
+00:00:14.024 --> 00:00:15.661
+if it flags the moderation API.
+
+
+6
+00:00:16.623 --> 00:00:19.903
+Second, if it doesn't, we'll extract
+the list of products. Third, if
+
+7
+00:00:19.903 --> 00:00:22.636
+the products are found, we'll try
+to look them up.
+
+8
+00:00:23.237 --> 00:00:26.978
+And four, we'll answer the user question
+with the model. And
+
+9
+00:00:26.978 --> 00:00:30.719
+finally, we'll put the answer through the
+moderation API. And if
+
+10
+00:00:30.719 --> 00:00:34.120
+it is not flagged, we'll return it
+to the user.
+
+11
+00:00:34.681 --> 00:00:36.184
+So we have our setup.
+
+12
+00:00:36.785 --> 00:00:38.569
+We have this additional import.
+
+13
+00:00:39.190 --> 00:00:45.423
+This is a Python package we'll
+use for a chatbot UI.
+
+14
+00:00:47.187 --> 00:00:50.903
+And so I'm
+going to paste in a function "process_user_message".
+
+15
+00:00:50.903 --> 00:00:54.620
+And I'm actually going to
+run an example first and
+
+16
+00:00:54.620 --> 00:00:56.850
+then we'll talk through the function.
+
+
+17
+00:00:58.911 --> 00:01:02.042
+So we have our user input that we've
+been using. Tell
+
+18
+00:01:02.042 --> 00:01:04.888
+me about the smartx pro
+phone and the camera. Also
+
+19
+00:01:04.888 --> 00:01:06.026
+tell me about TVs.
+
+20
+00:01:06.768 --> 00:01:08.290
+So let's run this.
+
+21
+00:01:09.133 --> 00:01:10.690
+First, let's run this.
+
+22
+00:01:12.620 --> 00:01:17.632
+So as you can see, we're
+going through the steps to
+
+23
+00:01:17.632 --> 00:01:19.454
+answer the user question.
+
+24
+00:01:20.657 --> 00:01:23.410
+So the first step,
+the moderation step,
+
+25
+00:01:23.410 --> 00:01:26.950
+the second step is
+extracting the list of products.
+
+26
+00:01:27.491 --> 00:01:30.938
+The third step is
+looking up the product information.
+
+27
+00:01:30.938 --> 00:01:30.938
+
+
+28
+00:01:31.840 --> 00:01:37.540
+And so now with this product
+information, the model is trying to
+
+29
+00:01:37.540 --> 00:01:42.290
+answer the question as we've
+seen in the previous videos.
+
+30
+00:01:46.331 --> 00:01:48.473
+And then finally,
+it puts the response
+
+31
+00:01:48.473 --> 00:01:51.228
+through the moderation API
+again to make sure it's
+
+32
+00:01:51.228 --> 00:01:53.065
+safe to show to the user.
+
+33
+00:01:53.646 --> 00:01:56.953
+And so this is the response that we're
+now familiar with.
+
+34
+00:01:58.095 --> 00:02:01.121
+And so let's
+talk through a little bit of what's happening.
+
+35
+00:02:01.121 --> 00:02:01.121
+
+
+36
+00:02:01.763 --> 00:02:06.530
+So we have our helper function
+"process_user_message".
+
+37
+00:02:09.238 --> 00:02:12.576
+It takes in the user input,
+which is the current message,
+
+38
+00:02:12.576 --> 00:02:17.430
+and an array of all of the messages
+so far and this is when we build
+
+39
+00:02:17.430 --> 00:02:21.070
+the chatbot UI. So the first step,
+checking to see if the
+
+40
+00:02:21.070 --> 00:02:24.711
+input flags the moderation API.
+We covered this in a previous video.
+
+41
+00:02:24.711 --> 00:02:24.711
+
+
+42
+00:02:25.593 --> 00:02:30.364
+If the input is flagged,
+then we tell the user that we can't
+
+43
+00:02:30.364 --> 00:02:31.465
+process the request.
+
+44
+00:02:32.267 --> 00:02:35.389
+If it is not flagged,
+we try to extract the
+
+45
+00:02:35.389 --> 00:02:38.512
+list of products as we
+did in the previous video.
+
+46
+00:02:38.512 --> 00:02:42.260
+Then we try to look up the products.
+And in this case,
+
+47
+00:02:42.260 --> 00:02:46.007
+if no products are found,
+this will just be an empty string.
+
+48
+00:02:46.007 --> 00:02:49.755
+Then we answer the user question,
+so we give the conversation history
+
+49
+00:02:49.755 --> 00:02:52.565
+and the new messages with the
+relevant product information.
+
+50
+00:02:52.565 --> 00:02:55.688
+So we get the response,
+and then we run this
+
+51
+00:02:55.688 --> 00:02:57.250
+response through the moderation API.
+
+
+52
+00:02:58.345 --> 00:03:02.291
+If it's flagged, we
+tell the user that we can't provide
+
+53
+00:03:02.291 --> 00:03:05.878
+this information. Maybe we'll
+say something like, let me connect
+
+54
+00:03:05.878 --> 00:03:08.747
+you, and you could take some subsequent
+step.
+
+55
+00:03:09.268 --> 00:03:13.258
+And so, let's
+put this all together with a nice UI, and
+
+56
+00:03:13.258 --> 00:03:14.920
+try to have a conversation.
+
+57
+00:03:15.541 --> 00:03:17.961
+So here we have
+a function that will
+
+58
+00:03:17.961 --> 00:03:20.986
+just accumulate the messages
+as we interact with the assistant.
+
+59
+00:03:20.986 --> 00:03:24.010
+And feel free to pause
+the video to understand in
+
+60
+00:03:24.010 --> 00:03:25.522
+more detail how this works.
+
+61
+00:03:26.925 --> 00:03:30.238
+And of course feel free to
+do the same for the really long
+
+62
+00:03:30.238 --> 00:03:32.277
+"process_user_message" function that
+we just saw as well.
+
+63
+00:03:33.539 --> 00:03:38.450
+So now we're going to paste in our code
+to display the chatbot UI.
+
+64
+00:03:40.053 --> 00:03:44.758
+So if we run this, now let's
+try and have a conversation with
+
+65
+00:03:44.758 --> 00:03:46.206
+the customer service assistant.
+
+
+66
+00:03:46.767 --> 00:03:51.010
+So let's ask, "what TVs do you have".
+
+
+67
+00:03:54.203 --> 00:03:56.951
+And under the hood,
+the assistant is going through
+
+68
+00:03:56.951 --> 00:03:59.394
+all of the steps in the "process_user_message"
+function.
+
+69
+00:04:00.837 --> 00:04:04.804
+So it's
+listed a variety of different TVs. So
+
+70
+00:04:04.804 --> 00:04:07.890
+now let's ask, "which is
+the cheapest".
+
+71
+00:04:11.078 --> 00:04:14.712
+Again, it's
+going through all the same steps, but
+
+72
+00:04:14.712 --> 00:04:18.345
+this time it's passing
+the conversation history as well
+
+73
+00:04:18.345 --> 00:04:19.556
+into the prompts.
+
+74
+00:04:22.522 --> 00:04:25.292
+Okay, so it's telling us that this
+speaker is the cheapest
+
+75
+00:04:25.292 --> 00:04:26.551
+TV related product we have.
+
+76
+00:04:27.172 --> 00:04:30.050
+Interesting. Let's
+see what the most expensive is.
+
+77
+00:04:36.151 --> 00:04:40.280
+So the most expensive TV
+is the CineView 8K TV.
+
+78
+00:04:40.781 --> 00:04:43.653
+So let's
+ask for more information about it, "tell
+
+79
+00:04:43.653 --> 00:04:44.929
+me more about it".
+
+80
+00:04:46.553 --> 00:04:53.810
+And so we've received some more information
+about this television.
+
+81
+00:04:54.810 --> 00:04:58.329
+So in this example, we've
+combined the techniques we've learned
+
+82
+00:04:58.329 --> 00:05:01.497
+throughout the course to create a
+comprehensive system with
+
+83
+00:05:01.497 --> 00:05:05.016
+a chain of steps that evaluates
+user inputs, processes them,
+
+84
+00:05:05.016 --> 00:05:06.775
+and then
+checks the output.
+
+85
+00:05:07.557 --> 00:05:09.876
+By monitoring the quality
+of the system across
+
+86
+00:05:09.876 --> 00:05:12.484
+a larger number of inputs,
+you can alter the
+
+87
+00:05:12.484 --> 00:05:15.093
+steps and improve the
+overall performance of your system.
+
+88
+00:05:15.093 --> 00:05:17.991
+Maybe we might find that
+our prompts could be better
+
+89
+00:05:17.991 --> 00:05:21.179
+for some of the steps,
+maybe some of the steps aren't
+
+90
+00:05:21.179 --> 00:05:24.367
+even necessary. Maybe we'll find
+a better retrieval method, and so
+
+91
+00:05:24.367 --> 00:05:26.976
+on. We'll discuss this
+more in the next video.
+
+92
+00:05:26.976 --> 00:05:26.976
+

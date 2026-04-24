@@ -1,0 +1,2569 @@
+WEBVTT
+1
+00:00:01.980 --> 00:00:06.554
+In this lesson,
+we do a deep dive into evaluation.
+
+2
+00:00:06.554 --> 00:00:11.037
+We'll walk you through some
+core concepts on how
+
+3
+00:00:11.037 --> 00:00:14.880
+to evaluate RAG systems. Specifically,
+we
+
+4
+00:00:14.880 --> 00:00:20.644
+will introduce the RAG triad, a
+triad of metrics for the three
+
+5
+00:00:20.644 --> 00:00:27.049
+main steps of a RAG's execution.
+Context relevance, groundedness, and
+
+6
+00:00:27.049 --> 00:00:33.179
+answer relevance. These are
+examples of an extensible framework of
+
+7
+00:00:33.179 --> 00:00:39.217
+feedback functions. Programmatic evaluations
+of LLM apps. We then
+
+8
+00:00:39.217 --> 00:00:44.066
+show you how to
+synthetically generate an evaluation
+
+9
+00:00:44.066 --> 00:00:49.556
+data set, given any
+unstructured corpus. Let's get started.
+
+10
+00:00:49.556 --> 00:00:53.947
+Now I'll use a notebook
+to walk you through the
+
+11
+00:00:53.947 --> 00:00:59.894
+RAG triad, answer relevance, context relevance,
+and groundedness
+
+12
+00:00:59.894 --> 00:01:02.365
+to understand
+how each can
+
+13
+00:01:02.365 --> 00:01:07.488
+be used with truelens to detect
+hallucinations. At this
+
+14
+00:01:07.488 --> 00:01:10.050
+point, you
+have already PIP
+
+15
+00:01:10.050 --> 00:01:16.180
+installed TruLens, eval and Llama Index.
+So I'll not show you that
+
+16
+00:01:16.180 --> 00:01:21.395
+step. The first step for you
+will be to set up an OpenAI
+
+17
+00:01:21.395 --> 00:01:27.159
+API key. The OpenAI key is used
+for the completion step of the
+
+18
+00:01:27.159 --> 00:01:32.100
+RAG and to implement the evaluations
+with TruLens. So
+
+19
+00:01:32.100 --> 00:01:35.028
+here's a code snippet
+that does
+
+20
+00:01:35.028 --> 00:01:39.511
+exactly that. And you're now all set up
+with the
+
+21
+00:01:39.511 --> 00:01:47.928
+OpenAI key. The next section, I will quickly recap
+the query engine construction with Llama
+
+22
+00:01:47.928 --> 00:01:51.222
+Index. Jerry has
+already walked you
+
+23
+00:01:51.222 --> 00:01:53.967
+through that
+in lesson one in
+
+24
+00:01:53.967 --> 00:01:58.633
+some detail. We will
+largely build on that lesson.
+
+25
+00:01:58.633 --> 00:02:03.390
+The first step now is to set
+up a true object. From
+
+26
+00:02:03.390 --> 00:02:07.599
+TruLens eval, we are going to
+import the true
+
+27
+00:02:07.599 --> 00:02:14.552
+class. Then we'll set up a true object
+and instance of this class. And then
+
+28
+00:02:14.552 --> 00:02:20.225
+this object will be used to
+reset the database. This database
+
+29
+00:02:20.225 --> 00:02:26.538
+will be used later on to
+record the prompts, responses, intermediate
+
+30
+00:02:26.538 --> 00:02:30.838
+results of the Llama Index app,
+as well as the
+
+31
+00:02:30.838 --> 00:02:37.426
+results of the various evaluations we will be
+setting up with TrueLens.
+
+32
+00:02:37.426 --> 00:02:41.909
+Now let's set up
+the Llama Index reader. So this
+
+33
+00:02:41.909 --> 00:02:47.398
+snippet of code reads this PDF document
+from a directory on
+
+34
+00:02:47.398 --> 00:02:50.692
+how to build a
+career in AI written
+
+35
+00:02:50.692 --> 00:02:56.731
+by Andrew Ang and then loads this data
+into this document object.
+
+36
+00:02:56.731 --> 00:03:00.207
+The next step is
+to merge all of this
+
+37
+00:03:00.207 --> 00:03:06.886
+content into a single large document rather than
+having one document per
+
+38
+00:03:06.886 --> 00:03:11.461
+page, which is the
+default setup. Next, we set up
+
+39
+00:03:11.461 --> 00:03:18.140
+the sentence index, leveraging some of
+the Llama Index utilities. So you
+
+40
+00:03:18.140 --> 00:03:23.538
+can see here that we are
+using OpenAI GPT 3.5 Turbo set at
+
+41
+00:03:23.538 --> 00:03:30.217
+a temperature of 0.1. As the
+LLM that will be used for completion of the
+
+42
+00:03:30.217 --> 00:03:35.981
+RAG. The embedding model is set
+to bge small, and version 1.5.
+
+43
+00:03:35.981 --> 00:03:41.928
+And all of this
+content is being indexed with the sentence index
+
+44
+00:03:41.928 --> 00:03:45.954
+object. Next, we set
+up the sentence window
+
+45
+00:03:45.954 --> 00:03:48.698
+engine. And this is the
+query
+
+46
+00:03:48.698 --> 00:03:54.371
+engine that will be used later on
+to do retrieval effectively
+
+47
+00:03:54.371 --> 00:03:58.763
+from this advanced RAG
+application. Now that we
+
+48
+00:03:58.763 --> 00:04:04.252
+have set up the
+query engine for sentence-window-based RAG,
+
+49
+00:04:04.252 --> 00:04:10.016
+let's see it in action
+by actually asking a specific question.
+
+50
+00:04:10.016 --> 00:04:14.316
+How do you create
+your AI portfolio? This will
+
+51
+00:04:14.316 --> 00:04:17.061
+return a full object with
+the
+
+52
+00:04:17.061 --> 00:04:23.923
+final response from the LLM, the intermediate
+pieces of retrieved context,
+
+53
+00:04:23.923 --> 00:04:28.498
+as well as some
+additional metadata. Let's take a
+
+54
+00:04:28.498 --> 00:04:31.426
+look at what
+the final response
+
+55
+00:04:31.426 --> 00:04:37.007
+looks like. So here you can
+see the final response that came
+
+56
+00:04:37.007 --> 00:04:42.954
+out of this sentence window-based rag.
+It provides a pretty good
+
+57
+00:04:42.954 --> 00:04:47.437
+answer on the surface to
+this question of how do
+
+58
+00:04:47.437 --> 00:04:52.194
+you create your AI portfolio. Later
+on, we will see
+
+59
+00:04:52.194 --> 00:04:56.312
+how to evaluate answers
+of this form against
+
+60
+00:04:56.312 --> 00:05:02.716
+the RAG triad to build confidence
+and identify failure modes for RAGs
+
+61
+00:05:02.716 --> 00:05:07.657
+of this form. for rags of
+this form. Now that we have
+
+62
+00:05:07.657 --> 00:05:13.787
+an example of a response to
+this question that looks quite good on
+
+63
+00:05:13.787 --> 00:05:19.642
+the surface, we will see how to make
+use of feedback functions,
+
+64
+00:05:19.642 --> 00:05:25.315
+such as the rag
+triad, to evaluate this kind of response more
+
+65
+00:05:25.315 --> 00:05:31.079
+deeply, identify failure modes, as
+well as build confidence or
+
+66
+00:05:31.079 --> 00:05:35.562
+iterate to improve the
+LLM application. Now that
+
+67
+00:05:35.562 --> 00:04:57.044
+we have set
+up the sentence-window-based RAG
+
+68
+00:04:57.044 --> 00:05:43.888
+application, let's see how
+we can evaluate it
+
+69
+00:05:43.888 --> 00:05:49.835
+with the RAG triad. We'll do a little
+bit of housekeeping in the
+
+70
+00:05:49.835 --> 00:05:55.782
+beginning. First step is this,
+is of course snippet that lets us
+
+71
+00:05:55.782 --> 00:06:01.820
+launch a StreamLit dashboard from
+inside the notebook. You'll see
+
+72
+00:06:01.820 --> 00:06:07.859
+later that we'll make use of that
+dashboard to see the results of
+
+73
+00:06:07.859 --> 00:06:11.702
+the evaluation and
+to run experiments, to
+
+74
+00:06:11.702 --> 00:06:17.466
+look at different choices of apps, and to see
+which to look at
+
+75
+00:06:17.466 --> 00:06:21.766
+different choices of apps
+and to see which one
+
+76
+00:06:21.766 --> 00:06:27.347
+is doing better. Next up, we initialize
+OpenAI GPT 3.5 Turbo
+
+77
+00:06:27.347 --> 00:06:31.830
+as the default provider
+for our evaluations. And
+
+78
+00:06:31.830 --> 00:06:40.430
+this provider will be used to implement
+the different feedback functions or evaluations, such
+
+79
+00:06:40.430 --> 00:06:46.194
+as context relevance, answer
+relevance, and groundedness. Now,
+
+80
+00:06:46.194 --> 00:06:50.952
+let's go deeper into
+each of the evaluations of the
+
+81
+00:06:50.952 --> 00:06:47.018
+RAG triad, and
+we'll go
+
+82
+00:06:47.018 --> 00:06:56.808
+back and forth a
+bit between slides and
+
+83
+00:06:56.808 --> 00:07:04.584
+the notebook to give you the full context.
+First up, we'll discuss answer relevance.
+
+84
+00:07:04.584 --> 00:07:10.806
+Recall that answer relevance is checking
+whether the final response
+
+85
+00:07:10.806 --> 00:07:15.106
+is relevant to the
+query that was asked by the
+
+86
+00:07:15.106 --> 00:07:18.491
+user. To give
+you a concrete example
+
+87
+00:07:18.491 --> 00:07:21.145
+of what the
+output of answer
+
+88
+00:07:21.145 --> 00:07:26.177
+relevance might look
+like, here's an example. The user
+
+89
+00:07:26.177 --> 00:07:31.941
+asked the question, how can altruism
+be beneficial in building
+
+90
+00:07:31.941 --> 00:07:35.783
+a career? This was
+the response that came
+
+91
+00:07:35.783 --> 00:06:43.084
+out of the RAG application.
+And the answer
+
+92
+00:06:43.084 --> 00:07:45.116
+relevance evaluation produces two pieces
+of output. One is
+
+93
+00:07:45.116 --> 00:07:48.318
+a score. On a scale
+of 0 to 1, the
+
+94
+00:07:48.318 --> 00:07:52.801
+answer was assessed to be highly
+relevant, so it
+
+95
+00:07:52.801 --> 00:07:55.637
+got a score
+of 0.9. The second
+
+96
+00:07:55.637 --> 00:08:01.401
+piece is the supporting
+evidence or the rationale or the chain
+
+97
+00:08:01.401 --> 00:08:06.525
+of thought reasoning behind
+why the evaluation produced
+
+98
+00:08:06.525 --> 00:08:13.570
+this score. So here you can see that
+supporting evidence found in the answer
+
+99
+00:08:13.570 --> 00:08:18.511
+itself, which indicates to the LLM
+evaluation that it
+
+100
+00:08:18.511 --> 00:08:22.536
+is a meaningful
+and relevant answer. I also
+
+101
+00:08:22.536 --> 00:08:26.745
+want to use this
+opportunity to introduce the
+
+102
+00:08:26.745 --> 00:08:31.869
+abstraction of a feedback function.
+Answer relevance is
+
+103
+00:08:31.869 --> 00:08:38.273
+a concrete example of a feedback
+function. More generally, a feedback
+
+104
+00:08:38.273 --> 00:08:42.116
+function provides a score on a
+scale of 0
+
+105
+00:08:42.116 --> 00:08:44.677
+to 1 after
+reviewing an LLM
+
+106
+00:08:44.677 --> 00:08:50.533
+app's inputs, outputs,
+and intermediate results. Let's now look
+
+107
+00:08:50.533 --> 00:08:54.650
+at the structure
+of feedback functions using
+
+108
+00:08:54.650 --> 00:09:02.610
+the answer relevance feedback function as a concrete
+example. The first component is a
+
+109
+00:09:02.610 --> 00:09:05.812
+provider. And in
+this case, we can
+
+110
+00:09:05.812 --> 00:06:26.066
+see that we are using an
+LLM from OpenAI
+
+111
+00:06:26.066 --> 00:09:13.589
+to implement these
+feedback functions. Note
+
+112
+00:09:13.589 --> 00:09:20.085
+that feedback functions don't
+have to be implemented necessarily using
+
+113
+00:09:20.085 --> 00:09:28.868
+LLMs. We can also use BERT models and
+other kinds of mechanisms to implement feedback functions
+
+114
+00:09:28.868 --> 00:09:33.169
+that I'll talk about
+in some more detail later
+
+115
+00:09:33.169 --> 00:09:37.194
+in the lesson. The
+second component is that
+
+116
+00:09:37.194 --> 00:09:42.226
+leveraging that provider, we
+will implement a feedback
+
+117
+00:09:42.226 --> 00:09:48.082
+function. In this case,
+that's the relevance feedback function.
+
+118
+00:09:48.082 --> 00:09:53.389
+We give it a name,
+a human-readable name that'll be shown
+
+119
+00:09:53.389 --> 00:09:57.780
+later in our evaluation
+dashboard. And for this
+
+120
+00:09:57.780 --> 00:10:03.178
+particular feedback function, we run it
+on the user input,
+
+121
+00:10:03.178 --> 00:10:08.668
+the user query, and it
+also takes as input the final output
+
+122
+00:10:08.668 --> 00:10:11.870
+or response from
+the app. So given
+
+123
+00:10:11.870 --> 00:10:15.438
+the user question and
+the final answer
+
+124
+00:10:15.438 --> 00:10:19.830
+from the RAG,
+this be by function will make use
+
+125
+00:10:19.830 --> 00:10:24.313
+of a LLM provider such as OpenAI
+GPT 3.5 to come
+
+126
+00:10:24.313 --> 00:10:28.888
+up with a score for how
+relevant the responses to
+
+127
+00:10:28.888 --> 00:10:33.096
+the question that was
+asked. And in addition,
+
+128
+00:10:33.096 --> 00:10:39.409
+it'll also provide supporting evidence
+or chain of thought reasoning
+
+129
+00:10:39.409 --> 00:10:46.637
+for the justification of that score.
+Let's now switch back to the notebook and
+
+130
+00:10:46.637 --> 00:10:51.029
+look at the code
+in some more detail. Now let's
+
+131
+00:10:51.029 --> 00:10:55.421
+see how to define
+the question-answer relevance
+
+132
+00:10:55.421 --> 00:11:00.361
+feedback function in
+code. From TruLens eval, we will
+
+133
+00:11:00.361 --> 00:11:05.485
+import the feedback class. Then
+we set up the different
+
+134
+00:11:05.485 --> 00:11:11.615
+pieces of the question answer
+relevance function that we were just
+
+135
+00:11:11.615 --> 00:11:16.372
+discussing. First
+up, we have the provider, that is
+
+136
+00:11:16.372 --> 00:11:20.673
+OpenAI, GPT 3.5.
+And we set up this particular
+
+137
+00:11:20.673 --> 00:11:27.626
+feedback function where the relevance score
+will also be augmented with the
+
+138
+00:11:27.626 --> 00:11:31.103
+chain of thought
+reasoning, much like
+
+139
+00:11:31.103 --> 00:11:34.488
+I showed in
+the slides. We give this
+
+140
+00:11:34.488 --> 00:11:42.631
+feedback function a human-understandable
+name. We call it answer relevance. This will be
+
+141
+00:11:42.631 --> 00:11:45.559
+show up later
+in the dashboard,
+
+142
+00:11:45.559 --> 00:11:51.872
+making it easy for users to
+understand what the feedback function is
+
+143
+00:11:51.872 --> 00:11:55.440
+setting
+up. Then we also will give the
+
+144
+00:11:55.440 --> 00:12:00.106
+feedback function access to the input, that
+is the
+
+145
+00:12:00.106 --> 00:12:06.510
+prompt, and the output, which
+is the prompt, and the output, which is
+
+146
+00:12:06.510 --> 00:12:11.909
+the final response coming
+out of the RAG application. With
+
+147
+00:12:11.909 --> 00:12:16.117
+this setup, later on in
+the notebook, we will
+
+148
+00:12:16.117 --> 00:12:20.051
+see how to apply
+this feedback function on
+
+149
+00:12:20.051 --> 00:12:25.998
+a set of records, get the evaluation
+scores for answer relevance
+
+150
+00:12:25.998 --> 00:12:31.214
+as well as the chain of
+thought reasons for why for that
+
+151
+00:12:31.214 --> 00:12:36.886
+particular answer that was the
+judged score to be appropriate
+
+152
+00:12:36.886 --> 00:12:40.454
+for as part of
+the evaluation The next
+
+153
+00:12:40.454 --> 00:12:44.754
+feedback function that we will go
+deep into is
+
+154
+00:12:44.754 --> 00:12:52.440
+context relevance. Recall that context relevance
+is checking how good the retrieval
+
+155
+00:12:52.440 --> 00:12:57.655
+process is. That is, given a
+query, we will look at each
+
+156
+00:12:57.655 --> 00:13:02.779
+piece of retrieved context from the
+vector database and
+
+157
+00:13:02.779 --> 00:13:08.817
+assess how relevant that piece of
+context is to the question that
+
+158
+00:13:08.817 --> 00:13:12.751
+was asked. Let's look
+at a simple example.
+
+159
+00:13:12.751 --> 00:13:18.881
+The question here or the prompt
+from the user is, how can altruism
+
+160
+00:13:18.881 --> 00:13:23.090
+be beneficial in building
+a career? These are
+
+161
+00:13:23.090 --> 00:13:27.390
+the two pieces of
+retrieved context. And after
+
+162
+00:13:27.390 --> 00:11:06.125
+the evaluation with context
+relevance, each of these pieces
+
+163
+00:11:06.125 --> 00:13:37.912
+of retrieved context gets a score
+between 0 and 1. You
+
+164
+00:13:37.912 --> 00:13:42.029
+can see here the left
+context got a relevant
+
+165
+00:13:42.029 --> 00:13:46.329
+score of 0.5. The right
+context got a relevant
+
+166
+00:13:46.329 --> 00:13:49.348
+score of 0.7, so
+it was assessed
+
+167
+00:13:49.348 --> 00:13:53.557
+to be more relevant
+to this particular query.
+
+168
+00:13:53.557 --> 00:13:58.681
+And then the mean
+context relevant score is the average
+
+169
+00:13:58.681 --> 00:13:32.239
+of the relevant scores
+of each of these
+
+170
+00:13:32.239 --> 00:14:08.196
+retrieved pieces of context. That gets
+also reported out. Let's
+
+171
+00:14:08.196 --> 00:09:57.323
+now look at the structure of
+the feedback function for
+
+172
+00:09:57.323 --> 00:14:18.352
+context relevance. Various pieces
+of this structure are
+
+173
+00:14:18.352 --> 00:14:24.847
+similar to the structure for answer
+relevance, which we reviewed a few
+
+174
+00:14:24.847 --> 00:14:30.063
+minutes ago. There is a provider,
+that's OpenAI, and the
+
+175
+00:14:30.063 --> 00:14:39.486
+feedback function makes use of that
+provider to implement the context-relevance feedback function. The
+
+176
+00:14:39.486 --> 00:14:43.969
+differences are in the
+inputs to this particular
+
+177
+00:14:43.969 --> 00:14:49.459
+feedback function. In addition to the
+user input or prompt,
+
+178
+00:14:49.459 --> 00:14:57.053
+we also share with this feedback function
+a pointer to the retrieve contexts, that
+
+179
+00:14:57.053 --> 00:15:01.536
+is, the intermediate results
+in the execution of
+
+180
+00:15:01.536 --> 00:15:05.287
+the RAG application. We get
+back a score
+
+181
+00:15:05.287 --> 00:15:10.319
+for each of the retrieved pieces
+of context, assessing
+
+182
+00:15:10.319 --> 00:13:06.621
+how relevant
+or good that context
+
+183
+00:13:06.621 --> 00:15:16.907
+is with respect to
+the query that was
+
+184
+00:15:16.907 --> 00:15:21.847
+asked, and then we
+aggregate and average those scores
+
+185
+00:15:21.847 --> 00:15:27.337
+across all the retrieved pieces
+of context to get the final
+
+186
+00:15:27.337 --> 00:15:31.546
+score. Now you will notice
+that in the answer
+
+187
+00:15:31.546 --> 00:15:36.395
+relevance feedback function, we had
+only made use of
+
+188
+00:15:36.395 --> 00:15:40.603
+the original input, the
+prompt, and the final
+
+189
+00:15:40.603 --> 00:15:45.178
+response from the RAG.
+In this feedback function,
+
+190
+00:15:45.178 --> 00:14:48.727
+we are making use
+of the input or
+
+191
+00:14:48.727 --> 00:15:54.053
+prompt from the user,
+as well as intermediate results, the set
+
+192
+00:15:54.053 --> 00:16:01.006
+of retrieve contexts, to assess the
+quality of the retrieval. Between these
+
+193
+00:16:01.006 --> 00:16:04.758
+two examples, the full power
+of feedback
+
+194
+00:16:04.758 --> 00:16:11.528
+functions is leveraged by making use of
+inputs, outputs, and intermediate
+
+195
+00:16:11.528 --> 00:16:17.384
+results of a RAG application to
+assess its quality. Now that we
+
+196
+00:16:17.384 --> 00:16:21.684
+have the context selection set
+up, we are in a
+
+197
+00:16:21.684 --> 00:16:28.546
+position to define the context relevance feedback
+function in code. You'll
+
+198
+00:16:28.546 --> 00:16:32.480
+see that it's pretty
+much the code segment
+
+199
+00:16:32.480 --> 00:16:38.152
+that I walked through on the
+slide. We are still using OpenAI
+
+200
+00:16:38.152 --> 00:16:42.544
+as the provider, GPT 3.5
+as the evaluation LLM.
+
+201
+00:16:42.544 --> 00:16:50.412
+We are calling the question
+statement or context relevance feedback function. It gets
+
+202
+00:16:50.412 --> 00:16:55.993
+the input prompt, the
+set of retrieved pieces of context, it
+
+203
+00:16:55.993 --> 00:17:00.202
+runs the evaluation function
+on each of those
+
+204
+00:17:00.202 --> 00:17:05.417
+retrieved pieces of context separately,
+gets a score for
+
+205
+00:17:05.417 --> 00:17:10.449
+each of them, and then averages
+them to report a final
+
+206
+00:17:10.449 --> 00:17:14.567
+aggregate score. Now,
+one additional variant
+
+207
+00:17:14.567 --> 00:17:16.671
+that you can
+also use,
+
+208
+00:17:16.671 --> 00:17:23.075
+if you like, is in
+addition to reporting a context-relevant score for
+
+209
+00:17:23.075 --> 00:17:30.303
+each piece of retrieved context, you
+can also augment it with chain-of-thought
+
+210
+00:17:30.303 --> 00:17:35.335
+reasoning so
+that the evaluation LLM provides not only
+
+211
+00:17:35.335 --> 00:17:40.459
+a score, So that the
+evaluation LLM provides not only a
+
+212
+00:17:40.459 --> 00:17:47.138
+score, but also a
+justification or explanation for its assessment score.
+
+213
+00:17:47.138 --> 00:17:51.987
+And that can be done with QS
+relevance with chain of
+
+214
+00:17:51.987 --> 00:17:57.751
+thought reasoning method. And
+if I give you a concrete example
+
+215
+00:17:57.751 --> 00:18:01.594
+of this in action, you
+can see here's the
+
+216
+00:18:01.594 --> 00:13:19.156
+question or the user
+prompt, how can altruism be
+
+217
+00:13:19.156 --> 00:08:44.312
+beneficial in building a career?
+This is an
+
+218
+00:08:44.312 --> 00:13:06.621
+example of a
+retrieved piece of context
+
+219
+00:13:06.621 --> 00:18:17.879
+that takes out a
+chunk from Andrew's article
+
+220
+00:18:17.879 --> 00:18:20.350
+on this topic. You
+can see
+
+221
+00:18:20.350 --> 00:18:26.388
+the context relevance feedback function gives
+a score of 0.7 on a
+
+222
+00:18:26.388 --> 00:13:26.475
+scale of 0 to
+1 to this piece of retrieved context.
+
+223
+00:13:26.475 --> 00:18:35.355
+And because we have
+also invoked the chain of
+
+224
+00:18:35.355 --> 00:18:40.204
+thought reasoning on the
+evaluation LLM, it provides
+
+225
+00:18:40.204 --> 00:18:44.687
+this justification for why
+the score is 0.7. Let
+
+226
+00:18:44.687 --> 00:18:48.347
+me now show you the
+code snippet to set
+
+227
+00:18:48.347 --> 00:18:53.287
+up the groundedness feedback
+function. We kick it off
+
+228
+00:18:53.287 --> 00:19:01.064
+in much the same way as the
+previous feedback functions, leveraging LLM provider for
+
+229
+00:19:01.064 --> 00:19:07.286
+evaluation, which is, if you recall,
+OpenAI GPT 3.5. Then we define
+
+230
+00:19:07.286 --> 00:19:13.507
+the groundedness feedback
+function. This definition is structurally
+
+231
+00:19:13.507 --> 00:19:22.565
+very similar to the definition for context relevance. The
+groundedness measure comes with chain of
+
+232
+00:19:22.565 --> 00:19:26.591
+thought reasons justifying
+the scores, much
+
+233
+00:19:26.591 --> 00:19:32.629
+like I discussed on the slides. We give
+it the name groundedness,
+
+234
+00:19:32.629 --> 00:19:35.923
+which is
+easy to understand. And it
+
+235
+00:19:35.923 --> 00:19:42.236
+gets access to the set
+of retrieved contexts in the RAG application,
+
+236
+00:19:42.236 --> 00:15:51.034
+much like for context
+relevance, as well
+
+237
+00:15:51.034 --> 00:10:09.766
+as the final
+output or response
+
+238
+00:10:09.766 --> 00:14:01.517
+from the RAG.
+And then each
+
+239
+00:14:01.517 --> 00:19:56.143
+sentence in the final response gets
+a grounded net
+
+240
+00:19:56.143 --> 00:20:03.737
+score, and those are aggregated, averaged, to
+produce the final grounded net score
+
+241
+00:20:03.737 --> 00:20:11.056
+for the full response. The
+context selection here is the same context selection
+
+242
+00:20:11.056 --> 00:20:13.709
+that was used for
+setting up
+
+243
+00:20:13.709 --> 00:20:11.513
+the context relevance feedback function.
+So if you recall, that
+
+244
+00:20:11.513 --> 00:18:16.324
+just gets the set of retrieved
+pieces of context from
+
+245
+00:18:16.324 --> 00:17:15.756
+the retrieval step of
+the RAG, and then can
+
+246
+00:17:15.756 --> 00:20:33.929
+access each node within that
+list, recover the text of the
+
+247
+00:20:33.929 --> 00:20:39.144
+context from that node, and
+proceed to work with that to
+
+248
+00:20:39.144 --> 00:18:50.176
+do the context
+relevance as well as the groundedness
+
+249
+00:18:50.176 --> 00:20:48.385
+evaluation. With that,
+we are now in a position
+
+250
+00:20:48.385 --> 00:20:52.502
+to start executing the
+evaluation of the RAG
+
+251
+00:20:52.502 --> 00:20:57.809
+application. We have set
+up all three feedback functions,
+
+252
+00:20:57.809 --> 00:15:34.473
+answer relevance, context relevance,
+and groundedness. And all we
+
+253
+00:15:34.473 --> 00:21:07.690
+need is an evaluation
+set on which we can
+
+254
+00:21:07.690 --> 00:21:14.094
+run the application and the evaluations and see
+how they're doing and
+
+255
+00:21:14.094 --> 00:21:21.322
+if there are opportunities to
+iterate and improve them further. Let's now look
+
+256
+00:21:21.322 --> 00:21:24.250
+at the workflow
+to evaluate and
+
+257
+00:21:24.250 --> 00:21:30.289
+iterate to improve LLM applications. We will
+start with the basic
+
+258
+00:21:30.289 --> 00:03:58.488
+Llama Index
+RAG that
+
+259
+00:03:58.488 --> 00:21:37.242
+we introduced in the previous lesson
+and which we have
+
+260
+00:21:37.242 --> 00:21:42.000
+already evaluated with the
+TruLens RAG triad. We'll
+
+261
+00:21:42.000 --> 00:21:46.391
+focus a bit on the failure
+modes related to the
+
+262
+00:21:46.391 --> 00:21:50.875
+context size. Then we
+will iterate on that basic
+
+263
+00:21:50.875 --> 00:21:55.632
+rag with an advanced rag
+technique, the Llama Index
+
+264
+00:21:55.632 --> 00:22:00.756
+sentence window rag. Next,
+we will re-evaluate this new
+
+265
+00:22:00.756 --> 00:22:06.977
+advanced rag with the TruLens RAG
+triad, focusing on these kinds of
+
+266
+00:22:06.977 --> 00:22:13.290
+questions. Do we see improvements specifically
+in context relevance?
+
+267
+00:22:13.290 --> 00:22:19.786
+What about the other
+metrics? The reason we focus on context relevance
+
+268
+00:22:19.786 --> 00:22:24.727
+is that often failure modes
+arise because the context
+
+269
+00:22:24.727 --> 00:22:29.027
+is too small. Once
+you increase the context up
+
+270
+00:22:29.027 --> 00:22:34.334
+to a certain point, you might
+see improvements in context
+
+271
+00:22:34.334 --> 00:22:40.281
+relevance. In addition, when context
+relevance goes up, often we
+
+272
+00:22:40.281 --> 00:22:45.953
+find improvements in groundedness as well.
+Because the LLM in
+
+273
+00:22:45.953 --> 00:22:51.351
+the completion step has
+enough relevant context to produce
+
+274
+00:22:51.351 --> 00:22:56.017
+the summary. When it does not
+have enough relevant
+
+275
+00:22:56.017 --> 00:23:01.232
+context, it tends
+to leverage its own internal knowledge
+
+276
+00:23:01.232 --> 00:23:08.094
+from the pre-training data set to
+try to fill those gaps, which results in
+
+277
+00:23:08.094 --> 00:23:11.388
+a loss of groundedness.
+Finally, we
+
+278
+00:23:11.388 --> 00:23:16.695
+will experiment with different window
+sizes to figure out
+
+279
+00:23:16.695 --> 00:23:22.550
+what window size results
+in the best evaluation metrics. Recall
+
+280
+00:23:22.550 --> 00:23:26.576
+that if the window size is
+too small, there
+
+281
+00:23:26.576 --> 00:23:30.419
+may not be enough
+relevant context to get
+
+282
+00:23:30.419 --> 00:23:36.457
+a good score on context relevance
+and groundedness. If the window
+
+283
+00:23:36.457 --> 00:23:41.215
+size becomes too big,
+on the other hand, irrelevant
+
+284
+00:23:41.215 --> 00:23:46.064
+context can creep into the final
+response, resulting
+
+285
+00:23:46.064 --> 00:23:48.626
+in not such
+great scores in
+
+286
+00:23:48.626 --> 00:23:56.403
+groundedness or answer relevance. We walked
+through three examples of evaluations or
+
+287
+00:23:56.403 --> 00:24:03.905
+feedback functions. Context relevance, answer
+relevance, and groundedness. In our
+
+288
+00:24:03.905 --> 00:24:09.303
+notebook, all three were
+implemented with LLM evaluations.
+
+289
+00:24:09.303 --> 00:24:12.688
+I do want to
+point out that feedback
+
+290
+00:24:12.688 --> 00:24:17.720
+functions
+can be implemented in different ways. Often,
+
+291
+00:24:17.720 --> 00:24:22.478
+we see practitioners starting
+out with ground truth
+
+292
+00:24:22.478 --> 00:24:28.059
+evals, which can be
+expensive to collect, but nevertheless a
+
+293
+00:24:28.059 --> 00:24:33.732
+good starting point. We also
+see people leverage humans to do
+
+294
+00:24:33.732 --> 00:24:38.215
+evaluations. That's also helpful
+and meaningful,
+
+295
+00:24:38.215 --> 00:24:43.338
+but hard to scale
+in practice. Ground truth evals, just
+
+296
+00:24:43.338 --> 00:24:48.553
+to give you a
+concrete example, think of a summarization
+
+297
+00:24:48.553 --> 00:24:51.390
+use case where
+there's a large
+
+298
+00:24:51.390 --> 00:24:55.507
+passage and then the
+LLM produces a summary.
+
+299
+00:24:55.507 --> 00:25:01.271
+A human expert would then
+give that summary a score indicating
+
+300
+00:25:01.271 --> 00:25:05.205
+how good it is. This can
+be used for other
+
+301
+00:25:05.205 --> 00:25:10.603
+kinds of use cases as
+well, such as chatbot-like use cases
+
+302
+00:25:10.603 --> 00:25:15.910
+or even classification use cases. Human
+evals are similar
+
+303
+00:25:15.910 --> 00:25:20.484
+in some ways to ground truth evals
+in that as the
+
+304
+00:25:20.484 --> 00:24:54.500
+LLM produces an output
+or a RAG application produces
+
+305
+00:24:54.500 --> 00:25:30.823
+an output, the human users of
+that application are going to
+
+306
+00:25:30.823 --> 00:25:35.398
+provide a rating for that
+output, how good it is.
+
+307
+00:25:35.398 --> 00:25:41.711
+The difference with ground truth evals
+is that these human users may
+
+308
+00:25:41.711 --> 00:25:45.736
+not be as much of an expert
+in the topic as
+
+309
+00:25:45.736 --> 00:25:49.945
+the ones who produce
+the curated ground truth
+
+310
+00:25:49.945 --> 00:25:55.526
+evals. It's nevertheless a
+very meaningful evaluation. It'll
+
+311
+00:25:55.526 --> 00:25:59.277
+scale a bit better
+than the ground truth
+
+312
+00:25:59.277 --> 00:26:04.401
+evals, but our degree of
+confidence in it is lower. One
+
+313
+00:26:04.401 --> 00:26:10.256
+very interesting result from the research
+literature is that if
+
+314
+00:26:10.256 --> 00:26:13.184
+you ask a set
+of humans to rate
+
+315
+00:26:13.184 --> 00:26:20.504
+a question, there's about
+80% agreement. And interestingly enough, when you use
+
+316
+00:26:20.504 --> 00:26:25.170
+LLMs for evaluation, the
+agreement between the LLM
+
+317
+00:26:25.170 --> 00:26:29.744
+evaluation and the human evaluation
+is also about
+
+318
+00:26:29.744 --> 00:26:33.587
+the 80 to 85%
+mark. So that suggests that
+
+319
+00:26:33.587 --> 00:26:39.260
+LLM evaluations are quite comparable
+to human evaluations for
+
+320
+00:26:39.260 --> 00:26:43.651
+the benchmark data sets to
+which they have been
+
+321
+00:26:43.651 --> 00:26:50.239
+applied. So feedback functions
+provide us a way to scale up evaluations
+
+322
+00:26:50.239 --> 00:26:55.271
+in a programmatic manner. In addition
+to the LLM evals
+
+323
+00:26:55.271 --> 00:27:00.394
+that you have
+seen, feedback functions also provide can
+
+324
+00:27:00.394 --> 00:27:05.427
+implement traditional NLP metrics
+such as rouge scores
+
+325
+00:27:05.427 --> 00:27:10.825
+and blue scores. They
+can be helpful in certain scenarios,
+
+326
+00:27:10.825 --> 00:27:13.752
+but one weakness
+that they have
+
+327
+00:27:13.752 --> 00:27:16.863
+is that they
+are quite syntactic.
+
+328
+00:27:16.863 --> 00:27:22.261
+They look for overlap between words
+in two pieces of text.
+
+329
+00:27:22.261 --> 00:27:28.025
+So for example, if you have
+one piece of text that's referring
+
+330
+00:27:28.025 --> 00:27:31.045
+to a river
+bank and the other to
+
+331
+00:27:31.045 --> 00:27:35.894
+a financial bank, syntactically they
+might be viewed
+
+332
+00:27:35.894 --> 00:27:39.462
+as similar, and
+these references might
+
+333
+00:27:39.462 --> 00:27:44.860
+end up being viewed as similar
+references by a traditional
+
+334
+00:27:44.860 --> 00:27:50.075
+NLP evaluation, whereas the
+surrounding context will get
+
+335
+00:27:50.075 --> 00:27:54.650
+used to provide a
+more meaningful evaluation when
+
+336
+00:27:54.650 --> 00:28:01.237
+you're using either large language
+models such as GPT-4 or medium-sized
+
+337
+00:28:01.237 --> 00:28:07.550
+language models such
+as BERT models, and to perform your evaluation.
+
+338
+00:28:07.550 --> 00:28:14.412
+While in the course we have given you
+three examples of feedback functions
+
+339
+00:28:14.412 --> 00:13:37.271
+and evaluations, answer
+relevance, context relevance, and
+
+340
+00:13:37.271 --> 00:28:25.666
+groundedness, TruLens provides a much broader
+set of evaluations
+
+341
+00:28:25.666 --> 00:28:28.959
+to ensure that
+the apps that you're
+
+342
+00:28:28.959 --> 00:28:34.266
+building are honest,
+harmless, and helpful. These are all
+
+343
+00:28:34.266 --> 00:28:37.743
+available in the
+open source library,
+
+344
+00:28:37.743 --> 00:28:41.585
+and we encourage you
+to play with them as
+
+345
+00:28:41.585 --> 00:28:46.801
+you are working through the course
+and building your LLM
+
+346
+00:28:46.801 --> 00:28:52.839
+applications. Now that we have
+set up all the feedback functions,
+
+347
+00:28:52.839 --> 00:02:11.167
+we can set
+up an object
+
+348
+00:02:11.167 --> 00:28:57.871
+to start recording,
+which will
+
+349
+00:28:57.871 --> 00:02:23.153
+be used
+to record
+
+350
+00:02:23.153 --> 00:29:06.106
+the execution of the application on
+various records. So you'll see here
+
+351
+00:29:06.106 --> 00:29:10.131
+that we are
+importing this Tru Llama class,
+
+352
+00:29:10.131 --> 00:29:13.425
+creating an
+object, Tru Recorder of
+
+353
+00:29:13.425 --> 00:29:17.908
+this Tru Llama class. This
+is our integration of
+
+354
+00:29:17.908 --> 00:29:21.751
+TruLens with Llama Index.
+It takes in the
+
+355
+00:29:21.751 --> 00:29:27.240
+sentence-window-engine from Llama Index
+that we had created
+
+356
+00:29:27.240 --> 00:29:31.540
+earlier, sets the app ID,
+and makes use of the
+
+357
+00:29:31.540 --> 00:29:38.128
+three feedback functions of the RAG triad that
+we created earlier. This
+
+358
+00:29:38.128 --> 00:29:42.886
+Tru recorder object will be used
+in a little bit to
+
+359
+00:29:42.886 --> 00:29:49.931
+run the Llama Index application, as well
+as the evaluation of these feedback
+
+360
+00:29:49.931 --> 00:29:54.780
+functions, and to
+record it all in a local database.
+
+361
+00:29:54.780 --> 00:29:59.446
+Let us now load
+some evaluation questions. In this
+
+362
+00:29:59.446 --> 00:30:04.844
+setup, the evaluation questions are set
+up already in this
+
+363
+00:30:04.844 --> 00:30:10.974
+text file, and then we
+just execute this code snippet to load them
+
+364
+00:30:10.974 --> 00:30:14.359
+in. Let's take a
+quick look at these
+
+365
+00:30:14.359 --> 00:30:18.659
+questions that we will
+use for evaluation. You
+
+366
+00:30:18.659 --> 00:30:23.966
+can see what are the keys to building
+a career in AI, and
+
+367
+00:30:23.966 --> 00:30:27.077
+so on. And this
+file you can edit
+
+368
+00:30:27.077 --> 00:30:33.573
+yourself and add your own
+questions that you might want to get answers
+
+369
+00:30:33.573 --> 00:30:36.958
+from Andrew Ang. You
+can also append
+
+370
+00:30:36.958 --> 00:30:42.356
+directly to the eval questions list
+in this way. Now let's
+
+371
+00:30:42.356 --> 00:30:47.937
+take a look at the eval
+questions list, and you can see that
+
+372
+00:30:47.937 --> 00:30:51.688
+this question has been
+added at the end.
+
+373
+00:30:51.688 --> 00:30:57.544
+Go ahead and add your own
+questions. And now we have everything
+
+374
+00:30:57.544 --> 00:31:03.674
+set up to get to the most
+exciting step in this notebook with this
+
+375
+00:31:03.674 --> 00:31:08.157
+code snippet. We can
+execute the sentence window
+
+376
+00:31:08.157 --> 00:31:13.097
+engine on each question
+in the list of eval questions
+
+377
+00:31:13.097 --> 00:31:16.574
+that we just looked
+at. And then with
+
+378
+00:31:16.574 --> 00:31:23.619
+Tru recorder, we are going to run
+each record against the RAG triad. We will
+
+379
+00:31:23.619 --> 00:16:42.087
+record the prompts, responses, intermediate
+results, and the evaluation
+
+380
+00:16:42.087 --> 00:31:35.513
+results in the true database.
+And you can see here as the
+
+381
+00:31:35.513 --> 00:31:39.722
+execution of the steps
+are happening for each
+
+382
+00:31:39.722 --> 00:31:43.839
+record, there is a
+hash that's an identifier
+
+383
+00:31:43.839 --> 00:31:47.956
+for the record. As the
+record gets added, we
+
+384
+00:31:47.956 --> 00:31:51.799
+have an indicator here
+that that step has
+
+385
+00:31:51.799 --> 00:31:57.929
+executed effectively. In addition,
+the feedback results for answer
+
+386
+00:31:57.929 --> 00:32:03.052
+relevance is done, and so
+on for context relevance, and
+
+387
+00:32:03.052 --> 00:32:07.719
+so on. Now that we have
+the recording done, we can
+
+388
+00:32:07.719 --> 00:32:10.646
+see the logs
+in the notebook by
+
+389
+00:32:10.646 --> 00:32:15.312
+executing, by getting the
+records and feedback and
+
+390
+00:32:15.312 --> 00:32:19.521
+executing this code snippet.
+And I don't want
+
+391
+00:32:19.521 --> 00:32:24.553
+you to necessarily read
+through all of the information
+
+392
+00:32:24.553 --> 00:32:30.043
+here. The main point I want
+to make is that you can see the
+
+393
+00:32:30.043 --> 00:32:36.173
+depth of instrumentation and the application.
+A lot of information
+
+394
+00:32:36.173 --> 00:32:40.016
+gets logged to the
+tru recorder, and this
+
+395
+00:32:40.016 --> 00:32:46.054
+information are on prompts, responses, evaluation
+results, and so
+
+396
+00:32:46.054 --> 00:32:52.001
+fault. And can be quite valuable to
+identify failure mods in the
+
+397
+00:32:52.001 --> 00:32:57.674
+apps and to inform iteration
+and improvement of the apps. All
+
+398
+00:32:57.674 --> 00:33:04.078
+of this information is valuable,
+flexible JSON format, so they can be
+
+399
+00:33:04.078 --> 00:33:09.202
+exploded and consumed by
+downstream processes. Next up,
+
+400
+00:33:09.202 --> 00:33:16.430
+let's look at some more human-readable format, for
+prompts, responses, and the
+
+401
+00:33:16.430 --> 00:33:21.919
+feedback function evaluations. With
+these quotes stampedes,
+
+402
+00:33:21.919 --> 00:26:14.282
+you can see that for
+each input prompt or question,
+
+403
+00:26:14.282 --> 00:33:31.068
+we see the output and the
+respective scores for
+
+404
+00:33:31.068 --> 00:30:17.195
+context relevance, groundedness, and answer relevance, and
+this is run for
+
+405
+00:30:17.195 --> 00:33:41.316
+each and every entry
+in this list of
+
+406
+00:33:41.316 --> 00:33:48.635
+questions and evaluations_questions.text. You can
+see here the last question is
+
+407
+00:33:48.635 --> 00:33:52.386
+"How can I be successful in
+the AI?" Was
+
+408
+00:33:52.386 --> 00:33:56.137
+the question that I
+manually embedded to
+
+409
+00:33:56.137 --> 00:34:01.810
+that list have the end. Sometimes
+in running the evaluations,
+
+410
+00:34:01.810 --> 00:34:04.097
+you
+might see a non that
+
+411
+00:34:04.097 --> 00:34:08.763
+likely happen because of
+API key failure. You just
+
+412
+00:34:08.763 --> 00:34:14.436
+want to rerun it to,
+and show that the execution successfully
+
+413
+00:34:14.436 --> 00:34:17.272
+completes. I just
+showed you a
+
+414
+00:34:17.272 --> 00:34:24.500
+record level view
+of the evaluations, the prompts, responses, and evaluations,
+
+415
+00:34:24.500 --> 00:34:28.068
+let's now get an
+aggregate view in the
+
+416
+00:34:28.068 --> 00:34:34.747
+leaderboard, which
+aggregates across all of these individual records and
+
+417
+00:34:34.747 --> 00:34:41.060
+produces an average score across the 10 records
+in that database. So
+
+418
+00:34:41.060 --> 00:34:45.727
+you can see here
+in the leaderboard, the aggregate
+
+419
+00:34:45.727 --> 00:34:49.661
+view across all the 10
+records. We had set
+
+420
+00:34:49.661 --> 00:34:53.412
+the app ID to
+app 1. The average context
+
+421
+00:34:53.412 --> 00:35:00.365
+relevance is 0.56. Similarly, their average scores
+for groundedness, answer
+
+422
+00:35:00.365 --> 00:35:05.123
+relevance, and latency
+across all the 10 records of
+
+423
+00:35:05.123 --> 00:35:10.155
+questions that were asked of
+the RAG application. It's
+
+424
+00:35:10.155 --> 00:35:15.553
+useful to get this aggregate view to
+see how well your app
+
+425
+00:35:15.553 --> 00:35:19.853
+is performing and
+at what level of latency and
+
+426
+00:35:19.853 --> 00:35:25.251
+cost. In addition
+to the notebook interface, TrueLens also
+
+427
+00:35:25.251 --> 00:35:30.741
+provides a
+local Streamlit app dashboard with which you can
+
+428
+00:35:30.741 --> 00:35:35.773
+examine the applications that
+you're building, look at
+
+429
+00:35:35.773 --> 00:35:45.380
+the evaluation results, drill down into record-level views to
+both get aggregate and detailed evaluation
+
+430
+00:35:45.380 --> 00:35:49.040
+views into
+the performance of your app.
+
+431
+00:35:49.040 --> 00:35:29.003
+So we
+can get the dashboard
+
+432
+00:35:29.003 --> 00:35:56.267
+going with the True.run
+Dashboard method, and this
+
+433
+00:35:56.267 --> 00:36:00.202
+sets up a local database
+at a certain URL.
+
+434
+00:36:00.202 --> 00:36:03.587
+Now once I click
+on this, this might
+
+435
+00:36:03.587 --> 00:36:08.710
+show up in some
+window, which is not within this frame.
+
+436
+00:36:08.710 --> 00:36:12.919
+Let's take a few minutes to
+walk through this
+
+437
+00:36:12.919 --> 00:34:19.194
+dashboard. You can
+see here the aggregate view of
+
+438
+00:34:19.194 --> 00:36:21.977
+the app's performance. 11 records
+were processed
+
+439
+00:36:21.977 --> 00:36:26.460
+by the app and evaluated.
+The average latency is
+
+440
+00:36:26.460 --> 00:36:30.303
+3.55 seconds. We have
+the total cost, the
+
+441
+00:36:30.303 --> 00:36:34.511
+total number of tokens
+that were processed by
+
+442
+00:36:34.511 --> 00:36:38.995
+the LLMs. And then scores
+for the RAG triad. For
+
+443
+00:36:38.995 --> 00:36:44.301
+context relevance, it's
+0.56. For groundedness, 0.86. And
+
+444
+00:36:44.301 --> 00:36:49.699
+answer relevant is 0.92. We can
+select the app here to get
+
+445
+00:36:49.699 --> 00:36:57.202
+a more detailed record-evel view of the
+evaluations. For each of the records, you
+
+446
+00:36:57.202 --> 00:23:45.149
+can see that the user
+input, the prompt, the response,
+
+447
+00:23:45.149 --> 00:37:08.455
+this metadata, the timestamp, and
+then scores for answer relevance,
+
+448
+00:37:08.455 --> 00:03:59.220
+context relevance,
+and groundedness that have
+
+449
+00:03:59.220 --> 00:37:19.526
+been recorded, along with latency,
+total number of tokens, and total cost.
+
+450
+00:37:19.526 --> 00:37:23.735
+Let me pick a row
+in which the LLM indicates,
+
+451
+00:37:23.735 --> 00:37:31.145
+evaluation indicates that the LLM, the
+RAG application has done well. Let's pick
+
+452
+00:37:31.145 --> 00:37:35.537
+this row. Once we click on a
+row, we can scroll
+
+453
+00:37:35.537 --> 00:37:41.484
+down and get a more detailed
+view of the different components of
+
+454
+00:37:41.484 --> 00:37:46.791
+that row from the table. So
+the question here, the prompt
+
+455
+00:37:46.791 --> 00:37:51.914
+was, what is the first
+step to becoming good at AI? The
+
+456
+00:37:51.914 --> 00:37:49.627
+final response from the
+RAG was, is to
+
+457
+00:37:49.627 --> 00:38:00.606
+learn foundational technical skills. Down here,
+you can
+
+458
+00:38:00.606 --> 00:07:13.917
+see that the
+answer relevance was
+
+459
+00:07:13.917 --> 00:38:06.279
+viewed to be
+one on a scale
+
+460
+00:38:06.279 --> 00:38:11.951
+of zero to 1. It's a relevant, quite
+a relevant answer to the
+
+461
+00:38:11.951 --> 00:38:17.349
+question that was asked. Up
+here, you can see that context
+
+462
+00:38:17.349 --> 00:38:23.479
+relevance, the average context relevance
+score is 0.8. For the two
+
+463
+00:38:23.479 --> 00:38:30.433
+pieces of context that were retrieved, Both of
+them individually got scores
+
+464
+00:38:30.433 --> 00:38:33.360
+of 0.8. We can
+see the chain of
+
+465
+00:38:33.360 --> 00:38:37.203
+thought reason for why
+the LLM evaluation
+
+466
+00:38:37.203 --> 00:38:42.052
+gave a score of 0.8
+to this particular response from
+
+467
+00:38:42.052 --> 00:38:46.718
+the RAG in the retrieval step. And
+then down here,
+
+468
+00:38:46.718 --> 00:38:03.717
+you can see
+the groundedness evaluations. So this was
+
+469
+00:38:03.717 --> 00:38:56.691
+one of the clauses
+in the final answer. It got a score
+
+470
+00:38:56.691 --> 00:39:01.815
+of one. And over here is the
+reason for that score. You
+
+471
+00:39:01.815 --> 00:39:05.566
+can see this was the
+statement sentence,
+
+472
+00:39:05.566 --> 00:39:09.958
+and the supporting evidence backs it
+up. And so
+
+473
+00:39:09.958 --> 00:18:24.741
+it got a full score
+of one on a
+
+474
+00:18:24.741 --> 00:17:05.051
+scale of 0 to 1,
+or a full score
+
+475
+00:17:05.051 --> 00:39:21.028
+of 10 on a scale of zero to 10.
+So previously, the kind
+
+476
+00:39:21.028 --> 00:39:27.067
+of reasoning and information
+we were talking about through slides
+
+477
+00:39:27.067 --> 00:18:00.587
+and in the notebook,
+now you can see
+
+478
+00:18:00.587 --> 00:39:35.850
+that quite neatly in
+this StreamLit local app that runs on
+
+479
+00:39:35.850 --> 00:39:39.693
+your machine. You
+can also get a detailed
+
+480
+00:39:39.693 --> 00:39:44.816
+view of the timeline, as well
+as get access to the full
+
+481
+00:39:44.816 --> 00:39:49.208
+JSON object. Now let's
+look at an example where
+
+482
+00:39:49.208 --> 00:39:52.044
+the rag did not
+do so well. So
+
+483
+00:39:52.044 --> 00:32:18.515
+as I look
+through the evaluations, I
+
+484
+00:32:18.515 --> 00:40:02.749
+see this row with a low groundedness score
+of 0.5. So let's click on that. That
+
+485
+00:40:02.749 --> 00:40:09.519
+brings up this example. The question
+is how can altruism be beneficial in
+
+486
+00:40:09.519 --> 00:40:13.088
+building a
+career? There's a response.
+
+487
+00:40:13.088 --> 00:40:17.571
+If I scroll down
+to the groundedness evaluation,
+
+488
+00:40:17.571 --> 00:40:24.067
+then both of the sentences in the final
+response have low groundedness
+
+489
+00:40:24.067 --> 00:40:28.001
+score. Let's pick one
+of these and look at
+
+490
+00:40:28.001 --> 00:40:32.576
+why the groundedness score is
+low. So you can see
+
+491
+00:40:32.576 --> 00:40:39.254
+this, the overall response got
+broken down into four statements, and the
+
+492
+00:40:39.254 --> 00:40:45.384
+top two were good, but the
+bottom two did not have good supporting
+
+493
+00:40:45.384 --> 00:40:51.972
+evidence in the retrieved pieces of context.
+In particular, if you look
+
+494
+00:40:51.972 --> 00:40:59.200
+at this last one, the final output
+from the LLM says, additionally, practicing
+
+495
+00:40:59.200 --> 00:41:04.689
+altruism can contribute to personal
+fulfillment and a sense
+
+496
+00:41:04.689 --> 00:41:10.636
+of purpose, which can
+enhance motivation and overall well-being,
+
+497
+00:41:10.636 --> 00:41:17.407
+ultimately benefiting one's career success. While that
+might very well be
+
+498
+00:41:17.407 --> 00:41:21.890
+the case, there was
+no supporting evidence found
+
+499
+00:41:21.890 --> 00:41:27.471
+in the retrieved pieces
+of context to ground that statement.
+
+500
+00:41:27.471 --> 00:41:32.412
+And that's why our
+evaluation gives this a low score.
+
+501
+00:41:32.412 --> 00:41:37.078
+You can play around with
+the dashboard and explore
+
+502
+00:41:37.078 --> 00:37:54.476
+some of these other examples
+where the LLM, the final RAG
+
+503
+00:37:54.476 --> 00:35:42.269
+output, does not do
+so well to get
+
+504
+00:35:42.269 --> 00:41:49.338
+a feeling for the
+kinds of failure modes
+
+505
+00:41:49.338 --> 00:41:54.644
+that are
+quite common when you're using RAG applications.
+
+506
+00:41:54.644 --> 00:41:58.304
+And some of these will get addressed
+as
+
+507
+00:41:58.304 --> 00:42:00.775
+we go into
+the sessions on
+
+508
+00:42:00.775 --> 00:42:05.624
+more advanced RAG techniques, which can
+do better in
+
+509
+00:42:05.624 --> 00:42:10.381
+terms of addressing these failure
+modes. Lesson two
+
+510
+00:42:10.381 --> 00:42:14.864
+is a wrap
+with that. In the next lesson, we will
+
+511
+00:42:14.864 --> 00:42:20.628
+walk through the mechanism
+for sentence window-based retrieval
+
+512
+00:42:20.628 --> 00:35:21.775
+and advanced RAG technique,
+and also show you how to
+
+513
+00:35:21.775 --> 00:42:31.059
+evaluate the advanced technique
+leveraging the RAG triad and
+
+514
+00:42:31.059 --> 00:42:32.340
+true lengths.

@@ -1,0 +1,180 @@
+WEBVTT
+1
+00:00:00.000 --> 00:00:01.820
+Embeddings-based
+retrieval is still a very
+
+2
+00:00:01.820 --> 00:00:03.980
+active area of research, and
+there's a
+
+3
+00:00:03.980 --> 00:00:05.980
+lot of other techniques that you
+should be aware of.
+
+4
+00:00:06.640 --> 00:00:09.080
+For example, you can fine-tune
+the embedding model
+
+5
+00:00:09.080 --> 00:00:11.720
+directly using the same type of
+data as we used in the
+
+6
+00:00:11.720 --> 00:00:12.960
+embeddings adapters lab.
+
+7
+00:00:13.360 --> 00:00:15.180
+Additionally, recently there's
+been some really good
+
+8
+00:00:15.180 --> 00:00:19.540
+results published in fine-tuning the
+LLM itself to expect
+
+9
+00:00:19.540 --> 00:00:22.340
+retrieved results and reason
+about them.
+
+10
+00:00:22.640 --> 00:00:24.680
+You can see some
+of the papers highlighted here.
+
+11
+00:00:25.140 --> 00:00:28.140
+Additionally, you could experiment
+with a more
+
+12
+00:00:28.140 --> 00:00:30.760
+complicated embedding adapter
+model using a full-blown
+
+13
+00:00:30.760 --> 00:00:32.960
+neural network or even
+a transformer layer.
+
+14
+00:00:33.320 --> 00:00:35.000
+Similarly, you can use
+a more complex
+
+15
+00:00:35.000 --> 00:00:38.840
+relevance modeling model
+rather than just using the cross-encoder
+
+16
+00:00:38.840 --> 00:00:42.720
+as we described in the lab. And
+finally, an often overlooked piece
+
+17
+00:00:42.720 --> 00:00:46.440
+is that the quality of retrieved
+results often depends
+
+18
+00:00:46.440 --> 00:00:48.960
+on the way that your data
+is chunked before it's stored
+
+19
+00:00:48.960 --> 00:00:50.460
+in the retrieval system itself.
+
+20
+00:00:50.840 --> 00:00:52.600
+There's a lot of
+experimentation going on
+
+21
+00:00:52.600 --> 00:00:55.780
+right now about using deep models
+including transformers for
+
+22
+00:00:55.780 --> 00:00:57.800
+optimal and intelligent
+chunking. And
+
+23
+00:00:57.800 --> 00:00:58.820
+that wraps up the course.
+
+24
+00:00:59.340 --> 00:01:01.580
+In this course, we covered the
+basics of retrieval
+
+25
+00:01:01.580 --> 00:01:04.060
+augmented generation using
+embeddings-based retrieval.
+
+26
+00:01:04.580 --> 00:01:09.180
+We looked at how we can use LLMs to
+augment and enhance our queries to
+
+27
+00:01:09.180 --> 00:01:10.620
+produce better retrieval results.
+
+28
+00:01:11.740 --> 00:01:16.140
+We looked at how we can use a cross-encoder
+model for re-ranking to
+
+29
+00:01:16.140 --> 00:01:18.460
+score the retrieved results
+for relevancy.
+
+30
+00:01:19.320 --> 00:01:20.800
+And we looked at how we
+can train an
+
+31
+00:01:20.800 --> 00:01:22.640
+embedding adapter using
+data from human
+
+32
+00:01:22.640 --> 00:01:25.740
+feedback about relevancy
+to improve our query results.
+
+33
+00:01:26.540 --> 00:01:29.240
+Finally, we covered some of
+the most exciting work that's
+
+34
+00:01:29.240 --> 00:01:32.100
+ongoing right now in the research
+literature around improving
+
+35
+00:01:32.100 --> 00:01:34.440
+retrieval for AI
+applications.
+
+36
+00:01:34.740 --> 00:01:37.340
+Thanks for joining the course and we're
+really looking forward to
+
+37
+00:01:37.340 --> 00:01:38.320
+seeing what you'll build.

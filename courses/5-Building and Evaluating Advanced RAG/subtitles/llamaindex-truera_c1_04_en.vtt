@@ -1,0 +1,1954 @@
+WEBVTT
+1
+00:00:00.500 --> 00:00:03.534
+In this lesson, we'll
+do a deep dive into
+
+2
+00:00:03.534 --> 00:00:08.566
+an advanced RAG technique, our
+sentence window retrieval method. In
+
+3
+00:00:08.566 --> 00:00:11.674
+this method, we
+retrieve based on smaller
+
+4
+00:00:11.674 --> 00:00:15.522
+sentences to better match
+the relevant context, and
+
+5
+00:00:15.522 --> 00:00:19.370
+then synthesize based on
+an expanded context window
+
+6
+00:00:19.370 --> 00:00:24.995
+around the sentence. Let's check
+out how to set it up. First, some context.
+
+7
+00:00:24.995 --> 00:00:29.435
+The standard RAG pipeline uses
+the same text chunk for both
+
+8
+00:00:29.435 --> 00:00:34.763
+embedding and synthesis. The issue
+is that embedding and synthesis. The
+
+9
+00:00:34.763 --> 00:00:38.463
+issue
+is that embedding-based retrieval typically
+
+10
+00:00:38.463 --> 00:00:42.016
+works well with smaller
+chunks, whereas the LLM
+
+11
+00:00:42.016 --> 00:00:47.270
+needs more context and bigger chunks
+to synthesize a good answer. What
+
+12
+00:00:47.270 --> 00:00:51.784
+sentence window retrieval does is
+decouple the two a bit. We
+
+13
+00:00:51.784 --> 00:00:56.076
+first embed smaller chunks or sentences
+and store them in
+
+14
+00:00:56.076 --> 00:01:00.590
+a vector database. We also add
+context of the sentences that
+
+15
+00:01:00.590 --> 00:01:04.957
+occur before and after to
+each chunk. During retrieval, we
+
+16
+00:01:04.957 --> 00:01:09.915
+retrieve the sentences that are
+most relevant to the question with
+
+17
+00:01:09.915 --> 00:01:12.727
+a similarity search
+and then replace
+
+18
+00:01:12.727 --> 00:01:17.241
+the sentence with a full surrounding
+context. This allows us
+
+19
+00:01:17.241 --> 00:01:20.571
+to expand the context
+that's actually fed to
+
+20
+00:01:20.571 --> 00:01:25.752
+the LLM in order to answer
+the question. This notebook will introduce
+
+21
+00:01:25.752 --> 00:01:28.934
+the various components
+needed to construct
+
+22
+00:01:28.934 --> 00:01:31.820
+a sentence window
+retriever with Llama
+
+23
+00:01:31.820 --> 00:01:36.038
+Index. The various components will
+be covered in detail.
+
+24
+00:01:36.038 --> 00:01:41.292
+At the end, Anupam will show you
+how to experiment with parameters and
+
+25
+00:01:41.292 --> 00:01:44.327
+evaluation with TruEra.
+This is the same
+
+26
+00:01:44.327 --> 00:01:49.655
+setup that you've used in the previous
+lessons, so make sure to install
+
+27
+00:01:49.655 --> 00:01:53.059
+the relevant packages, such
+as Llama Index and
+
+28
+00:01:53.059 --> 00:01:57.869
+Truelines eval. For this quick start, you'll
+need an open AI key
+
+29
+00:01:57.869 --> 00:02:01.865
+similar to previous lessons. This
+open AI key is used
+
+30
+00:02:01.865 --> 00:02:06.084
+for embeddings, LLMs, and
+also the evaluation piece. Now
+
+31
+00:02:06.084 --> 00:02:10.302
+we set up and inspect
+our documents to use for iteration
+
+32
+00:02:10.302 --> 00:02:14.224
+and experimentation. Similar to the first
+lesson, we
+
+33
+00:02:14.224 --> 00:02:17.998
+encourage you to upload your
+own PDF file as well.
+
+34
+00:02:17.998 --> 00:02:21.476
+As with before, we'll load in
+the How to Build
+
+35
+00:02:21.476 --> 00:02:26.065
+a Career in AI eBook. It's
+the same document as before. So we
+
+36
+00:02:26.065 --> 00:02:30.135
+see that it's a list of
+documents, there are 41 pages,
+
+37
+00:02:30.135 --> 00:02:33.983
+the object schemas are document
+object, and here is
+
+38
+00:02:33.983 --> 00:02:38.201
+some sample text from the first
+page. The next piece is,
+
+39
+00:02:38.201 --> 00:02:42.493
+we'll merge these into a
+single document because it helps
+
+40
+00:02:42.493 --> 00:02:47.008
+with overall text blending accuracy when
+using more advanced
+
+41
+00:02:47.008 --> 00:02:49.450
+retrievers. Now let's
+set up the
+
+42
+00:02:49.450 --> 00:02:54.260
+sentence window retrieval method, and
+we'll go through how to set
+
+43
+00:02:54.260 --> 00:02:58.256
+this up more in
+depth. We'll start with a window size
+
+44
+00:02:58.256 --> 00:03:02.474
+of 3 and a top K value
+of 6. First, we'll import what we
+
+45
+00:03:02.474 --> 00:03:08.839
+call a sentence window node parser. The sentence window node
+parser is an object that
+
+46
+00:03:08.839 --> 00:03:14.019
+will split a document into
+individual sentences and then augment each
+
+47
+00:03:14.019 --> 00:03:18.903
+sentence chunk with the surrounding context
+around that sentence.
+
+48
+00:03:18.903 --> 00:03:21.345
+Here we demonstrate
+how the node
+
+49
+00:03:21.345 --> 00:03:23.935
+parser works with
+a small example.
+
+50
+00:03:23.935 --> 00:03:26.007
+We see
+that our text, which
+
+51
+00:03:26.007 --> 00:03:29.708
+has three sentences, gets
+split into three nodes.
+
+52
+00:03:29.708 --> 00:03:33.778
+Each node contains a single
+sentence with the metadata
+
+53
+00:03:33.778 --> 00:03:37.774
+containing a larger window around
+the sentence. We'll
+
+54
+00:03:37.774 --> 00:03:41.474
+show what that metadata looks like
+for the second
+
+55
+00:03:41.474 --> 00:03:45.396
+node right here. You see
+that this metadata contains
+
+56
+00:03:45.396 --> 00:03:49.763
+the original sentence, but
+also the sentence that occurred
+
+57
+00:03:49.763 --> 00:03:52.797
+before and after it.
+We encourage you to
+
+58
+00:03:52.797 --> 00:03:57.311
+try out your own text too.
+For instance, let's try something
+
+59
+00:03:57.311 --> 00:04:01.603
+like this. For this sample
+text, let's take a look at the
+
+60
+00:04:01.603 --> 00:04:06.487
+surrounding metadata for the first node.
+Since the window size is
+
+61
+00:04:06.487 --> 00:04:09.892
+3, we have two
+additional adjacent nodes that
+
+62
+00:04:09.892 --> 00:04:13.814
+occur in front, and
+of course none behind it because
+
+63
+00:04:13.814 --> 00:04:17.070
+it's the first node. So
+we see that we have
+
+64
+00:04:17.070 --> 00:04:20.696
+the original sentence, or
+hello, but also foobar
+
+65
+00:04:20.696 --> 00:04:25.432
+and cat dog. The next step is actually
+build the index, and the
+
+66
+00:04:25.432 --> 00:04:28.022
+first thing
+we'll do is a setup in
+
+67
+00:04:28.022 --> 00:04:31.723
+LLM. In this case,
+we'll use OpenAI, specifically
+
+68
+00:04:31.723 --> 00:04:36.237
+GPT-355 Turbo, with a temperature
+of 0.1. The next step is to
+
+69
+00:04:36.237 --> 00:04:40.529
+set up a service context object, which,
+as a reminder, is
+
+70
+00:04:40.529 --> 00:04:45.561
+a wrapper object that contains all
+the context needed for indexing,
+
+71
+00:04:45.561 --> 00:04:50.140
+including the AL1, embedding model, and
+the node parser. Note
+
+72
+00:04:50.140 --> 00:04:52.640
+that the embedding model
+that we specify is
+
+73
+00:04:52.640 --> 00:04:56.320
+the "bge small model,"
+and we actually download and
+
+74
+00:04:56.320 --> 00:05:00.418
+run it locally from
+HuggingFace. This is a compact,
+
+75
+00:05:00.418 --> 00:05:04.819
+fast, and accurate for its
+size embedding model. We can also
+
+76
+00:05:04.819 --> 00:05:09.509
+use other embedding model. For instance,
+a related model is "bge
+
+77
+00:05:09.509 --> 00:05:12.972
+large," which we have
+in the commented-out code
+
+78
+00:05:12.972 --> 00:05:18.743
+below. The next step is the setup
+of VectorStoreIndex with the source document.
+
+79
+00:05:18.743 --> 00:05:22.062
+Because we've
+defined the node parser as part
+
+80
+00:05:22.062 --> 00:05:25.886
+of the service context, what this will
+do is it will
+
+81
+00:05:25.886 --> 00:05:28.699
+take the source document,
+transform it
+
+82
+00:05:28.699 --> 00:05:34.038
+into a series of sentences
+augmented with surrounding contexts, and embed
+
+83
+00:05:34.038 --> 00:05:37.934
+it, and load it into
+the VectorStore. We can save the
+
+84
+00:05:37.934 --> 00:05:40.676
+index to disk so that you
+can load it
+
+85
+00:05:40.676 --> 00:05:45.726
+later without rebuilding it. If
+you've already built the index, saved
+
+86
+00:05:45.726 --> 00:05:49.622
+it, and you don't want to rebuild it,
+here is a handy
+
+87
+00:05:49.622 --> 00:05:53.734
+block of code that allows
+you to load the index from the
+
+88
+00:05:53.734 --> 00:05:57.846
+existing file if it exists,
+otherwise, it will build it.
+
+89
+00:05:57.846 --> 00:06:01.526
+The index is now built. The next step
+is to set up
+
+90
+00:06:01.526 --> 00:06:04.917
+and run the query
+engine. First, what we'll do
+
+91
+00:06:04.917 --> 00:06:09.823
+is we'll define what we
+call a metadata replacement post-processor.
+
+92
+00:06:09.823 --> 00:06:14.656
+This takes a value stored in
+the metadata and replaces a node text
+
+93
+00:06:14.656 --> 00:06:18.552
+with that value. And so this
+is done after retrieving
+
+94
+00:06:18.552 --> 00:06:22.520
+the nodes and before sending
+the nodes to the outline.
+
+95
+00:06:22.520 --> 00:06:25.911
+We'll first walk through
+how this works. Using
+
+96
+00:06:25.911 --> 00:06:30.673
+the nodes we created with the sentence window
+node parser, we can
+
+97
+00:06:30.673 --> 00:06:34.713
+test this post-processor. Note
+that we made a backup of
+
+98
+00:06:34.713 --> 00:06:39.835
+the original nodes. Let's take a look
+at the second node again. Great.
+
+99
+00:06:39.835 --> 00:06:44.236
+Now let's apply the post-processor
+on top of these nodes. If
+
+100
+00:06:44.236 --> 00:06:47.483
+we now take a look
+at the text of the second
+
+101
+00:06:47.483 --> 00:06:54.409
+node, we see that it's been replaced with a
+full context, including the sentences that occurred
+
+102
+00:06:54.409 --> 00:06:58.665
+before and after the current node.
+The next step is to add
+
+103
+00:06:58.665 --> 00:07:04.004
+the sentence transformer re-rank model. This takes
+the query and retrieve
+
+104
+00:07:04.004 --> 00:07:08.044
+nodes and re-order the nodes in order
+relevance using a
+
+105
+00:07:08.044 --> 00:07:14.105
+specialized model for the task. Generally,
+you will make the initial similarity top
+
+106
+00:07:14.105 --> 00:07:18.433
+K larger, and then the
+re-ranker will rescore the nodes and
+
+107
+00:07:18.433 --> 00:07:21.319
+return a smaller top N,
+so filter out a
+
+108
+00:07:21.319 --> 00:07:25.359
+smaller set. An example
+of a re-ranker is bge-re-ranker
+
+109
+00:07:25.359 --> 00:07:29.399
+based. This is a re-ranker
+based on the bge embeddings.
+
+110
+00:07:29.399 --> 00:07:33.873
+This string represents the
+model's name from HuggingFace, and
+
+111
+00:07:33.873 --> 00:07:38.778
+you can find more details on
+the model from HuggingFace. Let's take
+
+112
+00:07:38.778 --> 00:07:44.189
+a look at how this re-ranker works. We'll
+input some toy data and then see
+
+113
+00:07:44.189 --> 00:07:48.807
+how the re-ranker can actually re-rank
+the initial set of nodes
+
+114
+00:07:48.807 --> 00:07:53.135
+to a new set of nodes. Let's
+assume the original query is I
+
+115
+00:07:53.135 --> 00:07:56.743
+want a dog,
+and the initial set of score nodes is
+
+116
+00:07:56.743 --> 00:07:58.907
+this is a
+cat with a score of
+
+117
+00:07:58.907 --> 00:08:01.865
+0.6, and then this is a
+dog with a score
+
+118
+00:08:01.865 --> 00:08:07.204
+of 0.4. Intuitively, you would expect
+that the second node actually has a
+
+119
+00:08:07.204 --> 00:08:10.883
+higher score, so it matches
+the query more. And so
+
+120
+00:08:10.883 --> 00:08:14.707
+that's where the re-ranker can
+come in. Here, we see
+
+121
+00:08:14.707 --> 00:08:19.902
+the re-ranker properly surfaces the known about dogs
+and gave it a high
+
+122
+00:08:19.902 --> 00:08:25.024
+score of irrelevance. Now let's apply this
+to our actual query engine.
+
+123
+00:08:25.024 --> 00:08:28.631
+As mentioned earlier, we
+want a larger similarity
+
+124
+00:08:28.631 --> 00:08:32.816
+top K than the top N
+value we chose for the re-ranker. In
+
+125
+00:08:32.816 --> 00:08:36.062
+order to give the re-ranker
+a fair chance at
+
+126
+00:08:36.062 --> 00:08:39.742
+surfacing the proper
+information. We set the top K
+
+127
+00:08:39.742 --> 00:08:41.978
+equal to 6 and top N
+equals to
+
+128
+00:08:41.978 --> 00:08:46.018
+2, which means that we first fetch the
+six most similar
+
+129
+00:08:46.018 --> 00:08:50.564
+chunks using the sentence window
+retrieval, and then we filter
+
+130
+00:08:50.564 --> 00:08:56.263
+for the top two most relevant chunks using
+the sentence re-ranker. Now that we
+
+131
+00:08:56.263 --> 00:08:59.510
+have the full query
+engine set up, let's run
+
+132
+00:08:59.510 --> 00:09:05.137
+through a basic example. Let's ask a
+question over this dataset. What are the
+
+133
+00:09:05.137 --> 00:09:07.807
+keys to building a
+career in AI? And
+
+134
+00:09:07.807 --> 00:09:10.476
+we get back to
+response. We see that
+
+135
+00:09:10.476 --> 00:09:14.083
+the final response is that
+the keys to building a
+
+136
+00:09:14.083 --> 00:09:19.711
+career in AI are learning foundational
+technical skills, working on projects,
+
+137
+00:09:19.711 --> 00:09:24.689
+and finding a job. Now that
+we have the sentence window query engine
+
+138
+00:09:24.689 --> 00:09:29.378
+in place, let's put everything together. We'll
+put a lot of code
+
+139
+00:09:29.378 --> 00:09:33.923
+into this notebook cell, but
+note that this is essentially the
+
+140
+00:09:33.923 --> 00:09:37.170
+same as the function
+in the utils.BAAI file.
+
+141
+00:09:37.170 --> 00:09:42.364
+We have functions for building the sentence window
+index that we showed
+
+142
+00:09:42.364 --> 00:09:45.755
+earlier in this notebook.
+It consists of being
+
+143
+00:09:45.755 --> 00:09:49.723
+able to use the sentence
+window node parser to extract
+
+144
+00:09:49.723 --> 00:09:52.898
+out sentences
+from documents and augment it
+
+145
+00:09:52.898 --> 00:09:58.020
+with surrounding contexts. It contains
+setting up the sentence context
+
+146
+00:09:58.020 --> 00:10:01.133
+or using the service
+context object. It also
+
+147
+00:10:01.133 --> 00:10:05.636
+consists of setting up a vector
+sort index, using the source documents
+
+148
+00:10:05.636 --> 00:10:08.997
+and the service context
+containing the LLM embedding
+
+149
+00:10:08.997 --> 00:10:12.168
+model and node parser.
+The second part of this is
+
+150
+00:10:12.168 --> 00:10:16.037
+actually getting the sentence window query
+entered, which we
+
+151
+00:10:16.037 --> 00:10:14.071
+showed consists of
+getting the sentence
+
+152
+00:10:14.071 --> 00:10:22.823
+window retriever, using
+the metadata replacement post processor to
+
+153
+00:10:22.823 --> 00:10:25.676
+actually replace a
+node with the surrounding
+
+154
+00:10:25.676 --> 00:10:29.608
+context, and then finally using
+a re-ranking module to filter
+
+155
+00:10:29.608 --> 00:10:32.209
+for the top N results. We
+combine all of
+
+156
+00:10:32.209 --> 00:10:36.077
+this using the as query intro
+module. Let's first call build
+
+157
+00:10:36.077 --> 00:10:39.692
+sentence window index with
+the source document, them, as
+
+158
+00:10:39.692 --> 00:10:42.990
+well as the save directory. And
+then let's call the
+
+159
+00:10:42.990 --> 00:10:45.273
+second function to
+get the sentence
+
+160
+00:10:45.273 --> 00:10:49.015
+window query engine. Great. Now you're
+ready to experiment
+
+161
+00:10:49.015 --> 00:10:53.200
+with sentence window retrieval. In the
+next section, Audit Prompt
+
+162
+00:10:53.200 --> 00:10:56.752
+will show you how to
+actually run evaluations using the
+
+163
+00:10:56.752 --> 00:11:00.810
+sentence window retriever, so that you
+can evaluate the results
+
+164
+00:11:00.810 --> 00:11:03.855
+and actually play
+around the parameters and see
+
+165
+00:11:03.855 --> 00:11:09.562
+how that affects the performance of your
+engine. After running through these examples, we
+
+166
+00:11:09.562 --> 00:11:12.670
+encourage you to add
+your own questions and then
+
+167
+00:11:12.670 --> 00:11:16.665
+even define your own evaluation benchmarks
+just to play around
+
+168
+00:11:16.665 --> 00:11:19.900
+with this and get
+a sense of how everything works.
+
+169
+00:11:19.900 --> 00:11:26.206
+Thanks, Jerry. Now that you have set
+up the sentence window retriever,
+
+170
+00:11:26.206 --> 00:11:29.989
+let's see how we can
+evaluate it with the
+
+171
+00:11:29.989 --> 00:11:34.043
+RAG triad and compare
+its performance to the
+
+172
+00:11:34.043 --> 00:11:38.998
+basic rag with experiment
+tracking. Let us now see how
+
+173
+00:11:38.998 --> 00:11:42.962
+we can evaluate and
+iterate on the sentence
+
+174
+00:11:42.962 --> 00:11:48.277
+window size parameter to
+make the right trade-offs between
+
+175
+00:11:48.277 --> 00:11:53.592
+the evaluation metrics, or the
+quality of the app, and the
+
+176
+00:11:53.592 --> 00:11:58.187
+cost of running the
+application and evaluation. We
+
+177
+00:11:58.187 --> 00:12:02.601
+will gradually increase the
+sentence window size
+
+178
+00:12:02.601 --> 00:12:07.466
+starting with 1, evaluate the
+successive app versions
+
+179
+00:12:07.466 --> 00:12:13.592
+with TrueLens and the RAG triad,
+track experiments to pick the best
+
+180
+00:12:13.592 --> 00:12:19.537
+sentence window size, and as
+we go through this exercise, we will
+
+181
+00:12:19.537 --> 00:12:26.024
+want to note the trade-offs between token
+usage or cost. As we increase
+
+182
+00:12:26.024 --> 00:12:31.879
+the window size, the token usage
+and cost will go up, as in many
+
+183
+00:12:31.879 --> 00:12:38.185
+cases will context relevance. At the
+same time, increasing the window
+
+184
+00:12:38.185 --> 00:12:43.951
+size in the beginning, we expect
+will improve context relevance
+
+185
+00:12:43.951 --> 00:12:47.825
+and therefore will
+also indirectly improve
+
+186
+00:12:47.825 --> 00:12:51.608
+groundedness. One of
+the reasons for that
+
+187
+00:12:51.608 --> 00:12:56.743
+is when the retrieval step does
+not produce sufficiently
+
+188
+00:12:56.743 --> 00:13:01.608
+relevant context, the
+LLM in the completion step will
+
+189
+00:13:01.608 --> 00:13:05.302
+tend to fill in
+those gaps by leveraging
+
+190
+00:13:05.302 --> 00:13:12.328
+its pre-existing knowledge from the
+pre-training stage rather than explicitly
+
+191
+00:13:12.328 --> 00:13:15.481
+relying on the
+retrieved pieces of
+
+192
+00:13:15.481 --> 00:13:22.688
+context. And this choice can result
+in lower groundedness scores because recall
+
+193
+00:13:22.688 --> 00:13:26.562
+groundedness means components
+of the final
+
+194
+00:13:26.562 --> 00:13:29.895
+response should be
+traceable back to
+
+195
+00:13:29.895 --> 00:13:35.751
+the retrieved pieces of context. Consequently,
+what we expect is
+
+196
+00:13:35.751 --> 00:13:40.706
+that as you keep increasing
+your sentence window size,
+
+197
+00:13:40.706 --> 00:13:43.859
+context relevance will increase
+up
+
+198
+00:13:43.859 --> 00:13:48.453
+to a certain point,
+as will groundedness, and then
+
+199
+00:13:48.453 --> 00:13:52.868
+beyond that point,
+we will see context relevance
+
+200
+00:13:52.868 --> 00:13:56.111
+either flatten out
+or decrease, and
+
+201
+00:13:56.111 --> 00:14:00.525
+groundedness is likely going
+to follow a similar
+
+202
+00:14:00.525 --> 00:14:04.489
+pattern as well. In
+addition, there is also
+
+203
+00:14:04.489 --> 00:14:10.074
+a very interesting relationship between
+context relevance and
+
+204
+00:14:10.074 --> 00:14:13.047
+groundedness that you
+can see in
+
+205
+00:14:13.047 --> 00:14:19.353
+practice. When context relevance is low,
+groundedness tends to be low
+
+206
+00:14:19.353 --> 00:14:24.128
+as well. This is because the LLM
+will usually try to
+
+207
+00:14:24.128 --> 00:14:30.074
+fill in the gaps in the retrieved pieces
+of context by leveraging
+
+208
+00:14:30.074 --> 00:14:35.119
+its knowledge from the
+pre-training stage. This results
+
+209
+00:14:35.119 --> 00:14:40.614
+in a reduction in
+groundedness, even if the answers actually
+
+210
+00:14:40.614 --> 00:14:43.497
+happen
+to be quite relevant. As
+
+211
+00:14:43.497 --> 00:14:49.623
+context relevance increases, groundedness also
+tends to increase up
+
+212
+00:14:49.623 --> 00:14:54.307
+to a certain point. But
+if the context size becomes
+
+213
+00:14:54.307 --> 00:14:58.091
+too big, even if
+the context relevance is
+
+214
+00:14:58.091 --> 00:15:03.496
+high, there could be a drop in
+the groundedness because the
+
+215
+00:15:03.496 --> 00:15:07.730
+LLM can get overwhelmed
+with contexts that are
+
+216
+00:15:07.730 --> 00:15:13.856
+too large and fall
+back on its pre-existing knowledge base from the
+
+217
+00:15:13.856 --> 00:15:18.901
+training phase. Let us now
+experiment with the sentence
+
+218
+00:15:18.901 --> 00:15:23.225
+window size. I will
+walk you through a notebook
+
+219
+00:15:23.225 --> 00:15:29.621
+to load a few questions for
+evaluation and then gradually increase the
+
+220
+00:15:29.621 --> 00:15:32.955
+sentence window size
+and observe the
+
+221
+00:15:32.955 --> 00:15:37.639
+impact of that
+on the RAG triad evaluation metrics.
+
+222
+00:15:37.639 --> 00:15:44.936
+First, we load a set of
+pre-generated evaluation questions. And you can see here
+
+223
+00:15:44.936 --> 00:15:50.071
+some of these
+questions from this list. Next, we run the
+
+224
+00:15:50.071 --> 00:15:57.008
+evaluations for each question in
+that preloaded set of evaluation questions.
+
+225
+00:15:57.008 --> 00:16:01.963
+And then, with the true recorder
+object, we record the
+
+226
+00:16:01.963 --> 00:16:08.179
+prompts, the responses, the intermediate
+results of the application,
+
+227
+00:16:08.179 --> 00:16:10.521
+as well
+as the evaluation
+
+228
+00:16:10.521 --> 00:16:15.206
+results, in the
+true database. Let's now adjust the
+
+229
+00:16:15.206 --> 00:16:20.791
+sentence window size parameter and
+look at the impact of that
+
+230
+00:16:20.791 --> 00:16:27.187
+on the different RAG triad evaluation
+metrics. We will first reset the
+
+231
+00:16:27.187 --> 00:16:33.133
+true database. With this
+code snippet, we set the sentence window
+
+232
+00:16:33.133 --> 00:16:39.439
+size to 1. You'll
+notice that in this instruction. Everything else is
+
+233
+00:16:39.439 --> 00:16:42.322
+the
+same as before. Then we set
+
+234
+00:16:42.322 --> 00:16:49.979
+the sentence window engine with the get
+sentence window query engine associated with
+
+235
+00:16:49.979 --> 00:16:53.673
+this index. And next up, we
+are ready to
+
+236
+00:16:53.673 --> 00:16:59.889
+set up the true recorder with
+the sentence window size set to 1. And
+
+237
+00:16:59.889 --> 00:17:05.835
+this sets up the
+definition of all the feedback functions for the
+
+238
+00:17:05.835 --> 00:17:12.681
+RAG triad, including answer relevance, context
+relevance, and groundedness.
+
+239
+00:17:12.681 --> 00:17:15.474
+And now we
+have everything set
+
+240
+00:17:15.474 --> 00:17:19.078
+up to
+run the evaluations for the setup
+
+241
+00:17:19.078 --> 00:16:34.124
+with the sentence window
+size set to 1.
+
+242
+00:16:34.124 --> 00:17:27.726
+Okay, that ran beautifully.
+Now let's look at it in the
+
+243
+00:17:27.726 --> 00:17:35.473
+dashboard. You'll see that this
+instruction brings up a locally hosted StreamLit app,
+
+244
+00:17:35.473 --> 00:17:38.446
+and you can click
+on the link to
+
+245
+00:17:38.446 --> 00:17:42.951
+get to the StreamLit
+app. So the app leader board
+
+246
+00:17:42.951 --> 00:17:48.896
+shows us the aggregate metrics for all
+the 21 records that we ran
+
+247
+00:17:48.896 --> 00:17:56.013
+through and evaluated with TrueLens. The
+average latency here is 4.57 seconds.
+
+248
+00:17:56.013 --> 00:18:01.238
+The total cost is about
+two cents. Total number of tokens
+
+249
+00:18:01.238 --> 00:18:05.382
+processed is
+about 9,000. And you can see the
+
+250
+00:18:05.382 --> 00:18:11.418
+evaluation metrics. The application
+does reasonably well in answer
+
+251
+00:18:11.418 --> 00:18:17.814
+relevance and groundedness, but on context relevance,
+it's quite poor.
+
+252
+00:18:17.814 --> 00:18:20.787
+Let's now drill
+down and look at
+
+253
+00:18:20.787 --> 00:18:27.994
+the individual records that were
+processed by the application and evaluated. If
+
+254
+00:18:27.994 --> 00:18:33.129
+I scroll to the right, I
+can see some examples where the
+
+255
+00:18:33.129 --> 00:18:37.724
+application is not
+doing so well on these metrics.
+
+256
+00:18:37.724 --> 00:18:40.787
+So let me pick
+this row, and then
+
+257
+00:18:40.787 --> 00:18:44.210
+we can go deeper
+and examine how it's
+
+258
+00:18:44.210 --> 00:18:49.435
+doing. So the question here is,
+in the context of project
+
+259
+00:18:49.435 --> 00:18:58.984
+selection and execution, explain the difference between
+ready-fire and ready-fire-aim approaches. Provide
+
+260
+00:18:58.984 --> 00:19:03.939
+examples where each approach
+might be more beneficial.
+
+261
+00:19:03.939 --> 00:19:09.074
+You can see the overall
+response here in detail from the
+
+262
+00:19:09.074 --> 00:19:11.687
+RAG. And then,
+if you scroll
+
+263
+00:19:11.687 --> 00:19:18.263
+down, we can see the overall scores
+for groundedness, context relevance,
+
+264
+00:19:18.263 --> 00:19:25.830
+and answer relevance. Two pieces of
+context were retrieved in this example. And for
+
+265
+00:19:25.830 --> 00:19:28.443
+1 of the pieces
+of retrieved
+
+266
+00:19:28.443 --> 00:19:32.677
+context, context relevance
+is quite low. Let's
+
+267
+00:19:32.677 --> 00:19:36.911
+drill down into that example
+and take a closer
+
+268
+00:19:36.911 --> 00:19:42.046
+look. What you'll see here
+with this example is that the
+
+269
+00:19:42.046 --> 00:19:47.451
+piece of context is quite
+small. Remember that we are using
+
+270
+00:19:47.451 --> 00:19:52.857
+a sentence window of size 1, which
+means we have only added
+
+271
+00:19:52.857 --> 00:19:57.811
+1 sentence extra in the
+beginning and 1 sentence extra
+
+272
+00:19:57.811 --> 00:20:02.586
+at the end around the retrieve
+piece of context. And
+
+273
+00:20:02.586 --> 00:20:06.730
+that produces a fairly
+small piece of context
+
+274
+00:20:06.730 --> 00:20:11.234
+that is missing out
+on important information that
+
+275
+00:20:11.234 --> 00:20:17.180
+would make it relevant to
+the question that was asked. Similarly,
+
+276
+00:20:17.180 --> 00:20:21.324
+if you look at groundedness, we
+will see that
+
+277
+00:20:21.324 --> 00:20:26.189
+both of these
+pieces have retrieved the sentences. In
+
+278
+00:20:26.189 --> 00:20:31.414
+the final summary, the
+groundedness scores are quite low.
+
+279
+00:20:31.414 --> 00:20:35.738
+Let's pick the one
+with the higher groundedness
+
+280
+00:20:35.738 --> 00:20:39.972
+score, which has a
+bit more justification. And
+
+281
+00:20:39.972 --> 00:20:44.296
+if we look at this example,
+what we will see is
+
+282
+00:20:44.296 --> 00:20:49.521
+there are a few sentences
+here in the beginning for which
+
+283
+00:20:49.521 --> 00:20:57.719
+there is good supporting evidence in the
+retrieved piece of context. And so the score here
+
+284
+00:20:57.719 --> 00:21:00.692
+is high. It's a score of
+10 on a
+
+285
+00:21:00.692 --> 00:21:04.026
+scale of 0
+to 10. But then for these
+
+286
+00:21:04.026 --> 00:21:16.187
+sentences down here, there wasn't supporting evidence, and
+therefore the groundedness score is 0. Let's take a concrete example. Maybe
+
+287
+00:21:16.187 --> 00:21:22.223
+this one. It's saying it's often used
+in situations where the cost
+
+288
+00:21:22.223 --> 00:21:26.277
+of execution is
+relatively low and where the
+
+289
+00:21:26.277 --> 00:21:33.304
+ability to iterate and adapt
+quickly is more important than upfront planning.
+
+290
+00:21:33.304 --> 00:21:38.709
+This does feel like a plausible
+piece of text that could be
+
+291
+00:21:38.709 --> 00:21:44.745
+useful as part of the response
+to the question. However, it wasn't
+
+292
+00:21:44.745 --> 00:21:48.709
+there in the retrieved
+piece of context, so
+
+293
+00:21:48.709 --> 00:21:52.853
+it's not backed up
+by any supporting evidence
+
+294
+00:21:52.853 --> 00:21:57.898
+in the retrieved context.
+This could possibly have been
+
+295
+00:21:57.898 --> 00:22:04.654
+part of what the model had learned
+during its training phase, where either
+
+296
+00:22:04.654 --> 00:22:09.159
+from the same document,
+Andrew's document here on
+
+297
+00:22:09.159 --> 00:22:13.032
+career advice for AI,
+or some other source
+
+298
+00:22:13.032 --> 00:22:16.996
+talking about the same
+topic, the model may
+
+299
+00:22:16.996 --> 00:22:22.762
+have learned similar information.
+But it's not grounded in that
+
+300
+00:22:22.762 --> 00:22:26.726
+it
+is not, the sentence is not supported by
+
+301
+00:22:26.726 --> 00:22:32.131
+the retrieved piece of
+context in this particular instance.
+
+302
+00:22:32.131 --> 00:22:36.185
+So this is a general issue
+when the sentence
+
+303
+00:22:36.185 --> 00:22:42.491
+window is too small, that context relevance tends
+to be low. And as a
+
+304
+00:22:42.491 --> 00:22:48.437
+consequence, groundedness also becomes low because
+the LLM starts
+
+305
+00:22:48.437 --> 00:22:56.004
+making use of its pre-existing knowledge from its
+training phase to start answering
+
+306
+00:22:56.004 --> 00:23:02.130
+questions instead of just relying on the
+supplied context. Now that
+
+307
+00:23:02.130 --> 00:23:06.094
+I've shown you a
+failure mode with sentence
+
+308
+00:23:06.094 --> 00:23:09.247
+windows set to one, I
+want to walk
+
+309
+00:23:09.247 --> 00:23:11.769
+through a few
+more steps to
+
+310
+00:23:11.769 --> 00:23:14.562
+see how the
+metrics improve as
+
+311
+00:23:14.562 --> 00:23:19.517
+we change the sentence window size.
+For the purpose of
+
+312
+00:23:19.517 --> 00:23:26.904
+going through the notebook
+quickly, I'm going to reload the evaluation questions,
+
+313
+00:23:26.904 --> 00:23:32.309
+but in this instance, just set it to
+the one question where
+
+314
+00:23:32.309 --> 00:23:37.985
+the model had problem, this particular
+question, which we just
+
+315
+00:23:37.985 --> 00:23:43.750
+walked through with the sentence
+window size set at 1. And then
+
+316
+00:23:43.750 --> 00:23:47.804
+I want to run this
+through with the sentence
+
+317
+00:23:47.804 --> 00:23:51.408
+window size set to
+3. This code snippet
+
+318
+00:23:51.408 --> 00:23:53.840
+is going to
+set up the rag
+
+319
+00:23:53.840 --> 00:23:58.254
+with sentence window size
+set up three, and also
+
+320
+00:23:58.254 --> 00:24:02.308
+set up the true recorder
+for it. We now have
+
+321
+00:24:02.308 --> 00:24:07.623
+the definition of the feedback function
+set up in addition
+
+322
+00:24:07.623 --> 00:24:11.317
+to the RAG, with
+the sentence window set
+
+323
+00:24:11.317 --> 00:24:14.560
+at size 3. Next up,
+we are going to
+
+324
+00:24:14.560 --> 00:24:19.515
+run the evaluations with that
+eval for that particular
+
+325
+00:24:19.515 --> 00:24:24.109
+evaluation question that we
+have looked through in
+
+326
+00:24:24.109 --> 00:24:30.506
+some detail with the
+sentence window set through one, where we observe
+
+327
+00:24:30.506 --> 00:24:37.622
+the failure mode that has run successfully. Let's
+now look at the results with
+
+328
+00:24:37.622 --> 00:24:42.217
+sentence window engine
+set to three in the TruLens
+
+329
+00:24:42.217 --> 00:24:46.451
+dashboard. You can
+see the results here, I ran
+
+330
+00:24:46.451 --> 00:24:51.766
+it on the one record. That
+was the problematic record when
+
+331
+00:24:51.766 --> 00:24:55.640
+we looked at sentence
+window size one. And
+
+332
+00:24:55.640 --> 00:24:59.514
+you can see a
+huge increase in the context
+
+333
+00:24:59.514 --> 00:25:04.919
+relevance. It went up from 0.57
+to 0.9. Now if I select the
+
+334
+00:25:04.919 --> 00:22:11.861
+app and look at
+this example in some
+
+335
+00:22:11.861 --> 00:25:13.117
+more detail, let's now look
+at the same question that
+
+336
+00:25:13.117 --> 00:25:13.387
+we looked at with sentence
+window set at one. Now we
+
+337
+00:25:13.387 --> 00:25:23.747
+are at 3. Here's the full final response. Now
+if you look at the
+
+338
+00:25:23.747 --> 00:25:30.053
+retrieved pieces of context, you'll notice
+that this particular piece
+
+339
+00:25:30.053 --> 00:20:33.126
+of retrieved context is
+similar to the one
+
+340
+00:20:33.126 --> 00:25:39.603
+that we had retrieved earlier
+with sentence window set at size
+
+341
+00:25:39.603 --> 00:25:43.837
+1. But now it has
+the expansion because of the
+
+342
+00:25:43.837 --> 00:25:48.972
+bigger sentence window size. For
+this section, we'll see
+
+343
+00:25:48.972 --> 00:25:53.926
+that this context
+got a context-relevant score of 0.9,
+
+344
+00:25:53.926 --> 00:25:59.602
+which is higher than the score
+of 0.8 that the smaller context
+
+345
+00:25:59.602 --> 00:26:04.647
+had gotten earlier. And this example
+shows that with an
+
+346
+00:26:04.647 --> 00:26:10.052
+expansion in the sentence window
+size, even reasonably good
+
+347
+00:26:10.052 --> 00:26:16.989
+pieces of retrieved context can get even better.
+Once the completion step is
+
+348
+00:26:16.989 --> 00:26:24.556
+done with these significantly better pieces of context,
+the groundedness score goes
+
+349
+00:26:24.556 --> 00:26:27.529
+up quite a bit.
+We'd see that by
+
+350
+00:26:27.529 --> 00:26:33.114
+finding supporting evidence across
+these two pieces of highly
+
+351
+00:26:33.114 --> 00:26:38.700
+relevant context, the
+groundedness score actually goes up all
+
+352
+00:26:38.700 --> 00:26:42.574
+the way to one. So
+increasing the sentence
+
+353
+00:26:42.574 --> 00:26:45.637
+window size from
+one to three led
+
+354
+00:26:45.637 --> 00:26:52.213
+to a substantial improvement
+in the evaluation metrics of the RAG triad.
+
+355
+00:26:52.213 --> 00:26:58.159
+Both groundedness and
+context relevance went up significantly, as
+
+356
+00:26:58.159 --> 00:27:01.942
+did answer relevance.
+And now we can look
+
+357
+00:27:01.942 --> 00:27:05.906
+at sentence window set to five.
+If you look
+
+358
+00:27:05.906 --> 00:27:09.780
+at the metrics here, a couple
+of things to
+
+359
+00:27:09.780 --> 00:27:13.924
+observe. One is
+the total tokens has gone up,
+
+360
+00:27:13.924 --> 00:27:17.257
+and this could have
+an impact on the
+
+361
+00:27:17.257 --> 00:24:58.162
+cost if
+you were to increase
+
+362
+00:24:58.162 --> 00:27:25.275
+the number of records. So
+that's one of the trade-offs that
+
+363
+00:27:25.275 --> 00:27:32.122
+I mentioned earlier. As you increase the
+sentence window size, it gets more
+
+364
+00:27:32.122 --> 00:27:39.419
+expensive because more tokens are being processed by
+the LLMs during evaluation.
+
+365
+00:27:39.419 --> 00:27:47.076
+The other thing to observe is that while
+context relevance, and answer relevance have
+
+366
+00:27:47.076 --> 00:27:54.553
+remained flat, groundedness has actually dropped with
+the increase in the sentence
+
+367
+00:27:54.553 --> 00:27:59.508
+window size. And this can happen
+after a certain point
+
+368
+00:27:59.508 --> 00:28:04.103
+because, as the
+context size increases, the LLM can
+
+369
+00:28:04.103 --> 00:28:08.427
+get overwhelmed in
+the completion step with too
+
+370
+00:28:08.427 --> 00:28:13.382
+much information. And in the
+process of summarization,
+
+371
+00:28:13.382 --> 00:28:16.354
+it can start
+introducing its own
+
+372
+00:28:16.354 --> 00:28:21.940
+pre-existing knowledge instead of just the
+information in the
+
+373
+00:28:21.940 --> 00:28:26.444
+retrieved pieces of context.
+So to wrap things up
+
+374
+00:28:26.444 --> 00:28:30.858
+here, it turns out that
+as we gradually increase
+
+375
+00:28:30.858 --> 00:28:34.462
+the sentence window size
+from 1 to 3 to
+
+376
+00:28:34.462 --> 00:28:38.966
+5, 3, the size of 3
+is the best choice for us for
+
+377
+00:28:38.966 --> 00:28:43.921
+this particular evaluation.
+And we see the increase in
+
+378
+00:28:43.921 --> 00:28:49.777
+context relevance and answer
+relevance and groundedness as we go
+
+379
+00:28:49.777 --> 00:28:53.290
+from one to 3,
+and then a reduction
+
+380
+00:28:53.290 --> 00:29:00.767
+or degradation in the
+groundedness step with a further increase to a size of five.
+
+381
+00:29:00.767 --> 00:29:05.722
+As you are playing with the notebook, we
+encourage you
+
+382
+00:29:05.722 --> 00:29:09.236
+to rerun it with
+more records in these
+
+383
+00:29:09.236 --> 00:29:16.623
+two steps. Examine the
+individual records which are causing problems for specific
+
+384
+00:29:16.623 --> 00:29:23.920
+metrics like context relevance or groundedness,
+and get some intuition and build
+
+385
+00:29:23.920 --> 00:29:30.767
+some intuition around why the failure modes
+are happening and what to do to
+
+386
+00:29:30.767 --> 00:29:34.370
+address them, and in
+the next section, we
+
+387
+00:29:34.370 --> 00:29:38.874
+will look at another advanced
+rack technique auto
+
+388
+00:29:38.874 --> 00:29:41.847
+merging to address
+some of those
+
+389
+00:29:41.847 --> 00:29:46.171
+failure modes. Irrelevant
+context can creep into
+
+390
+00:29:46.171 --> 00:29:51.126
+the final response, resulting in not
+such great scores
+
+391
+00:29:51.126 --> 00:29:54.460
+in groundedness or answer relevance.

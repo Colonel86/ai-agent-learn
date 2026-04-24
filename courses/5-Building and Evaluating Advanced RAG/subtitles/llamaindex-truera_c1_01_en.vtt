@@ -1,0 +1,399 @@
+WEBVTT
+1
+00:00:02.080 --> 00:00:05.660
+Retrieval Augmented Generation,
+or RAG, has become a key
+
+2
+00:00:05.660 --> 00:00:09.368
+method for getting LLMs
+to answer questions over a user's
+
+3
+00:00:09.368 --> 00:00:13.780
+own data. But to actually build and
+productionize a high-quality RAG
+
+4
+00:00:13.780 --> 00:00:18.000
+system, it costs a lot to have
+effective retrieval techniques, to
+
+5
+00:00:18.000 --> 00:00:20.557
+give the LLM highly
+relevant context to
+
+6
+00:00:20.557 --> 00:00:25.161
+generate his answer, and also
+to have an effective evaluation framework
+
+7
+00:00:25.161 --> 00:00:27.462
+to help you
+efficiently iterate and
+
+8
+00:00:27.462 --> 00:00:31.362
+improve your RAG system, both during
+initial development and
+
+9
+00:00:31.362 --> 00:00:34.879
+during post-deployment maintenance. This
+course covers
+
+10
+00:00:34.879 --> 00:00:38.587
+two advanced retrieval
+methods, sentence window retrieval
+
+11
+00:00:38.587 --> 00:00:42.232
+and auto-merging retrieval, that deliver
+a significantly
+
+12
+00:00:42.232 --> 00:00:45.301
+better context of the
+LLM than simpler methods.
+
+13
+00:00:45.301 --> 00:00:47.858
+It also covers how
+to evaluate your LLM
+
+14
+00:00:47.858 --> 00:00:52.717
+question-answering system with three evaluation
+metrics, context relevance,
+
+15
+00:00:52.717 --> 00:00:55.786
+groundedness, and answer
+relevance. I'm excited
+
+16
+00:00:55.786 --> 00:00:59.686
+to introduce Jerry Liu,
+co-founder and CEO of LlamaIndex, and
+
+17
+00:00:59.686 --> 00:01:03.650
+Anupam Datta, co-founder and Chief Scientist
+of TruEra. For a
+
+18
+00:01:03.650 --> 00:01:08.126
+long time, I've enjoyed following Jerry
+and LLamaIndex on social media
+
+19
+00:01:08.126 --> 00:01:10.172
+and getting tips
+on evolving RAG
+
+20
+00:01:10.172 --> 00:01:14.903
+practices. So I'm looking forward to
+him teaching this body of knowledge
+
+21
+00:01:14.903 --> 00:01:18.548
+more systematically here. And Anupam has
+been a professor
+
+22
+00:01:18.548 --> 00:01:20.977
+at CMU and has
+done research for over
+
+23
+00:01:20.977 --> 00:01:23.407
+a decade on trustworthy
+AI and how to
+
+24
+00:01:23.407 --> 00:01:26.860
+monitor, evaluate, and optimize
+AI app effectiveness.
+
+25
+00:01:26.860 --> 00:01:28.440
+Thanks, Andrew. It's
+great to be here.
+
+26
+00:01:29.140 --> 00:01:30.280
+Great to be with you, Andrew.
+
+27
+00:01:31.000 --> 00:01:34.240
+Sentence window retrieval
+gives an LLM better context by
+
+28
+00:01:34.240 --> 00:01:36.140
+retrieving not just
+the most relevant sentence,
+
+29
+00:01:36.140 --> 00:01:38.720
+but the window of
+sentences that occur before
+
+30
+00:01:38.720 --> 00:01:43.540
+and after it in the document. Auto-merging
+retrieval organizes the document
+
+31
+00:01:43.540 --> 00:01:47.060
+into a tree-like structure
+where each parent node's text is
+
+32
+00:01:47.060 --> 00:01:51.180
+divided among its child nodes. When meta child
+nodes are identified as relevant
+
+33
+00:01:51.180 --> 00:01:54.460
+to a user's question, then the
+entire text of the parent node is
+
+34
+00:01:54.460 --> 00:01:57.620
+provided as context for the
+LLM. I know this sounds
+
+35
+00:01:57.620 --> 00:02:00.560
+like a lot of steps, but don't worry, we'll
+go over it in detail
+
+36
+00:02:00.560 --> 00:02:04.890
+on code later. But the main takeaway is that
+this provides a way to dynamically
+
+37
+00:02:04.890 --> 00:02:07.260
+retrieve more coherent chunks of text
+than simpler methods.
+
+38
+00:02:07.620 --> 00:02:11.450
+To evaluate RAG-based LLM apps, the
+RAG triad, a
+
+39
+00:02:11.450 --> 00:02:16.420
+triad of metrics for the three
+main steps of a RAG's execution,
+
+40
+00:02:16.420 --> 00:02:21.920
+is quite effective. For example,
+we'll cover in detail how to compute
+
+41
+00:02:21.920 --> 00:02:26.800
+context relevance, which measures how
+relevant the retrieved chunks
+
+42
+00:02:26.800 --> 00:02:31.940
+of text are to
+the user's question. This helps you identify
+
+43
+00:02:31.940 --> 00:02:35.270
+and debug possible issues with how
+your system is
+
+44
+00:02:35.270 --> 00:02:38.700
+retrieving context for
+the LLM in the QA system.
+
+45
+00:02:38.700 --> 00:02:44.180
+But that's only part of the
+overall QA system. We'll also cover additional evaluation
+
+46
+00:02:44.180 --> 00:02:47.660
+metrics such as groundedness
+and answer relevance
+
+47
+00:02:47.660 --> 00:02:51.560
+that let you
+systematically analyze what parts of your
+
+48
+00:02:51.560 --> 00:02:55.530
+system are or
+are not yet working well so
+
+49
+00:02:55.530 --> 00:02:59.720
+that you can go in in
+a targeted way to improve whatever
+
+50
+00:02:59.720 --> 00:03:05.150
+part needs the most work. If
+you're familiar with the concept of error
+
+51
+00:03:05.150 --> 00:03:09.420
+analysis and machine learning, this has
+similarities. And I've found that
+
+52
+00:03:09.420 --> 00:03:13.320
+taking this sort of systematic
+approach helps you be
+
+53
+00:03:13.320 --> 00:03:17.360
+much more efficient in
+building a reliable QA
+
+54
+00:03:17.360 --> 00:03:17.880
+system.
+
+55
+00:03:17.880 --> 00:03:22.124
+The goal of this course
+is to help you build production-ready,
+
+56
+00:03:22.124 --> 00:03:26.506
+write-based LLM apps. And important
+parts of getting production
+
+57
+00:03:26.506 --> 00:03:29.244
+ready is to iterate
+in a systematic way
+
+58
+00:03:29.244 --> 00:03:33.215
+on the system. In the
+later half of this course, you gain
+
+59
+00:03:33.215 --> 00:03:36.638
+hands-on practice iterating
+using these retrieval
+
+60
+00:03:36.638 --> 00:03:39.719
+methods and evaluation
+methods. And you also
+
+61
+00:03:39.719 --> 00:03:43.074
+see how to use
+systematic experiment tracking to
+
+62
+00:03:43.074 --> 00:03:46.429
+establish a baseline and
+then quickly improve on
+
+63
+00:03:46.429 --> 00:03:46.840
+that.
+
+64
+00:03:46.840 --> 00:03:48.880
+We'll also share some
+suggestions for tuning
+
+65
+00:03:48.880 --> 00:03:51.060
+these two retrieval
+methods based on
+
+66
+00:03:51.060 --> 00:03:53.020
+our experience assisting
+partners who are
+
+67
+00:03:53.020 --> 00:03:53.920
+building RAG apps.
+
+68
+00:03:53.920 --> 00:03:57.757
+Many people have worked
+to create this course. I'd
+
+69
+00:03:57.757 --> 00:04:01.211
+like to thank, on
+the LlamaIndex side, Logan
+
+70
+00:04:01.211 --> 00:04:05.433
+Markehwich, and
+on the TruEra side, Shayak Sen, Joshua
+
+71
+00:04:05.433 --> 00:04:09.962
+Reini, and Barbara Lewis. From
+DeepLearning.ai, Eddie Shyu
+
+72
+00:04:09.962 --> 00:04:12.802
+and Dialla Ezzeddine
+also contributed to
+
+73
+00:04:12.802 --> 00:04:13.800
+this course.
+
+74
+00:04:13.800 --> 00:04:16.640
+The next lesson will give
+you an overview of what you'll
+
+75
+00:04:16.640 --> 00:04:20.596
+see in the rest of the course. You'll
+try out question-answering systems that
+
+76
+00:04:20.596 --> 00:04:22.929
+use sentence window
+retrieval or auto-merging
+
+77
+00:04:22.929 --> 00:04:25.109
+retrieval and compare
+their performance on
+
+78
+00:04:25.109 --> 00:04:28.660
+the RAG triad,
+context relevance, groundedness, and answer relevance.
+
+79
+00:04:28.660 --> 00:04:31.690
+Sounds great. Let's get started. And
+I think you people
+
+80
+00:04:31.690 --> 00:04:33.840
+are really clean up
+with this RAG stuff.
+
+81
+00:04:35.280 --> 00:04:35.920
+Laugh on it.

@@ -1,0 +1,299 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.217 --> 00:00:04.880
+We build agentic workflows by taking building blocks and putting them together to sequence
+
+2
+00:00:04.880 --> 00:00:10.800
+out these complex workflows. In this video, I'd like to share with you a few of the key design
+
+3
+00:00:10.800 --> 00:00:16.639
+patterns, which are patterns for how you can think about combining these building blocks into more
+
+4
+00:00:16.639 --> 00:00:21.520
+complex workflows. Let's take a look. I think four key design patterns for building agentic
+
+5
+00:00:21.520 --> 00:00:27.680
+workflows are reflection, two-use, planning, and multi-agent collaboration. Let me briefly go over
+
+6
+00:00:27.680 --> 00:00:33.360
+what they mean, and then we'll actually go through most of these in-depth latent discourse as well.
+
+7
+00:00:33.360 --> 00:00:39.439
+The first of the major design patterns is reflection. So I might go to an LLM agent and
+
+8
+00:00:39.439 --> 00:00:45.520
+ask it to write code, and it turns out that an LLM might then generate code like this. It defines
+
+9
+00:00:45.520 --> 00:00:50.319
+here a Python function to do a certain task. I could then construct a prompt that looks like this.
+
+10
+00:00:50.319 --> 00:00:55.040
+I can say, here's code intended for a certain task, and then copy-paste whatever the LLM had
+
+11
+00:00:55.040 --> 00:00:59.360
+just output back into this prompt. And then I ask it to check the code carefully for correctness,
+
+12
+00:00:59.360 --> 00:01:03.680
+style, and efficiency, and give constructive criticism. And it turns out that the same LLM model
+
+13
+00:01:03.680 --> 00:01:09.440
+prompted this way may be able to point out some problems with the code. And if I then take this
+
+14
+00:01:09.440 --> 00:01:15.199
+critique and feed it back to the model to say, looks like this is a bug, could you change the
+
+15
+00:01:15.199 --> 00:01:21.919
+code to fix it? Then it may actually come with a better version of the code. To give a preview of
+
+16
+00:01:21.919 --> 00:01:28.879
+tool use, if you're able to run the code and see where the code fails, then feeding that back to
+
+17
+00:01:28.879 --> 00:01:35.680
+the LLM can also cause it to be able to iterate and generate a much better, say, v3 version 3 of the
+
+18
+00:01:35.680 --> 00:01:41.440
+code. So reflection is a common design pattern where you can ask the LLM to examine its own outputs
+
+19
+00:01:41.440 --> 00:01:46.720
+or maybe bring in some external sources of information, such as run the code and see if it
+
+20
+00:01:46.720 --> 00:01:52.480
+generates any error messages, and use that as feedback to iterate again and come up with a better
+
+21
+00:01:52.480 --> 00:01:58.239
+version of its output. And this design pattern isn't magic. It does not result in everything
+
+22
+00:01:58.239 --> 00:02:03.440
+working 100% of the time. But sometimes it can be a nice bump in the performance of your system.
+
+23
+00:02:03.440 --> 00:02:09.600
+Now, I've drawn this as if it was a single LLM that I'm prompting, but to foreshadow multi-agent
+
+24
+00:02:09.600 --> 00:02:15.600
+workflows, you can also imagine instead of having the same model critique itself, you can imagine
+
+25
+00:02:15.600 --> 00:02:20.960
+having a critique agent. And all that is, is an LLM that's been prompted with instructions like,
+
+26
+00:02:20.960 --> 00:02:25.679
+your role is to critique code, here's code intended for a task, check the code carefully, and so on.
+
+27
+00:02:25.679 --> 00:02:31.919
+And the second critique agent, maybe point out errors or run unit tests. And by having two
+
+28
+00:02:31.919 --> 00:02:36.800
+simulated agents where each agent is just an LLM prompted to take on a certain persona,
+
+29
+00:02:36.800 --> 00:02:42.720
+you can have them go back and forth to iterate to get a better output. In addition to reflection
+
+30
+00:02:42.720 --> 00:02:49.039
+pattern, the second important design pattern is tool use. Where today, LLMs can be given tools,
+
+31
+00:02:49.039 --> 00:02:54.320
+meaning functions that they can call in order to get work done. For example, if you ask an LLM,
+
+32
+00:02:54.320 --> 00:02:58.240
+what's the best coffee maker according to reviewers, and you give it a web search tool,
+
+33
+00:02:58.240 --> 00:03:03.919
+then it can actually search the internet to find much better answers. Or a code execution tool.
+
+34
+00:03:03.919 --> 00:03:08.639
+If you ask a math question like, if I invest $100 in compound interest, what do I have at the end?
+
+35
+00:03:08.639 --> 00:03:13.600
+It can then write code and execute code to compute an answer. Today, different developers
+
+36
+00:03:13.600 --> 00:03:19.679
+have given LLMs many different tools for everything from math or data analysis to gather information
+
+37
+00:03:19.679 --> 00:03:24.160
+by fetching things from the web or for various databases, to interface with productivity apps
+
+38
+00:03:24.160 --> 00:03:30.160
+like email, calendar, and so on, as well as to process images and much more. And the ability
+
+39
+00:03:30.160 --> 00:03:37.039
+of an LLM to decide what tools to use, meaning what functions to call, that lets the model get a lot
+
+40
+00:03:37.039 --> 00:03:43.919
+more done. The third of the four design patterns is planning. This is an example from a paper
+
+41
+00:03:43.919 --> 00:03:51.039
+called Hugging GPT, in which if you ask a system to please generate an image where a girl is reading
+
+42
+00:03:51.039 --> 00:03:54.720
+a book and a pose is the same as a boy in the image, then please describe the new image in
+
+43
+00:03:54.720 --> 00:04:00.880
+your voice. Then a model can automatically decide that to carry out this task, it first needs to
+
+44
+00:04:00.880 --> 00:04:05.520
+find a pose determination model to figure out the pose of the boy. Then to pose the image,
+
+45
+00:04:05.600 --> 00:04:10.320
+to generate a picture of a girl and image the text, and then finally text the speech. And so
+
+46
+00:04:10.960 --> 00:04:17.440
+in planning, an LLM decides what is the sequence of actions it needs to take. In this case, it is
+
+47
+00:04:17.440 --> 00:04:23.920
+a sequence of API calls so that it can then carry out the right sequence of steps in the right order
+
+48
+00:04:23.920 --> 00:04:29.440
+in order to carry out the task. So rather than the developer hard coding the sequence of steps
+
+49
+00:04:29.440 --> 00:04:36.160
+in advance, this actually lets the LLM decide what are the steps to take. Agents that plan today are
+
+50
+00:04:36.160 --> 00:04:40.720
+harder to control and somewhat more experimental, but sometimes they can give really delightful
+
+51
+00:04:40.720 --> 00:04:47.040
+results. And then finally, multi-agent workflows. Just as a human manager might hire a number of
+
+52
+00:04:47.040 --> 00:04:52.559
+others to work together on a complex project, in some cases it might make sense for you to hire
+
+53
+00:04:52.559 --> 00:04:58.160
+a set of multiple agents, maybe each of which specializes in a different role, and have them
+
+54
+00:04:58.160 --> 00:05:03.519
+work together to accomplish a complex task. The picture you see here on the left is taken from a
+
+55
+00:05:03.519 --> 00:05:09.679
+project called ChatDev, which is a software framework created by Chen Qian and collaborators.
+
+56
+00:05:09.679 --> 00:05:15.760
+In ChatDev, multiple agents with different roles, like chief executive officer, programmer, tester,
+
+57
+00:05:15.760 --> 00:05:22.399
+designer, and so on, collaborate together as if they were a virtual software company and can
+
+58
+00:05:22.399 --> 00:05:28.079
+collaboratively complete a range of software development tasks. Let's consider another example.
+
+59
+00:05:28.079 --> 00:05:33.839
+If you want to write a marketing brochure, maybe you think of hiring a team of three people, such
+
+60
+00:05:33.839 --> 00:05:39.679
+as a researcher to do online research, a marketer to write the marketing text, and then finally an
+
+61
+00:05:39.679 --> 00:05:47.359
+editor to edit and polish the text. And so in a similar way, you might consider building a multi-agent
+
+62
+00:05:47.359 --> 00:05:53.440
+workflow in which you have a simulated research agent, a simulated marketer agent, and a simulated
+
+63
+00:05:53.440 --> 00:06:00.079
+editor agent that then come together to carry out this task for you. Multi-agent workflows are
+
+64
+00:06:00.079 --> 00:06:05.679
+more difficult to control since you don't always know ahead of time what the agents will do, but
+
+65
+00:06:05.679 --> 00:06:11.440
+research has shown that they can result in better outcomes for many complex tasks, including things
+
+66
+00:06:11.440 --> 00:06:16.160
+like writing biographies or deciding on chess moves to make in the game. You learn more about
+
+67
+00:06:16.160 --> 00:06:21.519
+multi-agent workflows later in this course as well. And so with that, I hope you have a sense of what
+
+68
+00:06:21.519 --> 00:06:27.760
+agentic workflows can do, as well as of what are the key challenges of finding building blocks and
+
+69
+00:06:27.760 --> 00:06:33.679
+putting them together, maybe via these design patterns, in order to implement an agentic workflow.
+
+70
+00:06:33.679 --> 00:06:39.200
+And of course, also developing eval so you can see how well your system is doing and keep on improving
+
+71
+00:06:39.200 --> 00:06:46.720
+on it. In the next module, I'd like to share with you a deep dive into the first of these design
+
+72
+00:06:46.720 --> 00:06:53.279
+patterns, that is reflection, and you find that it's a maybe surprisingly simple to implement
+
+73
+00:06:53.279 --> 00:06:59.679
+technique that can give the performance of your system sometimes a very nice bump. So let's go on
+
+74
+00:06:59.679 --> 00:07:03.760
+to the next module to learn about the reflection design pattern.
+

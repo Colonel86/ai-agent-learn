@@ -1,0 +1,323 @@
+WEBVTT
+1
+00:00:00.020 --> 00:00:02.520
+RAG,
+or Retrieval Augmented Generation,
+
+2
+00:00:02.520 --> 00:00:06.620
+retrieves relevant documents to
+give context to an LLM,
+
+3
+00:00:06.620 --> 00:00:08.840
+and this makes it
+much better at answering
+
+4
+00:00:08.840 --> 00:00:10.620
+queries and performing tasks.
+
+5
+00:00:10.780 --> 00:00:12.460
+Many teams are
+using simple retrieval
+
+6
+00:00:12.460 --> 00:00:15.740
+techniques based on
+semantic similarity or embeddings,
+
+7
+00:00:15.740 --> 00:00:18.420
+but you learn more
+sophisticated techniques in this
+
+8
+00:00:18.420 --> 00:00:20.860
+course, which will let you
+do much better than that.
+
+9
+00:00:21.000 --> 00:00:25.140
+A common workflow in RAG is to take
+your query and embed that,
+
+10
+00:00:25.140 --> 00:00:29.240
+then find the most similar documents,
+meaning ones with similar embeddings,
+
+11
+00:00:29.240 --> 00:00:31.540
+and that's the context. But
+the problem with that
+
+12
+00:00:31.540 --> 00:00:34.960
+is that it can tend to find documents
+that talk about similar
+
+13
+00:00:34.960 --> 00:00:39.000
+topics as a query, but
+not actually contain the answer. But
+
+14
+00:00:39.000 --> 00:00:42.680
+you can take the initial
+user query and rewrite.
+
+15
+00:00:42.820 --> 00:00:44.520
+This is called query expansion.
+
+16
+00:00:44.740 --> 00:00:48.700
+Rewrite it to pull
+in more directly related documents.
+
+17
+00:00:49.140 --> 00:00:52.740
+Two key related techniques. One,
+to expand the optional
+
+18
+00:00:52.740 --> 00:00:56.160
+query into multiple queries
+by rewording or rewriting
+
+19
+00:00:56.160 --> 00:01:00.660
+it in different ways. And second,
+to even guess or hypothesize what
+
+20
+00:01:00.660 --> 00:01:03.880
+the answer might look like to
+see if we can find anything
+
+21
+00:01:03.880 --> 00:01:06.380
+in our document
+collection that looks more like an
+
+22
+00:01:06.380 --> 00:01:08.620
+answer rather than
+only generally talking
+
+23
+00:01:08.620 --> 00:01:10.800
+about the topics of the query.
+
+24
+00:01:10.980 --> 00:01:13.920
+I'm delighted that your
+instructor for this course is Anton
+
+25
+00:01:13.920 --> 00:01:14.888
+Troynikov.
+
+26
+00:01:15.060 --> 00:01:18.440
+Anton has been one of the
+innovators driving forward
+
+27
+00:01:18.440 --> 00:01:22.080
+the state-of-the-art and retrieval
+for AI applications.
+
+28
+00:01:22.080 --> 00:01:25.100
+He is co-founder of Chroma, which
+provides one of the
+
+29
+00:01:25.100 --> 00:01:27.240
+most popular open-source vector
+databases.
+
+30
+00:01:28.360 --> 00:01:31.080
+If you've taken one of our
+LangChain short courses taught
+
+31
+00:01:31.080 --> 00:01:34.180
+by Harrison Chase, you
+have very likely used Chroma.
+
+32
+00:01:34.860 --> 00:01:35.620
+Thank you, Andrew.
+
+33
+00:01:36.000 --> 00:01:38.100
+I'm really excited to be working
+with you on this course
+
+34
+00:01:38.100 --> 00:01:40.860
+and share what I'm seeing
+out in the field in terms
+
+35
+00:01:40.860 --> 00:01:43.460
+of what does and doesn't work in
+RAG deployments.
+
+36
+00:01:43.960 --> 00:01:45.500
+We'll start off the course
+by doing a quick
+
+37
+00:01:45.500 --> 00:01:46.960
+review of RAG applications.
+
+38
+00:01:47.340 --> 00:01:48.600
+You will then learn
+about some of the
+
+39
+00:01:48.600 --> 00:01:50.940
+pitfalls of retrieval where
+simple vector search doesn't
+
+40
+00:01:50.940 --> 00:01:51.460
+do well.
+
+41
+00:01:51.840 --> 00:01:53.920
+Then you'll learn several methods to
+improve the results.
+
+42
+00:01:54.200 --> 00:01:56.280
+As Andrew mentioned,
+the first methods use an
+
+43
+00:01:56.280 --> 00:01:58.440
+LLM to improve the query itself.
+
+44
+00:01:58.900 --> 00:02:01.680
+Another method re-ranks
+query results with help from something
+
+45
+00:02:01.680 --> 00:02:03.660
+called a cross encoder, which
+takes in a pair
+
+46
+00:02:03.660 --> 00:02:05.940
+of sentences and produces
+a relevancy score.
+
+47
+00:02:06.500 --> 00:02:09.640
+You'll also learn how to adapt the
+query embeddings based on user feedback
+
+48
+00:02:09.640 --> 00:02:11.300
+to produce more
+relevant results.
+
+49
+00:02:12.180 --> 00:02:14.980
+There's a lot of innovation going
+on in RAG right now. So
+
+50
+00:02:14.980 --> 00:02:17.820
+in the final lesson, we'll also
+go over some of the cutting edge techniques
+
+51
+00:02:17.820 --> 00:02:20.340
+that aren't mainstream yet
+and are only just now appearing
+
+52
+00:02:20.340 --> 00:02:21.020
+in research.
+
+53
+00:02:21.780 --> 00:02:23.780
+And I think they'll
+become much more mainstream soon.
+
+54
+00:02:24.040 --> 00:02:26.220
+We'd like to acknowledge some
+of the folks that
+
+55
+00:02:26.220 --> 00:02:27.360
+have worked on this course.
+
+56
+00:02:27.540 --> 00:02:30.911
+From the Chroma team, we'd
+like to thank Jeff Huber, Hammad
+
+57
+00:02:30.911 --> 00:02:35.980
+Bashir, Liquan Pei, and
+Ben Eggers, as well as Chroma's open-source
+
+58
+00:02:35.980 --> 00:02:37.540
+developer community.
+
+59
+00:02:38.040 --> 00:02:41.400
+From the Deep Learning team,
+we have Geoff Ladwig and Esmael
+
+60
+00:02:41.400 --> 00:02:42.420
+Gargari.
+
+61
+00:02:42.460 --> 00:02:44.600
+The first lesson starts
+with an overview of Rack.
+
+62
+00:02:44.800 --> 00:02:47.280
+I hope you go on
+to watch that right after this.
+
+63
+00:02:47.280 --> 00:02:52.100
+And with these techniques,
+it turns out it's possible for smaller
+
+64
+00:02:52.100 --> 00:02:54.640
+teams than ever to build effective
+systems.
+
+65
+00:02:55.160 --> 00:02:56.980
+So after this course,
+you might be able
+
+66
+00:02:56.980 --> 00:02:59.240
+to build something really
+cool with an approach
+
+67
+00:02:59.240 --> 00:03:02.480
+that previously would have
+been considered RAG tag.

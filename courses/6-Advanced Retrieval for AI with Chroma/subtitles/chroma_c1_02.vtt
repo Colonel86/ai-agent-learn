@@ -1,0 +1,1317 @@
+WEBVTT
+1
+00:00:01.810 --> 00:00:03.770
+In this first lesson, we're
+going to review some of
+
+2
+00:00:03.770 --> 00:00:07.310
+the elements in an embeddings-based retrieval
+system, and how that fits together
+
+3
+00:00:07.310 --> 00:00:09.130
+in a retrieval
+augmented generation loop,
+
+4
+00:00:09.130 --> 00:00:10.450
+together with
+an LLM.
+
+5
+00:00:10.770 --> 00:00:11.690
+So, let's go!
+
+6
+00:00:14.880 --> 00:00:16.400
+So, the first thing I'd
+like to show you is
+
+7
+00:00:16.400 --> 00:00:19.180
+the overall system diagram of
+how this works in practice.
+
+8
+00:00:19.700 --> 00:00:22.020
+The way retrieval
+augmented generation works is,
+
+9
+00:00:22.020 --> 00:00:24.500
+you have some user query that comes in,
+and you have a
+
+10
+00:00:24.500 --> 00:00:27.020
+set of documents which you've
+previously embedded and stored
+
+11
+00:00:27.020 --> 00:00:29.320
+in your retrieval system, in
+this case Chroma. you
+
+12
+00:00:29.320 --> 00:00:31.460
+take your query, you
+run your query through
+
+13
+00:00:31.460 --> 00:00:33.520
+the same embedding model
+as you use to
+
+14
+00:00:33.520 --> 00:00:35.880
+embed your documents, which
+generates an embedding. You
+
+15
+00:00:35.880 --> 00:00:38.580
+embed the query and then the
+retrieval system finds the most relevant
+
+16
+00:00:38.580 --> 00:00:40.900
+documents according to
+the embedding of that query by
+
+17
+00:00:40.900 --> 00:00:43.360
+finding the nearest
+neighbor embeddings of
+
+18
+00:00:43.360 --> 00:00:44.200
+those documents.
+
+19
+00:00:44.340 --> 00:00:47.380
+We then return both the query
+and the relevant documents to the
+
+20
+00:00:47.380 --> 00:00:50.100
+LLM and the
+LLM synthesizes information
+
+21
+00:00:50.100 --> 00:00:52.920
+from the retrieved
+documents to generate an answer.
+
+22
+00:00:52.920 --> 00:00:55.180
+Let's
+show how this works in practice.
+
+23
+00:00:55.320 --> 00:00:57.720
+To start with we're going to pull
+in some helper functions from our
+
+24
+00:00:57.720 --> 00:00:59.840
+utilities. This
+function just basically is
+
+25
+00:00:59.840 --> 00:01:02.060
+a basic word wrap
+function which allows us
+
+26
+00:01:02.060 --> 00:01:05.060
+to look at the documents in a nicely
+pretty printed way. And
+
+27
+00:01:05.060 --> 00:01:07.260
+the example that we're gonna
+use, we're gonna read
+
+28
+00:01:07.260 --> 00:01:10.460
+from a PDF. So we're gonna pull in.
+PDF Reader. This is a really
+
+29
+00:01:10.460 --> 00:01:12.680
+simple Python package that
+you can easily import.
+
+30
+00:01:12.680 --> 00:01:17.340
+It's open source. And we're
+gonna read from Microsoft's 2022
+
+31
+00:01:17.340 --> 00:01:20.340
+annual report. And so to
+do that we're going
+
+32
+00:01:20.340 --> 00:01:25.300
+to extract the texts from the
+report using this PDF
+
+33
+00:01:25.300 --> 00:01:27.530
+reader application and all
+we're doing here is
+
+34
+00:01:27.530 --> 00:01:30.240
+for every page that the
+reader has we're extracting the text
+
+35
+00:01:30.240 --> 00:01:32.940
+from that page and we're also
+stripping the whitespace characters
+
+36
+00:01:32.940 --> 00:01:34.240
+from those pages.
+
+37
+00:01:34.560 --> 00:01:36.680
+Now the other important thing
+that we really need to
+
+38
+00:01:36.680 --> 00:01:40.020
+do is make sure that we're
+not sending any empty strings.
+
+39
+00:01:40.380 --> 00:01:44.320
+There aren't any empty pages that we
+send to our retrieval system. So
+
+40
+00:01:44.320 --> 00:01:46.860
+we're going to filter out those
+as well and this
+
+41
+00:01:46.860 --> 00:01:48.830
+little loop just basically
+checks to see if
+
+42
+00:01:48.830 --> 00:01:50.980
+there's an empty string and if there is
+we don't add it to
+
+43
+00:01:50.980 --> 00:01:54.840
+the final list of PDF texts. And so just to
+show the sort of output that
+
+44
+00:01:54.840 --> 00:01:56.900
+we get here, we'll print an example.
+
+45
+00:02:01.820 --> 00:02:05.280
+And what we'll do is print the output
+of the first page of
+
+46
+00:02:05.280 --> 00:02:06.800
+extracted text from this PDF.
+
+47
+00:02:07.120 --> 00:02:10.000
+And here we are, and this is what
+the PDF reader has
+
+48
+00:02:10.000 --> 00:02:14.180
+extracted as text from
+the first page of the document.
+
+49
+00:02:19.240 --> 00:02:22.740
+So in our next step,
+we need to chunk up these pages is
+
+50
+00:02:22.740 --> 00:02:24.320
+first by character and by token.
+
+51
+00:02:24.960 --> 00:02:28.080
+To do that, we're going to grab some
+useful utilities from LangChain.
+
+52
+00:02:28.080 --> 00:02:30.560
+We're gonna use some LangChain
+text splitters. We're gonna use
+
+53
+00:02:30.560 --> 00:02:32.460
+the recursive character
+text splitter and
+
+54
+00:02:32.460 --> 00:02:34.550
+the sentence transformers
+token text splitter.
+
+55
+00:02:34.550 --> 00:02:37.120
+It's important that we
+use the sentence transformers token text
+
+56
+00:02:37.120 --> 00:02:38.600
+splitter, and I'll
+explain why in just
+
+57
+00:02:38.600 --> 00:02:41.000
+a moment. But first, let's start with
+the character splitter.
+
+58
+00:02:41.000 --> 00:02:46.120
+The character splitter allows us to
+divide text recursively according to certain
+
+59
+00:02:46.120 --> 00:02:47.260
+divider characters.
+
+60
+00:02:47.420 --> 00:02:50.160
+And what that practically means is,
+First,
+
+61
+00:02:50.160 --> 00:02:53.440
+in each presented piece of text,
+the recursive character
+
+62
+00:02:53.440 --> 00:02:57.920
+text splitter will find the double
+newlines and split
+
+63
+00:02:57.920 --> 00:03:01.220
+on double newlines, and then if the
+chunks that got split
+
+64
+00:03:01.220 --> 00:03:03.460
+are still larger than
+our target chunk size,
+
+65
+00:03:03.460 --> 00:03:05.480
+in this case 1000 characters,
+it will use the
+
+66
+00:03:05.480 --> 00:03:07.940
+next character to split them,
+then the next character,
+
+67
+00:03:07.940 --> 00:03:10.640
+then just a space, and finally it
+will split just
+
+68
+00:03:10.640 --> 00:03:12.580
+on character boundaries itself.
+And we've
+
+69
+00:03:12.580 --> 00:03:16.120
+also selected a chunk overlap of 0. This
+is a hyperparameter that
+
+70
+00:03:16.120 --> 00:03:17.940
+you can play with
+to decide what optimal
+
+71
+00:03:17.940 --> 00:03:20.620
+chunking looks like for you. So
+let's go ahead and run these.
+
+72
+00:03:22.360 --> 00:03:26.680
+And we're going to output
+the output of the character text
+
+73
+00:03:26.680 --> 00:03:28.420
+splitter. We're going
+to look at the 10th text
+
+74
+00:03:28.420 --> 00:03:30.860
+split chunk that we get. And we're
+also going to output the total
+
+75
+00:03:30.860 --> 00:03:32.680
+number of chunks that
+the character splitter gives
+
+76
+00:03:32.680 --> 00:03:34.960
+us. So let's run this cell
+and take a look at
+
+77
+00:03:34.960 --> 00:03:35.460
+the output.
+
+78
+00:03:36.180 --> 00:03:39.280
+So we see the 10th
+chunk is all of this
+
+79
+00:03:39.280 --> 00:03:42.740
+text according to the character,
+recursive character text splitter.
+
+80
+00:03:42.980 --> 00:03:48.240
+And there's 347 chunks in total from
+on this annual report PDF.
+
+81
+00:03:48.680 --> 00:03:52.780
+So now we've split by character, but
+character text splitting isn't quite
+
+82
+00:03:52.780 --> 00:03:54.820
+enough. And the
+reason for that is because
+
+83
+00:03:54.820 --> 00:03:56.860
+the embedding model, which we
+use called sentence
+
+84
+00:03:56.860 --> 00:03:59.880
+transformers, has a
+limited context window width.
+
+85
+00:04:00.120 --> 00:04:05.780
+In fact, it uses 256 characters.
+That's the maximum context window length
+
+86
+00:04:05.780 --> 00:04:08.580
+of our embedding model. This
+is a minor pitfall. If you're not
+
+87
+00:04:08.580 --> 00:04:12.160
+used to working with embeddings, you may
+not consider the embedding model context
+
+88
+00:04:12.160 --> 00:04:15.840
+window itself, but it's very, very
+important because typically an embedding
+
+89
+00:04:15.840 --> 00:04:18.040
+model will simply
+truncate any characters
+
+90
+00:04:18.040 --> 00:04:20.400
+or tokens that
+are beyond its context window.
+
+91
+00:04:20.460 --> 00:04:22.780
+So to make sure that we're
+actually capturing all the meaning
+
+92
+00:04:22.780 --> 00:04:25.220
+in each chunk when we
+go to embed it, it's very
+
+93
+00:04:25.220 --> 00:04:27.720
+important that we also
+chunk according to the
+
+94
+00:04:27.720 --> 00:04:32.180
+token count. And what we're doing here
+is we're using the Sentence Transformer text splitter,
+
+95
+00:04:32.180 --> 00:04:35.740
+again with a chunk
+overlap of zero, and we're using 256
+
+96
+00:04:35.740 --> 00:04:38.000
+tokens per
+chunk, which is the context window
+
+97
+00:04:38.000 --> 00:04:41.380
+length of the Sentence
+Transformer embedding model, and
+
+98
+00:04:41.380 --> 00:04:43.580
+I'll go into more
+detail about that embedding model in
+
+99
+00:04:43.580 --> 00:04:44.180
+a little bit.
+
+100
+00:04:44.660 --> 00:04:47.180
+And we are essentially
+taking all of the
+
+101
+00:04:47.180 --> 00:04:51.040
+chunks that were generated
+by the character text splitter,
+
+102
+00:04:51.040 --> 00:04:55.260
+and we are re-splitting them using the
+token text splitter. Let's put
+
+103
+00:04:55.260 --> 00:04:58.440
+out similar output to what we had in
+the last cell and see what we observe
+
+104
+00:04:58.440 --> 00:04:59.000
+here.
+
+105
+00:04:59.100 --> 00:05:01.160
+So we see a similar chunk.
+
+106
+00:05:01.840 --> 00:05:03.600
+It's a little bit different to
+what we got before.
+
+107
+00:05:03.940 --> 00:05:05.380
+Obviously, it's
+fewer characters because we
+
+108
+00:05:05.380 --> 00:05:08.700
+have only 256 tokens. This is, again,
+the 10th chunk. And
+
+109
+00:05:08.700 --> 00:05:11.060
+we notice that we have a couple more
+chunks than we had before.
+
+110
+00:05:11.220 --> 00:05:14.140
+In the previous output,
+we had 347 chunks.
+
+111
+00:05:14.740 --> 00:05:16.960
+In this output, we have 349.
+
+112
+00:05:17.340 --> 00:05:20.480
+So it's divided a couple of the
+existing chunks into more pieces.
+
+113
+00:05:20.720 --> 00:05:22.420
+So we have our text chunks.
+
+114
+00:05:22.900 --> 00:05:25.940
+That's the first step in any retrieval
+augmented generation system.
+
+115
+00:05:25.940 --> 00:05:28.180
+The next step is to
+load the chunks that
+
+116
+00:05:28.180 --> 00:05:30.580
+we have into our retrieval. And
+in this case, we'll be
+
+117
+00:05:30.580 --> 00:05:31.180
+using Chroma.
+
+118
+00:05:31.340 --> 00:05:34.580
+So to use Chroma,
+we need to import Chroma itself.
+
+119
+00:05:35.220 --> 00:05:38.560
+And we're going to use the
+sentence transformer embedding model,
+
+120
+00:05:38.560 --> 00:05:40.320
+as promised.
+
+121
+00:05:40.800 --> 00:05:43.900
+Now, let's talk a little bit about the
+Sentence Transformer Embedding
+
+122
+00:05:43.900 --> 00:05:45.440
+Model and what
+this actually means and what an
+
+123
+00:05:45.440 --> 00:05:47.300
+embedding model really
+actually even is.
+
+124
+00:05:47.400 --> 00:05:49.560
+So the Sentence
+Transformer Embedding Model
+
+125
+00:05:49.560 --> 00:05:53.140
+is essentially an extension of the
+BERT transformer architecture.
+
+126
+00:05:53.340 --> 00:05:56.740
+The BERT architecture
+embeds each token individually.
+
+127
+00:05:56.740 --> 00:05:58.700
+So here we have
+the class fire instruction
+
+128
+00:05:58.700 --> 00:06:01.900
+token and then I like dogs.
+Each token receives its
+
+129
+00:06:01.900 --> 00:06:05.300
+own dense vector embedding.
+What a Sentence Transformer does is
+
+130
+00:06:05.300 --> 00:06:08.720
+allow you to embed entire sentences
+or even small documents like we
+
+131
+00:06:08.720 --> 00:06:12.600
+have here by pooling the output
+of all the token embeddings to
+
+132
+00:06:12.600 --> 00:06:17.300
+produce a single dense vector per
+document or in our case, per chunk.
+
+133
+00:06:17.400 --> 00:06:19.520
+Sentence transformers are great
+as an embedding model. They're
+
+134
+00:06:19.520 --> 00:06:22.000
+open source, all
+the weights are available online, and
+
+135
+00:06:22.000 --> 00:06:23.660
+they're really
+easy to run locally. They come
+
+136
+00:06:23.660 --> 00:06:25.680
+built into Chromo, and you
+can learn more about
+
+137
+00:06:25.680 --> 00:06:28.020
+them by looking up
+the sentence transformers website
+
+138
+00:06:28.020 --> 00:06:30.280
+or taking a look
+at the linked paper. So that's why we're
+
+139
+00:06:30.280 --> 00:06:32.080
+using sentence transformers.
+And now hopefully it
+
+140
+00:06:32.080 --> 00:06:36.420
+makes sense why we use the
+sentence transformer tokenizer text splitter. So
+
+141
+00:06:36.420 --> 00:06:39.200
+what we're going to do is
+we're going to create a sentence transformer embedding function.
+
+142
+00:06:39.200 --> 00:06:40.420
+This is for
+use with Chroma.
+
+143
+00:06:40.420 --> 00:06:43.320
+And we're going to demonstrate, basically, what happens
+when this embedding function gets
+
+144
+00:06:43.320 --> 00:06:45.160
+cold. So that's the
+output of this.
+
+145
+00:06:45.360 --> 00:06:46.180
+So let's take a look.
+
+146
+00:06:47.120 --> 00:06:49.940
+Now, you may get this
+warning about HuggingFace tokenizers.
+
+147
+00:06:49.940 --> 00:06:52.560
+This is a minor bug in HuggingFace.
+This is nothing to worry about,
+
+148
+00:06:52.560 --> 00:06:55.520
+perfectly normal. And here's
+the output that we get. And
+
+149
+00:06:55.520 --> 00:06:59.040
+you can see this is one very, very
+long vector. It's a
+
+150
+00:06:59.040 --> 00:07:01.500
+dense vector. Every entry
+in the vector has a
+
+151
+00:07:01.500 --> 00:07:04.360
+number associated with it. And this
+is the representation of
+
+152
+00:07:04.360 --> 00:07:06.460
+the 10th text chunk
+that we showed you
+
+153
+00:07:06.460 --> 00:07:11.340
+before as a dense vector. This vector
+has 358 dimensions, which sounds
+
+154
+00:07:11.340 --> 00:07:14.040
+like a lot unless you consider
+the full dimensionality
+
+155
+00:07:14.040 --> 00:07:16.060
+of all English
+text, which is much, much higher.
+
+156
+00:07:17.600 --> 00:07:19.420
+So the next step is to set up Chroma.
+
+157
+00:07:19.840 --> 00:07:21.660
+We're going to use the
+default Chroma client, which
+
+158
+00:07:21.660 --> 00:07:23.700
+is great if you're just
+experimenting in a notebook.
+
+159
+00:07:24.400 --> 00:07:26.260
+And we're going to make a
+new Chroma collection. And
+
+160
+00:07:26.260 --> 00:07:27.500
+the collection is going
+to be called.
+
+161
+00:07:28.260 --> 00:07:29.960
+Microsoft Annual Report 2022.
+
+162
+00:07:30.200 --> 00:07:32.220
+And we're also going to pass
+in our embedding function, which
+
+163
+00:07:32.220 --> 00:07:33.880
+we defined before, which
+as you remember, is
+
+164
+00:07:33.880 --> 00:07:35.960
+the sentence transformer
+embedding function. We
+
+165
+00:07:35.960 --> 00:07:41.360
+are going to create IDs for each of
+the text chunks that we've created.
+
+166
+00:07:41.360 --> 00:07:44.260
+And they're just going
+to be the string of the number of
+
+167
+00:07:44.260 --> 00:07:47.340
+their position in the
+total token split texts.
+
+168
+00:07:47.340 --> 00:07:49.260
+And then what we're going to do
+is we're going to add those
+
+169
+00:07:49.260 --> 00:07:50.840
+documents to our Chroma collection.
+
+170
+00:07:51.500 --> 00:07:53.900
+And to make sure that
+everything is the way we expect,
+
+171
+00:07:53.900 --> 00:07:57.280
+let's just output the count after everything's
+been added. And let's run this
+
+172
+00:07:57.280 --> 00:07:57.660
+cell.
+
+173
+00:07:59.640 --> 00:08:01.520
+So now that we
+have everything loaded into Chroma,
+
+174
+00:08:01.520 --> 00:08:05.880
+So let's
+connect an LLM and build a full-fledged RAG
+
+175
+00:08:05.880 --> 00:08:08.400
+system. We're going to
+demonstrate how querying and
+
+176
+00:08:08.400 --> 00:08:10.620
+retrieval and LLMs all
+work together.
+
+177
+00:08:10.720 --> 00:08:13.000
+So let's
+start with a pretty simple query. I
+
+178
+00:08:13.000 --> 00:08:15.260
+think if you're reading
+an annual financial report, one of
+
+179
+00:08:15.260 --> 00:08:16.940
+the top questions you have
+in mind is, what was
+
+180
+00:08:16.940 --> 00:08:19.060
+the total revenue for
+this year?
+
+181
+00:08:19.220 --> 00:08:22.020
+And what we're going to do is we're going
+to get some results from
+
+182
+00:08:22.020 --> 00:08:24.540
+Chroma by querying it. And we
+see here that we call
+
+183
+00:08:24.540 --> 00:08:25.940
+query on our collection.
+
+184
+00:08:27.000 --> 00:08:30.880
+We pass our query texts. And we're
+asking for five results.
+
+185
+00:08:31.240 --> 00:08:34.680
+Chroma under the hood will use
+the embedding function that you've
+
+186
+00:08:34.680 --> 00:08:37.320
+defined on your collection
+to automatically embed the
+
+187
+00:08:37.320 --> 00:08:38.260
+query for you.
+
+188
+00:08:38.380 --> 00:08:40.120
+So you don't really have to do
+anything else to call
+
+189
+00:08:40.120 --> 00:08:41.340
+that embedding function again.
+
+190
+00:08:41.840 --> 00:08:46.100
+And we're going to pull the retrieve
+documents out of the results.
+
+191
+00:08:46.380 --> 00:08:48.320
+This zero on the
+end is basically saying,
+
+192
+00:08:48.320 --> 00:08:50.920
+give me the results
+for the zeroth query.
+
+193
+00:08:50.920 --> 00:08:52.320
+We only have the one query.
+
+194
+00:08:52.480 --> 00:08:54.680
+And what we're gonna output now
+is basically the
+
+195
+00:08:54.680 --> 00:08:57.440
+retrieve documents themselves
+and take a look.
+
+196
+00:08:58.800 --> 00:08:59.780
+So let's run the cell.
+
+197
+00:08:59.980 --> 00:09:01.800
+And we see that the
+documents that we get here
+
+198
+00:09:01.800 --> 00:09:04.440
+are fairly relevant to our query.
+What was the total revenue?
+
+199
+00:09:04.620 --> 00:09:07.560
+We have classified
+revenue by different
+
+200
+00:09:07.560 --> 00:09:11.380
+product and service offerings. We're
+talking about an unearned revenue, and
+
+201
+00:09:11.380 --> 00:09:13.580
+there's more
+information in a similar vein.
+
+202
+00:09:14.140 --> 00:09:17.360
+So the next step is to use these
+results together with an
+
+203
+00:09:17.360 --> 00:09:19.160
+LLM to answer our query.
+
+204
+00:09:19.460 --> 00:09:22.820
+We're going to use GPT for this, and
+we need to just do a little bit
+
+205
+00:09:22.820 --> 00:09:25.120
+of setup so that we can have an
+OpenAI client.
+
+206
+00:09:25.300 --> 00:09:28.660
+We're going to load our
+OpenAI API key from
+
+207
+00:09:28.660 --> 00:09:31.000
+the environment so that
+we can authenticate.
+
+208
+00:09:31.500 --> 00:09:33.840
+And we're
+gonna create an OpenAI client.
+
+209
+00:09:34.180 --> 00:09:37.120
+This is using their new
+version one API where they've
+
+210
+00:09:37.120 --> 00:09:40.600
+wrapped everything in this one
+nice client object for us. So
+
+211
+00:09:40.600 --> 00:09:43.180
+running the cell, there won't be
+any output here, but everything's
+
+212
+00:09:43.180 --> 00:09:43.740
+ready to go.
+
+213
+00:09:43.920 --> 00:09:45.840
+Now we're going to define a
+function that allows us
+
+214
+00:09:45.840 --> 00:09:49.600
+to call out to the model using our
+retrieved results along with
+
+215
+00:09:49.600 --> 00:09:52.320
+our query. We're gonna
+use GPT 3.5 Turbo, which does a
+
+216
+00:09:52.320 --> 00:09:54.780
+reasonably good job in rag
+loops and is fairly quick
+
+217
+00:09:54.780 --> 00:09:55.540
+and fast.
+
+218
+00:09:55.660 --> 00:09:58.380
+So the first thing is we're
+going to pass in our
+
+219
+00:09:58.380 --> 00:09:59.740
+query and retrieve documents.
+
+220
+00:09:59.860 --> 00:10:02.500
+We're going to just join our retrieved
+documents into a
+
+221
+00:10:02.500 --> 00:10:06.040
+single string called information, and
+we're going to use the double new
+
+222
+00:10:06.040 --> 00:10:08.600
+line to do so. We're going to
+set up some messages.
+
+223
+00:10:08.900 --> 00:10:11.520
+So the first thing is the system prompt.
+The system prompt
+
+224
+00:10:11.520 --> 00:10:14.620
+essentially defines how
+the model should behave in response
+
+225
+00:10:14.620 --> 00:10:17.180
+to your input, and here we're
+saying you are a helpful expert
+
+226
+00:10:17.180 --> 00:10:19.780
+financial research assistant. Your
+users are asking
+
+227
+00:10:19.780 --> 00:10:22.200
+questions about information
+contained in an
+
+228
+00:10:22.200 --> 00:10:23.020
+annual report.
+
+229
+00:10:25.290 --> 00:10:27.790
+You'll be shown the user's question
+and the relevant
+
+230
+00:10:27.790 --> 00:10:29.510
+information from in
+the annual report.
+
+231
+00:10:29.790 --> 00:10:32.650
+Answer the user's
+question using only this information.
+
+232
+00:10:32.790 --> 00:10:34.350
+So what this is doing,
+and this is really the
+
+233
+00:10:34.350 --> 00:10:39.410
+core of the entire RAG loop, we're
+turning GPT from a model that
+
+234
+00:10:39.410 --> 00:10:42.950
+remembers facts into a model that
+processes information.
+
+235
+00:10:43.650 --> 00:10:46.570
+That's the system prompt. And
+now we're going to add another piece
+
+236
+00:10:46.570 --> 00:10:49.050
+of the message for
+our user content.
+
+237
+00:10:49.650 --> 00:10:52.390
+And we have here that we're
+in the role of the user, and
+
+238
+00:10:52.390 --> 00:10:55.530
+here's the content. The content
+is essentially a formatted
+
+239
+00:10:55.530 --> 00:10:58.010
+string that says, Here's our question,
+and that's just our original
+
+240
+00:10:58.010 --> 00:10:58.430
+query.
+
+241
+00:10:58.850 --> 00:11:00.390
+Here's the information you're supposed
+to use.
+
+242
+00:11:00.530 --> 00:11:01.350
+Here's the information.
+
+243
+00:11:01.530 --> 00:11:04.870
+And then we need to send
+the request to the OpenAI client,
+
+244
+00:11:04.870 --> 00:11:07.970
+which is just using the
+normal API from the client. There's
+
+245
+00:11:07.970 --> 00:11:11.190
+nothing special here at all. We're specifying
+the model. We're sending the
+
+246
+00:11:11.190 --> 00:11:14.090
+messages. We're basically calling the
+chat completion endpoint
+
+247
+00:11:14.090 --> 00:11:17.070
+on the OpenAI client, specifying a
+model and
+
+248
+00:11:17.070 --> 00:11:19.330
+the messages we'd like to send and
+getting the response back.
+
+249
+00:11:19.890 --> 00:11:21.350
+And then we need to
+do a little bit more
+
+250
+00:11:21.350 --> 00:11:25.850
+just to unpack the response
+from what the client returns.
+
+251
+00:11:26.230 --> 00:11:29.370
+So we've
+defined our RAG function and now let's actually
+
+252
+00:11:29.370 --> 00:11:31.390
+use it. Let's put everything
+together.
+
+253
+00:11:31.530 --> 00:11:32.610
+So here's what we're going to do.
+
+254
+00:11:32.910 --> 00:11:38.710
+We are going to say output is equal
+to calling RAG without
+
+255
+00:11:38.710 --> 00:11:42.350
+query and retrieve documents.
+Then we're just gonna print the word
+
+256
+00:11:42.350 --> 00:11:46.810
+wrap output and fire away.
+
+257
+00:11:48.090 --> 00:11:51.810
+There we go. The total revenue for
+the year ended June 30, 2022 was
+
+258
+00:11:51.810 --> 00:11:56.270
+$198,270 million for Microsoft.
+
+259
+00:11:56.850 --> 00:11:58.150
+Microsoft are doing pretty well.
+
+260
+00:11:58.390 --> 00:12:00.450
+Now's a good time to take
+a moment and try some
+
+261
+00:12:00.450 --> 00:12:01.470
+of your own queries.
+
+262
+00:12:01.870 --> 00:12:04.570
+So remember we specified the
+query a little bit further up.
+
+263
+00:12:05.510 --> 00:12:08.050
+What was the total revenue?
+Try some of your own and see what
+
+264
+00:12:08.050 --> 00:12:10.210
+the model outputs based
+on the retrieved results
+
+265
+00:12:10.210 --> 00:12:14.950
+from the annual report. I think it's
+actually really important to play with
+
+266
+00:12:14.950 --> 00:12:17.930
+your retrieval system to gain intuition
+about what the model and the
+
+267
+00:12:17.930 --> 00:12:20.970
+retriever can and can't do
+together before we dive
+
+268
+00:12:20.970 --> 00:12:23.250
+into really analyzing how
+the system works. In the
+
+269
+00:12:23.250 --> 00:12:26.390
+next lab, we're going to talk about some
+of the pitfalls and common failure
+
+270
+00:12:26.390 --> 00:12:29.350
+modes of using retrieval in a
+retrieval augmented generation
+
+271
+00:12:29.350 --> 00:12:29.870
+loop.

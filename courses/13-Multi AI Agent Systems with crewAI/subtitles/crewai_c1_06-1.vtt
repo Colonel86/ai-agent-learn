@@ -1,0 +1,397 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.102 --> 00:00:04.904
+Okay, so we just built an amazing crew.
+
+2
+00:00:04.904 --> 00:00:08.842
+By now, you're probably getting excited
+and I am as well.
+
+3
+00:00:08.975 --> 00:00:11.578
+But we can take a step further
+in this lesson,
+
+4
+00:00:11.578 --> 00:00:15.448
+we are going to build a multi-agent system
+that's going to be able to help us
+
+5
+00:00:15.448 --> 00:00:19.953
+plan an event. Think about a meetup
+or a conference, whatever it might be.
+
+6
+00:00:20.253 --> 00:00:24.057
+These agents are going to help us
+to find a venue, do the planning,
+
+7
+00:00:24.391 --> 00:00:27.360
+planning around the catering,
+everything that comes with that.
+
+8
+00:00:27.360 --> 00:00:30.630
+So let's jump into it
+and see what that looks like.
+
+9
+00:00:31.898 --> 00:00:34.100
+Welcome to our next lesson.
+
+10
+00:00:34.100 --> 00:00:36.903
+And in this lesson
+we're going to be talking about tasks.
+
+11
+00:00:36.903 --> 00:00:38.605
+I'm super excited about this one.
+
+12
+00:00:38.605 --> 00:00:41.574
+We talked about so many things already and
+
+13
+00:00:41.574 --> 00:00:45.945
+this is another great topic for us
+to dig into because at the end of the day,
+
+14
+00:00:45.945 --> 00:00:49.282
+if you think about your agents,
+they are performing tasks.
+
+15
+00:00:49.449 --> 00:00:54.387
+So, tasks are a cornerstone
+on multiple agent systems as well.
+
+16
+00:00:54.421 --> 00:00:57.490
+So when you talk about tasks,
+I want to bring back
+
+17
+00:00:57.791 --> 00:01:00.527
+something
+that we talked about a few lessons ago.
+
+18
+00:01:00.527 --> 00:01:02.362
+The manager analogy.
+
+19
+00:01:02.362 --> 00:01:07.067
+You might remember that we discussed
+that this manager/mentor framework
+
+20
+00:01:07.067 --> 00:01:11.471
+to create agents where you put yourself
+in your manager's shoes
+
+21
+00:01:11.604 --> 00:01:16.042
+and you think about what would be
+the people that you would hire in order
+
+22
+00:01:16.042 --> 00:01:20.647
+to do a series of tasks or the job
+that you're trying to accomplish.
+
+23
+00:01:20.914 --> 00:01:24.317
+And then you kind of use
+that as a starting point to define
+
+24
+00:01:24.317 --> 00:01:28.621
+what will be the roles, the goals,
+and the backstory of your agents.
+
+25
+00:01:28.655 --> 00:01:31.458
+So, you need to have
+a very good understanding of
+
+26
+00:01:31.458 --> 00:01:33.560
+what is the goal
+that you're trying to accomplish.
+
+27
+00:01:33.560 --> 00:01:36.296
+And you also need to have a very clear
+understanding
+
+28
+00:01:36.296 --> 00:01:39.399
+of the process
+through how to achieve this goal.
+
+29
+00:01:39.933 --> 00:01:42.735
+So with that in mind,
+you're going to have a clear understanding
+
+30
+00:01:42.735 --> 00:01:45.738
+of the people that it would hire
+and those would be our agents.
+
+31
+00:01:46.072 --> 00:01:49.075
+But now I want to build
+on top of this analogy.
+
+32
+00:01:49.175 --> 00:01:53.646
+I want to expand this mental model
+to how you think about your tasks.
+
+33
+00:01:53.880 --> 00:01:57.217
+Because whenever you hire
+someone to do something,
+
+34
+00:01:57.484 --> 00:02:01.221
+you also need to think about
+how you're going to delegate
+
+35
+00:02:01.387 --> 00:02:04.457
+work to them, especially
+if it's more of a junior person.
+
+36
+00:02:04.657 --> 00:02:07.961
+You want to make sure
+that you're very explicit about
+
+37
+00:02:07.961 --> 00:02:12.961
+why do you expect that they do
+and what is the expected result.
+
+38
+00:02:13.233 --> 00:02:16.436
+So I would say for you to build
+
+39
+00:02:16.436 --> 00:02:20.206
+great agents, you should add data
+to your mental model as well.
+
+40
+00:02:20.206 --> 00:02:23.676
+So once that you think about
+what are the people that you would hire
+
+41
+00:02:23.676 --> 00:02:27.714
+to get the job done,
+think about what processes and tasks
+
+42
+00:02:27.714 --> 00:02:32.714
+I expect individuals on my team to do,
+and you can use that to create the tasks.
+
+43
+00:02:33.720 --> 00:02:38.720
+And whenever you're creating a task again,
+you need to have at least two things
+
+44
+00:02:38.825 --> 00:02:42.262
+top of mind. One: a clear description
+
+45
+00:02:42.262 --> 00:02:45.265
+of what is the task. And two:
+
+46
+00:02:45.532 --> 00:02:49.035
+set a clear and concise expectation.
+
+47
+00:02:49.169 --> 00:02:52.939
+Again, to go back to your analogy,
+let's think that you just
+
+48
+00:02:52.939 --> 00:02:56.809
+hired a junior engineer
+to work on your team, and your tasked
+
+49
+00:02:56.843 --> 00:02:58.511
+with coaching this person.
+
+50
+00:02:58.511 --> 00:03:00.446
+It's their first day on the job.
+
+51
+00:03:00.446 --> 00:03:00.747
+You basically want to give them
+a specific task to work on.
+
+52
+00:03:00.747 --> 00:03:03.249
+You want to give them
+a specific task to work on.
+
+53
+00:03:03.416 --> 00:03:07.287
+You want to explain their task
+very truthfully, and then you want to
+
+54
+00:03:07.287 --> 00:03:12.287
+make sure that you say,
+why do you expect them to do. So crewAI
+
+55
+00:03:12.392 --> 00:03:15.395
+kind of forces you to think that way,
+because
+
+56
+00:03:15.562 --> 00:03:19.832
+crewAI makes sure that it's mandatory
+for you to share
+
+57
+00:03:19.832 --> 00:03:23.703
+at least two attributes on every task
+that you create.
+
+58
+00:03:24.070 --> 00:03:26.873
+The description and the expected outcome.
+
+59
+00:03:26.873 --> 00:03:30.677
+And that is
+used to build better internal prompts.
+
+60
+00:03:30.677 --> 00:03:33.680
+But then also apply
+to any other framework out there.
+
+61
+00:03:33.713 --> 00:03:37.517
+You will get better results
+if you go the extra mile on
+
+62
+00:03:37.517 --> 00:03:40.987
+explaining what is a task
+and what you expect your agent to do.
+
+63
+00:03:41.054 --> 00:03:44.157
+Other than that,
+there is a bunch of other things
+
+64
+00:03:44.157 --> 00:03:49.062
+that you can set on the task. crewAI
+offers a bunch of hyperparameters
+
+65
+00:03:49.062 --> 00:03:53.333
+that you could use, like
+setting a context, or setting a callback,
+
+66
+00:03:53.600 --> 00:03:58.600
+or overriding the agent tools
+with a specific task, force human input,
+
+67
+00:03:59.305 --> 00:04:03.443
+kind of like making sure that before
+the agent finishes the work, it
+
+68
+00:04:03.443 --> 00:04:07.647
+stops and asks you how you feel about it
+so you can give further instructions.
+
+69
+00:04:07.647 --> 00:04:09.682
+Also, we can talk about execution.
+
+70
+00:04:09.682 --> 00:04:13.319
+This tasks are synchronous
+or outputting their results
+
+71
+00:04:13.319 --> 00:04:16.322
+as pedantic objects or json object,
+
+72
+00:04:16.456 --> 00:04:20.693
+or even outputting them as a file
+or running these tasks in parallel.
+
+73
+00:04:20.994 --> 00:04:22.428
+So you can see how
+
+74
+00:04:22.428 --> 00:04:26.099
+there is a bunch of options
+when you're talking about tasks in here.
+
+75
+00:04:26.366 --> 00:04:29.002
+And you're going to need to take all that
+into account
+
+76
+00:04:29.002 --> 00:04:32.605
+depending on how complex
+your multi-agent system is.
+
+77
+00:04:32.939 --> 00:04:36.276
+crewAI offers all these options,
+and you're going to find a bunch of them
+
+78
+00:04:36.342 --> 00:04:38.144
+in other frameworks as well.
+
+79
+00:04:38.144 --> 00:04:41.948
+Maybe not all of them,
+and maybe in a different shapes and forms,
+
+80
+00:04:42.115 --> 00:04:46.019
+but in the end of the day, it's
+all about how you can set up your agents
+
+81
+00:04:46.019 --> 00:04:50.056
+for success to perform
+their tasks super efficiently.
+
+82
+00:04:50.056 --> 00:04:53.693
+So with that in mind,
+let's jump into code real quick,
+

@@ -1,0 +1,219 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.218 --> 00:00:05.760
+So what is Agentic AI and why are Agentic AI workflows so powerful? Let's take a look.
+
+2
+00:00:05.760 --> 00:00:11.119
+The way that many of us use large language models or LLMs today is by prompting it to say,
+
+3
+00:00:11.119 --> 00:00:17.120
+write an essay for us on a certain topic X. And I think of that as akin to going to a human,
+
+4
+00:00:17.120 --> 00:00:22.799
+or in this case, going to an AI and asking it to please type out an essay for me by writing
+
+5
+00:00:22.799 --> 00:00:27.840
+from the first word to the last word all in one go and without ever using backspace.
+
+6
+00:00:27.840 --> 00:00:32.080
+It turns out that we as people, we don't do our best writing like that by being forced to write
+
+7
+00:00:32.080 --> 00:00:38.400
+in this completely linear order and nor do AI models. But despite the difficulty of being
+
+8
+00:00:38.400 --> 00:00:43.360
+constrained to write in this way, our LLMs do surprisingly well. In contrast, with an agentic
+
+9
+00:00:43.360 --> 00:00:48.000
+workflow, this is what the process might look like. You may ask it to first write an essay
+
+10
+00:00:48.000 --> 00:00:53.360
+outline on a certain topic, then ask if it needs to do any web research. And after doing some web
+
+11
+00:00:53.360 --> 00:00:57.279
+research and maybe downloading some web pages, then to write the first draft and then to read
+
+12
+00:00:57.279 --> 00:01:02.080
+the first draft and see what parts need revision or more research and then revise the draft and so
+
+13
+00:01:02.080 --> 00:01:06.879
+on. And this type of workflow is more akin to doing some thinking and some research and then
+
+14
+00:01:06.879 --> 00:01:12.559
+doing some revision and then doing some more thinking and so on. And with this iterative
+
+15
+00:01:12.559 --> 00:01:18.639
+process, it turns out that an agentic workflow can take longer, but it delivers a much better
+
+16
+00:01:18.639 --> 00:01:25.199
+work product. So an agentic AI workflow is a process where an LLM based app executes multiple
+
+17
+00:01:25.199 --> 00:01:31.680
+steps to complete a task. In this example, you might use an LLM to write the first essay outline
+
+18
+00:01:31.680 --> 00:01:37.839
+and then you might use an LLM to decide what search terms to type into a web search engine or
+
+19
+00:01:37.839 --> 00:01:44.959
+really what search terms to call a web search API with in order to get back relevant web pages.
+
+20
+00:01:44.959 --> 00:01:50.639
+Based on that, you can feed the downloaded web pages into an LLM to have it write the first draft
+
+21
+00:01:51.199 --> 00:01:57.839
+and then maybe use another LLM to reflect and decide what needs more revision. And then depending
+
+22
+00:01:57.839 --> 00:02:03.760
+on how you design this workflow, perhaps you may even add a human in the loop step where the LLM
+
+23
+00:02:03.760 --> 00:02:10.240
+has the option to request human review, maybe of some key facts. And based on that, it may then
+
+24
+00:02:10.240 --> 00:02:16.720
+revise the draft and this process results in a much better work output. One of the key skills
+
+25
+00:02:16.720 --> 00:02:24.160
+you learn in this course is how to take a complex task like writing an essay and breaking it down
+
+26
+00:02:24.160 --> 00:02:31.360
+into smaller steps for agentic workflows to execute one step at a time to then get the work output
+
+27
+00:02:31.360 --> 00:02:36.559
+that you want. And knowing how to decompose the task into steps and how to build the components
+
+28
+00:02:36.559 --> 00:02:42.320
+to execute the individual steps well turns out to be a tricky but important skill that will
+
+29
+00:02:42.320 --> 00:02:48.880
+determine your ability to build agentic workflows for a huge range of exciting applications. In this
+
+30
+00:02:48.880 --> 00:02:54.639
+course, a running example that we'll use and something that you build alongside me is a research
+
+31
+00:02:54.639 --> 00:03:00.399
+agent. So here's an example of what it will look like. You can enter a research topic like how do I
+
+32
+00:03:00.399 --> 00:03:08.800
+build a new rocket company to compete with SpaceX. I don't personally want to compete with SpaceX,
+
+33
+00:03:08.800 --> 00:03:13.119
+but if you want to, you can try asking a research agent to help your background research.
+
+34
+00:03:13.679 --> 00:03:20.399
+So this agent starts with planning out what research to use, including calling a web search
+
+35
+00:03:20.399 --> 00:03:26.320
+engine to download some web pages, and then to synthesize and rank findings, draft an outline,
+
+36
+00:03:26.320 --> 00:03:30.720
+have an editor-to-agent review for coherence, and then finally generate a comprehensive
+
+37
+00:03:30.720 --> 00:03:35.119
+markdown report, which it has done here, building a new rocket company to compete with SpaceX
+
+38
+00:03:35.119 --> 00:03:41.119
+with an intro, background, findings, and so on. I think it points out appropriately that
+
+39
+00:03:41.839 --> 00:03:47.759
+this is going to be a tough startup to build, so I'm not personally planning to do this, but if
+
+40
+00:03:47.759 --> 00:03:53.520
+you want to tackle something like this, maybe a research agent like this could help you with some
+
+41
+00:03:53.520 --> 00:04:00.559
+initial research. And by finding and downloading multiple sources and deeply thinking about it,
+
+42
+00:04:00.559 --> 00:04:07.279
+this actually ends up with a much more thoughtful report than just prompting an LLM to write an essay
+
+43
+00:04:07.279 --> 00:04:12.160
+for you would. One of the reasons I'm excited about this is because in my work, I've ended up
+
+44
+00:04:12.160 --> 00:04:18.160
+building quite a few specialized research agents, be it in legal documents for conflict legal
+
+45
+00:04:18.160 --> 00:04:24.160
+compliance, or for some healthcare sectors, or some business product research areas. And so I hope
+
+46
+00:04:24.160 --> 00:04:29.679
+that working through this example, you not only learn how to build agentic workflows for many
+
+47
+00:04:29.679 --> 00:04:34.640
+other applications, but that some of the ideas in building research agents will be directly useful
+
+48
+00:04:34.640 --> 00:04:42.880
+to you if you ever need to build a custom research agent yourself. Now, one of the often discussed
+
+49
+00:04:42.880 --> 00:04:49.359
+areas of AI agents is how autonomous are they? What you just saw here was a relatively complex,
+
+50
+00:04:49.359 --> 00:04:55.440
+highly autonomous Agentic AI workflow, but there are also other simpler workflows that are
+
+51
+00:04:55.440 --> 00:05:00.799
+incredibly valuable. Let's go on to the next video to talk about the degree to which agentic
+
+52
+00:05:00.799 --> 00:05:05.279
+workflows can be autonomous, and does it give you a framework to think about how
+
+53
+00:05:05.920 --> 00:05:10.239
+you might go about building different applications and how easy or difficult they might be.
+
+54
+00:05:10.239 --> 00:05:12.239
+See you in the next video.
+

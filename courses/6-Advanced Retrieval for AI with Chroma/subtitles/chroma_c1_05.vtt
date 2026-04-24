@@ -1,0 +1,665 @@
+WEBVTT
+1
+00:00:00.000 --> 00:00:03.140
+In the last lesson, we looked at how
+to improve retrieval results
+
+2
+00:00:03.140 --> 00:00:05.740
+by augmenting the query
+we send with an LLM.
+
+3
+00:00:06.040 --> 00:00:10.660
+In this lesson, we're going to use a
+technique called cross-encoder re-ranking to score
+
+4
+00:00:10.660 --> 00:00:14.420
+the relevancy of our retrieved results
+for the query that we sent.
+
+5
+00:00:14.860 --> 00:00:15.660
+Let's dig in.
+
+6
+00:00:16.540 --> 00:00:19.580
+Re-ranking is a way to
+order results and score
+
+7
+00:00:19.580 --> 00:00:21.780
+them according to their
+relevancy to a particular
+
+8
+00:00:21.780 --> 00:00:22.400
+query.
+
+9
+00:00:22.500 --> 00:00:24.400
+So let's take a look at
+how this works underneath.
+
+10
+00:00:24.600 --> 00:00:27.440
+In re-ranking, after
+you retrieve results for
+
+11
+00:00:27.440 --> 00:00:30.320
+a particular query, you
+pass these results along with
+
+12
+00:00:30.320 --> 00:00:34.080
+your query to a re-ranking model.
+This allows you to re-rank the output
+
+13
+00:00:34.080 --> 00:00:36.440
+so the most relevant
+results have the highest
+
+14
+00:00:36.440 --> 00:00:38.280
+rank. Another way to
+think about this is
+
+15
+00:00:38.280 --> 00:00:42.040
+your re-ranking model scores each
+of the results conditioned on the
+
+16
+00:00:42.040 --> 00:00:44.620
+query, and those with the
+highest score are the most
+
+17
+00:00:44.620 --> 00:00:45.260
+relevant.
+
+18
+00:00:45.380 --> 00:00:47.280
+Then you can just
+select the top ranking
+
+19
+00:00:47.280 --> 00:00:49.920
+results as the most
+relevant to your particular query.
+
+20
+00:00:49.920 --> 00:00:52.160
+So let's take a look at how
+to do this in practice.
+
+21
+00:00:52.600 --> 00:00:54.900
+First, we import our
+helper functions as before.
+
+22
+00:00:57.350 --> 00:00:58.790
+And we load the data into Chroma.
+
+23
+00:01:01.330 --> 00:01:04.610
+So one use of re-ranking is to get more
+information out of the
+
+24
+00:01:04.610 --> 00:01:06.090
+long tail of query results.
+
+25
+00:01:06.250 --> 00:01:08.450
+So let's
+take a look at this query that we've already
+
+26
+00:01:08.450 --> 00:01:10.790
+covered once before, which is
+what has been the investment in
+
+27
+00:01:10.790 --> 00:01:13.190
+research and development.
+And usually we've been asking
+
+28
+00:01:13.190 --> 00:01:15.590
+for five results in
+return for our particular
+
+29
+00:01:15.590 --> 00:01:17.750
+query, but now we're
+gonna ask for 10.
+
+30
+00:01:17.950 --> 00:01:21.270
+That means we're gonna get a longer tail
+of possibly useful results. And
+
+31
+00:01:21.270 --> 00:01:23.930
+again, we're gonna include documents and
+embeddings. And so
+
+32
+00:01:23.930 --> 00:01:26.470
+let's retrieve the
+documents and taking a look at
+
+33
+00:01:26.470 --> 00:01:29.350
+what we get, we see that
+we get the same first five results as
+
+34
+00:01:29.350 --> 00:01:31.450
+before because retrieval is
+deterministic, but we also
+
+35
+00:01:31.450 --> 00:01:34.550
+have five new results, which might have
+relevant information to our
+
+36
+00:01:34.550 --> 00:01:37.430
+question. The trick is
+to figure out which of these
+
+37
+00:01:37.430 --> 00:01:40.710
+results are actually relevant to our
+specific query instead
+
+38
+00:01:40.710 --> 00:01:43.170
+of just being
+the nearest neighbors in embedding space.
+
+39
+00:01:43.170 --> 00:01:44.770
+And the way
+we do that is through
+
+40
+00:01:44.770 --> 00:01:47.310
+using a cross-encoder re-ranking. So we're
+going to use the sentence
+
+41
+00:01:47.310 --> 00:01:50.410
+transformers cross-encoder, and we're
+going to instantiate it
+
+42
+00:01:50.410 --> 00:01:51.430
+with a particular
+model.
+
+43
+00:01:54.180 --> 00:01:55.620
+So what is a cross-encoder model?
+
+44
+00:01:55.740 --> 00:01:58.480
+Sentence transformers are made up
+of two kinds of models. There's
+
+45
+00:01:58.480 --> 00:02:01.380
+something called a Bi-encoder, where a
+Bi-encoder encodes queries
+
+46
+00:02:01.380 --> 00:02:03.440
+separately, and then we
+can use the output of
+
+47
+00:02:03.440 --> 00:02:06.260
+those Bi-encoders to perform cosine
+similarity and find
+
+48
+00:02:06.260 --> 00:02:08.640
+the nearest neighbors.
+In contrast, a BERT
+
+49
+00:02:08.640 --> 00:02:13.120
+cross-encoder takes both our query
+and our document and passes it
+
+50
+00:02:13.120 --> 00:02:15.740
+through a classifier which outputs a
+score.
+
+51
+00:02:15.740 --> 00:02:18.419
+And in this way,
+we can use our cross-encoder
+
+52
+00:02:18.419 --> 00:02:20.444
+to score our
+retrieved results by
+
+53
+00:02:20.444 --> 00:02:23.898
+passing our query and each retrieved
+document and scoring
+
+54
+00:02:23.898 --> 00:02:28.067
+them using the cross-encoder. We
+can use the cross-encoder by passing
+
+55
+00:02:28.067 --> 00:02:31.997
+in the original query and each
+one of the retrieved documents and
+
+56
+00:02:31.997 --> 00:02:35.094
+using the resulting
+score as a relevancy or ranking
+
+57
+00:02:35.094 --> 00:02:37.060
+score for our retrieved results.
+
+58
+00:02:37.060 --> 00:02:39.100
+So we've
+instantiated our cross encoder. And
+
+59
+00:02:39.100 --> 00:02:41.020
+the first thing we're going
+to do is create pairs.
+
+60
+00:02:41.160 --> 00:02:44.060
+The pairs consist of
+our query and each
+
+61
+00:02:44.060 --> 00:02:45.840
+doc in our retrieved documents.
+
+62
+00:02:46.540 --> 00:02:50.560
+And we're just going to ask the cross
+encoder to score each pair.
+
+63
+00:02:50.820 --> 00:02:52.300
+So let's print out our scores.
+
+64
+00:02:52.440 --> 00:02:55.160
+And while we see that
+the first two documents have
+
+65
+00:02:55.160 --> 00:02:57.760
+high scores for our query,
+we notice first of
+
+66
+00:02:57.760 --> 00:02:59.420
+all that the second
+retrieved document is actually
+
+67
+00:02:59.420 --> 00:03:01.740
+a much higher score
+than our first one. And also some
+
+68
+00:03:01.740 --> 00:03:04.320
+documents in the longer tail of
+retrieved results have
+
+69
+00:03:04.320 --> 00:03:07.240
+higher scores than some of the
+documents in the first five.
+
+70
+00:03:07.380 --> 00:03:10.680
+So what would that look like if we
+were to reorder our
+
+71
+00:03:10.680 --> 00:03:13.300
+documents according to score?
+We see that the second
+
+72
+00:03:13.300 --> 00:03:15.240
+document is now ranked first.
+
+73
+00:03:15.480 --> 00:03:17.480
+First document is ranked second.
+And something in the long
+
+74
+00:03:17.480 --> 00:03:19.600
+tail actually makes it into
+the top five and in
+
+75
+00:03:19.600 --> 00:03:22.780
+fact the top five re-ranked
+results contain results
+
+76
+00:03:22.780 --> 00:03:24.060
+that are originally
+the sixth and
+
+77
+00:03:24.060 --> 00:03:26.680
+seventh results while
+the fourth and fifth results are
+
+78
+00:03:26.680 --> 00:03:28.000
+actually ranked quite low.
+
+79
+00:03:28.000 --> 00:03:31.211
+So in this way we've used the cross-encoder and
+the score that it
+
+80
+00:03:31.211 --> 00:03:33.303
+produces to re-rank our results,
+and now if
+
+81
+00:03:33.303 --> 00:03:35.735
+we were to cut to this
+top five we'd see that the
+
+82
+00:03:35.735 --> 00:03:38.022
+results should be much
+more relevant than what
+
+83
+00:03:38.022 --> 00:03:40.260
+we had before because
+we've mined more of the
+
+84
+00:03:40.260 --> 00:03:43.520
+long tail for information that's
+actually relevant to our question.
+
+85
+00:03:43.520 --> 00:03:45.860
+Now you might already see where I'm
+going with this.
+
+86
+00:03:46.060 --> 00:03:48.540
+But given the number
+of results that we
+
+87
+00:03:48.540 --> 00:03:50.660
+get with query expansion
+and the way in
+
+88
+00:03:50.660 --> 00:03:53.440
+which each generated query
+addresses a different part
+
+89
+00:03:53.440 --> 00:03:57.640
+of the complex question,
+we can use the cross-encoder re-ranker technique
+
+90
+00:03:57.640 --> 00:03:59.580
+to actually get
+all of the best results for
+
+91
+00:03:59.580 --> 00:04:02.760
+the original query from the augmented
+expanded queries instead
+
+92
+00:04:02.760 --> 00:04:05.660
+of just sending all of them
+to the LLM. And here's how we
+
+93
+00:04:05.660 --> 00:04:06.100
+do that.
+
+94
+00:04:06.280 --> 00:04:08.440
+So from the previous lab,
+this is just our original
+
+95
+00:04:08.440 --> 00:04:10.340
+query and the generated queries.
+And I've
+
+96
+00:04:10.340 --> 00:04:13.360
+saved them into text here for you. And
+then we do the same thing.
+
+97
+00:04:13.720 --> 00:04:15.780
+We concatenate the
+original and generated
+
+98
+00:04:15.780 --> 00:04:18.420
+queries together and
+we retrieve the results.
+
+99
+00:04:18.900 --> 00:04:21.980
+And then, as last time,
+we deduplicate the retrieved results.
+
+100
+00:04:24.580 --> 00:04:28.080
+And now we create pairs,
+just as we did in the previous example,
+
+101
+00:04:28.080 --> 00:04:30.520
+where we make pairs
+of the original query
+
+102
+00:04:30.520 --> 00:04:33.720
+and each retrieved document.
+In this way, we can compute the
+
+103
+00:04:33.720 --> 00:04:36.600
+relevancy of the retrieved
+results for the augmented
+
+104
+00:04:36.600 --> 00:04:39.340
+queries to the original
+query and select among
+
+105
+00:04:39.340 --> 00:04:41.340
+them the five best
+that we actually want
+
+106
+00:04:41.340 --> 00:04:44.580
+to pass to the LLM. So let's
+create those pairs and let's score
+
+107
+00:04:44.580 --> 00:04:44.940
+them.
+
+108
+00:04:45.980 --> 00:04:49.860
+And one great thing about using a cross-encoder
+model like this one is it's extremely
+
+109
+00:04:49.860 --> 00:04:51.600
+lightweight and runs
+completely locally.
+
+110
+00:04:51.700 --> 00:04:53.900
+So here are the scores
+of all of our retrieved results.
+
+111
+00:04:54.400 --> 00:04:56.520
+And we can use these
+scores to order our results
+
+112
+00:04:56.520 --> 00:04:58.040
+and give us a new ordering.
+
+113
+00:04:58.260 --> 00:05:00.320
+And then we can pass the
+top five of these new results
+
+114
+00:05:00.320 --> 00:05:03.160
+to the LLM and get the
+most relevant information
+
+115
+00:05:03.160 --> 00:05:06.020
+from this long tail of queries
+that we got through query expansion
+
+116
+00:05:06.020 --> 00:05:08.920
+and the retrieved results for our
+augmented queries.
+
+117
+00:05:09.060 --> 00:05:11.640
+So, in this lab,
+we learned how to use a cross-encoder
+
+118
+00:05:11.640 --> 00:05:16.480
+as a re-ranking model, and we've
+seen how we can apply re-ranking both to get
+
+119
+00:05:16.480 --> 00:05:19.320
+more out of the long tail of a
+single query, as well as to
+
+120
+00:05:19.320 --> 00:05:23.100
+filter the results of an augmented
+expanded query to
+
+121
+00:05:23.100 --> 00:05:26.020
+only the results
+relevant to the original query itself.
+
+122
+00:05:26.020 --> 00:05:27.920
+This is a really
+powerful technique and worth
+
+123
+00:05:27.920 --> 00:05:29.800
+experimenting with some more.
+And it's a good
+
+124
+00:05:29.800 --> 00:05:33.220
+idea to try to understand and get
+an intuition for how the
+
+125
+00:05:33.220 --> 00:05:36.460
+re-ranking score might change depending on
+query, even when
+
+126
+00:05:36.460 --> 00:05:38.260
+the result that your
+retrieval system is giving
+
+127
+00:05:38.260 --> 00:05:41.140
+you are the same.
+This is because the cross-encoder re-ranker
+
+128
+00:05:41.140 --> 00:05:43.020
+can emphasize different parts of
+the query
+
+129
+00:05:43.020 --> 00:05:44.360
+than the embedding model
+does.
+
+130
+00:05:44.480 --> 00:05:47.280
+And so the ranking that it
+provides is much
+
+131
+00:05:47.280 --> 00:05:49.840
+more conditional on
+the specific query than just what
+
+132
+00:05:49.840 --> 00:05:52.000
+is naively returned
+by the retrieval system itself.
+
+133
+00:05:52.000 --> 00:05:54.640
+In the next lab, we'll
+talk about query adapters.
+
+134
+00:05:54.820 --> 00:05:58.960
+Query adapters are a way to
+directly alter or augment the query
+
+135
+00:05:58.960 --> 00:06:02.160
+embedding itself using
+user feedback or other types of
+
+136
+00:06:02.160 --> 00:06:04.340
+data to get better query results.

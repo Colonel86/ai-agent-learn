@@ -1,0 +1,886 @@
+WEBVTT
+
+1
+00:00:04.120 --> 00:00:07.529
+In this section, we'll
+focus on tasks to process inputs, i.e.
+
+2
+00:00:07.529 --> 00:00:11.559
+the tasks that take the input and
+generate a useful output, often through
+
+3
+00:00:11.559 --> 00:00:15.279
+a series of steps. It is
+sometimes important for the model to
+
+4
+00:00:15.279 --> 00:00:18.069
+reason in detail about a problem
+before answering a
+
+5
+00:00:18.069 --> 00:00:21.479
+specific question, and if
+you took our previous course, ChatGPT Prompt
+
+6
+00:00:21.479 --> 00:00:24.579
+Engineering for Developers, you
+will have seen a number of
+
+7
+00:00:24.579 --> 00:00:27.059
+examples of this. Sometimes a
+model might make
+
+8
+00:00:27.059 --> 00:00:29.849
+reasoning errors by
+rushing to an incorrect conclusion, so
+
+9
+00:00:29.849 --> 00:00:32.639
+we can reframe the query
+to request a series
+
+10
+00:00:32.639 --> 00:00:35.119
+of relevant reasoning steps
+before the model provides
+
+11
+00:00:35.119 --> 00:00:37.909
+a final answer, so that
+it can think longer
+
+12
+00:00:37.909 --> 00:00:39.769
+and more methodically about
+the problem.
+
+13
+00:00:40.471 --> 00:00:42.857
+And in general,
+we call this strategy of
+
+14
+00:00:42.857 --> 00:00:45.840
+asking the model to reason
+about a problem in steps,
+
+15
+00:00:45.840 --> 00:00:47.929
+"Chain of Thought Reasoning".
+For some applications,
+
+16
+00:00:47.929 --> 00:00:51.509
+the reasoning process that
+a model uses to arrive at a final
+
+17
+00:00:51.509 --> 00:00:54.790
+answer would be inappropriate
+to share with the user. For example,
+
+18
+00:00:54.790 --> 00:00:56.879
+in tutoring applications,
+we may want to
+
+19
+00:00:56.879 --> 00:01:00.160
+encourage students to work
+on their own answers, but a model's
+
+20
+00:01:00.160 --> 00:01:03.143
+reasoning process about the student's solution
+could reveal the answer
+
+21
+00:01:03.143 --> 00:01:04.038
+to the student.
+
+22
+00:01:04.800 --> 00:01:07.054
+Inner monologue is a
+tactic that can be
+
+23
+00:01:07.054 --> 00:01:09.872
+used to mitigate this,
+and this is just a fancy
+
+24
+00:01:09.872 --> 00:01:12.690
+way of saying hiding the model's
+reasoning from the user.
+
+25
+00:01:13.558 --> 00:01:15.510
+The idea of inner
+monologue is to instruct
+
+26
+00:01:15.510 --> 00:01:17.462
+the model to put
+parts of the output
+
+27
+00:01:17.462 --> 00:01:19.414
+that are meant to
+be hidden from the
+
+28
+00:01:19.414 --> 00:01:21.854
+user into a structured
+format that makes passing them easy.
+
+29
+00:01:21.854 --> 00:01:21.854
+
+
+30
+00:01:22.375 --> 00:01:25.058
+Then, before presenting the
+output to the user,
+
+31
+00:01:25.058 --> 00:01:29.081
+the output is passed
+and only part of the output is made
+
+32
+00:01:29.081 --> 00:01:31.092
+visible. So,
+remember the classification problem
+
+33
+00:01:31.092 --> 00:01:33.774
+from a previous video,
+where we asked the
+
+34
+00:01:33.774 --> 00:01:36.457
+model to classify a
+customer query into a
+
+35
+00:01:36.457 --> 00:01:39.474
+primary and secondary category.
+And based on that classification,
+
+36
+00:01:39.474 --> 00:01:42.827
+we might want to take different
+instructions. Imagine the customer
+
+37
+00:01:42.827 --> 00:01:45.844
+query had been classified into the
+product information category.
+
+38
+00:01:45.844 --> 00:01:48.526
+In the next instructions, we'll
+want to include
+
+39
+00:01:48.526 --> 00:01:50.873
+information about the
+products we have available.
+
+40
+00:01:51.554 --> 00:01:54.911
+And so, in this case,
+the classification would
+
+41
+00:01:54.911 --> 00:01:58.268
+have been primary, general inquiry,
+secondary, product information.
+
+42
+00:01:58.849 --> 00:02:01.254
+And so, let's dive into an example
+starting from there.
+
+43
+00:02:02.336 --> 00:02:04.040
+So, let's
+start with our usual setup.
+
+44
+00:02:08.729 --> 00:02:13.979
+So, for this inner monologue example,
+we'll start with our same
+
+45
+00:02:13.979 --> 00:02:16.365
+delimiters that we've been
+using.
+
+46
+00:02:17.186 --> 00:02:19.970
+And now, let's
+go through our system message.
+
+47
+00:02:22.600 --> 00:02:27.039
+And so, what we're doing here is asking
+the model to reason
+
+48
+00:02:27.039 --> 00:02:30.739
+about the answer before
+coming to its conclusion. So, the
+
+49
+00:02:30.739 --> 00:02:33.329
+instruction is, "Follow
+these steps to answer
+
+50
+00:02:33.329 --> 00:02:36.289
+the customer queries. The
+customer query will be
+
+51
+00:02:36.289 --> 00:02:38.509
+delimited with four hashtags.", our
+delimiter.
+
+52
+00:02:39.250 --> 00:02:41.334
+So, then we've
+split this up into steps.
+
+53
+00:02:42.056 --> 00:02:45.580
+So, the first step is to
+"Decide whether the user is asking
+
+54
+00:02:45.580 --> 00:02:47.929
+a question about a specific product
+or products.
+
+55
+00:02:47.929 --> 00:02:49.691
+And a product category doesn't
+count.".
+
+56
+00:02:50.773 --> 00:02:54.135
+Step two, so, "If the user is
+asking about specific products,
+
+57
+00:02:54.135 --> 00:02:56.885
+identify whether the products
+are in the following list.".
+
+58
+00:02:57.426 --> 00:03:00.926
+And now we've included a list
+of available products. So, here
+
+59
+00:03:00.926 --> 00:03:02.517
+we have five available products.
+
+
+60
+00:03:03.218 --> 00:03:07.594
+They're all varieties of laptops
+and these are all
+
+61
+00:03:07.594 --> 00:03:11.970
+made up products. They
+were actually generated by GPT-4.
+
+62
+00:03:11.970 --> 00:03:11.970
+
+
+63
+00:03:13.979 --> 00:03:16.689
+And step three,
+"If the message contains
+
+64
+00:03:16.689 --> 00:03:20.946
+products in the list above,
+list any assumptions that the user
+
+65
+00:03:20.946 --> 00:03:23.656
+is making in their message.
+For example,
+
+66
+00:03:23.656 --> 00:03:27.526
+that laptop X is bigger
+than laptop Y or that
+
+67
+00:03:27.526 --> 00:03:31.010
+laptop Z has a 2 year warranty."
+for example.
+
+68
+00:03:33.198 --> 00:03:35.783
+Step four is,
+"If the user made any assumptions,
+
+69
+00:03:35.783 --> 00:03:38.081
+figure out whether the
+assumption is true based
+
+70
+00:03:38.081 --> 00:03:39.230
+on your product information.".
+
+71
+00:03:39.791 --> 00:03:42.607
+And step five is, "First,
+politely correct the customer's
+
+72
+00:03:42.607 --> 00:03:44.171
+incorrect assumptions, if
+applicable. Only
+
+73
+00:03:44.171 --> 00:03:46.674
+mention or reference products
+in the list of
+
+74
+00:03:46.674 --> 00:03:49.490
+5 available products, as
+these are the only five
+
+75
+00:03:49.490 --> 00:03:52.619
+products that the store sells. And
+answer the customer in
+
+76
+00:03:52.619 --> 00:03:53.558
+a friendly tone."
+
+77
+00:03:54.420 --> 00:03:57.526
+And these kind of very pedantic
+instructions are probably
+
+78
+00:03:57.526 --> 00:03:59.597
+unnecessary for a
+more advanced language
+
+79
+00:03:59.597 --> 00:04:00.632
+model like GPT-4.
+
+80
+00:04:01.774 --> 00:04:04.881
+And then we'll ask the model to
+use the following format.
+
+81
+00:04:05.382 --> 00:04:09.944
+So, step one, delimiter, it's
+reasoning. Step two, delimiter, reasoning
+
+82
+00:04:09.944 --> 00:04:11.313
+and so on.
+
+83
+00:04:12.015 --> 00:04:14.364
+And using the delimiters
+will mean that it
+
+84
+00:04:14.364 --> 00:04:18.474
+will be easier for us later to get
+just this response to the customer.
+
+85
+00:04:18.474 --> 00:04:20.530
+And kind of cut off everything before.
+
+
+86
+00:04:23.057 --> 00:04:25.702
+So, now let's
+try an example user message.
+
+87
+00:04:27.205 --> 00:04:32.029
+So, our message is, "by how much is
+the BlueWave Chromebook more
+
+88
+00:04:32.029 --> 00:04:34.039
+expensive than the TechPro desktop?"
+
+
+89
+00:04:34.820 --> 00:04:37.170
+So, let's
+take a look at these two products.
+
+90
+00:04:39.249 --> 00:04:43.297
+The BlueWave Chromebook is 249.99.
+
+91
+00:04:44.119 --> 00:04:49.469
+And the TechPro desktop is actually 999.99.
+This is not actually true.
+
+92
+00:04:50.491 --> 00:04:55.170
+And so, let's see how the model
+handles this user request.
+
+93
+00:04:56.603 --> 00:04:59.434
+So, we'll
+format into our messages array. And
+
+94
+00:04:59.434 --> 00:05:00.850
+we'll get our response.
+
+95
+00:05:08.440 --> 00:05:10.050
+And then we'll print it.
+
+96
+00:05:16.233 --> 00:05:19.569
+And so what we're hoping for is
+that the model takes all of
+
+97
+00:05:19.569 --> 00:05:21.879
+these different steps
+and realises that the user has
+
+98
+00:05:21.879 --> 00:05:22.906
+made an incorrect assumption
+
+99
+00:05:23.467 --> 00:05:28.357
+and then follows the final step
+to politely correct the user.
+
+100
+00:05:29.800 --> 00:05:33.802
+And so, within this one prompt we've
+actually maintained a number of different
+
+101
+00:05:33.802 --> 00:05:36.880
+complex states that
+the system could be in. So, you
+
+102
+00:05:36.880 --> 00:05:40.266
+know, at any given point
+there could be a different output
+
+103
+00:05:40.266 --> 00:05:43.960
+from the previous step and we
+would want to do something different.
+
+104
+00:05:43.960 --> 00:05:46.115
+For example, if
+the user hadn't made
+
+105
+00:05:46.115 --> 00:05:50.117
+any assumptions in step 3, then in
+step 4 we wouldn't actually have
+
+106
+00:05:50.117 --> 00:05:53.196
+any output. So this is
+a pretty complicated instruction for
+
+107
+00:05:53.196 --> 00:05:57.505
+the model. So let's see
+if it did it right. So step 1, the
+
+108
+00:05:57.505 --> 00:06:01.199
+user is asking a question about specific
+products. They're asking about the
+
+109
+00:06:01.199 --> 00:06:03.046
+price difference between these
+two products.
+
+110
+00:06:03.046 --> 00:06:03.046
+
+
+111
+00:06:03.608 --> 00:06:06.584
+The user assumes that the BlueWave
+Chromebook is more
+
+112
+00:06:06.584 --> 00:06:09.559
+expensive than the TechBook Pro and
+this assumption is
+
+113
+00:06:09.559 --> 00:06:10.221
+actually incorrect.
+
+114
+00:06:10.902 --> 00:06:13.779
+It's reasoning through, taking
+longer to think about the problem.
+
+115
+00:06:13.779 --> 00:06:16.369
+In the same way that
+a human would also
+
+116
+00:06:16.369 --> 00:06:18.671
+take some time to
+reason about an answer
+
+117
+00:06:18.671 --> 00:06:21.548
+to any given question, the
+model performs better if it
+
+118
+00:06:21.548 --> 00:06:22.986
+also has time to think.
+
+119
+00:06:23.688 --> 00:06:27.058
+And so the final
+response to the user
+
+120
+00:06:27.058 --> 00:06:30.429
+is the BlueWave Chromebook
+is actually less expensive
+
+121
+00:06:30.429 --> 00:06:34.642
+than the TechBook Pro.
+The TechBook Pro desktop costs $999.99,
+
+122
+00:06:34.642 --> 00:06:37.170
+while
+the BlueWave Chromebook costs $249.99.
+
+123
+00:06:37.170 --> 00:06:37.170
+
+
+124
+00:06:38.618 --> 00:06:41.824
+And so let's
+see another example of a user message.
+
+125
+00:06:42.806 --> 00:06:45.583
+And also at this point,
+feel free to pause the
+
+126
+00:06:45.583 --> 00:06:47.250
+video and try your own messages.
+
+127
+00:06:49.580 --> 00:06:52.899
+So let's format this user message. So
+the question is, "do
+
+128
+00:06:52.899 --> 00:06:56.822
+you sell TVs?". And if you remember in
+our product list, we've only
+
+129
+00:06:56.822 --> 00:06:59.840
+listed different computers. So let's
+see what the model says.
+
+130
+00:07:02.265 --> 00:07:05.304
+So in this case, step one,
+the user is asking
+
+131
+00:07:05.304 --> 00:07:08.039
+if the store sells TVs,
+but TVs are not
+
+132
+00:07:08.039 --> 00:07:11.990
+listed in the available products.
+So as you can see, the model then
+
+133
+00:07:11.990 --> 00:07:15.636
+skips to the response to user
+step because it realizes that the
+
+134
+00:07:15.636 --> 00:07:17.460
+intermediary steps are
+not actually necessary.
+
+135
+00:07:17.460 --> 00:07:21.714
+I will say that we did ask for
+the output in this specific format.
+
+136
+00:07:21.714 --> 00:07:24.449
+So technically, the model hasn't
+exactly followed our request.
+
+137
+00:07:25.051 --> 00:07:27.115
+Again, more advanced models will
+be better at doing that.
+
+138
+00:07:27.936 --> 00:07:30.560
+And so in this case,
+our response to the user is, "I'm
+
+139
+00:07:30.560 --> 00:07:32.746
+sorry, but
+we do not sell TVs at the store."
+
+140
+00:07:32.746 --> 00:07:32.746
+
+
+141
+00:07:33.307 --> 00:07:35.650
+And then it lists the available
+products.
+
+142
+00:07:37.480 --> 00:07:40.243
+So again, feel free to try
+some of your own responses.
+
+143
+00:07:41.004 --> 00:07:45.371
+And so now, we only really want
+this part of the response.
+
+144
+00:07:45.371 --> 00:07:49.737
+We wouldn't want to show the earlier
+parts to the user. So
+
+145
+00:07:49.737 --> 00:07:54.103
+what we can do is actually just cut
+the string at the
+
+146
+00:07:54.103 --> 00:07:57.014
+last occurrence of this
+delimiter token or string
+
+147
+00:07:57.014 --> 00:07:59.924
+of four hashtags and
+then only print the
+
+148
+00:07:59.924 --> 00:08:02.108
+final part of the model output.
+
+
+149
+00:08:03.571 --> 00:08:07.871
+So let's write some code to get only
+the final part of this string. So
+
+150
+00:08:07.871 --> 00:08:10.164
+we're going
+to use a try except block.
+
+151
+00:08:10.164 --> 00:08:10.164
+
+
+152
+00:08:10.805 --> 00:08:15.291
+To gracefully handle errors
+in case the model has some kind of
+
+153
+00:08:15.291 --> 00:08:18.281
+unpredictable output and doesn't
+actually use these characters.
+
+154
+00:08:19.082 --> 00:08:22.435
+And so we're going to say our
+final response is the
+
+155
+00:08:22.435 --> 00:08:25.483
+response and then we're going
+to split the string at
+
+156
+00:08:25.483 --> 00:08:26.397
+the delimiter string.
+
+157
+00:08:27.039 --> 00:08:30.329
+And because we want the final
+occurrence, we just want to get the
+
+158
+00:08:30.329 --> 00:08:31.848
+last item in the output list.
+
+159
+00:08:32.870 --> 00:08:35.055
+And then we're
+going to strip any white space.
+
+160
+00:08:36.137 --> 00:08:38.513
+Because as you can see,
+there might be white
+
+161
+00:08:38.513 --> 00:08:39.570
+space after the characters.
+
+162
+00:08:40.506 --> 00:08:50.113
+Then we're going to catch any
+errors and have a
+
+163
+00:08:50.113 --> 00:09:01.642
+fallback response which is, "Sorry,
+I'm having trouble right now. Please try
+
+164
+00:09:01.642 --> 00:09:09.328
+asking another question.". And then
+let's print our
+
+165
+00:09:09.328 --> 00:09:11.250
+final response.
+
+166
+00:09:22.131 --> 00:09:24.726
+And so as you can see,
+we just cut the string
+
+167
+00:09:24.726 --> 00:09:27.793
+to get this final output.
+And so this is what we would show
+
+168
+00:09:27.793 --> 00:09:29.680
+to the user if
+we were building this
+
+169
+00:09:29.680 --> 00:09:30.388
+into an application.
+
+170
+00:09:32.372 --> 00:09:35.909
+And overall, I just want to call
+out this prompt might be
+
+171
+00:09:35.909 --> 00:09:39.151
+slightly convoluted for this task.
+You might not actually need all
+
+172
+00:09:39.151 --> 00:09:42.982
+of these intermediate steps.
+And so why don't you try and see if
+
+173
+00:09:42.982 --> 00:09:45.929
+you can find an easier
+way to do the same
+
+174
+00:09:45.929 --> 00:09:47.403
+task in your own prompt.
+
+175
+00:09:50.008 --> 00:09:52.490
+And in general,
+finding the optimal trade-off
+
+176
+00:09:52.490 --> 00:09:54.618
+in prompt complexity
+requires some experimentation.
+
+177
+00:09:54.618 --> 00:09:54.618
+
+
+178
+00:09:55.179 --> 00:09:58.072
+So definitely good to try a
+number of different
+
+179
+00:09:58.072 --> 00:10:01.929
+prompts before deciding to use one.
+And in the next video, we'll
+
+180
+00:10:01.929 --> 00:10:04.821
+learn another strategy to handle complex
+tasks by splitting
+
+181
+00:10:04.821 --> 00:10:07.714
+these complex tasks
+into a series of simpler subtasks
+
+182
+00:10:07.714 --> 00:10:11.250
+rather than trying to do the
+whole task in one prompt.

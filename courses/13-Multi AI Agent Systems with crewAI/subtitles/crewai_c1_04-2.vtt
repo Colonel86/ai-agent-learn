@@ -1,0 +1,1458 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.168 --> 00:00:02.802
+Okay.
+
+2
+00:00:02.802 --> 00:00:06.573
+By now you're starting notice
+you're seeing how these things
+
+3
+00:00:06.573 --> 00:00:07.974
+are coming together, right?
+
+4
+00:00:07.974 --> 00:00:11.244
+You can see how you can view these agents
+and how they work
+
+5
+00:00:11.244 --> 00:00:13.346
+and how can they be super helpful.
+
+6
+00:00:13.346 --> 00:00:15.815
+So let's try to expand on that.
+
+7
+00:00:15.815 --> 00:00:18.118
+Let's start to think about
+what other use cases.
+
+8
+00:00:18.118 --> 00:00:19.686
+What else can we build.
+
+9
+00:00:19.686 --> 00:00:23.823
+In this lesson we're going to be using
+a multi-agent system
+
+10
+00:00:23.990 --> 00:00:26.693
+to help with customer support automation.
+
+11
+00:00:26.693 --> 00:00:29.662
+So it's a different use case
+but a very interesting one.
+
+12
+00:00:29.829 --> 00:00:32.699
+Stick around I'm
+sure that you're going to like this one.
+
+13
+00:00:32.699 --> 00:00:34.634
+Let's dive into it.
+
+14
+00:00:34.634 --> 00:00:36.569
+All right. Welcome to this lesson.
+
+15
+00:00:36.569 --> 00:00:39.806
+I'm super excited about this one
+because we're going to be talking about
+
+16
+00:00:40.040 --> 00:00:43.843
+how to use multi-agents
+for customer support automation.
+
+17
+00:00:44.110 --> 00:00:46.813
+And that is such a big use case.
+
+18
+00:00:46.813 --> 00:00:50.483
+If you think about customer support
+it feels like a no-brainer
+
+19
+00:00:50.483 --> 00:00:55.288
+to have AI agents, to help our customers,
+to have just a better service
+
+20
+00:00:55.522 --> 00:00:59.192
+in being able to tap into all of the docs,
+knowledges,
+
+21
+00:00:59.259 --> 00:01:02.595
+and help center
+in order to provide very meaningful
+
+22
+00:01:02.595 --> 00:01:05.899
+answers to these people
+that are trying to use customer support.
+
+23
+00:01:06.099 --> 00:01:08.902
+Let's try to do some code
+and see how that works.
+
+24
+00:01:08.902 --> 00:01:12.605
+Again I'm going to start
+just doing some boilerplate code
+
+25
+00:01:12.605 --> 00:01:15.108
+to make sure that warnings don't
+get in the way.
+
+26
+00:01:15.108 --> 00:01:18.778
+And I'm also going to import
+the same components that we learned
+
+27
+00:01:18.978 --> 00:01:22.282
+on the last lesson,
+where we bring the agent,
+
+28
+00:01:22.282 --> 00:01:25.285
+the task and the crew classes into this.
+
+29
+00:01:25.285 --> 00:01:29.756
+For this example, we are going to be using
+GPT-3.5 turbo once again.
+
+30
+00:01:30.056 --> 00:01:33.059
+So let's go ahead and set that
+environment variable.
+
+31
+00:01:33.660 --> 00:01:34.327
+All right.
+
+32
+00:01:34.327 --> 00:01:39.032
+So now let's dive into agents
+and how we can make them great.
+
+33
+00:01:39.265 --> 00:01:40.633
+How we can bring everything
+
+34
+00:01:40.633 --> 00:01:44.337
+that we learn in the slides
+into actually creating this agents.
+
+35
+00:01:44.637 --> 00:01:48.141
+So we know that agents are impacted
+by the role-playing,
+
+36
+00:01:48.141 --> 00:01:52.212
+the focus, the cooperation, the tools,
+the guardrails and the memories.
+
+37
+00:01:52.245 --> 00:01:52.645
+All right.
+
+38
+00:01:52.645 --> 00:01:57.645
+So for this use case, we are going to be
+building a support multi-agent system.
+
+39
+00:01:58.718 --> 00:02:00.553
+The goal is going to be to help
+
+40
+00:02:00.553 --> 00:02:02.555
+supporting customers that might have wing queries about a product.
+
+41
+00:02:02.555 --> 00:02:04.224
+supporting customers that might have inquiries about a product.
+
+42
+00:02:04.257 --> 00:02:07.660
+So the first agent that we are going to
+create is a support agent.
+
+43
+00:02:07.727 --> 00:02:10.730
+So this support agent
+should be straightforward.
+
+44
+00:02:10.864 --> 00:02:15.401
+You can see here that the role is
+a senior support representative.
+
+45
+00:02:15.668 --> 00:02:18.571
+You can see how we use the key
+word "senior" here
+
+46
+00:02:18.571 --> 00:02:21.741
+again to imply that we expect answers
+
+47
+00:02:21.741 --> 00:02:23.877
+that are a little bit more polished
+
+48
+00:02:23.877 --> 00:02:27.413
+than what you would
+mostly get out of the box. For the goal,
+
+49
+00:02:27.447 --> 00:02:32.085
+we also mentioned that the goal
+is to be super friendly and helpful.
+
+50
+00:02:32.218 --> 00:02:36.923
+So there will also play a piece
+on every stab on the process.
+
+51
+00:02:37.090 --> 00:02:38.625
+And for the backstory,
+we basically told this agent works at crewAI
+
+52
+00:02:38.625 --> 00:02:40.426
+And for the backstory,
+we basically told this agent works at crewAI
+
+53
+00:02:40.460 --> 00:02:44.130
+and they are helping a specific customer.
+
+54
+00:02:44.330 --> 00:02:46.432
+You can see the interpolation
+happening here.
+
+55
+00:02:46.432 --> 00:02:49.435
+Again,
+trying to answer a specific question.
+
+56
+00:02:49.502 --> 00:02:52.238
+But that agent alone
+is not going to help us.
+
+57
+00:02:52.238 --> 00:02:54.707
+We're going to need another agent as well.
+
+58
+00:02:54.707 --> 00:02:59.345
+So this other agent is going to be
+a support quality assurance agent.
+
+59
+00:02:59.379 --> 00:03:03.616
+So let me copy that and paste it here.
+
+60
+00:03:03.616 --> 00:03:05.518
+So this agent exists
+
+61
+00:03:05.518 --> 00:03:09.689
+to help the support agent by fact
+checking everything that it says
+
+62
+00:03:09.822 --> 00:03:14.360
+and making sure that is the best response
+possible for this customer.
+
+63
+00:03:14.627 --> 00:03:15.128
+All right.
+
+64
+00:03:15.128 --> 00:03:18.765
+So now we have both our support
+agent in our support QA agent.
+
+65
+00:03:18.798 --> 00:03:20.867
+So far we can see how we are doing
+
+66
+00:03:20.867 --> 00:03:24.170
+very focused approach here.
+Where we are prompting the agents
+
+67
+00:03:24.170 --> 00:03:27.574
+to be very much
+getting into the character of their role.
+
+68
+00:03:27.707 --> 00:03:32.707
+You can also see how one agent
+is not allowed to do any delegation,
+
+69
+00:03:32.779 --> 00:03:35.782
+because we are setting
+allow delegation to false,
+
+70
+00:03:36.115 --> 00:03:40.286
+but we are not doing that for the support
+quality assurance agent.
+
+71
+00:03:40.753 --> 00:03:44.057
+That means that this agent
+can delegate, work
+
+72
+00:03:44.057 --> 00:03:47.961
+back to the original support agent
+if it decides to.
+
+73
+00:03:48.261 --> 00:03:51.464
+So this is an important trait
+for your QA agents.
+
+74
+00:03:51.664 --> 00:03:55.368
+Make sure that if they find something
+that doesn't feel right,
+
+75
+00:03:55.602 --> 00:03:58.104
+they don't necessarily
+need to fix themselves,
+
+76
+00:03:58.104 --> 00:04:02.442
+but they can actually delegated back
+to another agent that might be better
+
+77
+00:04:02.442 --> 00:04:06.579
+suited to do it, because either has like
+the right set of tools
+
+78
+00:04:06.779 --> 00:04:10.216
+or the right set of backstory,
+goals and roles.
+
+79
+00:04:10.416 --> 00:04:14.053
+So you might be wondering
+when exactly an agent decides
+
+80
+00:04:14.053 --> 00:04:18.758
+that's reasonable to delegate work
+to another, or to ask question to another.
+
+81
+00:04:19.359 --> 00:04:23.396
+And this is some of the differences
+between regular
+
+82
+00:04:23.396 --> 00:04:27.433
+engineering
+and AI engineering. AI applications,
+
+83
+00:04:27.467 --> 00:04:32.467
+again, they have fuzzy inputs, fuzzy transformations and fuzzy outputs,
+
+84
+00:04:33.606 --> 00:04:37.443
+meaning that they don't necessarily
+follow the same pattern all the time.
+
+85
+00:04:37.477 --> 00:04:41.748
+So in this case,
+we're relying on the brains, the LLMs,
+
+86
+00:04:41.914 --> 00:04:46.914
+to make a conscious, reasonable call on
+when to delegate and when not to delegate.
+
+87
+00:04:47.553 --> 00:04:50.757
+All that goes back to the fact
+that these models
+
+88
+00:04:50.757 --> 00:04:54.027
+have a level of cognition,
+because they understand the language.
+
+89
+00:04:54.394 --> 00:04:59.265
+So depending on the customer inquiry,
+they may understand that
+
+90
+00:04:59.299 --> 00:05:02.302
+it's worth delegating
+and to do more research.
+
+91
+00:05:02.402 --> 00:05:07.373
+But if it's more simple inquiry
+that demands a simpler answer.
+
+92
+00:05:07.373 --> 00:05:09.609
+You might not want to delegate it back.
+
+93
+00:05:09.609 --> 00:05:14.047
+So this is not something that you
+necessarily will have full control off.
+
+94
+00:05:14.380 --> 00:05:17.083
+But you don't really want to, right?
+
+95
+00:05:17.083 --> 00:05:18.551
+That's the magic of AI
+
+96
+00:05:18.551 --> 00:05:21.788
+apps. It's the ability for these apps to react
+
+97
+00:05:21.788 --> 00:05:25.858
+on runtime, on how they're going to handle
+with the information that they're
+
+98
+00:05:25.858 --> 00:05:26.959
+being handled.
+
+99
+00:05:26.959 --> 00:05:29.829
+So make sure to keep that in mind,
+
+100
+00:05:29.829 --> 00:05:33.733
+that allowing an agent to delegate work
+and ask questions
+
+101
+00:05:33.933 --> 00:05:37.270
+don't necessarily imply
+that it's going to do it every time, but
+
+102
+00:05:37.270 --> 00:05:42.175
+that instead will give it the ption to do
+so if it chooses to.
+
+103
+00:05:42.475 --> 00:05:47.475
+So this is one way on how you can get
+your agents to collaborate together
+
+104
+00:05:47.947 --> 00:05:52.947
+in a great example, and how collaboration
+helps with better quality responses.
+
+105
+00:05:53.653 --> 00:05:58.653
+So this is a very common pattern
+that we see throughout many users on crewAI.
+
+106
+00:05:58.858 --> 00:06:02.762
+I usually having a final agent
+that is kind of like
+
+107
+00:06:02.762 --> 00:06:06.866
+a quality assurance
+agent helps a lot and go a long way
+
+108
+00:06:07.133 --> 00:06:10.803
+because they can do a final pass
+on whatever you want to do:
+
+109
+00:06:11.003 --> 00:06:14.707
+writing a blog post, entering a customer,
+whatever it might be.
+
+110
+00:06:14.974 --> 00:06:19.712
+So I do recommend you
+considering adding a QA agent of sorts
+
+111
+00:06:19.979 --> 00:06:22.749
+into whatever
+multi-agent systems that you do,
+
+112
+00:06:22.749 --> 00:06:27.749
+and that does tend to perform better
+than regular, regular agents without it.
+
+113
+00:06:28.621 --> 00:06:33.621
+So far, this is a great example of role
+playing focus and cooperation.
+
+114
+00:06:34.427 --> 00:06:34.794
+All right.
+
+115
+00:06:34.794 --> 00:06:39.794
+So now let's move on and talk about tools,
+guardrails and memory.
+
+116
+00:06:40.666 --> 00:06:44.537
+For that, we're going to be using crewAI tools.
+
+117
+00:06:44.937 --> 00:06:49.937
+So crewAI also has a tools package with a set of tools that you can use.
+
+118
+00:06:51.177 --> 00:06:51.210
+They have simple ones, like the ones
+that allow you to search the internet
+
+119
+00:06:51.210 --> 00:06:55.148
+They have simple ones, like the ones
+that allow you to search the internet
+
+120
+00:06:55.348 --> 00:06:58.418
+to more complex ones
+that allow you to do
+
+121
+00:06:58.451 --> 00:07:02.488
+RAG over GitHub
+if you want to, or websites.
+
+122
+00:07:02.755 --> 00:07:04.590
+There is many that you can explore,
+
+123
+00:07:04.590 --> 00:07:07.493
+but we're going to stick with
+some of the simpler ones in here.
+
+124
+00:07:07.493 --> 00:07:09.996
+We're going to use the server dev tool.
+
+125
+00:07:09.996 --> 00:07:12.932
+We're going to use the scrape website too.
+
+126
+00:07:12.932 --> 00:07:15.802
+And we're going to use the website
+search tool.
+
+127
+00:07:15.802 --> 00:07:19.372
+Server dev to basically integrates
+with server.
+
+128
+00:07:19.572 --> 00:07:23.843
+It's an external service
+that allows you to search Google. Scrape
+
+129
+00:07:23.843 --> 00:07:28.843
+website is a simple scraper
+that allows your agent to access a given
+
+130
+00:07:29.115 --> 00:07:32.919
+url and extract
+the contents of that. And the website
+
+131
+00:07:32.919 --> 00:07:37.523
+search tool,
+is actually doing RAG over a website.
+
+132
+00:07:37.790 --> 00:07:40.193
+If you don't know what a RAG means, it's
+basically
+
+133
+00:07:40.193 --> 00:07:44.030
+doing a semantic search
+over the content of that website.
+
+134
+00:07:44.063 --> 00:07:47.366
+So, in here you can see that
+we are importing the crewAI
+
+135
+00:07:47.366 --> 00:07:51.637
+tools package in then, these three
+classes from it.
+
+136
+00:07:51.637 --> 00:07:54.006
+And so let's go ahead and run that.
+
+137
+00:07:54.006 --> 00:07:57.944
+So this is a great place where you can
+also think about other tools.
+
+138
+00:07:58.110 --> 00:08:02.081
+So we're not going to talk about
+creating our custom tools right now.
+
+139
+00:08:02.281 --> 00:08:05.318
+But this is a place
+where you could bring like tools
+
+140
+00:08:05.318 --> 00:08:09.355
+that load customer data
+that tap into previous conversations
+
+141
+00:08:09.555 --> 00:08:13.426
+or that load data from a CRM,
+checking existing bugs,
+
+142
+00:08:13.426 --> 00:08:17.129
+feature requests, or ongoing tickets,
+all useful tools
+
+143
+00:08:17.129 --> 00:08:22.129
+that would help these agents to provide
+better answers to the customer
+
+144
+00:08:22.368 --> 00:08:23.035
+inquiry.
+
+145
+00:08:23.035 --> 00:08:27.573
+So you can see here on how
+you should be thinking about what tools
+
+146
+00:08:27.573 --> 00:08:29.375
+you should provide to your agents
+
+147
+00:08:29.375 --> 00:08:32.378
+in order
+for them to provide meaningful responses.
+
+148
+00:08:32.545 --> 00:08:33.212
+All right.
+
+149
+00:08:33.212 --> 00:08:38.150
+So for every crewAI tool, there is a few
+different ways that you can use it.
+
+150
+00:08:38.484 --> 00:08:41.487
+Let's say that we want to use the server dev tool.
+
+151
+00:08:41.754 --> 00:08:43.890
+This is the only thing that we would need to do.
+
+152
+00:08:43.890 --> 00:08:46.392
+Create an instance
+of the server devtool,
+
+153
+00:08:46.392 --> 00:08:50.129
+and we assign that into a variable
+and we should be able to use that.
+
+154
+00:08:50.530 --> 00:08:53.900
+We can also do the same thing
+for the scrape website
+
+155
+00:08:53.900 --> 00:08:56.669
+tool, where we create
+an instance of that.
+
+156
+00:08:56.669 --> 00:08:58.371
+And now we have that a tool.
+
+157
+00:08:58.371 --> 00:09:01.207
+And we can assign that to an agent
+or to a task.
+
+158
+00:09:01.207 --> 00:09:05.611
+But another interesting feature of crewAI is
+that you can also
+
+159
+00:09:05.611 --> 00:09:09.549
+be more specific about how you want
+these tools to be used.
+
+160
+00:09:09.949 --> 00:09:13.819
+So let's say that in this case
+I want of my agents
+
+161
+00:09:13.819 --> 00:09:16.856
+to only search the crewAI docs.
+
+162
+00:09:17.056 --> 00:09:21.160
+So I don't want it to be able
+to scrape any website out there.
+
+163
+00:09:21.327 --> 00:09:26.327
+But I wanted to scrape specifically,
+one single page off our documentation.
+
+164
+00:09:26.499 --> 00:09:31.499
+So I can actually do it when I instantiate
+this scrape website too.
+
+165
+00:09:32.505 --> 00:09:36.609
+I can set an optional argument
+called website URL,
+
+166
+00:09:36.909 --> 00:09:40.780
+and in that URL I can set a specific URL
+
+167
+00:09:40.780 --> 00:09:44.116
+that I want this to to be able to scrape.
+
+168
+00:09:44.617 --> 00:09:47.787
+So here is a great use case
+where you can see that
+
+169
+00:09:47.820 --> 00:09:52.191
+you use the same tool,
+but one tool, would allow your agent
+
+170
+00:09:52.191 --> 00:09:55.628
+to scrape any URL
+that it becomes aware of,
+
+171
+00:09:55.861 --> 00:10:00.861
+as long as the agent teams that are
+scraping that URL would be beneficial.
+
+172
+00:10:01.300 --> 00:10:05.204
+The second one allows your agent
+only to scrape one
+
+173
+00:10:05.204 --> 00:10:08.874
+certain URL,
+and not every URL that it finds.
+
+174
+00:10:09.075 --> 00:10:13.546
+So you can see how this can be very
+versatile as you're building our agents.
+
+175
+00:10:13.879 --> 00:10:17.183
+For now, let's focus only on our docs
+
+176
+00:10:17.183 --> 00:10:20.620
+search tool
+and see what our agents can do with that.
+
+177
+00:10:21.754 --> 00:10:22.088
+All right.
+
+178
+00:10:22.088 --> 00:10:23.522
+So now we already
+
+179
+00:10:23.522 --> 00:10:26.525
+understand
+how we can bring tools into this.
+
+180
+00:10:26.592 --> 00:10:31.230
+So how do we assign those tools?
+How do we give our agents those tools?
+
+181
+00:10:31.697 --> 00:10:35.034
+There are basically two different ways
+that you can give your agent tools.
+
+182
+00:10:35.101 --> 00:10:40.101
+You can give them at the agent level
+or you can give them at the task level.
+
+183
+00:10:41.007 --> 00:10:46.007
+What that means is that if you give your
+agent a tool that tool belongs to the agent,
+
+184
+00:10:46.579 --> 00:10:50.416
+it can potentially use that
+to for any task that it performs.
+
+185
+00:10:50.750 --> 00:10:54.520
+But if you give it to the task,
+that means that the agent will
+
+186
+00:10:54.520 --> 00:10:58.557
+only use that tool
+when performing that specific task.
+
+187
+00:10:58.591 --> 00:11:01.594
+So an easier way to put this, is that
+
+188
+00:11:01.694 --> 00:11:05.364
+task tools override the agent tools.
+
+189
+00:11:05.364 --> 00:11:08.701
+So an agent
+might have ten tools at his disposal.
+
+190
+00:11:08.868 --> 00:11:13.472
+But when performing a given task,
+if that task only says that
+
+191
+00:11:13.472 --> 00:11:18.472
+it has three tools at his disposal, then
+the agent will only use those three tools.
+
+192
+00:11:18.644 --> 00:11:22.048
+So let's start by creating our first task.
+
+193
+00:11:22.048 --> 00:11:27.048
+And the first task that we are going to do
+is the inquiry resolution task.
+
+194
+00:11:27.219 --> 00:11:32.219
+So in here, you can see that we are playing
+even more with the interpolation.
+
+195
+00:11:32.525 --> 00:11:34.226
+Where we are saying, "hey,
+
+196
+00:11:34.226 --> 00:11:37.730
+this customer, just reached out
+with a super, super important ask.
+
+197
+00:11:38.097 --> 00:11:39.632
+Here is the inquiry.
+
+198
+00:11:39.632 --> 00:11:43.469
+The person that works at this customer
+is the one that reaches it out.
+
+199
+00:11:43.502 --> 00:11:47.773
+Make sure to use everything that you know
+to provide the best support possible.
+
+200
+00:11:47.973 --> 00:11:50.876
+You must strive
+to provide a complete answer."
+
+201
+00:11:50.876 --> 00:11:55.014
+So you can see here how this looks like
+more, regular prompting.
+
+202
+00:11:55.181 --> 00:11:58.451
+But we are using that interpolation
+in a lot of different ways.
+
+203
+00:11:58.517 --> 00:12:01.921
+And then again,
+we come with an expected output which
+
+204
+00:12:02.088 --> 00:12:06.158
+very clear instructions and what we want
+to get back from this agent.
+
+205
+00:12:06.225 --> 00:12:09.195
+And we provide the tools in here.
+
+206
+00:12:09.195 --> 00:12:12.598
+So the tools is just an argument
+within the task.
+
+207
+00:12:12.598 --> 00:12:16.702
+And it's an array that includes all
+the tools that you want to be available
+
+208
+00:12:16.702 --> 00:12:19.371
+when the agent performs this task.
+
+209
+00:12:19.371 --> 00:12:23.209
+In this case,
+it's only one tool, docs scrape tool.
+
+210
+00:12:23.442 --> 00:12:26.212
+So let's go ahead and create this task.
+
+211
+00:12:26.212 --> 00:12:29.215
+Now we're going to create our new task.
+
+212
+00:12:29.215 --> 00:12:32.518
+That is going to be the task
+that the key way
+
+213
+00:12:32.551 --> 00:12:37.551
+agent will use in order to review the work
+that the support agent did.
+
+214
+00:12:37.590 --> 00:12:42.528
+So it's a similar task
+that doesn't use interpolation
+
+215
+00:12:42.795 --> 00:12:45.731
+but rechecks
+what the agent viewed.
+
+216
+00:12:46.232 --> 00:12:50.936
+You can see that in this case
+this task has no tools at its disposal,
+
+217
+00:12:51.137 --> 00:12:54.173
+meaning that the QA agent,
+when performing this
+
+218
+00:12:54.173 --> 00:12:57.176
+task, won't be able to look at our docs.
+
+219
+00:12:57.209 --> 00:13:02.209
+It's purely assessing what is the actual
+response by the support agent wrote.
+
+220
+00:13:03.549 --> 00:13:04.016
+All right.
+
+221
+00:13:04.016 --> 00:13:06.952
+So now we got our two tasks
+that were created.
+
+222
+00:13:06.952 --> 00:13:07.920
+That's great.
+
+223
+00:13:07.920 --> 00:13:11.490
+So let's put our crew together.
+Create our crew.
+
+224
+00:13:12.091 --> 00:13:15.795
+And in this crew,
+we're going to bring our two agents
+
+225
+00:13:15.795 --> 00:13:18.998
+the support agent
+and the support quality assurance agent.
+
+226
+00:13:19.298 --> 00:13:23.435
+And also the two tasks
+the Inquiry Resolution and Quality
+
+227
+00:13:23.435 --> 00:13:25.137
+Assurance review task.
+
+228
+00:13:25.137 --> 00:13:29.208
+And also, you notice
+that we're using memory for this one.
+
+229
+00:13:29.341 --> 00:13:32.912
+So using memory with crewAI
+is super easy.
+
+230
+00:13:32.978 --> 00:13:34.880
+You don't have to worry about it.
+
+231
+00:13:34.880 --> 00:13:36.982
+You don't have to think about it too much.
+
+232
+00:13:36.982 --> 00:13:40.052
+You can set this one
+single attribute on your crew,
+
+233
+00:13:40.319 --> 00:13:43.656
+and that enables
+all those memories for you.
+
+234
+00:13:43.756 --> 00:13:47.526
+The short term memory, the long term
+memory and the entity memory.
+
+235
+00:13:47.660 --> 00:13:52.031
+So you don't have to configure anything
+other than set this one
+
+236
+00:13:52.031 --> 00:13:55.034
+flag and everything works out of the box.
+
+237
+00:13:55.100 --> 00:13:58.838
+So let's now focus on executing this crew
+
+238
+00:13:58.838 --> 00:14:01.907
+so that we can actually get some results from it.
+
+239
+00:14:01.907 --> 00:14:05.811
+In order to execute this crew,
+we need to pass inputs to it.
+
+240
+00:14:06.111 --> 00:14:06.779
+We need to basically override
+all those interpolations
+
+241
+00:14:06.779 --> 00:14:09.748
+We need to basically override
+all those interpolations
+
+242
+00:14:09.748 --> 00:14:13.652
+that we did in the tasks
+and in the agents definitions.
+
+243
+00:14:13.686 --> 00:14:18.424
+So in this case
+we had three main interpolation variables.
+
+244
+00:14:18.591 --> 00:14:21.760
+We had the customer
+the person and the inquiry.
+
+245
+00:14:21.760 --> 00:14:24.897
+Here, we are saying
+that the customer is DeepLearning.AI.
+
+246
+00:14:25.064 --> 00:14:28.067
+The person that is asking
+the question is Andrew.
+
+247
+00:14:28.367 --> 00:14:33.367
+In the inquiry is it needs help
+setting up a crew and kicking it off.
+
+248
+00:14:33.739 --> 00:14:37.843
+And you want to make sure that it's
+using memory to set up that crew.
+
+249
+00:14:38.177 --> 00:14:42.448
+Can the agents provide some guidance
+and actually help Andrew with that?
+
+250
+00:14:42.648 --> 00:14:46.452
+Let's see how our agents do in
+trying to help Andrew.
+
+251
+00:14:46.752 --> 00:14:50.422
+So from the get-go
+you can see that our senior support
+
+252
+00:14:50.456 --> 00:14:53.425
+representative
+is kind of like kicking things off
+
+253
+00:14:53.525 --> 00:14:57.529
+starting to look
+into the issue that Andrew brought up.
+
+254
+00:14:57.863 --> 00:15:00.966
+You can see here
+the interpolation play its part
+
+255
+00:15:01.133 --> 00:15:04.770
+where DeepLearning.AI, it's
+kind of like popping up in the task.
+
+256
+00:15:04.837 --> 00:15:09.837
+So we can see that the agent now decides
+to read the website content, and it's
+
+257
+00:15:10.843 --> 00:15:14.613
+actually looking into the documentation
+that we provided it with.
+
+258
+00:15:14.713 --> 00:15:19.713
+So with the access to that documentation,
+it's learning everything about crewAI
+
+259
+00:15:19.952 --> 00:15:24.089
+and how to create these agents, how to
+create the crews and how to kick it off.
+
+260
+00:15:24.123 --> 00:15:26.492
+And then it comes up with an answer.
+
+261
+00:15:26.492 --> 00:15:28.928
+In this answer
+you can see that it's super polite.
+
+262
+00:15:28.928 --> 00:15:30.362
+It's says, "hey, Andrew.
+
+263
+00:15:30.362 --> 00:15:34.066
+Hey, dear Andrew,
+thank you for reaching out for assistance..."
+
+264
+00:15:34.066 --> 00:15:38.304
+And then goes on into explaining
+how to install both crewAI,
+
+265
+00:15:38.570 --> 00:15:43.570
+crewAI tools, how to create agents,
+and then how to create a crew
+
+266
+00:15:43.809 --> 00:15:47.746
+with the memory and everything with it.
+And you can see that once
+
+267
+00:15:47.746 --> 00:15:51.717
+that this work is done,
+we now have our next agent.
+
+268
+00:15:51.917 --> 00:15:53.252
+The support QA
+
+269
+00:15:53.252 --> 00:15:57.389
+specialist kicks off to make sure
+that this is the best answer possible.
+
+270
+00:15:57.489 --> 00:16:00.492
+So in here you can see that it didn't
+
+271
+00:16:00.492 --> 00:16:03.495
+really like some of the responses.
+
+272
+00:16:03.495 --> 00:16:07.132
+So we decided to delegate the work
+back to the coworker
+
+273
+00:16:07.433 --> 00:16:10.936
+asks this to review
+and revise the response to ensure
+
+274
+00:16:10.936 --> 00:16:14.006
+that it's comprehensive,
+accurate, and friendly.
+
+275
+00:16:14.473 --> 00:16:17.509
+So now, if we write being a little bit
+
+276
+00:16:17.509 --> 00:16:20.879
+more friendly on the response,
+you can see that it's more direct.
+
+277
+00:16:21.080 --> 00:16:23.916
+It's basically saying like,
+this is how you set our crew
+
+278
+00:16:23.916 --> 00:16:25.784
+in, this is how you add memory.
+
+279
+00:16:25.784 --> 00:16:30.089
+Because those were the specific topics
+that Andrew originally asked for.
+
+280
+00:16:30.122 --> 00:16:33.659
+So, you can see here
+how the answer looks way better.
+
+281
+00:16:33.659 --> 00:16:36.261
+And now we should be able
+to get back to Andrew with that.
+
+282
+00:16:36.261 --> 00:16:40.132
+You can see that the agent still
+is not super fan of that.
+
+283
+00:16:40.132 --> 00:16:43.402
+So we decided to ask question
+to the coworker again
+
+284
+00:16:43.602 --> 00:16:48.007
+to confirm if those are how the steps
+to create a crew and to add memory.
+
+285
+00:16:48.140 --> 00:16:50.476
+And if there's nothing
+that is missing in there.
+
+286
+00:16:50.476 --> 00:16:54.380
+So this agent kind of gives like more information around
+
+287
+00:16:54.646 --> 00:16:56.515
+anything that might be helpful.
+
+288
+00:16:56.515 --> 00:16:59.651
+And after that it puts together
+a final answer.
+
+289
+00:16:59.818 --> 00:17:02.287
+And the final answer
+says: Hello DeepLearning.AI,
+
+290
+00:17:02.287 --> 00:17:05.824
+Thank you for reaching out
+for assistance in setting up a crew
+
+291
+00:17:05.991 --> 00:17:07.292
+and adding memory.
+
+292
+00:17:07.292 --> 00:17:11.196
+I have reviewed the response draft
+and made some revisions to ensure clarity
+
+293
+00:17:11.196 --> 00:17:12.297
+and completeness.
+
+294
+00:17:12.297 --> 00:17:15.701
+Below are the steps
+that you need to follow." And then goes on
+
+295
+00:17:15.901 --> 00:17:19.705
+like with the steps to create the crew
+and to add memory to that.
+
+296
+00:17:19.738 --> 00:17:23.275
+So now this is something
+that we could actually set up and send
+
+297
+00:17:23.275 --> 00:17:24.943
+back to Andrew.
+
+298
+00:17:24.943 --> 00:17:27.946
+Make sure that it has all the information
+that it needs.
+
+299
+00:17:28.380 --> 00:17:29.448
+And there we go.
+
+300
+00:17:29.448 --> 00:17:33.052
+We created a new multi-agent system
+
+301
+00:17:33.152 --> 00:17:36.155
+that is now capable of collaboration.
+
+302
+00:17:36.455 --> 00:17:39.925
+So two agents are navigating
+and asking questions to each other.
+
+303
+00:17:40.192 --> 00:17:41.493
+They are using memory.
+
+304
+00:17:41.493 --> 00:17:44.563
+So they remember what they are doing
+as they are doing.
+
+305
+00:17:44.863 --> 00:17:49.034
+And they are very much going
+into their roles by using role-play.
+
+306
+00:17:49.401 --> 00:17:52.438
+So you can see all those elements
+that we talked about
+
+307
+00:17:52.471 --> 00:17:56.442
+in those lines
+being played at here at real time.
+
+308
+00:17:57.076 --> 00:17:59.445
+So let's go back to our lives real quick.
+

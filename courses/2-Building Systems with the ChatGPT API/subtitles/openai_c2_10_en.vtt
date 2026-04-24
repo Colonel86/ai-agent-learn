@@ -1,0 +1,811 @@
+WEBVTT
+
+1
+00:00:04.600 --> 00:00:08.880
+In the last video, you saw how to
+evaluate an LLM output
+
+2
+00:00:08.880 --> 00:00:12.091
+in an example where
+it had the right answer.
+
+3
+00:00:12.091 --> 00:00:14.945
+And so we could
+write down a function
+
+4
+00:00:14.945 --> 00:00:17.799
+to explicitly just tell
+us if the LLM
+
+5
+00:00:17.799 --> 00:00:20.653
+outputs the right categories
+and list of products.
+
+6
+00:00:21.234 --> 00:00:24.875
+But what if the LLM is
+used to generate text and there isn't
+
+7
+00:00:24.875 --> 00:00:28.515
+just one right piece of text? Let's take
+a look at an approach
+
+8
+00:00:28.515 --> 00:00:31.036
+for how to evaluate that
+type of LLM output.
+
+9
+00:00:31.757 --> 00:00:35.432
+Here's my usual helper functions, and
+given a customer message, "tell
+
+10
+00:00:35.432 --> 00:00:39.107
+me about the smartx pro
+phone and the fotosnap camera.", and
+
+11
+00:00:39.107 --> 00:00:43.784
+so on. Here are a few utils to
+get me the assistant answer. This
+
+12
+00:00:43.784 --> 00:00:46.457
+is basically the process
+that Isa has stepped
+
+13
+00:00:46.457 --> 00:00:47.793
+through in earlier videos.
+
+14
+00:00:48.414 --> 00:00:53.208
+And so here's the assistant answer, "Sure,
+I'd be happy to help!". Smartphone, the
+
+15
+00:00:53.208 --> 00:00:56.290
+smartx pro phone, and so
+on and so forth.
+
+16
+00:00:58.440 --> 00:01:03.199
+So, how can you evaluate if this
+is a good answer or not?
+
+17
+00:01:03.199 --> 00:01:06.493
+Seems like there are
+lots of possible good answers.
+
+18
+00:01:07.896 --> 00:01:11.795
+One way to evaluate this
+is to write a rubric,
+
+19
+00:01:11.795 --> 00:01:14.914
+meaning a set of guidelines,
+to evaluate this
+
+20
+00:01:14.914 --> 00:01:18.422
+answer on different dimensions,
+and then use that to
+
+21
+00:01:18.422 --> 00:01:22.321
+decide whether or not you're
+satisfied with this answer. Let
+
+22
+00:01:22.321 --> 00:01:25.050
+me show you how to do that.
+
+23
+00:01:26.052 --> 00:01:28.255
+So, let me create a
+little data structure to
+
+24
+00:01:28.255 --> 00:01:30.702
+store the customer message
+as well as the product info.
+
+25
+00:01:31.503 --> 00:01:35.259
+So here, I'm going to specify a
+prompt for evaluating the
+
+26
+00:01:35.259 --> 00:01:38.674
+assistant answer using what's called
+a rubric. I'll explain in
+
+27
+00:01:38.674 --> 00:01:40.381
+a second what that means.
+
+
+28
+00:01:41.223 --> 00:01:44.088
+But this prompt says
+in the system message, "You are an
+
+29
+00:01:44.088 --> 00:01:46.433
+assistant that evaluates
+how well the customer service agent
+
+30
+00:01:46.433 --> 00:01:49.559
+answers a user question by looking
+at the context that the customer
+
+31
+00:01:49.559 --> 00:01:51.643
+service agent is using to generate
+its response.".
+
+32
+00:01:52.164 --> 00:01:55.999
+So, this response is what we
+had further up in the notebook,
+
+33
+00:01:55.999 --> 00:01:59.515
+that was the assistant answer.
+And we're going to specify the
+
+34
+00:01:59.515 --> 00:02:02.711
+data in this prompt, what
+was the customer message, what
+
+35
+00:02:02.711 --> 00:02:06.546
+was the context, that is, what
+was the product and category information
+
+36
+00:02:06.546 --> 00:02:10.381
+that was provided, and
+then what was the output of the LLM.
+
+37
+00:02:10.381 --> 00:02:10.381
+
+
+38
+00:02:11.202 --> 00:02:14.080
+And then, this is a rubric. So,
+we want the LLM to,
+
+39
+00:02:14.080 --> 00:02:16.719
+"Compare the factual content of the
+submitted answer with the context.
+
+40
+00:02:16.719 --> 00:02:18.397
+Ignore differences in style,
+grammar, or punctuation.
+
+41
+00:02:19.158 --> 00:02:21.731
+And then,
+we wanted to check a few things,
+
+42
+00:02:21.731 --> 00:02:24.589
+like, "Is the assistant
+response based only on the context
+
+43
+00:02:24.589 --> 00:02:27.161
+provided? Does the answer include
+information that is not
+
+44
+00:02:27.161 --> 00:02:29.162
+provided in the context?
+Is there any
+
+45
+00:02:29.162 --> 00:02:31.162
+disagreement between the
+response and the context?"
+
+46
+00:02:31.944 --> 00:02:35.888
+So, this is called a rubric,
+and this specifies what
+
+47
+00:02:35.888 --> 00:02:39.043
+we think the answer
+should get right for
+
+48
+00:02:39.043 --> 00:02:41.803
+us to consider it a good answer.
+
+49
+00:02:42.745 --> 00:02:46.518
+Then, finally,
+we wanted to print out yes or no,
+
+50
+00:02:46.518 --> 00:02:47.650
+and so on.
+
+51
+00:02:50.220 --> 00:02:56.050
+And now,
+if we were to run this evaluation.
+
+52
+00:02:57.400 --> 00:02:58.419
+This is what you get.
+
+53
+00:02:59.481 --> 00:03:02.473
+So it says, "the assistant response
+is based only on the context
+
+54
+00:03:02.473 --> 00:03:05.714
+provided.". It does not, in this case,
+seem to make up new information.
+
+55
+00:03:06.476 --> 00:03:09.166
+There isn't disagreements. User
+asked two questions. Answered
+
+56
+00:03:09.166 --> 00:03:11.520
+question one and
+answered question two. So
+
+57
+00:03:11.520 --> 00:03:12.528
+answered both questions.
+
+58
+00:03:14.031 --> 00:03:17.511
+So we would look at this output and
+maybe conclude that this
+
+59
+00:03:17.511 --> 00:03:18.961
+is a pretty good response.
+
+60
+00:03:20.084 --> 00:03:25.738
+And one note, here I'm
+using the ChatGPT 3.5 Turbo
+
+61
+00:03:25.738 --> 00:03:28.000
+model for this evaluation.
+
+62
+00:03:28.722 --> 00:03:33.527
+For a more robust evaluation,
+it might be worth considering using
+
+63
+00:03:33.527 --> 00:03:39.205
+GPT-4 because even if you deploy 3.5 Turbo
+in production and generate a
+
+64
+00:03:39.205 --> 00:03:43.137
+lot of text, if your
+evaluation is a more
+
+65
+00:03:43.137 --> 00:03:48.379
+sporadic exercise, then it
+may be prudent to pay for the somewhat
+
+66
+00:03:48.379 --> 00:03:53.184
+more expensive GPT-4 API call
+to get a more rigorous evaluation
+
+67
+00:03:53.184 --> 00:03:54.495
+of the output.
+
+
+68
+00:03:55.256 --> 00:03:58.789
+One design pattern that I
+hope you can take away
+
+69
+00:03:58.789 --> 00:04:02.323
+from this is that when
+you can specify a rubric,
+
+70
+00:04:02.323 --> 00:04:05.150
+meaning a list of
+criteria by which to
+
+71
+00:04:05.150 --> 00:04:07.976
+evaluate an LLM output,
+then you can actually
+
+72
+00:04:07.976 --> 00:04:11.510
+use another API call
+to evaluate your first LLM output.
+
+73
+00:04:12.271 --> 00:04:15.871
+There's one other design pattern
+that could be useful
+
+74
+00:04:15.871 --> 00:04:19.070
+for some applications, which
+is if you can
+
+75
+00:04:19.070 --> 00:04:23.869
+specify an ideal response. So
+here, I'm going to specify a test
+
+76
+00:04:23.869 --> 00:04:27.069
+example where the customer
+message is, "tell me
+
+77
+00:04:27.069 --> 00:04:30.268
+about the smartx pro phone", and so
+on.
+
+78
+00:04:30.970 --> 00:04:35.621
+And here's an ideal answer. So
+this is if you have an expert human
+
+79
+00:04:35.621 --> 00:04:38.612
+customer service representative write
+a really good answer. The
+
+80
+00:04:38.612 --> 00:04:41.602
+expert says, this
+would be a great answer., "Of
+
+81
+00:04:41.602 --> 00:04:43.596
+course! The SmartX ProPhone is a.".
+
+82
+00:04:44.157 --> 00:04:47.323
+It goes on to give
+a lot of helpful information.
+
+83
+00:04:47.904 --> 00:04:51.675
+Now, it is unreasonable
+to expect any LLM to generate
+
+84
+00:04:51.675 --> 00:04:53.937
+this exact answer word for word.
+
+85
+00:04:54.578 --> 00:04:57.040
+And in classical
+natural language processing
+
+86
+00:04:57.040 --> 00:04:59.913
+techniques, there are some
+traditional metrics for
+
+87
+00:04:59.913 --> 00:05:03.606
+measuring if the LLM output is
+similar to this
+
+88
+00:05:03.606 --> 00:05:06.479
+expert human written outputs.
+For example, there's
+
+89
+00:05:06.479 --> 00:05:10.993
+something called the BLEU score, BLEU,
+that you can search online
+
+90
+00:05:10.993 --> 00:05:14.686
+to read more about. They
+can measure how similar
+
+91
+00:05:14.686 --> 00:05:17.969
+one piece of text
+is from another. But
+
+92
+00:05:17.969 --> 00:05:22.073
+it turns out there's an
+even better way, which is
+
+93
+00:05:22.073 --> 00:05:27.818
+you can use a prompt, which I'm
+going to specify here, to ask an
+
+94
+00:05:27.818 --> 00:05:31.512
+LLM to compare how well the
+automatically generated customer
+
+95
+00:05:31.512 --> 00:05:33.974
+service agent output
+corresponds to the
+
+96
+00:05:33.974 --> 00:05:36.436
+ideal expert response
+that was written
+
+97
+00:05:36.436 --> 00:05:40.130
+by a human that I just
+showed up above.
+
+98
+00:05:40.760 --> 00:05:45.691
+Here's the prompt we can use, which
+is. We're going to use an LLM
+
+99
+00:05:45.691 --> 00:05:49.919
+and tell it to be an assistant that
+evaluates how well the
+
+100
+00:05:49.919 --> 00:05:52.737
+customer service agent answers
+a user question by
+
+101
+00:05:52.737 --> 00:05:55.555
+comparing the response, that was
+the automatically generated
+
+102
+00:05:55.555 --> 00:05:58.021
+one, to the
+ideal (expert) human written
+
+103
+00:05:58.021 --> 00:05:58.374
+response.
+
+104
+00:05:58.935 --> 00:06:03.894
+So we're going to give it the data, which
+is what was the customer request, what
+
+105
+00:06:03.894 --> 00:06:07.304
+is the expert written ideal response,
+and then what did our
+
+106
+00:06:07.304 --> 00:06:08.234
+LLM actually output.
+
+107
+00:06:09.136 --> 00:06:14.062
+And this rubric comes from the
+OpenAI open source evals framework,
+
+108
+00:06:14.062 --> 00:06:18.092
+which is a fantastic framework with
+many evaluation methods
+
+109
+00:06:18.092 --> 00:06:20.779
+contributed both by
+OpenAI developers and
+
+110
+00:06:20.779 --> 00:06:23.465
+by the broader
+open source community.
+
+111
+00:06:24.167 --> 00:06:28.010
+In fact, if you want
+you could contribute an eval to
+
+112
+00:06:28.010 --> 00:06:31.155
+that framework yourself
+to help others evaluate their Large
+
+113
+00:06:31.155 --> 00:06:32.203
+Language Model outputs.
+
+114
+00:06:32.765 --> 00:06:35.694
+So in this rubric,
+we tell the LLM to,
+
+115
+00:06:35.694 --> 00:06:38.298
+"Compare the factual content
+of the submitted answer
+
+116
+00:06:38.298 --> 00:06:41.228
+with the expert answer.
+Ignore any differences in style,
+
+117
+00:06:41.228 --> 00:06:42.204
+grammar, or punctuation.".
+
+118
+00:06:42.825 --> 00:06:45.480
+And feel free to
+pause the video and
+
+119
+00:06:45.480 --> 00:06:49.794
+read through this in detail,
+but the key is we ask it to
+
+120
+00:06:49.794 --> 00:06:53.445
+carry the comparison and
+output a score from A to E,
+
+121
+00:06:53.445 --> 00:06:56.100
+depending on whether the
+"submitted answer is a
+
+122
+00:06:56.100 --> 00:06:59.086
+subset of the expert
+answer and is fully consistent",
+
+123
+00:06:59.086 --> 00:07:02.737
+versus the "submitted answer is
+a superset of the expert answer
+
+124
+00:07:02.737 --> 00:07:06.719
+and is fully consistent with it".
+This might mean it hallucinated or
+
+125
+00:07:06.719 --> 00:07:08.378
+made up some additional facts.
+
+126
+00:07:09.140 --> 00:07:13.263
+"Submitted answer contains
+all the details as the expert
+
+127
+00:07:13.263 --> 00:07:16.469
+answer.", whether there's
+disagreement or whether "the
+
+128
+00:07:16.469 --> 00:07:19.676
+answers differ, but
+these differences don't matter
+
+129
+00:07:19.676 --> 00:07:21.966
+from the perspective of factuality".
+
+
+130
+00:07:22.788 --> 00:07:25.975
+And the LLM will pick whichever
+of these seems to be the
+
+131
+00:07:25.975 --> 00:07:28.364
+most appropriate description.
+So here's the assistant answer that
+
+132
+00:07:28.364 --> 00:07:32.613
+we had just now. I think it's a
+pretty good answer, but now let's see what
+
+133
+00:07:32.613 --> 00:07:35.269
+the things when it compares
+the assistant answer to test
+
+134
+00:07:35.269 --> 00:07:37.659
+set ID. Oh, looks like it
+got an A.
+
+135
+00:07:38.961 --> 00:07:41.678
+And so it thinks
+"The submitted answer is
+
+136
+00:07:41.678 --> 00:07:44.394
+a subset of the
+expert answer and is
+
+137
+00:07:44.394 --> 00:07:47.790
+fully consistent with it",
+and that sounds right to me.
+
+138
+00:07:47.790 --> 00:07:50.506
+This assistant answer is
+much shorter than the
+
+139
+00:07:50.506 --> 00:07:54.241
+long expert answer up top,
+but it does hopefully is consistent.
+
+140
+00:07:54.241 --> 00:07:58.316
+Once again, I'm using GPT-3.5 Turbo in
+this example, but to get
+
+141
+00:07:58.316 --> 00:08:03.070
+a more rigorous evaluation, it might make
+sense to use GPT-4 in your own
+
+142
+00:08:03.070 --> 00:08:03.410
+application.
+
+143
+00:08:04.040 --> 00:08:06.569
+Now, let's
+try something totally different. I'm
+
+144
+00:08:06.569 --> 00:08:10.183
+going to have a very
+different assistant answer, "life is
+
+145
+00:08:10.183 --> 00:08:14.519
+like a box of chocolates", quote from
+a movie called "Forrest Gump".
+
+146
+00:08:14.519 --> 00:08:14.519
+
+
+147
+00:08:15.421 --> 00:08:20.421
+And if we were to evaluate that it
+outputs D and it concludes that,
+
+148
+00:08:20.421 --> 00:08:23.277
+"there is a disagreement
+between the submitted answer",
+
+149
+00:08:23.277 --> 00:08:27.206
+life is like a box
+of chocolate and the expert answer.
+
+150
+00:08:27.206 --> 00:08:31.134
+So it correctly assesses this to
+be a pretty terrible answer.
+
+151
+00:08:32.096 --> 00:08:35.517
+And so that's it. I
+hope you take away from
+
+152
+00:08:35.517 --> 00:08:37.227
+this video two design patterns.
+
+
+153
+00:08:37.868 --> 00:08:41.468
+First is, even without an
+expert provided ideal answer,
+
+154
+00:08:41.468 --> 00:08:45.469
+if you can write a rubric,
+you can use one
+
+155
+00:08:45.469 --> 00:08:47.869
+LLM to evaluate another LLM's
+output.
+
+156
+00:08:48.671 --> 00:08:53.697
+And second, if you can provide
+an expert provided ideal answer,
+
+157
+00:08:53.697 --> 00:08:59.181
+then that can help
+your LLM better compare if, and if a
+
+158
+00:08:59.181 --> 00:09:03.293
+specific assistant output
+is similar to the expert provided
+
+159
+00:09:03.293 --> 00:09:08.777
+ideal answer. I hope that helps you
+to evaluate your LLM systems
+
+160
+00:09:08.777 --> 00:09:09.234
+outputs.
+
+161
+00:09:10.096 --> 00:09:14.299
+So that both during development
+as well as when the
+
+162
+00:09:14.299 --> 00:09:17.662
+system is running and you're
+getting responses, you
+
+163
+00:09:17.662 --> 00:09:21.445
+can continue to monitor its performance
+and also have
+
+164
+00:09:21.445 --> 00:09:23.967
+these tools to
+continuously evaluate and
+
+165
+00:09:23.967 --> 00:09:26.489
+keep on improving
+the performance of
+
+166
+00:09:26.489 --> 00:09:27.330
+your system.

@@ -1,0 +1,376 @@
+WEBVTT
+
+1
+00:00:04.760 --> 00:00:08.017
+In this section, we'll
+focus on tasks to evaluate inputs, which
+
+2
+00:00:08.017 --> 00:00:10.386
+can be important for
+ensuring the quality and
+
+3
+00:00:10.386 --> 00:00:11.571
+safety of the system.
+
+4
+00:00:12.392 --> 00:00:14.756
+For tasks in which
+lots of independent sets
+
+5
+00:00:14.756 --> 00:00:17.120
+of instructions are needed
+to handle different cases,
+
+6
+00:00:17.120 --> 00:00:20.371
+it can be beneficial to
+first classify the type of query,
+
+7
+00:00:20.371 --> 00:00:23.621
+and then use that classification to
+determine which instructions to use.
+
+8
+00:00:23.621 --> 00:00:26.576
+This can be achieved by
+defining fixed categories and hard-coding
+
+9
+00:00:26.576 --> 00:00:28.940
+instructions that are relevant
+for handling tasks in
+
+10
+00:00:28.940 --> 00:00:29.827
+a given category.
+
+11
+00:00:30.388 --> 00:00:32.772
+For instance, when building a
+customer service assistant,
+
+12
+00:00:32.772 --> 00:00:36.049
+it might be important to
+first classify the type of query,
+
+13
+00:00:36.049 --> 00:00:38.730
+and then determine
+which instructions to use based on
+
+14
+00:00:38.730 --> 00:00:39.326
+that classification.
+
+15
+00:00:39.847 --> 00:00:42.507
+So for example, you might give
+different secondary instructions
+
+16
+00:00:42.507 --> 00:00:46.054
+if a user asks to close
+their account, versus if a user
+
+17
+00:00:46.054 --> 00:00:49.306
+asks about a specific product.
+So in the first case, you'd
+
+18
+00:00:49.306 --> 00:00:51.079
+maybe add additional
+instructions about how
+
+19
+00:00:51.079 --> 00:00:54.331
+to close the account, and
+then in the second case, you
+
+20
+00:00:54.331 --> 00:00:56.104
+might add additional
+product information. But
+
+21
+00:00:56.104 --> 00:01:00.538
+let's see an example, and I
+think it will make it more clear. So here
+
+22
+00:01:00.538 --> 00:01:03.790
+we have our system message, which is
+the instruction for the
+
+23
+00:01:03.790 --> 00:01:05.859
+overall system, and we're using this
+delimiter.
+
+24
+00:01:06.420 --> 00:01:10.568
+And a delimiter is just a way to
+separate different parts of
+
+25
+00:01:10.568 --> 00:01:14.025
+an instruction or output,
+and it helps the model kind
+
+26
+00:01:14.025 --> 00:01:17.827
+of determine the different sections.
+And so for this example, we'll
+
+27
+00:01:17.827 --> 00:01:21.284
+use the delimiter for hashtags. And
+this is a nice
+
+28
+00:01:21.284 --> 00:01:24.050
+delimiter because it's actually
+represented as one token.
+
+29
+00:01:24.050 --> 00:01:24.050
+
+
+30
+00:01:25.458 --> 00:01:29.992
+And so here's our system message, what
+we're asking the model. So, "You will
+
+31
+00:01:29.992 --> 00:01:32.583
+be provided with customer
+service queries. The customer
+
+32
+00:01:32.583 --> 00:01:35.498
+service query will be delimited with
+these hashtag characters.
+
+33
+00:01:35.498 --> 00:01:35.498
+
+
+34
+00:01:36.199 --> 00:01:39.916
+Classify each query into a primary
+category and a secondary category.",
+
+35
+00:01:39.916 --> 00:01:43.972
+and then provide the output in
+a JSON format with the keys
+
+36
+00:01:43.972 --> 00:01:46.337
+primary and secondary.
+And so we have
+
+37
+00:01:46.337 --> 00:01:49.379
+our primary categories listed here.
+So billing, technical support,
+
+38
+00:01:49.379 --> 00:01:51.069
+account management,
+or general inquiry.
+
+39
+00:01:51.590 --> 00:01:55.918
+And then below, we have the
+list of secondary categories,
+
+40
+00:01:55.918 --> 00:01:57.650
+unsubscribe or upgrade, etc.
+
+41
+00:01:59.004 --> 00:02:03.570
+And so now let's
+do an example of a user message.
+
+42
+00:02:04.375 --> 00:02:11.650
+So for our first user message, we'll
+use the following.
+
+43
+00:02:12.551 --> 00:02:15.422
+So the user message is,
+"I want you to delete my
+
+44
+00:02:15.422 --> 00:02:17.250
+profile and all of my user data.".
+
+45
+00:02:20.307 --> 00:02:25.138
+And then we'll just format this into
+a messages list with
+
+46
+00:02:25.138 --> 00:02:28.652
+the system message and
+the user message delimited
+
+47
+00:02:28.652 --> 00:02:29.970
+with these hashtags.
+
+48
+00:02:31.048 --> 00:02:33.092
+And let's just take a look and see
+what we think this might be.
+
+49
+00:02:33.653 --> 00:02:38.848
+So I want you to delete my profile.
+This kind of looks like account
+
+50
+00:02:38.848 --> 00:02:42.930
+management, maybe close account.
+So let's see what the model thinks.
+
+51
+00:02:47.480 --> 00:02:49.790
+Great, so the classification
+from the model
+
+52
+00:02:49.790 --> 00:02:52.101
+is account management
+as the primary category,
+
+53
+00:02:52.101 --> 00:02:54.411
+and then closed account as a secondary.
+
+
+54
+00:02:55.012 --> 00:02:57.479
+And the nice thing
+about asking for a
+
+55
+00:02:57.479 --> 00:03:01.179
+structured output like a
+JSON is that you can then read this
+
+56
+00:03:01.179 --> 00:03:05.187
+easily into some kind of object,
+so a dictionary for example in Python,
+
+57
+00:03:05.187 --> 00:03:08.270
+or something else if you're
+using a different language, and
+
+58
+00:03:08.270 --> 00:03:11.970
+then you can use this as the input
+to a subsequent step.
+
+59
+00:03:13.450 --> 00:03:16.207
+I'll show you another example, but
+also feel free to
+
+60
+00:03:16.207 --> 00:03:19.515
+pause the video now and just try your
+own user questions and
+
+61
+00:03:19.515 --> 00:03:21.170
+see how the model
+categorizes them.
+
+62
+00:03:23.249 --> 00:03:27.259
+So here's another user message, "Tell
+me more about your flat screen TVs". And
+
+63
+00:03:27.259 --> 00:03:29.550
+we just have the
+same messages list, response
+
+64
+00:03:29.550 --> 00:03:32.127
+from the model, and
+then we'll just print it.
+
+65
+00:03:33.109 --> 00:03:38.440
+And here we have our second
+categorization which seems correct.
+
+66
+00:03:38.440 --> 00:03:38.440
+
+
+67
+00:03:40.103 --> 00:03:42.560
+And so in general,
+based on the categorization
+
+68
+00:03:42.560 --> 00:03:46.552
+of the customer inquiry, we can now
+provide a set of more specific
+
+69
+00:03:46.552 --> 00:03:49.622
+instructions to handle
+the next steps. In this case we
+
+70
+00:03:49.622 --> 00:03:52.079
+might add kind of
+additional information about the
+
+71
+00:03:52.079 --> 00:03:56.071
+TVs, versus in this case
+we might want to give a link to
+
+72
+00:03:56.071 --> 00:03:58.220
+closing the account or
+something like that.
+
+73
+00:03:58.801 --> 00:04:01.382
+We'll learn more about different
+ways to process inputs
+
+74
+00:04:01.382 --> 00:04:02.529
+in a later video.
+
+75
+00:04:03.350 --> 00:04:07.655
+And in the next video we'll
+look at more ways to evaluate inputs, and
+
+76
+00:04:07.655 --> 00:04:10.114
+specifically ways to ensure
+that your users are
+
+77
+00:04:10.114 --> 00:04:12.267
+using the system in
+a responsible way.

@@ -1,0 +1,864 @@
+WEBVTT
+
+1
+00:00:03.778 --> 00:00:06.763
+We've now got our document
+split up into small, semantically
+
+2
+00:00:06.763 --> 00:00:09.450
+meaningful chunks, and
+it's time to put these chunks
+
+3
+00:00:09.450 --> 00:00:12.734
+into an index, whereby we
+can easily retrieve them when it
+
+4
+00:00:12.734 --> 00:00:16.316
+comes time to answer questions about
+this corpus of data. To do
+
+5
+00:00:16.316 --> 00:00:20.197
+that, we're going to utilize embeddings and vector
+stores. Let's see what those
+
+6
+00:00:20.197 --> 00:00:22.884
+are. We covered this briefly
+in the previous course,
+
+7
+00:00:22.884 --> 00:00:27.064
+but we're going to revisit it
+for a few reasons. First, these are incredibly
+
+8
+00:00:27.064 --> 00:00:29.452
+important for building chatbots over
+your data. And
+
+9
+00:00:29.452 --> 00:00:33.631
+second, we're going to go a
+bit deeper, and we're going to talk about
+
+10
+00:00:33.631 --> 00:00:36.318
+edge cases,
+and where this generic method can actually
+
+11
+00:00:36.318 --> 00:00:39.005
+fail. Don't worry, we're
+going to fix those later
+
+12
+00:00:39.005 --> 00:00:39.303
+on.
+
+
+13
+00:00:39.303 --> 00:00:42.827
+But for now, let's talk about vector
+stores and embeddings. And
+
+14
+00:00:42.827 --> 00:00:46.351
+this comes after text splitting, when
+we're ready to store the
+
+15
+00:00:46.351 --> 00:00:48.914
+documents in an easily accessible format.
+What embeddings
+
+16
+00:00:48.914 --> 00:00:51.797
+are? They take
+a piece of text, and they
+
+17
+00:00:51.797 --> 00:00:54.360
+create a numerical representation
+of that text. Text
+
+18
+00:00:54.360 --> 00:00:57.243
+with similar content will have
+similar vectors in this
+
+19
+00:00:57.243 --> 00:00:59.806
+numeric space. What that
+means is we can
+
+20
+00:00:59.806 --> 00:01:02.368
+then compare those vectors
+and find pieces of
+
+21
+00:01:02.368 --> 00:01:05.892
+text that are similar. So, in the
+example below, we can
+
+22
+00:01:05.892 --> 00:01:08.455
+see that the two
+sentences about pets are
+
+23
+00:01:08.455 --> 00:01:11.338
+very similar, while a
+sentence about a pet and
+
+24
+00:01:11.338 --> 00:01:14.862
+a sentence about a car
+are not very similar. As a
+
+25
+00:01:14.862 --> 00:01:18.065
+reminder of the full end-to-end workflow, we start
+with documents,
+
+26
+00:01:18.065 --> 00:01:20.628
+we then create smaller
+splits of those documents,
+
+27
+00:01:20.628 --> 00:01:23.831
+we then create embeddings
+of those documents, and then we
+
+28
+00:01:23.831 --> 00:01:27.676
+store all of those in a
+vector store. A vector store is
+
+29
+00:01:27.676 --> 00:01:30.238
+a database where you
+can easily look up
+
+30
+00:01:30.238 --> 00:01:32.801
+similar vectors later on.
+This will become useful
+
+31
+00:01:32.801 --> 00:01:36.005
+when we're trying to find documents
+that are relevant for
+
+32
+00:01:36.005 --> 00:01:38.888
+a question at hand.
+We can then take the
+
+33
+00:01:38.888 --> 00:01:42.411
+question at hand, create an embedding, and then
+do comparisons to
+
+34
+00:01:42.411 --> 00:01:44.974
+all the different vectors
+in the vector store,
+
+35
+00:01:44.974 --> 00:01:48.818
+and then pick the n
+most similar. We then take those n
+
+36
+00:01:48.818 --> 00:01:51.381
+most similar chunks, and
+pass them along with
+
+37
+00:01:51.381 --> 00:01:54.585
+the question into an LLM,
+and get back an answer.
+
+38
+00:01:54.585 --> 00:01:58.749
+We'll cover all of that later
+on. For now, it's time to deep
+
+39
+00:01:58.749 --> 00:02:00.991
+dive on embeddings and vector stores themselves.
+
+
+40
+00:02:00.991 --> 00:02:00.991
+
+
+41
+00:02:00.991 --> 00:02:04.717
+To start, we'll once again set the
+appropriate environment variables. From
+
+42
+00:02:04.717 --> 00:02:08.104
+here on out, we're going
+to be working with the
+
+43
+00:02:08.104 --> 00:02:12.168
+same set of documents. These are
+the CS229 lectures. We're going to
+
+44
+00:02:12.168 --> 00:02:16.233
+load a few of them here. Notice that we're
+actually going to
+
+45
+00:02:16.233 --> 00:02:18.942
+duplicate the first lecture.
+This is for the
+
+46
+00:02:18.942 --> 00:02:22.329
+purposes of simulating some dirty
+data. After the documents are
+
+47
+00:02:22.329 --> 00:02:25.377
+loaded, we can then use
+the recursive character text
+
+48
+00:02:25.377 --> 00:02:28.087
+splitter to create chunks.
+We can see that
+
+49
+00:02:28.087 --> 00:02:32.151
+we've now created over 200 different chunks. Time
+to move on to
+
+50
+00:02:32.151 --> 00:02:35.538
+the next section and create
+embeddings for all of them.
+
+51
+00:02:35.538 --> 00:02:39.603
+We'll use OpenAI to create these
+embeddings. Before jumping into a real-world
+
+52
+00:02:39.603 --> 00:02:41.635
+example,
+let's try it out with
+
+53
+00:02:41.635 --> 00:02:44.344
+a few toy
+test cases just to get
+
+54
+00:02:44.344 --> 00:02:48.409
+a sense for what's going
+on underneath the hood. We've got a
+
+55
+00:02:48.409 --> 00:02:52.134
+few example sentences where the first two
+are very similar and
+
+56
+00:02:52.134 --> 00:02:53.828
+the third one is
+unrelated.
+
+57
+00:02:53.828 --> 00:02:53.828
+
+
+
+58
+00:02:53.828 --> 00:02:56.345
+We can then use
+the embedding class to
+
+59
+00:02:56.345 --> 00:02:58.233
+create an embedding for
+each sentence.
+
+60
+00:02:58.233 --> 00:03:02.954
+We can then use NumPy to compare them,
+and see which ones are most similar.
+
+61
+00:03:02.954 --> 00:03:06.415
+We expect that the first two
+sentences should be very similar,
+
+62
+00:03:06.415 --> 00:03:09.877
+and then the first and second
+compared to the third shouldn't
+
+63
+00:03:09.877 --> 00:03:13.338
+be nearly as similar. We'll use
+a dot product to compare
+
+64
+00:03:13.338 --> 00:03:15.856
+the two embeddings. If you
+don't know what
+
+65
+00:03:15.856 --> 00:03:20.576
+a dot product is, that's fine. The important
+thing to know is that higher is
+
+66
+00:03:20.576 --> 00:03:23.723
+better. Here we can see
+that the first two embeddings
+
+67
+00:03:23.723 --> 00:03:27.499
+have a pretty high score
+of 0.96. If we compare the first
+
+68
+00:03:27.499 --> 00:03:30.646
+embedding to the third one,
+we can see that it's
+
+69
+00:03:30.646 --> 00:03:34.107
+significantly lower at 0.77. And
+if we compare the second to
+
+70
+00:03:34.107 --> 00:03:38.198
+the third, we can see it's right about
+the same at 0.76. Now
+
+71
+00:03:38.198 --> 00:03:42.918
+is a good time to pause, and try
+out a few sentences of your own,
+
+72
+00:03:42.918 --> 00:03:47.953
+and see what the dot product is. Let's
+now get back to the real-world example. It's
+
+73
+00:03:47.953 --> 00:03:51.415
+time to create embeddings for all the chunks
+of the PDFs
+
+74
+00:03:51.415 --> 00:03:53.932
+and then store them in
+a vector store.
+
+75
+00:03:53.932 --> 00:03:53.932
+
+
+
+76
+00:03:53.932 --> 00:03:58.061
+The vector store that we'll
+use for this lesson is Chroma. So,
+
+77
+00:03:58.061 --> 00:04:01.502
+let's import that. LangChain has
+integrations with lots, over 30
+
+78
+00:04:01.502 --> 00:04:04.943
+different vector stores. We choose
+Chroma because it's lightweight and
+
+79
+00:04:04.943 --> 00:04:08.383
+in memory, which makes it
+very easy to get up
+
+80
+00:04:08.383 --> 00:04:11.824
+and started with. There are other
+vector stores that offer
+
+81
+00:04:11.824 --> 00:04:15.609
+hosted solutions, which can be
+useful when you're trying to persist
+
+82
+00:04:15.609 --> 00:04:19.738
+large amounts of data or persist
+it in cloud storage somewhere. We're
+
+83
+00:04:19.738 --> 00:04:22.490
+going to want to
+save this vector store
+
+84
+00:04:22.490 --> 00:04:26.619
+so that we can
+use it in future lessons. So, let's create
+
+85
+00:04:26.619 --> 00:04:30.404
+a variable called persist directory, which we
+will use later on
+
+86
+00:04:30.404 --> 00:04:34.189
+at docs slash Chroma. Let's
+also just make sure that nothing
+
+87
+00:04:34.189 --> 00:04:37.629
+is there already. If there's
+stuff there already, it can
+
+88
+00:04:37.629 --> 00:04:42.446
+throw things off and we don't
+want that to happen. So, let's RM dash
+
+89
+00:04:42.446 --> 00:04:46.919
+RF docs dot Chroma just to make
+sure that there's nothing there. Let's
+
+90
+00:04:46.919 --> 00:04:50.704
+now create the vector store. So, we
+call Chroma from documents,
+
+91
+00:04:50.704 --> 00:04:54.833
+passing in splits, and these are the
+splits that we created earlier,
+
+92
+00:04:54.833 --> 00:04:55.865
+passing in embedding.
+
+
+93
+00:04:55.865 --> 00:04:55.865
+
+
+
+94
+00:04:55.865 --> 00:04:58.172
+And this is the
+open AI embedding model
+
+95
+00:04:58.172 --> 00:05:01.055
+and then passing in
+persist directory, which is a Chroma
+
+96
+00:05:01.055 --> 00:05:03.362
+specific keyword argument that
+allows us to save
+
+97
+00:05:03.362 --> 00:05:06.245
+the directory to disk.
+If we take a look at
+
+98
+00:05:06.245 --> 00:05:09.994
+the collection count after doing this,
+we can see that it's 209, which
+
+99
+00:05:09.994 --> 00:05:14.319
+is the same as the number of splits
+that we had from before. Let's now
+
+100
+00:05:14.319 --> 00:05:17.779
+start using it. Let's think of
+a question that we can ask
+
+101
+00:05:17.779 --> 00:05:21.815
+of this data. We know that
+this is about a class lecture. So, let's
+
+102
+00:05:21.815 --> 00:05:26.140
+ask if there is any email that
+we can ask for help if we need
+
+103
+00:05:26.140 --> 00:05:29.600
+any help with the course or material or
+anything like that. We're
+
+104
+00:05:29.600 --> 00:05:31.907
+going to use the
+similarity search method, and
+
+105
+00:05:31.907 --> 00:05:33.637
+we're going to pass
+in the
+
+106
+00:05:33.637 --> 00:05:36.520
+question, and then we'll also pass in
+K equals three.
+
+107
+00:05:36.520 --> 00:05:39.404
+This specifies the number of documents that
+we want to
+
+108
+00:05:39.404 --> 00:05:43.729
+return. So, if we run that
+and we look at the length of the documents,
+
+109
+00:05:43.729 --> 00:05:47.189
+we can see that it's three as
+we specified. If we take
+
+110
+00:05:47.189 --> 00:05:50.360
+a look at the content
+of the first document, we can
+
+111
+00:05:50.360 --> 00:05:53.820
+see that it is in fact
+about an email address, cs229-qa.cs.stanford.edu. And
+
+112
+00:05:53.820 --> 00:05:56.992
+this is the email that we
+can send questions to and
+
+113
+00:05:56.992 --> 00:05:58.722
+is read by all the TAs.
+
+
+114
+00:05:58.722 --> 00:05:58.722
+
+
+115
+00:05:58.722 --> 00:06:03.832
+After doing so, let's make sure to persist
+the vector database so
+
+116
+00:06:03.832 --> 00:06:09.368
+that we can use it in future lessons
+by running vectordb.persist. This has
+
+117
+00:06:09.368 --> 00:06:14.478
+covered the basics of semantic search
+and shown us that we can
+
+118
+00:06:14.478 --> 00:06:19.163
+get pretty good results based on
+just embeddings alone. But it
+
+119
+00:06:19.163 --> 00:06:25.125
+isn't perfect and here we'll go over a
+few edge cases and show where
+
+120
+00:06:25.125 --> 00:06:30.661
+this can fail. Let's try a new
+question. What did they say about
+
+121
+00:06:30.661 --> 00:06:35.345
+MATLAB? Let's run this specifying K equals
+five and get back
+
+122
+00:06:35.345 --> 00:06:38.752
+some results. If we
+take a look at
+
+123
+00:06:38.752 --> 00:06:43.011
+the first two results, we
+can see that they're actually
+
+124
+00:06:43.011 --> 00:06:46.418
+identical. This is because when
+we loaded in
+
+125
+00:06:46.418 --> 00:06:50.250
+the PDFs, if you
+remember, we specified on purpose
+
+126
+00:06:50.250 --> 00:06:54.509
+a duplicate entry. This is bad
+because we've got the
+
+127
+00:06:54.509 --> 00:06:58.767
+same information in two different
+chunks and we're going to
+
+128
+00:06:58.767 --> 00:07:03.452
+be passing both of these chunks
+to the language model down
+
+129
+00:07:03.452 --> 00:07:04.303
+the line.
+
+
+130
+00:07:04.303 --> 00:07:07.161
+There's no real value in
+the second piece of
+
+131
+00:07:07.161 --> 00:07:10.970
+information and it would
+be much better if there was a different
+
+132
+00:07:10.970 --> 00:07:14.145
+distinct chunk that the
+language model could learn from. One
+
+133
+00:07:14.145 --> 00:07:18.590
+of the things that we'll cover
+in the next lesson is how to retrieve
+
+134
+00:07:18.590 --> 00:07:21.130
+both relevant and distinct
+chunks at the same
+
+135
+00:07:21.130 --> 00:07:23.987
+time. There's another type
+of failure mode that can
+
+136
+00:07:23.987 --> 00:07:28.114
+also happen. Let's take a look
+at the question, what did they say
+
+137
+00:07:28.114 --> 00:07:31.289
+about regression in the third
+lecture? When we get the
+
+138
+00:07:31.289 --> 00:07:34.781
+docs for this, intuitively we would expect
+them to all be
+
+139
+00:07:34.781 --> 00:07:38.908
+part of the third lecture. We can check
+this because we have information
+
+140
+00:07:38.908 --> 00:07:41.448
+in the metadata about
+what lectures they came
+
+141
+00:07:41.448 --> 00:07:45.258
+from. So, let's loop over all
+the documents and print out the
+
+142
+00:07:45.258 --> 00:07:48.750
+metadata. We can see that
+there's actually a combination of results,
+
+143
+00:07:48.750 --> 00:07:52.243
+some from the third lecture, some
+from the second lecture, and
+
+144
+00:07:52.243 --> 00:07:55.417
+some from the first. The
+intuition about why this is
+
+145
+00:07:55.417 --> 00:07:59.227
+failing is that the third lecture
+and the fact that we want
+
+146
+00:07:59.227 --> 00:08:02.084
+documents from only the third lecture
+is a piece
+
+147
+00:08:02.084 --> 00:08:05.577
+of structured information, but we're just
+doing a semantic lookup based
+
+148
+00:08:05.577 --> 00:08:08.116
+on embeddings where it
+creates an embedding for
+
+149
+00:08:08.116 --> 00:08:10.656
+the whole sentence and
+it's probably a bit
+
+150
+00:08:10.656 --> 00:08:13.196
+more focused on regression.
+Therefore, we're getting results
+
+151
+00:08:13.196 --> 00:08:15.101
+that are probably pretty
+relevant to
+
+152
+00:08:15.101 --> 00:08:17.641
+regression and so if
+we take a look
+
+153
+00:08:17.641 --> 00:08:21.768
+at the fifth doc, the one that comes
+from the first lecture, we
+
+154
+00:08:21.768 --> 00:08:24.308
+can see that it
+does in fact mention
+
+155
+00:08:24.308 --> 00:08:27.800
+regression. So, it's picking up
+on that, but it's not picking
+
+156
+00:08:27.800 --> 00:08:33.197
+up on the fact that it's only supposed
+to be querying documents from the third lecture because
+
+157
+00:08:33.197 --> 00:08:35.737
+again, that's a piece
+of structured information that
+
+158
+00:08:35.737 --> 00:08:38.912
+isn't really perfectly captured in
+this semantic embedding that we've
+
+159
+00:08:38.912 --> 00:08:42.087
+created. Now's a good
+time to pause and try out
+
+160
+00:08:42.087 --> 00:08:44.309
+a few more queries.
+What other edge
+
+161
+00:08:44.309 --> 00:08:46.214
+cases can you notice that arise?
+
+
+162
+00:08:46.214 --> 00:08:46.214
+
+
+
+163
+00:08:47.502 --> 00:08:49.899
+You can also play
+around with changing k,
+
+164
+00:08:49.899 --> 00:08:53.195
+the number of documents that you
+retrieve. As you may have
+
+165
+00:08:53.195 --> 00:08:56.492
+noticed throughout this lesson,
+we used first three and then five.
+
+166
+00:08:56.492 --> 00:08:59.788
+You can try adjusting it
+to be whatever you want. You'll
+
+167
+00:08:59.788 --> 00:09:02.785
+probably notice that when
+you make it larger, you'll retrieve
+
+168
+00:09:02.785 --> 00:09:05.482
+more documents, but the
+documents towards the tail end
+
+169
+00:09:05.482 --> 00:09:08.478
+of that may not be
+as relevant as the ones
+
+170
+00:09:08.478 --> 00:09:12.074
+at the beginning. Now, that we've
+covered the basics of semantic search
+
+171
+00:09:12.074 --> 00:09:15.371
+and also some of
+the failure modes, let's go on to
+
+172
+00:09:15.371 --> 00:09:18.967
+the next lesson. We'll talk about how to
+address those failure modes
+
+173
+00:09:18.967 --> 00:09:20.465
+and beef up our
+retrieval.

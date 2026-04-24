@@ -1,0 +1,1369 @@
+WEBVTT
+
+1
+00:00:03.838 --> 00:00:06.561
+We just went over
+how to load documents
+
+2
+00:00:06.561 --> 00:00:11.327
+into a standard format. Now, we're
+going to talk about how to split them
+
+3
+00:00:11.327 --> 00:00:14.731
+up into smaller chunks. This
+may sound really easy, but
+
+4
+00:00:14.731 --> 00:00:18.135
+there's a lot of subtleties here
+that make a big
+
+5
+00:00:18.135 --> 00:00:20.858
+impact down the line. Let's jump into
+it!
+
+6
+00:00:20.858 --> 00:00:23.357
+Document splitting happens after
+you load your data
+
+7
+00:00:23.357 --> 00:00:25.231
+into the document format.
+But before,
+
+8
+00:00:25.231 --> 00:00:28.980
+it goes into the vector store,
+and this may seem really simple.
+
+9
+00:00:28.980 --> 00:00:31.479
+You can just split
+the chunks according to
+
+10
+00:00:31.479 --> 00:00:34.291
+the lengths of each
+character or something like that.
+
+11
+00:00:34.291 --> 00:00:38.039
+But as an example of why this is
+both trickier and very
+
+12
+00:00:38.039 --> 00:00:42.100
+important down the line, let's
+take a look at this example here. We've
+
+13
+00:00:42.100 --> 00:00:45.224
+got a sentence about the Toyota Camry
+and some specifications.
+
+14
+00:00:45.224 --> 00:00:48.036
+And if
+we did a simple splitting, we could
+
+15
+00:00:48.036 --> 00:00:51.784
+end up with part of the
+sentence in one chunk, and the
+
+16
+00:00:51.784 --> 00:00:54.908
+other part of the sentence
+in another chunk. And then,
+
+17
+00:00:54.908 --> 00:00:57.407
+when we're trying to
+answer a question down
+
+18
+00:00:57.407 --> 00:00:59.906
+the line about what
+are the specifications on
+
+19
+00:00:59.906 --> 00:01:03.655
+the Camry, we actually don't
+have the right information in either chunk,
+
+20
+00:01:03.655 --> 00:01:07.404
+and so it's split
+apart. And so, we wouldn't be able to
+
+21
+00:01:07.404 --> 00:01:10.840
+answer this question correctly. So, there's
+a lot of nuance and
+
+22
+00:01:10.840 --> 00:01:13.651
+importance in how you split
+the chunks so that
+
+23
+00:01:13.651 --> 00:01:16.151
+you get semantically relevant
+chunks together. The basis
+
+24
+00:01:16.151 --> 00:01:19.587
+of all the text
+splitters in Lang Chain involves splitting on
+
+25
+00:01:19.587 --> 00:01:21.461
+chunks in some
+chunk size with
+
+26
+00:01:21.461 --> 00:01:25.210
+some chunk overlap. And so, we
+have a little diagram here below
+
+27
+00:01:25.210 --> 00:01:27.709
+to show what that
+looks like. So, the
+
+28
+00:01:27.709 --> 00:01:31.145
+chunk size corresponds to the size
+of a chunk, and the
+
+29
+00:01:31.145 --> 00:01:36.456
+size of the chunk can be measured in a
+few different ways. And we'll talk about a
+
+30
+00:01:36.456 --> 00:01:39.267
+few of those in
+the lesson. And so, we
+
+31
+00:01:39.267 --> 00:01:42.704
+allow passing in a length function to
+measure the size of
+
+32
+00:01:42.704 --> 00:01:45.203
+the chunk. This is
+often characters or tokens.
+
+33
+00:01:45.203 --> 00:01:45.203
+
+
+
+34
+00:01:45.203 --> 00:01:47.681
+A chunk overlap is
+generally kept as a
+
+35
+00:01:47.681 --> 00:01:51.089
+little overlap between two chunks,
+like a sliding window as we
+
+36
+00:01:51.089 --> 00:01:54.187
+move from one to the other.
+And this allows for
+
+37
+00:01:54.187 --> 00:01:59.144
+the same piece of context to be at
+the end of one chunk and at the
+
+38
+00:01:59.144 --> 00:02:01.623
+start of the other
+and helps create some
+
+39
+00:02:01.623 --> 00:02:03.792
+notion of consistency.
+The text splitters in
+
+40
+00:02:03.792 --> 00:02:06.270
+Lang Chain all have
+a create documents and
+
+41
+00:02:06.270 --> 00:02:08.749
+a split documents method.
+This involves the same
+
+42
+00:02:08.749 --> 00:02:10.918
+logic under the hood,
+it just exposes
+
+43
+00:02:10.918 --> 00:02:13.706
+a slightly different interface,
+one that takes in a
+
+44
+00:02:13.706 --> 00:02:17.424
+list of text and another
+that takes in a list of documents.
+
+45
+00:02:17.424 --> 00:02:19.902
+There are a lot
+of different types of
+
+46
+00:02:19.902 --> 00:02:24.550
+splitters in Lang Chain, and we'll
+cover a few of them in this lesson. But,
+
+47
+00:02:24.550 --> 00:02:27.958
+I would encourage you to check
+out the rest of them
+
+48
+00:02:27.958 --> 00:02:30.746
+in your spare time. These
+text splitters vary across
+
+49
+00:02:30.746 --> 00:02:31.985
+a bunch of dimensions.
+
+50
+00:02:32.503 --> 00:02:36.963
+They can vary on how they split the
+chunks, what characters go into that.
+
+51
+00:02:36.963 --> 00:02:40.785
+They can vary on how they
+measure the length of the chunks.
+
+52
+00:02:40.785 --> 00:02:43.334
+Is it by characters?
+Is it by tokens?
+
+53
+00:02:43.334 --> 00:02:45.882
+There are even some
+that use other smaller
+
+54
+00:02:45.882 --> 00:02:49.705
+models to determine when
+the end of a sentence might be and
+
+55
+00:02:49.705 --> 00:02:52.253
+use that as a
+way of splitting chunks.
+
+56
+00:02:52.253 --> 00:02:55.120
+Another important part
+of splitting into chunks is also
+
+57
+00:02:55.120 --> 00:02:57.987
+the metadata. Maintaining the same
+metadata across all chunks,
+
+58
+00:02:57.987 --> 00:03:01.172
+but also adding in new
+pieces of metadata when relevant,
+
+59
+00:03:01.172 --> 00:03:03.721
+and so there are
+some text splitters that
+
+60
+00:03:03.721 --> 00:03:06.906
+are really focused on that.
+The splitting of chunks can
+
+61
+00:03:06.906 --> 00:03:10.092
+often be specific on the
+type of document that we're
+
+62
+00:03:10.092 --> 00:03:13.277
+working with, and
+this is really apparent when you're splitting
+
+63
+00:03:13.277 --> 00:03:13.914
+on code.
+
+64
+00:03:13.914 --> 00:03:17.952
+So, we have a language text splitter
+that has a bunch of different
+
+65
+00:03:17.952 --> 00:03:19.815
+separators for a
+variety of different
+
+66
+00:03:19.815 --> 00:03:22.921
+languages like Python, Ruby, C.
+And when splitting these documents,
+
+67
+00:03:22.921 --> 00:03:24.784
+it takes those
+different languages and
+
+68
+00:03:24.784 --> 00:03:26.648
+the relevant separators
+for those languages
+
+69
+00:03:26.648 --> 00:03:29.753
+into account when it's
+doing the splitting. First, we're going
+
+70
+00:03:29.753 --> 00:03:32.859
+to set up the environment
+as before by loading the
+
+71
+00:03:32.859 --> 00:03:36.586
+Open AIAPI key. Next, we're going
+to import two of the most
+
+72
+00:03:36.586 --> 00:03:40.002
+common types of text splitters
+in Lang Chain. The recursive character
+
+73
+00:03:40.002 --> 00:03:41.866
+text splitter and
+the character text
+
+74
+00:03:41.866 --> 00:03:44.971
+splitter. We're going to first
+play around with a few
+
+75
+00:03:44.971 --> 00:03:48.077
+toy use cases just to
+get a sense of what
+
+76
+00:03:48.077 --> 00:03:52.736
+exactly these do. And so, we're going
+to set a relatively small chunk size of
+
+77
+00:03:52.736 --> 00:03:57.084
+26, and an even smaller chunk
+overlap of 4, just so we can see
+
+78
+00:03:57.084 --> 00:03:58.326
+what these can do.
+
+
+79
+00:03:58.326 --> 00:04:02.600
+Let's initialize these two different
+text splitters as R
+
+80
+00:04:02.600 --> 00:04:08.775
+splitter and C splitter. And
+then let's take a look at a few
+
+81
+00:04:08.775 --> 00:04:15.898
+different use cases. Let's load in
+the first string. A, B, C, D, all the
+
+82
+00:04:15.898 --> 00:04:22.548
+way down to Z. And let's look at what
+happens when we use the
+
+83
+00:04:22.548 --> 00:04:27.297
+various splitters. When we split it
+with the recursive character
+
+84
+00:04:27.297 --> 00:04:31.096
+text splitter it still
+ends up as one
+
+85
+00:04:31.096 --> 00:04:35.846
+string. This is because this
+is 26 characters long and
+
+86
+00:04:35.846 --> 00:04:42.020
+we've specified a chunk size
+of 26. So, there's actually no need to
+
+87
+00:04:42.020 --> 00:04:47.719
+even do any splitting here. Now,
+let's do it on a slightly
+
+88
+00:04:47.719 --> 00:04:52.943
+longer string where it's longer than
+the 26 characters that we've
+
+89
+00:04:52.943 --> 00:04:55.318
+specified as the chunk size.
+
+
+90
+00:04:55.318 --> 00:04:58.850
+Here we can see that
+two different chunks are created.
+
+91
+00:04:58.850 --> 00:05:02.735
+The first one ends at Z, so that's
+26 characters. The
+
+92
+00:05:02.735 --> 00:05:06.974
+next one we can see starts with W, X,
+Y, Z. Those
+
+93
+00:05:06.974 --> 00:05:10.859
+are the four chunk overlaps, And
+then it continues with the
+
+94
+00:05:10.859 --> 00:05:15.804
+rest of the string. Let's take
+a look at a slightly more complex string
+
+95
+00:05:15.804 --> 00:05:18.629
+where we have a
+bunch of spaces between
+
+96
+00:05:18.629 --> 00:05:21.808
+characters. We can
+now see that it's split into
+
+97
+00:05:21.808 --> 00:05:24.987
+three chunks because there
+are spaces, so it takes
+
+98
+00:05:24.987 --> 00:05:26.047
+up more space.
+
+99
+00:05:26.047 --> 00:05:29.930
+And so, if we look at the
+overlap we can see that
+
+100
+00:05:29.930 --> 00:05:34.784
+in the first one there's L and M, and
+L and M are then also
+
+101
+00:05:34.784 --> 00:05:38.019
+present in the second one. That
+seems like only two
+
+102
+00:05:38.019 --> 00:05:41.903
+characters but because of
+the space both in between the L and
+
+103
+00:05:41.903 --> 00:05:46.109
+M, and then also, before
+the L and after the M that actually
+
+104
+00:05:46.109 --> 00:05:48.698
+counts as the four
+that makes up the
+
+105
+00:05:48.698 --> 00:05:51.287
+chunk overlap. Let's now
+try with the character
+
+106
+00:05:51.287 --> 00:05:54.199
+text splitter, And we
+can see that when we
+
+107
+00:05:54.199 --> 00:05:58.406
+run it doesn't actually try
+to split it at all. And so, what's
+
+108
+00:05:58.406 --> 00:06:02.612
+going on here? The issue is the
+character text splitter splits on a
+
+109
+00:06:02.612 --> 00:06:05.525
+single character and
+by default that character is a
+
+110
+00:06:05.525 --> 00:06:08.113
+newline character. But
+here, there are no newlines.
+
+111
+00:06:08.113 --> 00:06:11.026
+If we set the
+separator to be an empty
+
+112
+00:06:11.026 --> 00:06:14.585
+space, we can see what
+happens then. Here it's split in
+
+113
+00:06:14.585 --> 00:06:17.821
+the same
+way as before. This is a good point
+
+114
+00:06:17.821 --> 00:06:21.704
+to pause the video, and try some new
+examples both with different
+
+115
+00:06:21.704 --> 00:06:24.293
+strings that you've
+made up. And then, also
+
+116
+00:06:24.293 --> 00:06:27.205
+swapping out the separators and
+seeing what happens. It's
+
+117
+00:06:27.205 --> 00:06:30.441
+also interesting to experiment with
+the chunk size, and chunk
+
+118
+00:06:30.441 --> 00:06:33.030
+overlap, and just generally get
+a sense for
+
+119
+00:06:33.030 --> 00:06:35.619
+what's happening in a
+few toy examples so
+
+120
+00:06:35.619 --> 00:06:38.855
+that when we move on
+to more real-world examples, you'll
+
+121
+00:06:38.855 --> 00:06:41.767
+have good intuition as to what's
+happening underneath the
+
+122
+00:06:41.767 --> 00:06:45.650
+scenes. Now, let's try it out on
+some more real-world examples. We've
+
+123
+00:06:45.650 --> 00:06:48.886
+got this
+long paragraph here, and we can see that
+
+124
+00:06:48.886 --> 00:06:51.798
+right about here,
+we have this double newline symbol
+
+125
+00:06:51.798 --> 00:06:56.329
+which is a typical separator between paragraphs. Let's
+check out the length of this
+
+126
+00:06:56.329 --> 00:06:58.270
+piece of text,
+and we can
+
+127
+00:06:58.270 --> 00:07:00.535
+see that
+it's just about 500. And
+
+128
+00:07:00.535 --> 00:07:04.095
+now, let's define our two
+text splitters. We'll work with the
+
+129
+00:07:04.095 --> 00:07:08.625
+character text splitter as before with the
+space as a separator and then we'll
+
+130
+00:07:08.625 --> 00:07:11.214
+initialize the recursive character
+text splitter. And here,
+
+131
+00:07:11.214 --> 00:07:14.450
+we pass in a
+list of separators, and these are
+
+132
+00:07:14.450 --> 00:07:16.715
+the default separators
+but we're just putting
+
+133
+00:07:16.715 --> 00:07:19.627
+them in
+this notebook to better show what's going
+
+134
+00:07:19.627 --> 00:07:22.216
+on. And so, we
+can see that we've
+
+135
+00:07:22.216 --> 00:07:25.775
+got a list of double
+newline, single newline, space and then
+
+136
+00:07:25.775 --> 00:07:29.011
+nothing, an empty string. What
+this mean is that when
+
+137
+00:07:29.011 --> 00:07:31.924
+you're splitting a piece of text it
+will first
+
+138
+00:07:31.924 --> 00:07:34.189
+try to split it
+by double newlines.
+
+139
+00:07:34.189 --> 00:07:38.072
+And then, if it still needs to
+split the individual chunks more
+
+140
+00:07:38.072 --> 00:07:41.631
+it will go on to
+single newlines. And then, if it
+
+141
+00:07:41.631 --> 00:07:44.867
+still needs to do more it
+goes on to the
+
+142
+00:07:44.867 --> 00:07:48.427
+space. And then, finally it will just go
+character by character
+
+143
+00:07:48.427 --> 00:07:52.633
+if it really needs to do
+that. Looking at how these perform on
+
+144
+00:07:52.633 --> 00:07:56.517
+the above text, we can see that
+the character text splitter splits
+
+145
+00:07:56.517 --> 00:07:59.429
+on spaces. And so, we
+end up with the
+
+146
+00:07:59.429 --> 00:08:02.988
+weird separation in the middle
+of the sentence. The recursive text
+
+147
+00:08:02.988 --> 00:08:06.548
+splitter first tries to split
+on double newlines, and so here
+
+148
+00:08:06.548 --> 00:08:08.813
+it splits it up
+into two paragraphs.
+
+149
+00:08:08.813 --> 00:08:08.813
+
+
+
+150
+00:08:08.813 --> 00:08:08.813
+
+
+
+151
+00:08:08.813 --> 00:08:08.813
+
+
+152
+00:08:08.813 --> 00:08:12.107
+Even though the first one is
+shorter than the 450 characters,
+
+153
+00:08:12.107 --> 00:08:15.701
+we specified this is probably a
+better split because now the two
+
+154
+00:08:15.701 --> 00:08:19.294
+paragraphs that are each their own
+paragraphs are in the chunks as
+
+155
+00:08:19.294 --> 00:08:22.588
+opposed to being split in the
+middle of a sentence. Let's
+
+156
+00:08:22.588 --> 00:08:24.984
+now split it into
+even smaller chunks just
+
+157
+00:08:24.984 --> 00:08:27.979
+to get an even
+better intuition as to what's going
+
+158
+00:08:27.979 --> 00:08:31.273
+on. We'll also add
+in a period separator. This is aimed
+
+159
+00:08:31.273 --> 00:08:33.669
+at splitting in between
+sentences. If we run
+
+160
+00:08:33.669 --> 00:08:36.963
+this text splitter, we can see
+that it's split on sentences,
+
+161
+00:08:36.963 --> 00:08:39.359
+but the periods are
+actually in the wrong
+
+162
+00:08:39.359 --> 00:08:42.952
+places. This is because of
+the regex that's going on underneath the
+
+163
+00:08:42.952 --> 00:08:45.647
+scenes. To fix this, we can
+actually specify a
+
+164
+00:08:45.647 --> 00:08:48.043
+slightly more complicated regex
+with a look behind.
+
+165
+00:08:48.043 --> 00:08:52.535
+Now, if we run this, we
+can see that it's split into sentences, and it's
+
+166
+00:08:52.535 --> 00:08:55.829
+split properly with the periods being
+in the right places. Let's
+
+167
+00:08:55.829 --> 00:08:57.925
+now do this on an even
+more
+
+168
+00:08:57.925 --> 00:09:01.818
+real-world example with one of the PDFs that we
+worked with in the
+
+169
+00:09:01.818 --> 00:09:05.712
+first document loading section. Let's load it in,
+and then let's define our
+
+170
+00:09:05.712 --> 00:09:09.904
+text splitter here. Here we pass the length
+function. This is using LEN, the
+
+171
+00:09:09.904 --> 00:09:12.899
+Python built-in. This is the default,
+but we're just specifying
+
+172
+00:09:12.899 --> 00:09:15.893
+it for more clarity
+what's going on underneath the scenes,
+
+173
+00:09:15.893 --> 00:09:18.289
+and this is counting
+the length of the
+
+174
+00:09:18.289 --> 00:09:18.589
+characters.
+
+
+175
+00:09:18.589 --> 00:09:18.589
+
+
+176
+00:09:18.589 --> 00:09:21.607
+Because we now want to use documents,
+we're
+
+177
+00:09:21.607 --> 00:09:24.626
+using the split documents method, and
+we're passing
+
+178
+00:09:24.626 --> 00:09:29.532
+in a list of documents. If we
+compare the length of those documents
+
+179
+00:09:29.532 --> 00:09:32.928
+to the length of the original
+pages, we can
+
+180
+00:09:32.928 --> 00:09:36.324
+see that there's been a
+bunch more documents that
+
+181
+00:09:36.324 --> 00:09:39.343
+have been created as
+a result of this
+
+182
+00:09:39.343 --> 00:09:43.871
+splitting. We can do
+a similar thing with the Notion DB that
+
+183
+00:09:43.871 --> 00:09:49.154
+we used in the first lecture as well.
+And once again, comparing the lengths
+
+184
+00:09:49.154 --> 00:09:52.173
+of the original documents
+to the new split
+
+185
+00:09:52.173 --> 00:09:55.569
+documents, we can see
+that we've got a lot
+
+186
+00:09:55.569 --> 00:10:00.852
+more documents now that we've done all the splitting.
+This is a good point
+
+187
+00:10:00.852 --> 00:10:06.135
+to pause the video, and try some new
+examples. So far, we've done all
+
+188
+00:10:06.135 --> 00:10:10.664
+the splitting based on characters. But, there's
+another way to split, and
+
+189
+00:10:10.664 --> 00:10:15.192
+this is based on tokens, and
+for this let's import the token
+
+190
+00:10:15.192 --> 00:10:15.947
+text splitter.
+
+
+191
+00:10:15.947 --> 00:10:20.674
+The reason that this is useful
+is because often LLMs have context
+
+192
+00:10:20.674 --> 00:10:24.220
+windows that are
+designated by token count. And so,
+
+193
+00:10:24.220 --> 00:10:27.765
+it's
+important to know what the tokens are, and
+
+194
+00:10:27.765 --> 00:10:33.280
+where they appear. And then, we
+can split on them to have a slightly
+
+195
+00:10:33.280 --> 00:10:37.614
+more representative idea of
+how the LLM would view them. To
+
+196
+00:10:37.614 --> 00:10:42.341
+really get a sense for what the difference
+is between tokens and
+
+197
+00:10:42.341 --> 00:10:45.887
+characters. Let's initialize
+the token text splitter with a
+
+198
+00:10:45.887 --> 00:10:51.008
+chunk size of 1, and a
+chunk overlap of 0. So, this will
+
+199
+00:10:51.008 --> 00:10:54.160
+split any text into
+a list of the
+
+200
+00:10:54.160 --> 00:10:54.948
+relevant tokens.
+
+201
+00:10:54.948 --> 00:10:59.597
+Let's create a fun made-up text, and when
+we split it, we can
+
+202
+00:10:59.597 --> 00:11:04.961
+see that it's split into a bunch of different
+tokens, and they're all a little
+
+203
+00:11:04.961 --> 00:11:07.822
+bit different in terms
+of their length and
+
+204
+00:11:07.822 --> 00:11:11.399
+the number of characters
+in them. So, the first one
+
+205
+00:11:11.399 --> 00:11:14.617
+is
+just foo then you've got a space, and
+
+206
+00:11:14.617 --> 00:11:19.624
+then bar, and then you've got a
+space, and just the B then AZ
+
+207
+00:11:19.624 --> 00:11:24.989
+then ZY, and then foo again. And this
+shows a little bit of the difference
+
+208
+00:11:24.989 --> 00:11:28.207
+between splitting on characters versus splitting
+on tokens. Let's
+
+209
+00:11:28.207 --> 00:11:32.141
+apply this to
+the documents that we loaded above, and in
+
+210
+00:11:32.141 --> 00:11:35.718
+a similar way, we can
+call the split documents on
+
+211
+00:11:35.718 --> 00:11:38.936
+the pages, and if
+we take a look at
+
+212
+00:11:38.936 --> 00:11:42.513
+the first document, we have
+our new split document with
+
+213
+00:11:42.513 --> 00:11:45.374
+the page content being
+roughly the title, and
+
+214
+00:11:45.374 --> 00:11:48.592
+then we've got the
+metadata of the source and
+
+215
+00:11:48.592 --> 00:11:52.884
+the page where it
+came from. You can see here that the
+
+216
+00:11:52.884 --> 00:11:56.460
+metadata of the source and the
+page is the same
+
+217
+00:11:56.460 --> 00:12:02.182
+in the chunk as it was for the
+original document and so if we take a
+
+218
+00:12:02.182 --> 00:12:06.474
+look at that just
+to make sure pages 0 metadata, we can
+
+219
+00:12:06.474 --> 00:12:11.123
+see that it lines up. This
+is good it's carrying through the metadata
+
+220
+00:12:11.123 --> 00:12:13.984
+to each chunk appropriately,
+but there can also
+
+221
+00:12:13.984 --> 00:12:17.203
+be cases where you
+actually want to add more
+
+222
+00:12:17.203 --> 00:12:20.064
+metadata to the chunks
+as you split them.
+
+223
+00:12:20.064 --> 00:12:23.283
+This can contain information
+like where in the document,
+
+224
+00:12:23.283 --> 00:12:26.501
+the chunk came from
+where it is relative to
+
+225
+00:12:26.501 --> 00:12:30.793
+other things or concepts in the
+document and generally this information can
+
+226
+00:12:30.793 --> 00:12:32.939
+be used when
+answering questions to
+
+227
+00:12:32.939 --> 00:12:36.157
+provide more context about what this
+chunk is exactly.
+
+228
+00:12:36.157 --> 00:12:39.376
+To see a
+concrete example of this, let's look
+
+229
+00:12:39.376 --> 00:12:44.383
+at another type of text splitter that
+actually adds information into the metadata of
+
+230
+00:12:44.383 --> 00:12:46.529
+each chunk. You
+can now pause
+
+231
+00:12:46.529 --> 00:12:51.536
+and try a few examples that
+you come up with. This text splitter is
+
+232
+00:12:51.536 --> 00:12:55.112
+the markdown header text splitter and
+what it will do
+
+233
+00:12:55.112 --> 00:12:59.403
+is it will split
+a markdown file based on the header or
+
+234
+00:12:59.403 --> 00:13:02.264
+any subheaders and then
+it will add those
+
+235
+00:13:02.264 --> 00:13:05.126
+headers as content to
+the metadata fields and
+
+236
+00:13:05.126 --> 00:13:07.987
+that will get passed
+on along to any
+
+237
+00:13:07.987 --> 00:13:10.132
+chunks that originate from
+those splits.
+
+238
+00:13:10.132 --> 00:13:10.132
+
+
+
+239
+00:13:10.132 --> 00:13:14.246
+Let's do a toy example first, and
+play around with a
+
+240
+00:13:14.246 --> 00:13:17.611
+document where we've got
+a title and then a
+
+241
+00:13:17.611 --> 00:13:22.473
+subheader of chapter 1. We've then got
+some sentences there, and then another
+
+242
+00:13:22.473 --> 00:13:25.838
+section of an even
+smaller subheader, and then we
+
+243
+00:13:25.838 --> 00:13:31.073
+jump back out to chapter 2, and some sentences
+there. Let's define a list
+
+244
+00:13:31.073 --> 00:13:37.057
+of the headers we want to split on
+and the names of those headers. So first,
+
+245
+00:13:37.057 --> 00:13:41.544
+we've got a single hashtag
+and we'll call that header 1. We've
+
+246
+00:13:41.544 --> 00:13:46.405
+then got two hashtags, header 2,
+three hashtags, header 3. We can then
+
+247
+00:13:46.405 --> 00:13:49.397
+initialize the markdown header
+text splitter with those
+
+248
+00:13:49.397 --> 00:13:52.388
+headers, and then split
+the toy example we
+
+249
+00:13:52.388 --> 00:13:55.754
+have above. If we
+take a look at a
+
+250
+00:13:55.754 --> 00:14:01.363
+few of these examples, we can see the first one
+has the content, "Hi, this
+
+251
+00:14:01.363 --> 00:14:06.224
+is Jim ." "Hi, this is
+Joe." And now in the metadata, we
+
+252
+00:14:06.224 --> 00:14:09.590
+have header 1, and then
+we have it as
+
+253
+00:14:09.590 --> 00:14:14.451
+title and header 2 as chapter
+1, and this is coming from right
+
+254
+00:14:14.451 --> 00:14:17.443
+here in the example
+document above. Let's take
+
+255
+00:14:17.443 --> 00:14:22.304
+a look at the next
+one, and we can see here that we've
+
+256
+00:14:22.304 --> 00:14:26.417
+jumped down into an even smaller subsection.
+And so, we've got
+
+257
+00:14:26.417 --> 00:14:31.279
+the content of "Hi, this is
+Lance" and now we've got not only
+
+258
+00:14:31.279 --> 00:14:35.766
+header 1. But also header 2,
+and also header 3, and this
+
+259
+00:14:35.766 --> 00:14:39.880
+is again coming from
+the content and names in the markdown
+
+260
+00:14:39.880 --> 00:14:43.245
+document above. Let's try this out
+on a real-world
+
+261
+00:14:43.245 --> 00:14:47.358
+example. Before, we loaded
+the notion directory using the notion directory
+
+262
+00:14:47.358 --> 00:14:50.724
+loader and this loaded the files
+to markdown which
+
+263
+00:14:50.724 --> 00:14:54.089
+is relevant for
+the markdown header splitter. So, let's
+
+264
+00:14:54.089 --> 00:14:58.203
+load those documents, and then define
+the markdown splitter with header
+
+265
+00:14:58.203 --> 00:15:01.568
+1 as a single hashtag
+and header 2 as
+
+266
+00:15:01.568 --> 00:15:06.056
+a double hashtag. We
+split the text and we get our splits.
+
+267
+00:15:06.056 --> 00:15:06.056
+
+
+
+268
+00:15:06.056 --> 00:15:06.056
+
+
+269
+00:15:06.056 --> 00:15:10.089
+If we take a look at them,
+we can see that the first
+
+270
+00:15:10.089 --> 00:15:14.432
+one has content of some page,
+and now if we scroll down to the
+
+271
+00:15:14.432 --> 00:15:18.155
+metadata, we can see that we've
+loaded header 1 as Blendel's employee
+
+272
+00:15:18.155 --> 00:15:21.257
+handbook. We've now gone over how to
+get semantically relevant
+
+273
+00:15:21.257 --> 00:15:23.429
+chunks with appropriate
+metadata. The next step
+
+274
+00:15:23.429 --> 00:15:25.911
+is moving those chunks
+of data into a
+
+275
+00:15:25.911 --> 00:15:29.013
+vector store, and we'll cover that in
+the next section.

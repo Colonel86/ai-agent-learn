@@ -1,0 +1,770 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.767 --> 00:00:03.770
+When building agents, they're often
+working on
+
+2
+00:00:03.770 --> 00:00:07.273
+longer
+running tasks. For these types of tasks,
+
+3
+00:00:07.574 --> 00:00:10.176
+there are two really important concepts.
+
+4
+00:00:10.176 --> 00:00:12.779
+Persistence and streaming.
+
+5
+00:00:12.779 --> 00:00:15.148
+Persistence lets you keep around the state
+
+6
+00:00:15.148 --> 00:00:18.151
+of an agent at a particular point in time.
+
+7
+00:00:18.418 --> 00:00:21.788
+This can let you go back to that state
+and resume in that state
+
+8
+00:00:21.788 --> 00:00:22.889
+in future interactions.
+
+9
+00:00:22.889 --> 00:00:25.859
+This is really important for long
+running applications.
+
+10
+00:00:26.760 --> 00:00:29.062
+Likewise, with streaming,
+
+11
+00:00:29.062 --> 00:00:33.299
+you can emit a list of signals
+of what's going on at that exact moment.
+
+12
+00:00:33.867 --> 00:00:37.504
+So for long running applications,
+you know exactly what the agent is doing.
+
+13
+00:00:38.171 --> 00:00:41.041
+Let's see these concepts in action.
+
+14
+00:00:41.041 --> 00:00:43.576
+So to get started, let's create our agent
+
+15
+00:00:43.576 --> 00:00:46.579
+as we did before.
+
+16
+00:00:47.614 --> 00:00:48.782
+We'll load in the appropriate
+
+17
+00:00:48.782 --> 00:00:51.785
+environment variables.
+
+18
+00:00:53.119 --> 00:00:56.122
+We'll make the necessary imports.
+
+19
+00:00:57.290 --> 00:00:59.426
+We'll create our Tavily search tool again.
+
+20
+00:01:02.829 --> 00:01:05.832
+We'll create our agent state.
+
+21
+00:01:06.933 --> 00:01:09.803
+And finally, we'll create our agent again.
+
+22
+00:01:09.803 --> 00:01:12.605
+Now we're going to add in persistence.
+
+23
+00:01:12.605 --> 00:01:14.574
+In order to deal with persistence,
+
+24
+00:01:14.574 --> 00:01:18.378
+we've added the concept
+of a check pointer into LangGraph.
+
+25
+00:01:18.978 --> 00:01:21.514
+A check pointer basically checkpoints
+
+26
+00:01:21.514 --> 00:01:22.916
+the state after
+
+27
+00:01:22.916 --> 00:01:25.418
+and between every node.
+
+28
+00:01:25.418 --> 00:01:27.520
+To add in persistence for this agent,
+
+29
+00:01:27.520 --> 00:01:30.523
+what we'll do is we'll use a SqliteSaver.
+
+30
+00:01:30.723 --> 00:01:34.027
+So this is a really simple check pointer
+that we've added that uses
+
+31
+00:01:34.027 --> 00:01:37.030
+Sqlite, a built in database
+under the hood.
+
+32
+00:01:37.063 --> 00:01:40.066
+And we'll just use the in-memory database.
+
+33
+00:01:40.166 --> 00:01:43.169
+So if we refresh this notebook
+it'll disappear.
+
+34
+00:01:43.236 --> 00:01:46.439
+But you can easily connect this
+to an external database
+
+35
+00:01:46.706 --> 00:01:50.110
+or we also have other check pointers
+that use Redis
+
+36
+00:01:50.110 --> 00:01:53.613
+and Postgres and other more persistent
+databases like that.
+
+37
+00:01:55.181 --> 00:01:58.284
+Once we initialize this check pointer,
+the way that we can use
+
+38
+00:01:58.284 --> 00:02:02.522
+it, is we're going to pass it in
+to graph.compile.
+
+39
+00:02:02.856 --> 00:02:06.259
+So in order to make this easy,
+let's add another parameter to agent.
+
+40
+00:02:06.526 --> 00:02:09.529
+That is check pointer.
+
+41
+00:02:09.729 --> 00:02:12.499
+And then we're just going to pass check
+pointer
+
+42
+00:02:12.499 --> 00:02:15.435
+equals check pointer
+
+43
+00:02:15.435 --> 00:02:17.637
+right here. And we've modified our agent.
+
+44
+00:02:17.637 --> 00:02:20.640
+This is all we're going to need to do.
+
+45
+00:02:21.841 --> 00:02:23.476
+We can now create our agent.
+
+46
+00:02:23.476 --> 00:02:25.645
+And we're going to pass
+in checkpoint equals memory.
+
+47
+00:02:25.645 --> 00:02:26.679
+And remember memories.
+
+48
+00:02:26.679 --> 00:02:29.682
+The object that we initialized above.
+
+49
+00:02:30.150 --> 00:02:31.217
+When we use our agent
+
+50
+00:02:31.217 --> 00:02:34.354
+now, we're also going to add
+the concept of streaming.
+
+51
+00:02:34.754 --> 00:02:37.056
+And there's two things that we might care
+about.
+
+52
+00:02:37.056 --> 00:02:37.857
+Streaming.
+
+53
+00:02:37.857 --> 00:02:40.193
+First, we might care about streaming
+
+54
+00:02:40.193 --> 00:02:42.362
+the individual messages.
+
+55
+00:02:42.362 --> 00:02:46.366
+So this would be the AI message
+that determines what action to take.
+
+56
+00:02:46.633 --> 00:02:50.136
+And then the observation message
+that represents the result
+
+57
+00:02:50.270 --> 00:02:51.938
+of taking that action.
+
+58
+00:02:51.938 --> 00:02:54.974
+The second thing we might care about
+streaming is tokens.
+
+59
+00:02:55.475 --> 00:02:59.612
+So for each token of the LLM call
+we might want to stream the output.
+
+60
+00:02:59.879 --> 00:03:03.383
+To begin we're just going to start
+by streaming only the messages.
+
+61
+00:03:03.416 --> 00:03:05.385
+We'll do the tokens
+later on in the lesson.
+
+62
+00:03:07.053 --> 00:03:09.189
+So we're
+going to create our human message.
+
+63
+00:03:09.189 --> 00:03:10.957
+"What is the weather in SF?"
+
+64
+00:03:10.957 --> 00:03:13.426
+This is the one we ran before.
+
+65
+00:03:13.426 --> 00:03:16.429
+We're now going to add
+this concept of a thread config.
+
+66
+00:03:17.130 --> 00:03:20.133
+So this will be used to keep track
+of different threads
+
+67
+00:03:20.233 --> 00:03:22.902
+inside the persistent checkpointer.
+
+68
+00:03:22.902 --> 00:03:26.606
+This will allow us to have multiple
+conversations going on at the same time.
+
+69
+00:03:27.574 --> 00:03:30.410
+This is really needed
+for production applications
+
+70
+00:03:30.410 --> 00:03:32.645
+where you generally have many users.
+
+71
+00:03:32.645 --> 00:03:36.549
+This thread config is simply a dictionary
+with a configurable key.
+
+72
+00:03:36.916 --> 00:03:41.354
+And as part of that, we have a thread id
+and we can set that equal to any string.
+
+73
+00:03:41.554 --> 00:03:44.557
+Here we're going to set that equal to one.
+
+74
+00:03:46.693 --> 00:03:48.194
+We're now going to call the graph
+
+75
+00:03:48.194 --> 00:03:51.197
+not with invoke, but with stream.
+
+76
+00:03:51.364 --> 00:03:54.267
+We're going to pass in the same messages
+dictionary.
+
+77
+00:03:54.267 --> 00:03:58.471
+And we're also going to pass in this
+thread config as a second parameter there.
+
+78
+00:03:58.838 --> 00:04:01.474
+We're then going to get back
+a stream of events.
+
+79
+00:04:01.474 --> 00:04:05.111
+These events
+represent updates to that state over time
+
+80
+00:04:05.511 --> 00:04:08.414
+because we know our state
+only has one key,
+
+81
+00:04:08.414 --> 00:04:09.882
+the messages key.
+
+82
+00:04:09.882 --> 00:04:12.852
+We're just going to loop through it
+and print that out.
+
+83
+00:04:12.852 --> 00:04:14.621
+So let's run this and see what happens.
+
+84
+00:04:18.057 --> 00:04:18.558
+We can see
+
+85
+00:04:18.558 --> 00:04:21.561
+that we get back a stream of results.
+
+86
+00:04:21.661 --> 00:04:23.930
+First, we get back an AI message.
+
+87
+00:04:23.930 --> 00:04:26.466
+This is the first result
+from the language model.
+
+88
+00:04:26.466 --> 00:04:29.235
+And it's telling us to call Tavily.
+
+89
+00:04:29.235 --> 00:04:31.871
+Next, we get back a tool message.
+
+90
+00:04:31.871 --> 00:04:34.374
+This is the result of calling to Tavily.
+
+91
+00:04:34.374 --> 00:04:37.176
+And it has the results from the search.
+
+92
+00:04:37.176 --> 00:04:39.579
+And finally,
+we get back a third AI message.
+
+93
+00:04:39.579 --> 00:04:43.049
+This is the final result from the LLM
+answering our question.
+
+94
+00:04:43.950 --> 00:04:48.187
+With this stream method, we get back
+all of these intermediate results,
+
+95
+00:04:48.521 --> 00:04:52.292
+and we have really good visibility
+into what exactly is going on.
+
+96
+00:04:54.160 --> 00:04:56.596
+Let's now call it with another message.
+
+97
+00:04:56.596 --> 00:04:59.265
+This time we're going to say
+"What about in LA?"
+
+98
+00:04:59.265 --> 00:05:02.402
+So this is continuing
+the same conversation that we had before.
+
+99
+00:05:02.602 --> 00:05:04.537
+It's asking a follow-up question.
+
+100
+00:05:04.537 --> 00:05:05.605
+We don't say anything
+
+101
+00:05:05.605 --> 00:05:09.409
+explicitly about the weather,
+but based on it being a conversation,
+
+102
+00:05:09.642 --> 00:05:13.212
+we would expect it to realize
+that we're asking about the weather here.
+
+103
+00:05:13.746 --> 00:05:16.783
+In order to make sure that we're
+continuing from that same point,
+
+104
+00:05:17.083 --> 00:05:19.786
+we're passing in the same thread ID here.
+
+105
+00:05:21.054 --> 00:05:24.057
+If we run this,
+
+106
+00:05:24.590 --> 00:05:27.593
+we can see that it returns
+first a function call,
+
+107
+00:05:27.660 --> 00:05:30.663
+where it's looking for current weather
+in Los Angeles.
+
+108
+00:05:31.130 --> 00:05:33.900
+Again,
+it's knowing that we asked about the weather
+
+109
+00:05:33.900 --> 00:05:36.903
+because it has this persistence
+from the checkpointer.
+
+110
+00:05:38.805 --> 00:05:41.107
+We can then see that it's getting back
+results from
+
+111
+00:05:41.107 --> 00:05:43.743
+Tavily.
+
+112
+00:05:43.743 --> 00:05:47.413
+And finally, that is responding
+with an AI message
+
+113
+00:05:47.413 --> 00:05:50.416
+that says the current weather in
+Los Angeles is blah blah blah.
+
+114
+00:05:53.920 --> 00:05:55.888
+We can call this yet again
+
+115
+00:05:55.888 --> 00:05:59.892
+using the same thread ID with the message,
+"Which is warmer?"
+
+116
+00:06:00.827 --> 00:06:04.764
+Here it has access to the full history
+so it can accurately respond.
+
+117
+00:06:04.797 --> 00:06:07.900
+Los Angeles is currently warmer
+than San Francisco.
+
+118
+00:06:11.437 --> 00:06:14.440
+Just to demonstrate
+the importance of this thread ID.
+
+119
+00:06:14.640 --> 00:06:17.643
+Let's change this to be two.
+
+120
+00:06:18.244 --> 00:06:20.346
+If we run this now.
+
+121
+00:06:20.346 --> 00:06:23.149
+we can see that
+the language model is really confused.
+
+122
+00:06:23.149 --> 00:06:26.018
+"Can you please
+specify the two or more items
+
+123
+00:06:26.018 --> 00:06:28.054
+you are comparing to determine
+which is warmer?"
+
+124
+00:06:28.054 --> 00:06:31.557
+That's because it doesn't
+have access to any history.
+
+125
+00:06:32.158 --> 00:06:34.260
+And that's
+because we're using a separate thread ID.
+
+126
+00:06:36.229 --> 00:06:38.531
+So we've
+covered the importance of persistence.
+
+127
+00:06:38.531 --> 00:06:41.267
+And we've showed
+how you can stream events.
+
+128
+00:06:41.267 --> 00:06:44.270
+But what about streaming
+tokens themselves.
+
+129
+00:06:44.270 --> 00:06:47.473
+For that,
+we're going to want to use the A-stream
+
+130
+00:06:47.473 --> 00:06:52.378
+events method that comes on all LangChain
+and LangGraph objects.
+
+131
+00:06:53.079 --> 00:06:56.082
+A-stream event is an asynchronous method,
+
+132
+00:06:56.382 --> 00:07:00.453
+which means that we're going
+to need to use an async checkpointer.
+
+133
+00:07:02.488 --> 00:07:03.623
+In order to do this.
+
+134
+00:07:03.623 --> 00:07:07.727
+We can import async SqliteSaver
+and pass that to the agent.
+
+135
+00:07:07.927 --> 00:07:09.996
+This is very similar to before.
+
+136
+00:07:09.996 --> 00:07:14.996
+It's just swapping out a synchronous SqliteSaver
+with an async SqliteSaver.
+
+137
+00:07:15.902 --> 00:07:18.738
+This allows us to use async methods on
+
+138
+00:07:18.738 --> 00:07:21.741
+the graph.
+
+139
+00:07:21.808 --> 00:07:23.443
+We'll use a new thread id,
+
+140
+00:07:23.443 --> 00:07:26.412
+so this will start the conversation
+from fresh.
+
+141
+00:07:26.412 --> 00:07:29.415
+We're also going to be iterating
+over a different type of event.
+
+142
+00:07:29.715 --> 00:07:33.619
+These events represent updates
+from the underlying stream.
+
+143
+00:07:34.086 --> 00:07:37.089
+What we want to do, is
+we want to look for events
+
+144
+00:07:37.323 --> 00:07:40.326
+that correspond to new tokens.
+
+145
+00:07:40.393 --> 00:07:44.096
+These kind of events are called
+on chat model stream.
+
+146
+00:07:44.964 --> 00:07:48.301
+When we see these events happening,
+we want to get the content
+
+147
+00:07:48.434 --> 00:07:49.602
+and print it out.
+
+148
+00:07:49.602 --> 00:07:52.271
+And we'll print it out with this type
+delimiter.
+
+149
+00:07:52.271 --> 00:07:56.442
+When we run this, we should see it
+streaming real time into the screen.
+
+150
+00:08:05.051 --> 00:08:07.053
+So we can see a few things here.
+
+151
+00:08:07.053 --> 00:08:10.923
+First, we can see that
+it called the function under the hood.
+
+152
+00:08:11.591 --> 00:08:14.260
+The reason it didn't stream out
+anything there, is
+
+153
+00:08:14.260 --> 00:08:16.796
+there's actually no content to stream.
+
+154
+00:08:16.796 --> 00:08:18.731
+It was just a function call.
+
+155
+00:08:18.731 --> 00:08:22.368
+But then we can see that when it did
+get to the final response
+
+156
+00:08:22.368 --> 00:08:27.073
+and it is returning a final answer,
+we stream out those tokens one at a time.
+
+157
+00:08:27.473 --> 00:08:30.476
+We can see that we've got this
+little funny pipe delimiter here,
+
+158
+00:08:30.610 --> 00:08:34.046
+but we could easily remove that in our
+production application if we wanted to.
+
+159
+00:08:35.214 --> 00:08:38.017
+So that's it
+for persistence and streaming.
+
+160
+00:08:38.017 --> 00:08:41.487
+Pretty simple to get started with,
+but really powerful
+
+161
+00:08:41.487 --> 00:08:43.256
+for building production applications.
+
+162
+00:08:43.256 --> 00:08:47.059
+You're going to want your agents
+to be able to have multiple conversations
+
+163
+00:08:47.059 --> 00:08:48.294
+at the same time,
+
+164
+00:08:48.294 --> 00:08:52.231
+and have a concept of memory
+so they can resume those conversations.
+
+165
+00:08:52.565 --> 00:08:57.370
+And you're also going to want them to be
+able to stream both the final tokens,
+
+166
+00:08:57.570 --> 00:09:00.573
+but also all of the messages
+that came before.
+
+167
+00:09:00.940 --> 00:09:05.111
+Persistence is also really important
+for enabling human in the loop
+
+168
+00:09:05.411 --> 00:09:09.148
+type interactions, and that's exactly what
+we're going to cover in the next lesson.
+

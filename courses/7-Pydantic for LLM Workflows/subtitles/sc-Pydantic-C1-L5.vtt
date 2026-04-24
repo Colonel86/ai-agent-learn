@@ -1,0 +1,1322 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00.500 --> 00:03.419
+In this lesson, you'll be taking what you've learned so far
+
+00:03.419 --> 00:08.009
+about getting structured responses from an LLM using Pydantic data models.
+
+00:08.009 --> 00:11.210
+and you'll combine that with a new ability
+
+00:11.210 --> 00:13.859
+to use Pydantic models in the definition of tools
+
+00:13.859 --> 00:16.350
+that you can pass in your LLM API call.
+
+00:16.350 --> 00:19.100
+And so, when it comes to the ways in which
+
+00:19.100 --> 00:22.989
+Pydantic gets used in LLM workflows, these are the two big ones.
+
+00:22.989 --> 00:25.750
+structured responses and tool calling.
+
+00:25.750 --> 00:28.250
+And so what you'll do in this lesson
+
+00:28.250 --> 00:29.798
+is combine these to implement
+
+00:29.798 --> 00:32.618
+reliable structure and tool calling in your application.
+
+00:33.128 --> 00:36.609
+So, let's jump into the code. There's going to be a lot
+
+00:36.609 --> 00:38.149
+of code flying by in this lesson.
+
+00:38.149 --> 00:40.253
+So I first want to give you just
+
+00:40.253 --> 00:42.359
+a high-level visual picture for where we're going,
+
+00:42.359 --> 00:44.658
+and hopefully that'll make it a little easier to follow along.
+
+00:45.018 --> 00:46.598
+So, the starting point is the same.
+
+00:46.838 --> 00:50.639
+Namely, you're getting some user input that includes a name, an email,
+
+00:50.639 --> 00:53.149
+and some kind of message like what's my order status?
+
+00:53.749 --> 00:56.218
+You'll first take that user input
+
+00:56.218 --> 00:59.598
+and validate it using your UserInput model. Then you'll
+
+00:59.598 --> 01:03.329
+pass your validated user input into an LLM call
+
+01:03.329 --> 01:06.069
+where you're asking the LLM to return
+
+01:06.069 --> 01:08.808
+a valid instance of your CustomerQuery model.
+
+01:08.808 --> 01:11.644
+And then you'll pass that to another
+
+01:11.644 --> 01:14.478
+LLM API call with some tool definitions.
+
+01:14.478 --> 01:17.718
+And so the way you're going to code that up
+
+01:17.718 --> 01:20.959
+is first to start with two new pydantic data models.
+
+01:20.959 --> 01:24.638
+And these are FAQLookupArgs and CheckOrderStatusArgs.
+
+01:24.638 --> 01:27.599
+and you'll see how those get implemented in the notebook.
+
+01:27.599 --> 01:29.399
+But basically these are
+
+01:29.399 --> 01:32.299
+finding the parameters that you'll use to make a tool call.
+
+01:32.299 --> 01:36.338
+And those parameters go into two new functions that you'll define.
+
+01:36.338 --> 01:41.358
+So you'll have lookup_faq_answer that takes FAQLookupArgs as input,
+
+01:41.358 --> 01:45.429
+and check_order_status that takes CheckOrderStatusArgs as input.
+
+01:45.429 --> 01:46.938
+So you'll see how those functions
+
+01:46.938 --> 01:48.698
+get defined in the notebook as well.
+
+01:48.698 --> 01:51.198
+After that, you can make some tool_definitions
+
+01:51.198 --> 01:54.203
+where you'll define tools that include a name
+
+01:54.203 --> 01:57.209
+that's the Python function for that tool call,
+
+01:57.209 --> 01:59.198
+and a description, and then the parameters.
+
+01:59.198 --> 02:02.069
+and for parameters you're going to pass in the model_json_schema
+
+02:02.069 --> 02:05.328
+of those pydantic data models that you defined above.
+
+02:05.328 --> 02:07.358
+And then you'll take those tool definitions
+
+02:07.358 --> 02:09.788
+and then pass them in the API call.
+
+02:09.788 --> 02:13.109
+And that's letting the LLM know which tools are available
+
+02:13.109 --> 02:16.377
+and then the job of the LLM is to return parameters for
+
+02:16.377 --> 02:18.760
+a tool call if in fact that seems like
+
+02:18.760 --> 02:21.408
+a good next step. And then you'll take that response
+
+02:21.408 --> 02:26.429
+and first use the pydantic data models that you defined for FAQLookupArgs
+
+02:26.429 --> 02:29.048
+or CheckOrderStatusArgs and
+
+02:29.048 --> 02:30.844
+validate that the tool parameters returned by
+
+02:30.844 --> 02:32.897
+the LLM are what they need to be
+
+02:32.897 --> 02:34.591
+in order to call those functions, and
+
+02:34.591 --> 02:36.527
+then you'll go ahead and call those tools,
+
+02:36.527 --> 02:38.427
+return the outputs,
+
+02:38.427 --> 02:40.828
+and then you'll take all of that and
+
+02:40.828 --> 02:44.027
+bundle it up into one more LLM call where you're passing
+
+02:44.027 --> 02:47.228
+in your customer query, your tool outputs,
+
+02:47.228 --> 02:49.027
+and you've defined another
+
+02:49.027 --> 02:51.877
+pydantic data model called SupportTicket, which will be the final
+
+02:51.877 --> 02:54.127
+output from that last LLM call.
+
+02:54.127 --> 02:55.652
+So, you're going to be putting together a
+
+02:55.652 --> 02:57.177
+lot of different pieces and this is the
+
+02:57.177 --> 02:59.737
+big picture. All right, so
+
+03:00.048 --> 03:02.842
+in this notebook, there's going to be a fair amount of setup
+
+03:02.842 --> 03:05.638
+and a fair amount of code flying by, so bear with me.
+
+03:05.638 --> 03:08.737
+I'll try to move quickly through the parts that you've seen before
+
+03:08.737 --> 03:11.858
+and pause to explain each time there's something new.
+
+03:11.858 --> 03:14.828
+And so the first thing is just a whole bunch of imports.
+
+03:14.828 --> 03:17.068
+This is basically everything you've seen from the previous lessons.
+
+03:17.068 --> 03:18.948
+Now you're going to bring it all together.
+
+03:18.948 --> 03:22.737
+And next, you're going to define your UserInput data model.
+
+03:22.737 --> 03:25.777
+But in this case, you're making it a little bit more complex
+
+03:25.777 --> 03:28.358
+by messing with the order_id field.
+
+03:28.598 --> 03:30.228
+So order_id, which used to be an integer,
+
+03:30.228 --> 03:32.418
+is now going to be an optional string field,
+
+03:32.418 --> 03:34.078
+where the default is still None.
+
+03:34.078 --> 03:36.837
+And the description is that there's a new format.
+
+03:36.837 --> 03:40.497
+You have three capital letters, then a dash, and then five numbers.
+
+03:40.497 --> 03:43.647
+And the reason this is an interesting example is just because
+
+03:43.647 --> 03:48.647
+often times you'll have fields like this where validation is not straightforward.
+
+03:48.647 --> 03:50.698
+And that's where you need to bring in this field_validator
+
+03:50.698 --> 03:52.427
+tool from pydantic.
+
+03:52.427 --> 03:55.098
+So with field_validator, you can set
+
+03:55.098 --> 03:58.397
+your validator on the order_id field and then define a
+
+03:58.397 --> 04:00.403
+function, that in this case just has
+
+04:00.403 --> 04:02.698
+some regular expression parsing to see if the
+
+04:02.698 --> 04:05.698
+pattern in the input matches the expectation.
+
+04:05.698 --> 04:08.198
+And if it doesn't match, you can raise a ValueError,
+
+04:08.198 --> 04:10.147
+letting the user know what the problem
+
+04:10.147 --> 04:12.098
+is and what the expected format is.
+
+04:12.098 --> 04:14.698
+And so, this is just one example of how you might
+
+04:14.698 --> 04:17.697
+handle some custom validation directly within your model.
+
+04:17.697 --> 04:19.358
+And it's a way in which
+
+04:19.358 --> 04:21.298
+you can enforce security on input data.
+
+04:21.298 --> 04:23.963
+For example, if you had input coming in and you
+
+04:23.963 --> 04:26.898
+wanted to make sure it's not some kind of SQL injection
+
+04:26.898 --> 04:30.367
+or some kind of other malicious input, you can validate whatever
+
+04:30.367 --> 04:32.769
+you've got coming into your data model
+
+04:32.769 --> 04:35.160
+with completely custom validation logic like this.
+
+04:35.160 --> 04:36.850
+So you can define that model,
+
+04:37.069 --> 04:40.829
+and then you're going to define your customer query data model,
+
+04:40.829 --> 04:42.480
+just as you did before,
+
+04:42.480 --> 04:46.139
+inheriting from UserInput and with these four additional fields.
+
+04:47.980 --> 04:51.279
+Next, you're going to define a validate_user_input function,
+
+04:51.279 --> 04:54.430
+just as you did before, so I won't say much about that.
+
+04:55.620 --> 04:57.997
+And then you'll define a
+
+04:57.997 --> 04:59.997
+create customer_query function
+
+04:59.997 --> 05:01.726
+that takes in validated user data
+
+05:01.726 --> 05:03.747
+in the form of a JSON string
+
+05:03.747 --> 05:09.197
+and calls an LLM to populate an instance of CustomerQuery.
+
+05:09.197 --> 05:10.812
+So this is just a slight
+
+05:10.812 --> 05:12.697
+twist on what you were doing before.
+
+05:12.697 --> 05:15.096
+Essentially the same thing, you're just calling an LLM
+
+05:15.096 --> 05:17.896
+using in this case output_type of CustomerQuery.
+
+05:17.896 --> 05:21.896
+Now here we're using the Pydantic AI framework and Google's Gemini model,
+
+05:21.896 --> 05:24.497
+but this is just the same thing you were doing before,
+
+05:24.497 --> 05:26.172
+calling an LLM to take user input
+
+05:26.172 --> 05:29.047
+and populate an instance of the class. a customer query model.
+
+05:29.266 --> 05:31.526
+And so in this case you're returning the response.output,
+
+05:31.526 --> 05:34.209
+which when you're calling Pydantic AI is
+
+05:34.209 --> 05:37.276
+the validated instance of your CustomerQuery data model.
+
+05:39.307 --> 05:41.007
+And then you can try out what you've got so far.
+
+05:41.507 --> 05:43.247
+So here you have some user input
+
+05:43.247 --> 05:44.940
+in the form of a JSON
+
+05:44.940 --> 05:46.916
+string. You can validate the user input,
+
+05:47.177 --> 05:50.177
+then create a customer query and print out what you've got.
+
+05:52.637 --> 05:54.846
+All right, user input validated, CustomerQuery generated
+
+05:54.846 --> 05:57.596
+and looks like you got a valid instance of your customer
+
+05:57.596 --> 05:59.747
+query data model out the other end.
+
+06:00.607 --> 06:03.726
+And after that, you're going to define some new pydantic models.
+
+06:03.956 --> 06:06.867
+In this first case, you'll define a Pydantic
+
+06:06.867 --> 06:09.776
+model called FAQLookupArgs that inherits from BaseModel and
+
+06:10.466 --> 06:12.817
+has these two fields, query and tags.
+
+06:13.297 --> 06:16.987
+And so these two fields are what will be expected in
+
+06:16.987 --> 06:20.677
+an FAQ lookup function that you'll define in just a moment.
+
+06:23.026 --> 06:27.396
+And then you'll define another model called CheckOrderStatusArgs that
+
+06:27.396 --> 06:29.252
+also inherits from BaseModel and has
+
+06:29.252 --> 06:31.416
+an order_id field, just like what you
+
+06:31.416 --> 06:33.947
+had before with this field_validator on the order_id field,
+
+06:33.947 --> 06:37.802
+and an email. And so these are going to be the parameters
+
+06:37.802 --> 06:39.507
+that go passed into a check
+
+06:39.507 --> 06:41.497
+order status function. So let's define that.
+
+06:43.076 --> 06:47.447
+And then you're also going to define some fake database data.
+
+06:47.447 --> 06:50.872
+So in this case, just some data that you can actually look
+
+06:50.872 --> 06:54.297
+up with an FAQ lookup function or an order status lookup function.
+
+06:54.297 --> 06:58.045
+And so here you have a tiny little fake FAQ database with
+
+06:58.045 --> 07:01.735
+a question, answer, and keyword for each FAQ.
+
+07:01.735 --> 07:04.235
+And down here you have a a little order database
+
+07:04.235 --> 07:06.367
+with three different orders including a
+
+07:06.367 --> 07:08.855
+status, estimated delivery, purchase date, and email.
+
+07:08.855 --> 07:10.175
+And so you don't need to worry
+
+07:10.175 --> 07:11.495
+about the details of what's in here.
+
+07:11.495 --> 07:13.975
+This is just in order to complete the example.
+
+07:15.425 --> 07:19.446
+And then you can define the lookup_faq_answer function,
+
+07:19.446 --> 07:22.995
+which in this case takes as input an instance
+
+07:22.995 --> 07:26.656
+of the FAQLookUpArgs model that you created above.
+
+07:27.415 --> 07:29.675
+And this is just a function to go through
+
+07:29.675 --> 07:33.776
+that fake database of FAQs and search based on
+
+07:33.776 --> 07:35.935
+keywords in the user input.
+
+07:36.206 --> 07:37.966
+And if it finds an answer, it returns the answer.
+
+07:38.225 --> 07:39.571
+If not, it says, sorry, I couldn't
+
+07:39.571 --> 07:40.915
+find an FAQ answer for your question.
+
+07:43.656 --> 07:47.005
+And then you can define a check_order_status function,
+
+07:47.005 --> 07:51.805
+which in this case takes as input the CheckOrderStatusArgs pydantic model,
+
+07:51.805 --> 07:54.906
+a valid instance of that model as input,
+
+07:54.906 --> 07:56.875
+and then attempts to look up an order,
+
+07:56.875 --> 07:58.625
+from that little fake order database
+
+07:58.625 --> 08:00.985
+using the order ID and email
+
+08:00.985 --> 08:02.495
+for confirmation of
+
+08:02.495 --> 08:04.216
+a matching order.
+
+08:04.216 --> 08:06.946
+Again, the details here are not something you need to worry about.
+
+08:06.946 --> 08:08.271
+This is all just in service of
+
+08:08.271 --> 08:09.596
+building up an example of tool calling
+
+08:09.596 --> 08:11.565
+in your customer support system.
+
+08:13.115 --> 08:14.855
+And then finally we get to the interesting part.
+
+08:15.786 --> 08:17.526
+You can define tools
+
+08:17.526 --> 08:19.786
+that you'll use in your API call
+
+08:19.786 --> 08:22.855
+to an LLM like this, where up here you have
+
+08:22.855 --> 08:26.375
+a first tool that has a name of lookup_faq_answer,
+
+08:26.596 --> 08:28.545
+answer, that's the, that's the function that you'll
+
+08:28.545 --> 08:30.495
+call if in fact this tool is invoked.
+
+08:30.935 --> 08:34.596
+And the parameters that that function expects are the FAQLookupArgs.
+
+08:35.405 --> 08:37.785
+And so you're passing this information in your API
+
+08:37.785 --> 08:40.166
+call to an LLM, and this is where your
+
+08:40.505 --> 08:42.412
+Pydantic data model comes in in
+
+08:42.412 --> 08:44.635
+defining the parameters that that tool expects.
+
+08:45.105 --> 08:48.258
+And then you have another one for check_order_status where the
+
+08:48.258 --> 08:51.725
+parameters are the schema of that check order status args model.
+
+08:53.436 --> 08:56.394
+And as a final step, before getting into the LLM calls,
+
+08:56.394 --> 09:00.144
+you're going to define a couple more pydantic models.
+
+09:00.144 --> 09:02.649
+So this is now going to be your SupportTicket
+
+09:02.649 --> 09:05.154
+model, which is the ultimate output of the system.
+
+09:05.154 --> 09:08.105
+And so first you've got an OrderDetails model that
+
+09:08.105 --> 09:11.384
+just has a few fields of status, estimated_delivery, and note.
+
+09:11.384 --> 09:13.460
+And then what you're going to do is
+
+09:13.460 --> 09:15.534
+you're going to use OrderDetails inside of SupportTicket.
+
+09:15.534 --> 09:19.235
+So now SupportTicket is a model that inherits from CustomerQuery,
+
+09:19.235 --> 09:20.961
+so it has all the attributes of
+
+09:20.961 --> 09:22.934
+CustomerQuery. And then you're adding some new things.
+
+09:22.934 --> 09:26.284
+So a recommended_next_action, which is another Literal that
+
+09:26.284 --> 09:30.325
+has a certain set of acceptable values, escalate_to_agent, send_faq_response,
+
+09:30.325 --> 09:32.554
+send_order_status or no_action_needed.
+
+09:32.554 --> 09:34.601
+You have an order_details field and this is
+
+09:34.601 --> 09:36.904
+where you're going to pull in that OrderDetails model.
+
+09:36.904 --> 09:38.828
+And so, this is an example
+
+09:38.828 --> 09:41.075
+of how you can construct a field
+
+09:41.075 --> 09:45.715
+inside of a Pydantic data model using another Pydantic data model.
+
+09:46.014 --> 09:48.475
+And then you have an faq_response that can take
+
+09:48.475 --> 09:50.934
+the response if you looked up an FAQ answer
+
+09:50.934 --> 09:53.894
+and a creation_date. So let's define those.
+
+09:54.615 --> 09:56.174
+And now with all that infrastructure
+
+09:56.195 --> 09:59.794
+built up, you're ready to define your LLM call.
+
+10:00.804 --> 10:06.144
+And so what you're going to do is define this decide_next_action_with_tools function.
+
+10:06.695 --> 10:10.784
+And this takes as input an instance of your CustomerQuery data model.
+
+10:11.144 --> 10:12.519
+And so the first thing you're going
+
+10:12.519 --> 10:13.894
+to do is define a system prompt.
+
+10:14.284 --> 10:17.054
+And to do that, you'll first extract the model_json_schema
+
+10:17.804 --> 10:19.695
+from the SupportTicket model.
+
+10:20.075 --> 10:21.344
+and then construct a prompt that
+
+10:21.344 --> 10:22.825
+says you're a helpful customer support agent.
+
+10:23.174 --> 10:24.509
+Your job is to determine what support
+
+10:24.509 --> 10:25.845
+action should be taken for the customer,
+
+10:26.087 --> 10:28.668
+based on the query and expected fields in the SupportTicket schema below.
+
+10:29.222 --> 10:30.893
+And so the idea here
+
+10:30.893 --> 10:33.623
+is that there's input from the user.
+
+10:33.623 --> 10:35.893
+It gets converted via a first LLM call
+
+10:35.893 --> 10:38.413
+into a customer query data model.
+
+10:38.413 --> 10:40.682
+and then this is passed on to another LLM call
+
+10:40.682 --> 10:43.442
+to decide what to do, to call a tool
+
+10:43.442 --> 10:46.852
+or to construct a support ticket of a different form.
+
+10:46.852 --> 10:49.163
+So it says if more information on a particular order_id
+
+10:49.163 --> 10:52.342
+or FAQ response would be helpful in responding to the user query
+
+10:52.342 --> 10:53.942
+and can be obtained by calling a tool,
+
+10:53.942 --> 10:55.952
+then call the appropriate tool to get that information.
+
+10:56.744 --> 10:58.465
+And then here at the bottom
+
+10:58.465 --> 11:00.474
+you're passing in the support_ticket_schema as the
+
+11:00.474 --> 11:02.504
+expectation for where you're ultimately trying to go.
+
+11:02.803 --> 11:04.613
+Now this is not saying, give
+
+11:04.613 --> 11:06.724
+me back this structure in the response,
+
+11:06.823 --> 11:08.763
+because what you're going to do with this LLM
+
+11:08.763 --> 11:10.703
+call is decide whether or not to call tools.
+
+11:10.803 --> 11:14.504
+But this helps the LLM decide whether or not a tool call
+
+11:14.504 --> 11:16.796
+is a good idea in this case. So in
+
+11:16.796 --> 11:19.344
+this case your system_prompt is all this stuff up here,
+
+11:19.543 --> 11:22.484
+and then your user prompt is the model_dump
+
+11:22.484 --> 11:24.943
+of the customer_query model that you passed in.
+
+11:25.744 --> 11:28.313
+So this is all the information that was in the user input
+
+11:28.864 --> 11:31.403
+as well as the additional information from the first LLM call
+
+11:31.663 --> 11:33.793
+when you populated the customer query model.
+
+11:34.094 --> 11:37.344
+And then in this case you're going to call OpenAI, gpt-4o
+
+11:37.833 --> 11:41.323
+and you're passing in those tool definitions in the tools parameter,
+
+11:41.683 --> 11:43.532
+which lets the LLM know what tools
+
+11:43.532 --> 11:45.644
+are available to call as a next step.
+
+11:45.874 --> 11:47.946
+So let's go ahead and define
+
+11:47.946 --> 11:50.364
+that. And now you're ready for action.
+
+11:50.953 --> 11:55.224
+So you can call the decide_next_action_with_tools function, pass
+
+11:55.573 --> 11:57.788
+in customer_query. And what you're going to
+
+11:57.788 --> 12:00.004
+get back remember is the message response
+
+12:00.004 --> 12:03.163
+from the LLM, the tool_calls if there were any
+
+12:03.163 --> 12:04.908
+that were extracted from that message,
+
+12:04.908 --> 12:06.943
+and then the input prompts as well.
+
+12:06.943 --> 12:09.994
+And then with these print statements are doing are just printing out
+
+12:09.994 --> 12:13.043
+those tool_calls if in fact the LLM is suggesting a tool call.
+
+12:13.464 --> 12:14.784
+So you can run that. And so
+
+12:14.784 --> 12:16.104
+what you get back in this case
+
+12:16.104 --> 12:17.846
+is that the content of the message,
+
+12:17.846 --> 12:19.589
+that place where you were previously getting
+
+12:19.589 --> 12:21.331
+back a free form text response from
+
+12:21.331 --> 12:23.323
+the LLM, that's just null in this case,
+
+12:23.323 --> 12:24.671
+but down here in tool_calls, you
+
+12:24.671 --> 12:26.244
+can see that there's an indication to
+
+12:26.244 --> 12:28.943
+call the check_order_status tool.
+
+12:28.943 --> 12:30.239
+And so you can print that out
+
+12:30.239 --> 12:31.533
+a little bit more cleanly down here.
+
+12:31.533 --> 12:33.063
+tool_calls is passing in an order_id
+
+12:33.063 --> 12:37.173
+and an email and wants to call the check_order_status function.
+
+12:37.173 --> 12:38.903
+And so the LLM is saying,
+
+12:38.903 --> 12:41.884
+go ahead and call the check_order_status function with these parameters.
+
+12:42.374 --> 12:43.724
+So the next thing you're going
+
+12:43.724 --> 12:45.298
+to do is set up a function
+
+12:45.298 --> 12:46.649
+to call tools if in fact
+
+12:46.649 --> 12:48.224
+the LLM wants to call a tool.
+
+12:48.504 --> 12:51.649
+And so you can define a function called
+
+12:51.649 --> 12:54.793
+get_tool_outputs, passing in tool_calls from the LLM response.
+
+12:54.793 --> 12:56.413
+and then if there was a tool call,
+
+12:56.693 --> 12:59.673
+go ahead and call the lookup_faq_answer function
+
+12:59.673 --> 13:02.724
+if that's the tool indicated, or the check_order_status
+
+13:03.364 --> 13:06.514
+function if that was the tool that the LLM indicated.
+
+13:06.953 --> 13:08.274
+And what you're doing as a first
+
+13:08.274 --> 13:09.783
+step in the event of a tool call
+
+13:10.403 --> 13:13.433
+is passing in the tool_call function arguments
+
+13:14.124 --> 13:17.874
+into your FAQLookupArgs pydantic data model in this case
+
+13:18.104 --> 13:21.474
+and using the model_validate_json method to validate whether
+
+13:21.833 --> 13:24.592
+the parameters passed by the LLM are in
+
+13:24.592 --> 13:26.352
+fact valid for that tool call.
+
+13:26.602 --> 13:28.407
+So your pydantic data model came
+
+13:28.407 --> 13:30.513
+into play in the API call itself
+
+13:30.513 --> 13:32.389
+as part of the tool definition for
+
+13:32.389 --> 13:34.533
+the LLM to know what parameters are valid.
+
+13:34.743 --> 13:36.995
+And then the first thing you do when you get
+
+13:36.995 --> 13:39.472
+back parameters from the LLM is use that model to validate
+
+13:39.472 --> 13:41.732
+that those parameters returned by the LLM are going to work.
+
+13:41.732 --> 13:44.246
+And then the next step is to go ahead and
+
+13:44.246 --> 13:47.013
+call that function, passing in those arguments and return the results.
+
+13:47.342 --> 13:49.633
+And then the same thing for check_order_status.
+
+13:49.633 --> 13:51.759
+The first thing to do is validate that
+
+13:51.759 --> 13:54.153
+the parameters returned by the LLM are in fact
+
+13:54.692 --> 13:57.153
+matching the expectations of your model
+
+13:57.153 --> 13:58.932
+and then call that function.
+
+13:58.932 --> 14:01.413
+And in either case you'll return the outputs of the function.
+
+14:01.413 --> 14:05.602
+So you can run this cell to define the get_tool_outputs function
+
+14:05.602 --> 14:07.927
+and use it on the tool calls that
+
+14:07.927 --> 14:10.253
+you got back in the last LLM response.
+
+14:12.232 --> 14:14.600
+And so you can see that you've got the
+
+14:14.600 --> 14:17.232
+agent requested a call to the Check Order Status tool.
+
+14:17.232 --> 14:19.572
+Check Order Status tool returned this
+
+14:19.572 --> 14:22.302
+order ID and status from the database
+
+14:22.302 --> 14:24.192
+and that noted
+
+14:24.192 --> 14:26.993
+that the order ID and email match. Great.
+
+14:26.993 --> 14:29.202
+So the tool_outputs are this,
+
+14:29.202 --> 14:31.087
+and then you're able to pass those outputs
+
+14:31.087 --> 14:32.972
+on to the next step in the system.
+
+14:32.972 --> 14:36.033
+And so the next and final step in your system, and I
+
+14:36.033 --> 14:37.923
+know this has been a lot, so
+
+14:37.923 --> 14:40.082
+just stick with me here. We're almost there.
+
+14:40.082 --> 14:45.863
+What you're going to do here is to define a generate_structured_support_ticket function
+
+14:45.863 --> 14:48.212
+that takes in your customer_query,
+
+14:48.212 --> 14:52.033
+the message that was the response from the previous LLM call,
+
+14:52.033 --> 14:54.763
+and those tool_outputs, if in fact they were any tools called.
+
+14:55.023 --> 14:57.722
+And in this case, just for fun, since you're used Pydantic AI
+
+14:57.722 --> 15:01.143
+and Gemini in the first LLM call to create customer query,
+
+15:01.143 --> 15:03.062
+and then OpenAI in the second LLM
+
+15:03.062 --> 15:04.982
+call to decide what tools to call.
+
+15:05.182 --> 15:07.903
+Here, you're going to use Anthropic with instructor
+
+15:07.903 --> 15:09.923
+as the third and final LLM call in
+
+15:09.923 --> 15:11.942
+your system to generate a structured support ticket.
+
+15:12.222 --> 15:13.972
+And of course, there's no reason that
+
+15:13.972 --> 15:15.722
+you need to call three different frameworks
+
+15:15.722 --> 15:17.993
+and three different LLM providers to get all this done.
+
+15:17.993 --> 15:19.774
+It's just to demonstrate that when
+
+15:19.774 --> 15:21.852
+you're using Pydantic, it really doesn't matter
+
+15:21.852 --> 15:23.572
+which framework or LLM
+
+15:23.874 --> 15:27.100
+provider you're working with, the way in which you pass your pydantic
+
+15:27.100 --> 15:28.783
+models and get things done is essentially the same.
+
+15:28.974 --> 15:31.573
+So here in generate_structured_support_ticket,
+
+15:31.774 --> 15:34.988
+you're going to first unpack those tool results or say
+
+15:34.988 --> 15:38.524
+no tool calls were made if in fact that's the case.
+
+15:38.854 --> 15:41.083
+And construct a prompt that says you're a support agent,
+
+15:41.303 --> 15:43.441
+use all the information below to generate
+
+15:43.441 --> 15:45.884
+a support ticket as a validated Pydantic model.
+
+15:46.073 --> 15:48.192
+and the customer query is this, the
+
+15:48.192 --> 15:50.614
+LLM message from the previous call was this,
+
+15:50.614 --> 15:52.116
+the Tool results are this, and
+
+15:52.116 --> 15:53.409
+then you're going to set this up
+
+15:53.409 --> 15:54.701
+set up to get a response from
+
+15:54.701 --> 15:57.381
+Anthropic using Claude 3-7,
+
+15:57.381 --> 16:00.432
+passing the prompt here and setting the response_model to
+
+16:00.432 --> 16:02.802
+the Pydantic model you defined for SupportTicket.
+
+16:03.442 --> 16:05.601
+And then before you return the response, you'll add one more field
+
+16:06.412 --> 16:08.672
+called creation_date which is just datetime.now().
+
+16:08.672 --> 16:11.831
+And this is just to demonstrate that you can populate the fields
+
+16:11.831 --> 16:13.991
+in your Pydantic model any way you like.
+
+16:13.991 --> 16:16.542
+In this case, just grabbing the current datetime
+
+16:16.542 --> 16:18.662
+and sticking it onto the creation_date field
+
+16:18.662 --> 16:21.101
+in your Pydantic data model before returning it.
+
+16:21.351 --> 16:23.392
+So let's define that. And now when
+
+16:23.392 --> 16:26.182
+you're ready to create a support ticket
+
+16:26.631 --> 16:32.511
+by passing in the customer_query, message from the previous LLM response, tool_outputs
+
+16:32.511 --> 16:35.741
+into your generate_structured_support_ticket function.
+
+16:36.111 --> 16:39.481
+And then you'll print that out. And so it worked.
+
+16:39.481 --> 16:43.601
+Now you have a valid instance of your support_ticket data model
+
+16:43.601 --> 16:46.312
+where you have all the information from the user input.
+
+16:46.312 --> 16:49.392
+You have the information from the customer_query model,
+
+16:49.591 --> 16:51.476
+and then you have additional information in this
+
+16:51.476 --> 16:54.248
+case from a tool call to the check order status function.
+
+16:54.827 --> 16:57.057
+You have a recommended_next_action of send_order_status.
+
+16:57.158 --> 16:58.633
+No FAQ response in this case because
+
+16:58.633 --> 17:00.107
+that's not what this ticket was about,
+
+17:00.107 --> 17:02.140
+and you have a creation date. And so
+
+17:02.140 --> 17:04.428
+now you're ready to put the whole pipeline together
+
+17:04.428 --> 17:07.557
+and try it out with some brand new user input data.
+
+17:08.307 --> 17:10.311
+So here we have Joe user again. And Joe
+
+17:10.311 --> 17:12.538
+says, I'm really not happy with the product I bought,
+
+17:12.538 --> 17:14.763
+gives an order ID, and so we'll
+
+17:14.763 --> 17:17.307
+define that as some new user input data.
+
+17:18.067 --> 17:19.792
+And then you can run this user
+
+17:19.792 --> 17:21.518
+input through everything you've defined so far.
+
+17:22.778 --> 17:25.990
+So first you'll validate the user JSON. Create a customer query,
+
+17:26.641 --> 17:29.441
+then decide next action with tools.
+
+17:29.871 --> 17:33.871
+Grab those tool outputs if in fact there were tool calls recommended,
+
+17:34.221 --> 17:36.090
+and then generate a structured support ticket.
+
+17:36.330 --> 17:38.006
+So let's take a look at what happens
+
+17:38.006 --> 17:39.891
+when you run this whole thing end to end.
+
+17:41.490 --> 17:44.191
+Okay, great. User input validated, CustomerQuery generated.
+
+17:44.191 --> 17:46.891
+Agent requested a call to the Check Order Status tool.
+
+17:47.510 --> 17:51.790
+Check order status tool returned some information about an order status,
+
+17:52.060 --> 17:55.681
+and you got out a validated instance of your support ticket model.
+
+17:55.681 --> 17:59.510
+where you have a recommended next action to escalate to agent.
+
+17:59.510 --> 18:01.961
+and you got some information about the order.
+
+18:01.961 --> 18:03.951
+So that's pretty cool. It all worked.
+
+18:04.240 --> 18:06.691
+And you can change the user input and see what happens.
+
+18:07.401 --> 18:13.590
+So maybe something like how do I reset my password?
+
+18:17.101 --> 18:20.760
+And when you run that, user input validated, customer query generated.
+
+18:21.090 --> 18:22.440
+Okay, now the agent requested a call
+
+18:22.440 --> 18:23.790
+to call to the Lookup FAQ tool
+
+18:24.490 --> 18:26.730
+and got something returned about a forgot
+
+18:26.730 --> 18:29.290
+password and how to get that sorted out.
+
+18:29.290 --> 18:30.990
+We also have the agent requesting a
+
+18:30.990 --> 18:32.691
+call to the check order status tool
+
+18:32.691 --> 18:35.590
+and this is because there's an order ID in the user input
+
+18:35.891 --> 18:37.632
+and that was part of the prompt to
+
+18:37.632 --> 18:39.590
+always use that tool if there's an order ID.
+
+18:39.891 --> 18:41.891
+So in this case you called both tools
+
+18:42.290 --> 18:45.590
+and then generated a support ticket with all that information.
+
+18:45.891 --> 18:48.590
+So I'd encourage you to play around and try
+
+18:48.590 --> 18:51.590
+this out with different user input, valid and invalid data,
+
+18:51.590 --> 18:54.199
+and as you're probably starting to sense now, there's a
+
+18:54.199 --> 18:55.681
+whole lot more to the story
+
+18:55.681 --> 18:57.410
+here. Like what happens if the LLM
+
+18:57.410 --> 19:00.887
+returns invalid parameters for your tool call? How would you handle that?
+
+19:01.248 --> 19:04.194
+And so in these lessons we've certainly not covered all the possibilities
+
+19:04.194 --> 19:05.668
+when it comes to how you
+
+19:05.668 --> 19:07.387
+can use Pydantic in your LLM workflows,
+
+19:07.387 --> 19:09.851
+but I hope at this point you're feeling like
+
+19:09.851 --> 19:12.587
+you've got some ideas and you're ready to explore further
+
+19:12.587 --> 19:15.907
+with building out Pydantic models for your own LLM workflows.
+
+19:16.859 --> 19:19.680
+What you have now is a system where you've built in
+
+19:19.680 --> 19:22.191
+data validation with Pydantic models at
+
+19:22.191 --> 19:25.192
+every stage. from user input to layering them
+
+19:25.192 --> 19:27.471
+into the validation of a customer query,
+
+19:27.471 --> 19:31.300
+to defining the parameters for tool calling and in the final output.
+
+19:31.300 --> 19:35.060
+You've seen nested models and field validation,
+
+19:35.060 --> 19:37.161
+and then just for fun on top of it all,
+
+19:37.161 --> 19:40.191
+you built this pipeline using three different LLM providers
+
+19:40.191 --> 19:43.290
+and three different frameworks for calling your LLM APIs.
+
+19:43.290 --> 19:46.151
+At this point, I hope you're feeling like you've got
+
+19:46.151 --> 19:48.580
+an interesting set of tools to build LLM workflows
+
+19:48.580 --> 19:51.361
+using Pydantic models. Nice work.

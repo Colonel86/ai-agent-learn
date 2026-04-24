@@ -1,0 +1,660 @@
+WEBVTT
+
+1
+00:00:06.238 --> 00:00:08.392
+In order to create
+an application where you
+
+2
+00:00:08.392 --> 00:00:11.084
+can chat with your data,
+you first have to load
+
+3
+00:00:11.084 --> 00:00:14.314
+your data into a format
+where it can be worked with. That's
+
+4
+00:00:14.314 --> 00:00:16.468
+where LangChain document loaders
+come into play. We
+
+5
+00:00:16.468 --> 00:00:18.891
+have over 80 different
+types of document loaders, and
+
+6
+00:00:18.891 --> 00:00:21.314
+in this lesson we'll cover
+a few of the
+
+7
+00:00:21.314 --> 00:00:23.467
+most important ones and
+get you comfortable with
+
+8
+00:00:23.467 --> 00:00:24.544
+the concept in general.
+
+
+9
+00:00:25.145 --> 00:00:25.666
+Let's jump in!
+
+10
+00:00:28.241 --> 00:00:31.370
+Document loaders deal
+with the specifics of accessing and
+
+11
+00:00:31.370 --> 00:00:34.499
+converting data from a variety of
+different formats and
+
+12
+00:00:34.499 --> 00:00:37.628
+sources into a standardized format.
+There can be different
+
+13
+00:00:37.628 --> 00:00:41.105
+places that we want
+to load data from, like websites,
+
+14
+00:00:41.105 --> 00:00:43.539
+different databases, YouTube,
+and these documents can
+
+15
+00:00:43.539 --> 00:00:46.668
+come in different data types,
+like PDFs, HTML, JSON.
+
+16
+00:00:46.668 --> 00:00:49.449
+And so the whole
+purpose of document loaders
+
+17
+00:00:49.449 --> 00:00:52.230
+is to take this
+variety of data sources
+
+18
+00:00:52.230 --> 00:00:55.012
+and load them into
+a standard document object.
+
+19
+00:00:55.012 --> 00:00:57.793
+Which consists of content
+and then associated metadata.
+
+20
+00:00:57.793 --> 00:01:00.574
+There are a lot
+of different type of
+
+21
+00:01:00.574 --> 00:01:03.008
+document loaders in LangChain,
+and we won't
+
+22
+00:01:03.008 --> 00:01:06.833
+have time to cover them all, but
+here is a rough
+
+23
+00:01:06.833 --> 00:01:09.962
+categorization of the 80
+plus that we have. There
+
+24
+00:01:09.962 --> 00:01:13.438
+are a lot that deal
+with loading unstructured data, like
+
+25
+00:01:13.438 --> 00:01:15.872
+text files, from
+public data sources, like
+
+26
+00:01:15.872 --> 00:01:19.696
+YouTube, Twitter, Hacker News, and
+there are also even more that
+
+27
+00:01:19.696 --> 00:01:21.782
+deal with loading
+unstructured data from
+
+28
+00:01:21.782 --> 00:01:24.911
+the proprietary data
+sources that you or your company
+
+29
+00:01:24.911 --> 00:01:26.650
+might have, like Figma, Notion.
+
+
+30
+00:01:28.378 --> 00:01:31.548
+Document loaders can also be
+used to load structured data.
+
+31
+00:01:31.548 --> 00:01:34.718
+Data that's in a tabular format
+and may just have
+
+32
+00:01:34.718 --> 00:01:38.522
+some text data in one of those cells
+or rows that you
+
+33
+00:01:38.522 --> 00:01:41.058
+still want to do
+question answering or semantic
+
+34
+00:01:41.058 --> 00:01:43.278
+search over. And
+so the sources here
+
+35
+00:01:43.278 --> 00:01:45.180
+include things like Airbyte, Stripe,
+Airtable.
+
+36
+00:01:46.860 --> 00:01:49.682
+Alright, now let's
+jump into the fun stuff, actually
+
+37
+00:01:49.682 --> 00:01:53.132
+using document loaders. First,
+we're going to load some environment variables
+
+38
+00:01:53.132 --> 00:01:55.641
+that we need, like the
+OpenAI API key.
+
+39
+00:01:57.101 --> 00:02:02.581
+The first type of documents that we're
+going to be working with are PDFs. So
+
+40
+00:02:02.581 --> 00:02:06.600
+let's import the relevant document loader
+from Langchain. We're going to
+
+41
+00:02:06.600 --> 00:02:08.062
+use the PyPDF loader.
+
+42
+00:02:10.924 --> 00:02:13.538
+We've loaded a bunch of
+PDFs into the documents
+
+43
+00:02:13.538 --> 00:02:15.862
+folder in the workspace, and
+so let's choose
+
+44
+00:02:15.862 --> 00:02:17.895
+one and put that in the loader.
+
+45
+00:02:20.730 --> 00:02:23.322
+Now let's load the documents by just
+calling the load method.
+
+46
+00:02:31.541 --> 00:02:34.316
+Let's
+take a look at what exactly we've loaded.
+
+47
+00:02:34.316 --> 00:02:37.399
+So this, by default, will load
+a list of documents.
+
+48
+00:02:42.541 --> 00:02:45.596
+In this case, there are 22 different
+pages in this PDF.
+
+49
+00:02:45.596 --> 00:02:47.539
+Each one is its own unique document.
+
+50
+00:02:48.223 --> 00:02:50.480
+Let's take a look at the first one
+and see what it consists of.
+
+51
+00:02:51.922 --> 00:02:54.326
+The first thing
+the document consists of is some
+
+52
+00:02:54.326 --> 00:02:56.730
+page content,
+which is the content of the page.
+
+53
+00:02:56.730 --> 00:02:59.935
+This can be a bit long, so let's
+just print out the
+
+54
+00:02:59.935 --> 00:03:01.004
+first few hundred characters.
+
+55
+00:03:14.724 --> 00:03:18.729
+The other piece of information that's
+really important is the metadata associated
+
+56
+00:03:18.729 --> 00:03:21.400
+with each document. This
+can be accessed with
+
+57
+00:03:21.400 --> 00:03:22.401
+the metadata element.
+
+58
+00:03:26.718 --> 00:03:29.404
+You can see here that there's
+two different pieces. One
+
+59
+00:03:29.404 --> 00:03:31.821
+is the source information. This
+is the PDF, the
+
+60
+00:03:31.821 --> 00:03:34.506
+name of the file that
+we loaded it from. The
+
+61
+00:03:34.506 --> 00:03:37.192
+other is the page field. This
+corresponds to the page
+
+62
+00:03:37.192 --> 00:03:39.340
+of the PDF that it was loaded from.
+
+
+63
+00:03:40.838 --> 00:03:42.421
+The next type of
+document loader that we're
+
+64
+00:03:42.421 --> 00:03:44.400
+going to look at is
+one that loads from YouTube.
+
+65
+00:03:44.777 --> 00:03:47.336
+There's
+a lot of fun content on YouTube, and
+
+66
+00:03:47.336 --> 00:03:50.747
+so a lot of people use this document
+loader to be able
+
+67
+00:03:50.747 --> 00:03:53.021
+to ask questions of
+their favorite videos or
+
+68
+00:03:53.021 --> 00:03:54.442
+lectures or anything like that.
+
+69
+00:03:57.839 --> 00:04:00.912
+We're going to import a
+few different things here. The
+
+70
+00:04:00.912 --> 00:04:03.370
+key parts are the
+YouTube audio loader, which
+
+71
+00:04:03.370 --> 00:04:06.136
+loads an audio file
+from a YouTube video. The
+
+72
+00:04:06.136 --> 00:04:08.901
+other key part is
+the OpenAI Whisper parser. This
+
+73
+00:04:08.901 --> 00:04:11.974
+will use OpenAI's Whisper
+model, a speech-to-text model, to convert
+
+74
+00:04:11.974 --> 00:04:15.047
+the YouTube audio into a text
+format that we can
+
+75
+00:04:15.047 --> 00:04:15.662
+work with.
+
+76
+00:04:18.241 --> 00:04:22.654
+We can now specify a URL,
+specify a directory in which
+
+77
+00:04:22.654 --> 00:04:27.067
+to save the audio files,
+and then create the generic loader
+
+78
+00:04:27.067 --> 00:04:30.678
+as a combination of this YouTube
+audio loader combined
+
+79
+00:04:30.678 --> 00:04:35.492
+with the OpenAI Whisper parser.
+And then we can call "loader.load" to
+
+80
+00:04:35.492 --> 00:04:38.300
+load the documents corresponding
+to this YouTube.
+
+81
+00:04:39.498 --> 00:04:43.993
+This may take a few minutes, so we're
+going to speed this up and post. Now
+
+82
+00:04:43.993 --> 00:04:47.364
+that it's finished loading, we can
+take a look at the page
+
+83
+00:04:47.364 --> 00:04:50.735
+content of what we've loaded. And
+this is the first part of
+
+84
+00:04:50.735 --> 00:04:53.263
+the transcript from the
+YouTube video. This is a
+
+85
+00:04:53.263 --> 00:04:56.915
+good time to pause, go choose your
+favorite YouTube video, and see if
+
+86
+00:04:56.915 --> 00:04:58.320
+this transcription works for
+you.
+
+87
+00:04:59.482 --> 00:05:02.504
+The next set of documents that we're
+going to go over how to
+
+88
+00:05:02.504 --> 00:05:03.899
+load are URLs from the Internet.
+
+89
+00:05:05.158 --> 00:05:08.062
+There's a lot of really awesome educational
+content on the Internet, and
+
+90
+00:05:08.062 --> 00:05:10.723
+wouldn't it be cool if you could
+just chat with it?
+
+91
+00:05:10.723 --> 00:05:14.339
+We're going to enable that
+by importing the web-based loader
+
+92
+00:05:14.339 --> 00:05:17.956
+from LangChain. Then we
+can choose any URL, our favorite
+
+93
+00:05:17.956 --> 00:05:21.210
+URL. Here, we're going to
+choose a markdown file
+
+94
+00:05:21.210 --> 00:05:24.103
+from this GitHub page
+and create a loader
+
+95
+00:05:24.103 --> 00:05:28.443
+for it. And then next,
+we can call loader.load, and then we
+
+96
+00:05:28.443 --> 00:05:33.506
+can take a look at the content
+of the page. Here, you'll notice there's
+
+97
+00:05:33.506 --> 00:05:37.484
+a lot of white space,
+followed by some initial text, and
+
+98
+00:05:37.484 --> 00:05:41.100
+then some more text. This
+is a good example of
+
+99
+00:05:41.100 --> 00:05:46.163
+why you actually need to do some post-processing
+on the information to get it
+
+100
+00:05:46.163 --> 00:05:47.609
+into a workable
+format.
+
+101
+00:05:47.609 --> 00:05:47.609
+
+
+102
+00:05:47.609 --> 00:05:51.220
+Finally, we'll
+cover how to load data from Notion. Notion
+
+103
+00:05:51.220 --> 00:05:54.109
+is a really popular
+store of both personal
+
+104
+00:05:54.109 --> 00:05:56.997
+and company data, and
+a lot of people
+
+105
+00:05:56.997 --> 00:06:00.247
+have created chatbots talking
+to their Notion databases. In
+
+106
+00:06:00.247 --> 00:06:03.858
+your notebook, you'll see
+instructions on how to export data
+
+107
+00:06:03.858 --> 00:06:07.108
+from your Notion
+database into a format through which
+
+108
+00:06:07.108 --> 00:06:09.274
+we can load it into LangChain.
+
+
+109
+00:06:09.374 --> 00:06:12.664
+Once we have it in that format,
+we can use the
+
+110
+00:06:12.664 --> 00:06:15.056
+Notion directory loader to
+load that data and
+
+111
+00:06:15.056 --> 00:06:19.840
+get documents that we can work with.
+If we take a look at the content here,
+
+112
+00:06:19.840 --> 00:06:22.532
+we can see that it's
+in markdown format, and
+
+113
+00:06:22.532 --> 00:06:25.821
+this Notion document is from Blendle's
+Employee Handbook. I'm sure a
+
+114
+00:06:25.821 --> 00:06:28.214
+lot of people listening
+have used Notion and
+
+115
+00:06:28.214 --> 00:06:30.606
+have some Notion databases
+that they would like
+
+116
+00:06:30.606 --> 00:06:34.194
+to chat with, and so this
+is a great opportunity to go
+
+117
+00:06:34.194 --> 00:06:37.185
+export that data, bring it in
+here, and start working
+
+118
+00:06:37.185 --> 00:06:38.680
+with it in this
+format.
+
+119
+00:06:39.978 --> 00:06:43.590
+That's it for document loading. Here,
+we've covered how to load
+
+120
+00:06:43.590 --> 00:06:47.532
+data from a variety of sources
+and get it into a standardized
+
+121
+00:06:47.532 --> 00:06:49.174
+document interface. However, these
+documents
+
+122
+00:06:49.174 --> 00:06:53.443
+are still rather large, and so
+in the next section, we're going to
+
+123
+00:06:53.443 --> 00:06:57.713
+go over how to split them up into
+smaller chunks. This is relevant
+
+124
+00:06:57.713 --> 00:07:00.340
+and important because when
+you're doing this retrieval
+
+125
+00:07:00.340 --> 00:07:02.311
+augmented generation, you
+need to retrieve
+
+126
+00:07:02.311 --> 00:07:04.938
+only the pieces of
+content that are most
+
+127
+00:07:04.938 --> 00:07:09.208
+relevant, and so you don't
+want to select the whole documents that we've
+
+128
+00:07:09.208 --> 00:07:12.821
+loaded here, but rather only
+the paragraph or few sentences that
+
+129
+00:07:12.821 --> 00:07:15.448
+are most topical to what you're
+talking about.
+
+130
+00:07:15.448 --> 00:07:15.448
+
+
+131
+00:07:16.797 --> 00:07:19.332
+This is also an
+even better opportunity to
+
+132
+00:07:19.332 --> 00:07:21.867
+think about what sources
+of data we don't
+
+133
+00:07:21.867 --> 00:07:25.670
+currently have loaders for, but
+you might still want to explore. Who
+
+134
+00:07:25.670 --> 00:07:28.839
+knows? Maybe you can even make
+a PR to LangChain.

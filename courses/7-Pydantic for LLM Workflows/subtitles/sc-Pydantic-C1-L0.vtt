@@ -1,0 +1,188 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:01.399 --> 00:04.099
+Welcome to Pydantic for LLM workflows.
+
+00:04.500 --> 00:08.000
+In this course, you'll learn how you can use the Pydantic Python package
+
+00:08.300 --> 00:11.000
+to get an LLM to give you structured output.
+
+00:11.400 --> 00:15.599
+And by that, I mean output that's formatted exactly the way you want it to be.
+
+00:16.300 --> 00:20.054
+So of course, In general, LLMs produce free form text.
+
+00:20.054 --> 00:23.605
+And that can be great if you're doing something like summarizing an article
+
+00:23.605 --> 00:27.015
+or maybe coming up with an idea for a new recipe.
+
+00:27.015 --> 00:30.765
+But if you're building an LLM into a larger software system
+
+00:30.765 --> 00:33.610
+where you have multiple components and
+
+00:33.610 --> 00:37.011
+you want to be able to pass the data you're getting from an LLM
+
+00:37.011 --> 00:40.110
+to the next component in the system in a predictable way,
+
+00:40.110 --> 00:43.511
+that's when pydantic and structured output can be a big help.
+
+00:44.110 --> 00:47.511
+So for example, imagine you're building a customer support application
+
+00:47.511 --> 00:49.610
+where the user can submit a request.
+
+00:49.710 --> 00:53.137
+Maybe something like Hey, I forgot my password. or a complaint like,
+
+00:53.417 --> 00:55.356
+I'm not happy with the product I bought.
+
+00:55.557 --> 00:58.366
+You could pass that customer query to an LLM
+
+00:58.557 --> 01:01.947
+and have it generate a structured response that might look like this,
+
+01:02.076 --> 01:03.746
+where you have the user's information,
+
+01:03.976 --> 01:08.632
+like their name and email, the text of their request, a priority and a category.
+
+01:08.632 --> 01:14.102
+And then you might record some other things, like whether or not this request is a complaint.
+
+01:14.102 --> 01:16.512
+And maybe some tags or keywords about the request.
+
+01:16.512 --> 01:21.292
+Then your system could take this structured response and decide what to do next.
+
+01:21.292 --> 01:25.078
+Like if it's an urgent issue, you might create a support ticket
+
+01:25.078 --> 01:28.158
+and route it to a human support agent who can follow up and help.
+
+01:28.628 --> 01:31.938
+Or for this simple request of I forgot my password,
+
+01:32.347 --> 01:36.817
+you might pass the structured response to another LLM agent that can call a tool,
+
+01:37.168 --> 01:40.558
+like a function that can look up an FAQ response that could help the user.
+
+01:41.644 --> 01:44.974
+So maybe in this case that would be an FAQ response with a password
+
+01:44.974 --> 01:46.834
+reset link and instructions.
+
+01:46.834 --> 01:50.603
+So whether it's this step of having an LLM create a structured response
+
+01:50.603 --> 01:52.353
+that becomes a Support Ticket with
+
+01:52.353 --> 01:54.614
+this exact set of fields and content,
+
+01:54.614 --> 01:57.463
+or having an LLM provide the parameters you need.
+
+01:57.638 --> 01:59.838
+to call a tool and look up an FAQ response.
+
+02:00.289 --> 02:04.519
+You have very precise expectations for what each of those LLM responses
+
+02:04.789 --> 02:08.389
+needs to look like and what kind of data it needs to contain.
+
+02:08.778 --> 02:11.318
+So in this course, you'll learn different methods
+
+02:11.558 --> 02:14.444
+for using Pydantic to ensure that an LLM
+
+02:14.444 --> 02:16.794
+is giving you exactly the data that you need.
+
+02:16.794 --> 02:19.925
+Or in other words, you'll learn to validate the data
+
+02:19.925 --> 02:21.955
+that you're getting in a response from an LLM.
+
+02:22.164 --> 02:25.495
+And along the way, you'll also be learning data validation skills
+
+02:25.495 --> 02:28.224
+that can help you with handling a wide variety of data
+
+02:28.224 --> 02:31.251
+in really any kind of software system. And that might include
+
+02:31.251 --> 02:33.450
+things like human input to the system
+
+02:33.450 --> 02:35.850
+or external APIs and data sources,
+
+02:35.850 --> 02:38.050
+or really any data that you're wanting to pass
+
+02:38.050 --> 02:40.450
+from one component to the next in your system.
+
+02:40.751 --> 02:43.050
+It turns out that pydantic has actually been around since
+
+02:43.050 --> 02:45.251
+well before LLMs were a thing.
+
+02:45.251 --> 02:48.151
+And it's one of the most popular data validation frameworks.
+
+02:48.336 --> 02:50.945
+works out there. In fact, Pydantic sees
+
+02:50.945 --> 02:52.936
+over 300 million downloads per month,
+
+02:52.936 --> 02:56.235
+making it not just one of the most popular data validation frameworks,
+
+02:56.235 --> 02:59.295
+but really one of the most popular Python packages, period.
+
+02:59.586 --> 03:04.355
+And that's because data validation is at the core of really any software application.
+
+03:04.806 --> 03:09.002
+And so, in the lessons that follow, you'll be learning how you can use Pydantic
+
+03:09.002 --> 03:11.062
+to get structured output from an LLM.
+
+03:11.062 --> 03:13.942
+And you'll also be building data validation skills
+
+03:13.942 --> 03:18.671
+that you can use in any software application where you want to pass data from one component to the next.
+
+03:18.671 --> 03:21.342
+So, let's go on to the next video to get started.

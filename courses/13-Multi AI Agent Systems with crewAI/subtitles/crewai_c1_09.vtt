@@ -1,0 +1,470 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.035 --> 00:00:03.970
+So what a trip it has been.
+
+2
+00:00:03.970 --> 00:00:07.040
+It has been a pleasure
+to have you all the way to disperse.
+
+3
+00:00:07.374 --> 00:00:10.477
+You learned a lot about multi AI
+agent systems.
+
+4
+00:00:10.510 --> 00:00:11.177
+By now,
+
+5
+00:00:11.177 --> 00:00:14.381
+you are able to put these agent systems
+together yourself.
+
+6
+00:00:14.814 --> 00:00:17.784
+So let's look at what are the next steps?
+
+7
+00:00:17.784 --> 00:00:20.487
+Where do you go from here?
+What else can you learn?
+
+8
+00:00:20.487 --> 00:00:22.522
+What are good resources out there?
+
+9
+00:00:22.522 --> 00:00:24.791
+So let's get into it.
+
+10
+00:00:24.791 --> 00:00:26.593
+All right. So you came this far.
+
+11
+00:00:26.593 --> 00:00:29.129
+You'll learn a lot
+about multiple agent systems.
+
+12
+00:00:29.129 --> 00:00:31.264
+You will learn about
+how to use them together.
+
+13
+00:00:31.264 --> 00:00:35.869
+And we use create an entire course
+to build all these examples.
+
+14
+00:00:35.869 --> 00:00:40.869
+So by now, you might be wondering,
+how doI do more? Where do I go from here?
+
+15
+00:00:41.975 --> 00:00:45.211
+Well, let me show you
+a few resources that you can tap into.
+
+16
+00:00:45.245 --> 00:00:49.449
+So, you can actually go at crewAI.com
+to learn more about crewAI.
+
+17
+00:00:49.616 --> 00:00:52.619
+And you're going to find
+a bunch of interesting resources in here,
+
+18
+00:00:53.186 --> 00:00:56.956
+A few ones that people would really like
+is the documentation,
+
+19
+00:00:56.956 --> 00:00:59.959
+and you can do that
+by clicking on this link over here.
+
+20
+00:01:00.026 --> 00:01:04.964
+And that will take you to the crewAI
+docs, where you can get very specific
+
+21
+00:01:05.165 --> 00:01:09.169
+around the core concepts,
+the specific attributes,
+
+22
+00:01:09.369 --> 00:01:12.372
+and even have access to some
+how-to guides.
+
+23
+00:01:12.405 --> 00:01:13.873
+But you can go beyond that.
+
+24
+00:01:13.873 --> 00:01:16.576
+You can also chat with our docs.
+
+25
+00:01:16.576 --> 00:01:20.146
+If you click in here,
+you're going to get access to a custom GPT
+
+26
+00:01:20.447 --> 00:01:25.418
+called crewAI Assistant that will help you
+to put your crews together.
+
+27
+00:01:25.718 --> 00:01:29.289
+This assistant knows everything
+there is to know about crewAI,
+
+28
+00:01:29.289 --> 00:01:32.325
+so you can ask about the agents,
+the tasks,
+
+29
+00:01:32.325 --> 00:01:36.129
+the processes, and even ask it
+to write some of the code for you.
+
+30
+00:01:36.296 --> 00:01:40.500
+So this is going to be a great resource
+for you to iterate on it faster.
+
+31
+00:01:40.500 --> 00:01:44.370
+And just make sure that you can build
+their crews super fast. Alright,
+
+32
+00:01:44.370 --> 00:01:46.239
+and that, in case you're wondering
+
+33
+00:01:46.239 --> 00:01:49.175
+about how you can use
+crewAI in a production setting,
+
+34
+00:01:49.175 --> 00:01:49.976
+Don't be afraid
+
+35
+00:01:49.976 --> 00:01:54.280
+to check crewAI+. It's
+our enterprise solution for companies
+
+36
+00:01:54.280 --> 00:01:57.484
+that are trying to deploy the systems
+in a production setting.
+
+37
+00:01:57.917 --> 00:02:00.920
+Right now
+we are working with early beta customers,
+
+38
+00:02:01.054 --> 00:02:04.157
+so we are kind of like hand-picking who
+we want to work with.
+
+39
+00:02:04.457 --> 00:02:08.094
+But hey, we are very eager
+to hear all the use-cases.
+
+40
+00:02:08.328 --> 00:02:10.497
+So if you believe
+you have a great use-case
+
+41
+00:02:10.497 --> 00:02:11.831
+and you would like to deploy that
+
+42
+00:02:11.831 --> 00:02:15.602
+in a production setting,
+click on Apply Now and reach out to us
+
+43
+00:02:15.869 --> 00:02:18.972
+and we're going to be eager to onboard
+you into our platform.
+
+44
+00:02:19.005 --> 00:02:20.073
+In our platform,
+
+45
+00:02:20.073 --> 00:02:23.776
+I'm going to show you some of the things
+that you're going to get access to.
+
+46
+00:02:24.144 --> 00:02:27.847
+So if you get access to crewAI+,
+you're going to be able
+
+47
+00:02:27.847 --> 00:02:32.285
+to transform your crews
+into APIs in a matter of minutes
+
+48
+00:02:32.352 --> 00:02:35.388
+without having
+to change anything in your code.
+
+49
+00:02:35.421 --> 00:02:39.559
+So you're going to be able to push it
+to GitHub, select your repository
+
+50
+00:02:39.759 --> 00:02:42.729
+add any environment variables
+that you want, like
+
+51
+00:02:42.729 --> 00:02:46.966
+specific models
+that you are using or your Serp API key,
+
+52
+00:02:46.966 --> 00:02:50.670
+whatever it might be. And after that,
+you're going to get an API
+
+53
+00:02:50.703 --> 00:02:55.375
+that you can now use. This API, it's
+going to be hosted in a private VPC.
+
+54
+00:02:55.408 --> 00:02:57.143
+It's going to use SSL.
+
+55
+00:02:57.143 --> 00:02:59.179
+It's going to have auto-scaling.
+
+56
+00:02:59.179 --> 00:03:03.850
+Everything that makes it ready
+for production use-case. And
+
+57
+00:03:03.850 --> 00:03:05.985
+this is just the tip of the iceberg.
+
+58
+00:03:05.985 --> 00:03:08.821
+You can kind of see here
+in the other menus,
+
+59
+00:03:08.821 --> 00:03:12.559
+all the other features that you can get
+access through in crewAI+.
+
+60
+00:03:12.825 --> 00:03:17.030
+So if you believe that you're ready
+to bring your crews into production
+
+61
+00:03:17.030 --> 00:03:20.967
+and deploy them at a larger scale,
+this is a great place to go.
+
+62
+00:03:21.067 --> 00:03:24.070
+If you're looking for other resources
+where you can learn more about crew
+
+63
+00:03:24.070 --> 00:03:27.073
+AI, I would definitely recommend
+you check YouTube.
+
+64
+00:03:27.240 --> 00:03:30.210
+We have a huge community that have been
+
+65
+00:03:30.210 --> 00:03:33.613
+putting out a lot of videos on crewAI.
+
+66
+00:03:33.880 --> 00:03:37.483
+So you're going to find crewAI videos for days
+
+67
+00:03:37.650 --> 00:03:40.587
+where you can learn about specific
+use-cases.
+
+68
+00:03:40.587 --> 00:03:44.457
+You can learn about how to build
+more complex settings, how
+
+69
+00:03:44.457 --> 00:03:49.162
+to integrate it with grok, mixtral,
+and many other use-cases.
+
+70
+00:03:49.295 --> 00:03:54.000
+So don't be afraid
+of really going in there, searching YouTube
+
+71
+00:03:54.000 --> 00:03:57.704
+and learning more about how to build
+crewAI in production.
+
+72
+00:03:57.937 --> 00:04:01.741
+It's definitely a great resource
+if you're trying to learn more.
+
+73
+00:04:02.041 --> 00:04:06.379
+Another thing is, if you are wondering
+about a lot of those concepts
+
+74
+00:04:06.379 --> 00:04:11.379
+that we discussed on agents role playing
+and communicating and collaborating,
+
+75
+00:04:11.918 --> 00:04:16.389
+there's a bunch of papers out there
+that highlights the benefits of doing that
+
+76
+00:04:16.589 --> 00:04:20.293
+versus regular prompting, engineering
+or all the other techniques.
+
+77
+00:04:20.593 --> 00:04:24.264
+One paper that I recommend
+is the paper behind chatdev
+
+78
+00:04:24.597 --> 00:04:28.001
+You can definitely dig into that
+and see how agents
+
+79
+00:04:28.001 --> 00:04:31.504
+that are able to talk to themselves,
+are able to tackle way
+
+80
+00:04:31.504 --> 00:04:34.507
+more complex problems
+in a way better manner.
+
+81
+00:04:34.507 --> 00:04:38.444
+So I would definitely recommend this paper in case
+you want to dig into that a little bit.
+
+82
+00:04:38.578 --> 00:04:41.948
+Don't be afraid
+to join our Discord community as well.
+
+83
+00:04:41.981 --> 00:04:46.753
+On our website you're going to find a link
+right in the top called Join Our Discord.
+
+84
+00:04:47.220 --> 00:04:51.024
+By clicking on that,
+you're going to access thousands of people
+
+85
+00:04:51.090 --> 00:04:54.460
+that are talking about crewAI
+and how to build with them.
+
+86
+00:04:54.894 --> 00:04:58.665
+So among everything that I just showed
+you, you should be good
+
+87
+00:04:58.665 --> 00:05:01.668
+to go and start your really putting
+your skills to the tasks
+
+88
+00:05:01.768 --> 00:05:05.938
+and build multiple agent systems
+for production today.
+
+89
+00:05:06.105 --> 00:05:09.575
+Another great resource
+is the actual framework.
+
+90
+00:05:09.742 --> 00:05:14.480
+You can go into GitHub
+and see all the code that powers crewAI.
+
+91
+00:05:14.814 --> 00:05:16.683
+So feel free to go in there.
+
+92
+00:05:16.683 --> 00:05:17.950
+Check the issues,
+
+93
+00:05:17.950 --> 00:05:21.387
+the pull requests and contribute
+if you feel like it.
+
+94
+00:05:21.654 --> 00:05:25.158
+There's so many good resources in here,
+and so many people
+
+95
+00:05:25.158 --> 00:05:26.492
+that are eager to help you.
+
+96
+00:05:26.492 --> 00:05:28.928
+So make sure to check out the code, and
+
+97
+00:05:28.928 --> 00:05:33.232
+If you find a bug, please let us know
+and feel free to contribute to it.
+
+98
+00:05:33.566 --> 00:05:34.434
+Thank you so much!
+
