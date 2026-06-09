@@ -1,0 +1,853 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.960 --> 00:00:05.213
+In this course, you've learned
+about the core concepts of MCP.
+
+2
+00:00:05.797 --> 00:00:09.384
+You've built a server that exposes tools,
+resources, and prompts,
+
+3
+00:00:09.968 --> 00:00:12.971
+developed a chatbot,
+that can connect to multiple servers,
+
+4
+00:00:13.054 --> 00:00:15.724
+use Claude Desktop
+to build more sophisticated
+
+5
+00:00:15.724 --> 00:00:18.685
+applications
+and deploy your own remote server.
+
+6
+00:00:19.019 --> 00:00:20.145
+Congratulations!
+
+7
+00:00:20.145 --> 00:00:22.355
+MCP is constantly evolving.
+
+8
+00:00:22.355 --> 00:00:25.608
+In this last lesson,
+you'll learn about other features of MCP
+
+9
+00:00:25.942 --> 00:00:28.945
+and some of the exciting things
+coming soon to the protocol.
+
+10
+00:00:29.446 --> 00:00:30.989
+I'll see you there.
+
+11
+00:00:30.989 --> 00:00:33.867
+There's a lot you've learned
+about the Model Context Protocol.
+
+12
+00:00:33.867 --> 00:00:38.121
+You've learned about hosts and clients
+and servers, tools, resources and prompts.
+
+13
+00:00:38.329 --> 00:00:39.748
+And then you've got a chance
+
+14
+00:00:39.748 --> 00:00:44.002
+to write some code to power larger
+applications using all of these ideas.
+
+15
+00:00:44.044 --> 00:00:46.129
+But there's still a bit
+that we have not yet covered
+
+16
+00:00:46.129 --> 00:00:47.756
+about the model context protocol.
+
+17
+00:00:47.756 --> 00:00:51.301
+Much of this is an active development,
+and you can always examine the latest
+
+18
+00:00:51.593 --> 00:00:53.845
+on the specification, run through GitHub
+
+19
+00:00:53.845 --> 00:00:55.889
+and through the discussions
+that you can find.
+
+20
+00:00:55.889 --> 00:00:56.514
+The first piece
+
+21
+00:00:56.514 --> 00:01:00.060
+we haven't covered yet is authentication
+in the Model Context Protocol.
+
+22
+00:01:00.310 --> 00:01:04.147
+In the March specification update,
+OAUTH 2.1 was added
+
+23
+00:01:04.314 --> 00:01:07.317
+as the means of authentication
+with remote servers.
+
+24
+00:01:07.484 --> 00:01:10.361
+What this allows for
+is for clients and servers
+
+25
+00:01:10.361 --> 00:01:13.782
+to authenticate and send authenticated
+requests to data sources.
+
+26
+00:01:13.990 --> 00:01:16.993
+You can imagine many different servers
+need to access data
+
+27
+00:01:17.118 --> 00:01:19.204
+that requires some form of authentication.
+
+28
+00:01:19.204 --> 00:01:22.707
+This requires the client
+making a request to the server.
+
+29
+00:01:22.916 --> 00:01:26.419
+The server
+then requiring some user to authenticate.
+
+30
+00:01:26.544 --> 00:01:29.547
+And once the authentication process
+is successfully done,
+
+31
+00:01:29.714 --> 00:01:34.344
+the client and server can exchange a token
+and the client can make authenticated
+
+32
+00:01:34.344 --> 00:01:37.347
+requests to the server
+and then to the data source.
+
+33
+00:01:37.472 --> 00:01:39.849
+This part of the protocol
+is an active development,
+
+34
+00:01:39.849 --> 00:01:43.144
+and there are always newer features
+and security pieces being added.
+
+35
+00:01:43.436 --> 00:01:46.439
+But authentication will primarily be done
+with the OAUTH 2.1
+
+36
+00:01:46.439 --> 00:01:49.442
+protocol. To highlight
+that in some depth,
+
+37
+00:01:49.442 --> 00:01:52.278
+this is an optional feature
+of the Model Context Protocol,
+
+38
+00:01:52.278 --> 00:01:55.782
+but it is highly recommended
+for remote servers. With standard IO,
+
+39
+00:01:55.990 --> 00:01:58.743
+we use environment variables
+and don't have the need
+
+40
+00:01:58.743 --> 00:02:00.245
+for this kind of authentication.
+
+41
+00:02:00.245 --> 00:02:03.289
+This is built on established standards
+that you can take a look at with
+
+42
+00:02:03.289 --> 00:02:04.499
+these links below.
+
+43
+00:02:04.499 --> 00:02:08.378
+So while we've explored primitives
+that to be exposed by the server
+
+44
+00:02:09.087 --> 00:02:13.800
+tools, resources and prompts, we also have
+primitives that the clients can expose.
+
+45
+00:02:14.384 --> 00:02:16.469
+These include roots and sampling.
+
+46
+00:02:16.469 --> 00:02:17.637
+Let's dive into this.
+
+47
+00:02:17.637 --> 00:02:22.142
+A route is a URI that a client suggests
+a server should operate in.
+
+48
+00:02:22.392 --> 00:02:26.187
+The idea is centered around
+only looking in specific folders
+
+49
+00:02:26.187 --> 00:02:29.983
+for files that you might need.
+When the client connects to a server,
+
+50
+00:02:30.150 --> 00:02:33.153
+it can declare the roots
+that the server should work with.
+
+51
+00:02:33.194 --> 00:02:35.446
+This can be useful for filesystem paths,
+
+52
+00:02:35.446 --> 00:02:39.200
+but can be any valid URI,
+including HTTP URLs.
+
+53
+00:02:39.492 --> 00:02:42.745
+The benefits of roots
+allow for security limitations.
+
+54
+00:02:42.745 --> 00:02:46.666
+Allow for keeping the server focused
+on a relevant file path or location,
+
+55
+00:02:47.041 --> 00:02:50.086
+and roots also have some versatility
+baked in, where again,
+
+56
+00:02:50.086 --> 00:02:54.007
+they're useful for file paths,
+but also can be any valid HTTP URI.
+
+57
+00:02:54.382 --> 00:02:57.510
+We're slowly starting to see more
+and more clients adapt this primitive,
+
+58
+00:02:57.719 --> 00:03:00.638
+and it's an important one
+to keep track of as the protocol evolves.
+
+59
+00:03:00.638 --> 00:03:03.641
+The last primitive
+that we're going to cover is sampling.
+
+60
+00:03:03.808 --> 00:03:08.605
+Sampling allows for servers to request
+inference from a large language model.
+
+61
+00:03:09.063 --> 00:03:11.441
+Kind of like the other side
+of communication,
+
+62
+00:03:11.441 --> 00:03:14.277
+where instead of the client
+talking to the large language model,
+
+63
+00:03:14.277 --> 00:03:17.405
+the server can talk back to the client
+and request inference.
+
+64
+00:03:17.822 --> 00:03:19.824
+An example here might be a situation
+
+65
+00:03:19.824 --> 00:03:22.952
+where your users report
+that a website is slow for some reason.
+
+66
+00:03:23.411 --> 00:03:28.411
+Your MCP server can then collect server
+logs, performance metrics, error logs,
+
+67
+00:03:28.583 --> 00:03:32.003
+and communicate with a variety of data
+sources to see what's going on.
+
+68
+00:03:32.545 --> 00:03:35.131
+Instead of the server
+handing that back to the client,
+
+69
+00:03:35.131 --> 00:03:37.467
+putting everything in the context window,
+
+70
+00:03:37.467 --> 00:03:40.178
+or potentially
+any kind of breach of security
+
+71
+00:03:40.178 --> 00:03:43.890
+between the server and the client,
+the server instead can talk directly
+
+72
+00:03:43.890 --> 00:03:47.435
+to the large language model
+and ask it to diagnose performance issues.
+
+73
+00:03:47.685 --> 00:03:51.481
+The large language model analyzes
+the patterns and returns data back,
+
+74
+00:03:51.814 --> 00:03:55.610
+and then the server can generate the steps
+to make the website a bit less slow.
+
+75
+00:03:55.902 --> 00:04:00.114
+When there are concerns from a security
+standpoint or breaching boundaries.
+
+76
+00:04:00.114 --> 00:04:04.035
+Or you might not want all that data
+coming back to be put into context.
+
+77
+00:04:04.410 --> 00:04:06.871
+Sampling and creating sampling loops,
+
+78
+00:04:06.871 --> 00:04:11.626
+it's a very powerful way for servers
+to request inference and kind of switch
+
+79
+00:04:11.626 --> 00:04:14.629
+the direction of communication
+from what we've seen before.
+
+80
+00:04:14.837 --> 00:04:16.214
+This is also quite powerful
+
+81
+00:04:16.214 --> 00:04:19.467
+as we explore agentic capabilities
+with the Model Context Protocol.
+
+82
+00:04:19.592 --> 00:04:20.843
+As we start to move towards
+
+83
+00:04:20.843 --> 00:04:24.138
+a world where more models
+are talking to different data sources,
+
+84
+00:04:24.722 --> 00:04:28.017
+and we're giving more autonomy
+to models to call different tools
+
+85
+00:04:28.017 --> 00:04:29.310
+and go off on their own,
+
+86
+00:04:29.310 --> 00:04:32.480
+we believe MCP
+will be a foundational protocol for agents.
+
+87
+00:04:33.064 --> 00:04:37.527
+As we start to think about how MCP
+can be used with agentic capabilities,
+
+88
+00:04:38.027 --> 00:04:41.656
+you can imagine a scenario
+where an user and a large language model
+
+89
+00:04:41.948 --> 00:04:45.118
+need to access a variety of MCP servers.
+
+90
+00:04:45.410 --> 00:04:48.162
+What's so powerful about the Model
+Context Protocol is
+
+91
+00:04:48.162 --> 00:04:51.165
+that there's a composable
+and somewhat recursive nature,
+
+92
+00:04:51.207 --> 00:04:54.210
+where clients can be servers,
+and servers can be clients.
+
+93
+00:04:54.502 --> 00:04:58.172
+What this allows us to do
+is to start creating an architecture
+
+94
+00:04:58.423 --> 00:05:02.135
+where we can take advantage of the ability
+for clients to communicate with servers,
+
+95
+00:05:02.552 --> 00:05:03.886
+but also for servers
+
+96
+00:05:03.886 --> 00:05:07.890
+to request the data that they need
+through sampling back to a client.
+
+97
+00:05:08.099 --> 00:05:11.394
+What we've set up here
+is the idea of a multi-agent architecture,
+
+98
+00:05:11.853 --> 00:05:16.024
+where the application and a large language
+model communicate with an agent.
+
+99
+00:05:16.566 --> 00:05:20.111
+This agent happens to be an MCP
+client and a server,
+
+100
+00:05:20.611 --> 00:05:23.114
+and it can serve data
+back to the application,
+
+101
+00:05:23.114 --> 00:05:25.992
+but it can also connect to other clients
+
+102
+00:05:25.992 --> 00:05:28.995
+and servers
+through the Model Context Protocol.
+
+103
+00:05:29.037 --> 00:05:32.248
+You can imagine that we have agents
+for analysis, for coding,
+
+104
+00:05:32.248 --> 00:05:35.668
+for research
+that also happen to be MCP servers.
+
+105
+00:05:35.835 --> 00:05:39.130
+And if they need to connect
+to other servers, clients as well.
+
+106
+00:05:39.422 --> 00:05:40.798
+Through this composable nature,
+
+107
+00:05:40.798 --> 00:05:44.635
+we can start to think about architectures
+that allow for multiple agents
+
+108
+00:05:44.802 --> 00:05:47.805
+all speaking the same language
+with the same protocol.
+
+109
+00:05:47.972 --> 00:05:49.515
+The next large piece that's on the roadmap
+
+110
+00:05:49.515 --> 00:05:53.519
+for the model Context Protocol,
+is the idea around a unified registry.
+
+111
+00:05:53.644 --> 00:05:56.439
+The purpose of this is to standardize
+the way
+
+112
+00:05:56.439 --> 00:05:59.442
+in which we think about discovering
+servers themselves.
+
+113
+00:05:59.609 --> 00:06:00.568
+As we've seen before,
+
+114
+00:06:00.568 --> 00:06:03.071
+there's a lot of excitement
+in the open source community,
+
+115
+00:06:03.071 --> 00:06:05.990
+and there are many different servers
+for data providers.
+
+116
+00:06:05.990 --> 00:06:10.286
+Tools like Google Drive, GitHub
+and so on may have dozens of MCP servers,
+
+117
+00:06:10.453 --> 00:06:14.957
+but just like with packages
+with NPM or PyPI, there's an opportunity
+
+118
+00:06:14.957 --> 00:06:18.461
+for malicious code to exist
+inside of these particular servers.
+
+119
+00:06:18.711 --> 00:06:22.799
+So the registry API serves
+the purpose of discovering servers,
+
+120
+00:06:22.965 --> 00:06:27.512
+of centralizing where these servers live,
+and also verifying that these servers
+
+121
+00:06:27.512 --> 00:06:31.015
+have been trusted by the community
+and by companies themselves.
+
+122
+00:06:31.224 --> 00:06:34.894
+This also allows
+for versioning of particular MCP servers
+
+123
+00:06:35.103 --> 00:06:38.314
+to lock in dependencies,
+just like you would in your application.
+
+124
+00:06:38.731 --> 00:06:42.318
+What this also gets
+exciting is the ability for MCP servers
+
+125
+00:06:42.693 --> 00:06:44.695
+to let agents self discover them.
+
+126
+00:06:44.695 --> 00:06:45.905
+You can imagine a scenario
+
+127
+00:06:45.905 --> 00:06:49.534
+where a user needs to fix
+a bug based on something in some logs.
+
+128
+00:06:49.700 --> 00:06:52.787
+The agent
+then searches through the registry API
+
+129
+00:06:52.954 --> 00:06:57.667
+for the official MCP server, installs
+it and queries and suggests the fix.
+
+130
+00:06:58.251 --> 00:07:02.797
+In this particular use case, instead of
+requiring the application to be connected
+
+131
+00:07:03.047 --> 00:07:06.968
+to a variety of servers from the start,
+we can start to build applications
+
+132
+00:07:07.427 --> 00:07:11.055
+where MCP servers are
+dynamically discovered and connected to.
+
+133
+00:07:11.514 --> 00:07:14.183
+As we think about layering this on
+with authentication,
+
+134
+00:07:14.183 --> 00:07:18.479
+we can imagine that a user has a request
+that requires a server to be discovered.
+
+135
+00:07:18.813 --> 00:07:23.025
+Similar to other protocols like OAUTH
+and the agent-to-agent protocol
+
+136
+00:07:23.067 --> 00:07:24.402
+that Google recently announced,
+
+137
+00:07:24.402 --> 00:07:28.197
+the idea of putting in a JSON file
+in a well-known folder is something
+
+138
+00:07:28.197 --> 00:07:31.742
+that's been done before,
+except here in this MCP JSON,
+
+139
+00:07:31.951 --> 00:07:36.164
+we specify the endpoint of a server
+to connect to, the capabilities
+
+140
+00:07:36.164 --> 00:07:39.625
+or primitives that it exposes, and then
+the authentication that's required.
+
+141
+00:07:39.876 --> 00:07:42.879
+So a user might ask
+how we manage my store on Shopify.
+
+142
+00:07:43.004 --> 00:07:45.173
+The agent or AI application
+
+143
+00:07:45.173 --> 00:07:48.926
+will see if Shopify has a
+well known MCP JSON file.
+
+144
+00:07:49.302 --> 00:07:51.262
+And if it does, it will figure out
+
+145
+00:07:51.262 --> 00:07:54.724
+what endpoint to connect to
+and what authentication is required.
+
+146
+00:07:54.932 --> 00:07:56.517
+Once the user authenticates,
+
+147
+00:07:56.517 --> 00:08:00.354
+the agent can perform the necessary action.
+Through a registry API,
+
+148
+00:08:00.605 --> 00:08:05.276
+we can allow for this idea of dynamic
+discovery and through layering on Oauth2,
+
+149
+00:08:05.568 --> 00:08:08.321
+we can ensure that these connections
+are secure.
+
+150
+00:08:08.321 --> 00:08:11.782
+As you might see in the suggestions,
+and in the discussions, there's a lot more
+
+151
+00:08:11.782 --> 00:08:13.201
+that's coming to the protocol.
+
+152
+00:08:13.201 --> 00:08:16.537
+As more and more clients
+support HTTP streamable.
+
+153
+00:08:17.038 --> 00:08:20.917
+The aim is to achieve a smooth transition
+between staple and stateless capabilities.
+
+154
+00:08:21.459 --> 00:08:24.462
+As remote MCP servers
+continue to be developed,
+
+155
+00:08:24.712 --> 00:08:28.299
+it's important to expand the ecosystem
+to support even more and more of those.
+
+156
+00:08:28.799 --> 00:08:32.303
+As you can imagine,
+when multiple MCP servers are being used,
+
+157
+00:08:32.762 --> 00:08:35.681
+it's very possible
+for tools to have naming conflicts.
+
+158
+00:08:35.681 --> 00:08:36.766
+You can imagine servers
+
+159
+00:08:36.766 --> 00:08:40.645
+that might have generic names of tools
+like fetch users, fetch entities,
+
+160
+00:08:40.978 --> 00:08:43.648
+and the model might get confused
+about what needs to be fetched.
+
+161
+00:08:43.648 --> 00:08:45.900
+So it's important
+to think about preventing collisions
+
+162
+00:08:45.900 --> 00:08:48.819
+and creating logical groups of servers
+or tools.
+
+163
+00:08:48.819 --> 00:08:52.323
+We spoke a bit about sampling
+or proactively requesting context.
+
+164
+00:08:52.532 --> 00:08:55.618
+There's a lot of work that's being put
+into the protocol and it's conversations
+
+165
+00:08:55.618 --> 00:08:59.455
+we have to enable primitives
+like sampling to become much more popular.
+
+166
+00:08:59.622 --> 00:09:03.084
+And finally, while OAUTH2
+is relatively new to the specification,
+
+167
+00:09:03.334 --> 00:09:04.627
+there's still quite a bit more to think
+
+168
+00:09:04.627 --> 00:09:07.922
+about with regards to authentication
+and authorization at scale.
+
+169
+00:09:08.381 --> 00:09:09.882
+In just a short amount of time,
+
+170
+00:09:09.882 --> 00:09:12.301
+you've seen so much about the Model
+Context Protocol.
+
+171
+00:09:12.301 --> 00:09:15.972
+You learn conceptually
+about the primitives. You've built, servers
+
+172
+00:09:15.972 --> 00:09:19.934
+and clients and hosts, and you've seen
+how to deploy remote MCP servers.
+
+173
+00:09:20.309 --> 00:09:22.436
+There's
+still so much more to be discovered.
+
+174
+00:09:22.436 --> 00:09:26.357
+So I encourage all of you to take a look
+at the discussions and the conversations,
+
+175
+00:09:26.732 --> 00:09:29.652
+and keep building
+and researching as much as you can.
+
+176
+00:09:29.652 --> 00:09:31.320
+Thank you so much for joining me
+in this journey,
+
+177
+00:09:31.320 --> 00:09:33.114
+and I can't wait to
+see what you build with MCP.
+

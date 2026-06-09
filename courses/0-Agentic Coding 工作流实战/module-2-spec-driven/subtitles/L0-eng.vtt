@@ -1,0 +1,342 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:02.669
+Welcome to this course on Spec-Driven Development
+
+2
+00:00:02.669 --> 00:00:04.437
+built in partnership with JetBrains.
+
+3
+00:00:04.838 --> 00:00:08.041
+Spec-Driven Development is currently the best type of workflow
+
+4
+00:00:08.041 --> 00:00:11.344
+for building serious applications with agentic coding assistance.
+
+5
+00:00:11.544 --> 00:00:14.547
+Give your coding agent a markdown file or a long prompt,
+
+6
+00:00:14.848 --> 00:00:16.649
+explaining exactly what to build
+
+7
+00:00:16.649 --> 00:00:18.451
+and it implements that spec.
+
+8
+00:00:18.651 --> 00:00:21.154
+Rather than writing code by hand,
+
+9
+00:00:21.154 --> 00:00:22.622
+you focus on writing down the
+
+10
+00:00:22.622 --> 00:00:24.357
+context that the agent doesn't already have.
+
+11
+00:00:24.657 --> 00:00:27.861
+I'm delighted that our instructor for this course is Paul Everett,
+
+12
+00:00:27.861 --> 00:00:29.863
+who's developer advocate at JetBrains.
+
+13
+00:00:30.163 --> 00:00:32.866
+Thank you Andrew and wait, I didn't know you wore
+
+14
+00:00:32.866 --> 00:00:35.068
+spectacles, You're right.
+
+15
+00:00:35.668 --> 00:00:39.339
+I don't actually need these. Okay, that's what I thought.
+
+16
+00:00:39.639 --> 00:00:41.841
+Anyway, Spec-Driven Development
+
+17
+00:00:41.941 --> 00:00:44.644
+has three main benefits that you'll start to see right away.
+
+18
+00:00:44.844 --> 00:00:47.347
+First, you can control large code changes
+
+19
+00:00:47.447 --> 00:00:49.349
+with small changes to the spec.
+
+20
+00:00:49.682 --> 00:00:53.286
+One sentence like, use SQLite with Prisma ORM,
+
+21
+00:00:53.486 --> 00:00:55.588
+might affect hundreds of lines of code.
+
+22
+00:00:55.889 --> 00:00:59.592
+Change that to MongoDB for the same downstream amplification.
+
+23
+00:00:59.959 --> 00:01:02.762
+This makes writing specs really efficient,
+
+24
+00:01:03.163 --> 00:01:05.265
+far more so than writing code.
+
+25
+00:01:05.865 --> 00:01:08.468
+Second, specs help eliminate context decay
+
+26
+00:01:09.469 --> 00:01:13.073
+between sessions, preserving the non-negotiable.
+
+27
+00:01:13.540 --> 00:01:17.343
+Agents are stateless, so loading them with the highest quality context
+
+28
+00:01:17.343 --> 00:01:19.846
+right when they boot up is important.
+
+29
+00:01:20.246 --> 00:01:24.250
+And finally, specs improve your intent fidelity.
+
+30
+00:01:24.751 --> 00:01:29.222
+You define the problem, success criteria, constraints, and so on,
+
+31
+00:01:29.222 --> 00:01:32.525
+and the agent can elaborate to create a fuller plan.
+
+32
+00:01:33.093 --> 00:01:36.096
+One way I often write a spec is by having a conversation
+
+33
+00:01:36.096 --> 00:01:40.300
+with an agent like Claude Code or Gemini or ChatGPT Codex,
+
+34
+00:01:40.300 --> 00:01:42.302
+to make the key architectural choices
+
+35
+00:01:42.302 --> 00:01:45.905
+using my knowledge of how I want to make different trade-offs.
+
+36
+00:01:46.106 --> 00:01:49.609
+Then have the agent summarize the key decisions in a markdown file.
+
+37
+00:01:49.976 --> 00:01:52.178
+Writing a spec requires thinking,
+
+38
+00:01:52.178 --> 00:01:53.847
+and this is hard work.
+
+39
+00:01:54.047 --> 00:01:56.149
+You have to decide what product you want to build,
+
+40
+00:01:56.549 --> 00:01:59.452
+what is its features, its technical architecture.
+
+41
+00:02:00.153 --> 00:02:02.956
+And without a spec, you'll be leaving these important decisions
+
+42
+00:02:02.956 --> 00:02:05.058
+up to the whims of the coding agent,
+
+43
+00:02:05.458 --> 00:02:07.260
+which might be okay if you want to
+
+44
+00:02:07.260 --> 00:02:09.062
+move really fast and just roll the dice,
+
+45
+00:02:09.262 --> 00:02:11.264
+but certainly leads to less maintainable code
+
+46
+00:02:11.264 --> 00:02:13.666
+and sometimes pretty weird products.
+
+47
+00:02:14.234 --> 00:02:17.837
+For example, I've seen teams working on a complex software product
+
+48
+00:02:18.138 --> 00:02:20.206
+where there was no clear spec,
+
+49
+00:02:20.206 --> 00:02:22.609
+and this led to many downstream headaches
+
+50
+00:02:22.909 --> 00:02:26.713
+from these different coding agents under the direction of different developers,
+
+51
+00:02:27.113 --> 00:02:29.215
+building quickly, building in contradictory ways.
+
+52
+00:02:29.482 --> 00:02:32.785
+Spec-Driven Development involves developing a constitution
+
+53
+00:02:32.785 --> 00:02:36.489
+at the project level to define the immutable standards.
+
+54
+00:02:36.489 --> 00:02:39.993
+Then iterating through feature development loops.
+
+55
+00:02:39.993 --> 00:02:42.295
+These loops isolate each feature
+
+56
+00:02:42.295 --> 00:02:46.699
+on its own branch with plan, implement, and verify steps
+
+57
+00:02:46.699 --> 00:02:49.402
+that leave a clean slate between features
+
+58
+00:02:49.402 --> 00:02:52.338
+and reduce headaches and context switching.
+
+59
+00:02:52.338 --> 00:02:56.943
+This same workflow supports both greenfield and brownfield projects.
+
+60
+00:02:57.443 --> 00:03:00.146
+In greenfield projects, you start from scratch.
+
+61
+00:03:00.346 --> 00:03:04.350
+You'll develop the constitution in a conversation with the agent.
+
+62
+00:03:04.651 --> 00:03:07.453
+In Brownfield, existing code bases,
+
+63
+00:03:07.654 --> 00:03:11.257
+you'll generate the project constitution based on the existing code base.
+
+64
+00:03:11.658 --> 00:03:15.762
+In both cases, you'll then iterate through these feature development loops,
+
+65
+00:03:16.162 --> 00:03:19.065
+managing versioning in small steps.
+
+66
+00:03:19.465 --> 00:03:22.468
+In this course, you'll also see how to write
+
+67
+00:03:22.468 --> 00:03:25.872
+your own agent skills to automate your spec-driven workflow.
+
+68
+00:03:26.773 --> 00:03:29.475
+You know, if you can accomplish what you need
+
+69
+00:03:29.475 --> 00:03:31.878
+in just one short prompt, that's great.
+
+70
+00:03:31.878 --> 00:03:34.981
+I'm definitely an advocate of lazy prompting when it works.
+
+71
+00:03:35.281 --> 00:03:38.284
+But the great developers I know out there almost always
+
+72
+00:03:38.284 --> 00:03:42.388
+will write detailed specs for projects with any significant complexity,
+
+73
+00:03:42.388 --> 00:03:45.091
+because they have unique context and an opinion
+
+74
+00:03:45.091 --> 00:03:47.060
+on what or how to build
+
+75
+00:03:47.060 --> 00:03:49.262
+that'll be superior to letting the LLM,
+
+76
+00:03:49.262 --> 00:03:52.265
+which is missing that context, pick randomly.
+
+77
+00:03:52.865 --> 00:03:54.634
+If a coding agent is going to go
+
+78
+00:03:54.634 --> 00:03:56.669
+off and write code for 20 or 30 minutes,
+
+79
+00:03:57.070 --> 00:04:00.673
+which may correspond to several hours of traditional developer work,
+
+80
+00:04:01.074 --> 00:04:03.643
+you're often better off sitting down for three or four minutes
+
+81
+00:04:03.643 --> 00:04:05.645
+and writing really clear instructions.
+
+82
+00:04:06.246 --> 00:04:08.648
+Many people have contributed to this course, including
+
+83
+00:04:08.848 --> 00:04:12.852
+Konstantin Chaika and Zina Smirnova from JetBrains
+
+84
+00:04:13.253 --> 00:04:15.655
+and Isabel Zaro from DeepLearning.AI.
+
+85
+00:04:16.256 --> 00:04:19.659
+Let's go on to the next video and let's write some specs.

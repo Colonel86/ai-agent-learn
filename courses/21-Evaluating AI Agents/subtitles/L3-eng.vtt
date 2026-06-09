@@ -1,0 +1,1534 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:02.635
+In this notebook, you're going to build
+the agent
+
+2
+00:00:02.635 --> 00:00:05.205
+that's going to be used
+throughout the rest of this course.
+
+3
+00:00:05.205 --> 00:00:08.208
+As you've seen, this is an example agent
+that uses a few different tools
+
+4
+00:00:08.208 --> 00:00:11.745
+and a router to answer questions
+about a data file that's attached.
+
+5
+00:00:11.911 --> 00:00:14.814
+So first thing you want to do is import
+
+6
+00:00:14.814 --> 00:00:17.817
+a few different libraries
+that are going to be used by this agent.
+
+7
+00:00:17.884 --> 00:00:21.354
+So you have an OpenAI
+library, Pandas, Json,
+
+8
+00:00:21.888 --> 00:00:25.358
+and then a library called duckDB,
+which gets used for some of the SQL
+
+9
+00:00:25.992 --> 00:00:27.627
+code that you're going to run,
+
+10
+00:00:27.627 --> 00:00:30.397
+as well as pydantic,
+some markdown displaying,
+
+11
+00:00:30.397 --> 00:00:34.100
+and then some helper methods
+that are used to gather the OpenAI key
+
+12
+00:00:34.100 --> 00:00:36.536
+and a few other kind of things
+specific to your environment here.
+
+13
+00:00:37.604 --> 00:00:40.573
+And then next thing you're going to do
+is you'll want to set up
+
+14
+00:00:40.573 --> 00:00:44.677
+your OpenAI client
+that will be used throughout this agent.
+
+15
+00:00:45.278 --> 00:00:48.248
+In this case, using GPT-4o-mini.
+
+16
+00:00:48.815 --> 00:00:50.984
+And then you're ready
+to start defining the tools.
+
+17
+00:00:50.984 --> 00:00:53.887
+So as mentioned there's three tools
+that the agent is going to have.
+
+18
+00:00:53.887 --> 00:00:56.856
+The first is a database
+lookup tool that it will use.
+
+19
+00:00:57.157 --> 00:01:00.126
+And so there's a local file
+in the notebook
+
+20
+00:01:00.427 --> 00:01:04.864
+that is store sales price
+elasticity promotions data file.
+
+21
+00:01:05.498 --> 00:01:08.068
+So, here's a path to that file
+that's going to be used.
+
+22
+00:01:08.068 --> 00:01:11.805
+And this is a parquet file
+which is just a file that's going to be
+
+23
+00:01:11.971 --> 00:01:15.942
+used to simulate the database
+that your agent can interact with.
+
+24
+00:01:16.776 --> 00:01:21.776
+And this file contains a bunch of
+transaction data of different store sales.
+
+25
+00:01:21.815 --> 00:01:23.049
+So you can imagine every time
+
+26
+00:01:23.049 --> 00:01:26.853
+there's a sale in a particular store,
+one new entry gets added to this file
+
+27
+00:01:27.020 --> 00:01:30.723
+with the product skew
+and with the any promotions
+
+28
+00:01:30.723 --> 00:01:34.928
+attached to it, as well as the
+price and the cost of that sale.
+
+29
+00:01:36.196 --> 00:01:39.132
+So now,
+there's a few steps to this first tool.
+
+30
+00:01:39.132 --> 00:01:42.302
+First, the tool needs to generate SQL
+
+31
+00:01:42.535 --> 00:01:45.905
+that can be run on this database
+that you have locally.
+
+32
+00:01:46.306 --> 00:01:49.976
+And then it needs to actually run
+that SQL command and get the result back.
+
+33
+00:01:50.743 --> 00:01:53.746
+So to generate
+the SQL you're going to use a prompt here.
+
+34
+00:01:54.380 --> 00:01:57.350
+So you'll need a prompt
+to actually generate the SQL code.
+
+35
+00:01:57.417 --> 00:02:01.020
+And so you can see that here
+generate a SQL query based on a prompt.
+
+36
+00:02:01.521 --> 00:02:04.524
+Do not reply with anything
+besides the SQL query.
+
+37
+00:02:05.458 --> 00:02:08.428
+And you can see the prompt
+is going to be passed in as a variable,
+
+38
+00:02:08.428 --> 00:02:12.332
+as are the columns for the table
+and the table name, so that the LLM knows
+
+39
+00:02:12.332 --> 00:02:13.933
+what available columns there are.
+
+40
+00:02:13.933 --> 00:02:16.035
+What the table is,
+which is critical when it creates the
+
+41
+00:02:16.035 --> 00:02:17.337
+SQL code that's going to run.
+
+42
+00:02:18.571 --> 00:02:19.739
+So now you can set
+
+43
+00:02:19.739 --> 00:02:23.176
+up a method
+to actually generate the SQL code itself,
+
+44
+00:02:23.576 --> 00:02:26.579
+using that GPT-4o-mini model
+that you established.
+
+45
+00:02:27.647 --> 00:02:30.650
+So here is the generated
+SQL method that you might use.
+
+46
+00:02:31.184 --> 00:02:34.921
+So it takes in a prompt list of columns
+and then table name.
+
+47
+00:02:35.855 --> 00:02:38.324
+And then it formats
+this SQL generation prompt
+
+48
+00:02:38.324 --> 00:02:41.327
+that you have up here
+with those different variables.
+
+49
+00:02:41.594 --> 00:02:44.597
+So you'll see the prompt, columns
+and table name passed in.
+
+50
+00:02:45.331 --> 00:02:47.300
+And then that formatted prompt
+will be sent
+
+51
+00:02:47.300 --> 00:02:50.870
+over to GPT-4o-mini as a user message.
+
+52
+00:02:51.237 --> 00:02:56.237
+And then that response will get returned.
+And now you need to incorporate
+
+53
+00:02:56.409 --> 00:03:00.380
+that SQL generation code into a tool
+that can be used
+
+54
+00:03:00.380 --> 00:03:03.550
+by the agent to actually run the code
+after it's been generated.
+
+55
+00:03:04.217 --> 00:03:07.153
+And so for that you'll find another method
+here.
+
+56
+00:03:07.153 --> 00:03:09.789
+In this case, this is going to
+be called lookup sales data.
+
+57
+00:03:10.823 --> 00:03:13.493
+And so what this method will do
+is it takes in a prompt.
+
+58
+00:03:13.493 --> 00:03:16.196
+And then it will try to first create
+
+59
+00:03:16.196 --> 00:03:19.432
+the database from that local parquet file.
+
+60
+00:03:19.465 --> 00:03:23.937
+So you can see it creates a data frame
+here using pandas with that local file.
+
+61
+00:03:24.637 --> 00:03:27.173
+And then it uses the DuckDB library here
+to say
+
+62
+00:03:27.173 --> 00:03:30.176
+create this table
+if it doesn't exist already,
+
+63
+00:03:30.210 --> 00:03:32.545
+which will create a SQL database
+
+64
+00:03:32.545 --> 00:03:35.548
+table
+based on that data frame that you have.
+
+65
+00:03:35.715 --> 00:03:38.885
+And then next, you'll use the generate SQL
+query
+
+66
+00:03:38.885 --> 00:03:41.888
+method that you just created
+to create an SQL query here.
+
+67
+00:03:42.155 --> 00:03:45.792
+And that can then be slightly modified
+here to remove any extra
+
+68
+00:03:45.792 --> 00:03:49.429
+trending white spaces
+or any other extra characters here,
+
+69
+00:03:49.596 --> 00:03:52.832
+and then run
+using duckDB to receive a result.
+
+70
+00:03:53.800 --> 00:03:57.070
+This step right here can be useful
+because oftentimes you'll have
+
+71
+00:03:57.070 --> 00:04:01.874
+the LLM respond with SQL at the top
+to kind of format the response there.
+
+72
+00:04:02.108 --> 00:04:03.243
+It doesn't just respond with code.
+
+73
+00:04:03.243 --> 00:04:05.278
+Sometimes it includes that extra SQL bit,
+
+74
+00:04:05.278 --> 00:04:08.281
+which is why you're removing
+some of those characters here.
+
+75
+00:04:08.514 --> 00:04:11.251
+DuckDB here is used to take
+
+76
+00:04:11.251 --> 00:04:14.254
+the data frame that you have
+and turn it into,
+
+77
+00:04:14.520 --> 00:04:17.757
+a corner database in memory
+that you can access.
+
+78
+00:04:18.191 --> 00:04:20.793
+And that will make it easier to run
+any kinds of,
+
+79
+00:04:20.793 --> 00:04:24.597
+queries across that database and will work
+fairly efficiently and very quickly.
+
+80
+00:04:24.931 --> 00:04:28.768
+And it also allows you to use generated
+SQL code
+
+81
+00:04:28.768 --> 00:04:32.171
+and query that database
+using SQL code in a very easy way.
+
+82
+00:04:33.640 --> 00:04:35.808
+Now that you have your tool defined here,
+
+83
+00:04:35.808 --> 00:04:38.745
+it's always good to make sure
+that the tool is actually working.
+
+84
+00:04:38.745 --> 00:04:42.482
+So you can put in an example query here,
+print out the result,
+
+85
+00:04:42.715 --> 00:04:47.120
+say example data and call your method
+with show me the sales data
+
+86
+00:04:47.320 --> 00:04:52.158
+for store 1320 on November 1st, 2021,
+and you can run that.
+
+87
+00:04:53.026 --> 00:04:55.261
+It might take a second to run
+and you should get a response back.
+
+88
+00:04:56.896 --> 00:04:59.065
+Should get a response
+back that looks something like this.
+
+89
+00:04:59.065 --> 00:05:02.068
+So you see data that's been retrieved
+from your SQL database.
+
+90
+00:05:02.835 --> 00:05:05.271
+Great.
+That's one tool down. Two more to go.
+
+91
+00:05:05.271 --> 00:05:08.274
+So next tool is a data analysis tool.
+
+92
+00:05:08.675 --> 00:05:11.544
+And so this is a tool
+that can take in data and then makes an LLM
+
+93
+00:05:11.544 --> 00:05:15.315
+call to conduct analysis
+and capture trends from that data.
+
+94
+00:05:15.481 --> 00:05:17.483
+So, similar to before
+
+95
+00:05:17.483 --> 00:05:19.819
+you're going to want to have a prompt
+for that particular tool.
+
+96
+00:05:19.819 --> 00:05:21.354
+In this case, it's pretty straightforward.
+
+97
+00:05:21.354 --> 00:05:23.256
+It's analyze the following data.
+
+98
+00:05:23.256 --> 00:05:24.924
+And there's a variable for data.
+
+99
+00:05:24.924 --> 00:05:27.293
+And then your job
+is to answer the following question.
+
+100
+00:05:27.293 --> 00:05:29.662
+And there's a variable for the prompt.
+
+101
+00:05:29.662 --> 00:05:32.632
+Now you'll have a method
+to actually make that call.
+
+102
+00:05:32.632 --> 00:05:35.368
+So you can have an analyze sales data
+method here
+
+103
+00:05:35.368 --> 00:05:37.870
+that takes in a prompt and some data.
+
+104
+00:05:37.870 --> 00:05:39.472
+And then similar to before,
+
+105
+00:05:39.472 --> 00:05:43.076
+you're going to format the prompt
+you just created with those parameters,
+
+106
+00:05:43.643 --> 00:05:46.346
+make a call to your OpenAI client
+
+107
+00:05:46.346 --> 00:05:49.315
+and get a response back as the analysis.
+
+108
+00:05:49.582 --> 00:05:51.851
+And then you can always do
+some little bit of error
+
+109
+00:05:51.851 --> 00:05:53.986
+checking here
+to see if the analysis doesn't come back
+
+110
+00:05:53.986 --> 00:05:55.888
+for whatever reason,
+then you can still return within
+
+111
+00:05:55.888 --> 00:05:58.124
+no analysis could be generated.
+
+112
+00:05:58.124 --> 00:06:00.426
+This kind of thing
+is especially helpful in agents
+
+113
+00:06:00.426 --> 00:06:03.529
+because if you have a response
+that breaks halfway through your agent,
+
+114
+00:06:03.796 --> 00:06:05.465
+you want to make sure that that doesn't
+cascade
+
+115
+00:06:05.465 --> 00:06:07.233
+and break everything else
+inside of your agent.
+
+116
+00:06:07.233 --> 00:06:08.000
+So, good error
+
+117
+00:06:08.000 --> 00:06:11.137
+checking is almost more important
+in agents than it can be in other tools.
+
+118
+00:06:12.505 --> 00:06:14.741
+And now, with your analyze sales
+
+119
+00:06:14.741 --> 00:06:18.311
+data method defined, you can test
+and make sure that that's working.
+
+120
+00:06:18.678 --> 00:06:22.682
+So you can call analyze
+sales data the prompt:
+
+121
+00:06:22.682 --> 00:06:24.617
+What trends do you see in this data?
+
+122
+00:06:24.617 --> 00:06:27.854
+And you can pass in the example data
+that you retrieved with the previous tool.
+
+123
+00:06:28.821 --> 00:06:30.690
+And you should get back
+something that looks like this,
+
+124
+00:06:30.690 --> 00:06:34.360
+which is some markdown
+formatted response from your model.
+
+125
+00:06:35.528 --> 00:06:39.198
+And moving on to the third and final tool
+that the agent will use here.
+
+126
+00:06:39.599 --> 00:06:41.968
+This third tool
+is a data visualization tool.
+
+127
+00:06:41.968 --> 00:06:43.770
+And if you think back to the previous
+lesson,
+
+128
+00:06:43.770 --> 00:06:46.739
+you'll remember that
+this works using two different steps.
+
+129
+00:06:46.739 --> 00:06:51.043
+So at first generates a chart config
+or what we're calling a chart config.
+
+130
+00:06:51.444 --> 00:06:54.147
+And then it will use that chart
+config to generate
+
+131
+00:06:54.147 --> 00:06:57.116
+some Python code
+to generate a visualization.
+
+132
+00:06:57.350 --> 00:07:00.219
+So starting with the chart config here.
+
+133
+00:07:00.219 --> 00:07:03.222
+You're going to again have a prompt that
+you want to use to generate that config.
+
+134
+00:07:03.423 --> 00:07:06.426
+You'll see it says generate a chart
+config based on some data.
+
+135
+00:07:06.726 --> 00:07:08.761
+Your goal is to show a visualization goal.
+
+136
+00:07:09.862 --> 00:07:10.596
+And then
+
+137
+00:07:10.596 --> 00:07:14.100
+here, you're going to use a tool
+called pydantic
+
+138
+00:07:14.534 --> 00:07:18.571
+along with a feature of OpenAI
+called Structured Output.
+
+139
+00:07:19.071 --> 00:07:22.742
+So that you can ensure that when you make
+a call to generate a chart config,
+
+140
+00:07:22.909 --> 00:07:25.912
+it matches a very specific format
+that you're defining here.
+
+141
+00:07:26.546 --> 00:07:30.283
+So first thing to do that is define
+the actual format that you want to use.
+
+142
+00:07:30.316 --> 00:07:32.418
+So in this case this visualization config
+
+143
+00:07:32.418 --> 00:07:36.422
+is a set of a dictionary
+with four different variables here.
+
+144
+00:07:36.522 --> 00:07:39.525
+Chart type x axis, y axis, and title.
+
+145
+00:07:39.759 --> 00:07:40.426
+And then you can see there's
+
+146
+00:07:40.426 --> 00:07:43.396
+a description of what
+each of those different variables are.
+
+147
+00:07:43.663 --> 00:07:48.367
+And you'll use that in just one
+sec here with your OpenAI call in order
+
+148
+00:07:48.367 --> 00:07:52.004
+to make sure that the output
+matches that format exactly.
+
+149
+00:07:53.272 --> 00:07:54.974
+So now you can define a method
+
+150
+00:07:54.974 --> 00:07:58.544
+for extracting the chart config
+and creating that chart config.
+
+151
+00:07:59.212 --> 00:08:02.448
+It'll take in some data
+as well as a visualization goal.
+
+152
+00:08:03.416 --> 00:08:05.518
+And then again, it's going to format
+
+153
+00:08:05.518 --> 00:08:08.521
+the chart
+config prompt that you set up above.
+
+154
+00:08:08.654 --> 00:08:11.457
+And then there's going to be slight
+difference in this call that's made here.
+
+155
+00:08:11.457 --> 00:08:12.291
+Because now you're using
+
+156
+00:08:12.291 --> 00:08:16.329
+that structured output feature
+to tell OpenAI that it should respond in
+
+157
+00:08:16.329 --> 00:08:19.432
+a format that matches that visualization
+config that you just created.
+
+158
+00:08:19.999 --> 00:08:23.302
+So one important thing to note is there's
+a slightly different message string here
+
+159
+00:08:24.036 --> 00:08:28.541
+to allow you to include that response
+format variable for visualization config.
+
+160
+00:08:28.941 --> 00:08:30.510
+And again
+what this will do is it will make it
+
+161
+00:08:30.510 --> 00:08:34.046
+so that when OpenAI responds,
+when GPT-4o-mini responds,
+
+162
+00:08:34.780 --> 00:08:37.984
+it will be in the format
+that matches your visualization config.
+
+163
+00:08:38.518 --> 00:08:41.654
+So you'll be able to access things
+like the content dot
+
+164
+00:08:41.888 --> 00:08:45.391
+chart type
+or content dot x axis, or y axis, or title.
+
+165
+00:08:46.425 --> 00:08:49.729
+And the broader goal of this approach
+is you're really scoping down
+
+166
+00:08:49.729 --> 00:08:50.329
+the first thing
+
+167
+00:08:50.329 --> 00:08:53.833
+you ask the model to do to say
+instead of just generating Python code,
+
+168
+00:08:54.200 --> 00:08:57.136
+it really just has to pull out, okay,
+what's the chart type I should create?
+
+169
+00:08:57.136 --> 00:09:00.373
+What's the x axis, y axis and title
+that I should give to my chart?
+
+170
+00:09:00.973 --> 00:09:04.010
+And then you can pass that into an LLM
+in the next step of this tool.
+
+171
+00:09:04.744 --> 00:09:08.180
+Do you have a more defined goal
+for that LLM to generate code for.
+
+172
+00:09:09.315 --> 00:09:13.085
+So moving on to the next step within
+this third tool
+
+173
+00:09:13.553 --> 00:09:17.290
+is to actually create the chart code
+itself.
+
+174
+00:09:17.723 --> 00:09:20.293
+So similar to before, you're going
+to create a prompt to start off with.
+
+175
+00:09:20.293 --> 00:09:23.829
+It says write Python code
+to generate a chart based on this config.
+
+176
+00:09:24.463 --> 00:09:26.132
+And it's passing in this config here.
+
+177
+00:09:27.133 --> 00:09:29.302
+And then you can define a method
+
+178
+00:09:29.302 --> 00:09:33.139
+to use that particular prompt
+to generate Python code.
+
+179
+00:09:33.639 --> 00:09:37.143
+So you'll see this create chart
+method here takes in a dictionary
+
+180
+00:09:37.143 --> 00:09:38.177
+which is that config.
+
+181
+00:09:38.177 --> 00:09:40.846
+So that's what it was
+generated by the last step there.
+
+182
+00:09:40.846 --> 00:09:43.849
+And then it formats
+your create chart prompt here.
+
+183
+00:09:43.983 --> 00:09:48.888
+With that config. Makes your standard
+OpenAI call gets its response back.
+
+184
+00:09:49.522 --> 00:09:52.825
+And then similar to what you did
+with the SQL code, it's always a good idea
+
+185
+00:09:52.825 --> 00:09:57.096
+to make sure that, any sort of prefix here
+that gets added by the model like this
+
+186
+00:09:57.096 --> 00:09:58.397
+Python one you see here,
+
+187
+00:09:58.397 --> 00:10:01.534
+is getting removed and replaced so that
+you're only left with a runnable code.
+
+188
+00:10:02.635 --> 00:10:04.170
+And now the last thing to do with
+this tool
+
+189
+00:10:04.170 --> 00:10:07.139
+is just compose those two different steps
+together into one method.
+
+190
+00:10:07.974 --> 00:10:09.375
+So now this generate visualization
+
+191
+00:10:09.375 --> 00:10:12.745
+method is going to take in some data
+and a visualization goal.
+
+192
+00:10:13.346 --> 00:10:18.250
+It's first going to create a config
+with the extract chart config method.
+
+193
+00:10:18.250 --> 00:10:22.321
+And then it will create some Python code
+using the create chart code.
+
+194
+00:10:23.289 --> 00:10:25.825
+And finally, you can test and make sure
+that this is actually all
+
+195
+00:10:25.825 --> 00:10:27.059
+working correctly.
+
+196
+00:10:27.059 --> 00:10:30.496
+So you can say generate visualization
+with some example data
+
+197
+00:10:30.763 --> 00:10:32.765
+and then a visualization goal.
+
+198
+00:10:32.765 --> 00:10:34.734
+In this case, that's similar to the prompt
+
+199
+00:10:34.734 --> 00:10:36.302
+the user might have.
+
+200
+00:10:36.302 --> 00:10:39.305
+And we'll print out the response as well.
+
+201
+00:10:39.372 --> 00:10:42.575
+And you should now see some Python code
+that's been printed out here
+
+202
+00:10:43.142 --> 00:10:46.145
+that will generate
+a particular visualization for you.
+
+203
+00:10:46.712 --> 00:10:49.849
+And you can actually take it
+one step further and run the code here
+
+204
+00:10:49.849 --> 00:10:52.852
+using the command execute code.
+
+205
+00:10:52.985 --> 00:10:54.820
+And you'll see a visualization.
+
+206
+00:10:54.820 --> 00:10:56.722
+In this case it looks like
+the code was created correctly.
+
+207
+00:10:56.722 --> 00:10:58.758
+But the visualization
+looks slightly off here.
+
+208
+00:10:58.758 --> 00:11:02.061
+So, this is where evaluation
+is going to come into play later on
+
+209
+00:11:02.061 --> 00:11:03.496
+because you'll be able to catch cases
+where
+
+210
+00:11:03.496 --> 00:11:05.398
+maybe the visualization is slightly off.
+
+211
+00:11:06.632 --> 00:11:08.167
+One important note is that
+
+212
+00:11:08.167 --> 00:11:12.071
+you always have the option to include
+the ability for your agent to run code,
+
+213
+00:11:12.238 --> 00:11:13.973
+but it's something you have to be
+a little bit careful with
+
+214
+00:11:13.973 --> 00:11:18.711
+because if you just run code that's been
+created by an LLM, it could have errors.
+
+215
+00:11:18.711 --> 00:11:20.479
+It could do things that you don't expect
+it to.
+
+216
+00:11:20.479 --> 00:11:24.417
+So it's always good to run code
+within an enclosed environment
+
+217
+00:11:24.417 --> 00:11:26.652
+if you're giving your agent
+that capability.
+
+218
+00:11:26.652 --> 00:11:30.589
+In this example agent, you left that
+capability out just to keep things safe.
+
+219
+00:11:30.790 --> 00:11:31.691
+But something good to know
+
+220
+00:11:31.691 --> 00:11:34.694
+if you're incorporating the ability
+to run code into future agents.
+
+221
+00:11:35.961 --> 00:11:39.999
+Now, with all of your tools defined,
+the next step is to put those tools
+
+222
+00:11:39.999 --> 00:11:43.002
+into a format
+that can be understood by your router.
+
+223
+00:11:43.069 --> 00:11:46.439
+In this case, you're using an OpenAI,
+GPT-4o-mini
+
+224
+00:11:46.839 --> 00:11:48.541
+router with function calling.
+
+225
+00:11:48.541 --> 00:11:52.411
+So there's a very specific format that
+OpenAI expects to be pass those tools in.
+
+226
+00:11:53.179 --> 00:11:54.814
+You can add that in here.
+
+227
+00:11:54.814 --> 00:11:57.817
+And what you'll see is that each object
+within this array of tools
+
+228
+00:11:58.184 --> 00:12:01.187
+has a specific Json format
+that's been defined.
+
+229
+00:12:01.253 --> 00:12:04.523
+So in this first one, this first tool here
+is your lookup sales data tool.
+
+230
+00:12:04.523 --> 00:12:06.892
+So this is a method
+that you defined earlier.
+
+231
+00:12:06.892 --> 00:12:09.895
+And you'll see there's a description
+in here of what that tool does.
+
+232
+00:12:09.929 --> 00:12:12.932
+Or it can do lookup data
+from this particular file.
+
+233
+00:12:13.399 --> 00:12:16.102
+And then you'll see
+that certain properties have been defined
+
+234
+00:12:16.102 --> 00:12:20.272
+for things like the prompt parameter
+that needs to be passed into this tool.
+
+235
+00:12:20.973 --> 00:12:24.510
+And so this is what tells the router
+how to choose this function.
+
+236
+00:12:24.510 --> 00:12:28.614
+And if it chooses this function to call
+what parameters need to be passed into it.
+
+237
+00:12:29.115 --> 00:12:30.883
+So these descriptions are really critical
+
+238
+00:12:30.883 --> 00:12:34.587
+both for the description of the function
+as well as descriptions of the parameters.
+
+239
+00:12:34.920 --> 00:12:38.023
+Because if you get these wrong, the router
+may choose not to call your function.
+
+240
+00:12:38.324 --> 00:12:40.392
+It may not understand
+what that function does,
+
+241
+00:12:40.392 --> 00:12:43.129
+or it may think the function can do things
+that it actually can't do.
+
+242
+00:12:43.129 --> 00:12:45.064
+So this is often
+something that you end up changing
+
+243
+00:12:45.064 --> 00:12:48.067
+a lot of times when building an agent
+is getting the description
+
+244
+00:12:48.067 --> 00:12:50.936
+and the parameter
+descriptions exactly right.
+
+245
+00:12:50.936 --> 00:12:53.939
+So there'll be an entry here
+for each of your different tools.
+
+246
+00:12:54.006 --> 00:12:56.442
+As well as a mapping at the bottom here
+
+247
+00:12:56.442 --> 00:13:00.179
+to say this name here
+matches this particular function, which
+
+248
+00:13:00.212 --> 00:13:01.046
+I got used in a second.
+
+249
+00:13:02.348 --> 00:13:02.715
+Awesome.
+
+250
+00:13:02.715 --> 00:13:05.718
+You're now ready to define your router.
+
+251
+00:13:05.718 --> 00:13:08.854
+To define your router
+you can use a few different approaches.
+
+252
+00:13:10.122 --> 00:13:11.590
+Let's walk through the code here.
+
+253
+00:13:11.590 --> 00:13:15.728
+So in this case, this run agent function
+that you have it's going to be
+
+254
+00:13:15.728 --> 00:13:17.062
+what runs your router.
+
+255
+00:13:17.062 --> 00:13:20.166
+Oftentimes, people will set up routers
+to either work recursively
+
+256
+00:13:20.166 --> 00:13:23.302
+where you continually call a function
+that represents your router.
+
+257
+00:13:23.903 --> 00:13:26.539
+Or in this case, you could go for something
+even simpler and just use
+
+258
+00:13:26.539 --> 00:13:29.675
+a while loop here that you break out of
+when the agent completes its task.
+
+259
+00:13:30.276 --> 00:13:33.512
+Looking through the code that you see
+here, you have the messages
+
+260
+00:13:33.512 --> 00:13:36.515
+object
+that's passed into this function here.
+
+261
+00:13:36.515 --> 00:13:37.716
+And then first
+
+262
+00:13:37.716 --> 00:13:41.387
+we'll make sure that that messages object
+matches the right format that we expect.
+
+263
+00:13:42.087 --> 00:13:44.824
+So in this case
+you want to have it as a user message.
+
+264
+00:13:44.824 --> 00:13:47.827
+And this is a format that's expected
+by OpenAI in this case.
+
+265
+00:13:48.093 --> 00:13:52.131
+So you want to check for cases
+where maybe you've passed in just a string
+
+266
+00:13:52.131 --> 00:13:55.935
+as opposed to a dictionary of
+these messages and correct for that case.
+
+267
+00:13:56.869 --> 00:13:59.038
+And then if the system prompt
+
+268
+00:13:59.038 --> 00:14:01.106
+has not actually been added
+into this already,
+
+269
+00:14:01.106 --> 00:14:02.975
+then you'll want to make sure
+that that's been added.
+
+270
+00:14:02.975 --> 00:14:05.611
+We'll define
+that system prompt in just one moment.
+
+271
+00:14:05.611 --> 00:14:09.315
+And then to actually run your agent,
+it's going to follow a similar loop here
+
+272
+00:14:09.415 --> 00:14:14.119
+where you first make a call to OpenAI
+with your tools object
+
+273
+00:14:14.119 --> 00:14:17.122
+that you just set up up there,
+as well as the messages,
+
+274
+00:14:17.223 --> 00:14:19.758
+and then you'll receive a response back
+
+275
+00:14:19.758 --> 00:14:22.862
+to look for if there's any tool
+calls inside that response.
+
+276
+00:14:23.929 --> 00:14:24.797
+And then if
+
+277
+00:14:24.797 --> 00:14:27.800
+there are, you're
+gonna want to handle those tool calls.
+
+278
+00:14:27.800 --> 00:14:30.803
+So you'll need to define
+what that means in just a second.
+
+279
+00:14:30.970 --> 00:14:33.806
+And then if there's no more tool calls
+then you can return the response
+
+280
+00:14:33.806 --> 00:14:35.608
+back to the user.
+
+281
+00:14:35.608 --> 00:14:38.611
+So there's a couple more pieces
+you need here for the router. First,
+
+282
+00:14:38.878 --> 00:14:40.779
+you need this system prompt variable.
+
+283
+00:14:40.779 --> 00:14:42.948
+So your router needs
+some sort of system prompt.
+
+284
+00:14:42.948 --> 00:14:45.851
+So you can define that
+a very basic version of this is just
+
+285
+00:14:45.851 --> 00:14:49.455
+you are a helpful assistant that can
+answer questions about this data set.
+
+286
+00:14:50.656 --> 00:14:52.591
+And the last piece you'll need is
+
+287
+00:14:52.591 --> 00:14:55.594
+a way to handle the tool
+calls that get made by your router.
+
+288
+00:14:55.895 --> 00:14:58.898
+And so you can add in a method
+to handle those tool calls.
+
+289
+00:14:59.298 --> 00:15:02.768
+So here this is just looping through
+each tool call that gets made.
+
+290
+00:15:03.369 --> 00:15:07.273
+And then for that tool call
+looking up the corresponding function name
+
+291
+00:15:08.073 --> 00:15:11.076
+parsing out any arguments
+that have been included in the tool call,
+
+292
+00:15:11.377 --> 00:15:14.380
+and then calling that function
+with those arguments
+
+293
+00:15:14.680 --> 00:15:17.683
+and appending the result
+back to the messages object.
+
+294
+00:15:17.917 --> 00:15:20.786
+One other important thing to note here
+is that OpenAI
+
+295
+00:15:20.786 --> 00:15:23.789
+specifically,
+as well as some other models,
+
+296
+00:15:24.023 --> 00:15:27.526
+rely on a behavior where if they tell you
+to call a particular tool,
+
+297
+00:15:27.526 --> 00:15:31.063
+if that's the response you get back
+from your router, then in the next call
+
+298
+00:15:31.063 --> 00:15:35.067
+that you make to them, you need to include
+a response of that particular tool.
+
+299
+00:15:35.401 --> 00:15:37.770
+So they'll give you a tool call ID,
+
+300
+00:15:37.770 --> 00:15:39.038
+and if you don't include back
+
+301
+00:15:39.038 --> 00:15:42.374
+a tool message here
+with that particular tool call ID,
+
+302
+00:15:42.942 --> 00:15:47.079
+then they'll actually error and say,
+hey, you need to call this particular tool
+
+303
+00:15:47.079 --> 00:15:50.082
+and you need to give me a response for
+that tool call that I asked you to make.
+
+304
+00:15:50.482 --> 00:15:53.719
+And now with each of these
+you are ready to go and run your agent.
+
+305
+00:15:54.553 --> 00:15:56.155
+Pull in an example here.
+
+306
+00:15:56.155 --> 00:16:01.155
+You can ask it a question like "show
+me the code for a graph of sales by store.
+
+307
+00:16:01.427 --> 00:16:03.929
+In November 2021
+and tell me what trends you see."
+
+308
+00:16:05.764 --> 00:16:06.899
+And you'll see it start to run,
+
+309
+00:16:06.899 --> 00:16:08.567
+and you'll start to get
+some print statements
+
+310
+00:16:08.567 --> 00:16:11.904
+from your router there
+where it's making calls to OpenAI,
+
+311
+00:16:12.204 --> 00:16:15.274
+it receives some tool calls back,
+it's going to process those tool calls.
+
+312
+00:16:15.274 --> 00:16:17.343
+Then go back to the router
+and you'll see that
+
+313
+00:16:17.343 --> 00:16:19.478
+loop complete a few times as the code
+runs
+
+314
+00:16:19.478 --> 00:16:20.746
+here.
+
+315
+00:16:20.746 --> 00:16:23.849
+And once you see a message saying that
+there's no more tool calls to make
+
+316
+00:16:23.849 --> 00:16:28.620
+and it's returned, the final response,
+you can print out your result.
+
+317
+00:16:29.688 --> 00:16:31.657
+And you should see in this case
+
+318
+00:16:31.657 --> 00:16:34.660
+some code to generate that graph.
+
+319
+00:16:36.028 --> 00:16:39.565
+As well as some of the trends that were
+gathered by the data analysis tool.
+
+320
+00:16:40.733 --> 00:16:41.333
+Congratulations.
+
+321
+00:16:41.333 --> 00:16:43.936
+You now have a working agent
+that can answer questions
+
+322
+00:16:43.936 --> 00:16:47.039
+based on this local database
+of sales data that you captured.
+

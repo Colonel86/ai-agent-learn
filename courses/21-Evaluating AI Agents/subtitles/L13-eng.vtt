@@ -1,0 +1,551 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:02.035
+After
+you develop your agent and improve it
+
+2
+00:00:02.035 --> 00:00:05.105
+until it's production ready,
+you need to apply the same techniques
+
+3
+00:00:05.105 --> 00:00:08.675
+of tracing evals and experimentation
+to your agent in production.
+
+4
+00:00:09.175 --> 00:00:10.210
+During production,
+
+5
+00:00:10.210 --> 00:00:12.312
+things like code changes or model updates
+
+6
+00:00:12.312 --> 00:00:14.280
+can degrade the performance of your agent.
+
+7
+00:00:14.280 --> 00:00:17.951
+You can use your evals and run experiments
+to continuously monitor
+
+8
+00:00:17.951 --> 00:00:20.787
+and improve your agent. Let's get to it.
+
+9
+00:00:20.787 --> 00:00:24.758
+As a quick recap, you've covered
+four main steps that take you from
+
+10
+00:00:24.758 --> 00:00:28.495
+an initial agent prototype all the way
+through to a production-ready system.
+
+11
+00:00:29.195 --> 00:00:30.997
+Choosing the right architecture,
+
+12
+00:00:30.997 --> 00:00:33.967
+you need to decide on an agent framework
+that matches your use case.
+
+13
+00:00:34.300 --> 00:00:36.202
+Deciding which eval to use.
+
+14
+00:00:36.202 --> 00:00:38.972
+Figuring out which metrics really matter
+for your system,
+
+15
+00:00:38.972 --> 00:00:41.975
+such as accuracy, latency,
+and convergence.
+
+16
+00:00:42.442 --> 00:00:45.645
+Building your evaluation structure,
+which includes the prompts,
+
+17
+00:00:45.645 --> 00:00:48.815
+tools, and data
+you'll use to measure performance.
+
+18
+00:00:49.549 --> 00:00:52.752
+Iterating with your data,
+you keep refining your agent by
+
+19
+00:00:52.752 --> 00:00:56.556
+analyzing results, adjusting prompts
+or logic, and testing again.
+
+20
+00:00:57.223 --> 00:01:01.294
+This cycle repeats as you move
+from development to production and back
+
+21
+00:01:01.294 --> 00:01:05.832
+again, so you can catch issues early
+and refine based on real-world feedback.
+
+22
+00:01:06.633 --> 00:01:10.270
+When you actually reach production,
+you may find that the simple agent designs
+
+23
+00:01:10.270 --> 00:01:13.273
+you use
+initially need to scale up and complexity.
+
+24
+00:01:13.940 --> 00:01:16.843
+You might end up
+adopting a multi-agent system
+
+25
+00:01:16.843 --> 00:01:19.779
+where agents can call
+other specialized agents,
+
+26
+00:01:19.779 --> 00:01:23.316
+or a multimodal system where your agent
+handles different types of data,
+
+27
+00:01:23.416 --> 00:01:28.354
+like text or images or audio,
+or a continuous improving system
+
+28
+00:01:28.655 --> 00:01:31.658
+where your agent learns
+from user interactions in real time,
+
+29
+00:01:32.058 --> 00:01:35.061
+either through manual updates
+or automated processes.
+
+30
+00:01:35.962 --> 00:01:38.665
+So, what's different about production?
+
+31
+00:01:38.665 --> 00:01:41.668
+Well, you can often discover new failure
+modes.
+
+32
+00:01:41.801 --> 00:01:44.771
+Users might ask you questions
+that you never saw in development
+
+33
+00:01:45.038 --> 00:01:47.574
+or they reference something
+that your system doesn't know about yet,
+
+34
+00:01:47.574 --> 00:01:49.309
+like a brand new product.
+
+35
+00:01:49.309 --> 00:01:53.046
+If your agent now calls out
+to additional APIs or other agents,
+
+36
+00:01:53.446 --> 00:01:56.449
+there are more chances for errors
+or unexpected outputs.
+
+37
+00:01:56.783 --> 00:02:00.353
+You might also try A/B testing
+or different model strategies
+
+38
+00:02:00.553 --> 00:02:02.789
+that introduce surprising regressions
+
+39
+00:02:02.789 --> 00:02:04.991
+that you didn't anticipate
+in a controlled environment.
+
+40
+00:02:06.226 --> 00:02:06.860
+The encouraging
+
+41
+00:02:06.860 --> 00:02:09.863
+part here is that a lot of the tools
+you use in development,
+
+42
+00:02:10.029 --> 00:02:14.234
+like instrumentation and feedback
+loops, are just as valuable in production.
+
+43
+00:02:14.701 --> 00:02:17.904
+You'll continue to collect metrics
+that you define for evaluation,
+
+44
+00:02:18.338 --> 00:02:22.142
+and you'll rely on continuous integration
+and continuous delivery flows
+
+45
+00:02:22.475 --> 00:02:25.812
+and ongoing experiments
+to keep tabs on your agent's performance.
+
+46
+00:02:26.513 --> 00:02:29.916
+In other words, you can use those
+same tracing and annotation methods
+
+47
+00:02:29.916 --> 00:02:33.520
+you had in development, only
+now, they're enriched by real user data.
+
+48
+00:02:34.053 --> 00:02:37.023
+You'll gather
+feedback from actual interactions, label
+
+49
+00:02:37.023 --> 00:02:40.760
+any problematic outputs, and identify
+where your agent might be struggling.
+
+50
+00:02:42.195 --> 00:02:45.198
+Collecting user feedback
+for evals is crucial in production.
+
+51
+00:02:45.598 --> 00:02:49.802
+You can take real usage data, for example,
+every user query or interaction,
+
+52
+00:02:50.036 --> 00:02:54.073
+and attach human-labeled annotations
+to highlight issues or successes.
+
+53
+00:02:54.908 --> 00:02:58.711
+If your eval metrics disagree
+with what real users say, that's a sign
+
+54
+00:02:58.711 --> 00:03:01.714
+you might need to recheck your system
+or your eval.
+
+55
+00:03:01.981 --> 00:03:03.516
+Maybe you're measuring the wrong metric.
+
+56
+00:03:03.516 --> 00:03:06.286
+Or maybe there's a deeper logic
+flaw and the agent's flow.
+
+57
+00:03:07.620 --> 00:03:09.322
+You also want to keep track of metrics
+
+58
+00:03:09.322 --> 00:03:12.759
+over time to understand efficiency
+or execution dependencies.
+
+59
+00:03:13.193 --> 00:03:15.628
+For example,
+if you're using convergence evals,
+
+60
+00:03:15.628 --> 00:03:19.065
+you can see how many steps it takes
+for the agents to reach a correct answer.
+
+61
+00:03:19.499 --> 00:03:23.803
+If that number grows after you tweak
+your prompts, it can indicate a regression
+
+62
+00:03:24.404 --> 00:03:27.407
+since you're likely calling external
+LLM APIs,
+
+63
+00:03:27.507 --> 00:03:29.342
+you should track those calls, too.
+
+64
+00:03:29.342 --> 00:03:30.944
+They can have a significant impact
+
+65
+00:03:30.944 --> 00:03:34.247
+on latency and costs,
+which can impact your end user experience.
+
+66
+00:03:34.847 --> 00:03:36.049
+Your choice of model,
+
+67
+00:03:36.049 --> 00:03:39.519
+perhaps a large reasoning model versus
+a smaller, faster one
+
+68
+00:03:39.519 --> 00:03:42.589
+may vary based on the complexity of tasks
+in production.
+
+69
+00:03:43.656 --> 00:03:46.226
+Keeping an eye on those decisions
+and their downstream
+
+70
+00:03:46.226 --> 00:03:49.229
+effects is part of robust production
+monitoring.
+
+71
+00:03:50.163 --> 00:03:53.633
+When you gather human feedback
+and run your evals on real traffic,
+
+72
+00:03:54.067 --> 00:03:57.503
+you'll gain a clearer picture
+of how changes like swapping out a model
+
+73
+00:03:57.503 --> 00:04:00.506
+or updating a prompt, impact
+the overall system.
+
+74
+00:04:00.707 --> 00:04:03.676
+You can rerun the same experiments
+you used in development,
+
+75
+00:04:03.943 --> 00:04:08.414
+but now on new data or new failure modes
+that you've discovered in production.
+
+76
+00:04:09.315 --> 00:04:11.651
+This is why you'll want to maintain
+consistent data
+
+77
+00:04:11.651 --> 00:04:14.654
+sets and keep augmenting them
+with production samples.
+
+78
+00:04:14.954 --> 00:04:17.857
+One effective approach is curating golden
+data sets that
+
+79
+00:04:17.857 --> 00:04:20.860
+capture your most critical use cases
+and known failure modes.
+
+80
+00:04:21.127 --> 00:04:24.297
+Each time you push a change,
+like adjusting a prompt or logic,
+
+81
+00:04:24.564 --> 00:04:28.201
+you can recheck these data sets to be sure
+you haven't broken something you've
+
+82
+00:04:28.201 --> 00:04:28.935
+already solved.
+
+83
+00:04:29.936 --> 00:04:32.639
+Experiments can act like gates
+for shipping changes,
+
+84
+00:04:32.639 --> 00:04:35.742
+so you can decide whether to roll forward
+or roll back a change.
+
+85
+00:04:36.643 --> 00:04:39.979
+Let's imagine you have a self-improving
+agent that collects feedback
+
+86
+00:04:39.979 --> 00:04:42.982
+automatically whenever a user interacts
+with your system.
+
+87
+00:04:43.082 --> 00:04:45.852
+You can add those user examples,
+both successful
+
+88
+00:04:45.852 --> 00:04:49.255
+and failed interactions,
+to a continuously updated data set.
+
+89
+00:04:49.756 --> 00:04:53.026
+Then you run
+CI/CD experiments on this data set,
+
+90
+00:04:53.293 --> 00:04:56.195
+checking
+if new versions of the agent do better or
+
+91
+00:04:56.195 --> 00:04:59.198
+worse on the very latest
+real-world scenarios.
+
+92
+00:04:59.532 --> 00:05:02.535
+When you refine the agent logic
+or tweak prompts,
+
+93
+00:05:02.535 --> 00:05:06.339
+you can also incorporate few shot examples
+from the newly collected data.
+
+94
+00:05:06.773 --> 00:05:10.276
+This lets your system learn from mistakes
+and gradually converge
+
+95
+00:05:10.276 --> 00:05:13.980
+towards better performance
+on exactly the tasks that matter most
+
+96
+00:05:14.213 --> 00:05:17.216
+in a self-improving and automated manner.
+
+97
+00:05:17.417 --> 00:05:20.553
+What you're doing here
+is essentially applying evaluation driven
+
+98
+00:05:20.553 --> 00:05:22.655
+development in production.
+
+99
+00:05:22.655 --> 00:05:24.657
+You're watching for new failure modes,
+
+100
+00:05:24.657 --> 00:05:27.960
+monitoring how well your agent
+handles them, and automating
+
+101
+00:05:28.127 --> 00:05:31.130
+feeding production
+feedback back into your evals.
+
+102
+00:05:32.398 --> 00:05:32.665
+In this
+
+103
+00:05:32.665 --> 00:05:33.466
+lesson, you've
+
+104
+00:05:33.466 --> 00:05:37.236
+learned what to watch out for new queries,
+complicated architectures,
+
+105
+00:05:37.236 --> 00:05:40.840
+and unexpected user behavior,
+and how to keep your agent on track
+
+106
+00:05:40.840 --> 00:05:43.843
+by continuously measuring
+and refining its performance.
+
+107
+00:05:44.243 --> 00:05:48.047
+You've also seen how the tools and data
+you used in development carry
+
+108
+00:05:48.047 --> 00:05:51.718
+seamlessly over to production,
+and how you might scale those approaches
+
+109
+00:05:51.918 --> 00:05:54.487
+for even more robust agent systems,
+
+110
+00:05:54.487 --> 00:05:57.690
+by using CI/CD pipelines
+with consistent experiments,
+
+111
+00:05:58.024 --> 00:06:01.327
+you can ensure that every update
+to your agent maintains
+
+112
+00:06:01.327 --> 00:06:04.330
+or improves on the quality
+you've already achieved.
+
+113
+00:06:04.597 --> 00:06:08.534
+Now, you have a solid foundation
+for monitoring your agents in production
+
+114
+00:06:08.768 --> 00:06:12.205
+and continuously refining their
+performance based on real-world data.
+

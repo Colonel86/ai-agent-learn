@@ -24,10 +24,31 @@ Home Theater system with 5.1 channel, 1000W output, wireless \
 subwoofer, and Bluetooth. Do you have any specific questions \
 about these products or any other products we offer?
 """
-    response = client.moderations.create(input=final_response_to_customer)
-    moderation_output = response.results[0]
-    print(f"flagged: {moderation_output.flagged}")
-    print()
+    # 优先尝试 OpenAI 原生 Moderation API
+    try:
+        response = client.moderations.create(input=final_response_to_customer)
+        moderation_output = response.results[0]
+        print(f"[OpenAI Moderation] flagged: {moderation_output.flagged}\n")
+        return
+    except Exception as e:
+        print(f"[提示] Moderation API 不可用（{type(e).__name__}），")
+        print(f"        当前 base_url 可能不支持该端点（如 DeepSeek）。")
+        print(f"        改用 chat completion 模拟 moderation。\n")
+
+    # Fallback：用 chat completion 模拟内容审核
+    system_message = """\
+You are a content moderation classifier. \
+Analyze the assistant's response and respond ONLY with valid JSON:
+{
+  "flagged": true/false,
+  "reason": "brief explanation"
+}"""
+    messages = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": final_response_to_customer},
+    ]
+    result = get_completion_from_messages(messages, temperature=0, max_tokens=200)
+    print(f"[Chat-based Moderation 输出]\n{result}\n")
 
 
 def demo_factual_check():

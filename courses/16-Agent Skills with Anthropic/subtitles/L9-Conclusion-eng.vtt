@@ -1,0 +1,62 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.102
+Congratulations on making it this far.
+
+2
+00:00:02.602 --> 00:00:05.772
+You've learned how to create skills, explored their best practices,
+
+3
+00:00:05.972 --> 00:00:08.675
+and seen them in action across different platforms.
+
+4
+00:00:08.975 --> 00:00:12.479
+When creating a skill, start with basic markdown instructions,
+
+5
+00:00:12.879 --> 00:00:15.482
+then expand later following progressive disclosure.
+
+6
+00:00:15.982 --> 00:00:17.984
+Monitor how your agent uses your skill
+
+7
+00:00:18.284 --> 00:00:21.087
+in real scenarios and iterate based on observations.
+
+8
+00:00:21.654 --> 00:00:23.857
+Make sure the description contains enough detail for
+
+9
+00:00:23.857 --> 00:00:26.092
+your agent to know when to use it.
+
+10
+00:00:26.459 --> 00:00:29.863
+Don't forget, Claude is very knowledgeable about what skills are.
+
+11
+00:00:30.163 --> 00:00:31.865
+So you can always start with
+
+12
+00:00:31.865 --> 00:00:33.867
+a simple conversation to begin creating skills
+
+13
+00:00:34.367 --> 00:00:37.370
+and then use the skill creator skill to follow best practices.
+
+14
+00:00:37.804 --> 00:00:39.806
+Thank you for joining me in this journey.
+
+15
+00:00:39.806 --> 00:00:41.941
+And I can't wait to see what you build with agent skills.

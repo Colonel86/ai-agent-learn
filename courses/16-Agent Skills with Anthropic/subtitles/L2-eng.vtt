@@ -1,0 +1,694 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.503
+In the previous lesson, we saw how to create skills in Claude
+
+2
+00:00:03.770 --> 00:00:07.173
+and move from prompts with data to package skills
+
+3
+00:00:07.273 --> 00:00:10.877
+that we can use across many different conversations.
+
+4
+00:00:10.877 --> 00:00:13.680
+Now let's dive deeper and talk about what skills are
+
+5
+00:00:13.780 --> 00:00:16.182
+and the open standard that powers them.
+
+6
+00:00:16.583 --> 00:00:18.885
+Similar to the model context protocol,
+
+7
+00:00:19.185 --> 00:00:21.688
+skills themselves are an open standard
+
+8
+00:00:21.788 --> 00:00:25.792
+that can be used across many different AI applications.
+
+9
+00:00:25.992 --> 00:00:29.496
+While skills were something originally created at Anthropic.
+
+10
+00:00:29.996 --> 00:00:32.432
+Skills themselves are now an open standard
+
+11
+00:00:32.632 --> 00:00:34.934
+with a specific specification
+
+12
+00:00:35.135 --> 00:00:37.637
+that is used across many different platforms,
+
+13
+00:00:37.837 --> 00:00:39.706
+including Codex, Gemini CLI,
+
+14
+00:00:39.906 --> 00:00:42.409
+Claude Code, Open Code, and much more.
+
+15
+00:00:42.942 --> 00:00:44.477
+With that in mind, let's talk
+
+16
+00:00:44.477 --> 00:00:46.246
+a little bit about how this works.
+
+17
+00:00:46.446 --> 00:00:51.151
+When we build AI applications, in order to use particular skills,
+
+18
+00:00:51.451 --> 00:00:54.354
+we need to make use of some kind of file system
+
+19
+00:00:54.554 --> 00:00:57.557
+when using tools like Claude AI or Claude Desktop.
+
+20
+00:00:57.957 --> 00:01:00.160
+In that file system, we load folders
+
+21
+00:01:00.360 --> 00:01:02.962
+that contain a SKILL.md file
+
+22
+00:01:03.063 --> 00:01:05.765
+and subfolders or files that can be referenced.
+
+23
+00:01:06.066 --> 00:01:08.868
+Here we can see exactly what we did previously.
+
+24
+00:01:09.469 --> 00:01:11.471
+At the same time, skills themselves
+
+25
+00:01:11.871 --> 00:01:14.941
+cannot only include other markdown documents,
+
+26
+00:01:15.241 --> 00:01:17.243
+but scripts that can be executed.
+
+27
+00:01:17.744 --> 00:01:21.748
+For example, we have a skill for working with PDF documents.
+
+28
+00:01:21.948 --> 00:01:24.117
+we need to convert PDFs to images,
+
+29
+00:01:24.451 --> 00:01:26.486
+extract info from form fields,
+
+30
+00:01:26.886 --> 00:01:29.756
+and even fill PDF forms with annotations.
+
+31
+00:01:30.123 --> 00:01:31.958
+This requires code to be executed.
+
+32
+00:01:32.225 --> 00:01:34.427
+But that code that needs to be executed
+
+33
+00:01:34.727 --> 00:01:36.729
+can be referenced from the SKILL.md file.
+
+34
+00:01:36.729 --> 00:01:39.032
+So as we start to explore
+
+35
+00:01:39.232 --> 00:01:41.634
+our own custom skills and built-in skills,
+
+36
+00:01:41.835 --> 00:01:44.037
+it's important to note that skills are not
+
+37
+00:01:44.237 --> 00:01:46.840
+just text files that reference other text files,
+
+38
+00:01:47.240 --> 00:01:49.442
+but text files that can reference scripts,
+
+39
+00:01:49.742 --> 00:01:52.245
+what they do, and when they need to be executed.
+
+40
+00:01:52.679 --> 00:01:57.517
+Skills can also include icons, images, and other assets
+
+41
+00:01:57.517 --> 00:01:59.819
+as we start to think about
+
+42
+00:01:59.819 --> 00:02:02.489
+ways of creating custom styles and brands.
+
+43
+00:02:02.489 --> 00:02:05.558
+Where skills really shine are places
+
+44
+00:02:05.558 --> 00:02:10.196
+where Claude might not know exactly how you or your company operates.
+
+45
+00:02:10.196 --> 00:02:14.467
+You can imagine designing newsletters, creating brand guides,
+
+46
+00:02:14.467 --> 00:02:16.669
+things that Claude has a general idea on,
+
+47
+00:02:16.669 --> 00:02:18.738
+but not the exact way that
+
+48
+00:02:18.738 --> 00:02:21.174
+your company or your team does it.
+
+49
+00:02:21.174 --> 00:02:24.177
+To give some more idea of why we bring
+
+50
+00:02:24.177 --> 00:02:27.380
+agent skills into the mix when we're building our own agents.
+
+51
+00:02:27.680 --> 00:02:30.150
+The way that we used to think about building agents
+
+52
+00:02:30.150 --> 00:02:32.952
+centered around agents with a single purpose.
+
+53
+00:02:33.153 --> 00:02:36.556
+Coding, research, finance, marketing, and much more.
+
+54
+00:02:36.756 --> 00:02:39.159
+These domain-specific agents
+
+55
+00:02:39.159 --> 00:02:41.361
+had a particular set of tools, the context
+
+56
+00:02:41.361 --> 00:02:43.863
+that it needed to perform the task necessary.
+
+57
+00:02:44.164 --> 00:02:47.367
+But as we started to build more of these single-purpose agents,
+
+58
+00:02:47.467 --> 00:02:49.369
+we started to realize that under the hood,
+
+59
+00:02:49.669 --> 00:02:52.372
+all that they really need is a simple scaffolding.
+
+60
+00:02:52.672 --> 00:02:55.675
+Underlying tools like bash and a filesystem,
+
+61
+00:02:55.975 --> 00:02:58.378
+to find, edit, modify, execute,
+
+62
+00:02:58.478 --> 00:03:01.181
+and perform whatever tasks are necessary.
+
+63
+00:03:01.781 --> 00:03:06.152
+These simpler agents are easier to evaluate, understand, and scale.
+
+64
+00:03:06.653 --> 00:03:09.689
+But what these agents lacked was the underlying
+
+65
+00:03:09.689 --> 00:03:13.059
+context and domain expertise to do the job reliably.
+
+66
+00:03:13.459 --> 00:03:17.764
+That context can be provided through skills, through the model context protocol,
+
+67
+00:03:18.264 --> 00:03:21.568
+but that domain expertise is really where skills shine as well.
+
+68
+00:03:21.734 --> 00:03:26.039
+We want finance agents to perform financial analysis in a particular fashion.
+
+69
+00:03:26.239 --> 00:03:28.942
+We want research agents to have the domain expertise
+
+70
+00:03:28.942 --> 00:03:31.744
+necessary to research the way that we want.
+
+71
+00:03:31.945 --> 00:03:35.548
+to be able to port that across many different ecosystems
+
+72
+00:03:35.548 --> 00:03:37.951
+and agents, and that's why we have agent skills.
+
+73
+00:03:38.418 --> 00:03:41.020
+These skills provide us the procedural knowledge
+
+74
+00:03:41.020 --> 00:03:44.924
+and the user-specific context that they can load on demand.
+
+75
+00:03:45.325 --> 00:03:47.727
+In addition to domain expertise,
+
+76
+00:03:47.727 --> 00:03:50.496
+skills can also provide a repeatable workflow.
+
+77
+00:03:50.797 --> 00:03:52.799
+In a non-deterministic system,
+
+78
+00:03:52.799 --> 00:03:54.801
+where we don't always know exactly what the
+
+79
+00:03:54.801 --> 00:03:56.803
+output of the model is going to be,
+
+80
+00:03:57.203 --> 00:03:59.305
+it can be difficult to find repeatable ways
+
+81
+00:03:59.305 --> 00:04:01.608
+of producing the same output.
+
+82
+00:04:01.608 --> 00:04:05.311
+What skills allow us to do is provide a repeatable workflow.
+
+83
+00:04:05.445 --> 00:04:08.248
+with very articulate steps or instructions
+
+84
+00:04:08.248 --> 00:04:10.650
+that allow the agent to perform a task
+
+85
+00:04:10.650 --> 00:04:13.353
+that we can start to predict with more accuracy.
+
+86
+00:04:13.653 --> 00:04:16.956
+Skills also introduce the idea of new capabilities,
+
+87
+00:04:16.956 --> 00:04:18.591
+things that an agent does not know
+
+88
+00:04:18.591 --> 00:04:20.260
+how to do out of the box
+
+89
+00:04:20.260 --> 00:04:23.963
+or even data that Claude has no idea how to operate on.
+
+90
+00:04:24.197 --> 00:04:26.699
+When we bring in these new capabilities,
+
+91
+00:04:26.699 --> 00:04:31.004
+we unleash an entire ecosystem and new functionality for our agents
+
+92
+00:04:31.004 --> 00:04:33.006
+with minimal additional context.
+
+93
+00:04:33.106 --> 00:04:35.208
+As we think about domain expertise,
+
+94
+00:04:35.208 --> 00:04:37.176
+we want to lean on things that
+
+95
+00:04:37.176 --> 00:04:39.178
+Claude might not know how to do
+
+96
+00:04:39.178 --> 00:04:43.683
+or knows how to do but not for your particular domain.
+
+97
+00:04:43.983 --> 00:04:46.185
+Claude can perform data analysis.
+
+98
+00:04:46.185 --> 00:04:48.187
+Claude can perform legal review.
+
+99
+00:04:48.187 --> 00:04:50.189
+But how does it do it the way that you
+
+100
+00:04:50.189 --> 00:04:52.692
+or your team or company want it to be done?
+
+101
+00:04:52.725 --> 00:04:56.729
+We previously saw the ability to perform weekly marketing campaign reviews,
+
+102
+00:04:57.030 --> 00:04:58.965
+and we want that to be
+
+103
+00:04:58.965 --> 00:05:01.234
+predictable across many different individuals and teams.
+
+104
+00:05:01.534 --> 00:05:04.203
+As we start to think about some of these new capabilities,
+
+105
+00:05:04.504 --> 00:05:08.508
+things like generating presentations, Excel spreadsheets, PDF reports,
+
+106
+00:05:08.808 --> 00:05:11.711
+executing scripts when necessary to perform those actions,
+
+107
+00:05:11.911 --> 00:05:14.514
+that here is where agent skills can shine.
+
+108
+00:05:14.814 --> 00:05:17.216
+What we saw previously, without skills,
+
+109
+00:05:17.216 --> 00:05:19.519
+was the idea of describing our instructions,
+
+110
+00:05:19.519 --> 00:05:22.322
+trying to predict workflows and bundling
+
+111
+00:05:22.322 --> 00:05:26.025
+all of the necessary files in context at one time.
+
+112
+00:05:26.492 --> 00:05:29.095
+We talked a little bit about the portability of skills.
+
+113
+00:05:29.295 --> 00:05:32.598
+And while we've seen skills so far in Claude AI,
+
+114
+00:05:32.999 --> 00:05:35.601
+skills can be used in the exact same format,
+
+115
+00:05:36.002 --> 00:05:39.839
+not only across Claude Code, the Agent SDK and the API,
+
+116
+00:05:40.306 --> 00:05:42.642
+but since Agent Skills are an open standard,
+
+117
+00:05:42.842 --> 00:05:45.945
+you can use this across a growing number of agent products.
+
+118
+00:05:46.079 --> 00:05:48.281
+You can create skills in one environment
+
+119
+00:05:48.281 --> 00:05:50.283
+and use them and share them and scale them
+
+120
+00:05:50.283 --> 00:05:52.885
+across many different environments.
+
+121
+00:05:53.286 --> 00:05:54.987
+When we say that skills are composable,
+
+122
+00:05:54.987 --> 00:05:56.889
+this is something that we've seen already.
+
+123
+00:05:57.290 --> 00:06:00.993
+We can take custom skills like analyzing our marketing campaign
+
+124
+00:06:01.294 --> 00:06:03.896
+and we can combine that with built-in skills
+
+125
+00:06:03.896 --> 00:06:06.099
+like creating PowerPoint presentations,
+
+126
+00:06:06.099 --> 00:06:08.301
+PDFs, or Excel spreadsheets.
+
+127
+00:06:08.434 --> 00:06:11.204
+Not only can we use multiple skills together,
+
+128
+00:06:11.404 --> 00:06:16.008
+but we can combine them to build complex and predictable workflows.
+
+129
+00:06:16.409 --> 00:06:20.012
+We can reference the skills necessary, the steps necessary,
+
+130
+00:06:20.313 --> 00:06:22.515
+and start to create predictable outputs
+
+131
+00:06:22.715 --> 00:06:24.717
+in a non-deterministic system.
+
+132
+00:06:24.951 --> 00:06:28.254
+Under the hood, skills can contain quite a bit of information.
+
+133
+00:06:28.755 --> 00:06:31.457
+We saw examples with additional markdown files
+
+134
+00:06:31.457 --> 00:06:34.260
+and even examples with scripts that can be executed.
+
+135
+00:06:34.660 --> 00:06:37.063
+You can have hundreds of skills across your system,
+
+136
+00:06:37.463 --> 00:06:39.866
+and what we're going to see quite a bit more
+
+137
+00:06:39.866 --> 00:06:41.768
+is that to protect the context window,
+
+138
+00:06:41.768 --> 00:06:43.870
+skills are progressively disclosed.
+
+139
+00:06:44.404 --> 00:06:46.773
+The idea of Progressive Disclosure
+
+140
+00:06:46.806 --> 00:06:49.575
+is to only load the data necessary
+
+141
+00:06:49.609 --> 00:06:52.278
+and avoid polluting the context.
+
+142
+00:06:52.578 --> 00:06:55.782
+We like to think of the context window as a public good.
+
+143
+00:06:55.782 --> 00:06:58.584
+The more data that we add to the context window,
+
+144
+00:06:58.584 --> 00:07:00.286
+the more tokens we consume,
+
+145
+00:07:00.286 --> 00:07:02.588
+the faster our context window fills up,
+
+146
+00:07:02.588 --> 00:07:05.291
+and the likelihood of context degradation
+
+147
+00:07:05.291 --> 00:07:08.294
+or incorrect responses potentially increases.
+
+148
+00:07:08.594 --> 00:07:11.597
+In order to avoid polluting the context window
+
+149
+00:07:11.597 --> 00:07:13.599
+with data that we might not need,
+
+150
+00:07:13.599 --> 00:07:16.602
+skills introduce the idea of Progressive Disclosure.
+
+151
+00:07:16.836 --> 00:07:19.038
+When skills are loaded from the file system,
+
+152
+00:07:19.038 --> 00:07:21.841
+the only data that gets added to the context window
+
+153
+00:07:21.841 --> 00:07:24.444
+is the name and description of the skill.
+
+154
+00:07:24.644 --> 00:07:28.347
+This is essential so that Claude or any other system knows
+
+155
+00:07:28.347 --> 00:07:30.650
+what the skill is and how to trigger it.
+
+156
+00:07:30.950 --> 00:07:35.388
+Once that skill is triggered, the underlying SKILL.md is loaded.
+
+157
+00:07:35.788 --> 00:07:38.958
+This is the next phase of loading data into context.
+
+158
+00:07:39.459 --> 00:07:41.828
+And depending on what is required,
+
+159
+00:07:41.928 --> 00:07:44.230
+if there are additional files or scripts
+
+160
+00:07:44.230 --> 00:07:46.532
+that need to be loaded and executed,
+
+161
+00:07:46.732 --> 00:07:48.734
+those will be loaded progressively.
+
+162
+00:07:49.068 --> 00:07:52.238
+These additional resources can be loaded as needed,
+
+163
+00:07:52.738 --> 00:07:55.041
+and if there are scripts that need to be loaded,
+
+164
+00:07:55.441 --> 00:07:59.745
+those scripts are loaded and executed separately from the context window
+
+165
+00:07:59.946 --> 00:08:04.150
+to avoid polluting with additional tokens that are not necessary.
+
+166
+00:08:04.350 --> 00:08:06.953
+By using tools like bash and a file system,
+
+167
+00:08:07.253 --> 00:08:10.356
+Claude can load only the information that's necessary,
+
+168
+00:08:10.857 --> 00:08:14.961
+execute only scripts and reading of files that is necessary,
+
+169
+00:08:15.261 --> 00:08:19.465
+and intentionally only add what is necessary to the context window.
+
+170
+00:08:19.799 --> 00:08:22.802
+In the next lesson, we'll continue talking about skills
+
+171
+00:08:23.302 --> 00:08:26.606
+and particularly how they're used alongside other technologies
+
+172
+00:08:26.806 --> 00:08:29.809
+like the model context protocol, sub-agents,
+
+173
+00:08:30.009 --> 00:08:31.978
+underlying tools, and much more.

@@ -1,0 +1,243 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.990 --> 00:00:04.239
+Let's take a look at how to write code to have your LLM get tools called.
+
+2
+00:00:04.239 --> 00:00:09.279
+Here's our old getCurrentTime function without the time zone argument.
+
+3
+00:00:09.279 --> 00:00:14.720
+Let me show you how to use the AI Suite open source library in order to have your LLM call
+
+4
+00:00:14.720 --> 00:00:20.000
+tools. By the way, technically, as you saw from the last video, the LLM doesn't call the tool.
+
+5
+00:00:20.000 --> 00:00:25.120
+The LLM just requests that you call the tool. But among developers building agentic workflows,
+
+6
+00:00:25.120 --> 00:00:30.639
+many of us will occasionally just say the LLM calls the tool, even though it's not technically
+
+7
+00:00:30.639 --> 00:00:34.400
+what happens, but because it's just a shorter way to say it.
+
+8
+00:00:34.400 --> 00:00:41.759
+This syntax here is very similar to the OpenAI syntax for calling these LLMs, except that here,
+
+9
+00:00:41.759 --> 00:00:46.880
+I'm using the AI Suite library, which is an open source package that some friends and I had worked
+
+10
+00:00:46.880 --> 00:00:53.439
+on that makes it easy to call multiple LLM providers. So the code syntax, and if this
+
+11
+00:00:53.439 --> 00:00:57.759
+looks like a lot to you, don't worry about it. You'll see more of this in the code labs.
+
+12
+00:00:57.759 --> 00:01:02.479
+But very briefly, this is very similar to the OpenAI syntax, where you say response equals
+
+13
+00:01:02.479 --> 00:01:07.519
+client check, completions create, then select the model, which in this case, we'll use the
+
+14
+00:01:07.519 --> 00:01:13.919
+OpenAI model GPT-4o, messages equals messages, assuming you've put into an array here the
+
+15
+00:01:13.919 --> 00:01:19.279
+messages you want to pass the LLM, and it will say tools equals, then a list of the tools you want
+
+16
+00:01:19.279 --> 00:01:23.919
+the LLM to have access to. And in this case, there's just one tool, which is get current time,
+
+17
+00:01:23.919 --> 00:01:28.720
+and then don't worry too much about the max turns parameter. This is included because
+
+18
+00:01:28.720 --> 00:01:33.919
+after a tool call returns, the LLM might decide to call another tool, and after that tool call
+
+19
+00:01:33.919 --> 00:01:38.959
+returns, the LLM might decide to call yet another tool. So max turns is just a ceiling on how many
+
+20
+00:01:38.959 --> 00:01:44.400
+times you want the LLM to request one tool after another before you stop to just break out of a
+
+21
+00:01:44.400 --> 00:01:49.279
+possible infinite loop. In practice, you almost never hit this limit unless your code is doing
+
+22
+00:01:49.279 --> 00:01:54.800
+something unusually ambitious. So I wouldn't worry about the max turns parameter. I usually just set it to
+
+23
+00:01:54.800 --> 00:02:00.720
+five, but in practice, it doesn't matter that much. And it turns out that with AISuite, the function
+
+24
+00:02:00.720 --> 00:02:06.639
+get current time is automatically described to the LLM in an appropriate way to enable the LLM to
+
+25
+00:02:06.639 --> 00:02:12.240
+know when to call it. So rather than you needing to manually write a long prompt to tell the LLM,
+
+26
+00:02:12.240 --> 00:02:18.000
+once get current time, this syntax in AISuite does that automatically. And to make it seem not
+
+27
+00:02:18.000 --> 00:02:23.679
+too mysterious, the way it does that, it actually looks at the dot string associated with get current
+
+28
+00:02:23.679 --> 00:02:30.240
+time with this comments in get current time in order to figure out how to describe this function
+
+29
+00:02:30.240 --> 00:02:36.880
+to the LLM. So to illustrate how this works, here's the function again, and here's the
+
+30
+00:02:36.880 --> 00:02:43.360
+snippet of code using AISuite to call the LLM. Behind the scenes, what this will do is create a
+
+31
+00:02:43.360 --> 00:02:50.399
+JSON schema that describes the function in detail. And this over here on the right is what is actually
+
+32
+00:02:50.399 --> 00:02:55.600
+passed to the LLM. And specifically, it will pull the name of the function, which is get current time,
+
+33
+00:02:55.600 --> 00:03:01.360
+and then also a description of the function, which is pulled out from the doc string to tell the LLM
+
+34
+00:03:01.360 --> 00:03:06.960
+what this function does, which lets it decide when to call it. There's some APIs which require that
+
+35
+00:03:06.960 --> 00:03:13.039
+you manually construct this JSON schema and then pass this JSON schema to the LLM, but the AISuite
+
+36
+00:03:13.039 --> 00:03:18.160
+package does this automatically for you. To go through a slightly more complex example, if you
+
+37
+00:03:18.160 --> 00:03:25.600
+have this more complex get current time tool that also has an input time zone parameter, then AISuite
+
+38
+00:03:25.600 --> 00:03:30.800
+will create this more complex JSON schema where, as before, it pulls out the name of the function,
+
+39
+00:03:30.800 --> 00:03:35.679
+which is get current time, pulls out the description from the doc string, and then also identifies
+
+40
+00:03:35.679 --> 00:03:41.520
+what are the parameters and describes them to the LLM based on the documentation here shown on the
+
+41
+00:03:41.520 --> 00:03:47.520
+left, so that when it's generating the function arguments to call the tool, it knows that it
+
+42
+00:03:47.520 --> 00:03:53.759
+should be something like America/New York or Pacific/Auckland or some other time zone.
+
+43
+00:03:53.759 --> 00:03:59.600
+And so if you execute this code snippet here on the lower left, it will use the OpenAI
+
+44
+00:03:59.600 --> 00:04:04.880
+GPT-4o model, see if the LLM wants the function called, and if so, it'll call the function,
+
+45
+00:04:04.880 --> 00:04:10.000
+get the output from the function, feed that back to the LLM, and do that up to a maximum of five
+
+46
+00:04:10.000 --> 00:04:17.119
+turns and then return the response. Note that if the LLM requests to call the get current time
+
+47
+00:04:17.760 --> 00:04:23.279
+function, AISuite or this client, it will call the get current time for you, so you don't need
+
+48
+00:04:23.279 --> 00:04:29.679
+to explicitly do it yourself. All that is done in this single function call that you have to write.
+
+49
+00:04:29.679 --> 00:04:36.160
+Just note that there are some other implementations of LLM interfaces where you have to do that step
+
+50
+00:04:36.160 --> 00:04:41.760
+manually, but with this particular package, this is all wrapped into this client chat completions
+
+51
+00:04:41.760 --> 00:04:49.760
+create function call. So you now know how to get an LLM to call functions, and I hope that you enjoy
+
+52
+00:04:49.760 --> 00:04:54.480
+playing with this in the labs, and it's actually really amazing when you provide a few functions
+
+53
+00:04:54.480 --> 00:04:59.440
+to LLM and LLM decides to go and take action in the world, go and get more information
+
+54
+00:04:59.440 --> 00:05:04.000
+to fulfill your requests. If you haven't played with this before, I think you'll find this to be
+
+55
+00:05:04.000 --> 00:05:10.559
+really cool. It turns out that of all the tools you can give an LLM, there's one that's a bit special,
+
+56
+00:05:10.559 --> 00:05:15.679
+which is a code execution tool. It turns out to be really powerful. If you can tell an LLM,
+
+57
+00:05:16.320 --> 00:05:21.760
+you can write code, and I will have a tool to execute that code for you, because code can do
+
+58
+00:05:21.760 --> 00:05:28.640
+a lot of things, and we give an LLM the flexibility to write code and have code executed. That turns
+
+59
+00:05:28.640 --> 00:05:35.200
+out to be an incredibly powerful tool to give to LLMs. So code execution is special. Let's go
+
+60
+00:05:35.200 --> 00:05:40.640
+on to the next video to talk about the code execution tool for LLMs.
+

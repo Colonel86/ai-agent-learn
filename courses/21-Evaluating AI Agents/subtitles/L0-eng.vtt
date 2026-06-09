@@ -1,0 +1,337 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.601 --> 00:00:06.072
+Welcome to Evaluating AI Agents
+built in partnership with Arize AI.
+
+2
+00:00:06.339 --> 00:00:09.342
+Say you're building an AI
+coding agent, you might have to carry out
+
+3
+00:00:09.342 --> 00:00:14.147
+a lot of steps to generate good code such
+as plan, use tools, reflect, and so on.
+
+4
+00:00:14.614 --> 00:00:18.685
+And using an evaluation driven development
+process would make your development
+
+5
+00:00:18.852 --> 00:00:19.919
+much more efficient.
+
+6
+00:00:19.919 --> 00:00:20.787
+In this course,
+
+7
+00:00:20.787 --> 00:00:24.657
+you'll learn how to add observability
+to your agent-based applications. Said this,
+
+8
+00:00:24.657 --> 00:00:29.396
+You will see what it is doing
+every step of the way, so you can evaluate it
+
+9
+00:00:29.429 --> 00:00:33.700
+components wise and efficiently
+drive improvements at the components.
+
+10
+00:00:33.900 --> 00:00:36.136
+And then also at the whole system level.
+
+11
+00:00:36.136 --> 00:00:39.172
+So if you're asking yourself questions
+like should
+
+12
+00:00:39.172 --> 00:00:41.041
+you update a prompt at the last step,
+
+13
+00:00:41.041 --> 00:00:43.410
+or should you update
+the logic of the workflow,
+
+14
+00:00:43.410 --> 00:00:46.413
+or should you change the large language
+model you're using?
+
+15
+00:00:46.413 --> 00:00:50.583
+Having a disciplined, evaluation
+driven process will help you a lot
+
+16
+00:00:50.583 --> 00:00:53.887
+in terms of making these decisions
+in a systematic rather than random
+
+17
+00:00:53.887 --> 00:00:56.823
+try a lot of things
+and see what works, kind of way.
+
+18
+00:00:56.823 --> 00:01:00.060
+If you've heard of the idea of error
+analysis, which is a key
+
+19
+00:01:00.060 --> 00:01:03.096
+concept to machine learning,
+this teaches you how to do that
+
+20
+00:01:03.096 --> 00:01:06.199
+in the agentic workflow
+development process.
+
+21
+00:01:06.399 --> 00:01:09.069
+If you haven't heard of error analysis,
+that's fine too.
+
+22
+00:01:09.069 --> 00:01:13.273
+But in this course it takes
+an important set of ideas and shows you
+
+23
+00:01:13.306 --> 00:01:16.409
+how to do it to develop agentic workflows
+efficiently.
+
+24
+00:01:17.177 --> 00:01:20.947
+The instructors of this course
+are John Gilhuly, whose head of developer
+
+25
+00:01:20.947 --> 00:01:25.518
+relations and Aman Khan,
+who is director of product at Arize AI.
+
+26
+00:01:25.685 --> 00:01:28.054
+It's been fun working with you
+on this course.
+
+27
+00:01:28.054 --> 00:01:30.190
+Thank you. Andrew.
+We're excited to teach this course.
+
+28
+00:01:30.190 --> 00:01:31.291
+Thank you.
+
+29
+00:01:31.291 --> 00:01:35.695
+Say you're building a research agent
+that searches the web, identifies sources,
+
+30
+00:01:35.695 --> 00:01:39.566
+collects content, summarizes findings,
+and then maybe iterates
+
+31
+00:01:39.566 --> 00:01:42.569
+if it identifies
+any weaknesses as an output.
+
+32
+00:01:42.735 --> 00:01:46.206
+When you're building this complex system,
+you need to evaluate the
+
+33
+00:01:46.306 --> 00:01:48.575
+quality of each step's output.
+
+34
+00:01:48.575 --> 00:01:52.445
+For example, for source selection,
+you might create a test set that comprises
+
+35
+00:01:52.445 --> 00:01:56.082
+research topics and the corresponding
+set of expected sources,
+
+36
+00:01:56.449 --> 00:02:00.286
+and then measure the percentage of times
+that the agent chooses
+
+37
+00:02:00.286 --> 00:02:04.524
+to correct sources. Or for open
+ended tasks like summarization,
+
+38
+00:02:04.924 --> 00:02:08.294
+you can prompt a separate
+large language model
+
+39
+00:02:08.294 --> 00:02:11.297
+or apply what we call large language model
+as judge.
+
+40
+00:02:11.531 --> 00:02:16.069
+In order to evaluate the quality of this
+more open-ended output of a text summary.
+
+41
+00:02:16.536 --> 00:02:19.539
+Apart from testing and improving
+the quality of your agent's output,
+
+42
+00:02:19.739 --> 00:02:22.442
+you can also evaluate the path taken
+by the agent
+
+43
+00:02:22.442 --> 00:02:25.879
+to ensure it doesn't get stuck in a loop
+or repeat steps unnecessarily.
+
+44
+00:02:26.679 --> 00:02:29.816
+And so, in this course, you'll learn
+how to structure your evaluations
+
+45
+00:02:29.816 --> 00:02:34.320
+to iterate on and improve both the output
+quality and the path taken by your agent.
+
+46
+00:02:34.754 --> 00:02:38.391
+You'll do this by creating a code based
+agent that operates as a data analyzer.
+
+47
+00:02:38.925 --> 00:02:39.826
+The agent will have access
+
+48
+00:02:39.826 --> 00:02:43.696
+to a set of tools that allow it to connect
+to a database and perform analysis.
+
+49
+00:02:44.164 --> 00:02:47.800
+A router that identifies
+what tool to use, and a memory
+
+50
+00:02:47.800 --> 00:02:49.235
+that keeps track of the chat history.
+
+51
+00:02:50.303 --> 00:02:52.272
+You'll
+collect and evaluate traces of the steps
+
+52
+00:02:52.272 --> 00:02:56.075
+taken by your agent to process
+a query and visualize the collected data.
+
+53
+00:02:56.543 --> 00:02:58.144
+You'll then learn how to evaluate
+
+54
+00:02:58.144 --> 00:03:01.614
+each tool in your agent workflow
+using different types of evaluators.
+
+55
+00:03:02.015 --> 00:03:06.186
+You also evaluate if the router chooses
+the right tool based on the user's query,
+
+56
+00:03:06.386 --> 00:03:09.389
+and if it extracts the right parameters
+to execute the tool
+
+57
+00:03:09.589 --> 00:03:12.592
+and assess
+the trajectory taken by the agent.
+
+58
+00:03:12.659 --> 00:03:16.129
+Finally, you put all of your evaluators
+into a structured experiment
+
+59
+00:03:16.129 --> 00:03:19.165
+that you can use to iterate on
+and improve your agent.
+
+60
+00:03:19.732 --> 00:03:23.203
+While the course focuses on
+applying evaluation during development.
+
+61
+00:03:23.536 --> 00:03:26.906
+You'll also learn how you can monitor
+your agent during production.
+
+62
+00:03:27.207 --> 00:03:29.576
+Many people have worked to create this
+course.
+
+63
+00:03:29.576 --> 00:03:34.214
+I'd like to thank Mikyo King,
+Xander Song, and Aparna Dhinakaran
+
+64
+00:03:34.247 --> 00:03:38.384
+from Arize AI.
+And from DeepLearning.AI
+
+65
+00:03:38.418 --> 00:03:41.387
+Hawraa Salami has also contributed
+to this course.
+
+66
+00:03:41.721 --> 00:03:44.557
+John and Aman are both experts
+on the important
+
+67
+00:03:44.557 --> 00:03:47.560
+topic of how to evaluate AI agentic workflows.
+
+68
+00:03:47.794 --> 00:03:50.730
+Let's now go on to the next video,
+and I hope you enjoy the course
+
+69
+00:03:50.730 --> 00:03:52.732
+and learn a lot from John and Aman.
+

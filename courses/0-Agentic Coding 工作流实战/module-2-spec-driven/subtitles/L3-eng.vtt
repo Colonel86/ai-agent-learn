@@ -1,0 +1,150 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.102
+Before you send your first prompt,
+
+2
+00:00:02.102 --> 00:00:04.971
+let's talk a little bit about setting up your workspace.
+
+3
+00:00:04.971 --> 00:00:08.575
+If you're already comfortable with setting up a coding agent
+
+4
+00:00:08.575 --> 00:00:10.577
+like Claude Code in an IDE
+
+5
+00:00:10.577 --> 00:00:14.481
+such as WebStorm, feel free to skip this optional video.
+
+6
+00:00:15.048 --> 00:00:17.951
+Spec-Driven Development is a best practice
+
+7
+00:00:17.951 --> 00:00:21.621
+that isn't tied to any specific IDE or coding agent.
+
+8
+00:00:21.621 --> 00:00:24.958
+So, you can choose the setup you're already using
+
+9
+00:00:24.958 --> 00:00:27.293
+or the same one you'll see in this course.
+
+10
+00:00:27.727 --> 00:00:30.530
+VS Code with the Codex CLI,
+
+11
+00:00:30.730 --> 00:00:32.732
+Zed editor with a local model,
+
+12
+00:00:33.233 --> 00:00:35.535
+all great for spec-driven development.
+
+13
+00:00:35.735 --> 00:00:38.538
+Since we are planning to develop a web application,
+
+14
+00:00:38.738 --> 00:00:41.541
+this course will use the WebStorm IDE
+
+15
+00:00:41.941 --> 00:00:44.544
+with Claude Code as a coding agent.
+
+16
+00:00:45.045 --> 00:00:47.714
+Instructions on downloading and installing both
+
+17
+00:00:48.014 --> 00:00:50.517
+have been included in the previous reading item.
+
+18
+00:00:50.617 --> 00:00:52.852
+Let's open up WebStorm and start
+
+19
+00:00:52.852 --> 00:00:55.422
+a brand new project named Agent Clinic.
+
+20
+00:00:56.122 --> 00:00:58.124
+This will be a TypeScript project
+
+21
+00:00:58.925 --> 00:01:01.528
+with a Git repository to keep close
+
+22
+00:01:01.528 --> 00:01:04.130
+track of versioning your code and specs.
+
+23
+00:01:06.933 --> 00:01:10.937
+Although many IDEs, including WebStorm, offer a chat panel,
+
+24
+00:01:11.337 --> 00:01:13.239
+we know there's a lot of diversity
+
+25
+00:01:13.239 --> 00:01:15.442
+in how you interact with your coding agents.
+
+26
+00:01:16.042 --> 00:01:18.545
+In spec-driven development with agents,
+
+27
+00:01:18.545 --> 00:01:22.048
+it's important to keep close track of versioning your code.
+
+28
+00:01:22.549 --> 00:01:26.252
+Let's say we want to create an initial commit using the agent.
+
+29
+00:01:26.786 --> 00:01:29.289
+Every time it needs to execute a command,
+
+30
+00:01:29.289 --> 00:01:31.591
+it will ask you for the confirmation
+
+31
+00:01:31.591 --> 00:01:35.195
+unless you start Claude Code in an unsafe mode.
+
+32
+00:01:35.795 --> 00:01:39.165
+Pay close attention to what Claude Code asks you to do.
+
+33
+00:01:39.466 --> 00:01:42.669
+The ultimate responsibility for the code is yours.
+
+34
+00:01:43.169 --> 00:01:47.340
+Throughout the coming lessons, you'll see several tricks and best practices
+
+35
+00:01:47.340 --> 00:01:49.342
+for spec-driven development with Git.
+
+36
+00:01:49.943 --> 00:01:52.145
+Great, we've got our setup ready and
+
+37
+00:01:52.145 --> 00:01:54.347
+you've got yours ready. Let's get started.

@@ -1,0 +1,216 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.301 --> 00:00:03.503
+Welcome to Long-Term
+
+2
+00:00:03.503 --> 00:00:06.606
+Agentic Memory with LangGraph
+built in partnership with LangChain.
+
+3
+00:00:06.740 --> 00:00:10.243
+I'm delighted to welcome back Harrison
+Chase, co-founder and CEO of LangChain.
+
+4
+00:00:10.443 --> 00:00:11.478
+Thanks, Andrew.
+
+5
+00:00:11.478 --> 00:00:14.481
+Recently we've seen many
+agentic applications being built,
+
+6
+00:00:14.981 --> 00:00:17.984
+and this has helped us to develop
+a mental framework that is useful
+
+7
+00:00:17.984 --> 00:00:20.987
+to think about
+for when you're adding memory to agents.
+
+8
+00:00:21.254 --> 00:00:24.891
+We would like to share that with learners.
+More and more AI applications
+
+9
+00:00:24.891 --> 00:00:29.229
+persist over time, and this really drives
+the need for agent memory.
+
+10
+00:00:29.295 --> 00:00:32.332
+An example would be
+an AI personal assistant.
+
+11
+00:00:32.632 --> 00:00:35.101
+Exactly. Assistants are a great example.
+
+12
+00:00:35.101 --> 00:00:38.104
+The more they learn, the better
+they are at future tasks.
+
+13
+00:00:38.371 --> 00:00:42.409
+To add memory to an agent,
+you must first figure out what information
+
+14
+00:00:42.409 --> 00:00:45.478
+to store in long term memory
+and also when it comes
+
+15
+00:00:45.478 --> 00:00:50.478
+time to use the information,
+what to retrieve. First, on what to store:
+
+16
+00:00:51.051 --> 00:00:55.422
+Chatbots initially just saw conversational
+history in the context memory
+
+17
+00:00:55.588 --> 00:00:58.391
+at each turn of a conversation.
+
+18
+00:00:58.391 --> 00:01:02.028
+But agents that act for you
+over time need long term memory.
+
+19
+00:01:02.128 --> 00:01:07.128
+For example, a calendar agent might need
+to persist information about meetings
+
+20
+00:01:07.167 --> 00:01:11.704
+over long periods and across
+multiple invocations of the agent.
+
+21
+00:01:12.472 --> 00:01:14.340
+Then comes retrieval.
+
+22
+00:01:14.340 --> 00:01:18.545
+Retrieval will take information from
+memory and insert it into the context.
+
+23
+00:01:18.778 --> 00:01:22.649
+Harrison will show you how to figure out
+when and what to retrieve.
+
+24
+00:01:22.816 --> 00:01:27.687
+And additionally, you also need to decide
+when to update the stored information.
+
+25
+00:01:27.687 --> 00:01:28.955
+So should it be updated
+
+26
+00:01:28.955 --> 00:01:33.293
+through each iteration of an agent loop
+or maybe in the background over time?
+
+27
+00:01:33.660 --> 00:01:34.627
+Right.
+
+28
+00:01:34.627 --> 00:01:35.795
+To address these questions,
+
+29
+00:01:35.795 --> 00:01:38.798
+we've found that it's useful
+to think about three types of memories.
+
+30
+00:01:38.832 --> 00:01:40.166
+Semantic Memories:
+
+31
+00:01:40.166 --> 00:01:43.269
+These are facts like important birthdays
+for a calendar agent.
+
+32
+00:01:43.503 --> 00:01:45.705
+The next is Episodic Memories:
+
+33
+00:01:45.705 --> 00:01:49.275
+These are experiences that can help
+an agent remember how to do tasks.
+
+34
+00:01:49.476 --> 00:01:53.713
+And finally, there's Procedural Memories,
+which are rules for an agent to follow.
+
+35
+00:01:53.980 --> 00:01:57.617
+To help manage memory,
+we've created a new library, Langmem,
+
+36
+00:01:57.784 --> 00:02:01.187
+that supports a vector database
+that provides searchable,
+
+37
+00:02:01.421 --> 00:02:05.592
+shareable, persistent storage
+that can be updated immediately
+
+38
+00:02:05.592 --> 00:02:08.995
+by the agent
+or in the background by a helper agent.
+
+39
+00:02:09.362 --> 00:02:10.430
+In this course,
+
+40
+00:02:10.430 --> 00:02:14.501
+you'll build a useful email assistant
+that demonstrates all of these concepts
+
+41
+00:02:14.701 --> 00:02:16.169
+using Langmem.
+
+42
+00:02:16.169 --> 00:02:18.771
+Several people have worked to create this
+course.
+
+43
+00:02:18.771 --> 00:02:22.675
+I'd like to thank from LangChain,
+Lance Martin, Will Fu-Hinthorn,
+
+44
+00:02:22.675 --> 00:02:27.213
+and Nuno Campos. And from DeepLearning.AI
+Geoff Ladwig.
+
+45
+00:02:27.647 --> 00:02:30.183
+All right,
+let's get started on the first lesson.
+

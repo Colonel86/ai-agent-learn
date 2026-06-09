@@ -60,9 +60,19 @@
 - **项目 1：多模型智能问答 CLI**（入门）
   - 支持 GPT-4 / Claude / 开源模型切换的命令行问答工具
   - 练习 API 调用、流式输出、错误处理
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：≥ 20 条测试问题，自动跑分对比 3 个模型的回答质量
+    - [ ] **Cost**：每次请求打印 input/output token 与成本，写入本地日志
+    - [ ] **Security**：输入长度/字符校验，异常路径不泄露 API Key
+    - [ ] **Observability**：所有 API 调用记录 trace（耗时/模型/token/错误）
 - **项目 2：Prompt 模板管理系统**（进阶）
   - 构建一个 Prompt 版本管理 + A/B 测试框架
   - 学习 Pydantic 验证和异步编程
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：内置 A/B 评测引擎，能输出两个 Prompt 版本在同一测试集上的胜率
+    - [ ] **Cost**：每个 Prompt 版本记录平均 token 与成本，对比基线
+    - [ ] **Security**：跑过 ≥ 5 条 Prompt Injection 攻击样本（参考 Lakera Gandalf）
+    - [ ] **Observability**：每次评测留 trace，可追溯到具体 Prompt 版本与输入
 
 ---
 
@@ -108,9 +118,19 @@
 - **项目 3：个人助手 Agent**（核心）
   - 用 LangGraph 构建能搜索网页、读写文件、执行代码的个人助手
   - 练习 Tool Use 和状态管理
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：≥ 30 条端到端任务集，统计任务完成率与工具调用成功率
+    - [ ] **Cost**：单任务 token 上限保护，超限自动中止并提示
+    - [ ] **Security**：文件读写限定白名单目录；代码执行沙箱化（Docker / E2B）
+    - [ ] **Observability**：接入 LangSmith 或 Langfuse，能看每一步状态变迁
 - **项目 4：自动化调研报告 Agent**（进阶）
   - 多步骤执行 Agent：接收主题 → 搜索资料 → 整理大纲 → 撰写报告
   - 使用条件路由和自我纠正
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：用 LLM-as-Judge 给报告打分（事实性/结构/完整性 3 维度）
+    - [ ] **Cost**：检索/写作分别用不同模型（Haiku 检索、Sonnet 写作），记录成本节省
+    - [ ] **Security**：外部 URL 抓取做 SSRF 防护；输出做 PII 检测
+    - [ ] **Observability**：完整端到端 trace，能看到每一次重试与自我纠正
 
 ---
 
@@ -155,8 +175,18 @@
 
 - **项目 5：技术文档语义搜索引擎**（核心）
   - 为真实文档库构建 RAG 系统：文档解析 → 智能分块 → 混合检索 → Re-ranking → 答案生成
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：用 RAGAS 跑 Faithfulness / Answer Relevancy / Context Precision 三指标
+    - [ ] **Cost**：对比 ≥ 2 种 Embedding 模型的成本×召回率曲线，给出选型理由
+    - [ ] **Security**：文档源做 PII 脱敏（Microsoft Presidio）；检索结果不跨权限边界
+    - [ ] **Observability**：检索 latency / Re-rank 耗时 / 命中分数 全链路可见
 - **项目 6：企业知识库问答系统**（综合）
   - 支持权限控制、引用溯源、对话历史、自适应检索的生产级知识库 Agent
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：建立完整 eval pipeline（CI 触发），对话多轮场景测试集 ≥ 50 条
+    - [ ] **Cost**：接入语义缓存（GPTCache / Redis），实测命中率与成本节省
+    - [ ] **Security**：行级权限隔离 + 审计日志 + 对越权请求做对抗测试
+    - [ ] **Observability**：选型 Phoenix / Langfuse 之一深度接入，含用户反馈回流
 
 ---
 
@@ -274,14 +304,34 @@
 
 - **项目 7：3-Agent 内容生产流水线**（核心）
   - 研究 Agent → 写作 Agent → 审核 Agent 协作流水线，用 CrewAI 实现
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：分别评测每个 Agent 的产出质量 + 整体流水线最终质量
+    - [ ] **Cost**：3 个 Agent 用模型分层（小模型审核、大模型写作），记录单篇成本
+    - [ ] **Security**：对流水线做红队测试（覆盖 OWASP LLM Top 10 至少 3 项）
+    - [ ] **Observability**：跨 Agent 嵌套 span 完整，能定位是哪个 Agent 拖慢全链路
 - **项目 8：MCP Server 生态开发**（核心）
   - 开发 3 个 MCP Server（GitHub API + PostgreSQL + Google Calendar），用 MCP Inspector 调试
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：每个 MCP Tool 有单元测试 + 与 Claude Desktop 的集成测试
+    - [ ] **Cost**：工具调用频次与外部 API 配额监控；对昂贵操作做确认/限流
+    - [ ] **Security**：最小权限原则（GitHub 用细粒度 PAT、DB 用只读账号）+ 操作审计日志
+    - [ ] **Observability**：MCP 通信日志结构化输出，关键操作可回放
 - **项目 9：混合编排系统**（挑战）
   - 用 LangGraph 做总编排，CrewAI 做子任务执行，Agent 通过 MCP 调用外部工具
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：端到端任务集 ≥ 30 条，覆盖正常 / 工具失败 / 超时 三类场景
+    - [ ] **Cost**：测算重试与 Workflow checkpoint 的额外成本，给出预算护栏方案
+    - [ ] **Security**：跨框架/跨 Agent 的权限传递清晰，无水平越权风险
+    - [ ] **Observability**：基于 OpenTelemetry GenAI 规范打 trace，跨框架链路可串联
 - **项目 10：AG-UI 前端集成 Demo**（加分）
   - 把项目 3 / 4 的 LangGraph agent 通过 AG-UI 协议暴露给 React 前端
   - 实现流式输出、工具调用可视化、人在回路审批按钮、状态双向同步
   - 体会 "协议分层" 在真实系统里的价值
+  - **🎯 架构师验收 Checklist**
+    - [ ] **Eval**：前端体验测试（首 token 延迟 / 流式中断恢复 / 审批往返时长）
+    - [ ] **Cost**：流式 token 用量与连接资源监控；空闲连接自动回收
+    - [ ] **Security**：前端不直接持有 API Key；输出做 XSS 过滤；审批操作幂等
+    - [ ] **Observability**：前后端 trace 打通（前端 sessionId 串到后端 OTel span）
 
 ---
 
@@ -336,6 +386,14 @@
 - 监控大盘 + 评估系统
 - 部署、监控、评估全链路打通
 
+#### 🎯 架构师验收 Checklist（毕业级，全部必须通过）
+
+- [ ] **Eval**：CI 触发的回归测试 + 在线 LLM-as-Judge + 用户反馈回流闭环
+- [ ] **Cost**：成本看板（按租户/Agent/模型分维度）+ 预算告警 + 自动降级
+- [ ] **Security**：通过 OWASP LLM Top 10 全部对抗测试 + 多租户隔离审计
+- [ ] **Observability**：基于 OTel GenAI 规范，跨租户/跨 Agent/跨工具 trace 全打通
+- [ ] **架构产出物**：≥ 3 份 ADR + 1 份完整设计文档 + 1 次公开技术分享
+
 > 完成后开源到 GitHub 并写系列技术博客
 
 ---
@@ -365,4 +423,3 @@
 2. **读源码 > 看教程**：多读 Dify / LangGraph / CrewAI 源码，比任何教程都有效
 3. **坚持写博客**：既是复盘也是个人品牌建设，面试时的最好证明
 4. **保持节奏**：每天 1-2 小时，关键是不断不停，6 个月后你会惊讶于自己的进步
-

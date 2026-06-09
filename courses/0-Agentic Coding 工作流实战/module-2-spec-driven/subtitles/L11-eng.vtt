@@ -1,0 +1,294 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.103
+People say spec-driven development and even AI
+
+2
+00:00:03.603 --> 00:00:05.872
+are only good for greenfield projects.
+
+3
+00:00:06.072 --> 00:00:10.176
+But SDD is also good for existing legacy projects.
+
+4
+00:00:10.677 --> 00:00:14.481
+In this lesson, we'll introduce SDD to an existing project.
+
+5
+00:00:14.981 --> 00:00:18.585
+To make it easy, we'll start with a project you already know.
+
+6
+00:00:18.952 --> 00:00:20.954
+The AgentClinic MVP.
+
+7
+00:00:21.855 --> 00:00:24.157
+We'll make it a legacy by
+
+8
+00:00:24.157 --> 00:00:26.860
+starting on main without the specs folder
+
+9
+00:00:27.160 --> 00:00:29.162
+in a new Claude Code session
+
+10
+00:00:29.462 --> 00:00:31.464
+in a different project directory.
+
+11
+00:00:31.898 --> 00:00:36.202
+We have some project background in the README.md file
+
+12
+00:00:36.202 --> 00:00:39.706
+with some open work listed in TODO.md
+
+13
+00:00:40.407 --> 00:00:43.410
+Your legacy project might have full product plans
+
+14
+00:00:43.410 --> 00:00:46.913
+in issue trackers, spreadsheets, Word documents, etc.
+
+15
+00:00:47.714 --> 00:00:51.418
+Remember our workflow? We'll start with the constitution step.
+
+16
+00:00:51.785 --> 00:00:54.821
+We'll use almost the same prompt from lesson four.
+
+17
+00:00:55.321 --> 00:00:57.390
+This time, we'll tell it to
+
+18
+00:00:57.390 --> 00:00:59.793
+look for roadmap items in existing artifacts.
+
+19
+00:00:59.993 --> 00:01:01.795
+In this case, a to-do file.
+
+20
+00:01:02.028 --> 00:01:06.132
+Remember, the agent will discover and in a sense reverse engineer
+
+21
+00:01:06.533 --> 00:01:09.936
+the SDD artifacts from the existing code base.
+
+22
+00:01:10.537 --> 00:01:14.507
+The constitution will help align future code changes made by the agent
+
+23
+00:01:14.507 --> 00:01:17.210
+with what past devs have already created.
+
+24
+00:01:17.844 --> 00:01:20.647
+You can always add more context if you have it.
+
+25
+00:01:21.347 --> 00:01:24.350
+For example, you might have been dropped into this project
+
+26
+00:01:24.350 --> 00:01:26.352
+in order to improve its efficiency
+
+27
+00:01:26.352 --> 00:01:29.355
+while implementing highly requested features.
+
+28
+00:01:29.722 --> 00:01:32.926
+The process is the same, but the conversation might be richer
+
+29
+00:01:32.926 --> 00:01:35.728
+as the agent has more artifacts,
+
+30
+00:01:36.229 --> 00:01:39.232
+code, commits, documents, etc.
+
+31
+00:01:39.532 --> 00:01:41.534
+You'll see a lot of tool calls here
+
+32
+00:01:41.534 --> 00:01:43.536
+as the agent explores the code base.
+
+33
+00:01:44.237 --> 00:01:47.240
+Let's look at the constitution for our legacy project.
+
+34
+00:01:47.507 --> 00:01:51.511
+In the mission, we have an audience, the project idea,
+
+35
+00:01:51.811 --> 00:01:54.514
+and some extra information about the project.
+
+36
+00:01:55.315 --> 00:01:58.017
+The tech stack shows that Claude extracted
+
+37
+00:01:58.017 --> 00:02:00.720
+the project file structure, framework versions,
+
+38
+00:02:00.720 --> 00:02:03.022
+and the clarifications we were asked.
+
+39
+00:02:03.356 --> 00:02:07.794
+In the roadmap, we can see the work is organized in phases,
+
+40
+00:02:07.794 --> 00:02:11.531
+matching the to-do file. Let's create a commit
+
+41
+00:02:11.531 --> 00:02:14.534
+for the constitution files that we produced
+
+42
+00:02:14.534 --> 00:02:16.136
+with a commit message.
+
+43
+00:02:16.503 --> 00:02:18.705
+Remember that in SDD,
+
+44
+00:02:18.705 --> 00:02:22.008
+specs are part of your versioning strategy.
+
+45
+00:02:23.009 --> 00:02:25.011
+Our legacy project is now placed
+
+46
+00:02:25.011 --> 00:02:26.613
+on an SDD foundation.
+
+47
+00:02:27.147 --> 00:02:29.949
+From now on, the workflow is exactly the same
+
+48
+00:02:30.049 --> 00:02:32.152
+as we discussed in previous lessons.
+
+49
+00:02:32.952 --> 00:02:35.522
+First, we grab the next feature on the roadmap
+
+50
+00:02:35.622 --> 00:02:38.625
+and plan it in a conversation with the agent.
+
+51
+00:02:39.692 --> 00:02:42.695
+We'll be doing phase one feedback form.
+
+52
+00:02:48.801 --> 00:02:52.705
+Very good. We now have a branch and specs for this feature.
+
+53
+00:02:52.872 --> 00:02:54.974
+Let's review the feature spec.
+
+54
+00:02:55.074 --> 00:02:57.076
+The plan,
+
+55
+00:02:57.277 --> 00:02:59.679
+the requirements, and the validation.
+
+56
+00:03:02.482 --> 00:03:04.384
+Then we commit the feature spec.
+
+57
+00:03:07.987 --> 00:03:11.090
+After we have made any corrections by chatting with the agent,
+
+58
+00:03:11.391 --> 00:03:13.393
+we proceed to implement the feature.
+
+59
+00:03:17.597 --> 00:03:20.500
+Once the agent is finished, we do our validation.
+
+60
+00:03:21.000 --> 00:03:22.569
+To make sure the code is
+
+61
+00:03:22.569 --> 00:03:24.404
+good and the feature works as expected.
+
+62
+00:03:28.908 --> 00:03:31.244
+Our feature loop is done, we can commit.
+
+63
+00:03:32.245 --> 00:03:34.314
+And then merge the branch to main.
+
+64
+00:03:36.516 --> 00:03:40.320
+Now it's time for replanning. Make sure you give time for this.
+
+65
+00:03:41.020 --> 00:03:44.224
+Since you just added SDD into your project,
+
+66
+00:03:44.624 --> 00:03:47.126
+you may find a lot of things to tune.
+
+67
+00:03:47.660 --> 00:03:50.163
+We now have a legacy project
+
+68
+00:03:50.163 --> 00:03:52.865
+rebased onto Spec-Driven Development
+
+69
+00:03:52.865 --> 00:03:55.468
+without a bunch of manual work.
+
+70
+00:03:55.468 --> 00:03:59.172
+This gives us a well-documented flow, working in steps,
+
+71
+00:03:59.172 --> 00:04:03.276
+using engineering and staying in control.
+
+72
+00:04:03.276 --> 00:04:05.311
+The spec is now the memory
+
+73
+00:04:05.311 --> 00:04:07.647
+of the project, so it doesn't fade.

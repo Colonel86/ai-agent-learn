@@ -1,0 +1,1274 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.569 --> 00:00:05.905
+Claude Code has tools for reading and editing Jupyter notebooks.
+
+2
+00:00:06.306 --> 00:00:08.008
+In this lesson, we'll go through
+
+3
+00:00:08.008 --> 00:00:10.010
+our second example and use Claude Code
+
+4
+00:00:10.410 --> 00:00:13.880
+to refactor a Jupyter notebook and transform it into a dashboard.
+
+5
+00:00:14.347 --> 00:00:16.149
+Let's get to it. So far we've
+
+6
+00:00:16.149 --> 00:00:17.951
+seen how to use Claude Code to
+
+7
+00:00:17.951 --> 00:00:20.720
+work with web applications on the front end and back end.
+
+8
+00:00:20.854 --> 00:00:23.023
+Now let's shift gears and showcase how to
+
+9
+00:00:23.023 --> 00:00:25.492
+use Claude Code to work with a Jupyter notebook.
+
+10
+00:00:25.859 --> 00:00:27.861
+I have a Jupyter notebook here
+
+11
+00:00:27.861 --> 00:00:30.230
+with some e-commerce data that is fictitious.
+
+12
+00:00:30.530 --> 00:00:34.367
+This ecommerce data is reading information from a few CSVs
+
+13
+00:00:34.367 --> 00:00:37.604
+that I have in this ecommerce_data folder.
+
+14
+00:00:37.937 --> 00:00:40.807
+I'm using pandas to read data from the CSV.
+
+15
+00:00:41.074 --> 00:00:44.744
+I'm displaying some information here, reading some other CSVs,
+
+16
+00:00:45.111 --> 00:00:46.546
+and as you can see here,
+
+17
+00:00:46.546 --> 00:00:48.248
+I'm getting the answers that I want,
+
+18
+00:00:48.248 --> 00:00:50.683
+but this data is not really the most organized.
+
+19
+00:00:50.917 --> 00:00:52.886
+I'm getting some statistical information,
+
+20
+00:00:53.253 --> 00:00:55.321
+but the formatting and the display might not
+
+21
+00:00:55.321 --> 00:00:57.390
+be what I'd like out of the box.
+
+22
+00:00:57.590 --> 00:00:58.792
+As I go through and take a
+
+23
+00:00:58.792 --> 00:00:59.993
+look at some more of this information.
+
+24
+00:01:00.293 --> 00:01:02.629
+I can start to see that I'm beginning to do some more
+
+25
+00:01:02.962 --> 00:01:06.099
+complicated procedures here. One of the things that I'd
+
+26
+00:01:06.099 --> 00:01:07.734
+like to get out of this data
+
+27
+00:01:08.101 --> 00:01:09.869
+are some insights around things like how
+
+28
+00:01:09.869 --> 00:01:11.871
+much revenue did we generate year over year.
+
+29
+00:01:11.905 --> 00:01:14.841
+Specifically, 2023 to 2022.
+
+30
+00:01:15.208 --> 00:01:17.043
+I have the necessary operations here
+
+31
+00:01:17.243 --> 00:01:19.712
+to do what I want. In fact, there's a little
+
+32
+00:01:19.712 --> 00:01:22.182
+bit of merging between two different CSVs and data frames.
+
+33
+00:01:22.315 --> 00:01:25.485
+And here, I'm working my way towards the answer that I want,
+
+34
+00:01:25.752 --> 00:01:28.188
+but there are some warnings that I'm seeing here.
+
+35
+00:01:28.254 --> 00:01:31.024
+at the same time, it takes a while just to show visually
+
+36
+00:01:31.357 --> 00:01:33.193
+what I want and how best to display it.
+
+37
+00:01:33.393 --> 00:01:35.462
+So while I do end up getting the numbers that I want,
+
+38
+00:01:35.862 --> 00:01:37.664
+it's a little bit tedious and messy. I
+
+39
+00:01:37.664 --> 00:01:39.499
+want a way to better showcase this information
+
+40
+00:01:39.766 --> 00:01:43.136
+and I want to explore how I can refactor this Jupyter notebook.
+
+41
+00:01:43.336 --> 00:01:44.838
+As we see in a few other sections,
+
+42
+00:01:45.371 --> 00:01:48.575
+I'm trying to calculate some high level metrics like average order values
+
+43
+00:01:48.875 --> 00:01:50.510
+and not only am I looking for
+
+44
+00:01:50.510 --> 00:01:52.345
+this number, but this is just for 2023.
+
+45
+00:01:52.879 --> 00:01:55.115
+What happens when I want 2024 and so on.
+
+46
+00:01:55.482 --> 00:01:57.517
+As we scroll down, we'll see some visualizations
+
+47
+00:01:58.017 --> 00:01:59.953
+that are pretty good. But I think we could do better.
+
+48
+00:02:00.153 --> 00:02:01.921
+As we work our way towards the
+
+49
+00:02:01.921 --> 00:02:03.656
+bottom, we're still calculating more of these
+
+50
+00:02:03.656 --> 00:02:05.758
+high level values like sales by state.
+
+51
+00:02:05.758 --> 00:02:08.661
+We're generating some visualizations again, but I think we could do
+
+52
+00:02:08.661 --> 00:02:11.564
+much better as we start to use tools like Claude Code.
+
+53
+00:02:11.998 --> 00:02:13.266
+So with that in mind, let's
+
+54
+00:02:13.266 --> 00:02:14.734
+showcase how we can use Claude Code
+
+55
+00:02:14.734 --> 00:02:17.070
+to refactor this notebook and better
+
+56
+00:02:17.070 --> 00:02:19.772
+consolidate our business logic from our presentation.
+
+57
+00:02:19.772 --> 00:02:21.274
+So I'm going to go ahead and open up Claude, and
+
+58
+00:02:21.274 --> 00:02:22.809
+I'm going to put in a prompt that I have here
+
+59
+00:02:23.209 --> 00:02:26.946
+that references the notebook as well as the other files that
+
+60
+00:02:27.080 --> 00:02:28.681
+that I'm working with. I'm going to
+
+61
+00:02:28.681 --> 00:02:30.283
+go ahead and paste in this prompt.
+
+62
+00:02:30.517 --> 00:02:31.818
+And then I want to talk a
+
+63
+00:02:31.818 --> 00:02:33.153
+little bit about what's actually happening here.
+
+64
+00:02:33.353 --> 00:02:35.121
+So before I paste in this prompt,
+
+65
+00:02:35.121 --> 00:02:37.090
+I'm actually going to make a new markdown file
+
+66
+00:02:37.390 --> 00:02:39.425
+just to showcase what this looks like and
+
+67
+00:02:39.425 --> 00:02:41.728
+walk through why we've done what we're doing here.
+
+68
+00:02:42.095 --> 00:02:45.165
+Notice here, I'm referencing the name of the file using this sign,
+
+69
+00:02:45.598 --> 00:02:48.168
+as well as the name of the folder using this as well.
+
+70
+00:02:48.501 --> 00:02:51.037
+If you're ever unsure of how best to prompt
+
+71
+00:02:51.037 --> 00:02:53.873
+or how best to ask Claude for what to do,
+
+72
+00:02:54.307 --> 00:02:56.509
+you can always ask Claude as well. So many
+
+73
+00:02:56.509 --> 00:02:58.945
+times, I find myself using tools like Claude AI
+
+74
+00:02:58.945 --> 00:03:00.914
+or even Claude Code and just asking
+
+75
+00:03:00.914 --> 00:03:02.849
+Claude, here's what I want to do,
+
+76
+00:03:02.849 --> 00:03:06.553
+give me the best possible prompt to accomplish this task.
+
+77
+00:03:06.553 --> 00:03:09.389
+In our case, we have some Refactoring Requirements
+
+78
+00:03:09.389 --> 00:03:11.357
+for how we want the structure to be laid out.
+
+79
+00:03:11.357 --> 00:03:14.994
+We have Code Quality Improvements and some asks that we have
+
+80
+00:03:14.994 --> 00:03:17.430
+for particular Python files that we want.
+
+81
+00:03:17.430 --> 00:03:19.299
+What we're asking Claude to do
+
+82
+00:03:19.299 --> 00:03:21.467
+here is create a separate Python file
+
+83
+00:03:21.467 --> 00:03:23.469
+for loading our data and processing it.
+
+84
+00:03:23.469 --> 00:03:27.173
+And then another Python file for calculating these metrics.
+
+85
+00:03:27.173 --> 00:03:30.810
+This separation of concerns is going to allow us to better test
+
+86
+00:03:30.810 --> 00:03:34.180
+and better understand what the code is that's powering
+
+87
+00:03:34.180 --> 00:03:37.517
+these visualizations that we make in our refactored notebook.
+
+88
+00:03:37.951 --> 00:03:40.086
+We're also asking for improved visualizations.
+
+89
+00:03:40.086 --> 00:03:41.621
+We're being a little bit more
+
+90
+00:03:41.621 --> 00:03:43.423
+specific with what we mean by that.
+
+91
+00:03:43.423 --> 00:03:45.625
+Finally, we want to have a little bit
+
+92
+00:03:45.625 --> 00:03:48.061
+more configuration around the data that we're working with.
+
+93
+00:03:48.061 --> 00:03:50.163
+In general, it's a good practice to
+
+94
+00:03:50.163 --> 00:03:52.232
+let Claude know what you're expecting here.
+
+95
+00:03:52.232 --> 00:03:55.134
+So instead of just refactor this, give me
+
+96
+00:03:55.535 --> 00:03:57.737
+underlying asset for a refactored notebook.
+
+97
+00:03:57.870 --> 00:03:59.639
+Give me a way to document
+
+98
+00:03:59.639 --> 00:04:01.674
+my functions and calculate my business metrics.
+
+99
+00:04:02.041 --> 00:04:05.245
+and then give me some other important files for the dependencies I'm
+
+100
+00:04:05.245 --> 00:04:08.414
+working on, as well as a README explaining how to use this.
+
+101
+00:04:08.915 --> 00:04:11.384
+So let's go ahead and copy this and paste it in.
+
+102
+00:04:11.651 --> 00:04:14.053
+And you'll notice that after you paste a certain number
+
+103
+00:04:14.053 --> 00:04:16.723
+of lines, Claude Code is not going to show you everything.
+
+104
+00:04:16.923 --> 00:04:19.292
+to keep things a little bit more concise in the terminal.
+
+105
+00:04:19.659 --> 00:04:21.461
+So let's go ahead and run this prompt.
+
+106
+00:04:21.461 --> 00:04:23.263
+As we've done with other kinds of tools,
+
+107
+00:04:23.663 --> 00:04:26.532
+we're going to be using a slightly different suite of tooling here.
+
+108
+00:04:26.532 --> 00:04:29.736
+instead of reading, we're going to be dealing with notebook reading.
+
+109
+00:04:29.736 --> 00:04:31.337
+But the same to-do list that we
+
+110
+00:04:31.337 --> 00:04:32.939
+saw before, it's going to be executed
+
+111
+00:04:32.939 --> 00:04:35.975
+just like we've gotten very accustomed to with Claude Code.
+
+112
+00:04:36.209 --> 00:04:38.011
+Here we're using that read notebook.
+
+113
+00:04:38.344 --> 00:04:41.047
+We're going to explore those cells, we're going to analyze the structure
+
+114
+00:04:41.047 --> 00:04:43.750
+and create the refactored notebook that we expect.
+
+115
+00:04:44.117 --> 00:04:45.918
+Once this is done, we should expect
+
+116
+00:04:45.918 --> 00:04:47.720
+to see not only some powerful visualizations,
+
+117
+00:04:48.721 --> 00:04:51.424
+but also some other files with helper functions
+
+118
+00:04:51.424 --> 00:04:54.127
+for loading data, processing data,
+
+119
+00:04:54.193 --> 00:04:56.596
+and calculating the business metrics that we need.
+
+120
+00:05:01.701 --> 00:05:03.403
+accept the changes to these Python files
+
+121
+00:05:04.003 --> 00:05:05.605
+and we'll see that Python is being
+
+122
+00:05:05.605 --> 00:05:07.206
+written for us using the right tool.
+
+123
+00:05:07.206 --> 00:05:12.178
+We'll then go ahead and write another Python file with metric calculations
+
+124
+00:05:12.979 --> 00:05:14.947
+for our eventual data and display. As
+
+125
+00:05:14.947 --> 00:05:17.183
+Claude Code is working through these individual tasks,
+
+126
+00:05:17.684 --> 00:05:19.986
+we can always examine the files that have been created.
+
+127
+00:05:20.687 --> 00:05:22.088
+We can give that a look and
+
+128
+00:05:22.088 --> 00:05:23.690
+we can see right out of the box
+
+129
+00:05:23.790 --> 00:05:27.093
+this kind of object-oriented approach is much cleaner than
+
+130
+00:05:27.093 --> 00:05:30.396
+trying to embed everything directly inside of our notebook.
+
+131
+00:05:30.697 --> 00:05:33.599
+We can see the same thing for our business metrics calculation.
+
+132
+00:05:33.800 --> 00:05:37.003
+and we can see here, the ability to calculate, passing
+
+133
+00:05:37.003 --> 00:05:40.506
+in data frames and returning visualizations and validation of that data.
+
+134
+00:05:40.907 --> 00:05:43.609
+Looks like we've created our business metrics,
+
+135
+00:05:43.609 --> 00:05:47.780
+and finally, our notebook, our requirements.txt, and soon to be our README.
+
+136
+00:05:48.114 --> 00:05:49.449
+So while this is running, let's
+
+137
+00:05:49.449 --> 00:05:51.017
+take a look at the refactored notebook.
+
+138
+00:05:51.150 --> 00:05:53.019
+Let's go ahead and make sure we can run
+
+139
+00:05:53.019 --> 00:05:55.188
+all of these cells as expected.
+
+140
+00:05:55.188 --> 00:05:56.456
+Right off the bat, this is
+
+141
+00:05:56.456 --> 00:05:57.924
+looking a bit nicer visually for us.
+
+142
+00:05:58.091 --> 00:05:59.726
+I see here that it's trying to read
+
+143
+00:05:59.726 --> 00:06:01.394
+the prompt, and I'll just let Claude know,
+
+144
+00:06:01.394 --> 00:06:04.397
+no need to read the prompt, just finish making the README.
+
+145
+00:06:04.397 --> 00:06:06.199
+As I take a look at this notebook, I can
+
+146
+00:06:06.199 --> 00:06:08.134
+see right out of the box, this is much, much nicer.
+
+147
+00:06:08.234 --> 00:06:11.104
+I'm getting analysis into what data I'm looking at,
+
+148
+00:06:11.204 --> 00:06:13.406
+and also some configuration to work with.
+
+149
+00:06:13.406 --> 00:06:15.875
+I can specify the years and comparison data
+
+150
+00:06:15.875 --> 00:06:17.643
+and even any month if I want as well.
+
+151
+00:06:17.777 --> 00:06:20.313
+I'll be using these constants across the notebook.
+
+152
+00:06:20.413 --> 00:06:22.448
+Here I can see the data loading that's required
+
+153
+00:06:22.448 --> 00:06:25.551
+here are the custom modules that I have from my classes.
+
+154
+00:06:25.651 --> 00:06:27.453
+So, as I'm running all of these cells,
+
+155
+00:06:27.453 --> 00:06:29.255
+looks like things are pretty good so far.
+
+156
+00:06:29.655 --> 00:06:31.758
+But if I scroll down a little bit more, I'll actually see
+
+157
+00:06:31.858 --> 00:06:33.659
+that there's an error here. I can see right
+
+158
+00:06:33.659 --> 00:06:35.461
+off the bat, the problem here appears to be
+
+159
+00:06:35.561 --> 00:06:36.996
+some kind of key error. So I'm going
+
+160
+00:06:36.996 --> 00:06:38.464
+to ask Claude to fix that for me.
+
+161
+00:06:38.664 --> 00:06:40.566
+I'll say I'm getting KeyError
+
+162
+00:06:40.767 --> 00:06:42.502
+when I run a particular cell. I could
+
+163
+00:06:42.502 --> 00:06:44.437
+try to have Claude Code figure that out for me,
+
+164
+00:06:44.837 --> 00:06:46.539
+but I'm actually going to give Claude Code
+
+165
+00:06:46.639 --> 00:06:48.141
+the code that I used so that
+
+166
+00:06:48.141 --> 00:06:49.642
+it has a little bit more context.
+
+167
+00:06:49.742 --> 00:06:50.810
+Claude Code is going to take a
+
+168
+00:06:50.810 --> 00:06:51.878
+look at what needs to be done.
+
+169
+00:06:51.878 --> 00:06:54.080
+see what the issue is and make the change for us.
+
+170
+00:06:54.080 --> 00:06:55.481
+All right, let's go ahead and run these
+
+171
+00:06:55.481 --> 00:06:56.916
+cells now that this changes have been made.
+
+172
+00:06:56.916 --> 00:06:58.684
+And let's go make sure that things are looking a bit better.
+
+173
+00:06:58.684 --> 00:07:00.153
+You can see here as I scroll down,
+
+174
+00:07:00.153 --> 00:07:01.788
+I'm not seeing those errors that I was before.
+
+175
+00:07:01.788 --> 00:07:03.256
+And now let's take a look at some
+
+176
+00:07:03.256 --> 00:07:04.924
+of the business metrics that it's returning to me.
+
+177
+00:07:04.924 --> 00:07:08.761
+Getting nicer displays of summaries, information on customer satisfaction,
+
+178
+00:07:08.761 --> 00:07:09.962
+that's a little bit easier to
+
+179
+00:07:09.962 --> 00:07:11.397
+work with than what I had before.
+
+180
+00:07:11.397 --> 00:07:13.900
+As we shift gears towards our revenue analysis,
+
+181
+00:07:13.900 --> 00:07:18.104
+we can start to see clearer values, more displayed information
+
+182
+00:07:18.104 --> 00:07:19.705
+and a little bit of work to
+
+183
+00:07:19.705 --> 00:07:21.307
+more easily display the data we're working
+
+184
+00:07:21.307 --> 00:07:24.177
+with the visualizations appear to be more pleasant looking.
+
+185
+00:07:24.777 --> 00:07:27.146
+we can see as we look at category performance,
+
+186
+00:07:27.146 --> 00:07:29.382
+we've got some even better tools to
+
+187
+00:07:29.382 --> 00:07:31.584
+analyze categories and revenue associated with them.
+
+188
+00:07:31.717 --> 00:07:33.252
+As we look at our geographic performance,
+
+189
+00:07:33.519 --> 00:07:35.354
+we're seeing a nice visualization by state.
+
+190
+00:07:35.621 --> 00:07:37.490
+We can hover over that to get
+
+191
+00:07:37.490 --> 00:07:38.958
+even more information on a state-by-state basis.
+
+192
+00:07:38.958 --> 00:07:40.660
+As we work our way to the bottom,
+
+193
+00:07:40.960 --> 00:07:43.596
+when we take a look at additional delivery analysis,
+
+194
+00:07:43.863 --> 00:07:45.364
+things are looking good as expected.
+
+195
+00:07:45.431 --> 00:07:48.067
+So we've done a nice job refactoring this notebook
+
+196
+00:07:48.067 --> 00:07:50.703
+to more visually display information and separate our concerns.
+
+197
+00:07:50.703 --> 00:07:52.572
+But what I'd like to do now is
+
+198
+00:07:52.572 --> 00:07:54.407
+move from a notebook to a web-based interface
+
+199
+00:07:54.407 --> 00:07:57.343
+with a nice dashboard powered by Streamlit.
+
+200
+00:07:57.343 --> 00:08:00.646
+If you're not familiar with Streamlit, it's a Python library
+
+201
+00:08:00.646 --> 00:08:03.516
+that's useful for displaying interfaces, particularly dashboards,
+
+202
+00:08:03.516 --> 00:08:06.018
+and it's very easy to seamlessly transition
+
+203
+00:08:06.018 --> 00:08:08.154
+from notebooks to these Python files.
+
+204
+00:08:08.154 --> 00:08:09.589
+So let's go ahead and make
+
+205
+00:08:09.589 --> 00:08:11.290
+a new markdown file with our prompt
+
+206
+00:08:11.290 --> 00:08:13.593
+that we'll call convert-to-dashboard.md
+
+207
+00:08:13.593 --> 00:08:15.328
+And let's walk through what we're going to
+
+208
+00:08:15.328 --> 00:08:17.096
+put in here. We're going to ask Claude
+
+209
+00:08:17.096 --> 00:08:19.866
+to convert our refactored notebook into a professional
+
+210
+00:08:20.266 --> 00:08:22.935
+professional Streamlit dashboard with this exact layout.
+
+211
+00:08:23.236 --> 00:08:25.037
+We could start just with this first line,
+
+212
+00:08:25.037 --> 00:08:26.873
+but in order to avoid lots of back
+
+213
+00:08:26.873 --> 00:08:28.941
+and forth, let's just tell Claude what we want.
+
+214
+00:08:29.275 --> 00:08:31.377
+We want a header with a title and filter,
+
+215
+00:08:31.377 --> 00:08:33.713
+we want KPIs with cards for revenue,
+
+216
+00:08:33.713 --> 00:08:35.915
+growth, toward average order value and total
+
+217
+00:08:35.915 --> 00:08:38.117
+orders. And then we want some charts.
+
+218
+00:08:38.150 --> 00:08:42.154
+revenue, categories, revenue by state, and a bar chart with satisfaction.
+
+219
+00:08:42.488 --> 00:08:44.290
+At the bottom row, we want two cards,
+
+220
+00:08:44.490 --> 00:08:46.859
+and we want to be specific for the way
+
+221
+00:08:46.859 --> 00:08:49.495
+in which we display our data and render this information.
+
+222
+00:08:49.562 --> 00:08:50.429
+So with that in mind, let's
+
+223
+00:08:50.429 --> 00:08:51.497
+go ahead and give this a shot.
+
+224
+00:08:51.764 --> 00:08:55.468
+Let's migrate from notebooks to visual interfaces using Streamlit.
+
+225
+00:08:55.902 --> 00:08:57.904
+We can see that it's created our dashboard,
+
+226
+00:08:58.037 --> 00:08:59.405
+and as it's going, we can take
+
+227
+00:08:59.405 --> 00:09:00.773
+a look at what's being done here.
+
+228
+00:09:01.207 --> 00:09:03.442
+We're importing Streamlit, bringing in pandas,
+
+229
+00:09:03.943 --> 00:09:06.479
+bringing in some visualizations including Plotly.
+
+230
+00:09:06.546 --> 00:09:09.582
+And then here you can see we're displaying some custom CSS for
+
+231
+00:09:09.582 --> 00:09:11.851
+styling, setting up our page configuration.
+
+232
+00:09:12.451 --> 00:09:14.987
+Most of this really comes from that st
+
+233
+00:09:14.987 --> 00:09:18.958
+object that I have to work with Streamlit. We've updated our requirements.
+
+234
+00:09:18.958 --> 00:09:21.794
+txt, and here we're actually going to create a README
+
+235
+00:09:21.794 --> 00:09:23.930
+displaying everything that's going on in the dashboard.
+
+236
+00:09:23.930 --> 00:09:25.765
+In fact, I'll just tell Claude right now,
+
+237
+00:09:26.532 --> 00:09:28.901
+don't make a new README, just modify the one we have.
+
+238
+00:09:29.201 --> 00:09:30.970
+In many of these longer plans, it's
+
+239
+00:09:30.970 --> 00:09:32.772
+very easy to just let Claude go,
+
+240
+00:09:32.772 --> 00:09:34.440
+but sometimes you want to stop the process
+
+241
+00:09:35.007 --> 00:09:36.609
+and have it navigate the way that
+
+242
+00:09:36.609 --> 00:09:38.477
+you want. Now that we've created this dashboard,
+
+243
+00:09:38.744 --> 00:09:41.013
+let's open up a new terminal window to start our server.
+
+244
+00:09:41.581 --> 00:09:44.450
+In this terminal window on the left, I'll start the server using
+
+245
+00:09:44.784 --> 00:09:48.387
+streamlit run and then the Python file that's going to be
+
+246
+00:09:48.387 --> 00:09:50.323
+displayed dashboard.py. We can see here
+
+247
+00:09:50.323 --> 00:09:52.592
+that I don't have the Streamlit command.
+
+248
+00:09:53.492 --> 00:09:54.694
+So I can see here, in
+
+249
+00:09:54.694 --> 00:09:56.128
+order to get everything up and running,
+
+250
+00:09:56.329 --> 00:09:57.830
+I need to install these dependencies.
+
+251
+00:09:57.830 --> 00:09:59.632
+So let's go ahead and do that.
+
+252
+00:09:59.632 --> 00:10:01.500
+I'll run my pip install command,
+
+253
+00:10:01.500 --> 00:10:04.270
+install all the necessary dependencies and make sure
+
+254
+00:10:04.270 --> 00:10:06.372
+that when the server loads, I don't have
+
+255
+00:10:06.372 --> 00:10:08.474
+any issues with the dependencies in this application.
+
+256
+00:10:08.708 --> 00:10:11.243
+Once that's done, I'll go ahead and run my server.
+
+257
+00:10:11.410 --> 00:10:14.246
+And I'll do that using the streamlit run command.
+
+258
+00:10:14.547 --> 00:10:16.182
+So let's go ahead and type in streamlit
+
+259
+00:10:16.182 --> 00:10:17.817
+run and the name of our Python file.
+
+260
+00:10:17.817 --> 00:10:20.119
+Python file just like it suggests right here.
+
+261
+00:10:20.119 --> 00:10:21.787
+Back in the browser, here's what things look like.
+
+262
+00:10:22.021 --> 00:10:23.956
+I've got some revenue, I've got some growth.
+
+263
+00:10:24.190 --> 00:10:25.591
+As we scroll down a little bit,
+
+264
+00:10:25.591 --> 00:10:27.026
+we're definitely going to want to verify
+
+265
+00:10:27.026 --> 00:10:28.561
+that these numbers are what we expect.
+
+266
+00:10:28.561 --> 00:10:31.664
+And we see that some things are still missing a little bit.
+
+267
+00:10:32.098 --> 00:10:33.432
+When we take a look at this
+
+268
+00:10:33.432 --> 00:10:34.967
+dashboard, it's a pretty good start, but we
+
+269
+00:10:34.967 --> 00:10:36.702
+can see that we're missing a couple things.
+
+270
+00:10:37.670 --> 00:10:39.839
+It looks like these cards here are empty
+
+271
+00:10:39.839 --> 00:10:43.809
+and actually redundant because we're getting the information that we want.
+
+272
+00:10:44.377 --> 00:10:47.179
+At the same time, it's a little difficult to start with 2024.
+
+273
+00:10:47.647 --> 00:10:50.983
+because we're not seeing much information year over year.
+
+274
+00:10:51.350 --> 00:10:52.985
+So maybe we should ask Claude
+
+275
+00:10:53.552 --> 00:10:55.154
+to not only clean up these pieces,
+
+276
+00:10:55.655 --> 00:10:58.691
+but also start with a default year of 2023,
+
+277
+00:10:59.291 --> 00:11:01.927
+so we can have some slightly nicer visualizations.
+
+278
+00:11:02.461 --> 00:11:04.130
+but also make sure we have the ability
+
+279
+00:11:04.630 --> 00:11:06.399
+to filter based on the month as well.
+
+280
+00:11:06.866 --> 00:11:09.068
+The reason why we'll want to start with 2023
+
+281
+00:11:09.502 --> 00:11:13.472
+is because we don't have data for every single month for 2024.
+
+282
+00:11:14.073 --> 00:11:15.374
+So as we start to look at
+
+283
+00:11:15.374 --> 00:11:16.642
+this, the monthly growth is
+
+284
+00:11:16.642 --> 00:11:18.477
+a little bit confusing.
+
+285
+00:11:19.345 --> 00:11:21.380
+And the data here, we just don't have yet.
+
+286
+00:11:22.081 --> 00:11:24.684
+So let's go make those asks, put them back in Claude.
+
+287
+00:11:24.684 --> 00:11:26.786
+This is a good start, but I want to
+
+288
+00:11:26.786 --> 00:11:28.621
+implement the following changes.
+
+289
+00:11:28.921 --> 00:11:30.089
+Let's go ahead and make a
+
+290
+00:11:30.089 --> 00:11:31.457
+new line here and first we'll start
+
+291
+00:11:32.324 --> 00:11:35.494
+with making sure the default year is 2023.
+
+292
+00:11:36.028 --> 00:11:40.332
+Next, ask Claude to add filters for months as well.
+
+293
+00:11:40.599 --> 00:11:42.768
+And then finally, we'll make sure
+
+294
+00:11:42.768 --> 00:11:45.171
+to remove the empty card for each.
+
+295
+00:11:46.072 --> 00:11:48.908
+So, let's update the code in our dashboard for these particular tasks.
+
+296
+00:11:48.908 --> 00:11:52.211
+We'll set the default year to 2023, which looks good.
+
+297
+00:11:52.211 --> 00:11:53.846
+And here we'll add some filters for months.
+
+298
+00:11:53.846 --> 00:11:55.848
+Now let's update the revenue chart to handle
+
+299
+00:11:55.848 --> 00:11:58.084
+the case where we're filtering by a specific month.
+
+300
+00:11:58.084 --> 00:12:00.186
+We can see the CSS is changing as well.
+
+301
+00:12:00.186 --> 00:12:01.921
+So it looks like this chart container
+
+302
+00:12:01.921 --> 00:12:03.923
+should be a little bit cleaner than before.
+
+303
+00:12:03.923 --> 00:12:06.092
+Let's go back to the browser, see what things look like.
+
+304
+00:12:06.392 --> 00:12:07.993
+We can see that 2023 is
+
+305
+00:12:07.993 --> 00:12:09.895
+the default, which is a good start.
+
+306
+00:12:09.895 --> 00:12:11.263
+We can also see that those
+
+307
+00:12:11.263 --> 00:12:12.865
+empty cards are gone, which is great.
+
+308
+00:12:13.299 --> 00:12:15.501
+We'll stop here for now, but you can imagine as you keep
+
+309
+00:12:15.501 --> 00:12:17.970
+prompting, you can create more powerful visualizations.
+
+310
+00:12:18.738 --> 00:12:20.906
+But in a short period of time, we started with a notebook
+
+311
+00:12:20.906 --> 00:12:22.908
+that was a bit disorganized,
+
+312
+00:12:22.908 --> 00:12:25.277
+was a little hard to read and understand.
+
+313
+00:12:25.277 --> 00:12:28.080
+And we migrated now to a dashboard that we can deploy,
+
+314
+00:12:28.080 --> 00:12:31.183
+share with team members and iterate on quickly.
+
+315
+00:12:31.350 --> 00:12:34.320
+In the next lesson, we'll build a Next.js application
+
+316
+00:12:34.320 --> 00:12:38.357
+and use Claude Code to connect to MCP servers
+
+317
+00:12:38.357 --> 00:12:42.027
+for Figma and Playwright to take a mockup and build a
+
+318
+00:12:42.027 --> 00:12:44.263
+powerful web application with Claude Code quickly.

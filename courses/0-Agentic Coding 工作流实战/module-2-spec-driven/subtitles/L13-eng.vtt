@@ -1,0 +1,262 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:02.135
+Spec-Driven Development moves the work from
+
+2
+00:00:02.135 --> 00:00:04.537
+the how to the what and why.
+
+3
+00:00:04.838 --> 00:00:07.841
+Since agents and models progress so fast,
+
+4
+00:00:08.041 --> 00:00:11.144
+you don't want your workflow tied to just one choice.
+
+5
+00:00:11.478 --> 00:00:15.482
+In this lesson, we see how standards let us switch agents
+
+6
+00:00:15.982 --> 00:00:19.285
+while keeping our workflow and even our tools.
+
+7
+00:00:19.986 --> 00:00:21.988
+These agent standards help for this goal.
+
+8
+00:00:22.389 --> 00:00:25.191
+MCP for external tools,
+
+9
+00:00:25.191 --> 00:00:27.594
+AGENTS.md for rules,
+
+10
+00:00:27.594 --> 00:00:31.164
+Agent Skills for capturing repeatable workflows
+
+11
+00:00:31.164 --> 00:00:33.266
+with extra context,
+
+12
+00:00:33.266 --> 00:00:37.170
+and ACP for connecting agents to clients.
+
+13
+00:00:37.504 --> 00:00:41.608
+For example, Codex is a leading AI agent from OpenAI.
+
+14
+00:00:42.108 --> 00:00:44.511
+It runs in a desktop app and
+
+15
+00:00:44.511 --> 00:00:47.213
+in editors as well as in a terminal.
+
+16
+00:00:47.814 --> 00:00:49.816
+Let's see it in action.
+
+17
+00:00:50.517 --> 00:00:54.521
+Here is our feature spec skill from lesson 12 copied into Codex,
+
+18
+00:00:54.621 --> 00:00:57.524
+which stores them in a different path.
+
+19
+00:00:58.825 --> 00:01:01.027
+It runs just fine once migrated.
+
+20
+00:01:01.528 --> 00:01:03.296
+This lets you switch back and
+
+21
+00:01:03.296 --> 00:01:05.398
+forth between agents in the same project,
+
+22
+00:01:05.999 --> 00:01:08.201
+keeping your SDD workflow.
+
+23
+00:01:09.002 --> 00:01:13.006
+We can also use different editors with different agents
+
+24
+00:01:13.106 --> 00:01:16.109
+using the Agent Client Protocol standard.
+
+25
+00:01:16.709 --> 00:01:19.712
+ACP makes it easy to connect agents and editors.
+
+26
+00:01:20.180 --> 00:01:22.682
+If your agent and client support ACP,
+
+27
+00:01:22.782 --> 00:01:24.784
+you have a perfect match.
+
+28
+00:01:25.285 --> 00:01:27.987
+To make this plug and play even easier,
+
+29
+00:01:28.088 --> 00:01:30.957
+the ACP registry automates finding,
+
+30
+00:01:31.057 --> 00:01:34.561
+installing, and connecting agents with their clients.
+
+31
+00:01:34.894 --> 00:01:37.397
+The ACP Registry covers the whole life cycle,
+
+32
+00:01:37.697 --> 00:01:40.100
+making it easier to mix and match.
+
+33
+00:01:41.401 --> 00:01:43.703
+For example, in JetBrains IDEs,
+
+34
+00:01:44.104 --> 00:01:48.675
+the AI Chat window leads to installation from the ACP Registry.
+
+35
+00:01:49.342 --> 00:01:52.846
+The IDE can then show a listing of compatible agents.
+
+36
+00:01:54.347 --> 00:01:56.850
+OpenCode is a popular open source agent.
+
+37
+00:01:57.550 --> 00:02:01.554
+The ACP registry makes it easy to add to our IDE.
+
+38
+00:02:02.255 --> 00:02:06.860
+Clicking install automates both the installation of OpenCode itself if needed,
+
+39
+00:02:07.127 --> 00:02:10.330
+which is nice, and integration into the IDE.
+
+40
+00:02:10.997 --> 00:02:15.997
+Once finished, your IDE now has native integration with a new agent.
+
+41
+00:02:17.604 --> 00:02:20.974
+You can use this new agent alongside the other agents.
+
+42
+00:02:21.441 --> 00:02:25.245
+in your same editor as part of SDD.
+
+43
+00:02:26.246 --> 00:02:29.649
+These new agent standards are bringing new possibilities,
+
+44
+00:02:29.949 --> 00:02:31.951
+but how do they actually work?
+
+45
+00:02:32.418 --> 00:02:35.221
+The ACP architecture was designed to ease
+
+46
+00:02:35.321 --> 00:02:37.724
+plugging together agents and clients.
+
+47
+00:02:38.424 --> 00:02:41.828
+In fact, the protocol matches what's used in LSP.
+
+48
+00:02:42.629 --> 00:02:44.731
+ACP is more than you think.
+
+49
+00:02:44.831 --> 00:02:47.433
+For example, it covers Next Edit Suggestion
+
+50
+00:02:47.534 --> 00:02:50.436
+in the editor and plan mode.
+
+51
+00:02:50.904 --> 00:02:53.106
+To go one step further with ACP,
+
+52
+00:02:53.106 --> 00:02:55.675
+you can write your own custom agent,
+
+53
+00:02:55.675 --> 00:02:58.478
+install it locally in your tool.
+
+54
+00:02:59.078 --> 00:03:02.081
+Which agent to choose? The industry changes fast
+
+55
+00:03:02.081 --> 00:03:04.384
+and benchmark sites have sprung up
+
+56
+00:03:04.384 --> 00:03:08.087
+with leaderboards providing different evaluations.
+
+57
+00:03:08.688 --> 00:03:11.090
+Of course, these leaderboards change fast.
+
+58
+00:03:11.491 --> 00:03:13.693
+So make sure to keep up to date
+
+59
+00:03:13.693 --> 00:03:16.663
+and base your decision on the criteria that matter to you.
+
+60
+00:03:16.663 --> 00:03:18.965
+Our specs work at a higher level,
+
+61
+00:03:19.265 --> 00:03:21.367
+not tied to any one agent or IDE.
+
+62
+00:03:21.668 --> 00:03:23.670
+In this lesson, we prove that.
+
+63
+00:03:23.970 --> 00:03:26.072
+We built our workflow and tools
+
+64
+00:03:26.272 --> 00:03:28.274
+to be independent of the agent.
+
+65
+00:03:28.575 --> 00:03:31.544
+As more standards emerge, this flexibility should grow.

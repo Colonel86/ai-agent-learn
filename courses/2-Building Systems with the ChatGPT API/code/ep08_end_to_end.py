@@ -12,14 +12,35 @@ from utils import (
     generate_output_string,
 )
 
+# 标记 moderations 端点是否可用（如 DeepSeek 后端会 404，只探测一次后跳过）
+_MODERATION_AVAILABLE = True
+
+
+def safe_moderate(text: str, debug: bool = False) -> bool:
+    """调用 Moderation API；端点不可用时降级为「未 flag」。
+
+    返回 True 表示内容应被拦截。
+    """
+    global _MODERATION_AVAILABLE
+    if not _MODERATION_AVAILABLE:
+        return False
+    try:
+        response = client.moderations.create(input=text)
+        return bool(response.results[0].flagged)
+    except Exception as e:
+        _MODERATION_AVAILABLE = False
+        if debug:
+            print(f"[提示] Moderation API 不可用（{type(e).__name__}），"
+                  f"当前 base_url 可能不支持该端点（如 DeepSeek）。后续步骤将跳过审核。")
+        return False
+
 
 def process_user_message(user_input: str, all_messages: list, debug: bool = True):
     """完整的 7 步处理流程"""
     delimiter = "```"
 
     # Step 1: Moderation 检查输入
-    response = client.moderations.create(input=user_input)
-    if response.results[0].flagged:
+    if safe_moderate(user_input, debug=debug):
         if debug:
             print("Step 1: Input flagged by Moderation API.")
         return "Sorry, we cannot process this request.", all_messages
@@ -57,8 +78,7 @@ def process_user_message(user_input: str, all_messages: list, debug: bool = True
     all_messages = all_messages + messages[1:]
 
     # Step 5: Moderation 检查输出
-    response = client.moderations.create(input=final_response)
-    if response.results[0].flagged:
+    if safe_moderate(final_response, debug=debug):
         if debug:
             print("Step 5: Response flagged by Moderation API.")
         return "Sorry, we cannot provide this information.", all_messages

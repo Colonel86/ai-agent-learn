@@ -1,0 +1,171 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:06.891 --> 00:00:05.119
+We've gone through a lot of tips for driving a disciplined, efficient process for building
+
+2
+00:00:05.119 --> 00:00:11.119
+Agentic AI systems. I'd like to wrap up by sharing with you what it feels like to be going through
+
+3
+00:00:11.119 --> 00:00:16.559
+this process. When I'm building these workflows, I feel like there are two major activities I'm
+
+4
+00:00:16.559 --> 00:00:21.280
+often spending time on. One is building, so writing software, trying to write code to improve
+
+5
+00:00:21.280 --> 00:00:27.200
+my system. And the second, which sometimes doesn't feel like progress, but I think is equally
+
+6
+00:00:27.200 --> 00:00:32.959
+important, is analysis to help me decide where to focus my build efforts next. And I often go
+
+7
+00:00:32.959 --> 00:00:38.240
+back and forth between building and analyzing, including things like error analysis. So for
+
+8
+00:00:38.240 --> 00:00:43.840
+example, when building a new agentic workflow, I'll often start by quickly building an end-to-end
+
+9
+00:00:43.840 --> 00:00:49.680
+system, maybe even a quick and dirty implementation. And this lets me then start to examine the final
+
+10
+00:00:49.680 --> 00:00:54.479
+outputs of the end-to-end system, or also read through traces to get a sense of where it's doing
+
+11
+00:00:54.479 --> 00:00:59.279
+well, where it's doing poorly. Based on even just looking at traces, sometimes this will give me a
+
+12
+00:00:59.279 --> 00:01:05.040
+gut sense of which individual components I might want to improve. And so I might go tune some
+
+13
+00:01:05.040 --> 00:01:11.040
+individual components or keep tuning the overall end-to-end system. As my system starts to mature
+
+14
+00:01:11.040 --> 00:01:15.919
+a little bit more, then beyond just manually examining a few outputs and reading through
+
+15
+00:01:15.919 --> 00:01:21.440
+traces, I might start to build evals and have a small data set, maybe just 10-20 examples,
+
+16
+00:01:21.440 --> 00:01:27.040
+to compute metrics, at least on end-to-end performance. And this then further helps me
+
+17
+00:01:27.040 --> 00:01:32.319
+have a more refined perspective on how to improve the end-to-end system or how to improve individual
+
+18
+00:01:32.319 --> 00:01:38.000
+components. As it matures even further, my analysis then becomes maybe even more disciplined, where I
+
+19
+00:01:38.000 --> 00:01:42.800
+start to do error analysis and look through the components and try to count up how frequently
+
+20
+00:01:42.800 --> 00:01:49.599
+individual components led to subpar outputs. And this more rigorous analysis then lets me be even
+
+21
+00:01:49.599 --> 00:01:54.720
+more focused in deciding what components to work on next or inspire ideas for improving the overall
+
+22
+00:01:54.720 --> 00:02:00.160
+end-to-end system. And then eventually, when it's even more mature to drive more efficient improvements
+
+23
+00:02:00.160 --> 00:02:06.000
+at the component level, that's when I might also build component-level evals. And so the workflow
+
+24
+00:02:06.000 --> 00:02:11.119
+of building an agentic system often goes back and forth. It's not a linear process. We sometimes
+
+25
+00:02:11.119 --> 00:02:15.360
+tune the end-to-end system, then do some error analysis, then improve a component for a bit,
+
+26
+00:02:15.360 --> 00:02:20.880
+then tune the component-level evals. And I tend to bounce back and forth between these two types
+
+27
+00:02:20.880 --> 00:02:27.119
+of techniques. And what I see less experienced teams often do is spend a lot of time building
+
+28
+00:02:27.119 --> 00:02:32.559
+and probably much less time analyzing with error analysis, building evals, and so on. That would be
+
+29
+00:02:32.559 --> 00:02:38.320
+ideal because this is analysis that helps you really focus where to spend your time building.
+
+30
+00:02:38.320 --> 00:02:44.320
+And just one more tip. There are actually quite a few tools out there to help with monitoring traces,
+
+31
+00:02:44.320 --> 00:02:49.440
+logging runtime, computing costs, and so on. And those tools can be helpful. I sometimes use a few
+
+32
+00:02:49.440 --> 00:02:54.639
+of them, and quite a few of DeepLearning.ai short course partners offer those tools, and they do
+
+33
+00:02:54.639 --> 00:03:00.559
+work well. I find that for agentic workflows I end up working on, most agentic workflows are pretty
+
+34
+00:03:00.559 --> 00:03:07.279
+custom. And so I end up building pretty custom evals myself because I want to capture the things
+
+35
+00:03:07.279 --> 00:03:12.320
+that work incorrectly with my system. So even though I do use some of those tools, I also end
+
+36
+00:03:12.320 --> 00:03:18.240
+up building a lot of custom evals that are well fit to my specific application and the issues I
+
+37
+00:03:18.240 --> 00:03:25.039
+see with it. So thanks for sticking with me this far to the end of the fourth of five modules.
+
+38
+00:03:25.600 --> 00:03:32.160
+If you're able to implement even a fraction of the ideas from this module, I think you'll be
+
+39
+00:03:32.160 --> 00:03:38.399
+well ahead of the vast majority of developers in terms of your sophistication at implementing
+
+40
+00:03:38.399 --> 00:03:43.759
+agentic workflows. Hope you found these materials useful, and I look forward to seeing you in the
+
+41
+00:03:43.759 --> 00:03:48.559
+final module. We'll talk about some more advanced design patterns for building
+
+42
+00:03:48.559 --> 00:03:54.320
+highly autonomous agents. I'll see you in the last module of this course.
+

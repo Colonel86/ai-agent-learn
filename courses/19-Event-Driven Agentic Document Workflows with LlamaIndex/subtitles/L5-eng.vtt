@@ -1,0 +1,801 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.133 --> 00:00:04.700
+The workflow you set up, in the previous
+lesson, identified
+
+2
+00:00:04.700 --> 00:00:07.933
+all the fields in the form and generated
+plausible answers to all of them.
+
+3
+00:00:08.400 --> 00:00:11.300
+But there are a couple of fields
+where the answers could be better.
+
+4
+00:00:11.300 --> 00:00:13.800
+In this lesson,
+you will give feedback to the agent
+
+5
+00:00:13.800 --> 00:00:17.033
+on the returned answers
+and ask it to re-answer when necessary.
+
+6
+00:00:17.400 --> 00:00:18.833
+Let's get to it.
+
+7
+00:00:18.833 --> 00:00:23.200
+LLMs are amazing, but they are best used
+to augment rather than replace a human.
+
+8
+00:00:23.600 --> 00:00:26.433
+Your current form
+filler does an excellent job figuring out
+
+9
+00:00:26.433 --> 00:00:29.633
+what fields need to be filled
+in, and gets most of the fields right.
+
+10
+00:00:29.800 --> 00:00:32.900
+But there are a couple where it needs
+a little help. To take care of those
+
+11
+00:00:32.933 --> 00:00:34.800
+you're going to create a human in the loop
+
+12
+00:00:34.800 --> 00:00:37.800
+workflow, where you can optionally provide
+feedback to the agent
+
+13
+00:00:37.800 --> 00:00:40.800
+you've created
+and have it incorporated into the results.
+
+14
+00:00:41.333 --> 00:00:43.500
+So let's get started on that.
+
+15
+00:00:43.500 --> 00:00:45.800
+First, we'll need our imports as usual.
+
+16
+00:00:45.800 --> 00:00:47.200
+And we'll need asyncio.
+
+17
+00:00:48.500 --> 00:00:51.500
+And we'll need our API keys.
+
+18
+00:00:51.600 --> 00:00:53.100
+The changes we're going to make
+
+19
+00:00:53.100 --> 00:00:56.300
+to our workflow are pretty significant.
+
+20
+00:00:56.400 --> 00:00:59.733
+We're going to use the input required
+and human response event.
+
+21
+00:01:00.100 --> 00:01:03.100
+These are new special events
+specifically designed
+
+22
+00:01:03.200 --> 00:01:06.400
+to allow you to exit the workflow
+and get feedback back into it.
+
+23
+00:01:06.433 --> 00:01:10.133
+You used to have a single step
+which parsed your form and fired off all
+
+24
+00:01:10.233 --> 00:01:11.300
+the questions.
+
+25
+00:01:11.300 --> 00:01:14.400
+Since we now might loop back
+and ask questions several times,
+
+26
+00:01:14.700 --> 00:01:18.133
+you don't need to parse the form
+every time, so we'll split up those steps.
+
+27
+00:01:18.400 --> 00:01:21.933
+This kind of refactoring is very common
+as you create a more complex workflow.
+
+28
+00:01:22.133 --> 00:01:25.233
+Your new generate questions
+step will be triggered either
+
+29
+00:01:25.233 --> 00:01:28.233
+by a generate questions
+event triggered, by the form parser,
+
+30
+00:01:28.300 --> 00:01:32.800
+or by a feedback event, which is the loop
+that we'll take after getting feedback.
+
+31
+00:01:33.000 --> 00:01:36.900
+Then we'll emit an input-required event,
+and in the same step
+
+32
+00:01:37.133 --> 00:01:39.333
+you'll wait for a human response event.
+
+33
+00:01:39.333 --> 00:01:42.333
+This will pause the whole workflow
+waiting for outside input.
+
+34
+00:01:42.400 --> 00:01:46.100
+Finally, you'll use the LLM
+to parse the feedback and decide
+
+35
+00:01:46.100 --> 00:01:48.700
+whether it means you should continue
+and output the results,
+
+36
+00:01:48.700 --> 00:01:51.333
+or if you need to loop back. That's a lot.
+
+37
+00:01:51.333 --> 00:01:52.733
+So let's get started.
+
+38
+00:01:52.733 --> 00:01:55.000
+First, we bring in our new event types.
+
+39
+00:01:57.400 --> 00:02:00.400
+And now, as usual, we set up our events.
+
+40
+00:02:00.433 --> 00:02:03.100
+There's a new one here.
+The feedback event.
+
+41
+00:02:03.100 --> 00:02:05.533
+Let's put in our workflow
+and walk through it
+
+42
+00:02:05.533 --> 00:02:08.533
+line by line.
+
+43
+00:02:09.333 --> 00:02:10.700
+This stuff is all the same.
+
+44
+00:02:10.700 --> 00:02:14.200
+Your setup remains the same
+and your parse form has changed.
+
+45
+00:02:14.500 --> 00:02:17.500
+Now we've separated the form parsing
+from the question generation.
+
+46
+00:02:17.700 --> 00:02:20.700
+So after we've parsed the form
+into fields,
+
+47
+00:02:20.900 --> 00:02:24.600
+when in the context,
+we set our fields to fill, and then we
+
+48
+00:02:24.600 --> 00:02:28.433
+send it to the generate questions event.
+The generate questions step,
+
+49
+00:02:28.600 --> 00:02:31.733
+like I said, can be triggered
+by a generate questions event,
+
+50
+00:02:31.933 --> 00:02:34.700
+but it can also be triggered by a feedback
+event.
+
+51
+00:02:34.700 --> 00:02:37.200
+We'll see how that happens in a bit.
+
+52
+00:02:37.200 --> 00:02:40.733
+The first thing we do is we get the list
+of fields to fill from the context.
+
+53
+00:02:41.000 --> 00:02:44.600
+Then for each of those fields,
+we fire off a query event
+
+54
+00:02:44.600 --> 00:02:48.233
+just like we did before,
+and we store the total number of fields
+
+55
+00:02:48.233 --> 00:02:51.800
+so that our collect events will know
+how many fields it should be waiting for.
+
+56
+00:02:52.200 --> 00:02:56.300
+Our Ask Questions event is unchanged,
+but now in our fill in application
+
+57
+00:02:56.300 --> 00:02:59.300
+form, we're going to emit
+an input-required event.
+
+58
+00:02:59.633 --> 00:03:02.633
+Just like before,
+we're going to wait for collect events.
+
+59
+00:03:02.700 --> 00:03:05.833
+It will return none until
+all of the events have been collected.
+
+60
+00:03:06.100 --> 00:03:09.400
+And once it's done, we're going to turn it
+into a list of questions.
+
+61
+00:03:09.500 --> 00:03:13.200
+The new thing we're doing here
+is we're going to set our sets
+
+62
+00:03:13.200 --> 00:03:16.200
+of questions
+into the context to use later.
+
+63
+00:03:16.300 --> 00:03:19.500
+And now we're going to emit
+an input-required event.
+
+64
+00:03:19.800 --> 00:03:23.400
+This is going to send a message
+to the human asking how things look,
+
+65
+00:03:23.733 --> 00:03:26.400
+and asking the human to give some response.
+
+66
+00:03:26.400 --> 00:03:29.400
+In our next step,
+which is called get feedback,
+
+67
+00:03:29.633 --> 00:03:31.700
+we accept a human response event.
+
+68
+00:03:31.700 --> 00:03:35.000
+So unlike our previous steps,
+which were always triggered
+
+69
+00:03:35.000 --> 00:03:38.000
+by the event from the step before,
+we now have a gap.
+
+70
+00:03:38.200 --> 00:03:41.233
+The input required event
+isn't being emitted by anything.
+
+71
+00:03:41.400 --> 00:03:43.400
+It's going to have to be emitted later.
+
+72
+00:03:43.400 --> 00:03:46.500
+The input required event is being captured
+by something else,
+
+73
+00:03:46.500 --> 00:03:50.100
+and the human response event isn't
+being emitted inside of the workflow.
+
+74
+00:03:50.200 --> 00:03:52.600
+It has to come from outside the workflow.
+
+75
+00:03:52.600 --> 00:03:54.500
+We'll see how that happens in a second.
+
+76
+00:03:54.500 --> 00:03:57.500
+Once we get the feedback, what we'll do is
+
+77
+00:03:57.533 --> 00:04:00.433
+we will ask the LLM
+
+78
+00:04:00.433 --> 00:04:03.433
+to decide whether or not
+the feedback is good or bad.
+
+79
+00:04:03.733 --> 00:04:08.233
+If everything is fine, the LLM will read
+the feedback and say that things are okay,
+
+80
+00:04:08.333 --> 00:04:11.733
+but if there's any other feedback,
+it will respond with the word "feedback"
+
+81
+00:04:12.033 --> 00:04:15.500
+and we will use that to decide
+what to do next.
+
+82
+00:04:16.033 --> 00:04:20.733
+If the LLM said everything was okay, then
+we'll emit a stop event and we'll be done.
+
+83
+00:04:21.000 --> 00:04:25.733
+If the LLM emits feedback then
+we are going to emit a feedback event.
+
+84
+00:04:26.100 --> 00:04:26.900
+Cool.
+
+85
+00:04:26.900 --> 00:04:30.833
+So now your workflow is ready to get some
+feedback, but how do we actually get it?
+
+86
+00:04:31.433 --> 00:04:32.200
+Turns out
+
+87
+00:04:32.200 --> 00:04:37.000
+you already know how. The input required
+event is an event in the event stream.
+
+88
+00:04:37.000 --> 00:04:40.400
+Just like progress events
+and text events that you sent previously,
+
+89
+00:04:40.400 --> 00:04:43.600
+You can intercept it
+the same way that you did those, and use
+
+90
+00:04:43.600 --> 00:04:47.600
+the send event method on the context
+to send back a human response event.
+
+91
+00:04:47.800 --> 00:04:51.733
+So all of this happens in the code
+where we execute the workflow.
+
+92
+00:04:52.200 --> 00:04:54.200
+Let's walk through it line by line.
+
+93
+00:04:54.200 --> 00:04:56.500
+This part is the same as you've seen
+before.
+
+94
+00:04:56.500 --> 00:04:59.500
+We get a handler
+by executing the workflow.
+
+95
+00:04:59.633 --> 00:05:03.700
+And this part is filtering the events
+just like we did before.
+
+96
+00:05:03.700 --> 00:05:07.400
+Except this time
+we're waiting for an input-required event.
+
+97
+00:05:07.400 --> 00:05:09.300
+When we see an input-required event,
+
+98
+00:05:09.300 --> 00:05:12.200
+we're going to print out the form
+so the user can see what's up.
+
+99
+00:05:12.200 --> 00:05:17.033
+And then we're going to use the input
+method to get keyboard feedback.
+
+100
+00:05:17.233 --> 00:05:20.900
+Once we've got the feedback
+in the response variable, we'll send it
+
+101
+00:05:20.900 --> 00:05:23.933
+as a human response
+event using the send event method.
+
+102
+00:05:24.833 --> 00:05:27.233
+And then will await the handler.
+
+103
+00:05:27.233 --> 00:05:30.033
+So let's execute this
+and see how that looks.
+
+104
+00:05:30.033 --> 00:05:31.200
+Cool.
+
+105
+00:05:31.200 --> 00:05:34.600
+So here is the combined list of fields
+
+106
+00:05:34.600 --> 00:05:37.600
+and succinct factual answers
+that the LLM has given us.
+
+107
+00:05:37.833 --> 00:05:41.000
+Just like before, it's done
+a good job of numbering everything,
+
+108
+00:05:41.133 --> 00:05:44.833
+but projects portfolio
+is still a list of things
+
+109
+00:05:44.833 --> 00:05:48.100
+that the applicant did
+instead of a link to their portfolio.
+
+110
+00:05:48.600 --> 00:05:50.400
+So let's say that.
+
+111
+00:05:52.133 --> 00:05:54.100
+Portfolio
+
+112
+00:05:54.100 --> 00:05:56.333
+should be
+
+113
+00:05:56.333 --> 00:05:59.333
+a URL.
+
+114
+00:05:59.633 --> 00:06:02.100
+The LLM says the verdict was feedback.
+
+115
+00:06:02.100 --> 00:06:04.133
+So now that's going to trigger the loop.
+
+116
+00:06:04.133 --> 00:06:06.100
+It's going to try everything again.
+
+117
+00:06:06.100 --> 00:06:09.533
+But we haven't actually found a way
+to incorporate the feedback yet.
+
+118
+00:06:09.733 --> 00:06:12.800
+So it's just going to do everything
+exactly the same way it did.
+
+119
+00:06:13.300 --> 00:06:16.100
+We'll incorporate the feedback
+in our next change.
+
+120
+00:06:16.100 --> 00:06:19.100
+In the meantime,
+let's just say this is fine.
+
+121
+00:06:19.733 --> 00:06:23.533
+The LLM says the verdict was okay
+so the workflow halts.
+
+122
+00:06:23.933 --> 00:06:24.633
+Cool.
+
+123
+00:06:24.633 --> 00:06:29.100
+So now, let's further modify things
+to actually do something useful
+
+124
+00:06:29.100 --> 00:06:31.633
+with that feedback
+that we've generated. This involves
+
+125
+00:06:31.633 --> 00:06:34.800
+checking if there is feedback
+and appending it to the questions.
+
+126
+00:06:34.933 --> 00:06:36.600
+In this simplified example,
+
+127
+00:06:36.600 --> 00:06:40.133
+we're going to append the feedback
+to every question in case it's relevant.
+
+128
+00:06:40.433 --> 00:06:42.133
+But a more sophisticated agent
+
+129
+00:06:42.133 --> 00:06:45.300
+might apply it to only the fields
+where the feedback applied.
+
+130
+00:06:45.733 --> 00:06:47.900
+Here's our modified workflow.
+
+131
+00:06:47.900 --> 00:06:49.300
+Setup is the same.
+
+132
+00:06:49.300 --> 00:06:52.700
+Parse form is the same,
+but generate questions has changed.
+
+133
+00:06:52.833 --> 00:06:57.833
+Now we're going to check if the attribute
+feedback exists on our event.
+
+134
+00:06:58.800 --> 00:06:59.700
+If the attribute
+
+135
+00:06:59.700 --> 00:07:03.000
+feedback exists on our event,
+that means that it's a feedback event
+
+136
+00:07:03.233 --> 00:07:04.300
+and we're going to use it.
+
+137
+00:07:04.300 --> 00:07:08.200
+So we're going to modify each question
+that applies to each field
+
+138
+00:07:08.400 --> 00:07:10.133
+to include the feedback.
+
+139
+00:07:10.133 --> 00:07:11.933
+We're going to say
+it might not be relevant
+
+140
+00:07:11.933 --> 00:07:15.100
+to this particular field,
+so that the LLM doesn't get confused
+
+141
+00:07:15.100 --> 00:07:17.800
+about why we're applying
+feedback to every single event.
+
+142
+00:07:17.800 --> 00:07:20.933
+Then, just like before,
+we generate query events
+
+143
+00:07:21.400 --> 00:07:25.433
+and we store the total number of fields.
+Ask question remains the same.
+
+144
+00:07:25.433 --> 00:07:29.433
+Fill in application remains the same
+and get feedback remains the same.
+
+145
+00:07:29.733 --> 00:07:31.833
+So let's execute this cell.
+
+146
+00:07:35.000 --> 00:07:38.000
+And then run our workflow.
+
+147
+00:07:39.500 --> 00:07:42.133
+Everything here is exactly the same
+as it was last time,
+
+148
+00:07:42.133 --> 00:07:45.200
+except now it's going to understand
+what to do with the feedback.
+
+149
+00:07:45.733 --> 00:07:48.733
+Okay,
+we've got the first attempt of the form.
+
+150
+00:07:49.200 --> 00:07:50.233
+As before, project
+
+151
+00:07:50.233 --> 00:07:53.333
+portfolio is a description
+of the things that the applicant has done.
+
+152
+00:07:54.000 --> 00:07:56.800
+Now we'll give it the feedback.
+
+153
+00:07:56.800 --> 00:07:59.800
+Portfolio should be a URL.
+
+154
+00:07:59.933 --> 00:08:00.933
+We hit enter.
+
+155
+00:08:00.933 --> 00:08:03.933
+The LLM has worked out
+that the verdict was feedback.
+
+156
+00:08:04.500 --> 00:08:06.033
+Now it's going to try again.
+
+157
+00:08:06.033 --> 00:08:07.633
+And it's going to append that feedback
+
+158
+00:08:07.633 --> 00:08:11.033
+to every single question
+so that the LLM knows what to do.
+
+159
+00:08:11.400 --> 00:08:12.533
+Cool.
+
+160
+00:08:12.533 --> 00:08:15.033
+Here's the new modified version.
+
+161
+00:08:15.033 --> 00:08:17.833
+And as you can see field six
+
+162
+00:08:17.833 --> 00:08:20.833
+the portfolio has correctly been turned
+into a URL.
+
+163
+00:08:20.933 --> 00:08:22.633
+That's exactly what we wanted.
+
+164
+00:08:22.633 --> 00:08:24.833
+So let's tell it. That's great.
+
+165
+00:08:25.800 --> 00:08:28.733
+One of the fun things about
+giving feedback in natural language is
+
+166
+00:08:28.733 --> 00:08:31.100
+you can just say anything
+and it'll figure out what you meant.
+
+167
+00:08:31.100 --> 00:08:34.233
+The LLM says that's great
+means the verdict was okay.
+
+168
+00:08:34.400 --> 00:08:37.400
+And so it stops the workflow
+and gives us the output.
+
+169
+00:08:37.500 --> 00:08:38.500
+Success!
+
+170
+00:08:38.500 --> 00:08:40.000
+Our agent now responds to human
+
+171
+00:08:40.000 --> 00:08:43.600
+in the loop feedback and produces
+more accurate filled forms as a result.
+
+172
+00:08:43.933 --> 00:08:44.900
+Congratulations.
+

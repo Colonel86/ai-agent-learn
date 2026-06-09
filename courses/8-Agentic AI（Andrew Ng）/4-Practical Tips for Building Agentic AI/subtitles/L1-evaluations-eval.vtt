@@ -1,0 +1,643 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:05.995 --> 00:00:04.719
+In this module, I'd like to share with you practical tips for building agentic AI workflows.
+
+2
+00:00:04.719 --> 00:00:10.720
+I hope that these tips will enable you to be much more effective than the typical developer
+
+3
+00:00:10.720 --> 00:00:16.319
+at building these types of systems. I find that when developing an agentic AI system,
+
+4
+00:00:16.319 --> 00:00:21.040
+it's difficult to know in advance where it will work and where it won't work so well,
+
+5
+00:00:21.040 --> 00:00:27.680
+and thus where you should focus your effort. So very common advice is to try to build even a
+
+6
+00:00:27.680 --> 00:00:34.159
+quick and dirty system to start, so you can then try it out and look at it to see where it may not
+
+7
+00:00:34.159 --> 00:00:40.000
+yet be working as well as you wish, to then have much more focused efforts to develop it even
+
+8
+00:00:40.000 --> 00:00:46.319
+further. In contrast, I find that it's sometimes less useful to sit around for too many weeks
+
+9
+00:00:46.319 --> 00:00:53.360
+theorizing and hypothesizing how to build it. It's often better to just build a quick system in a
+
+10
+00:00:53.360 --> 00:00:58.479
+safe, reasonable way that doesn't leak data, kind of do it in a responsible way, but just build
+
+11
+00:00:58.479 --> 00:01:03.759
+something quickly so you can look at it and then use that initial prototype to prioritize and try
+
+12
+00:01:03.759 --> 00:01:10.239
+further development. Let's start with an example of what might happen after you've built a prototype.
+
+13
+00:01:10.239 --> 00:01:16.080
+I want to use as our first example the invoice processing workflow that you've seen previously,
+
+14
+00:01:16.080 --> 00:01:22.080
+with the task to extract four required fields and then to save it to a database record. After having
+
+15
+00:01:22.080 --> 00:01:28.559
+built such a system, one thing you might do is find a handful of invoices, maybe 10 or 20 invoices,
+
+16
+00:01:28.559 --> 00:01:33.360
+and go through them and just take a look at their output and see what went well and if there were
+
+17
+00:01:33.360 --> 00:01:38.160
+any mistakes. So let's say you look through 20 invoices, you find that invoice 1 is fine, the
+
+18
+00:01:38.160 --> 00:01:43.120
+output looks correct. For invoice 2, maybe it confused the date of the invoice, that is when
+
+19
+00:01:43.120 --> 00:01:48.080
+was the invoice issued, with the due date of the invoice, and in this task we want to extract the
+
+20
+00:01:48.080 --> 00:01:53.279
+due date so we can issue payments on time. So then I might note down in a document or in a
+
+21
+00:01:53.279 --> 00:01:58.400
+spreadsheet that for invoice 2, the dates were mixed up. Maybe invoice 3 was fine, invoice 4 was
+
+22
+00:01:58.400 --> 00:02:03.839
+fine, and so on. But as I go through this example, I find that there are quite a lot of examples where I had
+
+23
+00:02:03.839 --> 00:02:10.720
+mixed up the dates. So it is based on going through a number of examples like this, that in this case
+
+24
+00:02:10.720 --> 00:02:17.759
+you might conclude that one common error mode is that it is struggling with the dates. In that case,
+
+25
+00:02:17.759 --> 00:02:23.679
+one thing you might consider would be to of course figure out how to improve your system to make it
+
+26
+00:02:23.679 --> 00:02:29.279
+extract due dates better, but also maybe write an eval to measure the accuracy with which it is
+
+27
+00:02:29.279 --> 00:02:35.919
+extracting due dates. In comparison, if you had found that it was extracting the biller address
+
+28
+00:02:35.919 --> 00:02:40.800
+incorrectly, who knows, maybe you have billers with unusual sounding names and so maybe it
+
+29
+00:02:40.800 --> 00:02:45.520
+struggles with billers, or especially if you have international billers whose names may not even all
+
+30
+00:02:45.520 --> 00:02:51.199
+be English letters, then you might instead focus on building an eval for the biller address. So one
+
+31
+00:02:51.199 --> 00:02:56.000
+of the reasons why building a quick and dirty system and looking at the output is so helpful
+
+32
+00:02:56.000 --> 00:03:03.119
+is it even helps you decide what do you want to put the most effort into evaluating. Now if you've
+
+33
+00:03:03.119 --> 00:03:09.119
+decided that you want to modify your system to improve the accuracy with which it is extracting
+
+34
+00:03:09.199 --> 00:03:14.639
+the due date of the invoice, then to track progress it might be a good idea to create an
+
+35
+00:03:14.639 --> 00:03:20.320
+evaluation or an eval to measure the accuracy of date extraction. There are probably multiple ways
+
+36
+00:03:20.320 --> 00:03:25.839
+one might go about this, but let me share with you how I might go about this. To create a test set or
+
+37
+00:03:25.839 --> 00:03:33.119
+an evaluation set, I might find 10 to 20 invoices and manually write down what is the due date. So
+
+38
+00:03:33.119 --> 00:03:39.119
+maybe one invoice has a due date of August 20th, 2025, and I write it down as a standard year, month,
+
+39
+00:03:39.119 --> 00:03:46.000
+date format. And then to make it easy to evaluate in code later, I would probably write the prompt
+
+40
+00:03:46.000 --> 00:03:51.679
+to the LLM to tell it to always format the due date in this year, month, date format. And with that,
+
+41
+00:03:51.679 --> 00:03:56.720
+I can then write code to extract out the one date that the LLM has output, which is the due date,
+
+42
+00:03:56.720 --> 00:04:01.360
+because that's the one day we care about. So this is a regular expression, pattern matching, you know,
+
+43
+00:04:01.360 --> 00:04:06.320
+four numbers of the year, two for the month, two for the date, and extract that out. And then I can
+
+44
+00:04:06.320 --> 00:04:11.839
+just write code to test if the extract date is equal to the actual date, that is the ground
+
+45
+00:04:11.839 --> 00:04:18.399
+truth annotation I had written down. So with an eval set of, say, 20 or so invoices, I build and
+
+46
+00:04:18.399 --> 00:04:24.480
+make changes to see if the percentage of time that it gets the extracted date correct is hopefully
+
+47
+00:04:24.480 --> 00:04:29.519
+going up as I tweak my prompts or tweak other parts of my system. So just to summarize what
+
+48
+00:04:29.519 --> 00:04:35.279
+we've seen so far, we build a system, then look at outputs to discover where it may be behaving in
+
+49
+00:04:35.279 --> 00:04:40.959
+an unsatisfactory way, such as due dates are wrong. Then to drive improvements to this important
+
+50
+00:04:40.959 --> 00:04:46.079
+output, put in place a small eval with, say, just 20 examples to help us track progress.
+
+51
+00:04:46.079 --> 00:04:50.480
+And this lets me go back to two prompts, try different algorithms, and so on to see if I can
+
+52
+00:04:50.480 --> 00:04:57.600
+move up this metric of due date accuracy. So this is what improving an Agentic AI workflow will often
+
+53
+00:04:57.600 --> 00:05:01.519
+feel like. Look at the output, see what's wrong, then if you know how to fix it, just fix it. But
+
+54
+00:05:01.519 --> 00:05:05.600
+if you need a longer process of improving it, then put in place an eval and use that to drive
+
+55
+00:05:05.600 --> 00:05:10.640
+further development. One other thing to consider is if after working for a while, if you think
+
+56
+00:05:10.640 --> 00:05:15.119
+those 20 examples you had initially aren't good enough, maybe they don't cover all the cases you
+
+57
+00:05:15.119 --> 00:05:19.920
+want, or maybe 20 examples is just too few, then you can always add to the eval set over time to
+
+58
+00:05:19.920 --> 00:05:25.440
+make sure it better reflects your personal judgments on whether or not the system's performance is
+
+59
+00:05:25.440 --> 00:05:30.239
+sufficiently satisfactory. This is just one example. For the second example, let's look at
+
+60
+00:05:30.239 --> 00:05:35.679
+building a marketing copy assistant for writing captions for Instagram, where to keep things
+
+61
+00:05:35.679 --> 00:05:40.399
+succinct, let's say our marketing team tells us that they want captions that are at most 10 words
+
+62
+00:05:40.399 --> 00:05:45.920
+long. So we would have an image of a product, say a pair of sunglasses that we want to market,
+
+63
+00:05:45.920 --> 00:05:52.160
+and then have a user query, like please write a caption to sell these sunglasses, and then have a
+
+64
+00:05:52.160 --> 00:05:58.399
+LLM, or large multimodal model, analyze the image and the query and generate a description of the
+
+65
+00:05:58.399 --> 00:06:03.839
+sunglasses. And there are lots of different ways that a marketing copy assistance may go wrong,
+
+66
+00:06:03.839 --> 00:06:08.559
+but let's say that you look at the output and you find that the copy or the text generated mostly
+
+67
+00:06:08.559 --> 00:06:13.359
+sounds okay, but maybe it's just sometimes too long. So for the sunglasses input, generate 17
+
+68
+00:06:13.359 --> 00:06:18.480
+words, if you have a coffee machine, it's okay, stylish is okay, blue shirt, 14 words, blender,
+
+69
+00:06:18.480 --> 00:06:24.880
+11 words. So it looks like in this example, the LLM is having a hard time adhering to the length
+
+70
+00:06:24.880 --> 00:06:28.799
+guideline. So again, there are lots of things that could have gone wrong with a marketing copy
+
+71
+00:06:28.799 --> 00:06:33.920
+assistant. But if you find that it's struggling with the length of the output, they might build
+
+72
+00:06:33.920 --> 00:06:39.440
+an eval to track this so that you can make improvements and make sure it's getting better
+
+73
+00:06:39.440 --> 00:06:44.959
+at adhering to the length guideline. So to create an eval, to measure the text length, what you
+
+74
+00:06:44.959 --> 00:06:49.760
+might do is create a set of test stars, so mark a pair of sunglasses, a coffee machine, and so on,
+
+75
+00:06:49.760 --> 00:06:56.399
+and maybe create 10 to 20 examples. Then you would run each of them through your system and write
+
+76
+00:06:56.399 --> 00:07:02.880
+code to measure the word count of the output. So this is Python code to measure the word count of a
+
+77
+00:07:02.880 --> 00:07:10.320
+piece of text. Then lastly, you would compare the length of the generated text to the 10 word target
+
+78
+00:07:10.320 --> 00:07:15.440
+limit. So if word count is equal to 10, now I'm correct, plus equals one. One difference between
+
+79
+00:07:15.440 --> 00:07:22.160
+this and the previous invoice processing example is that there is no per example ground truth.
+
+80
+00:07:22.160 --> 00:07:26.880
+The target is just 10, same for every single example. Whereas in contrast, for the invoice
+
+81
+00:07:26.880 --> 00:07:32.959
+processing example, we had to generate a custom target label that is the correct due date of the
+
+82
+00:07:32.959 --> 00:07:38.239
+invoice, and we're testing the outputs against that per example ground truth. I know I used a
+
+83
+00:07:38.239 --> 00:07:43.600
+very simple workflow for generating these captions, but these types of evals can be applied to much
+
+84
+00:07:43.600 --> 00:07:49.519
+more complex generation workflows as well. Let me touch on one final example in which we'll revisit
+
+85
+00:07:49.519 --> 00:07:55.920
+the research agents we've been looking at. If you look at the output of the research agents on
+
+86
+00:07:55.920 --> 00:08:01.679
+different input prompts, let's say that when you ask it to write an article on recent breakthroughs
+
+87
+00:08:01.679 --> 00:08:07.200
+in black hole science, you find that it missed some high profile result and a loss of news coverage.
+
+88
+00:08:07.200 --> 00:08:11.760
+So this is an unsatisfactory result. Or if you asked it to research renting versus buying a
+
+89
+00:08:11.760 --> 00:08:16.239
+home in Seattle, well, it seems to do a good job. Or robotics for harvesting fruits. Well,
+
+90
+00:08:16.239 --> 00:08:22.079
+it didn't mention a leading equipment company. So based on this evaluation, it looks like
+
+91
+00:08:22.079 --> 00:08:29.200
+sometimes it misses a really important point that a human expert writer would have captured. So then
+
+92
+00:08:29.200 --> 00:08:34.799
+I would create an eval to measure how often it captures the most important points. For example,
+
+93
+00:08:34.799 --> 00:08:40.000
+you might come up with a number of example prompts on black holes, robotic harvesting,
+
+94
+00:08:40.000 --> 00:08:45.039
+and so on. And for each one, come up with, let's say, three to five gold standard discussion points
+
+95
+00:08:45.039 --> 00:08:51.520
+for each of these topics. Notice that here we do have a per example annotation because the
+
+96
+00:08:51.520 --> 00:08:56.159
+gold standard talking points, that is the most important talking points, they are different for
+
+97
+00:08:56.159 --> 00:09:01.440
+each of these examples. With these ground truth annotations, you might then use an LLMs judge to
+
+98
+00:09:01.440 --> 00:09:07.840
+count how many of the gold standard talking points were mentioned. And so an example prompt might be
+
+99
+00:09:07.840 --> 00:09:12.159
+to say, determine how many of the five gold standard talking points are present in the
+
+100
+00:09:12.159 --> 00:09:16.400
+provided essay. You have the optional prompts, the essay text, gold standard points, and so on,
+
+101
+00:09:16.400 --> 00:09:21.520
+and have it return a JSON object with two Gs that scores how many of the points, zero to five,
+
+102
+00:09:21.520 --> 00:09:28.559
+to the score, as well as an explanation. And this allows you to get a score for each prompt in your
+
+103
+00:09:28.559 --> 00:09:35.679
+evaluation set. In this example, I'm using LLM-as-a-judge to count how many of the talking points
+
+104
+00:09:35.679 --> 00:09:40.640
+were mentioned because there's so many different ways to talk about these talking points, and so a
+
+105
+00:09:40.640 --> 00:09:46.159
+regular expression or a code for simple pattern matching might not work that well, which is why
+
+106
+00:09:46.159 --> 00:09:52.000
+you might use an LLM-as-a-judge and treat this as a slightly more subjective evaluation for whether
+
+107
+00:09:52.000 --> 00:09:57.599
+or not, say, event horizons were adequately mentioned. So this is your third example of how
+
+108
+00:09:57.599 --> 00:10:04.479
+you might build evals. In order to think about how to build evals for your application, the evals
+
+109
+00:10:04.479 --> 00:10:10.719
+you build will often have to reflect whatever you see or you're worried about going wrong in your
+
+110
+00:10:10.719 --> 00:10:18.880
+application. And it turns out that broadly, there are two axes of evaluation. On the top axis is the
+
+111
+00:10:18.880 --> 00:10:26.880
+way you evaluate the output. In some cases, you evaluate it by writing code with objective evals,
+
+112
+00:10:26.880 --> 00:10:34.960
+and sometimes you use an LLM-as-a-judge for more subjective evals. On the other axis is whether
+
+113
+00:10:34.960 --> 00:10:43.200
+you have a per-example ground truth or not. So for checking invoice date extraction, we were writing
+
+114
+00:10:43.200 --> 00:10:49.599
+code to evaluate if we got the actual date, and that had a per-example ground truth because each
+
+115
+00:10:49.599 --> 00:10:55.520
+invoice has a different actual date. But in the example where we checked marketing copy length,
+
+116
+00:10:55.520 --> 00:11:02.159
+every example had a length limit of 10, and so there was no per-example ground truth for that
+
+117
+00:11:02.159 --> 00:11:07.919
+problem. In contrast, for counting gold standard talking points, there was a per-example ground
+
+118
+00:11:07.919 --> 00:11:13.440
+truth because each article had different important talking points. But we used an LLM-as-a-judge to
+
+119
+00:11:13.440 --> 00:11:17.919
+read the essay to see if those topics were adequately mentioned because there's so many
+
+120
+00:11:17.919 --> 00:11:23.760
+different ways to mention the talking points. And the last of the four quadrants would be LLM-as-a-judge
+
+121
+00:11:23.760 --> 00:11:30.239
+with no per-example ground truth. And one place where we saw that was if you are grading
+
+122
+00:11:30.239 --> 00:11:35.520
+charts with a rubric. This is when we're looking at visualizing the coffee machine sales, and if
+
+123
+00:11:35.520 --> 00:11:40.799
+you ask it to create a chart according to a rubric, such as whether it's clear access labels and so on,
+
+124
+00:11:40.799 --> 00:11:46.320
+there is the same rubric for every chart, and that would be using an LLM-as-a-judge but without a
+
+125
+00:11:46.320 --> 00:11:51.280
+per-example ground truth. So I find this two-by-two grid as maybe a useful way to think about the
+
+126
+00:11:51.280 --> 00:11:56.080
+different types of evals you might construct for your application. And by the way, these are
+
+127
+00:11:56.080 --> 00:12:01.520
+sometimes also called end-to-end evals because one end is the input end, which is the user query
+
+128
+00:12:01.520 --> 00:12:08.799
+prompt, and the other end is the final output. And so all of these are evals for the entire end-to-end
+
+129
+00:12:08.799 --> 00:12:13.919
+system's performance. So just to wrap up this video, I'd like to share a few final tips for
+
+130
+00:12:13.919 --> 00:12:20.799
+designing end-to-end evals. First, quick and dirty evals is fine to get started. I feel like I see
+
+131
+00:12:20.799 --> 00:12:25.840
+quite a lot of teams that are almost paralyzed because they think building evals is this
+
+132
+00:12:25.840 --> 00:12:32.559
+massive multi-week effort, and so they take longer than would be ideal to get started. But I think
+
+133
+00:12:32.559 --> 00:12:37.599
+just as you iterate on an agentic workflow and make it better over time, you should plan to
+
+134
+00:12:37.599 --> 00:12:44.080
+iterate on your evals as well. So if you put in place 10, 15, 20 examples as your first cut at
+
+135
+00:12:44.080 --> 00:12:49.119
+evals and write some code or try prompting an LLM-as-a-judge, just do something to start to get some
+
+136
+00:12:49.119 --> 00:12:54.400
+metrics that can complement the human eye at looking at the output, and then there's a blend
+
+137
+00:12:54.400 --> 00:12:58.559
+of the two that can drive your decision making. And as the evals become more sophisticated over
+
+138
+00:12:58.559 --> 00:13:03.679
+time, you can then shift more and more of your trust to the metric-based evals rather than
+
+139
+00:13:03.679 --> 00:13:08.719
+needing to read over hundreds of outputs every time you tweak a prompt somewhere. And as you
+
+140
+00:13:08.719 --> 00:13:15.359
+go through this process, you'll likely find ways to keep on improving your evals as well. So if you
+
+141
+00:13:15.359 --> 00:13:22.239
+had 20 examples to start, you may then run into places where your evals fail to capture your
+
+142
+00:13:22.239 --> 00:13:28.960
+judgment about what system is better. So maybe you update the system and you look at it and you feel
+
+143
+00:13:28.960 --> 00:13:34.159
+like this has got to work much better, but your eval fails to show the new system achieving a
+
+144
+00:13:34.159 --> 00:13:40.239
+higher score. If that's the case, that's often an opportunity to go maybe collect a larger eval set
+
+145
+00:13:40.239 --> 00:13:45.840
+or change the way you evaluate the output to make it correspond better to your judgment as to what
+
+146
+00:13:45.840 --> 00:13:50.400
+system is actually working better. And so your evals will get better over time. And lastly,
+
+147
+00:13:50.400 --> 00:13:56.239
+in terms of using evals to gain inspiration as to what to work on next, a lot of agentic workflows
+
+148
+00:13:56.239 --> 00:14:02.239
+are being used to automate tasks that, say, humans can do. And so I find for such applications,
+
+149
+00:14:02.239 --> 00:14:06.320
+I'll look for places where the performance is worse than that of an expert human, and that
+
+150
+00:14:06.320 --> 00:14:11.679
+often gives me inspiration for where to focus my efforts or what are the types of examples that I
+
+151
+00:14:11.679 --> 00:14:18.400
+maybe get my agentic workflow to work better than it is currently. So I hope that after you've built
+
+152
+00:14:18.400 --> 00:14:23.599
+that quick and dirty system, you think about when it would make sense to start putting in some evals
+
+153
+00:14:23.599 --> 00:14:28.159
+to track the potentially problematic aspects of the system, and that that will then help you
+
+154
+00:14:28.159 --> 00:14:34.479
+drive improvements in the system. In addition to helping you drive improvements, it turns out that
+
+155
+00:14:34.479 --> 00:14:40.799
+there's a method of evals that helps you hone in of your entire agentic system. What are the
+
+156
+00:14:40.799 --> 00:14:47.520
+components most worth focusing your attention on? Because agentic systems often have many pieces.
+
+157
+00:14:47.520 --> 00:14:53.599
+So which piece is going to be most productive for you to spend time working to improve? It turns
+
+158
+00:14:53.599 --> 00:14:58.400
+out being able to do this well is a really important skill for driving efficient development
+
+159
+00:14:58.400 --> 00:15:03.760
+of agentic workflows. In the next video, I'd like to deep dive into this topic. So let's go on to
+
+160
+00:15:03.760 --> 00:15:05.039
+the next video.
+

@@ -16,17 +16,19 @@
 
 ## 知识点 1：Base LLM vs Instruction-tuned LLM
 
-| | **Base LLM** | **Instruction Tuned LLM** |
-|---|---|---|
-| **核心行为** | Predicts next word, based on text training data | Tries to follow instructions |
-| **训练方式** | 海量文本预训练 | Fine-tune on instructions and good attempts at following those instructions |
-| **关键技术** | — | RLHF: Reinforcement Learning with Human Feedback |
-| **设计目标** | — | Helpful, Honest, Harmless |
-| **输入示例** | "Once upon a time, there was a unicorn" | "What is the capital of France?" |
-| **输出示例** | "that lived in a magical forest with all her unicorn friends"（续写故事） | "The capital of France is Paris."（直接回答）|
-| **另一个输入** | "What is the capital of France?" | — |
-| **另一个输出** | "What is France's largest city? / What is France's population? / What is the currency of France?"（生成相关问题） | — |
-| **推荐程度** | 不推荐直接用于产品 | ✅ 推荐，本课程重点 |
+
+|           | **Base LLM**                                                                                              | **Instruction Tuned LLM**                        |
+| --------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| **核心行为**  | Predicts next word, based on text training data                                                           | Tries to follow instructions                     |
+| **训练方式**  | 海量文本预训练                                                                                                   |                                                  |
+| **关键技术**  | —                                                                                                         | RLHF: Reinforcement Learning with Human Feedback |
+| **设计目标**  | —                                                                                                         | Helpful, Honest, Harmless                        |
+| **输入示例**  | "Once upon a time, there was a unicorn"                                                                   | "What is the capital of France?"                 |
+| **输出示例**  | "that lived in a magical forest with all her unicorn friends"（续写故事）                                       | "The capital of France is Paris."（直接回答）          |
+| **另一个输入** | "What is the capital of France?"                                                                          | —                                                |
+| **另一个输出** | "What is France's largest city? / What is France's population? / What is the currency of France?"（生成相关问题） | —                                                |
+| **推荐程度**  | 不推荐直接用于产品                                                                                                 | ✅ 推荐，本课程重点                                       |
+
 
 **RLHF**（Reinforcement Learning from Human Feedback）= 人类反馈强化学习，是让模型更"听话"的关键技术。
 
@@ -47,8 +49,9 @@
 
 1. Prompting 最佳实践（软件开发视角）
 2. 常见使用场景：
-   - 总结（Summarizing）
-   - 推理（Inferring）
-   - 转换（Transforming）
-   - 扩写（Expanding）
+  - 总结（Summarizing）
+  - 推理（Inferring）
+  - 转换（Transforming）
+  - 扩写（Expanding）
 3. 用 LLM 构建一个 Chatbot
+

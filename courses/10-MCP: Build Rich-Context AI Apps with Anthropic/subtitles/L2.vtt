@@ -1,0 +1,1384 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.960 --> 00:00:04.963
+MCP is based on a client-server
+architecture.
+
+2
+00:00:05.213 --> 00:00:08.675
+In this lesson, we'll go through
+the features that MCP can provide
+
+3
+00:00:09.009 --> 00:00:12.053
+and how the communication between
+the client and the server takes place.
+
+4
+00:00:12.470 --> 00:00:14.055
+All right. Let's dive in.
+
+5
+00:00:14.055 --> 00:00:17.225
+So we previously spoke about
+why the Model Context Protocol
+
+6
+00:00:17.642 --> 00:00:22.439
+is so useful for building AI applications
+and connecting to external data sources.
+
+7
+00:00:22.564 --> 00:00:26.234
+Now let's dive a little bit deeper
+into the architecture behind MCP.
+
+8
+00:00:26.401 --> 00:00:30.864
+Similar to other protocols, MCP follows
+the client-server architecture,
+
+9
+00:00:31.239 --> 00:00:36.239
+where we have MCP clients that maintain
+a 1 to 1 connection with MCP servers.
+
+10
+00:00:36.828 --> 00:00:40.373
+The way these two communicate
+with each other is through messages
+
+11
+00:00:40.665 --> 00:00:43.668
+defined by the MCP itself.
+
+12
+00:00:43.668 --> 00:00:46.296
+These clients live inside of a host.
+
+13
+00:00:46.296 --> 00:00:49.632
+This could be something like Claude desktop
+or Claude AI.
+
+14
+00:00:50.050 --> 00:00:53.511
+The host is responsible
+for storing and maintaining
+
+15
+00:00:53.511 --> 00:00:56.639
+all of the clients and connections
+to MCP servers.
+
+16
+00:00:56.931 --> 00:00:58.308
+We'll see this in a little more depth.
+
+17
+00:00:58.308 --> 00:01:02.645
+Hosts are LLM applications
+that want to access data through MCP.
+
+18
+00:01:02.937 --> 00:01:07.317
+The servers are lightweight programs
+that expose the specific capabilities
+
+19
+00:01:07.317 --> 00:01:08.401
+through the protocol.
+
+20
+00:01:08.401 --> 00:01:10.820
+And very soon we're going to start
+building our own servers.
+
+21
+00:01:10.820 --> 00:01:15.075
+We'll then build our own clients as well
+as hosts that contain multiple clients.
+
+22
+00:01:15.241 --> 00:01:17.827
+The code for that is going to be
+a little bit more lower level.
+
+23
+00:01:17.827 --> 00:01:20.830
+But the goal here is really to understand
+the architecture.
+
+24
+00:01:21.164 --> 00:01:24.084
+And when you use tools
+like Claude Desktop or Cursor
+
+25
+00:01:24.084 --> 00:01:27.087
+or Windsurf, you have an idea
+of what's happening under the hood.
+
+26
+00:01:27.629 --> 00:01:28.922
+So how does it work?
+
+27
+00:01:28.922 --> 00:01:32.050
+Before we discuss the responsibilities
+of the client and the server,
+
+28
+00:01:32.342 --> 00:01:35.970
+let's dive into some of the primitives
+or fundamental pieces of the protocol.
+
+29
+00:01:36.179 --> 00:01:37.597
+Starting with tools.
+
+30
+00:01:37.597 --> 00:01:42.227
+If you're familiar with tool use, tools in
+MCP are going to look very similar.
+
+31
+00:01:42.268 --> 00:01:45.271
+Tools are functions
+that can be invoked by the client.
+
+32
+00:01:45.480 --> 00:01:47.816
+These tools allow for retrieving,
+searching,
+
+33
+00:01:47.816 --> 00:01:50.610
+sending messages, and updating database
+records.
+
+34
+00:01:50.610 --> 00:01:53.279
+Tools are usually meant for data
+that might require
+
+35
+00:01:53.279 --> 00:01:56.282
+something like a Post request
+or some kind of modification.
+
+36
+00:01:56.366 --> 00:01:59.369
+Resources are a bit more similar
+to a Get request.
+
+37
+00:01:59.410 --> 00:02:03.540
+Resources are read-only data or context
+that's exposed by the server.
+
+38
+00:02:03.748 --> 00:02:06.543
+Your application can choose
+whether to consume
+
+39
+00:02:06.543 --> 00:02:10.755
+or use these resources, but it doesn't
+necessarily have to bring it into context.
+
+40
+00:02:10.922 --> 00:02:14.968
+Examples of resources can include database
+records, API responses,
+
+41
+00:02:15.176 --> 00:02:18.096
+files, PDFs, and so on that you may have.
+
+42
+00:02:18.096 --> 00:02:20.890
+The third primitive we're going to
+explore, is a prompt template.
+
+43
+00:02:20.890 --> 00:02:24.769
+And prompt templates aim
+to achieve a very reasonable task,
+
+44
+00:02:25.103 --> 00:02:28.565
+which is to remove the burden
+of prompt engineering from the user.
+
+45
+00:02:28.648 --> 00:02:32.819
+You might have an MCP server
+whose job is to query things in Google
+
+46
+00:02:32.819 --> 00:02:37.073
+Drive and summarize and so on,
+but the user itself would need to write
+
+47
+00:02:37.073 --> 00:02:38.366
+the prompt necessary
+
+48
+00:02:38.366 --> 00:02:41.411
+to achieve all of those tasks
+in the most efficient way possible.
+
+49
+00:02:41.536 --> 00:02:44.873
+Instead of mandating that the user write
+the entire prompt
+
+50
+00:02:45.206 --> 00:02:48.001
+and figure out the best practices
+for prompt engineering,
+
+51
+00:02:48.001 --> 00:02:51.671
+prompt templates are predefined templates
+that live on the server
+
+52
+00:02:52.172 --> 00:02:55.925
+that the client can access
+and feed to the user if they so choose.
+
+53
+00:02:56.176 --> 00:02:59.429
+We're going to see in a few lessons
+how to build tools, resources,
+
+54
+00:02:59.429 --> 00:03:02.765
+and prompt templates
+both on the server and the client.
+
+55
+00:03:02.974 --> 00:03:06.394
+The client's job is to find resources
+and find tools.
+
+56
+00:03:06.686 --> 00:03:09.939
+The server's job is to expose
+that information to the client.
+
+57
+00:03:10.523 --> 00:03:13.276
+Now that we have an idea
+of some of these primitives: tools,
+
+58
+00:03:13.276 --> 00:03:16.863
+resources, prompts, let's go explore
+what this actually looks like.
+
+59
+00:03:16.988 --> 00:03:20.033
+I'm going to be using a host
+Claude Desktop, and I'm going to connect
+
+60
+00:03:20.033 --> 00:03:24.662
+to an MCP server for SQL Lite that exposes
+tools, resources, and prompts.
+
+61
+00:03:25.079 --> 00:03:27.749
+So let's take a look at that
+right here in Claude Desktop
+
+62
+00:03:27.749 --> 00:03:29.167
+I've connected to an MCP
+
+63
+00:03:29.167 --> 00:03:33.630
+server and I have tools at my disposal
+to work with SQLite.
+
+64
+00:03:33.838 --> 00:03:36.633
+We'll talk a bit about the configuration
+settings in a later lesson.
+
+65
+00:03:36.633 --> 00:03:39.135
+I wanted to show you
+what this looks like in action.
+
+66
+00:03:39.135 --> 00:03:43.056
+Once I connect to this MCP server,
+I can start talking to my data
+
+67
+00:03:43.056 --> 00:03:44.432
+in natural language.
+
+68
+00:03:44.432 --> 00:03:47.352
+So I'll ask
+right after that what tables do I have
+
+69
+00:03:48.478 --> 00:03:51.481
+and how many records are in each table.
+
+70
+00:03:52.774 --> 00:03:55.777
+This right here is Claude
+connecting to the Outside World.
+
+71
+00:03:56.486 --> 00:03:58.947
+We can see here
+we're going to be using a tool
+
+72
+00:03:58.947 --> 00:04:01.950
+from the SQL
+light server called List Tables.
+
+73
+00:04:02.075 --> 00:04:05.078
+You can see in the request
+there's no dynamic data being sent.
+
+74
+00:04:05.286 --> 00:04:07.247
+And I'll go ahead and allow this.
+
+75
+00:04:07.247 --> 00:04:10.083
+The ability to require a human in the loop
+
+76
+00:04:10.083 --> 00:04:13.044
+is based on the interface
+that the host develops.
+
+77
+00:04:13.378 --> 00:04:16.339
+So the server itself
+is simply sending back the tools.
+
+78
+00:04:16.339 --> 00:04:17.465
+The client is then
+
+79
+00:04:17.465 --> 00:04:20.760
+taking advantage of those tools
+and executing the data necessary.
+
+80
+00:04:21.302 --> 00:04:23.972
+We can see here for the number of records
+that we have
+
+81
+00:04:23.972 --> 00:04:26.849
+30 products, 30 users and zero orders.
+
+82
+00:04:26.849 --> 00:04:28.810
+So we can see the records that we have
+in this table.
+
+83
+00:04:28.810 --> 00:04:31.354
+What we can start to do now is something
+a little more interesting.
+
+84
+00:04:31.354 --> 00:04:33.982
+By taking advantage of tools
+like artifacts
+
+85
+00:04:33.982 --> 00:04:36.359
+and making this slightly
+more visually appealing.
+
+86
+00:04:36.359 --> 00:04:39.279
+So generate an interesting visualization
+
+87
+00:04:41.656 --> 00:04:43.408
+based on
+
+88
+00:04:43.408 --> 00:04:46.411
+the data in the products table.
+
+89
+00:04:48.121 --> 00:04:49.372
+You can imagine even with my spelling
+
+90
+00:04:49.372 --> 00:04:52.375
+mistake, we'll be able to query
+that information that we need.
+
+91
+00:04:52.375 --> 00:04:53.960
+So we'll go find the table.
+
+92
+00:04:53.960 --> 00:04:57.046
+We'll run the necessary query
+and fetch the data necessary.
+
+93
+00:04:57.630 --> 00:04:59.882
+We'll see here
+we're going to analyze this.
+
+94
+00:04:59.882 --> 00:05:00.591
+And it's going to tell us
+
+95
+00:05:00.591 --> 00:05:03.594
+many things are price
+but there are a few higher-priced items.
+
+96
+00:05:03.594 --> 00:05:06.597
+We're going to use the analysis tool
+to analyze this data.
+
+97
+00:05:06.806 --> 00:05:10.059
+What we're bringing in here
+is context to an AI application.
+
+98
+00:05:10.560 --> 00:05:11.811
+This could be Claude desktop.
+
+99
+00:05:11.811 --> 00:05:13.271
+This could be with any other model.
+
+100
+00:05:13.271 --> 00:05:15.106
+This could be in any other environment.
+
+101
+00:05:15.106 --> 00:05:17.817
+But through MCP
+we can build really interesting
+
+102
+00:05:17.817 --> 00:05:19.402
+applications right off the bat.
+
+103
+00:05:19.402 --> 00:05:22.196
+I'm making use of the artifacts
+feature in Claude
+
+104
+00:05:22.196 --> 00:05:24.657
+so that we can see
+a nice little visualization.
+
+105
+00:05:24.657 --> 00:05:27.493
+But the goal here is really
+to let your imagination carry you
+
+106
+00:05:27.493 --> 00:05:28.745
+where you can go with this.
+
+107
+00:05:28.745 --> 00:05:30.121
+Bringing in external data.
+
+108
+00:05:30.121 --> 00:05:33.124
+External systems
+allows you to easily create much
+
+109
+00:05:33.124 --> 00:05:36.127
+more interesting, compelling,
+and powerful applications.
+
+110
+00:05:36.377 --> 00:05:37.879
+We'll see here the code generated.
+
+111
+00:05:37.879 --> 00:05:39.380
+It's going to be
+a nice little visualization.
+
+112
+00:05:39.380 --> 00:05:40.465
+I have a distribution.
+
+113
+00:05:40.465 --> 00:05:42.383
+I have price versus quantity and so on.
+
+114
+00:05:42.383 --> 00:05:43.634
+And right after that,
+
+115
+00:05:43.634 --> 00:05:46.763
+I can take this data that I want
+and turn it into something meaningful.
+
+116
+00:05:46.971 --> 00:05:48.806
+We're doing this through tool use.
+
+117
+00:05:48.806 --> 00:05:50.808
+So the first primitive that we've explored
+
+118
+00:05:50.808 --> 00:05:53.644
+are the tools given to us
+by the MCP server.
+
+119
+00:05:53.644 --> 00:05:55.813
+Next, let's explore some other primitives.
+
+120
+00:05:55.813 --> 00:05:59.817
+I'm going to see here in SQLite
+that there is an MCP demo prompt.
+
+121
+00:06:00.234 --> 00:06:02.945
+This is a prompt template
+that is being sent from the server,
+
+122
+00:06:02.945 --> 00:06:06.824
+where all I have to do as the user is pass
+in some dynamic data.
+
+123
+00:06:06.991 --> 00:06:10.328
+So here we're demonstrating what we can do
+with this particular prompt.
+
+124
+00:06:10.828 --> 00:06:13.664
+This is a topic to see the database
+with initial data.
+
+125
+00:06:13.664 --> 00:06:17.418
+So let's go ahead and seed the database
+with some data around planets.
+
+126
+00:06:17.668 --> 00:06:20.671
+When I add this to the prompt
+we can see right off the bat
+
+127
+00:06:20.797 --> 00:06:23.800
+there is a text file
+that's generated with a prompt
+
+128
+00:06:23.883 --> 00:06:26.260
+that the server has given me.
+We can see right here
+
+129
+00:06:26.260 --> 00:06:29.138
+this is not something that I, as the user,
+have to write.
+
+130
+00:06:29.138 --> 00:06:33.393
+I just choose the dynamic data and then I
+go ahead and run that particular prompt.
+
+131
+00:06:33.559 --> 00:06:35.645
+What we're going to see here
+is this prompt in action.
+
+132
+00:06:35.645 --> 00:06:38.773
+And here this is going to generate
+a business problem and analyze
+
+133
+00:06:38.773 --> 00:06:41.067
+some data and set up information
+and so on.
+
+134
+00:06:41.067 --> 00:06:44.195
+But you can imagine giving your users
+much more battle
+
+135
+00:06:44.195 --> 00:06:47.323
+tested evaluated prompts
+so you don't have to do it yourself.
+
+136
+00:06:48.116 --> 00:06:50.368
+You'll see here
+we're going to set up some tables.
+
+137
+00:06:50.368 --> 00:06:51.119
+We're going to query.
+
+138
+00:06:51.119 --> 00:06:52.203
+We're going to populate
+
+139
+00:06:52.203 --> 00:06:55.206
+all kinds of actions
+we can take based on the prompt
+
+140
+00:06:55.206 --> 00:06:57.417
+and the tools
+that we have at our disposal.
+
+141
+00:06:57.417 --> 00:07:01.212
+So here you're seeing an example of tools
+and prompts being integrated together
+
+142
+00:07:01.587 --> 00:07:05.007
+to make AI applications far more powerful
+than they are out of the box.
+
+143
+00:07:05.550 --> 00:07:08.261
+In a few lessons, we're going to start
+making our own prompts,
+
+144
+00:07:08.261 --> 00:07:11.931
+our own resources, and our own tools
+to see how this happens under the hood.
+
+145
+00:07:12.348 --> 00:07:16.102
+As we go through, we can actually see that
+there is a data insight here,
+
+146
+00:07:16.352 --> 00:07:20.815
+a business insight memo that gets updated
+as we are constantly adding more data.
+
+147
+00:07:20.982 --> 00:07:22.567
+This is an example of a resource.
+
+148
+00:07:22.567 --> 00:07:23.943
+Resources are dynamic.
+
+149
+00:07:23.943 --> 00:07:27.238
+They can be updated as data changes
+in your application.
+
+150
+00:07:27.572 --> 00:07:30.575
+And instead of requiring tools
+to fetch this information,
+
+151
+00:07:30.658 --> 00:07:33.453
+we have data here
+that can constantly be updated.
+
+152
+00:07:33.453 --> 00:07:35.037
+I could ask to update the memo.
+
+153
+00:07:35.037 --> 00:07:39.250
+I could ask to update information inside
+based on new data that I've achieved.
+
+154
+00:07:39.375 --> 00:07:42.670
+So in this little example
+we've seen a host Claude Desktop.
+
+155
+00:07:43.045 --> 00:07:46.674
+We've seen a variety of tools
+from the SQLite MCP server,
+
+156
+00:07:47.049 --> 00:07:49.844
+and we've seen prompts and resources
+that allow us to perform
+
+157
+00:07:49.844 --> 00:07:51.387
+really powerful actions.
+
+158
+00:07:51.387 --> 00:07:55.224
+Now that we've seen what it looks like
+to use tools with MCP
+
+159
+00:07:55.224 --> 00:07:58.269
+servers, let's go ahead and talk about
+how you actually create these.
+
+160
+00:07:58.644 --> 00:08:02.482
+MCP provides software development kits
+for building servers and clients
+
+161
+00:08:02.482 --> 00:08:03.858
+in quite a few languages.
+
+162
+00:08:03.858 --> 00:08:06.903
+In this course,
+you'll be using the Python MCP SDK,
+
+163
+00:08:06.986 --> 00:08:10.531
+which makes it very easy
+to declare tools, resources, and prompts.
+
+164
+00:08:11.032 --> 00:08:13.367
+You can see here to declare a tool.
+
+165
+00:08:13.367 --> 00:08:14.785
+We decorate a function.
+
+166
+00:08:14.785 --> 00:08:16.954
+We pass in the necessary arguments
+
+167
+00:08:16.954 --> 00:08:19.957
+and return values
+so that the tool schema can be generated.
+
+168
+00:08:20.500 --> 00:08:21.626
+And then we return
+
+169
+00:08:21.626 --> 00:08:23.794
+what happens
+when that tool needs to be executed.
+
+170
+00:08:23.794 --> 00:08:27.548
+For resources, we allow the server
+to expose data to the client.
+
+171
+00:08:28.049 --> 00:08:30.718
+And that's done by specifying a URI
+
+172
+00:08:30.718 --> 00:08:33.930
+or a location
+where the client goes to find that data.
+
+173
+00:08:34.472 --> 00:08:37.767
+You can call this whatever you want,
+but you can imagine to return a list
+
+174
+00:08:37.767 --> 00:08:39.602
+of documents, this is a pretty good one.
+
+175
+00:08:39.602 --> 00:08:41.938
+If you're sending back
+a certain data format,
+
+176
+00:08:41.938 --> 00:08:43.981
+you can specify that with the main type.
+
+177
+00:08:43.981 --> 00:08:46.984
+You decorate a function
+which returns the data that you want
+
+178
+00:08:47.151 --> 00:08:48.903
+when that resource is accessed.
+
+179
+00:08:48.903 --> 00:08:51.239
+And you can do that for direct resources.
+
+180
+00:08:51.239 --> 00:08:54.742
+Or if you happen to have some kind
+of dynamic information or ID,
+
+181
+00:08:55.451 --> 00:08:59.080
+you can go ahead and use a templated
+resource, just like an F string in Python.
+
+182
+00:08:59.372 --> 00:09:01.415
+To give you an example
+of what an interface
+
+183
+00:09:01.415 --> 00:09:03.042
+might look like with a resource.
+
+184
+00:09:03.042 --> 00:09:06.921
+You can have a command line application
+where you use an @ sign to then fetch
+
+185
+00:09:07.171 --> 00:09:08.673
+all the documents that you need,
+
+186
+00:09:08.673 --> 00:09:12.301
+or for a templated resource,
+you can reference that directly and inject
+
+187
+00:09:12.301 --> 00:09:15.972
+that into a prompt or request
+that's coming in. With resources,
+
+188
+00:09:16.180 --> 00:09:18.683
+we don't need tools to fetch the data
+that we need.
+
+189
+00:09:18.683 --> 00:09:21.310
+The server
+simply sends the data back to the client,
+
+190
+00:09:21.310 --> 00:09:24.480
+and the application
+chooses to use that data or not.
+
+191
+00:09:24.939 --> 00:09:26.732
+Lastly, let's talk about prompts.
+
+192
+00:09:26.732 --> 00:09:27.608
+Just like you saw
+
+193
+00:09:27.608 --> 00:09:31.195
+with decorating tools and resources,
+we do the same thing with a prompt.
+
+194
+00:09:31.654 --> 00:09:33.239
+We give it a name and description,
+
+195
+00:09:33.239 --> 00:09:38.077
+and then a list of messages
+or text to return back. With prompts,
+
+196
+00:09:38.369 --> 00:09:41.122
+you define
+a set of user assistant messages
+
+197
+00:09:41.122 --> 00:09:43.374
+or just the text of a prompt
+that you need.
+
+198
+00:09:43.374 --> 00:09:46.460
+You can imagine a situation
+where a user might want to convert
+
+199
+00:09:46.460 --> 00:09:49.630
+some data to markdown,
+and while this is a fine prompt,
+
+200
+00:09:50.131 --> 00:09:54.385
+it might be a lot nicer if you gave them
+a thoroughly evaluated prompt instead.
+
+201
+00:09:54.510 --> 00:09:56.470
+So with prompts and prompt templates,
+
+202
+00:09:56.470 --> 00:09:59.223
+the idea is for these
+to be user controlled,
+
+203
+00:09:59.223 --> 00:10:02.643
+where a user chooses to not have to do
+all the prompt engineering themselves,
+
+204
+00:10:02.935 --> 00:10:05.396
+and use the quality ones
+provided by the server.
+
+205
+00:10:05.396 --> 00:10:08.149
+Now that we have an idea
+on some of the primitives, let's talk
+
+206
+00:10:08.149 --> 00:10:11.319
+a little bit about the communication
+between clients and servers.
+
+207
+00:10:11.652 --> 00:10:14.280
+When the client opens up
+a connection to the server,
+
+208
+00:10:14.280 --> 00:10:18.242
+there's an initialization process
+where a request is sent, a response is
+
+209
+00:10:18.242 --> 00:10:21.954
+sent back, and a notification
+is sent to confirm initialization.
+
+210
+00:10:22.330 --> 00:10:26.375
+Once that initialization appears, there's
+an exchange of messages that happen.
+
+211
+00:10:26.584 --> 00:10:29.295
+It's important to look at these steps
+because in the code
+
+212
+00:10:29.295 --> 00:10:32.298
+you're actually going to see methods
+like initialize.
+
+213
+00:10:32.590 --> 00:10:35.134
+So make sure you understand
+these ideas under the hood.
+
+214
+00:10:35.134 --> 00:10:36.552
+So when we start writing code
+
+215
+00:10:36.552 --> 00:10:39.263
+you can understand
+what's happening. In message exchanges,
+
+216
+00:10:39.263 --> 00:10:41.724
+clients can send requests to servers.
+
+217
+00:10:41.724 --> 00:10:43.017
+Servers can send requests
+
+218
+00:10:43.017 --> 00:10:46.771
+to clients, notifications
+can also be sent back and forth.
+
+219
+00:10:46.896 --> 00:10:48.022
+We'll talk a bit later on
+
+220
+00:10:48.022 --> 00:10:51.025
+about some of the other protocols,
+where servers can sample
+
+221
+00:10:51.150 --> 00:10:55.446
+or request information from clients,
+and notifications can be sent both ways.
+
+222
+00:10:55.821 --> 00:10:59.784
+Finally, at the end of communication,
+there's a termination of that connection.
+
+223
+00:11:00.117 --> 00:11:00.868
+As we talk a little bit
+
+224
+00:11:00.868 --> 00:11:04.914
+more about the connection and the way in
+which messages are sent back and forth.
+
+225
+00:11:05.164 --> 00:11:08.793
+It's important to understand another part
+of the Model Context Protocol,
+
+226
+00:11:09.126 --> 00:11:10.586
+and that is the idea of a transport.
+
+227
+00:11:10.586 --> 00:11:15.174
+And a transport handles the mechanics
+of how messages are sent back and forth
+
+228
+00:11:15.424 --> 00:11:17.009
+between the client and the server,
+
+229
+00:11:17.009 --> 00:11:19.804
+depending
+on how you're running your application.
+
+230
+00:11:19.804 --> 00:11:22.723
+You will choose one of these
+different transports.
+
+231
+00:11:22.723 --> 00:11:26.060
+You can also make your own if you would
+like. For servers running locally,
+
+232
+00:11:26.352 --> 00:11:29.522
+we're going to be using standard
+IO or standard input output.
+
+233
+00:11:29.689 --> 00:11:33.567
+When we start deploying servers remotely
+later on in the course, we have the choice
+
+234
+00:11:33.901 --> 00:11:36.862
+between using HTTP and server-side events
+
+235
+00:11:36.862 --> 00:11:40.199
+or using the Streamable HTTP transport.
+
+236
+00:11:40.449 --> 00:11:43.202
+As of this time of recording,
+Streamable HTTP
+
+237
+00:11:43.202 --> 00:11:46.664
+is not supported yet across all software
+development kits.
+
+238
+00:11:47.164 --> 00:11:48.958
+So we're going to be talking in depth
+about it.
+
+239
+00:11:48.958 --> 00:11:52.586
+But in our example we'll be using HTTP
+with server center events.
+
+240
+00:11:53.003 --> 00:11:54.630
+To give you a little bit of a distinction,
+
+241
+00:11:54.630 --> 00:11:57.633
+when you're using HTTP,
+which servers and events
+
+242
+00:11:57.633 --> 00:12:01.804
+you need to open up a stateful connection
+that maintains a back-and-forth
+
+243
+00:12:01.804 --> 00:12:02.555
+that's open.
+
+244
+00:12:02.555 --> 00:12:06.350
+For certain kinds of applications
+and deployments, or stateless deployments,
+
+245
+00:12:06.642 --> 00:12:08.102
+this does not suffice.
+
+246
+00:12:08.102 --> 00:12:12.189
+So in a newer version
+of the specification, the Streamable HTTP
+
+247
+00:12:12.189 --> 00:12:15.860
+transport allows for stateful connections
+as well as stateless.
+
+248
+00:12:16.110 --> 00:12:18.195
+To talk about our first transport
+standard, IO.
+
+249
+00:12:18.195 --> 00:12:21.824
+The process involves the client
+launching the server as a subprocess,
+
+250
+00:12:22.408 --> 00:12:23.534
+and the server
+
+251
+00:12:23.534 --> 00:12:27.455
+reading and writing alongside the client
+with standard in and standard out.
+
+252
+00:12:27.455 --> 00:12:30.374
+All of this is going to be abstracted
+away from us,
+
+253
+00:12:30.374 --> 00:12:33.377
+but it's important to understand
+when using standard IO
+
+254
+00:12:33.377 --> 00:12:36.881
+that this is most commonly
+what's done when running servers locally.
+
+255
+00:12:37.465 --> 00:12:40.885
+When we talk about the transports
+or remote servers, you'll see that
+
+256
+00:12:41.135 --> 00:12:44.597
+there are different transports based on
+different versions of the protocol.
+
+257
+00:12:44.764 --> 00:12:47.767
+The original transport for remote servers
+involved
+
+258
+00:12:47.767 --> 00:12:51.979
+using HTTP and server events
+for a stateful connection.
+
+259
+00:12:52.146 --> 00:12:55.775
+In a stateful connection, the client
+and the server are communicating
+
+260
+00:12:55.775 --> 00:12:59.153
+with each other with no closed connection
+between requests.
+
+261
+00:12:59.695 --> 00:13:00.863
+Data can be shared.
+
+262
+00:13:00.863 --> 00:13:04.200
+Data can be sent
+and remembered between different requests.
+
+263
+00:13:04.533 --> 00:13:07.745
+With the ability
+to introduce state. In server sent events,
+
+264
+00:13:07.745 --> 00:13:12.166
+the server is also able to send back
+events and messages back to the client.
+
+265
+00:13:12.583 --> 00:13:16.253
+While this can work for a variety
+of applications, many applications
+
+266
+00:13:16.253 --> 00:13:19.632
+when deployed are not stateful
+nor need to be stateful.
+
+267
+00:13:19.632 --> 00:13:23.969
+In fact, it is sometimes more efficient
+for scaling applications to have servers
+
+268
+00:13:23.969 --> 00:13:28.766
+that are ephemeral or stateless,
+where each connection and each request
+
+269
+00:13:29.308 --> 00:13:33.687
+is different and not remembered to support
+both stateful and stateless connections.
+
+270
+00:13:33.938 --> 00:13:38.317
+Updated versions of the protocol included
+a new transport called Streamable HTTP,
+
+271
+00:13:38.734 --> 00:13:43.734
+which allows for making use of HTTP with
+server events for stateful connections
+
+272
+00:13:44.365 --> 00:13:47.785
+or standard stateless connections
+with HTTP on its own.
+
+273
+00:13:48.786 --> 00:13:49.036
+Going
+
+274
+00:13:49.036 --> 00:13:53.249
+forward, the Streamable transport is what
+is going to be recommended and used so
+
+275
+00:13:53.249 --> 00:13:57.211
+that you can support stateless connections
+as well as stateful connections.
+
+276
+00:13:57.419 --> 00:14:02.299
+The way that this works is by using HTTP,
+get and Post requests to some endpoint.
+
+277
+00:14:02.758 --> 00:14:06.095
+In this case,
+we have /MCP to initialize the request
+
+278
+00:14:06.470 --> 00:14:08.055
+and the server returns a response.
+
+279
+00:14:08.055 --> 00:14:13.018
+If we want to opt into or upgrade
+to server-sent events, we can go ahead
+
+280
+00:14:13.018 --> 00:14:16.689
+and issue an optional Get request
+and send notifications back and forth.
+
+281
+00:14:16.897 --> 00:14:20.192
+Otherwise, we make Post requests
+and we issue responses.
+
+282
+00:14:20.693 --> 00:14:24.780
+In this lesson, you've seen quite a bit.
+From the architecture behind MCP,
+
+283
+00:14:24.780 --> 00:14:28.409
+with clients and servers
+and hosts to demos making use
+
+284
+00:14:28.409 --> 00:14:32.121
+of some of the most popular primitives
+like tools, prompts and resources.
+
+285
+00:14:32.288 --> 00:14:35.541
+You saw some of the different transports
+and mechanisms for sending data,
+
+286
+00:14:36.000 --> 00:14:38.544
+and now it's time for you
+to get your hands on some code.
+
+287
+00:14:38.544 --> 00:14:40.546
+In the next lesson,
+we're going to take a look
+
+288
+00:14:40.546 --> 00:14:43.549
+at some functionality
+and some tools that we'll be using.
+
+289
+00:14:43.674 --> 00:14:46.677
+And then we're going to start
+layering on MCP logic
+
+290
+00:14:46.677 --> 00:14:49.722
+to build our own servers
+and eventually clients and hosts.
+
+291
+00:14:50.347 --> 00:14:50.681
+See you then.
+

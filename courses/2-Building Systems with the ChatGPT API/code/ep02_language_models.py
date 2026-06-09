@@ -121,7 +121,13 @@ def demo_tokens():
     print(f"加分隔符后反转: {response2}\n")
 
     # 用 tiktoken 展示分词差异
-    encoding = tiktoken.encoding_for_model(MODEL)
+    # 注意：tiktoken 只内置了 OpenAI 模型的编码表，DeepSeek 等第三方模型
+    # 需要回退到通用编码（cl100k_base 是 GPT-4 同款，对其他模型仅作估算）
+    try:
+        encoding = tiktoken.encoding_for_model(MODEL)
+    except KeyError:
+        encoding = tiktoken.get_encoding("cl100k_base")
+        print(f"[提示] tiktoken 不识别模型 {MODEL}，回退到 cl100k_base 编码器")
     tokens_no_dash = encoding.encode("lollipop")
     tokens_with_dash = encoding.encode("l-o-l-l-i-p-o-p")
     print(f'"lollipop" 分词为 {len(tokens_no_dash)} 个 token: {tokens_no_dash}')

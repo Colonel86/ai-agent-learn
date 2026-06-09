@@ -1,0 +1,1407 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.867 --> 00:00:03.870
+In this lesson we're
+going to create our base email system.
+
+2
+00:00:04.037 --> 00:00:05.805
+It's not going to have any memory yet.
+
+3
+00:00:05.805 --> 00:00:08.274
+We're just going to set it up
+and get it working.
+
+4
+00:00:08.274 --> 00:00:10.543
+All right. Let's dive in.
+
+5
+00:00:10.543 --> 00:00:13.046
+The first thing we're going to want to do
+is import
+
+6
+00:00:13.046 --> 00:00:16.049
+some environment variable.
+
+7
+00:00:16.483 --> 00:00:17.350
+After that,
+
+8
+00:00:17.350 --> 00:00:20.420
+we're going to start to set up our profile
+for this email system.
+
+9
+00:00:21.254 --> 00:00:24.758
+The first part of this is just basic facts
+about the user.
+
+10
+00:00:25.058 --> 00:00:28.061
+Like their name
+and some background about them.
+
+11
+00:00:29.462 --> 00:00:31.331
+This should be a profile for the users
+
+12
+00:00:31.331 --> 00:00:34.734
+whose email this assistant
+will be attempting to respond to.
+
+13
+00:00:35.068 --> 00:00:37.203
+So you can change this
+to be whatever you want.
+
+14
+00:00:37.203 --> 00:00:40.206
+Probably your name and your background.
+
+15
+00:00:41.875 --> 00:00:42.709
+After that,
+
+16
+00:00:42.709 --> 00:00:45.712
+we're going to define
+some prompt instructions.
+
+17
+00:00:45.979 --> 00:00:50.417
+These are instructions that will get
+formatted into a larger prompt down below.
+
+18
+00:00:51.051 --> 00:00:52.919
+There's two parts of this.
+
+19
+00:00:52.919 --> 00:00:55.522
+The first is triage rules.
+
+20
+00:00:55.522 --> 00:00:58.525
+These are parts
+that will go into the triage prompt.
+
+21
+00:00:58.958 --> 00:01:02.095
+The triage prompt is what is responsible
+for triaging
+
+22
+00:01:02.095 --> 00:01:05.098
+the user's email
+into a few different categories.
+
+23
+00:01:05.932 --> 00:01:07.934
+There are three to be precise.
+
+24
+00:01:07.934 --> 00:01:10.904
+Ignore, notify, and respond.
+
+25
+00:01:10.904 --> 00:01:14.174
+And we can see here
+that we have instruction for what
+
+26
+00:01:14.207 --> 00:01:18.044
+type of emails should be classified
+into each of these categories.
+
+27
+00:01:20.280 --> 00:01:21.414
+A second instruction
+
+28
+00:01:21.414 --> 00:01:24.417
+set is instructions for the main agent.
+
+29
+00:01:24.584 --> 00:01:28.955
+This main agent gets called
+after we decide that we should respond
+
+30
+00:01:28.955 --> 00:01:30.590
+to the email.
+
+31
+00:01:30.590 --> 00:01:33.793
+So this contains instructions
+for what to do in that case
+
+32
+00:01:34.794 --> 00:01:37.797
+for both the profile
+and the prompt instructions,
+
+33
+00:01:37.831 --> 00:01:40.834
+these will get formatted into larger
+prompts down below.
+
+34
+00:01:41.267 --> 00:01:44.971
+The reason that we're pulling them out
+is twofold. One,
+
+35
+00:01:45.271 --> 00:01:49.008
+this makes it more modular
+and easier to see and visualize.
+
+36
+00:01:49.876 --> 00:01:54.848
+Two in the future, some of these will
+actually be generated as part of memory.
+
+37
+00:01:55.048 --> 00:01:58.118
+And so we want them to be separate
+from the rest of the prompt,
+
+38
+00:01:58.118 --> 00:02:01.121
+which we are not going to update
+as part of memory.
+
+39
+00:02:04.557 --> 00:02:07.560
+After that, let's define an example email.
+
+40
+00:02:07.694 --> 00:02:11.397
+This is just to see what the schema of
+the emails that we'll be working with are.
+
+41
+00:02:12.165 --> 00:02:17.165
+There's four main parts:
+a from email address, a to email address,
+
+42
+00:02:17.670 --> 00:02:20.773
+a subject for that email
+and then the body.
+
+43
+00:02:21.441 --> 00:02:25.645
+We'll use this to test out
+some of the agent parts down below.
+
+44
+00:02:25.645 --> 00:02:27.614
+You can change
+this to be whatever you want.
+
+45
+00:02:31.784 --> 00:02:34.587
+Let's
+now define the first part of the agent.
+
+46
+00:02:34.587 --> 00:02:36.623
+This will be the triage step.
+
+47
+00:02:36.623 --> 00:02:39.626
+First, we're going to set up some imports.
+
+48
+00:02:42.028 --> 00:02:46.299
+Next, we're going to choose the model
+that we want to use for this triage step.
+
+49
+00:02:46.599 --> 00:02:50.103
+We're going to use OpenAI's
+GPT 4o-mini model.
+
+50
+00:02:50.103 --> 00:02:53.106
+But you can use whatever one you want.
+
+51
+00:02:55.975 --> 00:02:56.709
+After that,
+
+52
+00:02:56.709 --> 00:03:00.380
+we'll define the schema
+that we want this triage step to output.
+
+53
+00:03:01.381 --> 00:03:03.650
+We'll use a pydantic base model here.
+
+54
+00:03:03.650 --> 00:03:05.218
+And it will have two fields.
+
+55
+00:03:05.218 --> 00:03:06.953
+First, will be a reasoning field.
+
+56
+00:03:06.953 --> 00:03:11.391
+This is where the LLM can just generate
+some reasoning for what it decided to do.
+
+57
+00:03:12.258 --> 00:03:15.261
+And then next, is the main part
+the classification step.
+
+58
+00:03:15.295 --> 00:03:18.665
+This should be one of ignore,
+respond and notify.
+
+59
+00:03:21.134 --> 00:03:22.869
+We're going to bind
+
+60
+00:03:22.869 --> 00:03:26.039
+this type to the LLM
+with with structured output.
+
+61
+00:03:26.639 --> 00:03:31.544
+This will make it so that LLM router
+always returns information in this schema.
+
+62
+00:03:36.015 --> 00:03:38.985
+Now we're going to import some prompts
+for the triage step.
+
+63
+00:03:39.152 --> 00:03:42.155
+There's two that we're going to be working
+with the system prompt,
+
+64
+00:03:42.155 --> 00:03:45.158
+and the user prompt.
+
+65
+00:03:46.392 --> 00:03:49.028
+Let's take a look at the system prompt.
+
+66
+00:03:49.028 --> 00:03:52.031
+We can see here
+that it's got a few different sections.
+
+67
+00:03:52.031 --> 00:03:53.499
+First, is a role section.
+
+68
+00:03:53.499 --> 00:03:57.470
+This is where some background about
+who the AI should be is placed.
+
+69
+00:03:58.304 --> 00:04:00.974
+Then we have the background
+on the user themselves.
+
+70
+00:04:00.974 --> 00:04:02.709
+Then we have some instructions.
+
+71
+00:04:02.709 --> 00:04:05.411
+This defines
+the three different categories
+
+72
+00:04:05.411 --> 00:04:08.314
+of things
+that we want to classify emails into.
+
+73
+00:04:08.314 --> 00:04:10.083
+And then we have a rule section.
+
+74
+00:04:10.083 --> 00:04:13.786
+This is where we will format
+a lot of our instructions into.
+
+75
+00:04:13.786 --> 00:04:17.223
+And so you can see the here that there are
+these little curly brackets.
+
+76
+00:04:17.757 --> 00:04:19.158
+This is actually a prompt template.
+
+77
+00:04:19.158 --> 00:04:22.161
+This means that there are parts
+of this prompt that are not filled in.
+
+78
+00:04:22.228 --> 00:04:24.364
+And we're going to do that
+with different variables.
+
+79
+00:04:24.364 --> 00:04:25.732
+And we'll see how to do that.
+
+80
+00:04:25.732 --> 00:04:28.968
+And then finally we can see that
+there's a section for few shot examples.
+
+81
+00:04:34.440 --> 00:04:37.443
+If we look at the user
+prompt we can see that it's much simpler.
+
+82
+00:04:37.610 --> 00:04:41.581
+We can see that basically just formats
+the email into a pretty simple input.
+
+83
+00:04:46.219 --> 00:04:47.754
+Let's test this out.
+
+84
+00:04:47.754 --> 00:04:50.757
+We can see here that we call triage system
+prompt dot format.
+
+85
+00:04:50.990 --> 00:04:54.794
+This will format the prompt template
+with a bunch of variables that we pass in.
+
+86
+00:04:55.628 --> 00:04:58.798
+We use information in profile
+such as the full name,
+
+87
+00:04:58.798 --> 00:05:02.602
+the name, and the user profile background
+to populate some things.
+
+88
+00:05:03.102 --> 00:05:06.105
+Examples we set as none
+because we don't have any of these yet.
+
+89
+00:05:06.572 --> 00:05:07.540
+And then the triage_no,
+
+90
+00:05:07.540 --> 00:05:10.877
+triage_notify, and triage_email parts
+we take
+
+91
+00:05:11.044 --> 00:05:14.047
+from the prompt instructions.
+
+92
+00:05:14.681 --> 00:05:16.316
+We do the same with the user prompt,
+
+93
+00:05:16.316 --> 00:05:19.952
+formatting it with information
+from the example email that we have.
+
+94
+00:05:23.656 --> 00:05:26.726
+With that
+done, we can now call the LLM router,
+
+95
+00:05:26.726 --> 00:05:30.229
+which is this LLM
+with the router schema attached.
+
+96
+00:05:30.496 --> 00:05:34.667
+We pass in two messages a system message
+with a system prompt as content,
+
+97
+00:05:34.934 --> 00:05:37.937
+and then a user message
+with the user prompt as content.
+
+98
+00:05:39.939 --> 00:05:40.707
+If we take a look
+
+99
+00:05:40.707 --> 00:05:43.710
+at what result
+is, we can see that there's two parts.
+
+100
+00:05:44.043 --> 00:05:45.345
+There's a reasoning string,
+
+101
+00:05:45.345 --> 00:05:47.547
+this is the logic of the LLM.
+
+102
+00:05:47.547 --> 00:05:49.716
+And then there's
+a classification of the LLM.
+
+103
+00:05:49.716 --> 00:05:52.719
+In this case it's saying to respond.
+
+104
+00:05:53.086 --> 00:05:56.823
+Now's a good time to pause
+and try it out with some different emails
+
+105
+00:05:56.823 --> 00:05:59.826
+or different instructions
+and see what you got.
+
+106
+00:06:02.161 --> 00:06:04.397
+With the logic of the triage,
+step out of the way.
+
+107
+00:06:04.397 --> 00:06:07.133
+We're now going to tackle the main agent.
+
+108
+00:06:07.133 --> 00:06:09.168
+First, we're going to define some tools.
+
+109
+00:06:09.168 --> 00:06:11.571
+So we're going to import the
+tool wrapper from LangChain.
+
+110
+00:06:13.139 --> 00:06:16.275
+The first tool we're going to define
+is a tool for writing emails.
+
+111
+00:06:16.509 --> 00:06:18.611
+This tool will take in three things.
+
+112
+00:06:18.611 --> 00:06:21.214
+An email address to send the email to,
+
+113
+00:06:21.214 --> 00:06:24.217
+a subject of the email,
+and the content of the email.
+
+114
+00:06:24.717 --> 00:06:27.487
+Right here we just have a fake dummy tool.
+
+115
+00:06:27.487 --> 00:06:30.490
+So we're not actually implement
+in any logic in it.
+
+116
+00:06:30.656 --> 00:06:31.557
+In the real world,
+
+117
+00:06:31.557 --> 00:06:36.162
+you'll connect this to your Gmail API
+or outlook API to actually send the email,
+
+118
+00:06:36.629 --> 00:06:39.632
+but here we're just going to mock it out.
+
+119
+00:06:40.767 --> 00:06:43.369
+The next tool is a schedule meeting tool.
+
+120
+00:06:43.369 --> 00:06:47.140
+This is going to take in a list
+of attendees, a subject, a duration,
+
+121
+00:06:47.473 --> 00:06:50.476
+and a preferred day,
+and it will schedule a calendar meeting.
+
+122
+00:06:51.978 --> 00:06:54.914
+Again, this is just a mock tool for now.
+
+123
+00:06:54.914 --> 00:06:57.517
+In the real world
+you would connect this to real APIs.
+
+124
+00:07:00.153 --> 00:07:00.820
+And the final
+
+125
+00:07:00.820 --> 00:07:04.590
+tool we're going to define is a tool
+that will check the calendar availability.
+
+126
+00:07:04.590 --> 00:07:05.892
+So we'll take in a day
+
+127
+00:07:05.892 --> 00:07:08.961
+and it will return the availability
+for the user on that day.
+
+128
+00:07:09.562 --> 00:07:11.731
+Again, we're just mocking this tool out.
+
+129
+00:07:11.731 --> 00:07:14.300
+So we're always going to return
+9 a.m., 2 p.m.
+
+130
+00:07:14.300 --> 00:07:17.303
+and 4 p.m..
+
+131
+00:07:18.538 --> 00:07:20.206
+With our tools defined,
+
+132
+00:07:20.206 --> 00:07:23.776
+we're now going to go ahead
+and create the prompt for this agent.
+
+133
+00:07:24.377 --> 00:07:26.712
+So this is actually going to be a function
+
+134
+00:07:26.712 --> 00:07:30.216
+that takes in the state of the agent
+and returns a list of messages.
+
+135
+00:07:31.050 --> 00:07:33.686
+This list of messages
+is going to consist of two parts.
+
+136
+00:07:33.686 --> 00:07:36.389
+One will be the messages
+already in the state.
+
+137
+00:07:36.389 --> 00:07:39.959
+And then the second will be a system
+message that we put at the start.
+
+138
+00:07:41.394 --> 00:07:44.397
+What exactly is in this system message?
+
+139
+00:07:46.165 --> 00:07:47.834
+If we print out the prompt,
+
+140
+00:07:47.834 --> 00:07:52.138
+we can see that there is a little bit
+about the role that the AI is taking on.
+
+141
+00:07:52.605 --> 00:07:56.275
+There's then a section that lists out
+the tools that it has access to.
+
+142
+00:07:56.676 --> 00:07:59.679
+And then there's a section
+for the custom instructions.
+
+143
+00:07:59.846 --> 00:08:02.815
+And we're going to pull these
+in from the prompt instructions
+
+144
+00:08:02.815 --> 00:08:05.818
+that we defined above.
+
+145
+00:08:07.587 --> 00:08:10.723
+Let's now build
+the agent. We're going to use Create
+
+146
+00:08:10.723 --> 00:08:14.360
+React agent which is an off the shelf
+agent implementation.
+
+147
+00:08:18.531 --> 00:08:19.799
+We're going to create this agent
+
+148
+00:08:19.799 --> 00:08:23.302
+by calling Create
+React agent and passing in three things.
+
+149
+00:08:23.836 --> 00:08:27.206
+First is a string corresponding
+to the model to use.
+
+150
+00:08:27.240 --> 00:08:31.611
+In this case we're going to use
+OpenAI and the GPT 4o model.
+
+151
+00:08:32.812 --> 00:08:34.847
+Next we're
+going to pass in a list of tools.
+
+152
+00:08:34.847 --> 00:08:37.850
+In this case
+the three tools we have defined above.
+
+153
+00:08:37.884 --> 00:08:40.152
+And then finally we're going
+to pass in the prompt.
+
+154
+00:08:40.152 --> 00:08:43.823
+In this case, the function for creating
+the prompt that we have defined above.
+
+155
+00:08:45.124 --> 00:08:46.292
+We can now try it out.
+
+156
+00:08:46.292 --> 00:08:48.561
+So we're going to invoke it
+with the list of messages.
+
+157
+00:08:48.561 --> 00:08:53.561
+And in this case let's pass in something
+like "what's my
+
+158
+00:08:53.966 --> 00:08:56.969
+availability for
+
+159
+00:08:57.703 --> 00:09:00.706
+Tuesday?"
+
+160
+00:09:01.240 --> 00:09:03.276
+We'll get back a response.
+
+161
+00:09:03.276 --> 00:09:07.079
+This response will have a list of messages
+as part of the state.
+
+162
+00:09:07.780 --> 00:09:11.317
+If we print out the last message
+in this list of messages,
+
+163
+00:09:11.317 --> 00:09:12.585
+we can see that it responds with:
+
+164
+00:09:12.585 --> 00:09:15.855
+"You have the following available time
+slots on Tuesday 9 a.m.,
+
+165
+00:09:15.855 --> 00:09:19.191
+2 p.m., and 4 p.m." Great.
+
+166
+00:09:20.760 --> 00:09:23.629
+If you
+remember, these are the times that we hard
+
+167
+00:09:23.629 --> 00:09:26.632
+coded our calendar tool
+to say that we were available.
+
+168
+00:09:28.401 --> 00:09:31.571
+Let's now put it all together
+and create the overall agent.
+
+169
+00:09:32.605 --> 00:09:35.975
+The first thing we're going to do
+is define the state of the agent.
+
+170
+00:09:36.876 --> 00:09:39.345
+Here, the state is going to consist
+of two parts.
+
+171
+00:09:39.345 --> 00:09:41.013
+First is an email input.
+
+172
+00:09:41.013 --> 00:09:43.482
+This is what the user will pass in.
+
+173
+00:09:43.482 --> 00:09:46.485
+This will contain
+all the information about the email.
+
+174
+00:09:47.086 --> 00:09:49.422
+Second will be a list of messages.
+
+175
+00:09:49.422 --> 00:09:52.425
+This is where the agent will do its work.
+
+176
+00:09:54.093 --> 00:09:55.595
+After defining the state,
+
+177
+00:09:55.595 --> 00:09:58.598
+let's import some things that we'll use
+to build the rest of the agent.
+
+178
+00:10:01.233 --> 00:10:02.635
+We're going to first define
+
+179
+00:10:02.635 --> 00:10:05.638
+a node for doing the triage step.
+
+180
+00:10:06.038 --> 00:10:08.574
+So this is going to take
+in the state of the agent
+
+181
+00:10:08.574 --> 00:10:10.743
+and it's going to return a command.
+
+182
+00:10:10.743 --> 00:10:12.778
+A command is going to say two things.
+
+183
+00:10:12.778 --> 00:10:15.281
+And we'll see this later on.
+But it will say two things.
+
+184
+00:10:15.281 --> 00:10:19.118
+It will return an update to the state
+and then it will say where to go.
+
+185
+00:10:19.619 --> 00:10:24.523
+And so these two values here are possible
+values of where to go after this
+
+186
+00:10:24.523 --> 00:10:25.424
+triage node.
+
+187
+00:10:25.424 --> 00:10:29.128
+We could either go to the response agent
+or we could go to the end of the graph.
+
+188
+00:10:29.161 --> 00:10:32.698
+This is going to depend
+on the result of the triage step.
+
+189
+00:10:33.399 --> 00:10:35.668
+So let's actually implement this logic.
+
+190
+00:10:37.903 --> 00:10:38.504
+The first thing
+
+191
+00:10:38.504 --> 00:10:41.774
+we're going to do is pull apart
+the email and put into a few different
+
+192
+00:10:42.308 --> 00:10:44.877
+things that we're going to pass
+into the prompt down below.
+
+193
+00:10:44.877 --> 00:10:46.512
+This is just done for convenience.
+
+194
+00:10:46.512 --> 00:10:49.515
+There's no real logic here.
+
+195
+00:10:50.716 --> 00:10:53.119
+Next, we're going to create the system
+prompt.
+
+196
+00:10:53.119 --> 00:10:56.122
+This is the same as above.
+
+197
+00:10:57.590 --> 00:11:00.559
+After that
+we're going to create the user prompt.
+
+198
+00:11:00.559 --> 00:11:03.462
+This is using the author, to, and subject
+
+199
+00:11:03.462 --> 00:11:06.465
+an email thread information
+from the email input.
+
+200
+00:11:08.234 --> 00:11:11.437
+We're then going to call the LLM router
+that we have defined above.
+
+201
+00:11:11.537 --> 00:11:13.806
+Make sure this is LLM router not LLM.
+
+202
+00:11:13.806 --> 00:11:17.843
+This is the one with the output
+that will have the classification schema.
+
+203
+00:11:19.745 --> 00:11:22.214
+We're then going to handle the three
+different types
+
+204
+00:11:22.214 --> 00:11:24.283
+of classification that can occur.
+
+205
+00:11:24.283 --> 00:11:26.585
+Respond, ignore and notify.
+
+206
+00:11:27.586 --> 00:11:28.154
+If it's something
+
+207
+00:11:28.154 --> 00:11:31.157
+else we're going to raise a value here
+that's unexpected.
+
+208
+00:11:32.058 --> 00:11:34.593
+And at the end
+we're going to return this command.
+
+209
+00:11:34.593 --> 00:11:39.593
+This basically tells the graph which node
+to go to and which update to apply.
+
+210
+00:11:40.533 --> 00:11:44.103
+So each of these branches
+for each of these classification results
+
+211
+00:11:44.403 --> 00:11:46.405
+should set a go-to value.
+
+212
+00:11:46.405 --> 00:11:49.408
+And an update value.
+
+213
+00:11:50.543 --> 00:11:52.311
+Let's take a look at respond.
+
+214
+00:11:52.311 --> 00:11:55.281
+This is what happens
+when we want to respond to the email.
+
+215
+00:11:55.281 --> 00:11:56.982
+First
+we're going to print out some nice stuff.
+
+216
+00:11:56.982 --> 00:11:59.752
+This is just so that we can see
+what's going on.
+
+217
+00:11:59.752 --> 00:12:02.354
+Our go-to is going to be response agent.
+
+218
+00:12:02.354 --> 00:12:05.691
+So we want to go to the response
+agent afterwards.
+
+219
+00:12:06.525 --> 00:12:07.727
+The update we're going to apply
+
+220
+00:12:07.727 --> 00:12:10.730
+is we're going to add a new message
+to this list of messages.
+
+221
+00:12:10.863 --> 00:12:12.164
+It's going to be a user message.
+
+222
+00:12:12.164 --> 00:12:15.167
+And it's going to have this content
+respond to the email.
+
+223
+00:12:15.167 --> 00:12:17.837
+And then it's going to paste
+in the email input there.
+
+224
+00:12:20.806 --> 00:12:21.207
+When the
+
+225
+00:12:21.207 --> 00:12:24.243
+LLM calls ignore
+we're first going to print out something.
+
+226
+00:12:24.276 --> 00:12:26.545
+This is similarly just for logging.
+
+227
+00:12:26.545 --> 00:12:27.947
+Our update is going to be none.
+
+228
+00:12:27.947 --> 00:12:30.316
+So we're not going
+to update the state at all.
+
+229
+00:12:30.316 --> 00:12:31.717
+And then we're going to call go to.
+
+230
+00:12:31.717 --> 00:12:34.720
+We're going to go to the end node.
+
+231
+00:12:35.554 --> 00:12:37.156
+What if it's notify?
+
+232
+00:12:37.156 --> 00:12:38.224
+Here for mocking.
+
+233
+00:12:38.224 --> 00:12:39.992
+It's actually going to be pretty similar
+to ignore.
+
+234
+00:12:39.992 --> 00:12:42.995
+We're going to print something out
+with a slightly different print statement.
+
+235
+00:12:43.496 --> 00:12:45.531
+And then we're still going to apply
+no update.
+
+236
+00:12:45.531 --> 00:12:47.800
+And we're going to go
+to the end of the graph.
+
+237
+00:12:47.800 --> 00:12:49.602
+In real life
+this would probably do something else.
+
+238
+00:12:49.602 --> 00:12:51.937
+This would go to
+some sort of notification system.
+
+239
+00:12:51.937 --> 00:12:53.939
+So you might want to go
+to a different node
+
+240
+00:12:53.939 --> 00:12:55.775
+if you add that into the graph.
+
+241
+00:12:55.775 --> 00:12:57.076
+But here we don't have that.
+
+242
+00:12:57.076 --> 00:12:59.645
+So we're just going
+to do a simple go to the end.
+
+243
+00:13:01.247 --> 00:13:03.315
+And that completes our triage node.
+
+244
+00:13:03.315 --> 00:13:04.416
+Pretty complex.
+
+245
+00:13:04.416 --> 00:13:07.586
+But hopefully you understand.
+At a high level it's basically
+
+246
+00:13:07.887 --> 00:13:10.890
+formatting a prompt calling the LLM.
+
+247
+00:13:10.956 --> 00:13:14.393
+And then based on the output deciding
+which node to go to next.
+
+248
+00:13:17.396 --> 00:13:17.696
+Let's
+
+249
+00:13:17.696 --> 00:13:20.699
+put it all together
+and define our email agent.
+
+250
+00:13:20.966 --> 00:13:23.536
+So we're going to use state graph
+which is an agent
+
+251
+00:13:23.536 --> 00:13:25.738
+that operates on a particular state.
+
+252
+00:13:25.738 --> 00:13:28.741
+The state that it's going to operate
+is on the state that we defined above.
+
+253
+00:13:29.074 --> 00:13:32.077
+So it has an email and a list of messages.
+
+254
+00:13:32.144 --> 00:13:33.679
+We're going to add two nodes.
+
+255
+00:13:33.679 --> 00:13:36.148
+The triage node which we defined above.
+
+256
+00:13:36.148 --> 00:13:38.717
+And then the response agent
+which is a sub agent.
+
+257
+00:13:38.717 --> 00:13:41.720
+This is the react agent
+that we first defined.
+
+258
+00:13:41.954 --> 00:13:44.723
+We're going to add an edge
+from start to the triage router.
+
+259
+00:13:44.723 --> 00:13:46.725
+This is basically just saying
+
+260
+00:13:46.725 --> 00:13:50.563
+that the first node we want to go into
+after the start is this triage step.
+
+261
+00:13:51.096 --> 00:13:52.565
+And then we're
+going to compile this agent.
+
+262
+00:13:55.634 --> 00:13:56.702
+Before using it,
+
+263
+00:13:56.702 --> 00:14:00.105
+let's check out what it looks like.
+So we can use this
+
+264
+00:14:00.105 --> 00:14:03.843
+draw mermaid PNG method on the line
+
+265
+00:14:03.876 --> 00:14:07.246
+graph object to get a nice mermaid
+drawing of what it looks like.
+
+266
+00:14:07.646 --> 00:14:09.748
+And we're going to pass this
+x ray equals true.
+
+267
+00:14:09.748 --> 00:14:12.885
+This is just allowing us to zoom in
+to this response agent.
+
+268
+00:14:13.719 --> 00:14:15.588
+Because this is a sub agent in itself.
+
+269
+00:14:15.588 --> 00:14:17.756
+So we want to visualize it.
+
+270
+00:14:17.756 --> 00:14:20.860
+So if we look at the graph we can see that
+we first go to this triage step.
+
+271
+00:14:21.093 --> 00:14:24.697
+From there either goes to end
+or it goes into the response agent.
+
+272
+00:14:24.730 --> 00:14:27.466
+This response agent is of course
+an agent itself.
+
+273
+00:14:27.466 --> 00:14:31.904
+It's got this nice little react
+loop here of an LLM, calling something
+
+274
+00:14:31.904 --> 00:14:35.374
+and then calling some tools
+and then going back, or it can finish.
+
+275
+00:14:38.844 --> 00:14:40.779
+Let's try it out on a few emails.
+
+276
+00:14:40.779 --> 00:14:43.115
+So, first here's one
+that looks like some spam.
+
+277
+00:14:43.115 --> 00:14:45.985
+It's spamming some nice sales email.
+
+278
+00:14:45.985 --> 00:14:48.621
+Hopefully this will be ignored
+by the email
+
+279
+00:14:48.621 --> 00:14:51.624
+agent.
+
+280
+00:14:52.124 --> 00:14:52.725
+Let's call it
+
+281
+00:14:52.725 --> 00:14:56.495
+with this email input and we can see that
+it prints out this classification
+
+282
+00:14:56.495 --> 00:14:57.496
+Ignore.
+
+283
+00:14:57.496 --> 00:15:00.099
+So here we can tell
+that it's successfully ignoring this
+
+284
+00:15:00.099 --> 00:15:03.102
+email.
+
+285
+00:15:05.137 --> 00:15:06.939
+Let's try out another example.
+
+286
+00:15:06.939 --> 00:15:09.942
+This time one that expects a response.
+
+287
+00:15:12.745 --> 00:15:13.545
+If we call it
+
+288
+00:15:13.545 --> 00:15:16.782
+we can see that
+we print out this classification respond.
+
+289
+00:15:16.815 --> 00:15:19.385
+This means that we're getting a response.
+
+290
+00:15:19.385 --> 00:15:22.855
+But what exactly is happening?
+In order to see that,
+
+291
+00:15:23.088 --> 00:15:26.091
+let's take a look at the list of messages.
+
+292
+00:15:26.425 --> 00:15:28.027
+First, we can see the human message.
+
+293
+00:15:28.027 --> 00:15:32.598
+This is the human message that the triage
+node puts in to the list of messages.
+
+294
+00:15:33.499 --> 00:15:37.636
+We can then see that
+it calls the right email tool. In here
+
+295
+00:15:37.636 --> 00:15:40.773
+it responds to Alice
+thanking her for reaching out.
+
+296
+00:15:42.007 --> 00:15:42.641
+We can then
+
+297
+00:15:42.641 --> 00:15:46.312
+see that there's a tool message basically
+just saying that we sent this message.
+
+298
+00:15:46.745 --> 00:15:50.683
+And then we can see a final AI message
+saying, I've responded to Alice's email.
+
+299
+00:15:50.716 --> 00:15:52.918
+Blah blah blah.
+
+300
+00:15:52.918 --> 00:15:55.921
+This is the complete email
+agent in action.
+
+301
+00:15:55.921 --> 00:16:00.826
+It first triages the email and then it
+handles it accordingly if it's meant to.
+
+302
+00:16:01.460 --> 00:16:04.730
+Now's a good time to pause
+and try out some other emails.
+
+303
+00:16:04.964 --> 00:16:06.865
+Try out some other instructions.
+
+304
+00:16:06.865 --> 00:16:09.969
+Try out messing around with the system
+prompt and things like that.
+
+305
+00:16:10.636 --> 00:16:14.807
+This concludes building the email agent,
+but it still doesn't have any memory.
+
+306
+00:16:14.974 --> 00:16:17.843
+And so that's what
+we're going to add in in the next lessons.
+

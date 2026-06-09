@@ -4,12 +4,11 @@ LangChain Lesson 5: Evaluation
 """
 
 import os
-import langchain
 from dotenv import load_dotenv, find_dotenv
-from langchain_openai import ChatOpenAI
-from langchain.document_loaders import CSVLoader
-from langchain.vectorstores import DocArrayInMemorySearch
-from langchain_openai import OpenAIEmbeddings
+from langchain.globals import set_debug
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.document_loaders import CSVLoader
+from langchain_community.vectorstores import DocArrayInMemorySearch
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.chains import RetrievalQA
 
@@ -84,9 +83,9 @@ def demo_debug(qa: RetrievalQA, query: str):
     print("=" * 60)
     print(f"Query: {query}\n")
 
-    langchain.debug = True
+    set_debug(True)
     qa.invoke(query)
-    langchain.debug = False
+    set_debug(False)
 
 
 # ── 4. LLM 批量评估 ───────────────────────────────────────────────────────────

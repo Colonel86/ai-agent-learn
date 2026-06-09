@@ -1,0 +1,315 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.009 --> 00:00:05.039
+Welcome to this final module where you learn about design patterns that lets you build
+
+2
+00:00:05.039 --> 00:00:11.279
+highly autonomous agents, where you don't need to hard code in advance the sequence of steps to take,
+
+3
+00:00:11.279 --> 00:00:16.799
+but it can be more flexible and decide for itself what steps it wants to take to accomplish a task.
+
+4
+00:00:16.799 --> 00:00:20.399
+We'll talk about the planning design pattern and then later in this module,
+
+5
+00:00:20.399 --> 00:00:23.760
+how to build multi-agent systems. Let's dive in.
+
+6
+00:00:23.760 --> 00:00:30.319
+Suppose you run a sunglasses retail store and have information on what sunglasses are in your
+
+7
+00:00:30.319 --> 00:00:35.680
+inventory stored in a database. You might want a customer service agent to be able to answer
+
+8
+00:00:35.680 --> 00:00:40.639
+questions like, do you have any round sunglasses in stock? They're under $100. This is a fairly
+
+9
+00:00:40.639 --> 00:00:45.919
+complex query because you have to look through the product descriptions to see what sunglasses
+
+10
+00:00:45.919 --> 00:00:52.720
+are round, then look at what is in stock, and then finally see what's under $100 in order to tell the
+
+11
+00:00:52.720 --> 00:00:59.520
+customer, yes, we have classic sunglasses. How do you build an agent to answer a broad range of
+
+12
+00:00:59.520 --> 00:01:05.360
+customer queries like this and many others? In order to do so, we're going to give LLM
+
+13
+00:01:05.360 --> 00:01:11.279
+a set of tools to let it get item descriptions, such as look up if different glasses are round,
+
+14
+00:01:11.279 --> 00:01:15.760
+check inventory, maybe process item returns, which is not needed for this query,
+
+15
+00:01:15.760 --> 00:01:22.239
+but we need it for other queries, get item price, check past transactions, process item sale,
+
+16
+00:01:22.319 --> 00:01:29.519
+and so on. In order to let an LLM figure out what's the right sequence of tools to use to respond to
+
+17
+00:01:29.519 --> 00:01:35.440
+the customer request, you might then write a prompt like this. You have access to the following tools
+
+18
+00:01:35.440 --> 00:01:40.879
+and give it a description of each of the, say, six tools or even more tools that the LLM has,
+
+19
+00:01:40.879 --> 00:01:47.680
+and to then tell it to return a step-by-step plan to carry out the user's request. In this case,
+
+20
+00:01:47.680 --> 00:01:53.199
+to answer this particular query, a reasonable plan that an LLM might output might be to first
+
+21
+00:01:53.199 --> 00:01:59.120
+use get item descriptions to check the different descriptions to find the round sunglasses,
+
+22
+00:01:59.120 --> 00:02:03.680
+and then use check inventory to see if they're in stock, and use get item price to see if the
+
+23
+00:02:03.680 --> 00:02:11.440
+in-stock results are less than $100. After an LLM outputs this plan with three steps, what we can do
+
+24
+00:02:11.440 --> 00:02:18.160
+is then take the step one text, that is this text written here in red, and pass that to an LLM,
+
+25
+00:02:18.160 --> 00:02:22.720
+maybe with additional context about what are the tools with your user query, with additional
+
+26
+00:02:22.720 --> 00:02:29.279
+background context, and pass an LLM to carry out step one. And in this case, hopefully the LLM will
+
+27
+00:02:29.279 --> 00:02:34.080
+choose to call the get item descriptions to get the appropriate descriptions of items,
+
+28
+00:02:34.080 --> 00:02:39.759
+and the output of that first step can let it select which are the round sunglasses,
+
+29
+00:02:39.759 --> 00:02:45.360
+and that output of step one is then passed together with the step two instructions, that
+
+30
+00:02:45.360 --> 00:02:49.839
+would be these instructions that I have here in blue, to an LLM to then execute the second step
+
+31
+00:02:49.839 --> 00:02:55.119
+of the plan. Hopefully it will then take the two pairs of round sunglasses we found on the previous
+
+32
+00:02:55.119 --> 00:03:02.240
+slide and check the inventory, and the output of that second step is then used to another LLM call,
+
+33
+00:03:02.240 --> 00:03:06.320
+where you have the output of the second step as well as the instructions of what to do for step
+
+34
+00:03:06.320 --> 00:03:12.160
+three. Pass the LLM to have it get the item price, and finally this output is fed back to
+
+35
+00:03:12.160 --> 00:03:17.919
+the LLM one last time to generate the final answer for the user. In this slide, I've simplified a lot
+
+36
+00:03:17.919 --> 00:03:22.800
+of details a little bit. The actual plan typically written by the LLM is more detailed than these
+
+37
+00:03:22.800 --> 00:03:27.600
+simple one-line instructions, but the basic workflow is to have an LLM write out multiple
+
+38
+00:03:27.600 --> 00:03:33.919
+steps of a plan, and then task it to execute each step of the plan in turn with some appropriate
+
+39
+00:03:33.919 --> 00:03:38.880
+surrounding context about what is the task, what are the tools available, and so on. And the
+
+40
+00:03:38.880 --> 00:03:45.520
+exciting thing about using an LLM to plan this way is that we did not have to decide in advance
+
+41
+00:03:45.520 --> 00:03:52.160
+what is the sequence in which to call tools in order to answer a fairly complex customer request.
+
+42
+00:03:52.160 --> 00:03:58.000
+If a customer were to make a different request, such as I would like to return the gold frame
+
+43
+00:03:58.000 --> 00:04:05.039
+glasses that I had purchased but not the metal frame ones, then you can imagine an LLM similarly
+
+44
+00:04:05.039 --> 00:04:09.839
+being able to come up with a different plan to figure out based on what they had purchased previously,
+
+45
+00:04:09.839 --> 00:04:14.160
+which glasses they had bought based on get item descriptions, where the gold frame ones they want
+
+46
+00:04:14.160 --> 00:04:19.760
+to return, and then maybe call process item return. So with an agent that can plan like this, it can
+
+47
+00:04:19.760 --> 00:04:25.119
+carry out a much wider range of tasks that can require calling many different tools in many
+
+48
+00:04:25.119 --> 00:04:30.559
+different orders. One more example of planning, let's take a look at an email assistant. If you
+
+49
+00:04:30.559 --> 00:04:34.799
+want to be to tell your assistant, so please reply to that email invitation from Bob in New York,
+
+50
+00:04:34.799 --> 00:04:40.000
+tell him to attend and archive his email. Then an email assistant may be given tools like this to
+
+51
+00:04:40.000 --> 00:04:44.480
+search email, move an email, delete an email, and send an email. And you might write an assistant
+
+52
+00:04:44.480 --> 00:04:48.559
+prompt saying you have access to the following tools, and again please return the step-by-step plan.
+
+53
+00:04:48.559 --> 00:04:54.480
+In this case, maybe the LLM will say the steps for this are to use search email to find the email from
+
+54
+00:04:54.480 --> 00:04:59.760
+Bob that mentioned dinner and New York, and then generate and send an email to confirm attendance,
+
+55
+00:04:59.760 --> 00:05:04.480
+and then lastly move that email to the archive folder. Given this plan, which looks a reasonable
+
+56
+00:05:04.480 --> 00:05:11.440
+one, you would then again task an LLM step-by-step to carry out this plan. So the text from the first
+
+57
+00:05:11.440 --> 00:05:16.079
+step, shown here in red, will be fed to the LLM with additional background context, and hopefully
+
+58
+00:05:16.079 --> 00:05:22.160
+it'll trigger search email. Then the output of that can be given to an LLM again with the step
+
+59
+00:05:22.160 --> 00:05:27.839
+two instructions to send an appropriate response. And then finally, assuming the email was sent
+
+60
+00:05:27.839 --> 00:05:33.519
+successfully, you can take that output and have the LLM execute the third step of moving the email
+
+61
+00:05:33.519 --> 00:05:39.040
+from Bob into the archive folder. The planning design pattern is already used successfully
+
+62
+00:05:39.040 --> 00:05:45.119
+in many highly agentic coding systems, where if you ask it to write a piece of software to build
+
+63
+00:05:45.119 --> 00:05:50.399
+some fairly complex application, it might actually come up with a plan to build this component, build
+
+64
+00:05:51.200 --> 00:05:56.239
+this component, to almost form a checklist, and then do those steps one at a time to build a
+
+65
+00:05:56.239 --> 00:06:02.559
+decently complex piece of software. For many other applications, the use of planning is still
+
+66
+00:06:02.559 --> 00:06:07.920
+maybe more experimental. It's not in very widespread use. And one of the challenges of
+
+67
+00:06:07.920 --> 00:06:13.440
+planning is it makes the system sometimes a little bit hard to control, because you as a developer,
+
+68
+00:06:13.440 --> 00:06:19.440
+you don't really know at runtime what plan it will come up with. And so I think outside highly
+
+69
+00:06:19.440 --> 00:06:24.720
+agentic coding systems, where it actually works really well, adoption of planning is still growing
+
+70
+00:06:24.720 --> 00:06:29.760
+in other sectors. But this is exciting technology, and I think it will keep getting better and we'll
+
+71
+00:06:29.760 --> 00:06:34.799
+see it in more and more applications. The cool thing about building agents that can plan for
+
+72
+00:06:34.799 --> 00:06:39.679
+themselves is you don't need to hard code in advance the exact sequence of steps an LLM may
+
+73
+00:06:39.679 --> 00:06:45.679
+take to carry out a complex task. Now, I know that in this video, I've gone over the planning process
+
+74
+00:06:45.679 --> 00:06:51.440
+at a fairly high level, with it all putting a list of steps and then tasking an LLM to carry
+
+75
+00:06:51.440 --> 00:06:57.200
+out the steps of the plan one step at a time. But how does this actually work? In the next video,
+
+76
+00:06:57.200 --> 00:07:03.440
+we'll take a deeper dive to look further into the guts of what these plans actually look like,
+
+77
+00:07:03.440 --> 00:07:07.760
+and how the strings together to have an LLM plan and execute the plan for you.
+
+78
+00:07:07.760 --> 00:07:10.720
+Let's take a look at that in the next video.
+

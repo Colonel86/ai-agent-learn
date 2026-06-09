@@ -1,0 +1,411 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:07.858 --> 00:00:04.639
+Let's say you've built an agentic workflow and if it's not yet working as well as you wish,
+
+2
+00:00:04.639 --> 00:00:09.039
+and this happens to me all the time by the way, I'll often build a quick and dirty system and
+
+3
+00:00:09.039 --> 00:00:14.479
+it doesn't do as well as I wish it would, the question is where do you focus your efforts
+
+4
+00:00:14.479 --> 00:00:19.760
+to make it better? Turns out agentic workflows have many different components and working on
+
+5
+00:00:19.760 --> 00:00:25.120
+some of the components could be much more fruitful than working on some other components. So your
+
+6
+00:00:25.120 --> 00:00:30.319
+skill at choosing where to focus your efforts makes a huge difference in the speed with which
+
+7
+00:00:30.319 --> 00:00:35.919
+you can make improvements to your system. And I found that one of the biggest predictors for how
+
+8
+00:00:35.919 --> 00:00:41.759
+efficient and how good a team is, is whether or not they're able to drive a disciplined error
+
+9
+00:00:41.759 --> 00:00:47.759
+analysis process to tell you where to focus your efforts. So this is an important skill. Let's take
+
+10
+00:00:47.759 --> 00:00:54.319
+a look at how to carry out error analysis. In the research agent example, we had carried out an error
+
+11
+00:00:54.319 --> 00:01:00.639
+analysis in the previous video and we saw that it was often missing key points and a human expert
+
+12
+00:01:00.639 --> 00:01:06.720
+would have made in writing essays on certain topics. So now you've spotted this problem that
+
+13
+00:01:06.720 --> 00:01:12.239
+is sometimes missing key points, how do you know what to work on? It turns out that of the many
+
+14
+00:01:12.239 --> 00:01:17.599
+different steps in this workflow, almost any of them could have contributed to this problem of
+
+15
+00:01:17.599 --> 00:01:23.919
+missing key points. For example, maybe the first LLM was generating search terms that weren't great, so
+
+16
+00:01:23.919 --> 00:01:28.959
+it was just searching for the wrong things and did not discover the right articles. Or maybe use a
+
+17
+00:01:28.959 --> 00:01:33.599
+web search engine that just wasn't very good. There are multiple web search engines out there, in fact
+
+18
+00:01:33.599 --> 00:01:39.519
+actually quite a few that I tend to use for my own base applications and some are better than others.
+
+19
+00:01:39.519 --> 00:01:44.959
+Or maybe web search was just fine but when we gave the list of web search results in LLM, maybe it
+
+20
+00:01:44.959 --> 00:01:51.279
+didn't do a good job choosing the best handful to download. Maybe web fetch has fewer problems in
+
+21
+00:01:51.279 --> 00:01:56.480
+this case, assuming you can fetch web pages accurately. But after dumping the web pages in LLM,
+
+22
+00:01:56.480 --> 00:02:02.639
+maybe the LLM is ignoring some of the points in the documents we had fetched. So it turns out that
+
+23
+00:02:02.639 --> 00:02:09.039
+there are teams that sometimes look at this and go by gut to pick one of these components to work on
+
+24
+00:02:09.039 --> 00:02:13.919
+and sometimes that works and sometimes that leads to many months of work with very little progress
+
+25
+00:02:13.919 --> 00:02:20.399
+in the overall performance of the system. So rather than going by gut to decide which of these
+
+26
+00:02:20.399 --> 00:02:26.720
+many components to work on, I think it's much better to carry out an error analysis to better
+
+27
+00:02:26.720 --> 00:02:32.160
+understand each step in the workflow. And in particular, I'll often examine the traces and that
+
+28
+00:02:32.160 --> 00:02:38.320
+means the intermediate output after each step in order to understand which component's performance
+
+29
+00:02:38.320 --> 00:02:45.759
+is subpar, meaning say much worse than what a human expert would do, because that points to where
+
+30
+00:02:45.759 --> 00:02:50.880
+there may be room for security improvement. Let's look at an example. If we ask the research agent
+
+31
+00:02:50.880 --> 00:02:56.880
+to write an essay about recent news in black hole science, maybe the output search terms like these,
+
+32
+00:02:56.880 --> 00:03:01.759
+search for black hole theories Einstein, Event Horizon Telescope Radio, and so on. And I would
+
+33
+00:03:01.759 --> 00:03:07.600
+then have a human expert look at these and see are these reasonable web search terms for writing
+
+34
+00:03:07.600 --> 00:03:13.759
+about recent discoveries in black hole science. And maybe in this case an expert says these web
+
+35
+00:03:13.759 --> 00:03:20.080
+searches look okay, they're pretty similar to what I would do as a human. Then I look at the outputs of
+
+36
+00:03:20.080 --> 00:03:27.039
+the web search and look at the URLs returned. So web search would return many different web pages
+
+37
+00:03:27.039 --> 00:03:32.000
+and maybe one web page returns is that an elementary school student claims to track a
+
+38
+00:03:32.080 --> 00:03:38.160
+30-year-old black hole mystery from Astro Kid News. And this doesn't look like the most rigorous
+
+39
+00:03:38.160 --> 00:03:44.559
+peer-reviewed article. And maybe examining all of the articles that web search returns causes you to
+
+40
+00:03:44.559 --> 00:03:50.800
+conclude that it's returning too many blog or popular press types of articles and not enough
+
+41
+00:03:50.800 --> 00:03:56.000
+scientific articles to write a research report of the quality that you are looking for. It'd be good
+
+42
+00:03:56.000 --> 00:04:00.800
+to just look through the outputs of the other steps as well. Maybe the LLM finds the best five
+
+43
+00:04:00.800 --> 00:04:06.479
+sources you can, you end up with Astro Kid News, SpaceBot 2000, Space Fun News and so on. And it is
+
+44
+00:04:06.479 --> 00:04:12.160
+by looking at these intermediate outputs that you can then try to get a sense of the quality of the
+
+45
+00:04:12.160 --> 00:04:18.079
+output of each of these steps. To introduce some terminology, the overall set of outputs of all of
+
+46
+00:04:18.079 --> 00:04:24.000
+the intermediate steps is often called the trace of a run of this agent. And then some terminology
+
+47
+00:04:24.000 --> 00:04:29.839
+you see in other sources as well is the output of a single step is sometimes called a span.
+
+48
+00:04:30.399 --> 00:04:35.760
+This is terminology from the computer observability literature where people try to
+
+49
+00:04:35.760 --> 00:04:41.119
+figure out what computers are doing. And in this course, I use the word trace quite a bit. I'll use
+
+50
+00:04:41.119 --> 00:04:46.079
+the word span a little bit less, but you may see both of these terms on the internet. So by reading
+
+51
+00:04:46.079 --> 00:04:52.399
+the traces, you start to get an informal sense of where might be the most problematic components.
+
+52
+00:04:52.399 --> 00:04:57.440
+In order to do this in a more systematic way, it turns out to be useful to focus your attention
+
+53
+00:04:57.440 --> 00:05:02.559
+on the cases that the system is doing poorly on. Maybe you write some essays just fine and the
+
+54
+00:05:02.559 --> 00:05:06.799
+output is completely satisfactory. So I would put those aside and try to come up with a set of
+
+55
+00:05:06.799 --> 00:05:11.760
+examples where for whatever reason, the final output of your research agent is not quite
+
+56
+00:05:11.760 --> 00:05:17.279
+satisfactory and just focus on those examples. So this is one of the reasons we call error analysis
+
+57
+00:05:17.279 --> 00:05:22.720
+because we want to focus on the cases where the system made an error and we want to go through
+
+58
+00:05:22.720 --> 00:05:28.959
+to figure out which components were most responsible for the error in the research agent
+
+59
+00:05:28.959 --> 00:05:33.920
+output. In order to make this more rigorous, rather than reading and getting an informal sense,
+
+60
+00:05:33.920 --> 00:05:40.399
+you might actually build up a spreadsheet to more explicitly count up where the errors are. And by
+
+61
+00:05:40.399 --> 00:05:47.040
+error, I mean when a step outputs something that performs significantly worse than maybe what a
+
+62
+00:05:47.040 --> 00:05:52.880
+human expert would have given a similar input as that component. So I'll often do this myself in a
+
+63
+00:05:52.880 --> 00:05:57.200
+spreadsheet. So I might build a spreadsheet like this. And so for the first query, I'll look at
+
+64
+00:05:57.200 --> 00:06:01.600
+recent developments in black hole science. And I see that the search results has too many blog
+
+65
+00:06:01.600 --> 00:06:07.040
+posts, popular press articles, not enough scientific papers. And then based on this,
+
+66
+00:06:07.040 --> 00:06:12.799
+it is true that the five best sources aren't great. But here I won't say that the five best sources
+
+67
+00:06:12.880 --> 00:06:18.880
+did a bad job because if the inputs to LLM for selecting the five best sources were all
+
+68
+00:06:18.880 --> 00:06:23.839
+non-rigorous articles, then I can't blame this picking the five best sources for not picking
+
+69
+00:06:23.839 --> 00:06:28.239
+better articles because it did the best it could have or as what did nearly as well as any human
+
+70
+00:06:28.239 --> 00:06:32.559
+might have given the same selection to choose from. And then you might go through this for
+
+71
+00:06:32.559 --> 00:06:37.920
+different prompts. Renting versus buying in Seattle. Maybe it missed a well-known blog.
+
+72
+00:06:37.920 --> 00:06:41.440
+Robotics for harvesting fruit. Maybe in this case, we look at it and say,
+
+73
+00:06:41.440 --> 00:06:45.839
+oh, the search terms are too generic and the search results also weren't good and so on.
+
+74
+00:06:45.839 --> 00:06:52.160
+And then based on this, I would count up in my spreadsheet how often I observe errors in the
+
+75
+00:06:52.160 --> 00:06:57.119
+different components. So in this example, I'm dissatisfied with the search terms 5% of the time,
+
+76
+00:06:57.119 --> 00:07:01.839
+but I'm dissatisfied with the search results 45% of the time. And if I actually see this,
+
+77
+00:07:01.839 --> 00:07:05.839
+I might just take a careful look at the search terms to make sure that the search terms really
+
+78
+00:07:05.839 --> 00:07:10.640
+were okay and that poor choice of search terms were not what led to poor search results. But
+
+79
+00:07:10.640 --> 00:07:14.239
+if I really think the search terms are fine, but the search results are not, then I would take a
+
+80
+00:07:14.239 --> 00:07:18.480
+careful look at the web search engine I'm using and if there are any parameters I can tune to make
+
+81
+00:07:18.480 --> 00:07:23.440
+it bring back more relevant or higher quality results. There's this type of analysis that
+
+82
+00:07:23.440 --> 00:07:28.559
+tells me in this example that maybe I really should focus my attention on fixing the search
+
+83
+00:07:28.559 --> 00:07:34.799
+results and not on the other components of this agentic workflow. So to wrap up this video,
+
+84
+00:07:34.799 --> 00:07:40.000
+I find that it's useful to develop a habit of looking at traces. After you build an agentic
+
+85
+00:07:40.000 --> 00:07:44.559
+workflow, go ahead and look at the intermediate outputs to get a feel for what it is actually
+
+86
+00:07:44.559 --> 00:07:48.720
+doing at every step so that you can better understand if different steps are performing
+
+87
+00:07:48.720 --> 00:07:54.079
+better or worse. And a more systematic error analysis, maybe done with a spreadsheet,
+
+88
+00:07:54.079 --> 00:07:59.600
+can let you gather statistics or count up which component performs poorly most frequently. And
+
+89
+00:07:59.600 --> 00:08:05.279
+so by looking at what components are doing poorly, as well as where I have ideas for
+
+90
+00:08:05.279 --> 00:08:10.799
+efficiently improving different components, then that will let you prioritize what component to
+
+91
+00:08:10.799 --> 00:08:15.440
+work on. So maybe a component is problematic, but I don't have any ideas for improving it,
+
+92
+00:08:15.440 --> 00:08:20.799
+so that would suggest maybe not prioritizing that as high. But if there is a component that is
+
+93
+00:08:20.799 --> 00:08:25.040
+generating a lot of errors, and if I have ideas how to improve that, then that would be a good
+
+94
+00:08:25.040 --> 00:08:31.600
+reason to prioritize working on that component. And I just want to emphasize that error analysis
+
+95
+00:08:31.600 --> 00:08:37.520
+is a very helpful output for you to decide where to focus your efforts, because in any complex
+
+96
+00:08:37.520 --> 00:08:42.400
+system, there are just so many things you could work on. It's too easy to pick something to work
+
+97
+00:08:42.400 --> 00:08:47.599
+on and work on it for weeks or even months, only to discover later that that did not result in
+
+98
+00:08:47.599 --> 00:08:52.640
+improved performance in your overall system. And so using error analysis to decide where to focus
+
+99
+00:08:52.640 --> 00:08:58.080
+your effort turns out to be incredibly useful for improving your efficiency. In this video,
+
+100
+00:08:58.080 --> 00:09:04.400
+we went over error analysis with the research agent example, but I think error analysis is
+
+101
+00:09:04.400 --> 00:09:08.400
+such an important topic, I want to go over some additional examples with you.
+
+102
+00:09:08.400 --> 00:09:14.400
+So let's go on to the next video, where we'll look at more examples of error analysis.
+

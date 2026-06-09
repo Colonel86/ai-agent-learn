@@ -1,0 +1,1563 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:02.969
+In the first lesson, Claude AI used the Excel skill
+
+2
+00:00:02.969 --> 00:00:06.373
+to create spreadsheets displaying the marketing results.
+
+3
+00:00:06.773 --> 00:00:09.976
+The Excel skill is one of Anthropic's pre-built skills,
+
+4
+00:00:09.976 --> 00:00:13.980
+which also include a PowerPoint, Word, and PDF skill,
+
+5
+00:00:13.980 --> 00:00:16.282
+as well as a skill creation skill.
+
+6
+00:00:16.850 --> 00:00:18.852
+Let's take a look at those.
+
+7
+00:00:18.852 --> 00:00:22.555
+Now that we've seen how skills fit in the entire AI ecosystem,
+
+8
+00:00:22.555 --> 00:00:25.458
+let's take a look at some of the pre-built skills
+
+9
+00:00:25.458 --> 00:00:27.660
+that you can use out of the
+
+10
+00:00:27.660 --> 00:00:29.863
+box with Claude AI and Claude Desktop,
+
+11
+00:00:29.863 --> 00:00:32.966
+and that you can install yourself with tools like Claude Code.
+
+12
+00:00:33.266 --> 00:00:36.036
+Inside of this repository that lives at
+
+13
+00:00:36.036 --> 00:00:38.738
+github.com/anthropic/skills.
+
+14
+00:00:38.738 --> 00:00:41.241
+Let's take a look at the skills folder
+
+15
+00:00:41.241 --> 00:00:43.043
+and see which built-in ones that we have.
+
+16
+00:00:43.043 --> 00:00:45.445
+All of these are ready for production usage.
+
+17
+00:00:45.845 --> 00:00:48.448
+And we actually saw in a previous lesson
+
+18
+00:00:48.748 --> 00:00:51.451
+the use case of this Excel skill.
+
+19
+00:00:51.851 --> 00:00:54.154
+It's important to note that this list of skills,
+
+20
+00:00:54.254 --> 00:00:55.955
+while created at Anthropic,
+
+21
+00:00:56.256 --> 00:00:58.758
+is actually bucketed into two different sections.
+
+22
+00:00:59.059 --> 00:01:01.761
+The skills for Microsoft Docs, PDFs,
+
+23
+00:01:02.062 --> 00:01:04.431
+Power Points, and Excel
+
+24
+00:01:04.531 --> 00:01:06.332
+are known as document skills.
+
+25
+00:01:06.633 --> 00:01:08.935
+These are built in and always used
+
+26
+00:01:08.935 --> 00:01:10.637
+in tools like Claude AI.
+
+27
+00:01:10.637 --> 00:01:14.441
+The remainder of these skills are examples that we've created
+
+28
+00:01:14.541 --> 00:01:17.143
+that you can toggle on and off in Claude,
+
+29
+00:01:17.243 --> 00:01:19.546
+but by default with the exception of skill-creator
+
+30
+00:01:19.646 --> 00:01:21.181
+are toggled off.
+
+31
+00:01:21.181 --> 00:01:24.684
+Let's first start by analyzing the PowerPoint skill.
+
+32
+00:01:25.685 --> 00:01:27.987
+We can see just like other structures
+
+33
+00:01:28.188 --> 00:01:30.190
+that we have a SKILL.md file
+
+34
+00:01:30.690 --> 00:01:33.693
+as well as other files and folders to reference.
+
+35
+00:01:34.227 --> 00:01:36.629
+Inside of this SKILL.md,
+
+36
+00:01:36.729 --> 00:01:39.632
+we have that same YAML Frontmatter
+
+37
+00:01:39.699 --> 00:01:42.102
+that includes the name and the description.
+
+38
+00:01:42.502 --> 00:01:47.006
+What you're seeing here is how GitHub is rendering this markdown file,
+
+39
+00:01:47.407 --> 00:01:49.008
+but the underlying code
+
+40
+00:01:49.209 --> 00:01:51.511
+looks very similar to what we've made before.
+
+41
+00:01:52.011 --> 00:01:55.482
+You can view it this way if you're familiar with markdown files.
+
+42
+00:01:55.782 --> 00:01:57.183
+I'll switch back to the preview
+
+43
+00:01:57.183 --> 00:01:58.785
+because it looks a little bit nicer.
+
+44
+00:01:59.185 --> 00:02:00.854
+When we take a look at how
+
+45
+00:02:00.854 --> 00:02:02.489
+this skill works and what it does,
+
+46
+00:02:02.889 --> 00:02:04.991
+We've got an overview.
+
+47
+00:02:04.991 --> 00:02:06.926
+The users may ask to create,
+
+48
+00:02:06.926 --> 00:02:09.195
+edit, analyze contents of a PowerPoint file.
+
+49
+00:02:09.496 --> 00:02:12.198
+Here's what it looks like, here's how you read it.
+
+50
+00:02:12.499 --> 00:02:15.168
+And if there are particular tasks that need to be done,
+
+51
+00:02:15.502 --> 00:02:18.471
+there are underlying scripts to go ahead and execute.
+
+52
+00:02:18.972 --> 00:02:22.475
+Remember, these are not executed right out of the box.
+
+53
+00:02:22.675 --> 00:02:25.678
+These are only loaded and executed when necessary.
+
+54
+00:02:25.879 --> 00:02:28.982
+There's quite a bit that we can do with PowerPoint presentations,
+
+55
+00:02:29.382 --> 00:02:31.885
+colors, typography, as you can imagine,
+
+56
+00:02:31.885 --> 00:02:34.687
+this is how we can start to make things that look nicer
+
+57
+00:02:34.687 --> 00:02:38.391
+and look more like real-world presentations out of the box.
+
+58
+00:02:38.858 --> 00:02:42.362
+There are design principles that we have, requirements that are necessary,
+
+59
+00:02:42.662 --> 00:02:46.065
+and color palette selections that we can have Claude pick from
+
+60
+00:02:46.366 --> 00:02:48.368
+when the user does not specify them.
+
+61
+00:02:48.968 --> 00:02:51.337
+This SKILL.md is quite long,
+
+62
+00:02:51.337 --> 00:02:52.739
+as there is quite a bit
+
+63
+00:02:52.739 --> 00:02:54.340
+that we can do with PowerPoint presentations.
+
+64
+00:02:54.607 --> 00:02:56.809
+But what we're going to see later in this lesson
+
+65
+00:02:56.809 --> 00:02:58.711
+is how to actually use this skill
+
+66
+00:02:58.711 --> 00:03:00.914
+to take existing data and turn it into
+
+67
+00:03:00.914 --> 00:03:03.416
+a beautiful looking presentation.
+
+68
+00:03:03.883 --> 00:03:05.752
+The next skill I want to show you
+
+69
+00:03:05.752 --> 00:03:07.787
+is a little bit of a meta idea here,
+
+70
+00:03:07.787 --> 00:03:09.889
+and that's called the skill-creator.
+
+71
+00:03:10.156 --> 00:03:12.959
+And the skill creator is a skill
+
+72
+00:03:12.959 --> 00:03:16.963
+that serves the purpose of programmatically creating skills for you.
+
+73
+00:03:17.664 --> 00:03:20.066
+Instead of having to do things from scratch
+
+74
+00:03:20.066 --> 00:03:23.369
+and create the necessary files and folder structure,
+
+75
+00:03:23.369 --> 00:03:25.572
+the skill creator can do that for you.
+
+76
+00:03:25.738 --> 00:03:27.941
+Let's take a look at the SKILL.md file
+
+77
+00:03:27.941 --> 00:03:29.742
+and see what's happening here.
+
+78
+00:03:30.043 --> 00:03:33.646
+Similar to our other skills, we have a name and a description.
+
+79
+00:03:33.846 --> 00:03:35.081
+And I'm actually going to take
+
+80
+00:03:35.081 --> 00:03:36.549
+a look at the underlying code here,
+
+81
+00:03:36.549 --> 00:03:38.351
+since it's a little bit easier to follow.
+
+82
+00:03:38.751 --> 00:03:41.354
+We specify in this SKILL.md file
+
+83
+00:03:41.754 --> 00:03:44.657
+what skill is, what it provides,
+
+84
+00:03:45.258 --> 00:03:48.962
+and then we include some of the best practices associated with skills.
+
+85
+00:03:49.462 --> 00:03:52.966
+We're going to dive into those best practices in the next lesson.
+
+86
+00:03:53.166 --> 00:03:57.170
+But you can imagine when Claude is programmatically creating skills for you,
+
+87
+00:03:57.370 --> 00:03:59.672
+we want to leverage some of these best practices.
+
+88
+00:04:00.006 --> 00:04:02.609
+When we take a look at the skill creation process,
+
+89
+00:04:03.509 --> 00:04:06.512
+we're extremely explicit with the steps that we have here.
+
+90
+00:04:06.913 --> 00:04:10.516
+Since we want to use this skill to create a predictable workflow,
+
+91
+00:04:10.917 --> 00:04:14.821
+we want to be extremely explicit with what the steps are,
+
+92
+00:04:15.021 --> 00:04:17.090
+how to follow them, and what
+
+93
+00:04:17.090 --> 00:04:19.525
+to skip only if some reason exists.
+
+94
+00:04:19.926 --> 00:04:22.028
+We start with concrete examples,
+
+95
+00:04:22.028 --> 00:04:24.530
+we plan reusable skill contents,
+
+96
+00:04:24.530 --> 00:04:26.933
+and here you can start to see examples
+
+97
+00:04:26.933 --> 00:04:30.303
+that are very helpful for Claude to pattern match
+
+98
+00:04:30.303 --> 00:04:32.805
+when there's a skill you'd like to create.
+
+99
+00:04:32.839 --> 00:04:34.841
+When we start initializing the skill,
+
+100
+00:04:34.841 --> 00:04:37.644
+here we're running underlying Python scripts
+
+101
+00:04:37.644 --> 00:04:40.013
+to perform the task necessary.
+
+102
+00:04:40.013 --> 00:04:42.615
+Let's take a look at what those scripts do.
+
+103
+00:04:44.817 --> 00:04:48.788
+Inside of the scripts folder, I have three Python files here.
+
+104
+00:04:49.322 --> 00:04:53.426
+A script to initialize the skill and provide the underlying text,
+
+105
+00:04:53.726 --> 00:04:55.828
+a Python file to package that skill,
+
+106
+00:04:56.496 --> 00:04:58.998
+and then a script to validate that skill.
+
+107
+00:04:59.332 --> 00:05:01.534
+Let's take a look at what this
+
+108
+00:05:01.534 --> 00:05:03.736
+underlying code does to initialize a skill.
+
+109
+00:05:04.137 --> 00:05:06.139
+We take an existing template that we have
+
+110
+00:05:06.239 --> 00:05:09.842
+with some YAML Frontmatter and some placeholders and to-dos,
+
+111
+00:05:10.143 --> 00:05:11.644
+and we fill that in based
+
+112
+00:05:11.644 --> 00:05:13.446
+on the data that is coming in.
+
+113
+00:05:13.780 --> 00:05:16.783
+This underlying script allows us to create
+
+114
+00:05:16.783 --> 00:05:19.986
+the necessary text files when making our skills.
+
+115
+00:05:20.787 --> 00:05:24.824
+Once we've generated the necessary files, we can package that up.
+
+116
+00:05:24.824 --> 00:05:27.727
+Here you can see we're bringing in the necessary modules
+
+117
+00:05:27.827 --> 00:05:30.029
+to zip our skill necessary
+
+118
+00:05:30.129 --> 00:05:31.898
+and make sure that we're doing this
+
+119
+00:05:31.898 --> 00:05:33.633
+in the right folder and file structure.
+
+120
+00:05:34.334 --> 00:05:36.436
+Finally, we have one last script
+
+121
+00:05:36.536 --> 00:05:38.838
+to perform a validation of our skill.
+
+122
+00:05:39.038 --> 00:05:41.341
+make sure that a SKILL.md exists,
+
+123
+00:05:42.041 --> 00:05:44.043
+validate some of the YAML Frontmatter,
+
+124
+00:05:44.344 --> 00:05:46.579
+and make sure that what we put
+
+125
+00:05:46.579 --> 00:05:49.148
+inside of our folder and files is correct.
+
+126
+00:05:49.816 --> 00:05:52.719
+We're going to be leveraging this skill-creator skill
+
+127
+00:05:52.819 --> 00:05:54.821
+to take existing content that we have
+
+128
+00:05:54.921 --> 00:05:58.624
+and package it up into a reusable and modular script.
+
+129
+00:05:58.725 --> 00:06:01.828
+Now let's go ahead and shift gears back to Claude
+
+130
+00:06:01.928 --> 00:06:04.330
+and see how to put together built-in skills,
+
+131
+00:06:04.430 --> 00:06:06.332
+our own skills, and a predictable workflow
+
+132
+00:06:06.432 --> 00:06:08.634
+with an MCP server.
+
+133
+00:06:09.335 --> 00:06:11.637
+Back in Claude, let's go and take a look
+
+134
+00:06:11.938 --> 00:06:14.040
+and make sure that we have the
+
+135
+00:06:14.040 --> 00:06:16.142
+correct skills enabled and where those live.
+
+136
+00:06:16.843 --> 00:06:19.345
+Back in settings, inside of capabilities.
+
+137
+00:06:19.912 --> 00:06:23.516
+We saw previously, we can create skills in this section.
+
+138
+00:06:24.016 --> 00:06:25.451
+What I want to show you
+
+139
+00:06:25.451 --> 00:06:27.120
+are the example skills that we have
+
+140
+00:06:27.720 --> 00:06:29.155
+and this should look pretty familiar.
+
+141
+00:06:29.155 --> 00:06:30.823
+This is what we saw on GitHub.
+
+142
+00:06:31.524 --> 00:06:34.026
+By default, these skills are turned off.
+
+143
+00:06:34.527 --> 00:06:37.130
+If we want to toggle them on, we can absolutely do so.
+
+144
+00:06:37.530 --> 00:06:40.333
+The skill that is toggled on by default
+
+145
+00:06:40.400 --> 00:06:43.102
+is the skill-creator that we just saw.
+
+146
+00:06:43.302 --> 00:06:45.505
+It's important to note that while the skill-creator
+
+147
+00:06:45.605 --> 00:06:48.307
+is extremely effective at creating
+
+148
+00:06:48.408 --> 00:06:51.010
+underlying skills and structure necessary,
+
+149
+00:06:51.110 --> 00:06:54.313
+we still have to be intentional about the prompt that we provide
+
+150
+00:06:54.414 --> 00:06:56.082
+and the data that goes in to
+
+151
+00:06:56.082 --> 00:06:57.717
+the skill that we're going to make.
+
+152
+00:06:58.084 --> 00:07:00.153
+What we're going to do now is
+
+153
+00:07:00.153 --> 00:07:02.255
+put all of these ideas around skills,
+
+154
+00:07:02.855 --> 00:07:05.358
+MCP, and prompting together.
+
+155
+00:07:05.958 --> 00:07:09.061
+First, we're going to modify our previous skill
+
+156
+00:07:09.061 --> 00:07:11.564
+that we created for analyzing campaigns.
+
+157
+00:07:11.831 --> 00:07:16.335
+to not use a CSV for data, but instead BigQuery.
+
+158
+00:07:16.736 --> 00:07:21.040
+If you're not familiar, BigQuery is a data store powered by Google,
+
+159
+00:07:21.340 --> 00:07:23.342
+and in order to bring in the
+
+160
+00:07:23.342 --> 00:07:25.645
+necessary tooling and context to work with BigQuery,
+
+161
+00:07:25.845 --> 00:07:28.047
+we're going to connect an MCP server.
+
+162
+00:07:28.314 --> 00:07:30.817
+So we're going to use the skill-creator skill
+
+163
+00:07:31.117 --> 00:07:35.822
+to modify our previous marketing analyzing skill to use BigQuery.
+
+164
+00:07:36.122 --> 00:07:39.826
+We're then going to use skill-creator to create another skill.
+
+165
+00:07:40.493 --> 00:07:43.196
+This will be for the purpose of brand guidelines.
+
+166
+00:07:43.529 --> 00:07:48.234
+We'll include a file that specifies the guidelines as well as logos,
+
+167
+00:07:48.434 --> 00:07:50.703
+and we'll build for ourselves another skill
+
+168
+00:07:50.703 --> 00:07:53.105
+to perform that task. Finally,
+
+169
+00:07:53.306 --> 00:07:55.808
+we'll take our two skills that we used
+
+170
+00:07:56.008 --> 00:07:59.812
+to extract and analyze data and to leverage brand guidelines
+
+171
+00:08:00.012 --> 00:08:02.515
+and combine them with a built-in skill
+
+172
+00:08:02.615 --> 00:08:04.817
+for creating PowerPoint presentations
+
+173
+00:08:04.917 --> 00:08:07.720
+to create a workflow that makes use of prompting,
+
+174
+00:08:07.820 --> 00:08:10.223
+skills, and the model context protocol.
+
+175
+00:08:10.523 --> 00:08:13.125
+Before we jump in, you might be wondering
+
+176
+00:08:13.426 --> 00:08:15.127
+where the Excel and PowerPoint
+
+177
+00:08:15.428 --> 00:08:18.598
+and other document skills
+that we saw before live.
+
+178
+00:08:18.898 --> 00:08:20.900
+These are built in to Claude AI.
+
+179
+00:08:21.100 --> 00:08:23.503
+and are not things that can be toggled on and off.
+
+180
+00:08:24.070 --> 00:08:26.639
+So with that in mind, let's start this workflow.
+
+181
+00:08:27.073 --> 00:08:31.911
+Before we modify our analyzing marketing campaign skill to use BigQuery,
+
+182
+00:08:32.245 --> 00:08:34.947
+Let's also make a note that we're using Claude desktop here
+
+183
+00:08:35.615 --> 00:08:39.819
+to connect to a local MCP server to leverage BigQuery.
+
+184
+00:08:40.419 --> 00:08:43.723
+So let's take a look at how that BigQuery server is configured.
+
+185
+00:08:44.323 --> 00:08:47.026
+I'm going to head over to Settings, Developer
+
+186
+00:08:47.560 --> 00:08:50.062
+And here, we can take a look
+
+187
+00:08:50.062 --> 00:08:52.064
+at the underlying command and arguments
+
+188
+00:08:52.064 --> 00:08:54.066
+and environment variables for the particular project
+
+189
+00:08:54.066 --> 00:08:57.069
+and where my credentials live.
+
+190
+00:08:57.069 --> 00:09:00.039
+For this example, we don't have to use BigQuery,
+
+191
+00:09:00.039 --> 00:09:02.742
+you can use a database, some external data store,
+
+192
+00:09:02.742 --> 00:09:05.545
+but we just want to showcase what it looks like
+
+193
+00:09:05.545 --> 00:09:08.047
+with skills and MCP servers working together.
+
+194
+00:09:08.414 --> 00:09:10.650
+And if you're interested in seeing that
+
+195
+00:09:10.650 --> 00:09:13.219
+underlying config file, here's what it looks like.
+
+196
+00:09:13.719 --> 00:09:15.521
+In this config file, we specify
+
+197
+00:09:15.521 --> 00:09:17.623
+the servers we want to connect to
+
+198
+00:09:17.924 --> 00:09:21.928
+and the underlying commands to run when Claude Desktop starts.
+
+199
+00:09:22.328 --> 00:09:25.131
+With that in mind, let's go ahead and modify
+
+200
+00:09:25.531 --> 00:09:28.134
+our previous skill to now use BigQuery
+
+201
+00:09:28.534 --> 00:09:31.504
+instead of CSVs for data access.
+
+202
+00:09:32.305 --> 00:09:35.508
+To make sure this is working correctly, let's first ask Claude
+
+203
+00:09:35.708 --> 00:09:40.313
+to list the tables in BigQuery that exist.
+
+204
+00:09:42.715 --> 00:09:44.050
+This is going to make use
+
+205
+00:09:44.050 --> 00:09:45.618
+of the MCP server that we have.
+
+206
+00:09:45.985 --> 00:09:47.954
+We're going to allow this and we
+
+207
+00:09:47.954 --> 00:09:49.889
+should get back the list of tables.
+
+208
+00:09:49.889 --> 00:09:51.524
+In this case, we only have one.
+
+209
+00:09:53.693 --> 00:09:56.128
+So here we can see there's a data set called marketing
+
+210
+00:09:56.128 --> 00:09:57.830
+that contains a single table.
+
+211
+00:09:58.164 --> 00:10:00.366
+Now we're going to ask Claude
+
+212
+00:10:00.366 --> 00:10:02.735
+to show me the schema of the table.
+
+213
+00:10:05.338 --> 00:10:08.040
+Hopefully Claude can pick up that small spelling mistake
+
+214
+00:10:08.040 --> 00:10:10.710
+and we should be in business. Here
+
+215
+00:10:10.710 --> 00:10:13.346
+we're specifying what the table looks like.
+
+216
+00:10:13.713 --> 00:10:15.481
+And this looks great. And we're
+
+217
+00:10:15.481 --> 00:10:17.516
+going to make use of this schema
+
+218
+00:10:17.516 --> 00:10:21.520
+when we go ahead and update our analyzing-marketing-campaign skill.
+
+219
+00:10:21.821 --> 00:10:24.724
+What we're going to do now is ask Claude to update
+
+220
+00:10:24.724 --> 00:10:26.926
+our analyzing-marketing-campaign skill
+
+221
+00:10:26.926 --> 00:10:30.529
+so that instead of a CSV upload, we pull from BigQuery.
+
+222
+00:10:30.730 --> 00:10:32.732
+We specify the data
+
+223
+00:10:32.832 --> 00:10:36.936
+from the BigQuery table, specifically the schema that we just saw above.
+
+224
+00:10:37.436 --> 00:10:39.739
+Since we're all in one single conversation,
+
+225
+00:10:39.839 --> 00:10:41.307
+Claude should have no problem taking
+
+226
+00:10:41.307 --> 00:10:43.042
+a look at what the schema is.
+
+227
+00:10:43.342 --> 00:10:45.444
+We're specifying some requirements for this,
+
+228
+00:10:45.745 --> 00:10:47.346
+and just like in our existing skill,
+
+229
+00:10:47.346 --> 00:10:49.148
+we want to make sure that the reference
+
+230
+00:10:49.148 --> 00:10:52.151
+to our budget reallocation rules does not get modified.
+
+231
+00:10:52.618 --> 00:10:55.421
+Like we spoke about earlier, the skill creator skill
+
+232
+00:10:55.421 --> 00:10:57.423
+is extremely helpful and efficient,
+
+233
+00:10:57.423 --> 00:11:00.126
+but we still need to give the context necessary.
+
+234
+00:11:02.128 --> 00:11:04.530
+Notice here, the first thing it's going to do is analyze
+
+235
+00:11:04.530 --> 00:11:07.633
+the necessary skill structure and use our skill creator skill
+
+236
+00:11:07.633 --> 00:11:11.137
+to modify the existing skill
+
+237
+00:11:11.137 --> 00:11:13.139
+and follow best practices.
+
+238
+00:11:14.507 --> 00:11:18.010
+We're going to go ahead now and create the updated skill
+
+239
+00:11:18.010 --> 00:11:20.012
+with a new SKILL.md file.
+
+240
+00:11:21.113 --> 00:11:22.715
+Here we can start to see something
+
+241
+00:11:22.715 --> 00:11:25.017
+that feels similar to our previous skill.
+
+242
+00:11:25.651 --> 00:11:28.954
+But instead adding BigQuery instead of CSV uploads.
+
+243
+00:11:30.256 --> 00:11:33.959
+Under the hood, we're using the file system and bash tools
+
+244
+00:11:34.360 --> 00:11:37.863
+to create the necessary file and folder structure for us.
+
+245
+00:11:39.532 --> 00:11:41.600
+What we can see here is instead
+
+246
+00:11:41.600 --> 00:11:43.636
+of using a CSV, we're using BigQuery
+
+247
+00:11:43.936 --> 00:11:46.472
+and we're following the best practice of
+
+248
+00:11:46.472 --> 00:11:49.341
+using MCP servers with skills where we specify
+
+249
+00:11:49.341 --> 00:11:52.344
+the server and the name of the tool.
+
+250
+00:11:52.745 --> 00:11:55.047
+The skill-creator is following best practices
+
+251
+00:11:55.448 --> 00:11:57.950
+to take our existing skill and modify it.
+
+252
+00:11:58.651 --> 00:12:00.653
+So as we instructed skill-creator,
+
+253
+00:12:01.153 --> 00:12:03.255
+when we specified our required input.
+
+254
+00:12:03.289 --> 00:12:05.491
+We're seeing this in practice right now.
+
+255
+00:12:06.092 --> 00:12:08.794
+It's best practice not to use an ambiguous date range
+
+256
+00:12:09.095 --> 00:12:12.064
+or the entire range, so we ask the user to clarify,
+
+257
+00:12:12.465 --> 00:12:14.366
+and when we show an example
+
+258
+00:12:14.366 --> 00:12:16.569
+of querying, we're specifying a date range.
+
+259
+00:12:16.869 --> 00:12:19.672
+So some of the tools and requirements that we put in
+
+260
+00:12:19.772 --> 00:12:22.575
+are being directly applied when we update this skill.
+
+261
+00:12:23.175 --> 00:12:25.377
+So our skill looks like it's in great shape.
+
+262
+00:12:25.678 --> 00:12:28.981
+In order to make sure this is saved to subsequent conversations,
+
+263
+00:12:29.081 --> 00:12:32.284
+let's go ahead and copy this skill.
+
+264
+00:12:36.055 --> 00:12:37.723
+Now we're going to shift gears and
+
+265
+00:12:37.723 --> 00:12:39.358
+create a new skill for brand guidelines
+
+266
+00:12:39.458 --> 00:12:42.862
+that we'll use alongside this skill
+
+267
+00:12:42.962 --> 00:12:47.166
+to create a compelling data-driven PowerPoint presentation.
+
+268
+00:12:47.733 --> 00:12:49.935
+So let's go ahead and start with a new chat
+
+269
+00:12:50.236 --> 00:12:52.938
+and we're going to ask Claude to create
+
+270
+00:12:52.938 --> 00:12:56.942
+a brand guideline skill from files that we upload.
+
+271
+00:12:57.443 --> 00:12:59.945
+The first thing I'm going to do is upload a file
+
+272
+00:12:59.945 --> 00:13:02.948
+with my brand guidelines as well as some logos
+
+273
+00:13:02.948 --> 00:13:04.950
+to be used in the presentation.
+
+274
+00:13:05.951 --> 00:13:07.953
+Before we go ahead and create this skill,
+
+275
+00:13:08.220 --> 00:13:10.923
+let me just show you what these brand guidelines look like.
+
+276
+00:13:11.123 --> 00:13:14.627
+I've got a color palette, supporting colors, typography.
+
+277
+00:13:15.127 --> 00:13:18.197
+Claude knows how to design things, but where skills really shine
+
+278
+00:13:18.497 --> 00:13:20.699
+are where you can tell Claude exactly
+
+279
+00:13:20.800 --> 00:13:22.902
+how you want things done for your company.
+
+280
+00:13:23.202 --> 00:13:27.006
+logos, colors, fonts, great example.
+
+281
+00:13:27.306 --> 00:13:30.609
+Now let's go ahead and create a skill from these files
+
+282
+00:13:30.709 --> 00:13:34.013
+that we can apply to future presentations and documents.
+
+283
+00:13:34.613 --> 00:13:37.416
+What we're going to see here is the skill creator skill
+
+284
+00:13:37.817 --> 00:13:39.518
+in action again.
+
+285
+00:13:40.019 --> 00:13:43.122
+We're leveraging the existing tooling and skills that we have
+
+286
+00:13:43.422 --> 00:13:47.126
+to use best practices as well as the guideline and logos
+
+287
+00:13:47.426 --> 00:13:50.396
+to make a skill that is repeatable and portable.
+
+288
+00:13:50.796 --> 00:13:52.665
+We're going to analyze other existing
+
+289
+00:13:52.665 --> 00:13:54.800
+skills to see what patterns they use
+
+290
+00:13:55.100 --> 00:13:57.703
+and make sure that this new skill we're creating
+
+291
+00:13:57.703 --> 00:14:01.607
+can complement them. And this is extremely valuable
+
+292
+00:14:01.607 --> 00:14:04.210
+since we're going to be using this with PowerPoint presentations.
+
+293
+00:14:04.643 --> 00:14:05.945
+Now that we have a good
+
+294
+00:14:05.945 --> 00:14:07.446
+idea of what needs to be done,
+
+295
+00:14:07.847 --> 00:14:11.150
+let's run that init_skill Python script that we saw before.
+
+296
+00:14:11.851 --> 00:14:13.652
+This will create the underlying skill,
+
+297
+00:14:13.953 --> 00:14:16.155
+and now we can start adding our assets
+
+298
+00:14:16.455 --> 00:14:18.257
+to the skill's assets folder.
+
+299
+00:14:20.459 --> 00:14:22.461
+We're going to start to see colors populate,
+
+300
+00:14:22.761 --> 00:14:25.064
+accent colors, fonts, typography.
+
+301
+00:14:25.631 --> 00:14:27.733
+And in a bit, we'll have a skill
+
+302
+00:14:27.733 --> 00:14:30.603
+that we can start adding to all future conversations
+
+303
+00:14:30.603 --> 00:14:33.105
+when there's design that we need done.
+
+304
+00:14:33.806 --> 00:14:35.808
+Our logos are being pulled in,
+
+305
+00:14:35.808 --> 00:14:38.110
+Word documents and PDFs are specified,
+
+306
+00:14:38.310 --> 00:14:41.313
+and presentation layouts are the way that we want them to be.
+
+307
+00:14:42.114 --> 00:14:44.516
+The skill creator has finished running.
+
+308
+00:14:44.917 --> 00:14:48.220
+And here we have a SKILL.md file that's been created,
+
+309
+00:14:48.520 --> 00:14:51.924
+following best practices with a name and a description,
+
+310
+00:14:52.424 --> 00:14:54.026
+as well as underlying folders
+
+311
+00:14:54.126 --> 00:14:57.029
+with the necessary data and logos that we need.
+
+312
+00:14:57.229 --> 00:14:59.231
+There's one more step we need to do
+
+313
+00:14:59.231 --> 00:15:02.534
+to make sure that this gets added to future conversations.
+
+314
+00:15:03.035 --> 00:15:06.438
+In order to make sure this is saved to subsequent conversations,
+
+315
+00:15:06.639 --> 00:15:09.008
+let's go ahead and copy this skill.
+
+316
+00:15:10.943 --> 00:15:13.946
+Once this is done, we should see this skill
+
+317
+00:15:14.346 --> 00:15:16.348
+in the list of skills that we've created.
+
+318
+00:15:17.182 --> 00:15:18.717
+Now that we've updated
+
+319
+00:15:18.717 --> 00:15:21.921
+our skill to move from CSVs to BigQuery,
+
+320
+00:15:22.121 --> 00:15:25.124
+and created a new skill for our brand guidelines,
+
+321
+00:15:25.124 --> 00:15:28.594
+let's combine that to build a workflow alongside the built-in
+
+322
+00:15:28.594 --> 00:15:31.096
+PowerPoint presentation skill
+
+323
+00:15:31.096 --> 00:15:33.098
+to first analyze our data
+
+324
+00:15:33.098 --> 00:15:34.900
+and then generate a presentation.
+
+325
+00:15:35.367 --> 00:15:38.270
+So we're going to first analyze our marketing data
+
+326
+00:15:38.270 --> 00:15:40.205
+for a different week in BigQuery
+
+327
+00:15:40.205 --> 00:15:41.974
+to see how each channel is doing.
+
+328
+00:15:42.474 --> 00:15:44.076
+And then based on that data,
+
+329
+00:15:44.076 --> 00:15:47.146
+generate a presentation with our brand guidelines.
+
+330
+00:15:47.646 --> 00:15:49.715
+Let's see what this looks like.
+
+331
+00:15:50.316 --> 00:15:53.152
+First, we're going to go ahead and read the relevant skill files.
+
+332
+00:15:53.152 --> 00:15:56.155
+This includes our marketing campaign analysis
+
+333
+00:15:56.155 --> 00:15:59.158
+and will include our BigQuery guidelines as well.
+
+334
+00:15:59.625 --> 00:16:01.393
+We're going to go ahead and make
+
+335
+00:16:01.393 --> 00:16:03.429
+sure we have the correct PowerPoint presentation skill
+
+336
+00:16:03.429 --> 00:16:05.431
+as well as our brand skill for styling.
+
+337
+00:16:06.031 --> 00:16:08.834
+Inside of the underlying PowerPoint presentation skill,
+
+338
+00:16:09.134 --> 00:16:12.137
+there's additional documentation for presentation creation.
+
+339
+00:16:12.438 --> 00:16:14.907
+First, we're going to go ahead and start with BigQuery.
+
+340
+00:16:15.207 --> 00:16:17.209
+We're going to query what's necessary.
+
+341
+00:16:20.212 --> 00:16:21.714
+We can take a look and
+
+342
+00:16:21.714 --> 00:16:23.415
+see the underlying SQL that's being written
+
+343
+00:16:23.916 --> 00:16:26.919
+and like we saw before, that date range that we're looking for.
+
+344
+00:16:27.686 --> 00:16:29.688
+Now that we have the data,
+
+345
+00:16:29.688 --> 00:16:31.690
+we're going to use these metrics to go ahead
+
+346
+00:16:31.690 --> 00:16:33.692
+and generate a PowerPoint presentation.
+
+347
+00:16:34.293 --> 00:16:36.695
+We're going to do so with the styling that we've advised
+
+348
+00:16:36.695 --> 00:16:39.698
+in our brand style and turn this into a PowerPoint presentation.
+
+349
+00:16:39.965 --> 00:16:42.368
+can see here the underlying CSS and HTML
+
+350
+00:16:42.368 --> 00:16:44.269
+being written for our slides.
+
+351
+00:16:44.770 --> 00:16:46.772
+And then we're going to lean into the built-in skill
+
+352
+00:16:46.772 --> 00:16:49.274
+for creating the underlying presentation.
+
+353
+00:16:51.110 --> 00:16:53.345
+Now that we've got the right HTML files,
+
+354
+00:16:53.445 --> 00:16:55.748
+let's go ahead and create our presentation.
+
+355
+00:16:56.548 --> 00:16:59.651
+Here we're using the native PowerPoint skill
+
+356
+00:17:00.052 --> 00:17:03.155
+and writing the necessary code to create the presentation.
+
+357
+00:17:04.156 --> 00:17:06.225
+We can see here even when there
+
+358
+00:17:06.225 --> 00:17:08.627
+are particular issues, the model will go back
+
+359
+00:17:08.927 --> 00:17:11.030
+edit anything necessary
+
+360
+00:17:11.030 --> 00:17:12.831
+and lean on the exact workflow,
+
+361
+00:17:12.931 --> 00:17:14.733
+not only for running code necessary,
+
+362
+00:17:14.733 --> 00:17:16.835
+but validating what needs to be done.
+
+363
+00:17:18.037 --> 00:17:20.839
+This ability that the model has to backtrack
+
+364
+00:17:20.839 --> 00:17:22.441
+and follow particular patterns
+
+365
+00:17:22.441 --> 00:17:24.710
+allows for us to create presentations
+
+366
+00:17:24.710 --> 00:17:26.812
+that don't come with built-in issues
+
+367
+00:17:26.812 --> 00:17:28.714
+that we need to immediately then correct.
+
+368
+00:17:29.181 --> 00:17:32.684
+So we're seeing that Claude's done its verification, the slides look great.
+
+369
+00:17:33.185 --> 00:17:36.989
+Now it's going to go ahead and generate that underlying PowerPoint presentation,
+
+370
+00:17:37.489 --> 00:17:38.957
+which I can open up in
+
+371
+00:17:38.957 --> 00:17:40.692
+Google Drive and use as Google Slides,
+
+372
+00:17:40.993 --> 00:17:42.694
+or I can download directly.
+
+373
+00:17:43.495 --> 00:17:45.998
+We can see here, I've got some really nice looking slides
+
+374
+00:17:46.198 --> 00:17:48.700
+with the colors, fonts, logos,
+
+375
+00:17:49.001 --> 00:17:51.503
+and everything that I want for my particular company.
+
+376
+00:17:52.071 --> 00:17:54.873
+We have our efficiency analysis, funnel analysis,
+
+377
+00:17:55.274 --> 00:17:57.409
+and the executive summary that highlights what
+
+378
+00:17:57.409 --> 00:17:59.578
+needs review and what's doing quite well.
+
+379
+00:18:00.079 --> 00:18:01.680
+I can download this presentation, I
+
+380
+00:18:01.680 --> 00:18:03.549
+can continue to build off of it,
+
+381
+00:18:03.582 --> 00:18:06.552
+and again, open it up in Google Drive to share with teammates.
+
+382
+00:18:07.052 --> 00:18:09.855
+I can continue prompting and working with this presentation.
+
+383
+00:18:10.222 --> 00:18:13.325
+But what we're seeing here is an underlying PowerPoint presentation
+
+384
+00:18:13.325 --> 00:18:15.527
+created from a built-in skill,
+
+385
+00:18:15.527 --> 00:18:18.530
+combined with two skills that we've made
+
+386
+00:18:18.530 --> 00:18:20.532
+alongside an MCP server
+
+387
+00:18:20.532 --> 00:18:22.634
+pulling in data from BigQuery.
+
+388
+00:18:22.935 --> 00:18:26.238
+In the next lesson, we'll explore some of the best practices
+
+389
+00:18:26.338 --> 00:18:29.741
+around creating skills and take a look at two other custom skills
+
+390
+00:18:29.842 --> 00:18:32.811
+that we create and see if we're following the best practices.

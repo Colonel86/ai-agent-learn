@@ -1,0 +1,407 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:02.936
+You need to tell your agent about your project,
+
+2
+00:00:03.169 --> 00:00:05.939
+the mission, audience, and other decisions.
+
+3
+00:00:06.139 --> 00:00:08.641
+In this lesson, we'll work together
+
+4
+00:00:08.842 --> 00:00:11.144
+with the agent to write the Constitution.
+
+5
+00:00:11.611 --> 00:00:13.613
+What really is your project?
+
+6
+00:00:14.114 --> 00:00:17.117
+Say you're working on a new web app for your company.
+
+7
+00:00:17.417 --> 00:00:19.819
+What's the core idea behind its development?
+
+8
+00:00:20.120 --> 00:00:23.423
+How does it fit within your company's preferred tech stack?
+
+9
+00:00:23.823 --> 00:00:25.625
+What features are planned?
+
+10
+00:00:25.825 --> 00:00:28.828
+These three foundational principles form the Constitution,
+
+11
+00:00:28.828 --> 00:00:31.631
+a global set of high-level requirements
+
+12
+00:00:31.631 --> 00:00:34.634
+that will guide future feature development
+
+13
+00:00:34.634 --> 00:00:37.804
+and explain the project's shape to stakeholders.
+
+14
+00:00:38.104 --> 00:00:41.908
+For example, you have so many choices for your tech stack.
+
+15
+00:00:42.609 --> 00:00:46.613
+You'll want to narrow down your options based on appropriate tradeoffs
+
+16
+00:00:46.813 --> 00:00:48.915
+and what you use at your company.
+
+17
+00:00:49.282 --> 00:00:51.384
+We need to write this down.
+
+18
+00:00:51.484 --> 00:00:55.088
+for the agent, for your teammates, for the future.
+
+19
+00:00:55.288 --> 00:00:57.290
+But we don't write it alone.
+
+20
+00:00:57.390 --> 00:01:01.094
+We write it in a conversation with the agent.
+
+21
+00:01:01.294 --> 00:01:04.798
+You'll be surprised at the great questions it will ask.
+
+22
+00:01:05.165 --> 00:01:07.767
+architecture patterns you hadn't considered,
+
+23
+00:01:08.068 --> 00:01:10.970
+external packages that already do the work,
+
+24
+00:01:11.371 --> 00:01:13.239
+or tradeoffs. For example,
+
+25
+00:01:13.540 --> 00:01:15.542
+speed versus data fidelity.
+
+26
+00:01:15.942 --> 00:01:19.946
+The mission, tech stack, and roadmap aren't just properties
+
+27
+00:01:20.046 --> 00:01:22.649
+of a Greenfield project you're starting from scratch.
+
+28
+00:01:22.949 --> 00:01:25.552
+Existing codebases use these three pillars too.
+
+29
+00:01:26.152 --> 00:01:29.956
+We will talk about bringing the SDD workflow to existing projects
+
+30
+00:01:29.956 --> 00:01:31.958
+in just a few videos from now.
+
+31
+00:01:32.592 --> 00:01:36.763
+Here's the example project
+we'll use throughout this course.
+
+32
+00:01:36.763 --> 00:01:40.133
+We are writing AgentClinic, a place for AI agents
+
+33
+00:01:40.133 --> 00:01:42.535
+to get relief from their humans.
+
+34
+00:01:43.069 --> 00:01:47.974
+AgentClinic is a fun parody of the popular learning project Pet Clinic.
+
+35
+00:01:48.374 --> 00:01:50.477
+Coding agents are doing a lot of work.
+
+36
+00:01:50.977 --> 00:01:53.146
+It's stressful. Hallucinations,
+
+37
+00:01:53.580 --> 00:01:55.548
+context rot, memory issues and
+
+38
+00:01:56.049 --> 00:01:58.151
+co-worker sub-agent coordination
+
+39
+00:01:58.651 --> 00:02:00.653
+all take a toll on agent health.
+
+40
+00:02:01.154 --> 00:02:04.457
+Let's build a clinic where they can get help with their issues.
+
+41
+00:02:05.024 --> 00:02:08.528
+It's a full stack web app with a Next.js back end
+
+42
+00:02:08.828 --> 00:02:10.530
+and a React front end.
+
+43
+00:02:10.830 --> 00:02:13.032
+The app allows you to manage appointments,
+
+44
+00:02:13.233 --> 00:02:15.034
+ailments like hallucination,
+
+45
+00:02:15.235 --> 00:02:17.537
+and treatments like a context infusion.
+
+46
+00:02:19.105 --> 00:02:21.307
+Let's take a look at how you might go about writing
+
+47
+00:02:21.307 --> 00:02:24.077
+a detailed spec for a project like this.
+
+48
+00:02:25.044 --> 00:02:27.080
+Let's chat with the agent.
+
+49
+00:02:27.914 --> 00:02:30.917
+First, we provide our project description to the agent
+
+50
+00:02:31.317 --> 00:02:34.120
+and tell it that our stakeholders gave their input
+
+51
+00:02:34.521 --> 00:02:37.924
+in README.md, which we added to the repo.
+
+52
+00:02:38.158 --> 00:02:40.960
+In the important note, we directly mention
+
+53
+00:02:40.960 --> 00:02:43.963
+Claude code's AskUserQuestion tool.
+
+54
+00:02:44.464 --> 00:02:46.666
+This tool is totally optional, but
+
+55
+00:02:46.866 --> 00:02:49.068
+we just like the way it looks in the interface.
+
+56
+00:02:49.402 --> 00:02:51.905
+Also, for the project's constitution,
+
+57
+00:02:51.905 --> 00:02:55.208
+tell the agent to work with you on a mission,
+
+58
+00:02:55.208 --> 00:02:57.911
+tech stack, and roadmap.
+
+59
+00:02:58.211 --> 00:03:00.213
+Spec-driven development works best
+
+60
+00:03:00.213 --> 00:03:02.215
+with a human-in-the-loop approach
+
+61
+00:03:02.215 --> 00:03:04.417
+where you review small changes.
+
+62
+00:03:04.918 --> 00:03:07.420
+So tell the agent to organize the roadmap
+
+63
+00:03:07.420 --> 00:03:09.222
+in small steps.
+
+64
+00:03:09.756 --> 00:03:11.724
+As we work together, you'll see
+
+65
+00:03:11.724 --> 00:03:14.027
+the agent ask some really good questions.
+
+66
+00:03:14.961 --> 00:03:16.629
+You might see different ones.
+
+67
+00:03:17.130 --> 00:03:21.267
+The first question says, what tone should the mission.md take?
+
+68
+00:03:21.935 --> 00:03:24.737
+I'll choose, you guessed it, playful.
+
+69
+00:03:25.438 --> 00:03:29.142
+That covers the mission. Now some questions for the tech stack.
+
+70
+00:03:29.842 --> 00:03:32.845
+Our engineers are used to TypeScript on the back end,
+
+71
+00:03:33.246 --> 00:03:35.448
+so let's add that to the requirements.
+
+72
+00:03:36.449 --> 00:03:38.151
+Next for our roadmap.
+
+73
+00:03:38.484 --> 00:03:41.287
+It asks how granular it should be.
+
+74
+00:03:41.287 --> 00:03:43.289
+I'll choose the first option.
+
+75
+00:03:44.290 --> 00:03:46.292
+We finished the initial interview.
+
+76
+00:03:46.292 --> 00:03:48.294
+Let's choose submit answers.
+
+77
+00:03:49.095 --> 00:03:51.497
+The agent will ask you for write permissions.
+
+78
+00:03:51.998 --> 00:03:54.300
+This keeps changes under your control.
+
+79
+00:03:54.901 --> 00:03:57.704
+If you are comfortable with the security tradeoffs,
+
+80
+00:03:58.104 --> 00:04:01.007
+you can select the option to approve all instances
+
+81
+00:04:01.107 --> 00:04:03.710
+of a particular command for this session.
+
+82
+00:04:03.910 --> 00:04:06.112
+You'll see this in the rest of the course.
+
+83
+00:04:11.317 --> 00:04:14.721
+Now we're done and we have three files in the specs directory.
+
+84
+00:04:15.121 --> 00:04:19.325
+mission.md, tech-stack.md, roadmap.md.
+
+85
+00:04:20.026 --> 00:04:22.829
+It's human in the loop time. Let's review.
+
+86
+00:04:26.332 --> 00:04:29.636
+For example, the mission left out a target audience.
+
+87
+00:04:29.869 --> 00:04:33.373
+That's reasonable. How could the agent know your business?
+
+88
+00:04:33.873 --> 00:04:37.377
+Instead of editing directly, let's continue the conversation.
+
+89
+00:04:38.778 --> 00:04:40.880
+To keep all artifacts consistent,
+
+90
+00:04:41.381 --> 00:04:42.882
+it is better practice to ask
+
+91
+00:04:42.882 --> 00:04:44.684
+the agent to make changes to them.
+
+92
+00:04:44.984 --> 00:04:48.488
+Manually, and you might miss updating related documents.
+
+93
+00:04:50.890 --> 00:04:53.059
+We want to use SQLite for this project
+
+94
+00:04:53.059 --> 00:04:55.261
+since this is a quick prototype.
+
+95
+00:04:55.461 --> 00:04:59.465
+We didn't mention it, but the agent figured it out in recommendations.
+
+96
+00:04:59.766 --> 00:05:04.470
+It's now part of our tech stack. Do one final review.
+
+97
+00:05:04.971 --> 00:05:09.971
+It's important to get everything right up front. Let's commit the Constitution
+
+98
+00:05:11.277 --> 00:05:13.880
+so it will be a living document for the project.
+
+99
+00:05:15.281 --> 00:05:17.583
+AgentClinic now has a constitution,
+
+100
+00:05:18.184 --> 00:05:21.287
+mission, roadmap, tech stack, to guide our project.
+
+101
+00:05:21.487 --> 00:05:23.489
+We're ready to tackle our first feature.

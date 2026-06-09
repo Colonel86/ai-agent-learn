@@ -1,0 +1,366 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:03.603
+When you hear agentic coding, you might think Vibe coding.
+
+2
+00:00:04.170 --> 00:00:06.973
+Let's compare the two and see how Spec-Driven Development
+
+3
+00:00:07.073 --> 00:00:10.977
+gives better results by bringing back engineering.
+
+4
+00:00:10.977 --> 00:00:13.179
+Vibe coding gives quick results.
+
+5
+00:00:13.480 --> 00:00:15.982
+You write a prompt describing what you want,
+
+6
+00:00:15.982 --> 00:00:18.051
+like, create me a button
+
+7
+00:00:18.151 --> 00:00:21.354
+and hope for the best. Then you look at the result.
+
+8
+00:00:21.821 --> 00:00:25.625
+That's a big button. It's kind of close,
+
+9
+00:00:25.625 --> 00:00:27.627
+but off on some important things.
+
+10
+00:00:28.028 --> 00:00:30.130
+So you point out the mistakes to the agent,
+
+11
+00:00:30.130 --> 00:00:34.334
+it tries again and so on until you are satisfied.
+
+12
+00:00:34.667 --> 00:00:36.469
+As a result, you will end up
+
+13
+00:00:36.469 --> 00:00:38.271
+with a long dialogue with the agent,
+
+14
+00:00:38.571 --> 00:00:41.474
+the history of which will not even be saved.
+
+15
+00:00:42.175 --> 00:00:44.477
+This approach works okay for a button,
+
+16
+00:00:44.677 --> 00:00:48.181
+but it doesn't scale to a large ongoing project.
+
+17
+00:00:48.648 --> 00:00:50.950
+While high-level prompts are fast,
+
+18
+00:00:50.950 --> 00:00:55.950
+they lead to disposable code and mounting technical debt. We need engineering.
+
+19
+00:00:57.457 --> 00:01:02.362
+A well-maintained specification that creates a permanent technical artifact.
+
+20
+00:01:02.896 --> 00:01:05.698
+Spec-Driven Development is the professional response
+
+21
+00:01:05.899 --> 00:01:09.502
+to the chaos of unsupervised AI generation.
+
+22
+00:01:09.903 --> 00:01:12.705
+It is a paradigm shift where the Specification,
+
+23
+00:01:13.206 --> 00:01:15.208
+explaining the what and why,
+
+24
+00:01:15.608 --> 00:01:18.812
+is decoupled from the Implementation, the how.
+
+25
+00:01:18.978 --> 00:01:21.681
+With specs, we get a contract
+
+26
+00:01:21.781 --> 00:01:25.051
+between the humans, but also with the agent.
+
+27
+00:01:25.652 --> 00:01:28.254
+Your main task as the human now shifts.
+
+28
+00:01:28.655 --> 00:01:30.757
+Learn how to convert your intentions
+
+29
+00:01:30.857 --> 00:01:33.159
+into clear specifications.
+
+30
+00:01:33.526 --> 00:01:36.329
+Spec-driven development with agentic coding assistance
+
+31
+00:01:36.329 --> 00:01:38.731
+has three main benefits.
+
+32
+00:01:39.232 --> 00:01:42.335
+First, you're able to control large code changes
+
+33
+00:01:42.335 --> 00:01:44.237
+with small changes to the spec.
+
+34
+00:01:44.771 --> 00:01:46.873
+A few sentences in the spec
+
+35
+00:01:46.873 --> 00:01:49.375
+outlining the look and feel of the app
+
+36
+00:01:49.375 --> 00:01:52.278
+might translate to hundreds of lines of CSS.
+
+37
+00:01:52.579 --> 00:01:54.781
+This spec-driven approach reduces
+
+38
+00:01:54.781 --> 00:01:57.283
+the cognitive overhead needed for working
+
+39
+00:01:57.283 --> 00:01:59.886
+with these ultra-fast coding agents.
+
+40
+00:02:00.153 --> 00:02:03.957
+Second, specs eliminate the context decay problem
+
+41
+00:02:04.157 --> 00:02:06.759
+that derails multi-turn agent sessions.
+
+42
+00:02:07.260 --> 00:02:09.162
+As you work with your coding agent,
+
+43
+00:02:09.362 --> 00:02:11.464
+its context window will fill up,
+
+44
+00:02:11.965 --> 00:02:13.967
+often leading to more mistakes
+
+45
+00:02:14.067 --> 00:02:17.937
+as the agent tries to cope with a full working memory.
+
+46
+00:02:18.238 --> 00:02:21.641
+Specs persist between sessions and even agents,
+
+47
+00:02:21.641 --> 00:02:25.145
+anchoring the agent to the core context needed
+
+48
+00:02:25.145 --> 00:02:28.348
+to work in a code base and implement a feature.
+
+49
+00:02:28.948 --> 00:02:31.251
+Third, specs improve intent fidelity,
+
+50
+00:02:31.651 --> 00:02:35.054
+meaning that the agent is more likely to produce code
+
+51
+00:02:35.054 --> 00:02:36.656
+that matches your goals.
+
+52
+00:02:37.056 --> 00:02:40.560
+That's because specs force you to define the problem,
+
+53
+00:02:40.860 --> 00:02:43.863
+success criteria, constraints, user flows,
+
+54
+00:02:44.164 --> 00:02:47.834
+and so on before the agent starts generating code.
+
+55
+00:02:48.268 --> 00:02:51.070
+Specs are a key differentiator between vibe coding,
+
+56
+00:02:51.171 --> 00:02:54.674
+some slop, and engineering a viable software product.
+
+57
+00:02:55.475 --> 00:02:58.278
+Whether you are starting a new project from scratch
+
+58
+00:02:58.378 --> 00:03:01.080
+or want to implement the SDD approach
+
+59
+00:03:01.181 --> 00:03:04.050
+into a project that has been running for years,
+
+60
+00:03:04.250 --> 00:03:07.754
+specs help solve the drift and productivity problems.
+
+61
+00:03:08.488 --> 00:03:10.790
+As a comparison, think of compilers,
+
+62
+00:03:11.191 --> 00:03:14.294
+which convert understandable source code
+
+63
+00:03:14.294 --> 00:03:16.196
+into machine code.
+
+64
+00:03:16.796 --> 00:03:19.499
+SDD guides the agent and prompts,
+
+65
+00:03:19.499 --> 00:03:21.701
+converting specs into source code.
+
+66
+00:03:22.001 --> 00:03:24.971
+Even better, the specs are in a human language,
+
+67
+00:03:25.471 --> 00:03:27.073
+making it easy for stakeholders.
+
+68
+00:03:27.674 --> 00:03:29.976
+Spec-driven development has taken off recently
+
+69
+00:03:30.076 --> 00:03:33.580
+as a solution to concerns about productivity.
+
+70
+00:03:33.880 --> 00:03:37.584
+Multiple SDD projects, tools built around spec authoring,
+
+71
+00:03:37.684 --> 00:03:39.886
+conference talks on capturing intent.
+
+72
+00:03:40.086 --> 00:03:43.990
+This is all part of a broader push to bring engineering,
+
+73
+00:03:44.290 --> 00:03:48.494
+lessons learned from the software development life cycle, to agentic coding.
+
+74
+00:03:48.962 --> 00:03:53.366
+Spec-Driven Development is used with Coding Agents, not simple chatbots.
+
+75
+00:03:53.866 --> 00:03:56.970
+A chatbot can talk about code, but the chatbot
+
+76
+00:03:57.670 --> 00:04:00.773
+doesn't have access to your project's code
+
+77
+00:04:00.873 --> 00:04:02.775
+nor tools you have installed.
+
+78
+00:04:02.842 --> 00:04:07.842
+It just responds to your prompts. Agents are different.
+
+79
+00:04:07.847 --> 00:04:09.916
+They take your prompt, make a
+
+80
+00:04:09.916 --> 00:04:12.318
+plan, and guide themselves to a result
+
+81
+00:04:12.318 --> 00:04:14.621
+using reasoning along the way.
+
+82
+00:04:14.988 --> 00:04:18.258
+Importantly, agents have access to your code base
+
+83
+00:04:18.658 --> 00:04:20.360
+and your development tools.
+
+84
+00:04:21.060 --> 00:04:23.663
+In the SDD workflow, we treat these agents
+
+85
+00:04:23.663 --> 00:04:25.965
+as highly capable pair programmers.
+
+86
+00:04:26.366 --> 00:04:29.369
+They provide the technical knowledge and the speed,
+
+87
+00:04:29.569 --> 00:04:33.172
+and you, the senior architect, provide the blueprints.
+
+88
+00:04:33.673 --> 00:04:36.175
+As we move forward in this course, remember,
+
+89
+00:04:36.276 --> 00:04:38.878
+the agent is the muscle, but the SPEC is the brain.
+
+90
+00:04:39.178 --> 00:04:42.582
+With practice, you ensure that the software produced
+
+91
+00:04:42.682 --> 00:04:47.153
+is not just functional, but is aligned with your long-term goals.

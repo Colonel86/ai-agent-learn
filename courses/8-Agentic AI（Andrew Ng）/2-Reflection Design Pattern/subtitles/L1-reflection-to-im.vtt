@@ -1,0 +1,135 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.853 --> 00:00:07.039
+The reflection design pattern is something I've used in many applications, and it's surprisingly easy to implement.
+
+2
+00:00:07.039 --> 00:00:08.340
+Let's take a look.
+
+3
+00:00:08.340 --> 00:00:14.939
+Just as humans will sometimes reflect their own output and find a way to improve it, so can LLMs.
+
+4
+00:00:14.939 --> 00:00:21.639
+For example, I might write an email like this, and if I'm typing quickly, I might end up with a first draft that's not great.
+
+5
+00:00:21.639 --> 00:00:24.200
+And if I read over it, I might say,
+
+6
+00:00:24.200 --> 00:00:33.200
+huh, next month isn't that clear for what dates Tommy might be free for dinner, and there's such a typo that I had, and also forgot to sign my name.
+
+7
+00:00:33.200 --> 00:00:40.259
+And this would let me revise the draft to be more specific in saying, hey, Tommy, are you free for dinner on the 5th to the 7th?
+
+8
+00:00:40.259 --> 00:00:44.259
+A similar process lets LLMs also improve their outputs.
+
+9
+00:00:44.259 --> 00:00:53.259
+You can prompt an LLM to write the first draft in email, and given email version 1, email v1, you can pass it to maybe the same model,
+
+10
+00:00:53.259 --> 00:01:02.560
+the same large language model, but with a different prompt, and tell it to reflect and write an improved second draft to then get you the final output, email v2.
+
+11
+00:01:02.560 --> 00:01:12.900
+Here, I have just hard-coded this workflow of prompting the LLMa once, and then prompting them again to reflect and improve, and that gives email v2.
+
+12
+00:01:12.900 --> 00:01:18.459
+It turns out that a similar process can be used to improve other types of outputs.
+
+13
+00:01:18.459 --> 00:01:28.099
+For example, if you are having an LLM write code, you might prompt an LLM to write code to do a certain task, and it may give you v1 of the code,
+
+14
+00:01:28.099 --> 00:01:36.540
+and then pass it to the same LLM or maybe a different LLM to ask it to check for bugs and write an improved second draft of the code.
+
+15
+00:01:36.540 --> 00:01:46.440
+Different LLMs have different strengths, and so sometimes I would choose different models for writing the first draft and for reflecting and trying to improve it.
+
+16
+00:01:46.440 --> 00:01:53.379
+For example, it turns out reasoning models, sometimes also called thinking models, are pretty good at finding bugs,
+
+17
+00:01:53.379 --> 00:02:00.540
+and so I'll sometimes write the first draft of the code by direct generation, but then use a reasoning model to check for bugs.
+
+18
+00:02:00.540 --> 00:02:11.240
+Now, rather than just having an LLM reflect on the code, it turns out that if you can get external feedback, meaning new information from outside the LLM,
+
+19
+00:02:11.240 --> 00:02:14.080
+reflection becomes much more powerful.
+
+20
+00:02:14.080 --> 00:02:20.279
+In the case of code, one thing you can do is just execute the code to see what the code does,
+
+21
+00:02:20.279 --> 00:02:30.000
+and by examining the output, including any error messages of the code, this is incredibly useful information for the LLM to reflect and to find a way to improve his code.
+
+22
+00:02:30.000 --> 00:02:36.399
+So in this example, the LLM generated the first draft of the code, but when I run it, it generates a syntax error.
+
+23
+00:02:36.399 --> 00:02:44.300
+When you pass this code output and error logs back into the LLM and ask it to reflect on the feedback and write a new draft,
+
+24
+00:02:44.300 --> 00:02:50.440
+this gives it a lot of very useful information to come up with a much better version 2 of the code.
+
+25
+00:02:50.440 --> 00:02:53.139
+So the reflection design pattern isn't magic.
+
+26
+00:02:53.139 --> 00:03:01.779
+It does not make an LLM always get everything right 100% of the time, but it can often give it maybe a modest bump in performance.
+
+27
+00:03:01.779 --> 00:03:13.039
+But one design consideration to keep in mind is reflection is much more powerful when there is new additional external information that you can ingest into the reflection process.
+
+28
+00:03:13.039 --> 00:03:20.940
+So in this example, if you can run the code and have that code output or error messages as an additional input to the reflection step,
+
+29
+00:03:20.940 --> 00:03:26.139
+that really lets the LLM reflect much more deeply and figure out what may be going wrong, if anything,
+
+30
+00:03:26.139 --> 00:03:32.240
+and results in a much better second version of the code than if there wasn't this external information that you can ingest.
+
+31
+00:03:32.240 --> 00:03:41.339
+So one thing to keep in mind, whenever reflection has an opportunity to get additional information, that makes it much more powerful.
+
+32
+00:03:41.339 --> 00:03:54.339
+Now with that, let's go on to the next video where I want to share with you a more systematic comparison of using reflection versus direct generation or something we sometimes call zero shot prompting.
+
+33
+00:03:54.339 --> 00:03:55.839
+Let's go on to the next video.
+

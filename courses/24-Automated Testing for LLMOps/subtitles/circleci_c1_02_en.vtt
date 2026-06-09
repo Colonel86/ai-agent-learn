@@ -1,0 +1,479 @@
+WEBVTT
+1
+00:00:00.100 --> 00:00:02.880
+In this lesson, you'll get a quick overview
+of the technology we'll be
+
+2
+00:00:02.880 --> 00:00:06.820
+using to automate our LLM evals, continuous integration.
+
+3
+00:00:07.460 --> 00:00:10.290
+We'll discuss what continuous
+integration is, why it's important,
+
+4
+00:00:10.290 --> 00:00:13.440
+and that will give us a
+solid foundation for the
+
+5
+00:00:13.440 --> 00:00:15.640
+automated workflows we'll build in
+later lessons.
+
+6
+00:00:16.200 --> 00:00:16.640
+Let's dive in.
+
+7
+00:00:18.260 --> 00:00:24.060
+So what exactly,
+continuous integration or CI is a
+
+8
+00:00:24.060 --> 00:00:26.360
+development practice that
+revolves around making
+
+9
+00:00:26.360 --> 00:00:29.260
+small frequent changes
+to your software
+
+10
+00:00:29.260 --> 00:00:33.540
+and thoroughly testing
+those changes with everyone else's. In
+
+11
+00:00:33.540 --> 00:00:35.910
+other words, you're continuously
+validating that your
+
+12
+00:00:35.910 --> 00:00:38.970
+new features and updates work as
+intended when integrated
+
+13
+00:00:38.970 --> 00:00:42.520
+with those from the rest of
+your team. This method
+
+14
+00:00:42.520 --> 00:00:46.060
+allows you to detect and
+fix issues early, before they
+
+15
+00:00:46.060 --> 00:00:48.440
+become bigger problems
+that are harder for you and
+
+16
+00:00:48.440 --> 00:00:49.180
+your team to solve.
+
+17
+00:00:49.800 --> 00:00:52.840
+Let's see how this works in
+the context of an LLM-powered application.
+
+18
+00:00:53.760 --> 00:00:56.320
+Imagine you're working on a cutting-edge virtual
+assistant application.
+
+19
+00:00:57.180 --> 00:00:59.990
+With continuous integration,
+every time you or a
+
+20
+00:00:59.990 --> 00:01:04.220
+team member makes a code change,
+be it refining the LLM prompts
+
+21
+00:01:04.220 --> 00:01:07.030
+or updating data integrations,
+you merge that change
+
+22
+00:01:07.030 --> 00:01:08.440
+into a central repository.
+
+23
+00:01:09.200 --> 00:01:10.440
+Now here's where the magic happens.
+
+24
+00:01:11.140 --> 00:01:14.320
+Once the code is merged,
+the CI platform kicks in.
+
+25
+00:01:15.000 --> 00:01:18.030
+It automatically builds your
+application, simulating how it would
+
+26
+00:01:18.030 --> 00:01:19.720
+behave in a real-world environment.
+
+27
+00:01:20.240 --> 00:01:24.120
+Automated tests are run to ensure
+that your LLM produces accurate and
+
+28
+00:01:24.120 --> 00:01:25.040
+reliable results.
+
+29
+00:01:25.700 --> 00:01:28.230
+These tests cover
+everything from basic
+
+30
+00:01:28.230 --> 00:01:30.750
+functionality to more
+complex issues like
+
+31
+00:01:30.750 --> 00:01:32.440
+hallucinations or biased outputs.
+
+32
+00:01:33.140 --> 00:01:33.800
+Why is this important?
+
+33
+00:01:34.800 --> 00:01:37.500
+Well, think of it as
+having a supercharged feedback loop.
+
+34
+00:01:37.500 --> 00:01:40.500
+The CI platform
+provides near instantaneous
+
+35
+00:01:40.500 --> 00:01:41.940
+feedback on your changes.
+
+36
+00:01:42.640 --> 00:01:45.280
+If an issue is detected,
+perhaps the model
+
+37
+00:01:45.280 --> 00:01:47.920
+is generating unexpected outputs,
+you're alerted right away.
+
+38
+00:01:48.700 --> 00:01:51.010
+This rapid feedback loop
+allows you to catch
+
+39
+00:01:51.010 --> 00:01:54.410
+and address issues early
+in the development cycle. That way,
+
+40
+00:01:54.410 --> 00:01:57.780
+buggy code doesn't make its way into
+other features your team
+
+41
+00:01:57.780 --> 00:01:59.920
+members are building, or
+even worse, get
+
+42
+00:01:59.920 --> 00:02:01.140
+deployed to your users.
+
+43
+00:02:01.860 --> 00:02:04.280
+Now let's talk about the perks for
+you as a developer.
+
+44
+00:02:05.020 --> 00:02:07.840
+Continuous integration
+significantly reduces the time
+
+45
+00:02:07.840 --> 00:02:10.800
+and effort spent on debugging and
+troubleshooting. It's
+
+46
+00:02:10.800 --> 00:02:14.760
+not that your test will never fail, but
+when a test does fail, you'll have
+
+47
+00:02:14.760 --> 00:02:18.540
+actionable information you can
+use to get back on track quickly and
+
+48
+00:02:18.540 --> 00:02:19.640
+continue innovating.
+
+49
+00:02:20.200 --> 00:02:23.680
+CI empowers you to iterate quickly,
+experiment with new features,
+
+50
+00:02:23.680 --> 00:02:27.140
+and make improvements with confidence.
+But the advantages
+
+51
+00:02:27.140 --> 00:02:28.820
+extend beyond individual developers.
+
+52
+00:02:29.500 --> 00:02:34.000
+For teams, CI fosters collaboration
+by encouraging smaller,
+
+53
+00:02:34.000 --> 00:02:35.500
+more frequent contributions.
+
+54
+00:02:36.580 --> 00:02:39.300
+Conflicting changes are minimized,
+making it easier to
+
+55
+00:02:39.300 --> 00:02:40.680
+manage and resolve issues.
+
+56
+00:02:41.500 --> 00:02:44.430
+The shared repository becomes
+a reliable source of truth,
+
+57
+00:02:44.430 --> 00:02:46.380
+and the automated
+testing ensures that
+
+58
+00:02:46.380 --> 00:02:48.660
+everyone is building on a stable
+foundation.
+
+59
+00:02:49.160 --> 00:02:51.860
+This creates a culture of trust,
+collaboration,
+
+60
+00:02:51.860 --> 00:02:54.180
+and faster delivery of high-quality
+software.
+
+61
+00:02:55.180 --> 00:02:56.680
+Moreover,
+continuous integration sets
+
+62
+00:02:56.680 --> 00:02:58.930
+the stage for
+additional automation in
+
+63
+00:02:58.930 --> 00:03:02.310
+how you deploy, monitor,
+and retrain your language models,
+
+64
+00:03:02.310 --> 00:03:05.680
+enabling your team to move towards
+a more agile
+
+65
+00:03:05.680 --> 00:03:07.180
+and responsive development practice.
+
+66
+00:03:07.900 --> 00:03:11.240
+For AI developers,
+where innovation is rapid and constant,
+
+67
+00:03:11.240 --> 00:03:13.840
+CI provides the structure needed to
+excel.
+
+68
+00:03:14.480 --> 00:03:16.940
+If you're interested in more
+details on the
+
+69
+00:03:16.940 --> 00:03:19.400
+conceptual integration of
+AI and continuous integration, we
+
+70
+00:03:19.400 --> 00:03:21.870
+have a mini-series on
+our podcast, The Confident
+
+71
+00:03:21.870 --> 00:03:25.560
+Commit, that goes into this in
+great detail with many fantastic guests.
+
+72
+00:03:26.360 --> 00:03:29.470
+Throughout the rest of this course,
+you'll use CircleCI as your
+
+73
+00:03:29.470 --> 00:03:30.320
+continuous integration platform.
+
+74
+00:03:31.000 --> 00:03:32.970
+As you explore
+different techniques for
+
+75
+00:03:32.970 --> 00:03:35.260
+testing and evaluating
+your LLM applications, you'll
+
+76
+00:03:35.260 --> 00:03:38.210
+be able to trigger your automated
+evaluations and view
+
+77
+00:03:38.210 --> 00:03:40.500
+the results in the CircleCI user
+interface.
+
+78
+00:03:41.560 --> 00:03:44.890
+All of the setup work has been done
+for you so that you can focus on
+
+79
+00:03:44.890 --> 00:03:46.760
+learning and applying the
+strategies used in the course.
+
+80
+00:03:47.760 --> 00:03:51.540
+In a team environment, you'll
+often have a CI CD expert who is
+
+81
+00:03:51.540 --> 00:03:53.900
+responsible for setting up
+and maintaining your pipelines.
+
+82
+00:03:54.520 --> 00:03:57.410
+But if you are interested
+in learning more about what's
+
+83
+00:03:57.410 --> 00:03:59.730
+happening behind the scenes, feel
+free to explore
+
+84
+00:03:59.730 --> 00:04:01.460
+the configuration files
+provided in the
+
+85
+00:04:01.460 --> 00:04:02.040
+project repository.
+
+86
+00:04:02.880 --> 00:04:05.170
+We've also included an optional
+lab at the end
+
+87
+00:04:05.170 --> 00:04:08.230
+of this course that
+will give you a chance to walk through
+
+88
+00:04:08.230 --> 00:04:10.270
+a step-by-step process of
+setting up a workflow
+
+89
+00:04:10.270 --> 00:04:10.780
+in CircleCI.
+
+90
+00:04:12.020 --> 00:04:14.400
+While this only
+scratches the surface of what you
+
+91
+00:04:14.400 --> 00:04:16.520
+can do with continuous integration,
+using it throughout
+
+92
+00:04:16.520 --> 00:04:19.690
+this course will give you the
+knowledge and tools you need to
+
+93
+00:04:19.690 --> 00:04:22.070
+start making automated
+testing a central part of your
+
+94
+00:04:22.070 --> 00:04:22.600
+development practice.
+
+95
+00:04:23.400 --> 00:04:26.750
+These are skills that will benefit
+you for your entire career and
+
+96
+00:04:26.750 --> 00:04:29.260
+set you up to follow modern
+software engineering practices
+
+97
+00:04:29.260 --> 00:04:31.220
+no matter where your interests take
+you.
+
+98
+00:04:31.800 --> 00:04:34.200
+Alright, let's get started writing
+your first evaluations
+
+99
+00:04:34.200 --> 00:04:36.360
+and setting them up to run
+in CircleCI.
+
+100
+00:04:37.120 --> 00:04:37.820
+See you in the next lesson!

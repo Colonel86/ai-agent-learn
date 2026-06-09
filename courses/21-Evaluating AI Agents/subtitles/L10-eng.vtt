@@ -1,0 +1,765 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:03.169
+So far you've learned
+how to evaluate your agents skills,
+
+2
+00:00:03.203 --> 00:00:05.505
+router and path convergence.
+
+3
+00:00:05.505 --> 00:00:07.607
+You'll now
+learn how to combine your evaluators
+
+4
+00:00:07.607 --> 00:00:10.877
+into a structured experiment to iterate on
+and improve your agent.
+
+5
+00:00:11.578 --> 00:00:12.979
+Let's dive in.
+
+6
+00:00:12.979 --> 00:00:17.517
+Evaluation-driven development is a concept
+that involves using evaluations
+
+7
+00:00:17.884 --> 00:00:21.187
+and measurements from your agent
+to help guide where you spend
+
+8
+00:00:21.187 --> 00:00:24.424
+your time improving and iterating on
+and developing your agent.
+
+9
+00:00:25.325 --> 00:00:28.328
+Evaluation-driven development
+is made up of a few different steps.
+
+10
+00:00:28.595 --> 00:00:32.132
+First, you curate a data set of test cases
+or examples
+
+11
+00:00:32.132 --> 00:00:35.135
+that you can send through
+different variants of your agent.
+
+12
+00:00:35.869 --> 00:00:38.805
+Next, you send each of those different test
+cases through
+
+13
+00:00:38.805 --> 00:00:42.809
+those different variants of your agent,
+each time changing things like the model
+
+14
+00:00:42.809 --> 00:00:45.812
+you're using, the prompts you're using,
+or the agent logic.
+
+15
+00:00:46.646 --> 00:00:49.682
+And then once you run those different test
+cases through those different
+
+16
+00:00:49.682 --> 00:00:52.719
+variations of your agent,
+you take the results of all of those
+
+17
+00:00:52.719 --> 00:00:56.056
+different experiments
+and run them through your evaluators.
+
+18
+00:00:56.689 --> 00:00:59.059
+Those evaluators
+will give you a set of scores that you can
+
+19
+00:00:59.059 --> 00:01:01.127
+then use
+to compare the different iterations
+
+20
+00:01:01.127 --> 00:01:03.763
+of your agent on an apples to apples
+basis.
+
+21
+00:01:03.763 --> 00:01:06.499
+Now, this is presented
+linearly in the visualization here,
+
+22
+00:01:06.499 --> 00:01:09.069
+but in practice
+this tends to be more of a cycle,
+
+23
+00:01:09.069 --> 00:01:11.971
+especially as you move
+your agent into production.
+
+24
+00:01:11.971 --> 00:01:15.308
+LLM apps require kind of iterative
+improvement as you're working on them.
+
+25
+00:01:15.575 --> 00:01:18.344
+And so typically what will happen is
+you'll you'll go through this full
+
+26
+00:01:18.344 --> 00:01:21.881
+process, your release or agent or you'll
+get it into some other people's hands.
+
+27
+00:01:22.282 --> 00:01:23.550
+And then you'll realize that you wanted
+
+28
+00:01:23.550 --> 00:01:26.553
+to add in different test cases
+or different evaluators.
+
+29
+00:01:26.586 --> 00:01:29.956
+And so you can always update
+and change each of these different pieces
+
+30
+00:01:29.956 --> 00:01:30.857
+as you're going.
+
+31
+00:01:30.857 --> 00:01:34.994
+And then you can create a flywheel here,
+where you're incorporating information
+
+32
+00:01:34.994 --> 00:01:35.795
+from production
+
+33
+00:01:35.795 --> 00:01:39.232
+back into your development process
+using evaluation-driven development.
+
+34
+00:01:39.699 --> 00:01:42.502
+Diving into each of these steps
+in a little bit more detail.
+
+35
+00:01:42.502 --> 00:01:45.505
+You start by curating a data set test
+cases.
+
+36
+00:01:45.538 --> 00:01:49.175
+And the idea here is to be
+more comprehensive than exhaustive.
+
+37
+00:01:49.542 --> 00:01:52.045
+You can have a set of examples
+
+38
+00:01:52.045 --> 00:01:55.415
+that are representative of the inputs
+that you expect your agent to receive.
+
+39
+00:01:55.915 --> 00:01:58.451
+And you just really need 1 or 2 examples
+
+40
+00:01:58.451 --> 00:02:01.421
+from each of the different types of inputs
+that you might get.
+
+41
+00:02:01.421 --> 00:02:03.890
+You don't need to have hundreds
+and hundreds of examples,
+
+42
+00:02:03.890 --> 00:02:05.859
+especially if there's
+similar types of examples.
+
+43
+00:02:06.860 --> 00:02:07.527
+And these examples
+
+44
+00:02:07.527 --> 00:02:10.530
+can come from either
+live runs of your agent
+
+45
+00:02:10.663 --> 00:02:13.233
+or can be constructed
+beforehand, manually,
+
+46
+00:02:13.233 --> 00:02:16.069
+or even in some cases,
+and generated using another model.
+
+47
+00:02:16.069 --> 00:02:18.605
+In practice,
+you often start by constructing
+
+48
+00:02:18.605 --> 00:02:22.275
+the examples yourself,
+and then add to them from live data.
+
+49
+00:02:22.275 --> 00:02:24.511
+As you release your agent.
+
+50
+00:02:24.511 --> 00:02:25.612
+And then wherever possible, it's
+
+51
+00:02:25.612 --> 00:02:29.182
+always good to include expected outputs
+along with your test cases.
+
+52
+00:02:29.449 --> 00:02:32.919
+You may not always have expected outputs,
+but if you can include those,
+
+53
+00:02:32.952 --> 00:02:35.955
+it unlocks different types of evaluations
+that you can run.
+
+54
+00:02:36.789 --> 00:02:40.226
+LLM as-a-Judge, evals can be used
+even if you don't have expected output.
+
+55
+00:02:40.627 --> 00:02:44.898
+But certain code-based evals do require
+an expected output to compare against.
+
+56
+00:02:45.598 --> 00:02:48.401
+With your data set in place
+and your test case is in place.
+
+57
+00:02:48.401 --> 00:02:52.205
+Then you can start to make changes to your
+agent and track each of those changes.
+
+58
+00:02:52.906 --> 00:02:54.841
+So, some tests that you can often do
+
+59
+00:02:54.841 --> 00:02:57.844
+are changing things
+like your prompts used by your agent,
+
+60
+00:02:58.011 --> 00:03:01.014
+changing the tool definitions
+that you're passing into your router,
+
+61
+00:03:01.414 --> 00:03:04.517
+changing the router logic itself,
+changing some of the skills
+
+62
+00:03:04.517 --> 00:03:08.087
+or the skill structure, or just swapping
+in a new model that you want to test out.
+
+63
+00:03:09.255 --> 00:03:11.324
+And the
+practice of sending each of your test
+
+64
+00:03:11.324 --> 00:03:15.195
+cases through a variation of your agent
+is often referred to as an experiment.
+
+65
+00:03:15.228 --> 00:03:18.198
+We are experimenting
+with a certain version of your agent.
+
+66
+00:03:18.198 --> 00:03:21.601
+And you can use those experiments
+to record and measure results
+
+67
+00:03:21.601 --> 00:03:23.670
+from each of those different runs.
+
+68
+00:03:23.670 --> 00:03:26.906
+Once you have all your experiment
+data collected, then you can use all of
+
+69
+00:03:26.906 --> 00:03:29.809
+your evaluators from the previous lessons
+that you've built
+
+70
+00:03:29.809 --> 00:03:32.378
+and apply them
+to the results of those experiments.
+
+71
+00:03:32.378 --> 00:03:35.949
+So you can use your code-based evaluators,
+your comparison against ground truth, or
+
+72
+00:03:36.149 --> 00:03:39.886
+checking if generated code is runnable,
+as well as the convergence evaluators
+
+73
+00:03:39.886 --> 00:03:40.954
+that you run.
+
+74
+00:03:40.954 --> 00:03:43.556
+And you can use your LLM
+as-a-Judge evaluators, like function
+
+75
+00:03:43.556 --> 00:03:46.526
+calling,
+analysis, clarity, and entity correctness.
+
+76
+00:03:46.859 --> 00:03:49.796
+Now, how can you apply this to your agent?
+
+77
+00:03:49.796 --> 00:03:54.033
+As a quick reminder, your agent is set up
+to use this OpenAI router
+
+78
+00:03:54.234 --> 00:03:57.637
+with function calling and then three
+different skills that you can evaluate.
+
+79
+00:03:58.805 --> 00:04:00.273
+First, taking an example
+
+80
+00:04:00.273 --> 00:04:03.276
+of how you would set up an experiment
+around with a router.
+
+81
+00:04:03.376 --> 00:04:05.044
+You might have an example test case
+
+82
+00:04:05.044 --> 00:04:08.047
+that looks something like this
+where you have an input,
+
+83
+00:04:08.114 --> 00:04:11.084
+which is which stores
+have the best sales performance in 2021
+
+84
+00:04:11.084 --> 00:04:12.518
+and then an expected output.
+
+85
+00:04:12.518 --> 00:04:16.155
+In this case, the database lookup tool is
+the tool should be chosen by the router.
+
+86
+00:04:17.156 --> 00:04:20.159
+And then you might want to experiment
+with trying different tool descriptions.
+
+87
+00:04:20.593 --> 00:04:25.131
+So if you think back to the Json object
+that you pass into your LLM router,
+
+88
+00:04:25.431 --> 00:04:28.134
+you might want to modify the description
+that's given to each tool
+
+89
+00:04:28.134 --> 00:04:31.137
+to see if that improves
+your router performance.
+
+90
+00:04:31.237 --> 00:04:33.373
+And then once you have
+those experiments run,
+
+91
+00:04:33.373 --> 00:04:36.175
+you can evaluate the results
+using either code
+
+92
+00:04:36.175 --> 00:04:37.677
+based comparison against ground truth.
+
+93
+00:04:37.677 --> 00:04:39.979
+Because here you have
+that expected output.
+
+94
+00:04:39.979 --> 00:04:41.914
+You have that ground truth data.
+
+95
+00:04:41.914 --> 00:04:45.752
+Or you can use a function
+calling LLM as-a-Judge.
+
+96
+00:04:45.752 --> 00:04:47.520
+Taking another component of your agent.
+
+97
+00:04:47.520 --> 00:04:50.523
+You have your database
+lookup tool or skill,
+
+98
+00:04:50.523 --> 00:04:52.425
+and you might have a test case
+that looks something like this,
+
+99
+00:04:52.425 --> 00:04:55.128
+where you have the same input
+from the previous round.
+
+100
+00:04:55.128 --> 00:04:58.898
+And then in this case, the expected output
+is some SQL code that you see there.
+
+101
+00:04:59.799 --> 00:05:02.101
+And so if you notice here that SQL code
+
+102
+00:05:02.101 --> 00:05:05.338
+is an intermediate step
+within your database lookup tool.
+
+103
+00:05:05.338 --> 00:05:08.841
+First, it generates SQL and then it runs
+that SQL and gets an output.
+
+104
+00:05:09.309 --> 00:05:11.844
+So that's one thing to keep in mind here
+is that again you can evaluate
+
+105
+00:05:11.844 --> 00:05:14.847
+just the SQL generation
+part of your database lookup tool.
+
+106
+00:05:15.481 --> 00:05:17.216
+Invite you
+to pause the video here for a second,
+
+107
+00:05:17.216 --> 00:05:20.620
+and see if you can think of an experiment
+and some evaluations that you could run
+
+108
+00:05:20.753 --> 00:05:22.121
+on this database lookup tool.
+
+109
+00:05:23.856 --> 00:05:24.724
+So one experiment you could
+
+110
+00:05:24.724 --> 00:05:27.727
+do would be testing
+different SQL generation prompts.
+
+111
+00:05:27.894 --> 00:05:30.897
+You could also test different models
+or other pieces of that as well.
+
+112
+00:05:31.397 --> 00:05:34.567
+And then you can use your code based
+comparison against ground truth evaluator,
+
+113
+00:05:34.967 --> 00:05:37.970
+similar to what you had looked at in
+previous notebooks as well,
+
+114
+00:05:38.571 --> 00:05:41.507
+because you have that ground truth
+to compare against.
+
+115
+00:05:41.507 --> 00:05:44.243
+Next, you look at the database
+analysis tool.
+
+116
+00:05:44.243 --> 00:05:47.246
+In this case, you might have a test case
+like the one you see here
+
+117
+00:05:47.580 --> 00:05:50.450
+where you have a message from a user,
+and then you actually have
+
+118
+00:05:50.450 --> 00:05:51.484
+some retrieved data.
+
+119
+00:05:51.484 --> 00:05:53.553
+Because the database analysis tool
+
+120
+00:05:53.553 --> 00:05:56.989
+takes in both a user question
+as well as some data to analyze.
+
+121
+00:05:57.123 --> 00:05:59.926
+So you'd have to have both
+those pieces in your test case,
+
+122
+00:05:59.926 --> 00:06:02.929
+and then you don't actually
+have an expected output in this test case.
+
+123
+00:06:03.463 --> 00:06:05.198
+So once again,
+I invite you to pause the video
+
+124
+00:06:05.198 --> 00:06:09.001
+and see if you can think of an experiment
+and then an evaluation that you can run
+
+125
+00:06:09.001 --> 00:06:09.502
+in this case.
+
+126
+00:06:11.337 --> 00:06:11.938
+So here you
+
+127
+00:06:11.938 --> 00:06:14.807
+want to experiment could be testing different
+LLM models.
+
+128
+00:06:14.807 --> 00:06:17.810
+You could also test different prompts
+or other kind of logic changes there too.
+
+129
+00:06:19.011 --> 00:06:21.614
+Then you can use the analysis
+clarity and entity correctness
+
+130
+00:06:21.614 --> 00:06:23.282
+LLM as-a-Judge evaluations
+
+131
+00:06:23.282 --> 00:06:26.686
+from previous slides and notebooks
+that you've seen to evaluate the results.
+
+132
+00:06:27.820 --> 00:06:29.856
+And as you structure
+all of these together and start to run
+
+133
+00:06:29.856 --> 00:06:33.526
+multiple iterations of your agent
+with multiple different evaluators
+
+134
+00:06:33.526 --> 00:06:37.330
+and create a whole process around this,
+you can end up with, a dashboard
+
+135
+00:06:37.330 --> 00:06:40.333
+or a heads-up display
+that looks something like this.
+
+136
+00:06:40.366 --> 00:06:42.769
+Each row has one run of your agent,
+
+137
+00:06:42.769 --> 00:06:45.705
+and then all of your evaluators,
+those different columns here,
+
+138
+00:06:45.705 --> 00:06:49.175
+and you can measure, okay,
+what are the effects of each change
+
+139
+00:06:49.175 --> 00:06:52.178
+that I'm going to make to my agent across
+not just one part of the agent,
+
+140
+00:06:52.412 --> 00:06:54.347
+but each part of the agent holistically.
+
+141
+00:06:55.615 --> 00:06:58.751
+And then again, as you
+start to move your agent into production,
+
+142
+00:06:58.751 --> 00:07:01.721
+you'll find that you're going to come up
+with new test
+
+143
+00:07:01.721 --> 00:07:04.690
+cases, new evaluations, and new changes
+that you want to make
+
+144
+00:07:04.857 --> 00:07:07.660
+using some of that production
+monitoring data that you have.
+
+145
+00:07:07.660 --> 00:07:10.997
+And then you can bring that back
+into your testing and development process.
+
+146
+00:07:11.497 --> 00:07:14.267
+So this whole experimentation framework
+and this whole evaluation
+
+147
+00:07:14.267 --> 00:07:14.967
+driven development
+
+148
+00:07:14.967 --> 00:07:19.405
+framework enables you to not just create
+a strong application in development,
+
+149
+00:07:19.572 --> 00:07:22.241
+but also incorporate production learnings
+that you have
+
+150
+00:07:22.241 --> 00:07:25.545
+into your development process
+and create a large flywheel here
+
+151
+00:07:25.545 --> 00:07:28.548
+that you can use to create a better
+and better agent over time.
+
+152
+00:07:29.415 --> 00:07:32.452
+In this lesson, you learned the purpose
+of evaluation-driven development,
+
+153
+00:07:32.652 --> 00:07:35.655
+what it is and how it works,
+and you learned how you can
+
+154
+00:07:35.655 --> 00:07:38.624
+structure experiments around your evals
+to scale them
+
+155
+00:07:38.624 --> 00:07:40.326
+as you continually improve your agent.
+
+156
+00:07:41.327 --> 00:07:44.297
+In the next notebook, you're going
+to implement some of these techniques
+
+157
+00:07:44.297 --> 00:07:47.333
+and create the visualization
+that you saw just a few slides ago
+
+158
+00:07:47.834 --> 00:07:51.304
+by adding lots of evaluations to the agent
+you've been working on so far,
+
+159
+00:07:51.304 --> 00:07:52.805
+and structuring them into an experiment.
+

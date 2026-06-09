@@ -1,0 +1,587 @@
+WEBVTT
+1
+00:00:00.100 --> 00:00:03.379
+So far, you've used fast
+rules-based evaluations that
+
+2
+00:00:03.379 --> 00:00:05.740
+are suitable for running
+frequently on every commit.
+
+3
+00:00:06.480 --> 00:00:09.109
+For stages of development
+leading up to deployment,
+
+4
+00:00:09.109 --> 00:00:12.410
+more robust and comprehensive
+evaluation methods can help you better
+
+5
+00:00:12.410 --> 00:00:15.699
+ensure overall quality before
+you deploy the app to users.
+
+6
+00:00:16.579 --> 00:00:18.989
+One such method is
+model-graded evaluation,
+
+7
+00:00:18.989 --> 00:00:23.000
+where you'll use an LLM
+to evaluate the LLM app.
+
+8
+00:00:23.739 --> 00:00:25.780
+Let's take a look at this
+kind of eval and how to
+
+9
+00:00:25.780 --> 00:00:27.699
+automate this as part of
+your testing pipeline.
+
+10
+00:00:28.780 --> 00:00:32.659
+OK, until now, we've been
+using rules-based evals
+
+11
+00:00:32.659 --> 00:00:34.979
+to make sure our models
+follow the guidelines
+
+12
+00:00:34.979 --> 00:00:39.420
+we set up in our prompt and stick to
+the facts we provided in our data set.
+
+13
+00:00:40.240 --> 00:00:44.020
+But in order to have full
+confidence in our application,
+
+14
+00:00:44.020 --> 00:00:48.189
+we also need to be sure our
+model is generating high-quality,
+
+15
+00:00:48.189 --> 00:00:49.320
+contextually appropriate responses.
+
+16
+00:00:49.859 --> 00:00:52.240
+Evaluating LLM output
+can be tricky because
+
+17
+00:00:52.240 --> 00:00:54.899
+a good response to a query is subjective.
+
+18
+00:00:55.340 --> 00:00:59.420
+We could try and write custom
+rules like we did for our initial
+
+19
+00:00:59.420 --> 00:01:02.880
+evals to make sure that
+expected data is in the output,
+
+20
+00:01:02.880 --> 00:01:05.700
+but this gets more and
+more complicated and more
+
+21
+00:01:05.700 --> 00:01:07.900
+and more fragile as the application grows.
+
+22
+00:01:08.599 --> 00:01:13.680
+One approach to checking the output of
+an LLM is to use another LLM as a grader.
+
+23
+00:01:14.420 --> 00:01:17.420
+This is referred to as
+model graded evaluation.
+
+24
+00:01:18.180 --> 00:01:20.120
+We'll show a quick
+example to make sure our model
+
+25
+00:01:20.120 --> 00:01:22.180
+is actually producing output as a quiz.
+
+26
+00:01:22.659 --> 00:01:25.099
+We aren't concerned
+with the content just yet,
+
+27
+00:01:25.439 --> 00:01:29.920
+only that the LLM is giving back
+responses that look like a set of quiz questions.
+
+28
+00:01:30.400 --> 00:01:33.400
+We'll look more closely at the
+quality of output in our next lesson.
+
+29
+00:01:33.900 --> 00:01:37.120
+So, in this lesson, we're
+going to focus on judging
+
+30
+00:01:37.120 --> 00:01:39.689
+whether the response is
+in the desired format.
+
+31
+00:01:39.689 --> 00:01:41.629
+And then, in our next lesson,
+
+32
+00:01:41.629 --> 00:01:44.200
+we'll look at things like
+hallucination and adherence.
+
+33
+00:01:44.700 --> 00:01:47.930
+So, let's jump right in,
+and write a passing and
+
+34
+00:01:47.930 --> 00:01:50.840
+a failing test case to see how this works.
+
+35
+00:01:51.799 --> 00:01:55.129
+First off we need to
+establish our keys again as we
+
+36
+00:01:55.129 --> 00:01:58.159
+did in the previous
+lesson so we'll do that now.
+
+37
+00:02:06.579 --> 00:02:09.039
+For the purposes of
+adding model graded evals,
+
+38
+00:02:09.039 --> 00:02:13.659
+we're going to continue to use the
+application that we generated in the last lesson.
+
+39
+00:02:14.319 --> 00:02:17.139
+So, let's take another look at that
+just to remember what we're working on. 
+
+40
+00:02:17.879 --> 00:02:19.879
+Again, you can use the cat
+command if you want to see the
+
+41
+00:02:19.879 --> 00:02:22.879
+contents of one of these
+files on your local file system.
+
+42
+00:02:23.419 --> 00:02:25.979
+They're all included with
+the lab that you have. Now,
+
+43
+00:02:25.979 --> 00:02:30.139
+let's look at what it looks
+like to build a model graded eval.
+
+44
+00:02:30.900 --> 00:02:36.650
+This is going to look similar to the work
+that we did to build the quiz assistant,
+
+45
+00:02:36.650 --> 00:02:40.379
+except in this case, we are
+building a prompt that tells
+
+46
+00:02:40.379 --> 00:02:43.759
+the LLM to evaluate the
+output of the quiz assistant.
+
+47
+00:02:44.319 --> 00:02:49.129
+So, you can see here that we're giving
+specific instructions to the LLM to tell
+
+48
+00:02:49.129 --> 00:02:53.620
+it the role that it plays in
+evaluating the work of the quiz assistant.
+
+49
+00:02:54.199 --> 00:02:56.259
+Before evaluating an
+actual quiz assistant,
+
+50
+00:02:56.259 --> 00:03:00.030
+we are going to simulate
+this by writing an LLM response
+
+51
+00:03:00.030 --> 00:03:03.110
+as if it came from the quiz assistant and
+
+52
+00:03:03.110 --> 00:03:06.199
+using our eval to
+determine if that response would
+
+53
+00:03:06.199 --> 00:03:08.939
+pass the test that we're looking to make.
+
+54
+00:03:09.439 --> 00:03:13.740
+As you can see here, the
+full message or prompt
+
+55
+00:03:13.740 --> 00:03:18.030
+for the eval is telling
+the LLM to evaluate a
+
+56
+00:03:18.030 --> 00:03:21.469
+generated quiz based on
+the context and determine
+
+57
+00:03:21.469 --> 00:03:25.759
+whether or not it
+looks like a quiz or test.
+
+58
+00:03:26.259 --> 00:03:30.120
+It is not meant to evaluate
+whether the information is correct.
+
+59
+00:03:31.240 --> 00:03:36.020
+Then, it is told specifically to
+output a Y if the response is a quiz,
+
+60
+00:03:36.020 --> 00:03:39.520
+and N if the response
+does not look like a quiz.
+
+61
+00:03:40.580 --> 00:03:43.770
+Now, we are going to use
+langchain to build the familiar
+
+62
+00:03:43.770 --> 00:03:46.099
+chain that we saw in the previous lesson,
+
+63
+00:03:46.099 --> 00:03:49.580
+except this time we're building a
+chain specifically to do the evaluation.
+
+64
+00:03:50.719 --> 00:03:53.840
+So first, we have our chat prompt
+template as we built previously. 
+
+65
+00:03:54.780 --> 00:03:58.039
+Next, we select our LLM, which
+also we did in the previous lesson. 
+
+66
+00:03:58.680 --> 00:04:03.620
+And again, we're using GPT 3.5 Turbo.
+And finally, we select an output parser,
+
+67
+00:04:03.780 --> 00:04:07.319
+which again is the STR output
+parser to take the response
+
+68
+00:04:07.319 --> 00:04:09.919
+from the LLM and generate a basic string.
+
+69
+00:04:10.280 --> 00:04:13.699
+We chain these together as we
+did previously, but to recap,
+
+70
+00:04:13.699 --> 00:04:17.129
+we take the eval prompt,
+we pipe it to the LLM,
+
+71
+00:04:17.129 --> 00:04:20.240
+we take that response
+and pipe it to the output
+
+72
+00:04:20.240 --> 00:04:23.040
+parser to get the string
+that we're looking for.
+
+73
+00:04:23.439 --> 00:04:29.060
+So now, we've built a basic eval
+chain using a known good LLM response,
+
+74
+00:04:42.699 --> 00:04:45.819
+And as you can see in
+this case, we get a Y,
+
+75
+00:04:45.819 --> 00:04:48.939
+which means the known good
+response that we put in is believed
+
+76
+00:04:48.939 --> 00:04:52.319
+by the LLM to look like a quiz
+in the format that's expected.
+
+77
+00:04:53.240 --> 00:04:57.639
+However, we also want to ensure that it
+will fail if it doesn't look like a quiz.
+
+78
+00:04:58.060 --> 00:05:02.600
+In order to do that, we'll first
+store all of the eval chain creation
+
+79
+00:05:02.600 --> 00:05:05.620
+code as a utility function
+so we can use it repeatedly.
+
+80
+00:05:06.500 --> 00:05:11.399
+Next, we store a known bad result so
+that we can pass it into a new eval chain.
+
+81
+00:05:11.860 --> 00:05:16.750
+And now, we invoke this new eval chain
+and see that we get the correct response,
+
+82
+00:05:16.750 --> 00:05:21.639
+which is an N to indicate that the
+text does not look like a quiz. Now,
+
+83
+00:05:21.839 --> 00:05:27.519
+we're gonna take our newly created model
+graded eval capability and incorporate it
+
+84
+00:05:27.519 --> 00:05:31.459
+into the tests that we're running inside
+of our continuous integration pipeline.
+
+85
+00:05:31.980 --> 00:05:36.240
+So, we have two files for testing
+on the file system in the lab. 
+
+86
+00:05:36.839 --> 00:05:39.939
+The first is
+testassistant.py which you can see
+
+87
+00:05:39.939 --> 00:05:43.040
+here and is what we
+were running previously.
+
+88
+00:05:43.519 --> 00:05:49.689
+The second is test-release-evals.py which
+is a roll-up of all of the work we just
+
+89
+00:05:49.689 --> 00:05:55.439
+did to show how to create a
+model-graded eval and execute it against OpenAI.
+
+90
+00:05:56.079 --> 00:06:00.920
+Okay, so now that we have the
+release evals which are the model-graded
+
+91
+00:06:00.920 --> 00:06:03.160
+evals stored in the
+test-release-evals.py file,
+
+92
+00:06:03.160 --> 00:06:06.889
+along with the previous files
+we had, the test assistant,
+
+93
+00:06:06.889 --> 00:06:10.240
+and the app where we
+stored our original code.
+
+94
+00:06:10.600 --> 00:06:13.160
+We're gonna push all of
+that to GitHub. And then,
+
+95
+00:06:13.160 --> 00:06:17.720
+to CircleCI so that we can
+evaluate our application
+
+96
+00:06:17.720 --> 00:06:20.980
+including the model-graded evals.
+
+97
+00:06:21.439 --> 00:06:23.000
+Now, in this particular case,
+
+98
+00:06:23.000 --> 00:06:26.110
+we are using the full
+evaluation for the positive case,
+
+99
+00:06:26.110 --> 00:06:30.459
+but intentionally passing the known bad
+result to the negative case to show what
+
+100
+00:06:30.459 --> 00:06:34.199
+it looks like when there's a failure
+in the continuous integration pipeline.
+
+101
+00:06:34.639 --> 00:06:38.839
+We are also only going to trigger
+the release evals job on CircleCI
+
+102
+00:06:38.839 --> 00:06:42.720
+so that we don't do as much
+testing for this particular example.
+
+103
+00:06:43.319 --> 00:06:45.810
+We do this through this
+function, triggerReleaseEvals,
+
+104
+00:06:45.810 --> 00:06:48.660
+which uses a parameter
+passed to the workflow.
+
+105
+00:06:49.040 --> 00:06:52.850
+You can see here that the only job that
+is running is the runPreReleaseEvals,
+
+106
+00:06:52.850 --> 00:06:55.839
+because that was the one we
+specifically selected through that parameter.
+
+107
+00:06:55.839 --> 00:06:59.569
+So, as you can see, we ran the
+model graded evals in this run,
+
+108
+00:06:59.629 --> 00:07:06.908
+and we did get a failure because we
+intentionally passed the known bad content great so you can see that your pre-release
+
+109
+00:07:06.968 --> 00:07:10.097
+evals run when you merge
+your application changes to
+
+110
+00:07:10.157 --> 00:07:13.285
+the main branch in a
+real-world development scenario
+
+111
+00:07:13.345 --> 00:07:16.654
+this would happen after
+you've made changes on your dev
+
+112
+00:07:16.714 --> 00:07:20.022
+branch and run your per
+commit evals we're setting up a
+
+113
+00:07:20.082 --> 00:07:23.331
+system to progressively
+increase our confidence in the
+
+114
+00:07:23.391 --> 00:07:26.639
+application as we get
+closer to releasing it to users.
+
+115
+00:07:26.639 --> 00:07:30.699
+In our next lesson, we'll
+look at ways that you can
+
+116
+00:07:30.699 --> 00:07:33.290
+make the pre-release
+checks even more robust,
+
+117
+00:07:33.290 --> 00:07:35.879
+including running
+evaluations on multiple data points,
+
+118
+00:07:35.879 --> 00:07:38.829
+writing evaluations to detect
+hallucinations in your application,
+
+119
+00:07:38.829 --> 00:07:42.160
+and storing evaluation results
+for human review in CircleCI.
+
+120
+00:07:42.920 --> 00:07:43.819
+I'll see you in the next lesson.

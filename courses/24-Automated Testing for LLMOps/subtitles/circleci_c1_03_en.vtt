@@ -1,0 +1,2297 @@
+WEBVTT
+1
+00:00:00.020 --> 00:00:02.840
+In this lesson, you'll
+practice setting up rules-based evals,
+
+2
+00:00:02.840 --> 00:00:05.420
+which are
+fast and cheap to run. So rules-based
+
+3
+00:00:05.420 --> 00:00:08.110
+evals are
+suitable for the early, iterative stage of
+
+4
+00:00:08.110 --> 00:00:10.210
+development, in which you'll
+run these tests
+
+5
+00:00:10.210 --> 00:00:13.200
+frequently, anytime you add a
+feature or fix a bug.
+
+6
+00:00:14.080 --> 00:00:18.020
+Once you have your first evals set up,
+you'll have a chance to see them
+
+7
+00:00:18.020 --> 00:00:19.860
+run in an automated continuous integration
+pipeline.
+
+8
+00:00:20.520 --> 00:00:21.020
+Let's get started.
+
+9
+00:00:22.800 --> 00:00:26.220
+So we're going to start with an
+overview of automated evals.
+
+10
+00:00:26.840 --> 00:00:29.550
+Ultimately, we want you to
+come out of this
+
+11
+00:00:29.550 --> 00:00:31.960
+set of lessons with
+a good understanding of
+
+12
+00:00:31.960 --> 00:00:35.270
+how to build software effectively,
+how to build high-quality software, how
+
+13
+00:00:35.270 --> 00:00:38.270
+to be able to move
+quickly and get great feedback
+
+14
+00:00:38.270 --> 00:00:39.780
+on everything that you're building.
+
+15
+00:00:40.560 --> 00:00:44.170
+And this is a thing that's
+well understood in more
+
+16
+00:00:44.170 --> 00:00:47.770
+traditional forms of software, but
+is shifting as many of
+
+17
+00:00:47.770 --> 00:00:50.660
+us start to build LLM-powered applications.
+. If
+
+18
+00:00:50.660 --> 00:00:53.220
+we compare traditional
+software to LLM-based applications,
+
+19
+00:00:53.220 --> 00:00:55.780
+we can see a few
+fundamental differences.
+
+20
+00:00:56.340 --> 00:01:00.220
+Overall, from a behavior perspective,
+traditional software tends
+
+21
+00:01:00.220 --> 00:01:03.060
+to be focused around things that
+are predefined.
+
+22
+00:01:03.720 --> 00:01:06.380
+We know what the inputs are,
+and we know as a
+
+23
+00:01:06.380 --> 00:01:08.800
+result of any particular input
+what the output will be.
+
+24
+00:01:09.500 --> 00:01:10.880
+And that's
+fairly straightforward to test for.
+
+25
+00:01:11.860 --> 00:01:13.940
+By contrast,
+in LLM based applications,
+
+26
+00:01:13.940 --> 00:01:18.800
+we know what the inputs are,
+but we get a set of possible outputs.
+
+27
+00:01:18.800 --> 00:01:21.040
+So it's
+more probabilistic in nature.
+
+28
+00:01:21.620 --> 00:01:23.920
+Many of these applications
+are based on natural language.
+
+29
+00:01:23.920 --> 00:01:25.080
+This could be highly subjective.
+
+30
+00:01:26.000 --> 00:01:29.100
+and if your application
+does things like summarizing,
+
+31
+00:01:29.100 --> 00:01:31.120
+then it's
+quite possible that there will
+
+32
+00:01:31.120 --> 00:01:35.360
+be many good outcomes. Outcomes
+that are good enough and would
+
+33
+00:01:35.360 --> 00:01:38.660
+be considered correct, there
+are also many incorrect
+
+34
+00:01:38.660 --> 00:01:40.260
+possible outcomes or outputs.
+
+35
+00:01:40.960 --> 00:01:43.980
+And so the approach to
+testing can be quite different.
+
+36
+00:01:43.980 --> 00:01:47.470
+For example, if you were to prompt
+an LLM to answer the question,
+
+37
+00:01:47.470 --> 00:01:49.580
+is Italy a good place to take a
+vacation?
+
+38
+00:01:50.640 --> 00:01:51.860
+One answer could be yes.
+
+39
+00:01:52.560 --> 00:01:55.280
+You can go to Rome, go to Florence,
+you can go to Venice,
+
+40
+00:01:55.280 --> 00:01:58.300
+you can also explore museums,
+you could explore beaches.
+
+41
+00:01:59.420 --> 00:02:01.000
+Another answer could be
+a single word answer.
+
+42
+00:02:01.520 --> 00:02:01.680
+Yes.
+
+43
+00:02:02.360 --> 00:02:06.000
+Which one is considered better
+will depend on your use case. It's
+
+44
+00:02:06.000 --> 00:02:10.690
+also important to note that LLMs
+can produce harmful responses. They
+
+45
+00:02:10.690 --> 00:02:12.120
+might be toxic, they
+might be offensive.
+
+46
+00:02:13.080 --> 00:02:17.300
+And so LLMs bring new challenges
+to application testing
+
+47
+00:02:17.300 --> 00:02:19.180
+compared to traditional software.
+
+48
+00:02:19.820 --> 00:02:23.830
+To deal with these new testing
+challenges, AI researchers developed
+
+49
+00:02:23.830 --> 00:02:28.640
+the concept of evaluations or evals
+to assess how LLMs are doing
+
+50
+00:02:28.640 --> 00:02:31.180
+at specific tasks.
+There are many common
+
+51
+00:02:31.180 --> 00:02:32.340
+data sets for different tasks.
+
+52
+00:02:32.920 --> 00:02:37.780
+Examples include MMLU, HeLaSwag,
+and human eval. LLMs are often
+
+53
+00:02:37.780 --> 00:02:40.680
+tested on different data sets so
+researchers have a
+
+54
+00:02:40.680 --> 00:02:43.920
+point of comparison between models.
+However, what we're going to talk about
+
+55
+00:02:43.920 --> 00:02:47.960
+is building your own
+application and testing for
+
+56
+00:02:47.960 --> 00:02:49.260
+your specific use case.
+
+57
+00:02:50.000 --> 00:02:52.540
+Okay, so as I mentioned, there's
+some standard benchmarks, these
+
+58
+00:02:52.540 --> 00:02:55.200
+are some examples, but
+these are not necessarily going to
+
+59
+00:02:55.200 --> 00:02:59.160
+give you great information about what
+works the best in your specific
+
+60
+00:02:59.160 --> 00:03:01.160
+application and for
+your use cases.
+
+61
+00:03:01.960 --> 00:03:04.970
+So we're going to take the
+time in this lesson
+
+62
+00:03:04.970 --> 00:03:07.980
+to start building the
+tools to evaluate when you're building
+
+63
+00:03:07.980 --> 00:03:08.880
+your own application.
+
+64
+00:03:09.760 --> 00:03:12.260
+What's great about all of
+these benchmarks and the
+
+65
+00:03:12.260 --> 00:03:14.480
+existence of evals to
+perform these benchmarks is
+
+66
+00:03:14.480 --> 00:03:18.930
+that we have a lot of the tooling
+in place that we can use to start
+
+67
+00:03:18.930 --> 00:03:20.040
+testing our own applications.
+
+68
+00:03:20.940 --> 00:03:23.940
+And in many cases,
+these evals are run manually,
+
+69
+00:03:23.940 --> 00:03:26.940
+which is great for
+some quick feedback as you're
+
+70
+00:03:26.940 --> 00:03:30.270
+building, but
+once you get to scale, once you're working
+
+71
+00:03:30.270 --> 00:03:32.930
+with other team members
+and continuing to work
+
+72
+00:03:32.930 --> 00:03:36.930
+and move forward, you want
+to have a tool that's going to
+
+73
+00:03:36.930 --> 00:03:39.590
+keep checking the quality
+of your work and
+
+74
+00:03:39.590 --> 00:03:42.260
+keep checking the quality
+of your application, again,
+
+75
+00:03:42.260 --> 00:03:44.920
+across larger team,
+across time, and that's what
+
+76
+00:03:44.920 --> 00:03:47.920
+we're going to build to
+over the course of
+
+77
+00:03:47.920 --> 00:03:51.910
+this set of lessons so once we have
+the ability to perform
+
+78
+00:03:51.910 --> 00:03:54.580
+automated evals it's important
+for us to understand
+
+79
+00:03:54.580 --> 00:03:57.240
+what we're looking for
+and when we should
+
+80
+00:03:57.240 --> 00:03:59.910
+be performing these automated
+evals in terms of
+
+81
+00:03:59.910 --> 00:04:02.910
+what there's four main
+areas that we think about
+
+82
+00:04:02.910 --> 00:04:05.570
+first context adherence or
+groundedness, which is the
+
+83
+00:04:05.570 --> 00:04:08.570
+question of whether the
+LLM response aligns with the
+
+84
+00:04:08.570 --> 00:04:09.900
+provided context or guidelines.
+
+85
+00:04:10.560 --> 00:04:13.750
+Next is context relevance, and that's
+the question of whether
+
+86
+00:04:13.750 --> 00:04:16.300
+the retrieved context is
+relevant to the original
+
+87
+00:04:16.300 --> 00:04:20.440
+query or prompt. Next, we
+have correctness or accuracy, which
+
+88
+00:04:20.440 --> 00:04:23.220
+is really, does the LLM output
+align with the
+
+89
+00:04:23.220 --> 00:04:26.240
+provided ground truth and the expected
+results?
+
+90
+00:04:27.020 --> 00:04:29.980
+How close is it to what we would
+anticipate in the given scenario?
+
+91
+00:04:29.980 --> 00:04:33.720
+And then finally, we're
+concerned with bias and toxicity, which
+
+92
+00:04:33.720 --> 00:04:36.350
+are really negative potential
+that exist in the
+
+93
+00:04:36.350 --> 00:04:37.660
+world of LLM-powered apps.
+
+94
+00:04:38.160 --> 00:04:41.980
+First, bias should be favoritism
+or prejudice towards or
+
+95
+00:04:41.980 --> 00:04:46.340
+away from certain groups.
+And then toxicity, harmful words or
+
+96
+00:04:46.340 --> 00:04:50.300
+implicit wording that
+is offensive to certain groups.
+
+97
+00:04:50.940 --> 00:04:54.790
+And then in terms of when,
+in a traditional software model, we're
+
+98
+00:04:54.790 --> 00:04:58.310
+typically testing after every change, whether
+that's bug fixes, feature updates,
+
+99
+00:04:58.310 --> 00:05:00.230
+or even
+data changes or changes
+
+100
+00:05:00.230 --> 00:05:03.120
+to the model, which might
+be a different case
+
+101
+00:05:03.120 --> 00:05:05.360
+when you're evaluating from
+an LOM perspective.
+
+102
+00:05:05.860 --> 00:05:10.000
+If that becomes slow or takes
+too long you can also start
+
+103
+00:05:10.000 --> 00:05:12.420
+to pull out
+more comprehensive testing
+
+104
+00:05:12.420 --> 00:05:15.160
+to specific points like pre-deployment.
+
+105
+00:05:15.760 --> 00:05:19.970
+So doing more comprehensive testing
+at the point that you're looking at pushing
+
+106
+00:05:19.970 --> 00:05:21.920
+something into a
+production environment or
+
+107
+00:05:21.920 --> 00:05:25.800
+post deployment because some of these
+changes might occur once your software
+
+108
+00:05:25.800 --> 00:05:28.390
+is actually executing in a production
+environment, which
+
+109
+00:05:28.390 --> 00:05:32.280
+is again a bit of a shift from
+our traditional software models.
+
+110
+00:05:33.060 --> 00:05:35.340
+Okay, so let's get started putting all
+of this into practice.
+
+111
+00:05:36.320 --> 00:05:39.220
+In order to
+start understanding this framework,
+
+112
+00:05:39.220 --> 00:05:42.940
+we're going to build an AI-powered quiz
+generator. The app
+
+113
+00:05:42.940 --> 00:05:45.920
+will have a dataset
+comprised of facts categorized
+
+114
+00:05:45.920 --> 00:05:48.140
+across art, science, and
+geography.
+
+115
+00:05:48.680 --> 00:05:50.180
+The facts are grouped into specific
+subjects.
+
+116
+00:05:51.040 --> 00:05:53.020
+Some of those subjects
+apply to multiple categories.
+
+117
+00:05:53.020 --> 00:05:56.490
+For example, Paris is home to
+many great works of
+
+118
+00:05:56.490 --> 00:05:57.720
+art and scientific inventions.
+
+119
+00:05:58.340 --> 00:06:00.490
+The user will ask our
+bot to write a quiz
+
+120
+00:06:00.490 --> 00:06:02.860
+about a given topic and
+get back a set of questions.
+
+121
+00:06:03.660 --> 00:06:05.880
+We'll write evaluations to check
+that the bot is
+
+122
+00:06:05.880 --> 00:06:08.860
+using the appropriate facts
+and only using facts
+
+123
+00:06:08.860 --> 00:06:10.140
+from our data set.
+
+124
+00:06:10.660 --> 00:06:11.240
+So let's jump in.
+
+125
+00:06:12.120 --> 00:06:15.160
+In order to get things going,
+we have to do a little bit of setup.
+
+126
+00:06:15.160 --> 00:06:18.430
+This application and
+executing the application
+
+127
+00:06:18.430 --> 00:06:24.070
+for automated evals requires us to
+use a couple of third party
+
+128
+00:06:24.070 --> 00:06:27.780
+services, including CircleCI,
+GitHub, and OpenAI. So we're
+
+129
+00:06:27.780 --> 00:06:30.660
+going to put some keys
+in place to give us
+
+130
+00:06:30.660 --> 00:06:33.540
+access to those things and
+set up our GitHub repo.
+
+131
+00:06:34.360 --> 00:06:37.140
+This is all done for you,
+we just need to put the code in place.
+
+132
+00:06:37.940 --> 00:06:41.200
+So for the purposes of
+the lesson and this entire course,
+
+133
+00:06:41.200 --> 00:06:43.570
+there are some utility
+functions to make these
+
+134
+00:06:43.570 --> 00:06:46.240
+things easier and we'll
+use those as you'll see
+
+135
+00:06:46.240 --> 00:06:48.620
+here from this utils
+package to put our
+
+136
+00:06:48.620 --> 00:06:52.170
+keys in place and get our environment set
+up in order to
+
+137
+00:06:52.170 --> 00:06:53.360
+to execute our application.
+
+138
+00:06:54.020 --> 00:06:57.180
+Now we have those three
+keys in place for the
+
+139
+00:06:57.180 --> 00:07:01.290
+three external services that we're
+going to use to make this work CircleCI,
+
+140
+00:07:01.290 --> 00:07:02.240
+GitHub and OpenAI.
+
+141
+00:07:03.120 --> 00:07:06.530
+The work to do that, as noted,
+is in the utils package,
+
+142
+00:07:06.530 --> 00:07:08.240
+and these keys have been provided.
+
+143
+00:07:08.860 --> 00:07:11.330
+If you want to take this
+and do something bigger over time,
+
+144
+00:07:11.330 --> 00:07:13.600
+then you would need to
+go sign up for those services,
+
+145
+00:07:13.600 --> 00:07:16.510
+but they're provided for the purpose
+of this lesson. And now, as
+
+146
+00:07:16.510 --> 00:07:19.180
+you can see, we have our GitHub repo
+and branch in place.
+
+147
+00:07:19.720 --> 00:07:23.560
+There's a generated branch for each
+student so that it doesn't conflict
+
+148
+00:07:23.560 --> 00:07:24.820
+with everyone else's work.
+
+149
+00:07:25.360 --> 00:07:26.900
+And again, that's done for you so
+that you can get
+
+150
+00:07:26.900 --> 00:07:28.220
+through that lesson very easily.
+
+151
+00:07:28.780 --> 00:07:31.510
+We're going to start by
+using the evals locally, but
+
+152
+00:07:31.510 --> 00:07:34.790
+as the point of this is
+to get to automated evals, we
+
+153
+00:07:34.790 --> 00:07:36.970
+will use GitHub and
+CircleCI to push the
+
+154
+00:07:36.970 --> 00:07:39.150
+code into GitHub and
+then have that push
+
+155
+00:07:39.150 --> 00:07:41.330
+code into CircleCI for
+the purpose of executing
+
+156
+00:07:41.330 --> 00:07:43.520
+the automated eval, which
+again gets us to
+
+157
+00:07:43.520 --> 00:07:47.890
+that place where as we grow our team,
+as we work over time, we don't have
+
+158
+00:07:47.890 --> 00:07:50.070
+to worry about whether
+everything has been tested
+
+159
+00:07:50.070 --> 00:07:52.250
+because it all gets
+tested on our behalf
+
+160
+00:07:52.250 --> 00:07:54.440
+each time we make
+a change, helping us
+
+161
+00:07:54.440 --> 00:07:56.620
+to move confidently and quickly
+as we build.
+
+162
+00:07:57.180 --> 00:07:59.500
+Okay, so now let's get into creating
+the actual application.
+
+163
+00:08:00.080 --> 00:08:03.080
+As described, we're
+going to build a quiz
+
+164
+00:08:03.080 --> 00:08:04.580
+generator powered by AI.
+
+165
+00:08:05.220 --> 00:08:07.080
+We have a few different subjects,
+and first we're
+
+166
+00:08:07.080 --> 00:08:08.120
+going to build the template.
+
+167
+00:08:08.720 --> 00:08:11.910
+Now note that we're
+going to store a lot of our
+
+168
+00:08:11.910 --> 00:08:16.400
+data in strings so that it's visible
+on the screen and in our templates. If
+
+169
+00:08:16.400 --> 00:08:19.210
+this were larger or if
+you were building this as a real application,
+
+170
+00:08:19.210 --> 00:08:21.600
+you'd be much
+more likely to put this data into files
+
+171
+00:08:21.600 --> 00:08:23.330
+or into a database
+so that you could
+
+172
+00:08:23.330 --> 00:08:24.200
+build it more dynamically.
+
+173
+00:08:24.720 --> 00:08:26.480
+This is really built this
+way to help you see
+
+174
+00:08:26.480 --> 00:08:28.240
+it very clearly and make
+it easier to work with.
+
+175
+00:08:28.240 --> 00:08:31.000
+So the first thing that we've
+built here is the data
+
+176
+00:08:31.000 --> 00:08:32.100
+set for the quiz.
+
+177
+00:08:32.860 --> 00:08:38.520
+And the goal is to have the quiz
+generator, based on the LLM,
+
+178
+00:08:38.520 --> 00:08:42.440
+specifically choose questions
+and answers from this data set
+
+179
+00:08:42.440 --> 00:08:47.550
+and not to choose questions and
+answers from anywhere else. So we're
+
+180
+00:08:47.550 --> 00:08:49.200
+going to work with
+the validity of that
+
+181
+00:08:49.200 --> 00:08:50.840
+as we start to build out the application.
+
+182
+00:08:51.660 --> 00:08:53.560
+So this is our
+underlying data set that we're
+
+183
+00:08:53.560 --> 00:08:54.120
+going to use.
+
+184
+00:08:54.620 --> 00:08:58.220
+And now we're going to build
+a prompt template that will allow
+
+185
+00:08:58.220 --> 00:09:00.920
+us to ask for specific quizzes
+and validate that
+
+186
+00:09:00.920 --> 00:09:02.720
+those quizzes are
+actually generated based
+
+187
+00:09:02.720 --> 00:09:04.520
+on this data that we've provided.
+
+188
+00:09:05.100 --> 00:09:07.630
+So take a moment
+to read the content
+
+189
+00:09:07.630 --> 00:09:10.150
+of this prompt template,
+because this is what's
+
+190
+00:09:10.150 --> 00:09:12.680
+ultimately submitted to the
+LLM based on information
+
+191
+00:09:12.680 --> 00:09:16.150
+provided in the request, in
+addition to the content that you
+
+192
+00:09:16.150 --> 00:09:19.620
+saw in the quiz bank, which
+will be injected into here.
+
+193
+00:09:20.160 --> 00:09:23.520
+So I think it's really valuable to
+understand how this template is structured.
+
+194
+00:09:24.200 --> 00:09:28.010
+This is how we're going to get the
+request constructed or the
+
+195
+00:09:28.010 --> 00:09:29.280
+prompt to the LLM.
+
+196
+00:09:30.060 --> 00:09:33.530
+And so you can see it's
+written here in fairly plain English
+
+197
+00:09:33.530 --> 00:09:35.560
+with some specific
+instructions for the LLM.
+
+198
+00:09:36.140 --> 00:09:39.980
+And if you look at
+where the QuizBank placeholder is,
+
+199
+00:09:39.980 --> 00:09:43.050
+that will include the
+data that we just
+
+200
+00:09:43.050 --> 00:09:46.130
+created as our data
+set and then combine
+
+201
+00:09:46.130 --> 00:09:49.970
+it with these instructions,
+which basically ask for the LLM
+
+202
+00:09:49.970 --> 00:09:53.040
+to generate a quiz customized in
+specific steps.
+
+203
+00:09:53.580 --> 00:09:57.300
+So first, based on the category
+the user is asking about,
+
+204
+00:09:57.300 --> 00:10:00.300
+as discussed, we have three options
+that are available within
+
+205
+00:10:00.300 --> 00:10:03.900
+our quiz for categories, geography,
+science, and art. We've
+
+206
+00:10:03.900 --> 00:10:05.320
+explicitly outlined those.
+
+207
+00:10:06.020 --> 00:10:09.580
+And then the second step is
+to identify the subject that we're
+
+208
+00:10:09.580 --> 00:10:12.850
+going to generate the questions about,
+and those are pulled from
+
+209
+00:10:12.850 --> 00:10:13.740
+the quiz bank.
+
+210
+00:10:14.380 --> 00:10:18.240
+Choose up to two of those,
+and then in step three,
+
+211
+00:10:18.240 --> 00:10:21.050
+generate a quiz based
+on those two choices,
+
+212
+00:10:21.050 --> 00:10:24.560
+the category and the subjects,
+and then use a specific
+
+213
+00:10:24.560 --> 00:10:27.010
+format to generate the quiz,
+which we'll
+
+214
+00:10:27.010 --> 00:10:30.580
+see once we start running it. Now
+we're going
+
+215
+00:10:30.580 --> 00:10:34.330
+to take advantage of a third-party toolkit, Langchain,
+in order to
+
+216
+00:10:34.330 --> 00:10:37.050
+build a prompt template
+that we can use
+
+217
+00:10:37.050 --> 00:10:41.140
+to submit all of the pieces that we
+just outlined to an
+
+218
+00:10:41.140 --> 00:10:41.480
+LLM.
+
+219
+00:10:41.980 --> 00:10:44.610
+So if you print this out,
+you can see the
+
+220
+00:10:44.610 --> 00:10:47.770
+content or the generated object,
+which is the chat prompt that we're
+
+221
+00:10:47.770 --> 00:10:50.140
+now going to use to
+submit to the LLM.
+
+222
+00:10:50.760 --> 00:10:52.680
+So next, let's choose an LLM.
+
+223
+00:10:53.320 --> 00:10:56.920
+Now, we'll also use Langchain to
+get ourselves access to
+
+224
+00:10:56.920 --> 00:11:00.580
+an LLM for the rest of our actions
+here. We're choosing
+
+225
+00:11:00.580 --> 00:11:03.900
+to use OpenAI's GPT-35 Turbo.
+
+226
+00:11:05.200 --> 00:11:08.100
+You have the option
+to choose many different LLMs,
+
+227
+00:11:08.100 --> 00:11:10.030
+both depending on
+your personal choices,
+
+228
+00:11:10.030 --> 00:11:12.600
+as well as the
+option to choose different
+
+229
+00:11:12.600 --> 00:11:15.500
+ones to try to
+get different results if you're
+
+230
+00:11:15.500 --> 00:11:19.260
+not getting the right output for
+your particular use case. And
+
+231
+00:11:19.260 --> 00:11:21.400
+now we need a parser that's going
+to take the response
+
+232
+00:11:21.400 --> 00:11:24.000
+from the LLM and
+give us something useful. And in
+
+233
+00:11:24.000 --> 00:11:25.100
+our case, we just
+want a string.
+
+234
+00:11:25.740 --> 00:11:30.280
+So we're using Langchain's str
+output parser. And now we're going to
+
+235
+00:11:30.280 --> 00:11:33.100
+connect all these pieces together using
+the pipe operator
+
+236
+00:11:33.100 --> 00:11:34.660
+from the Langchain
+expression language.
+
+237
+00:11:35.400 --> 00:11:38.110
+You can think of this
+as taking the output of
+
+238
+00:11:38.110 --> 00:11:40.810
+one and piping it into
+the input of the next,
+
+239
+00:11:40.810 --> 00:11:42.980
+the whole thing think of as a pipeline.
+
+240
+00:11:43.700 --> 00:11:47.440
+So we're taking the chat prompt, piping
+it to the LLM, and
+
+241
+00:11:47.440 --> 00:11:50.060
+then piping the response
+through the output parser
+
+242
+00:11:50.060 --> 00:11:52.600
+to get our string. Now
+to take each of
+
+243
+00:11:52.600 --> 00:11:55.290
+those components and make
+it reusable as one piece, we're going
+
+244
+00:11:55.290 --> 00:11:57.730
+to build that into a
+function that we're calling assistant
+
+245
+00:11:57.730 --> 00:12:00.420
+chain in order to
+be able to continue to use this.
+
+246
+00:12:00.920 --> 00:12:03.900
+Now that we've
+seen how each of those pieces works, we're
+
+247
+00:12:03.900 --> 00:12:06.880
+going to package that up into
+our quiz assistant, which is
+
+248
+00:12:06.880 --> 00:12:10.680
+built on that chain, so that
+we can use it repeatedly as we test
+
+249
+00:12:10.680 --> 00:12:12.620
+and evaluate different responses.
+So now
+
+250
+00:12:12.620 --> 00:12:15.800
+that we have all the pieces, we're going
+to start actually building
+
+251
+00:12:15.800 --> 00:12:20.100
+the evaluations for
+our assistant. In this first
+
+252
+00:12:20.100 --> 00:12:22.870
+case, we're going to be
+looking for expected words,
+
+253
+00:12:22.870 --> 00:12:25.330
+meaning when we ask
+the assistant to generate
+
+254
+00:12:25.330 --> 00:12:27.790
+a quiz for us,
+there will be specific
+
+255
+00:12:27.790 --> 00:12:30.250
+words that we would
+expect to see in
+
+256
+00:12:30.250 --> 00:12:30.860
+the response.
+
+257
+00:12:31.500 --> 00:12:35.190
+So for our first example, we're
+going to generate a fairly straightforward
+
+258
+00:12:35.190 --> 00:12:37.650
+quiz about science, and
+then we have this
+
+259
+00:12:37.650 --> 00:12:41.350
+list of expected words
+that we assume if the quiz is generated
+
+260
+00:12:41.350 --> 00:12:44.110
+correctly based on the
+dataset that we provided, then
+
+261
+00:12:44.110 --> 00:12:49.720
+some of these words will appear. This
+is a fairly straightforward rules-based eval
+
+262
+00:12:49.720 --> 00:12:54.140
+meaning we are using known inputs
+for our testing.
+
+263
+00:12:55.120 --> 00:12:58.950
+In a later lesson we will look at
+model graded evals where
+
+264
+00:12:58.950 --> 00:13:01.500
+we actually use the
+power of the LLM
+
+265
+00:13:01.500 --> 00:13:04.050
+not just to generate
+the quiz but also
+
+266
+00:13:04.050 --> 00:13:06.920
+to evaluate the quality
+of the quiz after it's
+
+267
+00:13:06.920 --> 00:13:07.560
+been generated.
+
+268
+00:13:08.080 --> 00:13:11.070
+So now that we have all these pieces we've
+created our eval which is
+
+269
+00:13:11.070 --> 00:13:11.920
+looking for expected words.
+
+270
+00:13:12.520 --> 00:13:14.100
+We have the question we want to ask.
+
+271
+00:13:14.640 --> 00:13:16.620
+We have the expected words that we're
+looking for.
+
+272
+00:13:17.240 --> 00:13:21.100
+We can execute all of this
+as an eval and see what happens.
+
+273
+00:13:21.760 --> 00:13:25.430
+Okay as you can see now we're
+talking to a real LLM and this takes
+
+274
+00:13:25.430 --> 00:13:28.370
+a little bit of time as we make
+the request and get
+
+275
+00:13:28.370 --> 00:13:29.100
+back the response.
+
+276
+00:13:29.720 --> 00:13:32.830
+But here you can see what's
+generated for us, which
+
+277
+00:13:32.830 --> 00:13:34.380
+is a quiz about science.
+
+278
+00:13:35.940 --> 00:13:39.220
+And it contains at least some
+of the words that we expected.
+
+279
+00:13:39.820 --> 00:13:43.500
+So it's going to pass our eval. Because
+of the way that we
+
+280
+00:13:43.500 --> 00:13:46.530
+created this particular eval, the
+eval. Because the way that we
+
+281
+00:13:46.530 --> 00:13:48.750
+created this particular eval, the
+eval expected words function, we
+
+282
+00:13:48.750 --> 00:13:50.970
+used an assert to throw
+an exception in the case
+
+283
+00:13:50.970 --> 00:13:51.860
+where the eval fails.
+
+284
+00:13:52.640 --> 00:13:57.280
+But because our expected words were
+found in this particular quiz,
+
+285
+00:13:57.280 --> 00:14:01.920
+it passed and printed out the
+answer without any extra output.
+
+286
+00:14:02.440 --> 00:14:05.160
+So now let's
+move on and create a failing eval.
+
+287
+00:14:05.820 --> 00:14:09.320
+So in this case, what we're
+going to do is ask
+
+288
+00:14:09.320 --> 00:14:12.500
+the application to answer a
+question that it doesn't have
+
+289
+00:14:12.500 --> 00:14:17.800
+any information about. And what
+we want to happen is that the assistant
+
+290
+00:14:17.800 --> 00:14:20.900
+will decline to answer
+rather than making up
+
+291
+00:14:20.900 --> 00:14:22.060
+its own questions.
+
+292
+00:14:22.880 --> 00:14:25.160
+However, we haven't
+actually created those restrictions
+
+293
+00:14:25.160 --> 00:14:26.160
+in our prompt.
+
+294
+00:14:27.140 --> 00:14:31.570
+So we're going to run this, and
+what we should see is
+
+295
+00:14:31.570 --> 00:14:33.420
+a failure of our eval.
+
+296
+00:14:33.920 --> 00:14:36.970
+So as you can see in this case, we're
+going to ask for a
+
+297
+00:14:36.970 --> 00:14:37.840
+quiz specifically about Rome.
+
+298
+00:14:38.940 --> 00:14:42.230
+And again, we're
+hoping for the assistant to
+
+299
+00:14:42.230 --> 00:14:46.760
+decline in a polite and
+apologetic way by saying, I'm sorry.
+
+300
+00:14:46.760 --> 00:14:48.800
+And so let's run that
+and see what happens.
+
+301
+00:14:49.340 --> 00:14:51.770
+Again, you see some time as
+we connect to the LLM,
+
+302
+00:14:51.770 --> 00:14:53.540
+submit our prompt and
+get back the response.
+
+303
+00:14:54.280 --> 00:14:57.510
+But what we got back from
+a response was an actual quiz,
+
+304
+00:14:57.510 --> 00:14:58.860
+which we did not expect.
+
+305
+00:14:59.360 --> 00:15:01.940
+And so in this case,
+you can see what
+
+306
+00:15:01.940 --> 00:15:04.510
+happens with the assertion,
+which is that an error
+
+307
+00:15:04.510 --> 00:15:07.380
+is thrown indicating that I'm
+sorry was not contained in
+
+308
+00:15:07.380 --> 00:15:10.550
+any of this text. Again, you
+can see an actual quiz
+
+309
+00:15:10.550 --> 00:15:14.840
+that was returned to us. And
+as you can see right here, we
+
+310
+00:15:14.840 --> 00:15:19.340
+expected the bot to decline with I'm sorry
+and instead got the full
+
+311
+00:15:19.340 --> 00:15:22.790
+text of the quiz, which does
+not contain in it
+
+312
+00:15:22.790 --> 00:15:24.520
+anywhere the text, I'm sorry.
+
+313
+00:15:25.140 --> 00:15:28.360
+This would be a great place to stop
+the video for a
+
+314
+00:15:28.360 --> 00:15:30.500
+minute and explore this
+eval to ensure that
+
+315
+00:15:30.500 --> 00:15:31.840
+you really understand what's
+happening.
+
+316
+00:15:32.460 --> 00:15:35.850
+Because we passed expected
+words that we know will be in the
+
+317
+00:15:35.850 --> 00:15:37.270
+response,
+nothing happened other than
+
+318
+00:15:37.270 --> 00:15:38.400
+printing out the response.
+
+319
+00:15:39.420 --> 00:15:42.310
+Only something interesting will
+happen if the eval fails,
+
+320
+00:15:42.310 --> 00:15:44.880
+which in this case
+would mean finding none
+
+321
+00:15:44.880 --> 00:15:48.280
+of the expected words.
+So take the opportunity
+
+322
+00:15:48.280 --> 00:15:51.560
+to play with the
+expected words and see
+
+323
+00:15:51.560 --> 00:15:55.250
+what happens when they aren't
+found in the response
+
+324
+00:15:55.250 --> 00:15:56.480
+from the assistant.
+
+325
+00:15:57.280 --> 00:16:00.030
+And what you should see
+is that an exception is
+
+326
+00:16:00.030 --> 00:16:01.400
+thrown based on the assert.
+
+327
+00:16:02.280 --> 00:16:05.450
+Later in the lesson we're
+going to use a similar
+
+328
+00:16:05.450 --> 00:16:08.630
+prompt for the quiz assistant,
+but modify it so that
+
+329
+00:16:08.630 --> 00:16:12.430
+it would pass this
+test in that it will refuse to create
+
+330
+00:16:12.430 --> 00:16:14.970
+quizzes based on data
+that it doesn't already
+
+331
+00:16:14.970 --> 00:16:20.730
+have stored in its dataset. So from
+these examples, you can see that running
+
+332
+00:16:20.730 --> 00:16:24.440
+evaluations on your
+LLM apps can be extremely helpful
+
+333
+00:16:24.440 --> 00:16:27.330
+in assessing your
+LLMs performance, in discovering
+
+334
+00:16:27.330 --> 00:16:30.630
+areas for improvement, and enhancing
+the overall functionality
+
+335
+00:16:30.630 --> 00:16:33.100
+and reliability of
+your LLM-based applications.
+
+336
+00:16:33.720 --> 00:16:35.760
+But you can also
+imagine that if you
+
+337
+00:16:35.760 --> 00:16:38.660
+had to run those
+evaluations manually for every
+
+338
+00:16:38.660 --> 00:16:42.060
+change, the process would
+become tedious and time-consuming.
+
+339
+00:16:42.640 --> 00:16:46.170
+Now multiply those
+inefficiencies across a team, 10,
+
+340
+00:16:46.170 --> 00:16:48.760
+20, 100 contributors. It's
+just not scalable.
+
+341
+00:16:49.420 --> 00:16:55.650
+So instead, now let's look at how we
+would set up these evals to run automatically
+
+342
+00:16:55.650 --> 00:16:58.780
+in a continuous integration
+process. In this case, we'll
+
+343
+00:16:58.780 --> 00:17:01.740
+be using CircleCI, and ultimately,
+this will
+
+344
+00:17:01.740 --> 00:17:04.240
+allow your team to
+stay focused on developing
+
+345
+00:17:04.240 --> 00:17:08.020
+new features. For our
+first round of evals, we'll focus on
+
+346
+00:17:08.020 --> 00:17:11.310
+adding basic checks similar to the
+ones that we've used so far
+
+347
+00:17:11.310 --> 00:17:14.590
+to ensure that our assistant is being set
+up properly and producing
+
+348
+00:17:14.590 --> 00:17:15.140
+valid results.
+
+349
+00:17:15.680 --> 00:17:18.300
+These are the kinds of checks that you'll
+probably run every time
+
+350
+00:17:18.300 --> 00:17:19.820
+you make a change
+to your application.
+
+351
+00:17:20.340 --> 00:17:23.580
+In later lessons, we'll
+look at more advanced checks, including
+
+352
+00:17:23.580 --> 00:17:25.520
+model-graded evals
+that we might want
+
+353
+00:17:25.520 --> 00:17:29.140
+to run on a
+different cadence. Your CI-CD pipeline will
+
+354
+00:17:29.140 --> 00:17:31.080
+automatically run these
+different types of
+
+355
+00:17:31.080 --> 00:17:33.080
+evals depending on
+the situation that
+
+356
+00:17:33.080 --> 00:17:35.980
+you're in. And if any one
+of these automated checks
+
+357
+00:17:35.980 --> 00:17:38.950
+fails, your pipeline will stop
+running and notify you what went
+
+358
+00:17:38.950 --> 00:17:42.190
+wrong so that you can fix
+the problem and get back to
+
+359
+00:17:42.190 --> 00:17:45.130
+innovating. For this notebook, we're
+using the GitHub API
+
+360
+00:17:45.130 --> 00:17:46.000
+to commit code.
+
+361
+00:17:46.480 --> 00:17:49.220
+In your normal workflow, it's
+more likely that you would
+
+362
+00:17:49.220 --> 00:17:51.960
+use the Git command or
+command line tools like GH.
+
+363
+00:17:52.680 --> 00:17:55.360
+As a reminder, any code you push
+to GitHub will be
+
+364
+00:17:55.360 --> 00:17:57.800
+publicly visible because we've
+set up the course to let
+
+365
+00:17:57.800 --> 00:17:59.260
+you practice these
+exercises without logging
+
+366
+00:17:59.260 --> 00:18:00.480
+into your own
+GitHub account.
+
+367
+00:18:01.260 --> 00:18:04.620
+For your own projects, you'll
+want to use your own GitHub account, and
+
+368
+00:18:04.620 --> 00:18:06.940
+you can use a
+private repository if that's what
+
+369
+00:18:06.940 --> 00:18:07.460
+you need.
+
+370
+00:18:08.080 --> 00:18:10.010
+As mentioned previously, we've
+updated the application
+
+371
+00:18:10.010 --> 00:18:11.650
+prompt to decline
+generating quizzes for
+
+372
+00:18:11.650 --> 00:18:15.130
+topics for which there is no
+information. In other words, we
+
+373
+00:18:15.130 --> 00:18:18.090
+want the LLM to rely
+on the available context and
+
+374
+00:18:18.090 --> 00:18:21.060
+not on information that it
+may have from pre-training to
+
+375
+00:18:21.060 --> 00:18:22.540
+limit the possibility
+of hallucination.
+
+376
+00:18:23.040 --> 00:18:26.080
+Now we're taking the content of
+much of what we've built
+
+377
+00:18:26.080 --> 00:18:29.880
+already and putting it into
+a single app.py file on
+
+378
+00:18:29.880 --> 00:18:30.620
+the file system.
+
+379
+00:18:43.620 --> 00:18:48.490
+In order to see the contents,
+you can use the cat command to dump
+
+380
+00:18:48.490 --> 00:18:51.280
+that content back out
+into your notebook environment.
+
+381
+00:18:52.000 --> 00:18:54.860
+However, you'll note that the syntax
+highlighting is not visible, which
+
+382
+00:18:54.860 --> 00:18:57.200
+makes it a little bit
+more difficult to read.
+
+383
+00:18:57.820 --> 00:19:00.140
+As a reminder,
+this is the code that we've
+
+384
+00:19:00.140 --> 00:19:03.540
+already stepped through. We
+are just taking it and consolidating
+
+385
+00:19:03.540 --> 00:19:08.410
+it into a single file so
+that we can put it into Git and ultimately
+
+386
+00:19:08.410 --> 00:19:10.040
+into our continuous
+integration platform.
+
+387
+00:19:10.600 --> 00:19:12.360
+I'd like to draw your
+attention to two specific
+
+388
+00:19:12.360 --> 00:19:14.020
+points in this revised
+prompt.
+
+389
+00:19:14.700 --> 00:19:17.870
+The first is this line with
+an explicit instruction
+
+390
+00:19:17.870 --> 00:19:21.400
+to only reference facts in the
+included list of topics.
+
+391
+00:19:21.400 --> 00:19:26.350
+The second further down is specific
+instructions on what to do in
+
+392
+00:19:26.350 --> 00:19:29.800
+the case that there is no
+information about the
+
+393
+00:19:29.800 --> 00:19:33.260
+subject that the user is asking
+about and providing
+
+394
+00:19:33.260 --> 00:19:37.480
+specific text to say, I'm sorry, but
+I do not have
+
+395
+00:19:37.480 --> 00:19:39.020
+information on that topic.
+
+396
+00:19:45.890 --> 00:19:50.710
+Now we've created a separate file, testassistant.py,
+which we're using as
+
+397
+00:19:50.710 --> 00:19:54.210
+the structure of our
+evals and the specific
+
+398
+00:19:54.210 --> 00:19:55.090
+test cases.
+
+399
+00:19:55.670 --> 00:19:58.720
+This is similar to what we
+did previously in
+
+400
+00:19:58.720 --> 00:20:00.760
+terms of evaluating
+for expected words
+
+401
+00:20:00.760 --> 00:20:04.150
+and evaluating for refusal, and we're
+reusing these in a
+
+402
+00:20:04.150 --> 00:20:06.860
+couple different test cases
+which I will show
+
+403
+00:20:06.860 --> 00:20:10.930
+you again we can use cat to see
+the contents of this
+
+404
+00:20:10.930 --> 00:20:14.330
+file in this case we're looking
+at testassistant.py which includes
+
+405
+00:20:14.330 --> 00:20:16.360
+the functions that
+we defined previously
+
+406
+00:20:16.360 --> 00:20:18.390
+for evaluating expected
+words and evaluating
+
+407
+00:20:18.390 --> 00:20:20.430
+refusal and then
+structuring those into
+
+408
+00:20:20.430 --> 00:20:23.140
+specific test cases
+which I'll walk you through
+
+409
+00:20:23.140 --> 00:20:25.860
+now the first test
+case is similar to
+
+410
+00:20:25.860 --> 00:20:28.570
+what we did previously
+around a science quiz.
+
+411
+00:20:28.570 --> 00:20:32.720
+So we ask the LLM or the assistant
+to generate a quiz
+
+412
+00:20:32.720 --> 00:20:35.950
+about science, and then we look
+for specifically the expected
+
+413
+00:20:35.950 --> 00:20:38.530
+subjects that we know
+should come from our
+
+414
+00:20:38.530 --> 00:20:38.850
+dataset.
+
+415
+00:20:39.530 --> 00:20:42.530
+Next, we take a similar approach and
+generate a quiz about geography.
+
+416
+00:20:43.170 --> 00:20:46.270
+We use the same function,
+eval expected words,
+
+417
+00:20:46.270 --> 00:20:48.410
+but this time we
+pass in a different
+
+418
+00:20:48.410 --> 00:20:52.030
+set of subjects that
+we would expect to be present in a
+
+419
+00:20:52.030 --> 00:20:56.410
+quiz about geography. And finally,
+we redo the test refusal,
+
+420
+00:20:56.410 --> 00:20:59.870
+in this case asking
+the assistant to generate
+
+421
+00:20:59.870 --> 00:21:02.530
+a quiz about Rome
+and expecting the response
+
+422
+00:21:02.530 --> 00:21:06.890
+to include the words I'm sorry. But
+I'd like to draw your attention
+
+423
+00:21:06.890 --> 00:21:09.280
+specifically to the system
+message which we've modified in
+
+424
+00:21:09.280 --> 00:21:10.870
+order to get the
+correct behavior.
+
+425
+00:21:11.630 --> 00:21:16.340
+As we saw previously when we
+asked for a quiz about Rome,
+
+426
+00:21:16.340 --> 00:21:19.870
+despite it not being one of
+the explicitly identified
+
+427
+00:21:19.870 --> 00:21:24.450
+categories, we got a quiz.
+And so we've added these two additional
+
+428
+00:21:24.450 --> 00:21:26.030
+rules at the bottom.
+
+429
+00:21:27.230 --> 00:21:30.930
+First, only use explicit
+matches for the category.
+
+430
+00:21:31.850 --> 00:21:35.020
+If the category is not an exact match,
+answer that you do
+
+431
+00:21:35.020 --> 00:21:36.070
+not have the information.
+
+432
+00:21:36.870 --> 00:21:39.740
+And second, if the user asks a
+question about a subject you
+
+433
+00:21:39.740 --> 00:21:42.370
+do not have information about,
+answer with this specific text, I'm
+
+434
+00:21:42.370 --> 00:21:44.280
+sorry, I
+do not have information about, answer
+
+435
+00:21:44.280 --> 00:21:43.090
+with this specific text, I'm sorry,
+I do
+
+436
+00:21:43.090 --> 00:21:47.390
+not have information about that.
+
+437
+00:21:48.110 --> 00:21:50.600
+So some very explicit
+instructions given as part
+
+438
+00:21:50.600 --> 00:21:54.970
+of the prompt to ensure that if the
+data is not available, we don't
+
+439
+00:21:54.970 --> 00:21:58.080
+get made up quizzes about
+things that are not understood
+
+440
+00:21:58.080 --> 00:21:59.330
+in our data set.
+
+441
+00:21:59.850 --> 00:22:01.290
+Okay,
+so we have all the pieces in place.
+
+442
+00:22:01.910 --> 00:22:05.570
+In order to run these evals
+in our continuous
+
+443
+00:22:05.570 --> 00:22:08.070
+integration environment,
+which in this case is CircleCI.
+
+444
+00:22:08.650 --> 00:22:11.870
+We do have a CircleCI configuration
+file contained in the lab.
+
+445
+00:22:12.570 --> 00:22:13.930
+You don't need to know anything
+about that right now.
+
+446
+00:22:14.550 --> 00:22:18.180
+We'll talk about some of the details
+of that in a later lesson. So
+
+447
+00:22:18.180 --> 00:22:22.480
+now we're going to push the two files
+that we created to our
+
+448
+00:22:22.480 --> 00:22:25.450
+repo on our branch, which means
+we're pushing them
+
+449
+00:22:25.450 --> 00:22:26.110
+to GitHub.
+
+450
+00:22:27.250 --> 00:22:29.450
+Again, we're
+using a utility function that we've written
+
+451
+00:22:29.450 --> 00:22:32.410
+to make this easier for the
+purposes of the lab, so we
+
+452
+00:22:32.410 --> 00:22:36.580
+can see the outcome. And now
+we're going to trigger a pipeline on
+
+453
+00:22:36.580 --> 00:22:40.860
+CircleCI, and you can
+see the URL is passed back to us
+
+454
+00:22:40.860 --> 00:22:46.310
+of where we can find that pipeline. So
+here we see the execution
+
+455
+00:22:46.310 --> 00:22:51.090
+of our evals in the automated
+environment on CircleCI.
+
+456
+00:22:51.830 --> 00:22:55.360
+A number of steps
+here are based around
+
+457
+00:22:55.360 --> 00:22:58.440
+setting up the environment,
+creating the appropriate
+
+458
+00:22:58.440 --> 00:23:01.520
+Python or installing
+the appropriate Python version,
+
+459
+00:23:01.520 --> 00:23:05.490
+installing the dependencies,
+and then ultimately running our evals,
+
+460
+00:23:05.490 --> 00:23:07.250
+which happens right here.
+
+461
+00:23:08.630 --> 00:23:13.190
+And you can see that we used PyTest
+to run the testassistant.py
+
+462
+00:23:13.190 --> 00:23:17.370
+that we looked at earlier, and
+all of our tests passed
+
+463
+00:23:17.370 --> 00:23:19.270
+in just under 12 seconds.
+
+464
+00:23:19.950 --> 00:23:22.270
+And this is something
+that will happen every
+
+465
+00:23:22.270 --> 00:23:25.170
+time we make a
+change to ensure that we haven't
+
+466
+00:23:25.170 --> 00:23:27.500
+broken anything in perhaps
+edits that we make
+
+467
+00:23:27.500 --> 00:23:30.690
+to our prompt or edits that we make
+to our application.
+
+468
+00:23:31.190 --> 00:23:34.170
+Excellent. So in this lesson,
+you wrote some very
+
+469
+00:23:34.170 --> 00:23:37.460
+simple string matching evals
+and learned how to run them in a
+
+470
+00:23:37.460 --> 00:23:38.010
+CI pipeline.
+
+471
+00:23:38.930 --> 00:23:44.530
+In the next lesson, you'll
+learn how to use LLMs to do model-graded evals
+
+472
+00:23:44.530 --> 00:23:46.930
+and introduce those into
+your pipeline.
+
+473
+00:23:47.670 --> 00:23:48.370
+See you in the next lesson.

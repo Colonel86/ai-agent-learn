@@ -1,18 +1,28 @@
 """
 LangChain Lesson 1: Models, Prompts, and Output Parsers
-演示三个核心模式：直接调用 → PromptTemplate → StructuredOutputParser
+（LangChain 1.x 版本，使用 with_structured_output 替代 StructuredOutputParser）
+
+演示三个核心模式：
+  1. 直接调用 OpenAI（无 LangChain）
+  2. ChatPromptTemplate（提示词模板复用）
+  3. with_structured_output（结构化输出，生产推荐）
 """
 
 import os
+from typing import List
+
 from dotenv import load_dotenv, find_dotenv
 from openai import OpenAI
+from pydantic import BaseModel, Field
+
 from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv(find_dotenv())
 
-LLM_MODEL = "gpt-3.5-turbo"
+# 从 .env 读 MODEL，默认 deepseek-chat（兼容 OpenAI / DeepSeek 后端）
+LLM_MODEL = os.getenv("MODEL", "deepseek-chat")
+
 
 # ── 1. 直接调用 OpenAI（无 LangChain）────────────────────────────────────────
 
@@ -48,11 +58,11 @@ text: ```{customer_email}```
     print(response)
 
 
-# ── 2. LangChain PromptTemplate ───────────────────────────────────────────────
+# ── 2. LangChain ChatPromptTemplate ─────────────────────────────────────────
 
 def demo_prompt_template():
     print("\n" + "=" * 60)
-    print("2. LangChain PromptTemplate")
+    print("2. LangChain ChatPromptTemplate")
     print("=" * 60)
 
     chat = ChatOpenAI(temperature=0.0, model=LLM_MODEL)
@@ -62,7 +72,7 @@ into a style that is {style}.
 text: ```{text}```
 """
     prompt_template = ChatPromptTemplate.from_template(template_string)
-    print("模板输入变量：", prompt_template.messages[0].prompt.input_variables)
+    print("模板输入变量：", prompt_template.input_variables)
 
     # 场景 A：客户投诉邮件（海盗体 → 礼貌美式英语）
     customer_email = """
@@ -93,11 +103,25 @@ you misused your blender by forgetting to put the lid on. Tough luck! See ya!
     print(service_response.content)
 
 
-# ── 3. StructuredOutputParser ─────────────────────────────────────────────────
+# ── 3. with_structured_output（v1 推荐：Pydantic schema + 原生 JSON 模式）────
 
-def demo_output_parser():
+class ReviewExtraction(BaseModel):
+    """从商品评论中抽取的字段。"""
+
+    gift: bool = Field(
+        description="商品是否作为礼物购买。是为 True，否或未知为 False。"
+    )
+    delivery_days: int = Field(
+        description="商品送达耗时（天）。如评论里没提，输出 -1。"
+    )
+    price_value: List[str] = Field(
+        description="评论中关于价格或性价比的句子列表。"
+    )
+
+
+def demo_structured_output():
     print("\n" + "=" * 60)
-    print("3. StructuredOutputParser - LLM 输出 → Python dict")
+    print("3. with_structured_output - LLM 输出 → Pydantic 对象")
     print("=" * 60)
 
     chat = ChatOpenAI(temperature=0.0, model=LLM_MODEL)
@@ -113,57 +137,38 @@ It's slightly more expensive than the other leaf blowers out there, \
 but I think it's worth it for the extra features.
 """
 
-    # 定义期望输出字段
-    response_schemas = [
-        ResponseSchema(
-            name="gift",
-            description="Was the item purchased as a gift for someone else? "
-                        "Answer True if yes, False if not or unknown.",
-        ),
-        ResponseSchema(
-            name="delivery_days",
-            description="How many days did it take for the product to arrive? "
-                        "If this information is not found, output -1.",
-        ),
-        ResponseSchema(
-            name="price_value",
-            description="Extract any sentences about the value or price, "
-                        "output them as a comma-separated Python list.",
-        ),
-    ]
-
-    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
-    format_instructions = output_parser.get_format_instructions()
-
-    review_template = """\
-For the following text, extract the following information:
-
-gift: Was the item purchased as a gift? Answer True or False.
-delivery_days: How many days did delivery take? Output -1 if unknown.
-price_value: Extract sentences about value/price as a comma-separated list.
-
-text: {text}
-
-{format_instructions}
-"""
-
-    prompt = ChatPromptTemplate.from_template(template=review_template)
-    messages = prompt.format_messages(
-        text=customer_review,
-        format_instructions=format_instructions,
+    # 关键一行：把 chat model 包装成「输入 prompt → 输出 Pydantic 对象」的 runnable
+    # method="json_mode" 适用于 DeepSeek 等支持 OpenAI 兼容 JSON 模式的后端
+    structured_chat = chat.with_structured_output(
+        ReviewExtraction,
+        method="json_mode",
     )
 
-    response = chat.invoke(messages)
-    print("\nLLM 原始输出（字符串）：")
-    print(response.content)
+    review_template = """\
+For the following text, extract the following information and respond \
+in JSON with keys: gift (bool), delivery_days (int), price_value (list of strings).
 
-    output_dict = output_parser.parse(response.content)
-    print("\n解析后（Python dict）：")
-    print(output_dict)
-    print(f"\n类型验证: {type(output_dict)}")
-    print(f"gift       = {output_dict.get('gift')}")
-    print(f"delivery_days = {output_dict.get('delivery_days')}")
-    print(f"price_value   = {output_dict.get('price_value')}")
+gift: Was the item purchased as a gift? True/False.
+delivery_days: How many days did delivery take? -1 if unknown.
+price_value: Sentences about price/value as a list.
+
+text: {text}
+"""
+    prompt = ChatPromptTemplate.from_template(review_template)
+
+    # 链式组合：prompt | structured_chat
+    chain = prompt | structured_chat
+    result: ReviewExtraction = chain.invoke({"text": customer_review})
+
+    print("\n解析后（Pydantic 对象）：")
+    print(result)
+    print(f"\n类型验证: {type(result).__name__}")
+    print(f"gift          = {result.gift}")
+    print(f"delivery_days = {result.delivery_days}")
+    print(f"price_value   = {result.price_value}")
+
+    print("\n转 dict（便于 JSON 序列化）：")
+    print(result.model_dump())
 
 
 # ── 主入口 ────────────────────────────────────────────────────────────────────
@@ -171,4 +176,4 @@ text: {text}
 if __name__ == "__main__":
     demo_direct_api()
     demo_prompt_template()
-    demo_output_parser()
+    demo_structured_output()

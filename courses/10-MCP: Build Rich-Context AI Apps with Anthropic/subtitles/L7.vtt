@@ -1,0 +1,1045 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.210 --> 00:00:03.003
+So far,
+
+2
+00:00:03.003 --> 00:00:06.297
+your MCP server
+only provided tools to your chatbot.
+
+3
+00:00:06.715 --> 00:00:09.676
+You'll now update your server
+so that it also provides
+
+4
+00:00:09.676 --> 00:00:13.054
+resources and a prompt template.
+On the chatbot side,
+
+5
+00:00:13.054 --> 00:00:15.390
+you'll expose those features to the user.
+
+6
+00:00:15.390 --> 00:00:16.641
+Let's do it!
+
+7
+00:00:16.641 --> 00:00:19.561
+We've already seen how to create multiple
+
+8
+00:00:19.561 --> 00:00:22.981
+MCP clients
+connecting to multiple MCP servers.
+
+9
+00:00:23.064 --> 00:00:26.484
+Now let's shift back to some of the other
+primitives in the protocol,
+
+10
+00:00:26.693 --> 00:00:31.693
+like resources and prompts, and talk about
+how we can add that both on the server
+
+11
+00:00:32.240 --> 00:00:36.077
+as well as on the ability of the client
+to consume that data.
+
+12
+00:00:36.327 --> 00:00:38.246
+In our research server dot py.
+
+13
+00:00:38.246 --> 00:00:41.249
+You can find all of these files
+in your file system.
+
+14
+00:00:41.541 --> 00:00:43.585
+All of these files are provided to you.
+
+15
+00:00:43.585 --> 00:00:46.588
+So what I'd love to do
+is walk through some of the code,
+
+16
+00:00:46.713 --> 00:00:49.716
+both on the server side
+and with our clients.
+
+17
+00:00:49.841 --> 00:00:54.471
+As we saw before, adding
+a tool is as easy as decorating MCP dot tool.
+
+18
+00:00:54.679 --> 00:00:58.475
+Now let's bring in resources and prompts
+and we'll talk a bit how to add those.
+
+19
+00:00:58.892 --> 00:01:01.686
+The code here right now
+is living on our server.
+
+20
+00:01:01.686 --> 00:01:04.939
+And what we're going to do
+is bring in a couple resources
+
+21
+00:01:05.190 --> 00:01:08.193
+for all of our particular folders,
+
+22
+00:01:08.401 --> 00:01:11.404
+as well as any papers
+on a particular topic.
+
+23
+00:01:11.446 --> 00:01:14.365
+Remember that resources are read-only data
+
+24
+00:01:14.365 --> 00:01:18.119
+that the application can choose to use,
+or we can give to the model.
+
+25
+00:01:18.244 --> 00:01:21.623
+So instead of making tools to go
+and fetch things from the file system
+
+26
+00:01:21.956 --> 00:01:25.251
+the same way, we have a Get request
+to fetch our data with HTTP,
+
+27
+00:01:25.627 --> 00:01:27.504
+we're going to do the same thing
+with resources.
+
+28
+00:01:27.504 --> 00:01:32.175
+So on the server, I have a resource
+with a URI for papers colon slash slash
+
+29
+00:01:32.175 --> 00:01:36.179
+folders to go ahead and list the available
+folders in the paper directory.
+
+30
+00:01:36.346 --> 00:01:40.767
+I also have a resource here to fetch
+information about a particular topic.
+
+31
+00:01:41.059 --> 00:01:44.938
+We haven't done any of the implementation
+yet for what this is going to look like,
+
+32
+00:01:44.938 --> 00:01:47.649
+how it's going to be presented,
+or how it's going to be fetched.
+
+33
+00:01:47.649 --> 00:01:49.526
+All we're setting up on the server
+
+34
+00:01:49.526 --> 00:01:53.696
+are just ways to listen for requests
+for these particular resources.
+
+35
+00:01:53.988 --> 00:01:56.825
+We have a little bit
+of string manipulation in here, as well
+
+36
+00:01:56.825 --> 00:02:00.453
+as reading files to go ahead
+and fetch the data necessary
+
+37
+00:02:00.662 --> 00:02:03.957
+with some error handling
+to make sure that if papers are not found,
+
+38
+00:02:04.249 --> 00:02:06.626
+we go ahead and put that error message in.
+
+39
+00:02:06.626 --> 00:02:09.963
+We can see here we're reading
+from our paper's info JSON file,
+
+40
+00:02:10.421 --> 00:02:13.466
+and then returning a bit of text
+around the content that we have.
+
+41
+00:02:13.883 --> 00:02:15.176
+Aside from our resources,
+
+42
+00:02:15.176 --> 00:02:19.097
+we can also add prompt
+or prompt templates to our MCP servers.
+
+43
+00:02:19.347 --> 00:02:21.558
+So let's take a look at the prompt
+that we have here.
+
+44
+00:02:21.558 --> 00:02:25.061
+Before we dive into this code, let's
+remember the purpose of the primitive
+
+45
+00:02:25.061 --> 00:02:26.187
+for a prompt template.
+
+46
+00:02:26.187 --> 00:02:28.481
+Prompts are meant to be user-controlled.
+
+47
+00:02:28.481 --> 00:02:31.442
+You can imagine as the user of an
+AI application,
+
+48
+00:02:31.442 --> 00:02:34.404
+you don't want to have to do
+complex prompt engineering yourself.
+
+49
+00:02:34.863 --> 00:02:37.115
+In fact, you may be working with a server.
+
+50
+00:02:37.115 --> 00:02:40.618
+You may be trying to get some information,
+but you might not know the best way
+
+51
+00:02:40.618 --> 00:02:43.621
+to fetch it or retrieve
+it based on the prompt that you have.
+
+52
+00:02:43.830 --> 00:02:48.001
+Prompt templates are created on the server
+and are sent to the client
+
+53
+00:02:48.293 --> 00:02:51.296
+so that the user can use
+those entire templates
+
+54
+00:02:51.296 --> 00:02:54.257
+without having to do
+all the prompt engineering on their own.
+
+55
+00:02:54.257 --> 00:02:58.052
+So instead of asking the user
+to just specify how to search for papers,
+
+56
+00:02:58.469 --> 00:03:01.931
+we're actually going to provide to them
+a battle-tested prompt
+
+57
+00:03:02.056 --> 00:03:06.477
+that includes the dynamic information
+that they can put in, like the topic
+
+58
+00:03:06.477 --> 00:03:08.938
+or the number of papers
+you can imagine. We can do
+
+59
+00:03:08.938 --> 00:03:12.400
+some pretty sophisticated evaluations
+and prompt engineering testing.
+
+60
+00:03:12.734 --> 00:03:15.904
+And by the time it gets to the user,
+this is abstracted away.
+
+61
+00:03:15.987 --> 00:03:20.241
+We create a prompt template
+by decorating a function with MCP dot prompt.
+
+62
+00:03:20.825 --> 00:03:23.828
+And then we return
+what the prompt template looks like.
+
+63
+00:03:23.953 --> 00:03:28.625
+All that we're going to do on the client
+side is have the user put in the number of
+
+64
+00:03:28.625 --> 00:03:32.587
+papers, which is optional, and the topic
+which is going to be required.
+
+65
+00:03:32.879 --> 00:03:34.756
+Now that we've seen
+what's going to be sent
+
+66
+00:03:34.756 --> 00:03:37.800
+from the server to the client,
+let's make sure we figure out now
+
+67
+00:03:38.009 --> 00:03:41.846
+how to start bringing in these resources
+and prompts, and how to create a
+
+68
+00:03:41.846 --> 00:03:45.433
+UI for what the resources
+and prompt templates should look like.
+
+69
+00:03:45.642 --> 00:03:49.270
+This UI that we create, this presentation
+that we create
+
+70
+00:03:49.646 --> 00:03:52.649
+is completely up to you
+as the developer to make.
+
+71
+00:03:52.732 --> 00:03:56.277
+What's so powerful about MCP
+is that it doesn't mandate
+
+72
+00:03:56.277 --> 00:03:59.280
+that all interfaces
+look the same and work in same.
+
+73
+00:03:59.614 --> 00:04:03.534
+We're simply focused on
+sending back data and manipulating data,
+
+74
+00:04:03.952 --> 00:04:07.330
+and the presentation is up to the client
+and the host to create.
+
+75
+00:04:07.830 --> 00:04:10.166
+So with that in mind,
+let's hop back to our chatbot.
+
+76
+00:04:10.166 --> 00:04:11.417
+As we saw before,
+
+77
+00:04:11.417 --> 00:04:14.921
+there is going to be some slightly lower
+level code happening here.
+
+78
+00:04:15.421 --> 00:04:18.925
+Fortunately, it's going to be
+relatively similar to what we saw before.
+
+79
+00:04:19.175 --> 00:04:22.804
+We're going to store
+a list of the available tools and prompts
+
+80
+00:04:22.804 --> 00:04:27.804
+that we have, as well as all of the URIs
+that we have for our particular resources.
+
+81
+00:04:28.518 --> 00:04:30.979
+We're going to see in our connect
+to server function
+
+82
+00:04:30.979 --> 00:04:33.982
+that things look pretty similar
+to what we saw before.
+
+83
+00:04:34.023 --> 00:04:36.651
+We're going to be using this exit
+stack to manage
+
+84
+00:04:36.651 --> 00:04:39.654
+all of our connections
+in an asynchronous environment.
+
+85
+00:04:39.654 --> 00:04:41.489
+We're going to initialize the session.
+
+86
+00:04:41.489 --> 00:04:44.492
+And then instead of
+just getting access to the tools,
+
+87
+00:04:44.575 --> 00:04:47.704
+we're going to do the same thing
+for our prompts and our resources.
+
+88
+00:04:47.912 --> 00:04:50.873
+We're going to go ahead
+and use the session that we establish
+
+89
+00:04:50.873 --> 00:04:55.211
+for each client to list the prompts, list
+the tools and list the resources.
+
+90
+00:04:55.461 --> 00:04:58.589
+If that server does not provide prompts
+or resources,
+
+91
+00:04:58.881 --> 00:05:01.676
+we'll handle that error
+and print that exception.
+
+92
+00:05:01.676 --> 00:05:05.054
+If there are any issues connecting
+to the server, we'll handle that as well.
+
+93
+00:05:05.388 --> 00:05:09.017
+Our connect to servers function
+looks similar to what we saw before.
+
+94
+00:05:09.392 --> 00:05:12.895
+We're going to read our JSON file, load
+in all of the names
+
+95
+00:05:12.895 --> 00:05:15.898
+of the servers
+and the configuration necessary.
+
+96
+00:05:16.024 --> 00:05:19.110
+Our process query is also going to look
+relatively similar.
+
+97
+00:05:19.736 --> 00:05:23.156
+We're going to go ahead and create
+a message with our available tools.
+
+98
+00:05:23.489 --> 00:05:26.492
+If we're using tool use
+we'll append that information.
+
+99
+00:05:26.743 --> 00:05:29.787
+And then we'll go ahead and make sure
+that we call the correct tool.
+
+100
+00:05:30.121 --> 00:05:31.956
+Where things will look slightly different
+
+101
+00:05:31.956 --> 00:05:35.168
+is where we start handling resources
+and prompt templates.
+
+102
+00:05:35.585 --> 00:05:39.380
+So let's start with resources.
+To get an individual resource,
+
+103
+00:05:39.881 --> 00:05:43.259
+we're going to go ahead and make sure
+that we're dealing with the correct URI.
+
+104
+00:05:43.551 --> 00:05:48.222
+And once we have that correct URI, we're
+going to read the resource from that URI.
+
+105
+00:05:48.514 --> 00:05:49.390
+All that we're doing here
+
+106
+00:05:49.390 --> 00:05:52.852
+is simply printing out
+the content of that particular resource.
+
+107
+00:05:53.269 --> 00:05:56.189
+But depending on your interface
+that you want to build,
+
+108
+00:05:56.189 --> 00:05:58.566
+you could do whatever you want with that
+data.
+
+109
+00:05:58.566 --> 00:06:00.777
+We're going to do a similar thing
+for listing our prompts.
+
+110
+00:06:00.777 --> 00:06:04.030
+We're going to go ahead and find
+all of the available prompts that we have.
+
+111
+00:06:04.489 --> 00:06:07.492
+And if there are any arguments
+that those prompts require,
+
+112
+00:06:07.533 --> 00:06:11.079
+we're going to go ahead and show
+that to the user. When a prompt comes in,
+
+113
+00:06:11.412 --> 00:06:13.122
+we're going to go ahead and execute it.
+
+114
+00:06:13.122 --> 00:06:16.709
+We'll see shortly what it looks like
+for a resource and a prompt to come in
+
+115
+00:06:17.085 --> 00:06:18.920
+for the particular session that we're in.
+
+116
+00:06:18.920 --> 00:06:20.254
+We fetch that prompt.
+
+117
+00:06:20.254 --> 00:06:24.425
+We go ahead and we execute
+that particular prompt with that query.
+
+118
+00:06:24.634 --> 00:06:26.386
+The function here
+that we have for executing
+
+119
+00:06:26.386 --> 00:06:30.223
+the prompt is going to require us
+to get access to the prompt name
+
+120
+00:06:30.390 --> 00:06:32.600
+and any arguments that it might have.
+
+121
+00:06:32.600 --> 00:06:34.352
+Once we fetch that particular prompt,
+
+122
+00:06:34.352 --> 00:06:37.522
+we go ahead and pass it in
+as the content of our message,
+
+123
+00:06:37.855 --> 00:06:41.067
+and we go ahead and process the query
+with those arguments.
+
+124
+00:06:41.359 --> 00:06:44.028
+Where things look a little bit
+different is our chat loop.
+
+125
+00:06:44.028 --> 00:06:47.865
+Here is where we're going to start adding
+in the particular user interface
+
+126
+00:06:48.199 --> 00:06:51.202
+for getting access to our resources
+and our prompts.
+
+127
+00:06:51.327 --> 00:06:53.704
+We're doing a little bit
+of string manipulation here,
+
+128
+00:06:53.704 --> 00:06:56.541
+and this is totally up to you
+as the developer
+
+129
+00:06:56.541 --> 00:07:00.002
+of the host and clients
+for how you want things to be presented.
+
+130
+00:07:00.169 --> 00:07:03.965
+We're going to be using the @ sign
+to get access to a particular resource.
+
+131
+00:07:04.132 --> 00:07:05.133
+And if we see that
+
+132
+00:07:05.133 --> 00:07:08.886
+there is a topic that's passed in first,
+we'll fetch it using that URI.
+
+133
+00:07:09.053 --> 00:07:12.765
+If we see that our query starts
+with a slash, this is how will denote
+
+134
+00:07:12.932 --> 00:07:14.725
+that we're using a particular prompt.
+
+135
+00:07:14.725 --> 00:07:18.146
+If the command is slash
+prompts, we'll show the user all of them.
+
+136
+00:07:18.479 --> 00:07:21.441
+If the command is slash prompt,
+we'll go ahead and make sure
+
+137
+00:07:21.441 --> 00:07:24.694
+we're passing in those arguments.
+To pass in those arguments,
+
+138
+00:07:24.694 --> 00:07:27.655
+we're doing a little bit
+of string manipulation as well.
+
+139
+00:07:27.655 --> 00:07:30.992
+We're looking for key-value pairs
+separated by an equal sign.
+
+140
+00:07:31.534 --> 00:07:34.495
+And once we have what we need
+we execute the prompt.
+
+141
+00:07:34.579 --> 00:07:37.248
+We have similar cleanup logic
+to what we saw before
+
+142
+00:07:37.248 --> 00:07:40.126
+and similar logic
+to connect to our chatbot.
+
+143
+00:07:40.126 --> 00:07:41.043
+That's a lot of code.
+
+144
+00:07:41.043 --> 00:07:43.880
+So let's take a step back
+and then we'll see this in the terminal.
+
+145
+00:07:43.880 --> 00:07:45.423
+So let's go ahead and get my terminal.
+
+146
+00:07:46.507 --> 00:07:46.716
+And we'll
+
+147
+00:07:46.716 --> 00:07:49.719
+see here, that I'm inside of the L7 folder.
+
+148
+00:07:50.470 --> 00:07:51.929
+Just like we saw before,
+
+149
+00:07:51.929 --> 00:07:54.348
+I'm going to CD into MCP project.
+
+150
+00:07:54.348 --> 00:07:57.560
+I'll make sure I have my dot env
+folder which it looks like I do.
+
+151
+00:07:58.144 --> 00:08:01.647
+So let's go ahead and activate
+the virtual environment. Source,
+
+152
+00:08:02.106 --> 00:08:04.609
+venv bin activate.
+
+153
+00:08:04.609 --> 00:08:07.820
+Now that we got this activated
+let's go ahead and run our chatbot.
+
+154
+00:08:08.488 --> 00:08:11.032
+uv run
+
+155
+00:08:11.032 --> 00:08:14.035
+MCP chatbot.py
+
+156
+00:08:15.244 --> 00:08:18.206
+What we're going to see here
+is that we're going to connect
+
+157
+00:08:18.414 --> 00:08:20.875
+to many different MCP servers.
+
+158
+00:08:20.875 --> 00:08:23.836
+We have a little bit of error
+handling here in case these servers
+
+159
+00:08:23.836 --> 00:08:26.839
+do not provide tools, resources
+or prompts.
+
+160
+00:08:27.089 --> 00:08:31.886
+What we see here is not only the ability
+to make a query and talk to the large
+
+161
+00:08:31.886 --> 00:08:35.973
+language model, but also to get access
+to resources that we have.
+
+162
+00:08:36.182 --> 00:08:39.685
+If I take a look at the folders
+that I have, I can see here
+
+163
+00:08:39.977 --> 00:08:42.980
+that we are reading resources at this URI,
+
+164
+00:08:43.105 --> 00:08:46.108
+and here I have access
+to a folder called computers.
+
+165
+00:08:46.609 --> 00:08:49.779
+That's because in a previous search
+I looked for computers.
+
+166
+00:08:50.363 --> 00:08:52.281
+Let's go get access to those papers.
+
+167
+00:08:52.281 --> 00:08:54.951
+And here we'll see.
+I have the information right up here.
+
+168
+00:08:54.951 --> 00:08:59.163
+Instead of writing a tool to go ahead
+and fetch that data and requiring
+
+169
+00:08:59.163 --> 00:09:00.957
+that the model does all that work,
+
+170
+00:09:00.957 --> 00:09:03.751
+I now
+can provide this context to the model
+
+171
+00:09:03.751 --> 00:09:07.588
+and if the model chooses to go ahead
+and add it to its context window,
+
+172
+00:09:07.588 --> 00:09:09.090
+and the application requires
+
+173
+00:09:09.090 --> 00:09:11.384
+so, I can make use of that.
+
+174
+00:09:11.384 --> 00:09:13.135
+Let's
+go take a look at the prompts that I have.
+
+175
+00:09:13.135 --> 00:09:14.095
+Remember,
+
+176
+00:09:14.095 --> 00:09:17.515
+there's a prompt that we made on
+the server called Generate Search Prompt.
+
+177
+00:09:17.890 --> 00:09:21.477
+And we can actually see
+that the fetch server as well provides
+
+178
+00:09:21.477 --> 00:09:25.523
+a prompt for fetching an URL
+and extracting its contents as markdown.
+
+179
+00:09:25.940 --> 00:09:27.567
+The argument here is the URL.
+
+180
+00:09:27.567 --> 00:09:29.569
+Let's
+go ahead and make use of this prompt.
+
+181
+00:09:29.569 --> 00:09:32.405
+The way to do so
+is to add the slash prompt command.
+
+182
+00:09:32.405 --> 00:09:35.783
+And we'll see here that the usage requires
+the name of the prompt,
+
+183
+00:09:36.117 --> 00:09:38.828
+as well as any arguments
+that are required.
+
+184
+00:09:38.828 --> 00:09:41.581
+So let's go ahead and use
+our generate search prompt.
+
+185
+00:09:42.915 --> 00:09:44.709
+I'll use the slash prompt command.
+
+186
+00:09:44.709 --> 00:09:46.168
+I'll pass in the name of our prompt.
+
+187
+00:09:46.168 --> 00:09:46.627
+And then I'll
+
+188
+00:09:46.627 --> 00:09:49.964
+go ahead and pass in the argument
+that is required which is the topic.
+
+189
+00:09:50.381 --> 00:09:53.342
+Let's go ahead and search
+for some papers on that.
+
+190
+00:09:53.342 --> 00:09:55.303
+The NUM papers is optional.
+
+191
+00:09:55.303 --> 00:09:57.597
+So I can pass in a number if I want.
+
+192
+00:09:57.597 --> 00:09:59.640
+Or I can just default to five.
+
+193
+00:09:59.640 --> 00:10:03.811
+So let's go ahead and use this prompt
+with the dynamic variable of topic
+
+194
+00:10:03.811 --> 00:10:04.562
+that I've defined.
+
+195
+00:10:04.562 --> 00:10:07.732
+We'll see here,
+we're processing that to get the prompt.
+
+196
+00:10:08.274 --> 00:10:12.069
+And then we're generating the text
+necessary and executing that prompt.
+
+197
+00:10:12.778 --> 00:10:14.905
+We'll see here,
+this is going to look familiar,
+
+198
+00:10:14.905 --> 00:10:18.492
+we're talking to arxiv to get access
+to those particular papers.
+
+199
+00:10:18.909 --> 00:10:20.244
+We're going to take those papers
+
+200
+00:10:20.244 --> 00:10:23.789
+and we're going to add them to the folder
+that we have for math.
+
+201
+00:10:24.457 --> 00:10:28.919
+Once this is done, I should also be able
+to access this data via a resource.
+
+202
+00:10:29.295 --> 00:10:32.798
+Remember that those resources are updated
+dynamically as data
+
+203
+00:10:32.798 --> 00:10:34.675
+changes in my application.
+
+204
+00:10:34.675 --> 00:10:38.012
+My query is finished and we can see
+the response that the model is giving me.
+
+205
+00:10:38.304 --> 00:10:40.723
+Let's go take a look
+at what our folders look like.
+
+206
+00:10:40.723 --> 00:10:41.641
+And we can see here,
+
+207
+00:10:41.641 --> 00:10:44.185
+we now have topics for computers and math.
+
+208
+00:10:44.185 --> 00:10:47.730
+And if we want to access that file,
+we can go ahead and take a look at
+
+209
+00:10:47.730 --> 00:10:48.481
+what's there.
+
+210
+00:10:48.481 --> 00:10:51.484
+We're making use of prompts
+and resources together.
+
+211
+00:10:51.692 --> 00:10:53.653
+In this lesson, we've done quite a bit.
+
+212
+00:10:53.653 --> 00:10:56.781
+We've explored how to add prompts
+and resources on the server
+
+213
+00:10:57.114 --> 00:10:59.742
+and then consume them in our chatbot.
+
+214
+00:10:59.742 --> 00:11:02.828
+We put together
+some of the core primitives like tools,
+
+215
+00:11:03.120 --> 00:11:06.957
+resources, and prompts
+connecting to multiple MCP servers.
+
+216
+00:11:07.124 --> 00:11:10.211
+In the next lesson, we're going to start
+introducing other kinds of hosts
+
+217
+00:11:10.503 --> 00:11:12.254
+for more powerful interfaces.
+
+218
+00:11:12.254 --> 00:11:14.590
+But with many of these ideas
+that we've seen before.
+
+219
+00:11:14.590 --> 00:11:17.218
+As always,
+if you want to hop out, type in quit,
+
+220
+00:11:17.218 --> 00:11:18.552
+and I'll see you in the next lesson.
+

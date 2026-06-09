@@ -1,0 +1,247 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.702
+Welcome to this course on agent skills,
+
+2
+00:00:02.769 --> 00:00:06.172
+built in partnership with Anthropic and taught by returning instructor Elie Schoppik.
+
+3
+00:00:06.973 --> 00:00:11.177
+Skills give Claude Code and other agents new abilities to carry out tasks.
+
+4
+00:00:11.277 --> 00:00:13.480
+I'm thrilled to have Elie return to teach this.
+
+5
+00:00:13.580 --> 00:00:14.981
+Thank you, Andrew. I'm happy to be back
+
+6
+00:00:14.981 --> 00:00:16.349
+and work with you all on this one.
+
+7
+00:00:16.349 --> 00:00:19.152
+Skills are folders of instructions that extend
+
+8
+00:00:19.152 --> 00:00:21.855
+your agent's capabilities with specialized knowledge.
+
+9
+00:00:21.855 --> 00:00:24.157
+In this course, you'll learn how skills work,
+
+10
+00:00:24.157 --> 00:00:27.160
+learn best practices for creating them,
+
+11
+00:00:27.160 --> 00:00:29.362
+and build skills for different use cases
+
+12
+00:00:29.362 --> 00:00:32.365
+including coding and research and data analysis and more.
+
+13
+00:00:32.732 --> 00:00:35.535
+What's exciting about skills is they're now an open standard,
+
+14
+00:00:35.535 --> 00:00:38.238
+which means they have a standardized format that work with any
+
+15
+00:00:38.238 --> 00:00:40.240
+skills compatible agent.
+
+16
+00:00:40.240 --> 00:00:42.242
+So you can build your skills once
+
+17
+00:00:42.242 --> 00:00:44.244
+and deploy them across multiple agent products.
+
+18
+00:00:44.544 --> 00:00:47.547
+Any skill should include a SKILL.md markdown file,
+
+19
+00:00:47.547 --> 00:00:51.751
+which contains the skill's name, description, and main instructions.
+
+20
+00:00:51.751 --> 00:00:54.521
+The main instructions can also refer to other files
+
+21
+00:00:54.554 --> 00:00:56.923
+such as scripts, additional markdown files,
+
+22
+00:00:56.956 --> 00:00:59.526
+and assets such as templates and images.
+
+23
+00:01:00.193 --> 00:01:03.263
+skills are progressively disclosed to the agent,
+
+24
+00:01:03.263 --> 00:01:05.765
+which means that the skill's name and description
+
+25
+00:01:05.765 --> 00:01:07.967
+always live in your agent's context window,
+
+26
+00:01:07.967 --> 00:01:10.370
+but the agent does not load the rest of the instructions
+
+27
+00:01:10.370 --> 00:01:12.972
+into its context until a user request
+
+28
+00:01:12.972 --> 00:01:14.974
+matches the skill's description.
+
+29
+00:01:15.408 --> 00:01:17.977
+At that point, the agent might then additionally load
+
+30
+00:01:17.977 --> 00:01:20.580
+the reference and asset files if needed as well.
+
+31
+00:01:20.780 --> 00:01:23.783
+To use this skill, your agent needs a basic set of tools,
+
+32
+00:01:23.883 --> 00:01:25.618
+filesystem access to read and write
+
+33
+00:01:25.618 --> 00:01:27.587
+files and a bash tool to execute code.
+
+34
+00:01:27.887 --> 00:01:30.990
+And these tools enable your agent to execute whatever command
+a skill requires.
+
+35
+00:01:32.892 --> 00:01:35.528
+Your agent can combine skills with MCP and sub-agents
+
+36
+00:01:35.528 --> 00:01:37.530
+to create powerful, agentic workflows.
+
+37
+00:01:37.831 --> 00:01:41.501
+For example, it can use MCP to get data from external sources,
+
+38
+00:01:41.501 --> 00:01:42.902
+then rely on a skill to
+
+39
+00:01:42.902 --> 00:01:44.504
+know what to do with that data
+
+40
+00:01:44.504 --> 00:01:46.506
+or how to retrieve it efficiently.
+
+41
+00:01:46.639 --> 00:01:49.843
+It can also delegate tasks to a sub-agent with isolated context,
+
+42
+00:01:49.843 --> 00:01:52.946
+which can itself use skills for specialized knowledge.
+
+43
+00:01:53.446 --> 00:01:55.448
+In this course, we'll start with Claude AI,
+
+44
+00:01:55.448 --> 00:01:57.650
+where we'll create a skill for a marketing campaign
+
+45
+00:01:57.650 --> 00:02:01.121
+and combine it with the pre-built skills for Excel and PowerPoint.
+
+46
+00:02:01.621 --> 00:02:05.525
+Then, we'll create two skills for content creation and data analysis workflows
+
+47
+00:02:05.725 --> 00:02:07.727
+and try them with the Claude API.
+
+48
+00:02:07.894 --> 00:02:09.896
+After that, we'll use skills with
+
+49
+00:02:09.896 --> 00:02:12.265
+Claude code for reviewing and testing code.
+
+50
+00:02:12.365 --> 00:02:15.768
+And finally, we'll build a research agent with the Claude agent SDK
+
+51
+00:02:15.869 --> 00:02:18.471
+that uses a skill to combine research results.
+
+52
+00:02:18.771 --> 00:02:21.274
+I'd like to thank Hawraa Salami from DeepLearning.AI
+
+53
+00:02:21.274 --> 00:02:23.776
+who contributed to this course.
+
+54
+00:02:24.277 --> 00:02:26.779
+So, how do you know when to use a skill?
+
+55
+00:02:27.080 --> 00:02:28.915
+Let's say you have a workflow that
+
+56
+00:02:28.915 --> 00:02:30.783
+you repeatedly ask your agent to implement.
+
+57
+00:02:31.284 --> 00:02:33.987
+Instead of explaining the same workflow every time,
+
+58
+00:02:34.254 --> 00:02:36.756
+you can package it as a skill so your agent
+
+59
+00:02:36.756 --> 00:02:38.758
+automatically knows what to do.
+
+60
+00:02:39.259 --> 00:02:42.762
+That's exactly what you'll learn with Elie in the first lesson.
+
+61
+00:02:43.263 --> 00:02:45.265
+So, please go on to the next video to learn more.

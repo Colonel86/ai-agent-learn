@@ -1,0 +1,155 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.730 --> 00:00:04.079
+Let's take a look at how to build and use component-level evals.
+
+2
+00:00:04.639 --> 00:00:09.920
+In our example of a research agent, we said that the research agent was sometimes missing
+
+3
+00:00:09.920 --> 00:00:15.760
+key points. But if the problem was web search, if every time we change the web search engine,
+
+4
+00:00:15.760 --> 00:00:20.639
+we need to rerun the entire workflow, that can give us a good metric for performance,
+
+5
+00:00:20.639 --> 00:00:26.799
+but that type of eval is expensive. Moreover, this is a pretty complicated workflow,
+
+6
+00:00:26.799 --> 00:00:31.840
+so even if web search made things a little bit better, maybe noise introduced by the randomness
+
+7
+00:00:31.840 --> 00:00:38.080
+of other components would make it harder to see little improvements to the web search quality.
+
+8
+00:00:38.080 --> 00:00:43.919
+So as an alternative to only using end-to-end evals, what I would do is consider building an
+
+9
+00:00:43.919 --> 00:00:48.959
+eval just to measure the quality of the web search component. For example, to measure the
+
+10
+00:00:48.959 --> 00:00:53.279
+quality of the web search results, you might create a list of gold standard web resources.
+
+11
+00:00:53.279 --> 00:00:58.880
+So for a handful of queries, have an expert say, these are the most authoritative sources that if
+
+12
+00:00:58.880 --> 00:01:03.119
+someone was searching the internet, they really should find these web pages or any of these web
+
+13
+00:01:03.119 --> 00:01:09.919
+pages would be good. And then you can write code to capture how many of the web search outputs
+
+14
+00:01:09.919 --> 00:01:15.199
+correspond to the gold standard web resources. The standard metrics from information retrieval,
+
+15
+00:01:15.199 --> 00:01:18.959
+the F1 score, don't worry about the details if you don't know what that means, but there are
+
+16
+00:01:18.959 --> 00:01:23.839
+standard metrics that allow you to measure of a list of web pages returned by web search,
+
+17
+00:01:23.839 --> 00:01:29.360
+how much does that overlap with what an expert determined are the gold standard web resources.
+
+18
+00:01:29.360 --> 00:01:34.959
+With this, you're now armed with a way to evaluate just the quality of the web search component.
+
+19
+00:01:34.959 --> 00:01:40.319
+And so as you vary the parameters or hyperparameters of how you care about web search,
+
+20
+00:01:40.319 --> 00:01:45.120
+such as if you swap in and out different web search engines, so maybe try Google and Bing
+
+21
+00:01:45.120 --> 00:01:50.879
+and Dr. Go and Tivoli and U.com and others, or as you vary the number of results or as you vary
+
+22
+00:01:50.879 --> 00:01:54.959
+the date range that you ask the web search engines to search over, this can very quickly let you
+
+23
+00:01:54.959 --> 00:02:01.360
+judge if the quality of the web search component is going up and does make more incremental
+
+24
+00:02:01.360 --> 00:02:05.760
+improvements. And then of course, before you call the job done, it would be good to run an
+
+25
+00:02:05.760 --> 00:02:10.399
+end-to-end eval to make sure that after tuning your web search system for a while that you are
+
+26
+00:02:10.399 --> 00:02:16.479
+improving the overall system performance. But during that process of tuning these hyperparameters
+
+27
+00:02:16.479 --> 00:02:20.559
+one at a time, you could do so much more efficiently by evaluating just one component
+
+28
+00:02:20.559 --> 00:02:27.440
+rather than needing to rerun end-to-end evals every single time. So component level evals can
+
+29
+00:02:27.440 --> 00:02:32.720
+provide a clearer signal for specific errors. It actually lets you know if you're improving
+
+30
+00:02:32.720 --> 00:02:37.759
+the web search component or whatever component you're working on and avoid the noise in the
+
+31
+00:02:37.759 --> 00:02:43.360
+complexity of the overall end-to-end system. And if you're working on a project where you have
+
+32
+00:02:43.360 --> 00:02:48.240
+different teams focused on different components, it can also be more efficient for one team to just
+
+33
+00:02:48.240 --> 00:02:53.119
+have his own very clear metric to optimize without needing to worry about all of the other components.
+
+34
+00:02:53.119 --> 00:03:00.160
+And so this lets the team work on a smaller, more targeted problem faster. So when you've decided to
+
+35
+00:03:00.160 --> 00:03:05.839
+work on improving a component, consider if it's worth putting in place a component-wise eval and
+
+36
+00:03:05.839 --> 00:03:11.759
+if that will let you go faster on improving the performance of that component. Now the one thing
+
+37
+00:03:11.759 --> 00:03:16.880
+you may be wondering is, if you decided to improve a component, how do you actually go about making
+
+38
+00:03:16.880 --> 00:03:23.440
+that one component work better? Let's take a look at some examples of that in the next video.
+

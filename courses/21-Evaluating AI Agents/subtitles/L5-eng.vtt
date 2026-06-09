@@ -1,0 +1,1572 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:03.970
+In this notebook, you're going to add
+tracing and observability
+
+2
+00:00:03.970 --> 00:00:06.973
+into the agent that you previously built
+in the last notebook.
+
+3
+00:00:07.440 --> 00:00:10.310
+So you'll start from the agent
+that you've already built.
+
+4
+00:00:10.310 --> 00:00:11.678
+And then you're going to add a few things
+
+5
+00:00:11.678 --> 00:00:15.181
+in here to allow you to trace
+that agent using Arize Phoenix,
+
+6
+00:00:15.482 --> 00:00:18.485
+and then get some better observability
+into what your agent's doing.
+
+7
+00:00:18.752 --> 00:00:22.555
+So as before, you're going to start out
+by adding some new imports here
+
+8
+00:00:22.789 --> 00:00:25.325
+that will be used for Phoenix.
+
+9
+00:00:25.325 --> 00:00:28.962
+So importing here Phoenix
+as well as some basic libraries,
+
+10
+00:00:29.295 --> 00:00:33.033
+and then importing a few things
+from Phoenix here to set up some of that
+
+11
+00:00:33.199 --> 00:00:36.136
+tracing observability registering here
+
+12
+00:00:36.136 --> 00:00:39.239
+as well as some libraries
+from OpenTelemetry, which you just learned
+
+13
+00:00:39.239 --> 00:00:42.876
+about in the previous slides,
+and then a library called Open Inference.
+
+14
+00:00:43.510 --> 00:00:47.747
+Open Inference is a library
+that's used and created by the Arize team,
+
+15
+00:00:47.747 --> 00:00:51.751
+and it helps translate some concepts
+in OpenTelemetry to work better with LLMs.
+
+16
+00:00:52.519 --> 00:00:55.121
+So those are your libraries there
+that you're going to be using.
+
+17
+00:00:55.121 --> 00:00:56.890
+Go ahead and import those.
+
+18
+00:00:56.890 --> 00:00:59.225
+And then as before, you're going to set up
+your OpenAI
+
+19
+00:00:59.225 --> 00:01:01.361
+model and client that you want to use.
+
+20
+00:01:01.361 --> 00:01:05.165
+And now you can launch and connect
+to an instance of Phoenix.
+
+21
+00:01:05.465 --> 00:01:08.168
+So Phoenix is an application
+that can receive the traces
+
+22
+00:01:08.168 --> 00:01:10.236
+that you're going to send
+from your agent here.
+
+23
+00:01:10.236 --> 00:01:12.906
+And then can visualize those in a UI.
+
+24
+00:01:12.906 --> 00:01:16.443
+And so in this environment you've already
+got an instance of Phoenix running.
+
+25
+00:01:16.843 --> 00:01:19.112
+There are a few ways that you can
+launch Phoenix.
+
+26
+00:01:19.112 --> 00:01:21.815
+You can either use
+
+27
+00:01:21.815 --> 00:01:24.818
+this command
+to launch Phoenix inside of a notebook.
+
+28
+00:01:24.984 --> 00:01:27.754
+Alternatively,
+you can run it on your own local machine,
+
+29
+00:01:27.754 --> 00:01:30.723
+or you can access it through a web
+app on the Arize website.
+
+30
+00:01:31.124 --> 00:01:34.194
+In this case, in these notebooks,
+Phoenix has been launched for you,
+
+31
+00:01:34.194 --> 00:01:35.762
+so you don't actually have to run anything
+here.
+
+32
+00:01:35.762 --> 00:01:37.964
+You've already got an instance
+that's running.
+
+33
+00:01:37.964 --> 00:01:40.600
+Now, Phoenix has a concept of projects,
+
+34
+00:01:40.600 --> 00:01:44.904
+and so projects are used to separate out
+some of the traces that you're sending.
+
+35
+00:01:44.938 --> 00:01:47.974
+Maybe you're tracing multiple
+different kinds of applications or agents.
+
+36
+00:01:48.274 --> 00:01:51.277
+You might want to group some of the
+tracing into different projects.
+
+37
+00:01:51.478 --> 00:01:54.114
+So here
+you want to define the project name.
+
+38
+00:01:54.114 --> 00:01:57.117
+And then you can use the register
+method from Phoenix
+
+39
+00:01:57.150 --> 00:02:01.054
+to connect your application
+here to your Phoenix instance.
+
+40
+00:02:01.721 --> 00:02:06.059
+So this register method here will take in
+the project name as well as an endpoint.
+
+41
+00:02:06.493 --> 00:02:09.496
+This endpoint is just
+where your Phoenix instance is running.
+
+42
+00:02:09.796 --> 00:02:11.831
+And that will be
+where any traces get sent to.
+
+43
+00:02:11.831 --> 00:02:13.533
+So again
+you have it running in your notebook.
+
+44
+00:02:13.533 --> 00:02:16.369
+And so this helper method here
+get Phoenix endpoint.
+
+45
+00:02:16.369 --> 00:02:17.437
+It's in the utils function.
+
+46
+00:02:17.437 --> 00:02:20.073
+You can take a look
+and see what that's doing if you want to.
+
+47
+00:02:20.073 --> 00:02:21.341
+And that will give you an output
+
+48
+00:02:22.475 --> 00:02:23.409
+that looks something like
+
+49
+00:02:23.409 --> 00:02:26.446
+this where you can see OpenTelemetry
+tracing has been set up.
+
+50
+00:02:27.180 --> 00:02:30.884
+And so now any openTelemetry traces
+that you capture or you instrument
+
+51
+00:02:31.317 --> 00:02:34.320
+will be sent through
+into your Phoenix project.
+
+52
+00:02:34.621 --> 00:02:39.492
+So, next step that you'll go through here
+is you've made this connection to Phoenix,
+
+53
+00:02:39.526 --> 00:02:43.363
+but you still need to instrument
+your application and mark which calls
+
+54
+00:02:43.363 --> 00:02:46.065
+and which methods should be sent
+through into Phoenix.
+
+55
+00:02:46.065 --> 00:02:47.834
+And with what attributes.
+
+56
+00:02:47.834 --> 00:02:49.269
+You can do this manually.
+
+57
+00:02:49.269 --> 00:02:50.436
+However, libraries
+
+58
+00:02:50.436 --> 00:02:53.606
+like Phoenix also have tools to do
+some of this automatically for you.
+
+59
+00:02:54.374 --> 00:02:57.177
+So this OpenAI instrument or for example,
+
+60
+00:02:57.177 --> 00:03:00.180
+is part of the open inference library
+that we mentioned.
+
+61
+00:03:00.413 --> 00:03:03.149
+And what this will do is if I run that,
+it will take
+
+62
+00:03:03.149 --> 00:03:06.152
+in the tracer provider
+that we set up here,
+
+63
+00:03:06.452 --> 00:03:10.557
+and it will actually make it
+so that any calls you make to OpenAI's
+
+64
+00:03:10.723 --> 00:03:14.827
+library from this point on in the project
+will get sent through into Phoenix
+
+65
+00:03:14.827 --> 00:03:16.196
+traced properly.
+
+66
+00:03:16.196 --> 00:03:18.765
+So if you're just using OpenAI calls
+this would be
+
+67
+00:03:18.765 --> 00:03:21.834
+all you would need to do to actually set
+up tracing for those calls.
+
+68
+00:03:22.902 --> 00:03:25.905
+In this example agent,
+you have some stuff beyond that as well too.
+
+69
+00:03:25.905 --> 00:03:28.041
+So you have tool calls that get made.
+
+70
+00:03:28.041 --> 00:03:29.876
+You have some other logic
+that's happening.
+
+71
+00:03:29.876 --> 00:03:32.745
+So you're actually going to combine
+this automatic instrumentor
+
+72
+00:03:32.745 --> 00:03:35.748
+here with some more manual tracing.
+
+73
+00:03:36.115 --> 00:03:39.619
+And so, to set up your manual tracing,
+the first thing you want to do here
+
+74
+00:03:40.086 --> 00:03:42.889
+is you want to get
+
+75
+00:03:42.889 --> 00:03:45.892
+a tracer object from that tracer provider.
+
+76
+00:03:46.025 --> 00:03:48.895
+And then this is what's going to be used
+to mark any of those methods
+
+77
+00:03:48.895 --> 00:03:51.864
+that you want to send through into Phoenix
+as well.
+
+78
+00:03:53.132 --> 00:03:54.033
+Now with all of that
+
+79
+00:03:54.033 --> 00:03:58.071
+set up, make sure that you've also run
+the different cells of your agent
+
+80
+00:03:58.071 --> 00:04:01.541
+so that you can then run and test
+your agent as we trace it.
+
+81
+00:04:03.109 --> 00:04:04.744
+Now when it comes to
+
+82
+00:04:04.744 --> 00:04:08.581
+setting up manual tracing for your agent
+or really any project, it's
+
+83
+00:04:08.581 --> 00:04:11.918
+always helpful to start from the outermost
+layer that you want to trace.
+
+84
+00:04:11.918 --> 00:04:15.121
+The outermost tracer span,
+and then work your way down
+
+85
+00:04:15.121 --> 00:04:17.123
+in terms of the detail
+that you want to go to.
+
+86
+00:04:17.123 --> 00:04:19.892
+This just helps make sure that you're
+capturing the right information,
+
+87
+00:04:19.892 --> 00:04:22.762
+and you give yourself a holistic view
+of what's going on.
+
+88
+00:04:22.762 --> 00:04:25.698
+So in this case,
+you have your run agent method
+
+89
+00:04:25.698 --> 00:04:28.701
+that's going to be used here
+to start your agent.
+
+90
+00:04:28.835 --> 00:04:30.603
+However, this method has a loop in it.
+
+91
+00:04:30.603 --> 00:04:32.872
+And as we mentioned
+in the previous notebook,
+
+92
+00:04:32.872 --> 00:04:36.075
+sometimes you might want to use more of a
+recursive call here where you're calling
+
+93
+00:04:36.075 --> 00:04:39.078
+this method multiple times
+for one given run of your agent.
+
+94
+00:04:39.479 --> 00:04:42.248
+So it's helpful
+sometimes to create an actual
+
+95
+00:04:42.248 --> 00:04:45.251
+another outer layer
+that you can use, or outer method
+
+96
+00:04:45.451 --> 00:04:48.488
+that you can start
+as that very top level trace or span here.
+
+97
+00:04:49.155 --> 00:04:51.057
+So in this case
+you're going to create a new method.
+
+98
+00:04:52.091 --> 00:04:53.059
+In this case the start
+
+99
+00:04:53.059 --> 00:04:56.496
+main span could just be called start agent
+or whatever you want to use there.
+
+100
+00:04:57.163 --> 00:05:00.133
+And really all this method is doing aside
+from some of the tracing stuff,
+
+101
+00:05:00.500 --> 00:05:03.269
+is just calling this run
+agent method that you have already.
+
+102
+00:05:03.269 --> 00:05:06.039
+So it's just calling that run
+agent method.
+
+103
+00:05:06.039 --> 00:05:07.840
+And again,
+if you had that as a recursive method,
+
+104
+00:05:07.840 --> 00:05:09.742
+this would be the initial call
+that you would make to that method.
+
+105
+00:05:09.742 --> 00:05:14.247
+And then beyond that it's adding
+in some calls to set up tracing here.
+
+106
+00:05:14.247 --> 00:05:18.318
+So this is your first manual tracing call
+that's being added.
+
+107
+00:05:18.318 --> 00:05:20.887
+So you'll add in using this tracer object.
+
+108
+00:05:20.887 --> 00:05:24.324
+You'll start the span here with the name
+Agent Run.
+
+109
+00:05:24.957 --> 00:05:26.759
+You can make the name whenever you want.
+
+110
+00:05:26.759 --> 00:05:29.729
+And then the open inference span
+kind, agent.
+
+111
+00:05:30.330 --> 00:05:33.366
+The span kind is just
+what kind of category is the span.
+
+112
+00:05:33.700 --> 00:05:35.501
+It'll map to some of the colors and things
+
+113
+00:05:35.501 --> 00:05:37.403
+like that in the Phoenix
+UI that you'll see in a second.
+
+114
+00:05:37.403 --> 00:05:39.605
+So in this case, agent is the example.
+
+115
+00:05:39.605 --> 00:05:42.241
+You'll see some for
+tools and for chain later on.
+
+116
+00:05:43.343 --> 00:05:45.678
+And then
+that will start that current span.
+
+117
+00:05:45.678 --> 00:05:50.016
+And anything within that with clause block
+will be treated as part of that span.
+
+118
+00:05:50.983 --> 00:05:52.885
+You can also set some attributes
+for the span.
+
+119
+00:05:52.885 --> 00:05:55.988
+So in this case setting the input to
+what's the input value
+
+120
+00:05:55.988 --> 00:05:56.856
+for that given span.
+
+121
+00:05:56.856 --> 00:05:59.859
+In this case it'll be the messages object.
+
+122
+00:06:00.059 --> 00:06:03.463
+And then when the agent completes
+you can set the output here.
+
+123
+00:06:03.996 --> 00:06:06.499
+This will be the value
+of the return of the agent.
+
+124
+00:06:06.499 --> 00:06:10.002
+And then you can set a status code
+if you want to to say this was a completed
+
+125
+00:06:10.002 --> 00:06:12.739
+call correctly.
+There was not an error on this call.
+
+126
+00:06:12.739 --> 00:06:14.707
+So you can define that method.
+
+127
+00:06:14.707 --> 00:06:16.008
+And then from there
+
+128
+00:06:16.008 --> 00:06:19.212
+you can start to work your way down
+into the agent adding tracer.
+
+129
+00:06:19.879 --> 00:06:22.382
+So next step can be done here
+
+130
+00:06:22.382 --> 00:06:25.251
+is going into your run agent method.
+
+131
+00:06:25.251 --> 00:06:28.254
+And there's maybe a few places
+that you might want to start spans here.
+
+132
+00:06:28.554 --> 00:06:31.557
+The most obvious one
+is that each time you call your router,
+
+133
+00:06:31.724 --> 00:06:34.727
+you may want to have a span
+representing that router call.
+
+134
+00:06:35.461 --> 00:06:37.029
+So here's what you can add to do that.
+
+135
+00:06:39.465 --> 00:06:41.667
+So there's been a couple updates
+to the method here.
+
+136
+00:06:41.667 --> 00:06:43.202
+Everything up here is the same.
+
+137
+00:06:43.202 --> 00:06:45.938
+No changes
+there as you get down to your while loop.
+
+138
+00:06:45.938 --> 00:06:48.141
+Here's the first change that you'll see.
+
+139
+00:06:48.141 --> 00:06:51.878
+So adding that same call from before
+tracer start this current span.
+
+140
+00:06:52.412 --> 00:06:56.983
+This time calling it router call and then
+adding in the open inferred span kind.
+
+141
+00:06:56.983 --> 00:07:01.921
+This time adding in chain as the span kind.
+Chain is just a basic logic step.
+
+142
+00:07:01.921 --> 00:07:06.259
+There's no LLM call or tool call or it's
+not an agent, it's just a chain. Chain is
+
+143
+00:07:06.259 --> 00:07:08.528
+almost the default in a way.
+
+144
+00:07:08.528 --> 00:07:11.531
+So you can start that
+and then add in the input.
+
+145
+00:07:11.931 --> 00:07:14.434
+Once again you'll keep your OpenAI
+
+146
+00:07:14.434 --> 00:07:16.068
+call the same here.
+
+147
+00:07:16.068 --> 00:07:17.603
+Add in your status as well.
+
+148
+00:07:18.671 --> 00:07:19.405
+And then you
+
+149
+00:07:19.405 --> 00:07:22.375
+can add in the output either
+the tool calls
+
+150
+00:07:22.408 --> 00:07:23.709
+or if you have
+
+151
+00:07:23.709 --> 00:07:27.079
+all the tool calls completed and you're
+going back to the user, you can add the
+
+152
+00:07:27.346 --> 00:07:30.349
+eventual response of your agent here
+to final response.
+
+153
+00:07:30.783 --> 00:07:33.853
+So you can update that method here.
+And then you can add
+
+154
+00:07:33.853 --> 00:07:36.889
+a couple more pieces and then take a look
+at what this looks like in Phoenix.
+
+155
+00:07:37.557 --> 00:07:40.460
+So one other area
+that you might want to add another
+
+156
+00:07:40.460 --> 00:07:43.463
+span is when you go to handle the tool
+calls,
+
+157
+00:07:43.863 --> 00:07:46.532
+you might want to have a span
+that captures that particular
+
+158
+00:07:46.532 --> 00:07:48.534
+method and tracks that method.
+
+159
+00:07:48.534 --> 00:07:50.570
+So here's how you can do that.
+
+160
+00:07:50.570 --> 00:07:52.705
+You can go up to your handle tool
+call method.
+
+161
+00:07:52.705 --> 00:07:56.809
+And in this case you can use a different
+technique for actually marking a span.
+
+162
+00:07:56.843 --> 00:07:59.512
+So instead of using the with clause
+you have another option
+
+163
+00:07:59.512 --> 00:08:02.014
+which is to use a decorator
+for this method.
+
+164
+00:08:02.014 --> 00:08:05.017
+And this is really useful here
+because really this method is
+
+165
+00:08:05.117 --> 00:08:06.118
+totally self-contained.
+
+166
+00:08:06.118 --> 00:08:09.755
+If you just said everything in this
+method can be one span and that would work
+
+167
+00:08:09.755 --> 00:08:12.492
+well for the instrumentation
+you want to set up.
+
+168
+00:08:12.492 --> 00:08:13.960
+So here you can just mark
+
+169
+00:08:15.728 --> 00:08:17.530
+@tracer.chain.
+
+170
+00:08:17.530 --> 00:08:20.433
+You could do @tracer agent
+or @tracer tool
+
+171
+00:08:20.433 --> 00:08:23.769
+for the different kinds of tool spans
+or spans that you would want to track.
+
+172
+00:08:24.470 --> 00:08:27.840
+And then what that will do is
+it will treat any calls to this
+
+173
+00:08:27.840 --> 00:08:31.344
+method
+right here as a single span in Phoenix.
+
+174
+00:08:31.744 --> 00:08:35.214
+And then it will take the inputs to this
+method as the inputs,
+
+175
+00:08:35.848 --> 00:08:38.985
+and then it will take any return from this
+method as the output value.
+
+176
+00:08:39.652 --> 00:08:43.556
+So if you saw before you were marking
+the input in the output manually,
+
+177
+00:08:43.956 --> 00:08:46.626
+this is a kind of convenience way
+that makes it
+
+178
+00:08:46.626 --> 00:08:48.327
+so that you don't have to define
+those manually.
+
+179
+00:08:48.327 --> 00:08:50.997
+It'll just happen automatically.
+
+180
+00:08:50.997 --> 00:08:52.031
+And so now's a good moment.
+
+181
+00:08:52.031 --> 00:08:55.268
+You've added a few different kinds
+of instrumentation spans and traces.
+
+182
+00:08:55.701 --> 00:08:59.205
+It's a good opportunity to take a pause,
+run your agent and see what that looks
+
+183
+00:08:59.205 --> 00:08:59.872
+like in Phoenix.
+
+184
+00:09:01.607 --> 00:09:04.944
+So if you're going to run your agent here,
+make sure that you're using
+
+185
+00:09:04.944 --> 00:09:07.947
+your newly created start main span method
+
+186
+00:09:08.080 --> 00:09:10.783
+and you can run that.
+
+187
+00:09:10.783 --> 00:09:12.752
+But if you switch over into Phoenix,
+
+188
+00:09:12.752 --> 00:09:15.755
+it should now see
+you have some data in Phoenix to review.
+
+189
+00:09:16.422 --> 00:09:19.392
+So if you open up Phoenix
+and to open up Phoenix,
+
+190
+00:09:19.392 --> 00:09:22.395
+there'll be a URL provided in the notebook
+that you're working in.
+
+191
+00:09:22.995 --> 00:09:25.831
+You open up Phoenix,
+you'll start on this projects page.
+
+192
+00:09:25.831 --> 00:09:28.734
+And if you remember,
+you set the project name of Tracing Agent.
+
+193
+00:09:28.734 --> 00:09:29.702
+So you should see there's now
+
+194
+00:09:29.702 --> 00:09:33.039
+one trace inside
+that you can click into that project.
+
+195
+00:09:33.472 --> 00:09:34.373
+And you should see something
+
+196
+00:09:34.373 --> 00:09:37.510
+that looks like this,
+where one row here is your trace.
+
+197
+00:09:38.144 --> 00:09:39.612
+You've named it Agent Run.
+
+198
+00:09:39.612 --> 00:09:43.215
+You can click into this and see a few
+different spans that have been marked.
+
+199
+00:09:44.517 --> 00:09:46.619
+I'm going to expand this so you can see those.
+
+200
+00:09:46.619 --> 00:09:50.022
+So each row here within
+your trace is one span.
+
+201
+00:09:50.790 --> 00:09:52.758
+And so your first one is this agent Run.
+
+202
+00:09:52.758 --> 00:09:56.696
+So this was what was set with the with
+clause inside of start main span.
+
+203
+00:09:57.663 --> 00:09:59.966
+And then you have
+the router call as a span.
+
+204
+00:09:59.966 --> 00:10:03.603
+And so this was what was set with the
+with clause inside of your start agent.
+
+205
+00:10:04.203 --> 00:10:07.206
+And then you'll also have this tool
+called chain span here
+
+206
+00:10:07.206 --> 00:10:08.474
+which is the one that you created
+
+207
+00:10:08.474 --> 00:10:11.477
+using that decorator
+on your handle tool calls method.
+
+208
+00:10:12.345 --> 00:10:15.581
+You'll also see these orange calls here,
+which are LLM calls
+
+209
+00:10:15.581 --> 00:10:17.550
+that are made to OpenAI.
+
+210
+00:10:17.550 --> 00:10:20.886
+And so these are all coming
+from the automatic instrumentor
+
+211
+00:10:20.987 --> 00:10:21.554
+that you used
+
+212
+00:10:21.554 --> 00:10:24.991
+at the very beginning of this video,
+where you added the OpenAI instrumentor.
+
+213
+00:10:25.124 --> 00:10:26.926
+So those are automatically
+getting captured
+
+214
+00:10:26.926 --> 00:10:28.728
+without doing any of
+the manual instrumentation.
+
+215
+00:10:30.029 --> 00:10:31.397
+And if you expand
+
+216
+00:10:31.397 --> 00:10:34.367
+this a little bit you can see
+some of the values that are captured here.
+
+217
+00:10:34.433 --> 00:10:36.669
+So, starting in your agent run
+
+218
+00:10:36.669 --> 00:10:39.672
+you have your input and output values
+that are coming there.
+
+219
+00:10:40.339 --> 00:10:43.342
+Similarly for router
+you'll have your input and output as well.
+
+220
+00:10:43.943 --> 00:10:47.580
+And then if you look at your LLM spans
+you'll have a little bit more information.
+
+221
+00:10:47.713 --> 00:10:51.417
+You'll have things like the user prompt,
+the system prompt, the output.
+
+222
+00:10:52.018 --> 00:10:54.120
+And then you also have
+all the tools that were supplied.
+
+223
+00:10:54.120 --> 00:10:57.289
+So you can see the tool definitions
+that were supplied to your agent as well.
+
+224
+00:10:58.357 --> 00:11:01.494
+And in any of these spans you can also
+always go into the attribute section
+
+225
+00:11:01.727 --> 00:11:05.264
+and see all of the information
+that was sent to that particular span.
+
+226
+00:11:06.065 --> 00:11:07.933
+So this is where you have all of the info.
+
+227
+00:11:07.933 --> 00:11:09.669
+If you want to really
+deep dive into some of these.
+
+228
+00:11:11.070 --> 00:11:11.370
+Great.
+
+229
+00:11:11.370 --> 00:11:14.540
+So, so far you've got your agent router
+
+230
+00:11:14.540 --> 00:11:18.144
+and your handle tool calls method, as well
+as some of your LLM calls being tracked.
+
+231
+00:11:18.477 --> 00:11:20.579
+But you also have some tools
+inside of this agent.
+
+232
+00:11:20.579 --> 00:11:21.747
+And it would be helpful to understand
+
+233
+00:11:21.747 --> 00:11:24.984
+when those tools are actually being called
+and what the responses are there.
+
+234
+00:11:25.551 --> 00:11:28.621
+So you can add in some tracing
+for those tools as well.
+
+235
+00:11:29.989 --> 00:11:33.325
+So to add tracing to some of your tools,
+you have a few different options here.
+
+236
+00:11:34.060 --> 00:11:37.797
+First, you can use those decorators
+that you used for your handle tool
+
+237
+00:11:37.797 --> 00:11:39.699
+calls method.
+And that's probably the simplest way.
+
+238
+00:11:39.699 --> 00:11:42.668
+So usually the recommended way
+to go about doing that.
+
+239
+00:11:42.668 --> 00:11:46.138
+So starting here
+you have your lookup sales data method
+
+240
+00:11:46.238 --> 00:11:48.174
+which is your first tool.
+
+241
+00:11:48.174 --> 00:11:50.943
+And so you can add in a decorator
+at the top
+
+242
+00:11:50.943 --> 00:11:53.946
+to say tracer dot tool.
+
+243
+00:11:54.346 --> 00:11:54.914
+And then again
+
+244
+00:11:54.914 --> 00:11:57.917
+that will treat this as a single span
+whenever this method is called.
+
+245
+00:11:57.917 --> 00:12:01.687
+And then it will take the input
+as this prompt value and the output
+
+246
+00:12:01.687 --> 00:12:03.556
+as whatever the return of this method is.
+
+247
+00:12:04.657 --> 00:12:05.357
+Now this
+
+248
+00:12:05.357 --> 00:12:08.728
+particular tool actually calls
+some other kinds of methods inside of it.
+
+249
+00:12:08.728 --> 00:12:11.430
+It calls this generate SQL query method.
+
+250
+00:12:11.430 --> 00:12:14.767
+And so it might be helpful to have
+that as a separate span to say okay, first
+
+251
+00:12:14.767 --> 00:12:17.236
+you want to have a span
+for generating the SQL code
+
+252
+00:12:17.236 --> 00:12:20.072
+and then a separate
+one for running the SQL code.
+
+253
+00:12:20.072 --> 00:12:22.808
+So what you can do is
+if there's part of a method
+
+254
+00:12:22.808 --> 00:12:26.812
+that you want to actually track
+as an individual span,
+
+255
+00:12:26.812 --> 00:12:29.815
+you can use the with clause
+that you saw before.
+
+256
+00:12:30.116 --> 00:12:34.887
+So you can add in here
+before your SQL query is run.
+
+257
+00:12:34.954 --> 00:12:39.225
+You can add in a with clause to say
+start_as_current_span.
+
+258
+00:12:39.658 --> 00:12:42.661
+In this case
+you can call it execute SQL query
+
+259
+00:12:42.995 --> 00:12:46.165
+and set the open inference
+span kind as chain once again.
+
+260
+00:12:47.366 --> 00:12:49.702
+And then you'll want to make sure
+that this is indented
+
+261
+00:12:49.702 --> 00:12:52.705
+so that it's part of that span
+that you've created there.
+
+262
+00:12:53.339 --> 00:12:56.442
+And then it's would be good to add
+in some of the input and output values
+
+263
+00:12:56.442 --> 00:12:57.743
+that go along with that as well.
+
+264
+00:12:57.743 --> 00:13:02.615
+So, right before this
+you can add in the input value.
+
+265
+00:13:02.748 --> 00:13:06.252
+And so you can do span dot set input.
+
+266
+00:13:06.886 --> 00:13:09.255
+And in this case the SQL query
+
+267
+00:13:09.255 --> 00:13:12.224
+that's going to be called
+would make sense as a good input.
+
+268
+00:13:12.224 --> 00:13:14.827
+And then after your call is made you
+You can say span
+
+269
+00:13:14.827 --> 00:13:17.062
+set output and set status.
+
+270
+00:13:17.062 --> 00:13:20.232
+With the result of that SQL query.
+
+271
+00:13:21.333 --> 00:13:24.336
+And in this case you're defining it
+using the parameter name.
+
+272
+00:13:24.537 --> 00:13:27.540
+You can also just define it
+by sending the parameter itself
+
+273
+00:13:27.740 --> 00:13:30.142
+whichever way is easier for you to use.
+
+274
+00:13:30.142 --> 00:13:32.545
+And then so now if you run this
+
+275
+00:13:32.545 --> 00:13:36.015
+then that tool will have two spans
+that it creates whenever it gets run.
+
+276
+00:13:36.048 --> 00:13:39.819
+And we'll have one for the method itself
+using this decorator here.
+
+277
+00:13:40.319 --> 00:13:43.889
+And then it will have a separate span
+within that other span nested below
+
+278
+00:13:44.590 --> 00:13:47.560
+for specifically
+the SQL query running itself.
+
+279
+00:13:47.560 --> 00:13:51.630
+And it makes sense to do that in this case
+because you might generate correct SQL,
+
+280
+00:13:51.831 --> 00:13:53.132
+but then there might be some connection
+
+281
+00:13:53.132 --> 00:13:56.135
+issue or something else
+that prevents it from being run correctly.
+
+282
+00:13:56.235 --> 00:13:58.337
+And it's helpful
+to see where that error might be.
+
+283
+00:13:58.337 --> 00:14:02.508
+So if you see that the internal span
+here fails but the external one succeeds,
+
+284
+00:14:02.875 --> 00:14:06.145
+then you know that there was an issue
+with connecting to your SQL database
+
+285
+00:14:06.145 --> 00:14:07.413
+in this case.
+
+286
+00:14:07.413 --> 00:14:11.150
+And so finally you can add in similar
+tracing to your remaining tools.
+
+287
+00:14:11.851 --> 00:14:14.854
+And then that'll probably cover all the
+tracing that you need for the agent here.
+
+288
+00:14:15.054 --> 00:14:18.123
+And so this is fairly straightforward
+to add in here.
+
+289
+00:14:18.591 --> 00:14:21.927
+Your next method here
+is pretty simple in this tool.
+
+290
+00:14:21.994 --> 00:14:25.331
+So you can just use the decorator
+to say trace this as a tool.
+
+291
+00:14:25.431 --> 00:14:27.967
+Again
+it will grab the input and output for you.
+
+292
+00:14:27.967 --> 00:14:31.003
+Nothing really more that you need to do in
+this case to trace that particular tool.
+
+293
+00:14:31.904 --> 00:14:34.440
+And then for your data visualization tool,
+
+294
+00:14:34.440 --> 00:14:37.109
+again, you can use the decorators as well.
+
+295
+00:14:37.109 --> 00:14:39.778
+This is another case
+where you have a two-step tool.
+
+296
+00:14:39.778 --> 00:14:40.479
+But in this case
+
+297
+00:14:40.479 --> 00:14:43.883
+you have multiple steps that are split
+across two different methods.
+
+298
+00:14:44.283 --> 00:14:46.585
+So you can keep things simple
+and use the decorators
+
+299
+00:14:46.585 --> 00:14:50.222
+because those contain
+all of the logic for that particular step.
+
+300
+00:14:50.823 --> 00:14:53.792
+So here for this extract chart config.
+
+301
+00:14:53.792 --> 00:14:55.227
+This in itself is not a tool.
+
+302
+00:14:55.227 --> 00:14:56.629
+This is just part of a tool.
+
+303
+00:14:56.629 --> 00:14:59.231
+So it makes sense to call it chain here.
+
+304
+00:14:59.231 --> 00:15:03.869
+And so you can say @tracer dot
+chain as opposed to @tracer dot tool.
+
+305
+00:15:04.003 --> 00:15:05.871
+For this extract chart config method.
+
+306
+00:15:06.839 --> 00:15:09.642
+And then you can do the same kind of thing
+
+307
+00:15:09.642 --> 00:15:13.946
+for the other method that gets called here
+which is your create chart method
+
+308
+00:15:14.013 --> 00:15:17.016
+in your @tracer dot chain.
+
+309
+00:15:18.150 --> 00:15:21.153
+And also make sure that you run
+any of these cells again
+
+310
+00:15:21.654 --> 00:15:24.657
+as you added things to them
+just to update that.
+
+311
+00:15:25.391 --> 00:15:27.760
+And then finally
+you can go to your last method here
+
+312
+00:15:27.760 --> 00:15:31.563
+this generate visualization
+and mark this as a tool.
+
+313
+00:15:32.197 --> 00:15:35.768
+So you've marked three different tool
+spans for your three different tools.
+
+314
+00:15:36.068 --> 00:15:39.071
+You've marked a few different chain spans
+within those tools.
+
+315
+00:15:39.471 --> 00:15:42.541
+And you've marked your agent
+and router spans as well.
+
+316
+00:15:43.442 --> 00:15:45.477
+Now you've added
+all the tracing that you need to
+
+317
+00:15:45.477 --> 00:15:47.513
+so you can go back down
+and run your agent again,
+
+318
+00:15:47.513 --> 00:15:49.782
+and you should see some
+more detailed information.
+
+319
+00:15:51.283 --> 00:15:53.419
+And so
+now if you jump back over into Phoenix,
+
+320
+00:15:53.419 --> 00:15:56.422
+you should see you have a new trace
+that's been run.
+
+321
+00:15:56.755 --> 00:15:58.524
+So you should now have a second entry.
+
+322
+00:15:58.524 --> 00:16:01.627
+And if you click into that, it'll look
+slightly different than the one before.
+
+323
+00:16:01.627 --> 00:16:03.762
+You'll have a few more spans here.
+
+324
+00:16:03.762 --> 00:16:07.299
+Notably, you'll have this yellow
+one of your lookup sales data tool.
+
+325
+00:16:07.566 --> 00:16:10.769
+So that was one that you captured with
+that decorator on your lookup sales data.
+
+326
+00:16:11.570 --> 00:16:16.308
+And then within that you'll also have
+a chain span for executing the SQL query.
+
+327
+00:16:16.942 --> 00:16:19.278
+And look at the inputs
+and outputs of those.
+
+328
+00:16:19.278 --> 00:16:21.880
+this is the one that's been captured
+using the with clause
+
+329
+00:16:21.880 --> 00:16:24.717
+inside of your lookup sales data method.
+
+330
+00:16:24.717 --> 00:16:27.319
+And if you ran more complicated queries
+that you used other
+
+331
+00:16:27.319 --> 00:16:30.556
+tools, you would see those tools
+appearing as well too.
+
+332
+00:16:30.589 --> 00:16:33.826
+So now you have all of the information
+that you need to understand
+
+333
+00:16:33.826 --> 00:16:36.261
+what's happening
+inside of your agent at any given step.
+

@@ -1,0 +1,703 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.666 --> 00:00:05.050
+We surveyed developers a few months ago,
+asking which tasks
+
+2
+00:00:05.050 --> 00:00:08.050
+they thought agents were best suited
+to perform today.
+
+3
+00:00:09.133 --> 00:00:12.434
+The second most answered
+one was personal assistants
+
+4
+00:00:12.617 --> 00:00:15.617
+and productivity tasks.
+
+5
+00:00:16.067 --> 00:00:19.067
+One core aspect of these tasks
+
+6
+00:00:19.134 --> 00:00:22.134
+is memory, specifically, long-term memory.
+
+7
+00:00:22.584 --> 00:00:24.801
+Think about working with a human assistant
+
+8
+00:00:24.801 --> 00:00:27.801
+who is serving
+as a personal assistant of sorts.
+
+9
+00:00:28.635 --> 00:00:32.118
+If they forgot all their conversations
+with you and didn't remember
+
+10
+00:00:32.452 --> 00:00:36.885
+things that you told them previously,
+that would be a pretty bad experience.
+
+11
+00:00:37.035 --> 00:00:39.952
+And the same goes for agents.
+
+12
+00:00:39.952 --> 00:00:44.186
+So, memory is a key
+part of these types of tasks.
+
+13
+00:00:44.452 --> 00:00:49.452
+And so when we think about an example
+through which to introduce memory,
+
+14
+00:00:50.353 --> 00:00:53.386
+a task of this nature is a great fit.
+
+15
+00:00:56.153 --> 00:00:59.320
+One example of a task
+like this is an email agent.
+
+16
+00:01:00.970 --> 00:01:01.820
+So email
+
+17
+00:01:01.820 --> 00:01:04.870
+is something that we all have
+and we all have to deal with.
+
+18
+00:01:04.870 --> 00:01:08.470
+And as you get busier and busier,
+you may have more and more emails
+
+19
+00:01:08.470 --> 00:01:11.954
+popping up that you just don't have time
+to look at or respond to.
+
+20
+00:01:11.954 --> 00:01:14.954
+And this is perfect for an agent
+to come in.
+
+21
+00:01:16.154 --> 00:01:19.604
+If we think about what an agent
+would need to do this job well.
+
+22
+00:01:19.904 --> 00:01:24.355
+It's probably pretty similar
+to what an executive assistant might need
+
+23
+00:01:24.371 --> 00:01:27.072
+to do this job well.
+They might need a calendar
+
+24
+00:01:27.072 --> 00:01:29.655
+to check your calendar
+to see where you're free.
+
+25
+00:01:29.655 --> 00:01:30.805
+And they might need access
+
+26
+00:01:30.805 --> 00:01:34.705
+to writing emails on your behalf
+or in response to other emails.
+
+27
+00:01:35.305 --> 00:01:38.122
+And so when we think about building
+an agent, we can think about
+
+28
+00:01:38.122 --> 00:01:41.156
+giving them access
+to these types of tools.
+
+29
+00:01:43.823 --> 00:01:45.173
+And an agent like this has a
+
+30
+00:01:45.173 --> 00:01:48.323
+lot of places
+where memory becomes really important.
+
+31
+00:01:49.790 --> 00:01:51.473
+First step is looking at all
+
+32
+00:01:51.473 --> 00:01:54.790
+the emails and deciding,
+should I ignore this?
+
+33
+00:01:54.790 --> 00:01:57.023
+Should I respond to this?
+
+34
+00:01:57.023 --> 00:02:00.490
+If it does decide to respond to it
+and decides to use the calendar
+
+35
+00:02:00.524 --> 00:02:05.024
+email tool, it needs to know
+what is the person's meeting preferences,
+
+36
+00:02:05.541 --> 00:02:08.541
+both in terms of time,
+but also location and title.
+
+37
+00:02:09.191 --> 00:02:10.491
+And then if it decides to write an email,
+
+38
+00:02:10.491 --> 00:02:12.291
+it needs to know
+what is this person's tone?
+
+39
+00:02:12.291 --> 00:02:14.425
+What is their style?
+
+40
+00:02:14.425 --> 00:02:18.591
+And then there might also be interactions
+with people that they've had previously.
+
+41
+00:02:18.925 --> 00:02:21.925
+This is important
+context to be able to know, to respond to.
+
+42
+00:02:24.475 --> 00:02:25.825
+And so this email assistant
+
+43
+00:02:25.825 --> 00:02:28.825
+is a great place to show off
+
+44
+00:02:28.825 --> 00:02:31.842
+what LLMs and memory can do together.
+
+45
+00:02:32.809 --> 00:02:35.442
+And so we're going to use
+it as a proofing ground for talking about
+
+46
+00:02:35.442 --> 00:02:38.726
+three different types of memory
+for AI agents.
+
+47
+00:02:39.793 --> 00:02:42.793
+So, first the semantic memory.
+
+48
+00:02:43.376 --> 00:02:45.410
+So, what is semantic memory?
+
+49
+00:02:45.410 --> 00:02:47.327
+It's basically facts.
+
+50
+00:02:47.327 --> 00:02:49.310
+If we think about semantic memory
+in humans,
+
+51
+00:02:49.310 --> 00:02:52.194
+it's things that you've learned, facts
+that you've learned in school.
+
+52
+00:02:52.194 --> 00:02:55.194
+By reading a textbook that you remember
+from previous interactions,
+
+53
+00:02:55.194 --> 00:02:58.194
+all these kind of like facts
+based type of memory.
+
+54
+00:02:58.994 --> 00:03:01.727
+A second type of memory is episodic
+memory.
+
+55
+00:03:01.727 --> 00:03:03.011
+This is experiences.
+
+56
+00:03:03.011 --> 00:03:06.861
+This is callbacks to exact conversations
+that you've had.
+
+57
+00:03:08.478 --> 00:03:11.295
+It's not necessarily facts
+about these conversations.
+
+58
+00:03:11.295 --> 00:03:13.545
+It's just the memory of this conversation
+itself.
+
+59
+00:03:13.545 --> 00:03:16.545
+The memory of going to Disneyland
+or something like that.
+
+60
+00:03:17.862 --> 00:03:20.062
+And the third
+type of memory is procedural memory.
+
+61
+00:03:21.612 --> 00:03:24.312
+These are kind of like instructions
+for yourself
+
+62
+00:03:24.312 --> 00:03:27.262
+or instincts or motor skills,
+how to ride a bike,
+
+63
+00:03:27.262 --> 00:03:31.096
+or instructions that you give yourself
+for how to respond to emails,
+
+64
+00:03:31.096 --> 00:03:33.646
+for example.
+
+65
+00:03:33.646 --> 00:03:35.996
+How do we map these onto agents?
+
+66
+00:03:35.996 --> 00:03:39.763
+So, for semantic memory,
+these might be facts about a user
+
+67
+00:03:39.763 --> 00:03:43.163
+or about people placed things
+that the agent has interacted with.
+
+68
+00:03:44.930 --> 00:03:47.930
+For episodic,
+this might be past agent actions.
+
+69
+00:03:48.264 --> 00:03:51.047
+So in the form of few shot examples.
+
+70
+00:03:51.047 --> 00:03:55.014
+So actual literal kind of like trajectory
+of what have happened before.
+
+71
+00:03:55.964 --> 00:03:58.098
+And then from procedural
+this is maybe the most straightforward.
+
+72
+00:03:58.098 --> 00:03:59.781
+This is a system prompt.
+
+73
+00:03:59.781 --> 00:04:02.781
+The instructions
+that you give the agent on how to behave.
+
+74
+00:04:04.965 --> 00:04:08.715
+Besides these three types of memories,
+it's also worth calling out
+
+75
+00:04:08.715 --> 00:04:12.132
+the different ways that these agents
+can interact with these memories.
+
+76
+00:04:13.615 --> 00:04:16.015
+So there's two different paradigms
+that we see.
+
+77
+00:04:16.015 --> 00:04:18.199
+One is generally in the hot path.
+
+78
+00:04:18.199 --> 00:04:23.116
+So this is where the agent updates
+memories as it's responding to the user.
+
+79
+00:04:23.116 --> 00:04:25.933
+So it's all in one go.
+
+80
+00:04:25.933 --> 00:04:28.933
+A separate type is when the updates
+of the memory
+
+81
+00:04:29.033 --> 00:04:32.033
+happen in the background
+or in a separate process.
+
+82
+00:04:33.166 --> 00:04:35.267
+There's pros and cons to each of these.
+
+83
+00:04:35.267 --> 00:04:38.933
+When you update things in the hot path,
+you generally just have one agent.
+
+84
+00:04:39.383 --> 00:04:40.967
+And so that's simpler to maintain.
+
+85
+00:04:40.967 --> 00:04:43.967
+And the updates often happen
+instantaneously.
+
+86
+00:04:45.201 --> 00:04:48.834
+However, the downside
+is that you now have this agent
+
+87
+00:04:48.834 --> 00:04:50.034
+that has to do both these things.
+
+88
+00:04:50.034 --> 00:04:52.434
+It has to update memories
+and response to users.
+
+89
+00:04:52.434 --> 00:04:54.134
+So it's more complicated.
+
+90
+00:04:54.134 --> 00:04:57.618
+And it also adds an additional latency
+when responding to the user.
+
+91
+00:04:59.185 --> 00:05:01.485
+In the background has the flip.
+
+92
+00:05:01.485 --> 00:05:04.002
+So now you can separate the updated
+memory
+
+93
+00:05:04.002 --> 00:05:07.002
+from the agent's core
+
+94
+00:05:07.152 --> 00:05:08.452
+things that it needs to do.
+
+95
+00:05:08.452 --> 00:05:10.635
+So it's simpler.
+
+96
+00:05:10.635 --> 00:05:13.636
+And you remove the updating
+from the hot path so it actually
+
+97
+00:05:13.786 --> 00:05:16.036
+responds faster.
+
+98
+00:05:16.036 --> 00:05:18.736
+The issue is that
+now you have two agents instead of one.
+
+99
+00:05:18.736 --> 00:05:20.603
+So that's more complicated.
+
+100
+00:05:20.603 --> 00:05:23.353
+And the updates might not happen
+instantaneously.
+
+101
+00:05:23.353 --> 00:05:26.353
+They might only happen
+when the updating memory gets kicked off.
+
+102
+00:05:29.603 --> 00:05:30.953
+So in this course
+
+103
+00:05:30.953 --> 00:05:34.187
+we are going to apply these memory types
+to an email agent.
+
+104
+00:05:35.087 --> 00:05:37.254
+So we're going to start
+with a basic email agent
+
+105
+00:05:37.254 --> 00:05:40.254
+that first triages the incoming emails.
+
+106
+00:05:40.404 --> 00:05:43.421
+And if it's worth responding to it
+passes it on to a second agent,
+
+107
+00:05:43.721 --> 00:05:47.454
+which uses a calendar tool and a writing
+tool to respond to the email.
+
+108
+00:05:49.855 --> 00:05:50.621
+The first type of
+
+109
+00:05:50.621 --> 00:05:53.621
+memory that we're going to add
+in is semantic memory.
+
+110
+00:05:54.471 --> 00:05:56.688
+And so we're going to do this
+by giving this agent that's
+
+111
+00:05:56.688 --> 00:05:59.688
+responding to emails more tools.
+
+112
+00:05:59.688 --> 00:06:02.722
+Tools for writing memories
+
+113
+00:06:02.922 --> 00:06:05.922
+and tools for reading memories.
+
+114
+00:06:07.306 --> 00:06:10.306
+The agent's
+going to use these tools in the hot path.
+
+115
+00:06:10.639 --> 00:06:13.706
+So as it's looping
+and as it's calling the calendar
+
+116
+00:06:13.706 --> 00:06:18.323
+or writing the email, it's going to be
+writing memories and retrieving memories.
+
+117
+00:06:19.373 --> 00:06:22.090
+So this is semantic memory
+in the hot path.
+
+118
+00:06:22.090 --> 00:06:25.090
+And we're doing this
+by giving the agent a tool.
+
+119
+00:06:26.657 --> 00:06:29.024
+Then we're going to add episodic memory.
+
+120
+00:06:29.024 --> 00:06:31.490
+So this is in the form of few short
+examples
+
+121
+00:06:31.490 --> 00:06:34.191
+that are going to be in the triage step.
+
+122
+00:06:34.191 --> 00:06:38.924
+So here we're going to have a few shot
+examples that correspond to emails.
+
+123
+00:06:38.924 --> 00:06:42.291
+And then it's also going to have
+what we want the triage result to be.
+
+124
+00:06:42.291 --> 00:06:45.825
+So whether it should be ignored
+or notified or responded to.
+
+125
+00:06:47.141 --> 00:06:47.591
+And so these are
+
+126
+00:06:47.591 --> 00:06:50.592
+going to be inserted into the prompt right
+here.
+
+127
+00:06:51.792 --> 00:06:54.792
+We're going to add these examples
+in a separate process.
+
+128
+00:06:55.242 --> 00:06:58.242
+So this is an example of episodic memory
+
+129
+00:06:58.725 --> 00:07:01.726
+where the updates happen
+in the background.
+
+130
+00:07:02.992 --> 00:07:05.993
+And finally, we're going to add
+in procedural memory.
+
+131
+00:07:06.476 --> 00:07:09.893
+So these are the prompts themselves
+or rather parts of the prompts
+
+132
+00:07:10.193 --> 00:07:14.693
+with instructions for how to use
+different tools or how to triage things.
+
+133
+00:07:15.793 --> 00:07:18.793
+We are going to update this
+in the background as well.
+
+134
+00:07:19.960 --> 00:07:22.510
+And we're actually going to use a separate
+agent
+
+135
+00:07:22.510 --> 00:07:25.510
+to do the updates.
+
+136
+00:07:25.577 --> 00:07:28.511
+Although we're working
+with a very specific email agent,
+
+137
+00:07:28.511 --> 00:07:31.511
+which we're going to build in lesson two.
+
+138
+00:07:32.844 --> 00:07:36.494
+The techniques for managing agent memory
+that you learn here
+
+139
+00:07:36.861 --> 00:07:41.095
+will be applicable to any agents
+that you build in the future.
+
+140
+00:07:43.812 --> 00:07:44.545
+You'll want to think
+
+141
+00:07:44.545 --> 00:07:48.345
+carefully about what types of memories
+your agent needs.
+
+142
+00:07:48.762 --> 00:07:51.045
+Does it need to learn better instructions?
+
+143
+00:07:51.045 --> 00:07:53.329
+Okay, maybe that's procedural.
+
+144
+00:07:53.329 --> 00:07:55.812
+Do you want to give it a few shot examples
+because you think that will help
+
+145
+00:07:55.812 --> 00:07:56.896
+really guide its actions?
+
+146
+00:07:56.896 --> 00:07:59.396
+Okay. That's episodic.
+
+147
+00:07:59.396 --> 00:08:02.329
+Does it just need to know facts
+about people place and things?
+
+148
+00:08:02.329 --> 00:08:04.013
+Okay. That's semantic.
+
+149
+00:08:04.013 --> 00:08:07.013
+It all kind of depends on the application
+that you're building.
+
+150
+00:08:08.380 --> 00:08:10.847
+With that, let's jump to the next lesson
+
+151
+00:08:10.847 --> 00:08:14.180
+and learn
+how to build this baseline email agent.
+

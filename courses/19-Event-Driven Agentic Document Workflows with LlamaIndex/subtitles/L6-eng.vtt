@@ -1,0 +1,595 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.000 --> 00:00:05.133
+In the previous lesson,
+you gave feedback to your agent as text.
+
+2
+00:00:05.600 --> 00:00:09.100
+You'll now provide feedback to the agent
+in spoken natural language.
+
+3
+00:00:09.400 --> 00:00:11.700
+You will add multimodal
+capabilities to your agent
+
+4
+00:00:11.700 --> 00:00:14.800
+so it can capture the feedback
+as audio spoken by the user.
+
+5
+00:00:15.033 --> 00:00:16.600
+Let's have some fun!
+
+6
+00:00:16.600 --> 00:00:20.733
+So far, we've set up a moderately complex
+workflow with the human feedback loop.
+
+7
+00:00:21.200 --> 00:00:24.100
+Let's run it through our visualizer
+to see what it looks like.
+
+8
+00:00:24.100 --> 00:00:27.100
+We're going to bring in a couple of things
+just to get that done.
+
+9
+00:00:27.200 --> 00:00:30.933
+Here are all our imports
+and our cloud keys. And here,
+
+10
+00:00:31.200 --> 00:00:34.200
+all in one step is our entire RAG workflow.
+
+11
+00:00:34.500 --> 00:00:37.700
+This is exactly the workflow
+that we were using in the previous lesson,
+
+12
+00:00:37.700 --> 00:00:40.933
+so there's nothing new to walk through.
+We'll execute all three of those.
+
+13
+00:00:41.333 --> 00:00:44.600
+And then we'll visualize
+it using the visualizer.
+
+14
+00:00:56.633 --> 00:00:57.800
+It's pretty complicated.
+
+15
+00:00:57.800 --> 00:01:00.800
+So let's zoom out a bit.
+
+16
+00:01:02.933 --> 00:01:03.600
+Cool.
+
+17
+00:01:03.600 --> 00:01:07.400
+This is a really fun visualization
+because you can see the entire happy path
+
+18
+00:01:07.400 --> 00:01:08.433
+that we're walking through.
+
+19
+00:01:08.433 --> 00:01:12.533
+You start, you set up, you parse your form,
+you generate questions.
+
+20
+00:01:12.533 --> 00:01:15.000
+You ask a question,
+you fill in the application form.
+
+21
+00:01:15.000 --> 00:01:18.700
+This is the external step where you get
+human feedback and then you get feedback.
+
+22
+00:01:18.700 --> 00:01:23.533
+And at that point you can either stop or
+you can complete the loop and do it again.
+
+23
+00:01:23.700 --> 00:01:27.000
+Now, just for fun,
+we're going to do one more thing.
+
+24
+00:01:27.133 --> 00:01:30.800
+You're going to change the feedback
+from text feedback to actual words
+
+25
+00:01:30.800 --> 00:01:32.300
+spoken out loud.
+
+26
+00:01:32.300 --> 00:01:36.100
+To do this, we'll use a different model
+from OpenAI called Whisper.
+
+27
+00:01:36.600 --> 00:01:36.933
+LlamaIndex
+
+28
+00:01:36.933 --> 00:01:40.800
+is a built in way to transcribe
+audio files into text using Whisper.
+
+29
+00:01:41.200 --> 00:01:45.400
+Here's a function that takes a file
+and uses Whisper to return just the text.
+
+30
+00:01:45.700 --> 00:01:46.933
+It loads the file.
+
+31
+00:01:46.933 --> 00:01:51.933
+It instantiates the Whisper reader and
+then, it gets the text out of the document.
+
+32
+00:01:52.100 --> 00:01:55.400
+These are the same sorts of documents
+that we were using for RAG earlier.
+
+33
+00:01:55.600 --> 00:01:56.633
+Before we can use it.
+
+34
+00:01:56.633 --> 00:01:59.333
+We need to capture some audio
+from your microphone.
+
+35
+00:01:59.333 --> 00:02:01.033
+That involves some extra steps.
+
+36
+00:02:01.033 --> 00:02:05.400
+First, let's create a callback function
+that saves data to a global variable.
+
+37
+00:02:05.400 --> 00:02:08.400
+So we have somewhere to store
+the transcription once we've got it.
+
+38
+00:02:08.633 --> 00:02:12.433
+Now, you're going to use Gradio,
+which has special widgets that can render
+
+39
+00:02:12.433 --> 00:02:16.400
+inside a notebook to create an interface
+for capturing audio from a microphone.
+
+40
+00:02:16.400 --> 00:02:19.633
+When the audio is captured,
+it calls transcribe speech
+
+41
+00:02:19.633 --> 00:02:23.200
+on the recorded data
+and calls store transcription on that.
+
+42
+00:02:23.333 --> 00:02:24.900
+You can see that happening here.
+
+43
+00:02:24.900 --> 00:02:28.100
+It's defining your inputs,
+defining your outputs.
+
+44
+00:02:28.100 --> 00:02:32.000
+And it's running this function, which is
+the function that we just described up here.
+
+45
+00:02:32.000 --> 00:02:34.700
+And then we're passing
+the output of transcribe speech
+
+46
+00:02:34.700 --> 00:02:38.200
+to store transcription,
+which we defined here. In Gradio,
+
+47
+00:02:38.500 --> 00:02:40.400
+you further define a visual interface
+
+48
+00:02:40.400 --> 00:02:42.700
+containing this microphone
+input and output.
+
+49
+00:02:42.700 --> 00:02:44.300
+And then you launch it.
+
+50
+00:02:44.300 --> 00:02:46.433
+So we're creating a blocks interface.
+
+51
+00:02:46.433 --> 00:02:48.500
+We're putting some tabs into it.
+
+52
+00:02:48.500 --> 00:02:50.300
+And then we're going to launch it.
+
+53
+00:02:50.300 --> 00:02:54.700
+Gradio gives us this really cool
+already set up interface for us.
+
+54
+00:02:55.200 --> 00:02:57.200
+And it can listen to our microphone.
+
+55
+00:02:57.200 --> 00:02:58.100
+Let's try that out.
+
+56
+00:02:59.700 --> 00:03:02.700
+Hey computer, can you hear me?
+
+57
+00:03:03.333 --> 00:03:04.433
+Will submit it.
+
+58
+00:03:04.433 --> 00:03:07.433
+And it correctly transcribes the audio.
+
+59
+00:03:07.433 --> 00:03:09.700
+Nice. Gradio is pretty wild.
+
+60
+00:03:09.700 --> 00:03:13.900
+You can do all of this and print out the
+transcription in just a few lines of code.
+
+61
+00:03:14.100 --> 00:03:17.733
+Let's make sure that we've got it in that
+global variable that we set up earlier.
+
+62
+00:03:18.833 --> 00:03:19.900
+There it is.
+
+63
+00:03:19.900 --> 00:03:21.800
+We're going to want to run Gradio again.
+
+64
+00:03:21.800 --> 00:03:25.033
+So it's a good idea to shut down
+the Gradio interface that you were using.
+
+65
+00:03:25.100 --> 00:03:28.100
+Otherwise your Gradio interfaces
+will compete with each other.
+
+66
+00:03:28.333 --> 00:03:32.500
+Now we're going to create an entirely
+new class, a transcription handler.
+
+67
+00:03:32.900 --> 00:03:35.500
+I'm going to walk through what it does
+step by step.
+
+68
+00:03:35.500 --> 00:03:39.200
+First, we're going to create a queue
+to hold our transcription values.
+
+69
+00:03:39.500 --> 00:03:42.500
+Every time we record something
+we're going to put it in the queue
+
+70
+00:03:42.500 --> 00:03:44.900
+using this method, store transcription.
+
+71
+00:03:44.900 --> 00:03:47.500
+This create interface
+method is the same interface
+
+72
+00:03:47.500 --> 00:03:50.500
+and transcription logic
+that we were using a little bit earlier,
+
+73
+00:03:50.500 --> 00:03:53.500
+except it stores the result in a queue
+instead of a global.
+
+74
+00:03:53.600 --> 00:03:54.733
+You can see that happening
+
+75
+00:03:54.733 --> 00:03:58.100
+because it's calling self-store
+transcription, which we defined here.
+
+76
+00:03:58.500 --> 00:04:02.100
+Then, we launch the transcription interface
+just like we did before.
+
+77
+00:04:02.200 --> 00:04:06.300
+But the new thing we do
+is we pull every 0.5 seconds
+
+78
+00:04:06.400 --> 00:04:08.433
+waiting for
+something to end up in the queue.
+
+79
+00:04:08.433 --> 00:04:11.433
+So this, while true
+loop, will just continue forever
+
+80
+00:04:11.633 --> 00:04:14.600
+sleeping for 5.5 seconds every time.
+
+81
+00:04:14.600 --> 00:04:17.400
+But if there's something in the queue,
+it'll notice
+
+82
+00:04:17.400 --> 00:04:20.100
+and it will close the interface
+and return the result.
+
+83
+00:04:20.100 --> 00:04:21.733
+Now, you have a transcription handler.
+
+84
+00:04:21.733 --> 00:04:25.700
+You can use it instead of the keyboard
+interface when you're getting human input
+
+85
+00:04:25.700 --> 00:04:27.133
+when you run your workflow.
+
+86
+00:04:27.133 --> 00:04:30.133
+We don't have to change the workflow
+at all for this to work.
+
+87
+00:04:30.200 --> 00:04:32.700
+So just like before
+we set up our workflow.
+
+88
+00:04:32.700 --> 00:04:35.700
+We pass in our fake resume
+and our fake application form,
+
+89
+00:04:36.100 --> 00:04:38.600
+and we wait for an input-required event.
+
+90
+00:04:38.600 --> 00:04:42.433
+Now, instead of getting keyboard input,
+we call our transcription handler.
+
+91
+00:04:43.100 --> 00:04:44.400
+Once our transcription handler
+
+92
+00:04:44.400 --> 00:04:48.000
+has given us a transcription,
+we send that as the human response event.
+
+93
+00:04:48.400 --> 00:04:51.333
+So the moment of truth. Let's try it out.
+
+94
+00:04:51.333 --> 00:04:53.633
+A change that I made
+that I didn't tell you about
+
+95
+00:04:53.633 --> 00:04:57.100
+was to give us a little bit more feedback
+about what's going on under the hood.
+
+96
+00:04:58.000 --> 00:05:00.500
+When I told it to do is to print out
+
+97
+00:05:00.500 --> 00:05:03.600
+every question and every answer that
+it gets while it's thinking.
+
+98
+00:05:04.733 --> 00:05:07.033
+So you can see it doing that here.
+
+99
+00:05:07.033 --> 00:05:07.433
+All right.
+
+100
+00:05:07.433 --> 00:05:10.433
+It's got to the end of the questions.
+
+101
+00:05:13.900 --> 00:05:14.800
+And now it's spun up
+
+102
+00:05:14.800 --> 00:05:17.800
+a Gradio interface
+asking us for feedback.
+
+103
+00:05:17.933 --> 00:05:20.300
+We can see from the answers
+to the questions
+
+104
+00:05:20.300 --> 00:05:23.000
+that it's made the same mistake
+that it made before.
+
+105
+00:05:23.000 --> 00:05:27.200
+The project portfolio is a list of things
+that the candidate did instead of a URL.
+
+106
+00:05:27.933 --> 00:05:31.033
+So let's use the audio feedback to tell it
+
+107
+00:05:31.200 --> 00:05:34.200
+that that's what we need to change.
+
+108
+00:05:35.033 --> 00:05:38.033
+The portfolio field should be a URL.
+
+109
+00:05:44.000 --> 00:05:46.200
+We submit
+
+110
+00:05:46.200 --> 00:05:48.200
+and the LLM reads that transcript
+
+111
+00:05:48.200 --> 00:05:51.300
+and correctly decides
+that I gave it some feedback.
+
+112
+00:05:51.833 --> 00:05:54.833
+So now you can see our questions
+and answers happening.
+
+113
+00:05:55.000 --> 00:05:58.000
+Each one of them has this extra feedback
+field attached.
+
+114
+00:05:58.133 --> 00:05:59.600
+Every single question
+
+115
+00:05:59.600 --> 00:06:02.900
+gets the same feedback
+that the portfolio field should be a URL,
+
+116
+00:06:03.200 --> 00:06:05.000
+which is really only useful
+for one of them.
+
+117
+00:06:05.000 --> 00:06:06.700
+You can think about how you would improve
+
+118
+00:06:06.700 --> 00:06:10.333
+that if you were doing this
+in a more production application.
+
+119
+00:06:10.800 --> 00:06:13.200
+Okay,
+it got to the end of the questions again,
+
+120
+00:06:13.200 --> 00:06:16.300
+and it spun up another Gradio
+interface asking us for feedback.
+
+121
+00:06:17.400 --> 00:06:20.200
+Let's tell it that
+it did a good job this time because it did
+
+122
+00:06:20.200 --> 00:06:23.200
+the portfolio as a URL,
+just like we asked.
+
+123
+00:06:26.600 --> 00:06:27.300
+That's great.
+
+124
+00:06:27.300 --> 00:06:30.300
+Good job.
+
+125
+00:06:34.300 --> 00:06:37.233
+The LLM has correctly interpreted
+my positive feedback
+
+126
+00:06:37.233 --> 00:06:40.233
+as saying that everything is okay,
+and it spat out the form.
+
+127
+00:06:40.700 --> 00:06:41.933
+Congratulations!
+
+128
+00:06:41.933 --> 00:06:46.233
+You've successfully created an AI agent
+that responds to spoken human feedback.
+

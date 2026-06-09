@@ -1,0 +1,716 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.043 --> 00:00:03.253
+In this first lesson,
+
+2
+00:00:03.253 --> 00:00:07.549
+we'll go through how MCP
+makes AI development less fragmented
+
+3
+00:00:07.882 --> 00:00:08.883
+and how it standardizes
+
+4
+00:00:08.883 --> 00:00:12.595
+connections between AI applications
+and external data sources.
+
+5
+00:00:13.138 --> 00:00:14.097
+Let's go.
+
+6
+00:00:14.097 --> 00:00:18.309
+To answer the question
+why MCP or why the Model Context protocol?
+
+7
+00:00:18.435 --> 00:00:22.731
+We like to say the models are only as good
+as the context provided to them.
+
+8
+00:00:22.772 --> 00:00:25.775
+You can have an incredibly
+intelligent model at the frontier,
+
+9
+00:00:26.151 --> 00:00:30.030
+but if it doesn't have the ability
+to connect to the outside world and pull
+
+10
+00:00:30.030 --> 00:00:34.826
+in the data and context necessary,
+it's not as useful as it can possibly be.
+
+11
+00:00:35.160 --> 00:00:38.163
+The Model Context
+Protocol is an open-source protocol
+
+12
+00:00:38.538 --> 00:00:41.124
+that standardizes
+how your large language model
+
+13
+00:00:41.124 --> 00:00:44.169
+connects and works
+with your tools and data sources.
+
+14
+00:00:44.627 --> 00:00:49.215
+The idea here is not to reinvent the wheel
+and how we do things like tool use,
+
+15
+00:00:49.549 --> 00:00:54.549
+but instead to standardize the way
+that our AI applications connect with data
+
+16
+00:00:54.763 --> 00:00:57.015
+sources. The same way that we standardize
+
+17
+00:00:57.015 --> 00:01:00.602
+how web applications communicate
+with back ends and other systems
+
+18
+00:01:00.810 --> 00:01:04.981
+using REST, where we specify the protocol
+and statelessness and so on,
+
+19
+00:01:04.981 --> 00:01:07.984
+we're trying to achieve the same thing
+with the Model Context Protocol.
+
+20
+00:01:08.276 --> 00:01:12.655
+Everything that you're going to see with
+MCP can be done without MCP,
+
+21
+00:01:12.947 --> 00:01:16.951
+but as we think about a world
+in which many different models communicate
+
+22
+00:01:16.951 --> 00:01:20.038
+with many different data sources,
+and even with each other,
+
+23
+00:01:20.330 --> 00:01:23.249
+we want to make sure that we're
+speaking the same language.
+
+24
+00:01:23.249 --> 00:01:26.461
+We want to standardize
+how our AI applications interact
+
+25
+00:01:26.669 --> 00:01:30.590
+with external systems,
+instead of building the same integration
+
+26
+00:01:30.590 --> 00:01:31.800
+for a different data source
+
+27
+00:01:31.800 --> 00:01:35.595
+over and over and over again,
+depending on the model or the data source,
+
+28
+00:01:35.970 --> 00:01:38.973
+we're instead
+going to build once and use everywhere.
+
+29
+00:01:38.973 --> 00:01:42.060
+The Model Context Protocol borrows
+a lot of its ideas
+
+30
+00:01:42.060 --> 00:01:45.647
+from other protocols
+that aim to achieve similar kind of ideas.
+
+31
+00:01:45.897 --> 00:01:50.527
+For example, LSP, or the Language
+Server Protocol developed in 2016
+
+32
+00:01:50.610 --> 00:01:53.696
+by Microsoft, standardizes
+how integrated development
+
+33
+00:01:53.696 --> 00:01:56.699
+environments interact
+with language-specific tools.
+
+34
+00:01:57.117 --> 00:02:00.161
+When you create extensions
+for particular languages
+
+35
+00:02:00.161 --> 00:02:03.373
+for particular development environments,
+you don't want to have to write that over
+
+36
+00:02:03.373 --> 00:02:06.209
+and over again
+for all of those development environments.
+
+37
+00:02:06.209 --> 00:02:09.420
+So while MCP is very novel
+and what it's trying to do,
+
+38
+00:02:09.629 --> 00:02:10.880
+it stands on the shoulders
+
+39
+00:02:10.880 --> 00:02:14.050
+of many other protocols and ideas around
+standardization.
+
+40
+00:02:14.425 --> 00:02:17.428
+Let's go show a quick demo
+where with just a few lines of code,
+
+41
+00:02:17.554 --> 00:02:20.515
+we can bring in context to our
+AI application.
+
+42
+00:02:20.598 --> 00:02:23.852
+On the left-hand side here, I'm
+using Claude Desktop, and I'm asking
+
+43
+00:02:23.893 --> 00:02:27.313
+a question about retrieving some issues
+from a GitHub repository.
+
+44
+00:02:27.397 --> 00:02:29.941
+On the right
+we can see this GitHub repository.
+
+45
+00:02:29.941 --> 00:02:34.070
+And immediately through natural language
+I'm able to talk to this data source.
+
+46
+00:02:34.445 --> 00:02:36.573
+This is the power of MCP.
+
+47
+00:02:36.573 --> 00:02:40.285
+I have connected to an MCP server
+that's providing data necessary
+
+48
+00:02:40.285 --> 00:02:42.078
+from GitHub, and I'm also connected
+
+49
+00:02:42.078 --> 00:02:46.207
+to another MCP server for Asana,
+a popular project management tool.
+
+50
+00:02:46.583 --> 00:02:50.170
+What I'm doing here is reading data
+from GitHub, and then I'm asking
+
+51
+00:02:50.170 --> 00:02:53.631
+to triage particular issues
+and assign tickets in Asana.
+
+52
+00:02:53.631 --> 00:02:56.759
+So I am reading from one data source
+and writing to another.
+
+53
+00:02:56.885 --> 00:02:59.888
+We can see here in this interface there
+there's a human in the loop
+
+54
+00:03:00.138 --> 00:03:03.600
+verifying the actions that I want to take
+with just very little code,
+
+55
+00:03:03.808 --> 00:03:07.270
+I'm now communicating
+with external data sources with ease.
+
+56
+00:03:07.437 --> 00:03:11.649
+This idea of being able to use MCP
+with any model provider
+
+57
+00:03:11.941 --> 00:03:15.236
+completely open source,
+allows for seamless integration
+
+58
+00:03:15.236 --> 00:03:17.780
+with different models
+and different data sources.
+
+59
+00:03:17.780 --> 00:03:19.991
+We can see here I've created these tasks.
+
+60
+00:03:19.991 --> 00:03:23.244
+Things are updating for me in the browser,
+and I can now continue
+
+61
+00:03:23.244 --> 00:03:26.289
+to use natural language
+to iterate on this task I have here.
+
+62
+00:03:26.456 --> 00:03:28.666
+I'm going to assign
+a task to an individual.
+
+63
+00:03:28.666 --> 00:03:31.669
+I'm going to see that get updated
+and through the use
+
+64
+00:03:31.711 --> 00:03:33.213
+of a very intelligent model,
+
+65
+00:03:33.213 --> 00:03:36.716
+in this case, 3.5 Sonnet,
+a few tools provided by MCP,
+
+66
+00:03:37.008 --> 00:03:39.594
+and an environment to run this over
+and over again,
+
+67
+00:03:39.594 --> 00:03:42.513
+we're actually taking a look
+at a very lightweight agent to power
+
+68
+00:03:42.513 --> 00:03:43.640
+this application.
+
+69
+00:03:43.640 --> 00:03:47.644
+Like I mentioned, everything you could do
+with MCP, you could do without.
+
+70
+00:03:47.894 --> 00:03:49.354
+But here's what it starts to look like.
+
+71
+00:03:49.354 --> 00:03:52.857
+As you build these integrations
+where do you store your tools?
+
+72
+00:03:52.857 --> 00:03:55.026
+Where do you store
+custom prompts that you have?
+
+73
+00:03:55.026 --> 00:03:58.071
+Where do you store that data
+access layer and authentication logic?
+
+74
+00:03:58.112 --> 00:04:00.573
+We found ourselves
+and for many different teams,
+
+75
+00:04:00.573 --> 00:04:04.827
+repeating the wheel over and over and over
+again, many different AI applications,
+
+76
+00:04:05.036 --> 00:04:09.332
+talking to a similar data source
+but written in a different way. With MCP,
+
+77
+00:04:09.332 --> 00:04:13.127
+not only is this model agnostic,
+it's completely open source,
+
+78
+00:04:13.503 --> 00:04:17.006
+so these tools and data
+connectivity are provided to you
+
+79
+00:04:17.006 --> 00:04:20.635
+by the open source community,
+or you can build them yourself. With MCP,
+
+80
+00:04:20.969 --> 00:04:24.514
+we shift the burden of responsibility
+and we separate our concerns
+
+81
+00:04:24.514 --> 00:04:25.723
+in a really clean fashion.
+
+82
+00:04:25.723 --> 00:04:28.977
+We build or use MCP
+compatible applications
+
+83
+00:04:29.310 --> 00:04:33.398
+and connect to many different servers
+for the particular kind of data access
+
+84
+00:04:33.398 --> 00:04:34.023
+that we need.
+
+85
+00:04:34.023 --> 00:04:38.278
+We can have servers for data stores,
+for customer relationship management tools
+
+86
+00:04:38.278 --> 00:04:42.407
+like HubSpot or Salesforce, even servers
+for things like version control.
+
+87
+00:04:42.448 --> 00:04:46.995
+And the aim here is to use natural
+language to talk to these data stores
+
+88
+00:04:47.203 --> 00:04:50.581
+without having to write
+all that logic ourselves. With MCP,
+
+89
+00:04:50.873 --> 00:04:53.584
+the beauty of the server is
+that it's also reusable
+
+90
+00:04:53.584 --> 00:04:55.378
+across many different applications.
+
+91
+00:04:55.378 --> 00:04:57.797
+As we're going to see,
+there are reference servers
+
+92
+00:04:57.797 --> 00:05:00.800
+that we can use or servers
+that we can even build internally
+
+93
+00:05:00.925 --> 00:05:03.928
+and share amongst
+many different applications that we build.
+
+94
+00:05:04.095 --> 00:05:07.473
+We might build a MCP server
+or use one for Google Drive,
+
+95
+00:05:07.807 --> 00:05:10.143
+and depending on the application
+that we're building,
+
+96
+00:05:10.143 --> 00:05:13.354
+that could be an AI assistant
+or agent or desktop application
+
+97
+00:05:13.688 --> 00:05:15.898
+as long as it is MCP compatible,
+
+98
+00:05:15.898 --> 00:05:18.901
+we can go and use that server
+and whatever else we want.
+
+99
+00:05:19.110 --> 00:05:21.612
+You can let your imagination
+really start to carry you
+
+100
+00:05:21.612 --> 00:05:25.325
+with all the different data access
+that you can bring in to your application,
+
+101
+00:05:25.325 --> 00:05:28.328
+with minimal code and effort. With MCP,
+
+102
+00:05:28.453 --> 00:05:30.913
+there are lots of wins
+for many different audiences.
+
+103
+00:05:30.913 --> 00:05:33.750
+For application
+developers, connect to an MCP
+
+104
+00:05:33.750 --> 00:05:36.961
+server
+with very little work. For API developers,
+
+105
+00:05:36.961 --> 00:05:41.961
+build the MCP server once and adopt it
+everywhere. For users of AI applications,
+
+106
+00:05:42.508 --> 00:05:45.803
+the idea behind MCP can be abstracted away
+quite a bit,
+
+107
+00:05:46.137 --> 00:05:50.099
+so that you can bring a URL
+for an MCP server and simply
+
+108
+00:05:50.099 --> 00:05:53.102
+have the data access that you need
+brought into your application.
+
+109
+00:05:53.269 --> 00:05:56.814
+For enterprises and large organizations,
+you can think of the benefits
+
+110
+00:05:56.814 --> 00:05:58.608
+of separating your concerns
+
+111
+00:05:58.608 --> 00:06:01.694
+and building standalone integrations
+that different teams can use.
+
+112
+00:06:01.986 --> 00:06:05.031
+As you might be aware,
+the MCP ecosystem is growing fast.
+
+113
+00:06:05.323 --> 00:06:06.282
+We're seeing development
+
+114
+00:06:06.282 --> 00:06:09.744
+not only from large companies,
+but also startups at the frontier.
+
+115
+00:06:10.036 --> 00:06:12.246
+And we're seeing many, many,
+many different servers
+
+116
+00:06:12.246 --> 00:06:15.375
+being built privately
+and in the open source community.
+
+117
+00:06:15.625 --> 00:06:19.253
+The SDK or software
+development kits that we have to power MCP
+
+118
+00:06:19.712 --> 00:06:22.382
+are written across
+many different languages and developed
+
+119
+00:06:22.382 --> 00:06:26.094
+in the open source community,
+and also led by many different companies
+
+120
+00:06:26.344 --> 00:06:27.762
+and AI developers.
+
+121
+00:06:27.762 --> 00:06:31.766
+We're seeing MCP compatible applications
+across web applications,
+
+122
+00:06:32.141 --> 00:06:35.645
+across desktop applications,
+and even agentic products as well.
+
+123
+00:06:35.937 --> 00:06:36.813
+Before we wrap up,
+
+124
+00:06:36.813 --> 00:06:39.857
+let's answer a couple of common questions
+you might be having about MCP.
+
+125
+00:06:40.108 --> 00:06:44.362
+These MCP servers that we talk about,
+from GitHub to Asana to Google Drive.
+
+126
+00:06:44.445 --> 00:06:45.571
+Who actually writes those?
+
+127
+00:06:45.571 --> 00:06:46.531
+Well, anyone can.
+
+128
+00:06:46.531 --> 00:06:49.200
+You yourself
+as a developer can build them,
+
+129
+00:06:49.200 --> 00:06:52.203
+or you can go ahead and use community
+adopted ones.
+
+130
+00:06:52.537 --> 00:06:55.998
+In the next few lessons,
+we'll see how MCP servers are built,
+
+131
+00:06:56.165 --> 00:06:57.917
+and we're going to build
+quite a few of our own.
+
+132
+00:06:57.917 --> 00:07:01.796
+You might think of MCP servers
+as very similar to working with APIs,
+
+133
+00:07:02.130 --> 00:07:04.006
+and in fact you're not totally off.
+
+134
+00:07:04.006 --> 00:07:07.885
+You can think of an MCP server
+as kind of like a gateway or a wrapper
+
+135
+00:07:07.885 --> 00:07:12.056
+on top of an API, where if you do not want
+to bother calling the API directly,
+
+136
+00:07:12.265 --> 00:07:15.685
+you can use natural language and
+let the MCP server handle that for you.
+
+137
+00:07:16.060 --> 00:07:18.813
+MCP servers support tool use,
+
+138
+00:07:18.813 --> 00:07:21.774
+but that's just one part
+of what MCP servers can do.
+
+139
+00:07:21.774 --> 00:07:25.736
+The servers give you functions and schemas
+available to you, but as we're going
+
+140
+00:07:25.736 --> 00:07:29.073
+to see in the next lesson, there's
+so much more that MCP provides.
+
+141
+00:07:29.615 --> 00:07:32.618
+So we answer the question
+why the Model Context Protocol?
+
+142
+00:07:32.785 --> 00:07:34.829
+We've seen a really nice demo
+for what it can do
+
+143
+00:07:34.829 --> 00:07:36.164
+with a very little amount of work.
+
+144
+00:07:36.164 --> 00:07:39.625
+And the next lesson we're going to start
+to explore how MCP works a bit
+
+145
+00:07:39.625 --> 00:07:43.713
+under the hood and introduce
+the idea of hosts and clients and servers,
+
+146
+00:07:44.005 --> 00:07:45.798
+and talk a little bit
+about some of the underlying
+
+147
+00:07:45.798 --> 00:07:49.135
+primitives in the protocol,
+like resources, tools and prompts.
+
+148
+00:07:49.594 --> 00:07:50.011
+See you then.
+

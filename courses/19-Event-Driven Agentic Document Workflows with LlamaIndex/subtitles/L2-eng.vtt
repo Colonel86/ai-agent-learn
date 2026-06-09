@@ -1,0 +1,1645 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.000 --> 00:00:03.200
+In this lesson, you will
+
+2
+00:00:03.200 --> 00:00:06.900
+build a number of increasingly complex
+workflows to master the basic concepts.
+
+3
+00:00:07.000 --> 00:00:09.933
+You'll start with a simple workflow
+consisting of a series of steps
+
+4
+00:00:09.933 --> 00:00:14.200
+that emit events and then add to it
+branching and looping logic, implement
+
+5
+00:00:14.200 --> 00:00:15.600
+concurrent execution,
+
+6
+00:00:15.600 --> 00:00:18.600
+and finally collect
+events of different types at a given step.
+
+7
+00:00:18.800 --> 00:00:22.000
+All right,
+let's dive into the code. Under the hood,
+
+8
+00:00:22.000 --> 00:00:24.400
+workflows are regular Python classes.
+
+9
+00:00:24.400 --> 00:00:27.800
+They are defined as a series of steps,
+each of which receives
+
+10
+00:00:27.800 --> 00:00:31.200
+certain classes of events and emits
+certain classes of events.
+
+11
+00:00:31.633 --> 00:00:33.733
+So let's get started building one.
+
+12
+00:00:33.733 --> 00:00:37.833
+First, we'll bring in our imports
+and we're going to be using OpenAI today.
+
+13
+00:00:37.900 --> 00:00:41.733
+So let's bring in our OpenAI key
+to define our events,
+
+14
+00:00:42.000 --> 00:00:46.033
+we need to import some special events
+plus the core of workflows.
+
+15
+00:00:46.500 --> 00:00:47.733
+That's what we're doing here.
+
+16
+00:00:47.733 --> 00:00:50.200
+Now, let's define the workflow itself.
+
+17
+00:00:50.200 --> 00:00:54.600
+When you've got here is a regular class
+declaration, a step decorator,
+
+18
+00:00:55.300 --> 00:00:58.300
+and an async function called My Step.
+
+19
+00:00:58.700 --> 00:01:03.200
+In my step, we've defined an event
+that is of a specific type,
+
+20
+00:01:03.200 --> 00:01:07.000
+a start event, and we've also said that
+it emits a specific
+
+21
+00:01:07.100 --> 00:01:09.200
+type of event called a stop event.
+
+22
+00:01:09.200 --> 00:01:11.033
+These are both special events.
+
+23
+00:01:11.033 --> 00:01:14.600
+The start event is triggered
+when the workflow starts
+
+24
+00:01:15.000 --> 00:01:18.700
+and when a stop event is triggered,
+a workflow will automatically stop.
+
+25
+00:01:19.900 --> 00:01:22.633
+The async keyword defines
+asynchronous functions,
+
+26
+00:01:22.633 --> 00:01:26.100
+which can be paused and resumed, allowing
+other tasks to run in the meantime.
+
+27
+00:01:26.100 --> 00:01:29.233
+We'll see how this is useful
+when we're doing stuff in parallel later.
+
+28
+00:01:30.700 --> 00:01:34.133
+You can instantiate and run your workflow
+like this.
+
+29
+00:01:34.700 --> 00:01:36.833
+We just call my workflow
+
+30
+00:01:36.833 --> 00:01:41.400
+with a timeout of 10s, and in this case
+we're going to set verbose to false.
+
+31
+00:01:41.400 --> 00:01:42.833
+But we're going to set it to true later.
+
+32
+00:01:42.833 --> 00:01:44.833
+And you'll see what the difference is
+then.
+
+33
+00:01:44.833 --> 00:01:48.400
+Once you've got your workflow
+you call dot run on it.
+
+34
+00:01:48.533 --> 00:01:51.733
+And we're using the await keyword
+because this is asynchronous.
+
+35
+00:01:52.000 --> 00:01:56.400
+And what you get back from the run
+command is an asynchronous handle.
+
+36
+00:01:56.400 --> 00:01:58.900
+And then we can print the result.
+
+37
+00:01:58.900 --> 00:02:02.300
+So let's execute
+all of these cells and see what we get.
+
+38
+00:02:08.800 --> 00:02:11.000
+Tada! Workflows are asynchronous by default.
+
+39
+00:02:11.000 --> 00:02:14.400
+So, you use the await
+to get the result of the run command.
+
+40
+00:02:14.500 --> 00:02:18.633
+This is going to work fine in a notebook
+environment in a vanilla Python script
+
+41
+00:02:18.733 --> 00:02:23.300
+you're going to need to import asyncio
+and wrap your code in an async function.
+
+42
+00:02:23.833 --> 00:02:25.400
+I'll just show you what that looks like.
+
+43
+00:02:25.400 --> 00:02:29.400
+We can't execute it here because
+this is a notebook, so it won't work.
+
+44
+00:02:29.900 --> 00:02:31.700
+That's what that looks like.
+
+45
+00:02:31.700 --> 00:02:34.600
+You have exactly the same code
+
+46
+00:02:34.600 --> 00:02:38.400
+to instantiate and run the function,
+but you've wrapped it in an async function
+
+47
+00:02:38.933 --> 00:02:41.433
+and you've imported asyncio,
+
+48
+00:02:41.433 --> 00:02:44.533
+and you've used asyncio
+to run your async function for you.
+
+49
+00:02:44.733 --> 00:02:48.100
+That's the only difference about
+running it in a notebook versus running it
+
+50
+00:02:48.100 --> 00:02:51.700
+in vanilla Python. Because this code isn't
+going to run in the notebook,
+
+51
+00:02:51.733 --> 00:02:55.400
+I'm going to delete it just so that
+we can avoid it accidentally running.
+
+52
+00:02:55.900 --> 00:02:57.600
+One of the great features of workflows
+
+53
+00:02:57.600 --> 00:03:01.033
+is the built-in visualizer,
+which we're going to import now.
+
+54
+00:03:01.333 --> 00:03:04.333
+This is the function draw
+all possible flows.
+
+55
+00:03:04.400 --> 00:03:08.900
+It takes two arguments, one of which is
+the workflow that you want to visualize,
+
+56
+00:03:09.133 --> 00:03:12.400
+and the other of which is the file name
+where you want it
+
+57
+00:03:12.400 --> 00:03:14.133
+to output the visualization.
+
+58
+00:03:14.133 --> 00:03:17.600
+What it outputs is an HTML file
+
+59
+00:03:17.600 --> 00:03:22.200
+containing an interactive
+visualization of your workflow.
+
+60
+00:03:22.533 --> 00:03:26.900
+Because you would have to download
+an HTML file and open it in a browser,
+
+61
+00:03:27.200 --> 00:03:30.700
+we've set up a helper function
+which displays that HTML file
+
+62
+00:03:30.700 --> 00:03:32.400
+directly in the notebook.
+
+63
+00:03:32.400 --> 00:03:33.700
+That's what is happening here.
+
+64
+00:03:33.700 --> 00:03:37.233
+We get the HTML file
+and we display it as an HTML element.
+
+65
+00:03:38.233 --> 00:03:41.233
+Let's see what our workflow looks like.
+
+66
+00:03:41.233 --> 00:03:43.000
+We get this.
+
+67
+00:03:43.000 --> 00:03:44.800
+As you can see, it's interactive.
+
+68
+00:03:44.800 --> 00:03:46.200
+So you can drag these things around.
+
+69
+00:03:46.200 --> 00:03:49.033
+It's the way that your workflow
+is visualized isn't the way you want it.
+
+70
+00:03:49.033 --> 00:03:52.700
+But this is an extremely basic workflow
+with just the one step,
+
+71
+00:03:52.700 --> 00:03:55.700
+my step, and a start event,
+and a stop event.
+
+72
+00:03:55.800 --> 00:03:58.433
+Of course, a flow with a single step
+is not very useful.
+
+73
+00:03:58.433 --> 00:04:00.633
+Let's define a multi-step workflow.
+
+74
+00:04:00.633 --> 00:04:03.800
+Multiple steps are created
+by defining custom events
+
+75
+00:04:03.800 --> 00:04:06.800
+that can be emitted by steps and trigger
+other steps.
+
+76
+00:04:06.933 --> 00:04:11.533
+So let's define a simple three-step
+workflow by designing two custom events.
+
+77
+00:04:11.833 --> 00:04:13.800
+First event and second event.
+
+78
+00:04:13.800 --> 00:04:16.000
+These classes can have any names
+and properties,
+
+79
+00:04:16.000 --> 00:04:19.000
+but they must inherit from event.
+
+80
+00:04:21.100 --> 00:04:22.533
+That's what you've done there.
+
+81
+00:04:22.533 --> 00:04:26.133
+Now that we have our events,
+we can define a workflow that uses them.
+
+82
+00:04:26.500 --> 00:04:31.500
+You define a workflow
+by defining what events each step accepts
+
+83
+00:04:31.800 --> 00:04:32.800
+and what events
+
+84
+00:04:32.800 --> 00:04:37.000
+that each step emits. That defines
+how data flows around the workflow.
+
+85
+00:04:37.100 --> 00:04:38.200
+Let's see what that looks like.
+
+86
+00:04:39.600 --> 00:04:40.733
+So here we have a new
+
+87
+00:04:40.733 --> 00:04:44.933
+class, My Workflow, with a step defined
+as step one.
+
+88
+00:04:45.000 --> 00:04:47.500
+It accepts a start event
+so that one special
+
+89
+00:04:47.500 --> 00:04:49.300
+and this will kick off the workflow.
+
+90
+00:04:49.300 --> 00:04:50.833
+And then emits a first event.
+
+91
+00:04:50.833 --> 00:04:52.900
+Step two: accepts a first event.
+
+92
+00:04:52.900 --> 00:04:56.233
+So it will be triggered
+by the output of step one.
+
+93
+00:04:56.300 --> 00:05:00.833
+And it emits a second event which triggers
+step three, which emits a stop event.
+
+94
+00:05:01.200 --> 00:05:03.100
+The stop event will halt the workflow.
+
+95
+00:05:03.100 --> 00:05:06.100
+You can run this
+just like you ran the other workflows.
+
+96
+00:05:06.500 --> 00:05:09.500
+So let's execute all three of those cells.
+
+97
+00:05:12.900 --> 00:05:15.800
+As you can see, it started the workflow.
+
+98
+00:05:15.800 --> 00:05:19.433
+You got the first step, the second step,
+and the workflow is complete.
+
+99
+00:05:19.633 --> 00:05:22.600
+We can visualize this
+just like we visualize the last one.
+
+100
+00:05:24.300 --> 00:05:27.300
+So let's call our visualizer.
+
+101
+00:05:28.700 --> 00:05:31.700
+And then let's display what it outputs.
+
+102
+00:05:37.233 --> 00:05:39.000
+This is a more interesting visualization.
+
+103
+00:05:39.000 --> 00:05:41.800
+You can see our start event
+going to step one
+
+104
+00:05:41.800 --> 00:05:44.933
+emitting this first event
+which triggers step two, which emitted
+
+105
+00:05:45.000 --> 00:05:48.400
+the second event which triggers step three
+which triggers a stop event.
+
+106
+00:05:48.500 --> 00:05:50.433
+And then the workflow halts.
+
+107
+00:05:50.433 --> 00:05:52.400
+However,
+there's not much point to a workflow
+
+108
+00:05:52.400 --> 00:05:54.300
+if you just run it straight through.
+
+109
+00:05:54.300 --> 00:05:57.700
+A key feature of workflows
+is that they enable branching and looping
+
+110
+00:05:57.700 --> 00:06:01.700
+logic more simply and flexibly than graph-
+based approaches to enable looping.
+
+111
+00:06:01.933 --> 00:06:04.300
+Let's create a new loop event.
+
+112
+00:06:04.300 --> 00:06:05.600
+This isn't a special event.
+
+113
+00:06:05.600 --> 00:06:06.433
+We've just created
+
+114
+00:06:06.433 --> 00:06:09.433
+an event called the loop event
+that we're going to use to do loops.
+
+115
+00:06:09.800 --> 00:06:13.533
+Now you'll edit your step
+one to make a random decision
+
+116
+00:06:13.533 --> 00:06:16.533
+about whether to execute
+serially or to loop back.
+
+117
+00:06:16.800 --> 00:06:20.033
+So we have a random number generator
+that's randomly generating
+
+118
+00:06:20.033 --> 00:06:21.433
+either a 0 or 1.
+
+119
+00:06:21.433 --> 00:06:25.033
+If it's a zero, we just say the bad thing
+has happened and we loop back.
+
+120
+00:06:25.200 --> 00:06:29.300
+If it's a one, we say a good thing
+happened and we move on to the next step.
+
+121
+00:06:29.533 --> 00:06:32.000
+We do the loop by omitting the loop event.
+
+122
+00:06:32.000 --> 00:06:37.000
+The other change that we've made here is
+we've added an accepting type to step one.
+
+123
+00:06:37.600 --> 00:06:40.900
+So now it will accept either
+a start event or a loop event.
+
+124
+00:06:40.933 --> 00:06:44.033
+That means that either of these events
+will trigger step one.
+
+125
+00:06:44.100 --> 00:06:47.100
+We've also changed what types it emits,
+
+126
+00:06:47.200 --> 00:06:50.233
+so it emits of either a first event
+or that loop event.
+
+127
+00:06:50.433 --> 00:06:52.200
+Now let's execute our loop.
+
+128
+00:06:52.200 --> 00:06:55.400
+And we might have to run it
+a couple of times because it's random.
+
+129
+00:06:55.400 --> 00:06:57.900
+So it might just work the first time.
+
+130
+00:06:57.900 --> 00:06:59.633
+Yep. That's exactly what happened.
+
+131
+00:06:59.633 --> 00:07:00.733
+Let's execute it again.
+
+132
+00:07:01.900 --> 00:07:02.833
+All right.
+
+133
+00:07:02.833 --> 00:07:04.300
+Now we see a bad thing happened.
+
+134
+00:07:04.300 --> 00:07:06.800
+Then a good thing happened.
+Then the first step was complete.
+
+135
+00:07:06.800 --> 00:07:08.500
+Then the second step was complete.
+
+136
+00:07:08.500 --> 00:07:10.700
+Then the workflow was complete.
+
+137
+00:07:10.700 --> 00:07:13.700
+Let's visualize that once more.
+
+138
+00:07:16.633 --> 00:07:18.633
+Here we go.
+
+139
+00:07:18.633 --> 00:07:20.800
+You can always drag
+your visualizations around
+
+140
+00:07:20.800 --> 00:07:23.133
+if you don't like the way
+that they initially get rendered.
+
+141
+00:07:23.133 --> 00:07:25.500
+You can see our start
+event goes to step one
+
+142
+00:07:25.500 --> 00:07:27.233
+and it can either go to a first event,
+
+143
+00:07:27.233 --> 00:07:29.533
+which triggers step two
+and the rest of the flow,
+
+144
+00:07:29.533 --> 00:07:32.633
+or it can emit a loop event
+which looks back to step one.
+
+145
+00:07:32.900 --> 00:07:36.033
+Your loop could be anywhere,
+so we could have decided to loop back
+
+146
+00:07:36.033 --> 00:07:39.333
+from step three or step two,
+and it would have worked equally well.
+
+147
+00:07:39.500 --> 00:07:42.500
+You don't just have to loop back
+to the same step that you started from.
+
+148
+00:07:42.733 --> 00:07:46.633
+The same constructs that allow you to loop
+allow you to create branches.
+
+149
+00:07:47.000 --> 00:07:48.800
+Here's a workflow that executes
+
+150
+00:07:48.800 --> 00:07:52.400
+two different branches
+depending on an early decision to make it.
+
+151
+00:07:52.633 --> 00:07:55.600
+First, we're going to need
+some additional events.
+
+152
+00:07:55.600 --> 00:07:57.300
+We're going to call them branch A1,
+
+153
+00:07:57.300 --> 00:08:00.600
+branch A2, branch B1, and branch B2.
+
+154
+00:08:00.933 --> 00:08:04.800
+We're going to create a new branch
+workflow that uses those events
+
+155
+00:08:05.300 --> 00:08:08.233
+and has more steps
+than our previous workflow did.
+
+156
+00:08:10.033 --> 00:08:13.033
+It has the
+same start with a random number generator,
+
+157
+00:08:13.333 --> 00:08:18.100
+but now it emits either
+a branch A1 event or a branch B1 event.
+
+158
+00:08:18.300 --> 00:08:22.600
+A1 will trigger step A1,
+which will trigger step A2.
+
+159
+00:08:22.900 --> 00:08:26.800
+B1 will trigger step B1,
+which will trigger step B2.
+
+160
+00:08:27.000 --> 00:08:30.000
+You don't actually need to instantiate
+the workflow to visualize it.
+
+161
+00:08:30.000 --> 00:08:33.000
+You can just pass the workflow class
+directly to the visualizer.
+
+162
+00:08:33.033 --> 00:08:36.033
+So let's do that this time.
+
+163
+00:08:36.533 --> 00:08:39.433
+And see what a branching workflow
+looks like.
+
+164
+00:08:39.433 --> 00:08:42.433
+We'll display our HTML.
+
+165
+00:08:45.333 --> 00:08:46.900
+And we can zoom in and out.
+
+166
+00:08:46.900 --> 00:08:49.900
+If our visualization is too big
+for the window.
+
+167
+00:08:49.900 --> 00:08:54.300
+As you can see, we've got our start event
+going to step A1 to step A2.
+
+168
+00:08:54.333 --> 00:08:58.233
+Or if we omit the branch B1 event,
+we go to step B1 and step B2.
+
+169
+00:08:58.633 --> 00:09:01.633
+Both of them
+go to a stop event and are complete.
+
+170
+00:09:01.633 --> 00:09:04.133
+So now we've got a couple forms
+of flow control.
+
+171
+00:09:04.133 --> 00:09:07.033
+The final form of flow control
+that you can implement in workflows
+
+172
+00:09:07.033 --> 00:09:09.033
+is concurrent execution.
+
+173
+00:09:09.033 --> 00:09:12.633
+This allows you to efficiently run
+long-running tasks in parallel
+
+174
+00:09:12.800 --> 00:09:15.133
+and gather them together
+when they are needed.
+
+175
+00:09:15.133 --> 00:09:18.133
+This can also let you perform
+MapReduce-style tasks.
+
+176
+00:09:18.500 --> 00:09:19.833
+Let's see how this is done.
+
+177
+00:09:19.833 --> 00:09:22.800
+You'll be using a new concept
+the context object.
+
+178
+00:09:22.800 --> 00:09:26.200
+This is a form of shared memory available
+to every step in a workflow.
+
+179
+00:09:26.200 --> 00:09:27.433
+To access it
+
+180
+00:09:27.433 --> 00:09:31.000
+declared as an argument to your step
+and it will be automatically populated.
+
+181
+00:09:31.233 --> 00:09:36.233
+In this example, you'll use context dot
+send event rather than returning an event.
+
+182
+00:09:36.600 --> 00:09:39.300
+This allows you to omit
+multiple events in parallel
+
+183
+00:09:39.300 --> 00:09:42.300
+rather than just returning one as you did
+previously.
+
+184
+00:09:42.300 --> 00:09:44.633
+So we've created a step two events.
+
+185
+00:09:44.633 --> 00:09:48.333
+We've created a parallel flow class,
+and we've changed our start
+
+186
+00:09:48.333 --> 00:09:51.333
+event
+to accept the context parameter here.
+
+187
+00:09:51.400 --> 00:09:54.000
+This is going to automatically populate
+our context.
+
+188
+00:09:54.000 --> 00:09:56.133
+And we're calling send event three times.
+
+189
+00:09:56.133 --> 00:09:58.900
+It's emitting three different step
+two events.
+
+190
+00:09:58.900 --> 00:10:02.400
+One was query one,
+one was query two and one was query three.
+
+191
+00:10:02.700 --> 00:10:04.833
+We've set numb workers for here.
+
+192
+00:10:04.833 --> 00:10:06.100
+This is also the default.
+
+193
+00:10:06.100 --> 00:10:08.400
+It's just to show you
+how to set this parameter.
+
+194
+00:10:08.400 --> 00:10:11.633
+This can set how many of these step twos
+will run in parallel.
+
+195
+00:10:11.900 --> 00:10:16.900
+What step two does is it simply waits a
+random number of seconds between 1 and 5,
+
+196
+00:10:17.100 --> 00:10:18.800
+and then it returns a stop event
+
+197
+00:10:18.800 --> 00:10:23.033
+which will emit the query name
+that we set in step two event.
+
+198
+00:10:24.133 --> 00:10:26.700
+So let's execute that.
+
+199
+00:10:26.700 --> 00:10:29.700
+So now let's execute the workflow.
+
+200
+00:10:29.800 --> 00:10:32.433
+As you can see it ran all three queries.
+
+201
+00:10:32.433 --> 00:10:34.400
+And then it output query one.
+
+202
+00:10:34.400 --> 00:10:35.800
+And then it halted.
+
+203
+00:10:35.800 --> 00:10:38.800
+You don't see it
+outputting query two and query three.
+
+204
+00:10:38.800 --> 00:10:43.033
+That's because the very first stop event
+that fires halts the workflow.
+
+205
+00:10:43.033 --> 00:10:47.300
+If we run this again, we'll probably get
+a different query ending the workflow.
+
+206
+00:10:47.933 --> 00:10:48.633
+There you go.
+
+207
+00:10:48.633 --> 00:10:50.833
+This time, query three won the race.
+
+208
+00:10:50.833 --> 00:10:53.833
+So that's
+how you execute things in parallel.
+
+209
+00:10:54.100 --> 00:10:54.900
+But what if you
+
+210
+00:10:54.900 --> 00:10:58.433
+wanted the output of all three queries
+and not just the first one to complete?
+
+211
+00:10:58.633 --> 00:10:59.533
+Another method
+
+212
+00:10:59.533 --> 00:11:03.033
+context dot
+collect events exists for that purpose.
+
+213
+00:11:03.400 --> 00:11:05.800
+So let's see what this workflow
+looks like.
+
+214
+00:11:05.800 --> 00:11:10.100
+We've created a new step three event
+and a new concurrent workflow.
+
+215
+00:11:10.200 --> 00:11:13.433
+Just like before,
+we're omitting three step two events,
+
+216
+00:11:13.800 --> 00:11:16.633
+each of which emits a query one,
+query two, and query three.
+
+217
+00:11:16.633 --> 00:11:21.600
+And just like before, we have step two
+that waits and random number of seconds.
+
+218
+00:11:21.900 --> 00:11:25.833
+We've modified it to emit a step
+three event which passes the query.
+
+219
+00:11:25.933 --> 00:11:30.933
+Step three is going to be triggered
+every single time a step three event runs.
+
+220
+00:11:31.900 --> 00:11:34.633
+But we're using the Collect events method
+
+221
+00:11:34.633 --> 00:11:37.600
+to wait for certain number of events.
+
+222
+00:11:37.600 --> 00:11:40.800
+How collect events works
+is every time it runs,
+
+223
+00:11:41.000 --> 00:11:45.200
+if it hasn't seen the right number
+of events, then it will return none.
+
+224
+00:11:45.400 --> 00:11:47.700
+So that's why we're handling a none here.
+
+225
+00:11:47.700 --> 00:11:50.700
+It means that not
+all of the events have been received yet.
+
+226
+00:11:50.700 --> 00:11:51.600
+When it receives
+
+227
+00:11:51.600 --> 00:11:55.633
+the full number of events that it needs,
+it will return them in an array.
+
+228
+00:11:55.900 --> 00:11:58.900
+So that's what we're doing here,
+is we're printing the result.
+
+229
+00:11:59.300 --> 00:12:01.633
+Let's execute this workflow
+to see what it looks like.
+
+230
+00:12:08.400 --> 00:12:08.900
+As you can
+
+231
+00:12:08.900 --> 00:12:12.933
+see, it prints not all events received yet
+twice before
+
+232
+00:12:12.933 --> 00:12:14.733
+It has received all three events.
+
+233
+00:12:14.733 --> 00:12:19.733
+And then it emits the events, it emits
+them in the order that it received them.
+
+234
+00:12:20.300 --> 00:12:23.333
+So every time you run it,
+these will be in a different order,
+
+235
+00:12:23.333 --> 00:12:27.700
+because the steps happen a random
+number of seconds after each other.
+
+236
+00:12:28.033 --> 00:12:30.733
+Let's execute it one more time
+just to see that happen.
+
+237
+00:12:30.733 --> 00:12:34.200
+Not all events received yet, and now
+the results are in a different order.
+
+238
+00:12:34.400 --> 00:12:35.333
+Cool.
+
+239
+00:12:35.333 --> 00:12:40.333
+So this works if you want to receive
+a number of events of the same type.
+
+240
+00:12:41.200 --> 00:12:43.800
+However, you can use branching
+to emit different
+
+241
+00:12:43.800 --> 00:12:46.800
+types of events and wait for all of them
+to happen separately.
+
+242
+00:12:46.933 --> 00:12:51.533
+So let's give an example of how
+you would collect different event types.
+
+243
+00:12:51.933 --> 00:12:55.533
+For this, we're going to create
+a whole bunch of different event types.
+
+244
+00:12:55.600 --> 00:12:59.533
+Step A event, step a complete, step
+B event, step b complete, and so on.
+
+245
+00:12:59.900 --> 00:13:03.100
+And now we're going
+to create a new workflow.
+
+246
+00:13:05.500 --> 00:13:05.900
+Just like
+
+247
+00:13:05.900 --> 00:13:09.700
+before this one uses
+send event to emit events.
+
+248
+00:13:09.700 --> 00:13:13.133
+Except we've changed the type definition
+here to say
+
+249
+00:13:13.133 --> 00:13:17.400
+that it can emit a StepAEvent,
+or a StepBEvent, or a StepCEvent.
+
+250
+00:13:17.533 --> 00:13:20.200
+And here we're emitting
+all three of those types of events.
+
+251
+00:13:20.200 --> 00:13:22.633
+We've got a step
+that accepts each of those.
+
+252
+00:13:22.633 --> 00:13:26.433
+So there's a step A, a step B, and a step C
+which collect those.
+
+253
+00:13:26.633 --> 00:13:30.633
+All of them emit a step A complete, step
+B complete, step C event,
+
+254
+00:13:30.633 --> 00:13:32.333
+Step C complete event.
+
+255
+00:13:32.333 --> 00:13:33.900
+And then in step three
+
+256
+00:13:33.900 --> 00:13:37.633
+we've told it that it should accept
+all three of those types of events.
+
+257
+00:13:37.933 --> 00:13:40.800
+Now our collect events function
+
+258
+00:13:40.800 --> 00:13:43.800
+has been modified to say collect events
+
+259
+00:13:43.800 --> 00:13:47.100
+but collect a step C, a step
+A, and a step B.
+
+260
+00:13:47.433 --> 00:13:51.133
+The order of these is significant
+as you'll see in a second. Here,
+
+261
+00:13:51.600 --> 00:13:53.233
+we do as we did before.
+
+262
+00:13:53.233 --> 00:13:56.300
+If the events that we've collected
+are none, that means that we haven't
+
+263
+00:13:56.300 --> 00:13:59.300
+collected all of our events yet,
+so we simply return none.
+
+264
+00:13:59.733 --> 00:14:03.033
+This is what happens if all three of
+the results have been collected.
+
+265
+00:14:03.100 --> 00:14:04.433
+So let's execute this cell
+
+266
+00:14:05.533 --> 00:14:07.100
+to define the workflow.
+
+267
+00:14:07.100 --> 00:14:10.000
+And then run the workflow.
+
+268
+00:14:10.000 --> 00:14:13.800
+As you can see, it did something A ish,
+something B ish, something C ish.
+
+269
+00:14:13.800 --> 00:14:15.633
+It received all three queries.
+
+270
+00:14:15.633 --> 00:14:18.633
+And then when it prints out the results
+you'll see that
+
+271
+00:14:18.733 --> 00:14:23.133
+the array contains step C complete,
+step A complete, and step B complete.
+
+272
+00:14:23.133 --> 00:14:24.933
+The order is the same as the order
+
+273
+00:14:24.933 --> 00:14:27.433
+that we defined
+when we were defining collect events.
+
+274
+00:14:27.433 --> 00:14:30.833
+That is how you know which event you
+will get when you're getting them back.
+
+275
+00:14:30.900 --> 00:14:33.300
+This new workflow
+has quite a pretty visualization,
+
+276
+00:14:33.300 --> 00:14:36.300
+so I'm going to visualize it.
+
+277
+00:14:39.133 --> 00:14:42.133
+As usual, we display the HTML.
+
+278
+00:14:43.933 --> 00:14:46.933
+It's useful to be able to drag
+these things around and reorder them,
+
+279
+00:14:47.300 --> 00:14:50.300
+so that you can make things
+a little bit easier to understand.
+
+280
+00:14:50.433 --> 00:14:53.433
+In this case,
+if you drag them like this, you get
+
+281
+00:14:53.800 --> 00:14:55.500
+this really quite pleasing visualization.
+
+282
+00:14:57.200 --> 00:14:58.500
+In practical use,
+
+283
+00:14:58.500 --> 00:15:01.300
+agents can take a long time to run.
+
+284
+00:15:01.300 --> 00:15:04.300
+It's a poor user experience
+to have the user execute a workflow,
+
+285
+00:15:04.600 --> 00:15:07.100
+and then wait a long time
+to see if it works or not.
+
+286
+00:15:07.100 --> 00:15:08.700
+It's better to give them some indication
+
+287
+00:15:08.700 --> 00:15:12.000
+that things are happening in real time,
+even if the process is not complete.
+
+288
+00:15:12.133 --> 00:15:16.500
+To do this, workflows
+allows streaming events back to the user.
+
+289
+00:15:16.600 --> 00:15:21.400
+Here, you'll use context dot writes
+event to stream to emit these events.
+
+290
+00:15:22.000 --> 00:15:25.300
+This is going to be the first time
+that we actually use an LLM
+
+291
+00:15:25.300 --> 00:15:29.600
+to do something in this tutorial so far,
+so let's make sure that we bring in
+
+292
+00:15:29.700 --> 00:15:31.100
+OpenAI's LLM.
+
+293
+00:15:31.100 --> 00:15:34.100
+We're also going to define our events
+for a new workflow.
+
+294
+00:15:34.400 --> 00:15:35.233
+There's a first event,
+
+295
+00:15:35.233 --> 00:15:38.333
+a second event,
+a text event, and a progress event.
+
+296
+00:15:38.600 --> 00:15:40.600
+You'll see what those are useful
+for later.
+
+297
+00:15:40.600 --> 00:15:41.633
+The specific event
+
+298
+00:15:41.633 --> 00:15:44.933
+that we're going to be sending back
+is the Delta response from the LLM.
+
+299
+00:15:45.033 --> 00:15:45.700
+When you ask
+
+300
+00:15:45.700 --> 00:15:49.500
+an LLM to generate a streaming response,
+as you're going to do in a second,
+
+301
+00:15:49.700 --> 00:15:53.200
+it sends back each chunk of its response
+as it becomes available.
+
+302
+00:15:53.233 --> 00:15:54.900
+This is available as the delta.
+
+303
+00:15:54.900 --> 00:15:59.100
+What we're going to do is wrap the delta
+in a text event and send it
+
+304
+00:15:59.100 --> 00:16:02.733
+back to the workflows own stream,
+so that you can echo it out to the user.
+
+305
+00:16:02.800 --> 00:16:04.700
+Let's see what this workflow looks like.
+
+306
+00:16:04.700 --> 00:16:08.700
+In step one, we're writing our first event
+to a stream a progress event
+
+307
+00:16:08.700 --> 00:16:10.600
+that just says that step one is happening.
+
+308
+00:16:10.600 --> 00:16:14.433
+In step two, we instantiate
+the LLM using GPT-4o-mini.
+
+309
+00:16:14.700 --> 00:16:16.900
+We're calling LLM dot a stream
+
+310
+00:16:16.900 --> 00:16:21.533
+complete. The a is significant,
+which means it's an asynchronous function
+
+311
+00:16:21.533 --> 00:16:25.433
+as opposed to just the stream
+complete event, which would be blocking.
+
+312
+00:16:25.700 --> 00:16:27.500
+Calling it gives us a generator.
+
+313
+00:16:27.500 --> 00:16:30.500
+We can use the generator to emit
+
+314
+00:16:30.800 --> 00:16:33.400
+events from the LLM as they happen.
+
+315
+00:16:33.400 --> 00:16:37.200
+Every time we get a response from the LLM,
+we can call write
+
+316
+00:16:37.200 --> 00:16:40.500
+event to stream and emit
+a text event to our own stream.
+
+317
+00:16:41.000 --> 00:16:44.000
+We're passing a delta
+that is the delta from the response.
+
+318
+00:16:44.300 --> 00:16:47.700
+Once the generator is complete,
+we're going to return a second event,
+
+319
+00:16:47.700 --> 00:16:51.700
+which means that
+the entire generation is complete.
+
+320
+00:16:51.800 --> 00:16:55.233
+And then we're going to call step
+three and emit one more progress event.
+
+321
+00:16:56.900 --> 00:16:59.900
+So, let's execute this function.
+
+322
+00:17:00.800 --> 00:17:03.000
+It's going to be slightly different
+this time
+
+323
+00:17:03.000 --> 00:17:06.700
+because instead of just running
+the workflow and getting a response,
+
+324
+00:17:07.033 --> 00:17:10.233
+we're going to run the workflow
+and handle the stream of events.
+
+325
+00:17:10.400 --> 00:17:13.233
+So instead of awaiting workflow dot run,
+
+326
+00:17:13.233 --> 00:17:17.400
+we're going to call workflow dot
+run directly and get a handle from it.
+
+327
+00:17:17.800 --> 00:17:20.800
+We're then going to call Stream
+events on the handler.
+
+328
+00:17:21.100 --> 00:17:24.100
+This gives us every event
+that the workflow emits.
+
+329
+00:17:24.533 --> 00:17:27.533
+Because there can be a lot of events
+emitted from a workflow,
+
+330
+00:17:27.600 --> 00:17:30.600
+you'll want to filter it down
+to just the ones you're interested in
+
+331
+00:17:30.800 --> 00:17:32.500
+by using the type of the event.
+
+332
+00:17:32.500 --> 00:17:35.500
+So in this case, we're looking for
+two types of events:
+
+333
+00:17:35.600 --> 00:17:38.733
+those progress events that we emitted, in
+which case we just print
+
+334
+00:17:38.733 --> 00:17:41.733
+the message that comes with them
+or the text events that we emitted,
+
+335
+00:17:41.833 --> 00:17:44.900
+in which case we print the delta
+that we received.
+
+336
+00:17:45.400 --> 00:17:47.000
+The end equals parameter here
+
+337
+00:17:47.000 --> 00:17:49.200
+make sure
+that these all end up on one line,
+
+338
+00:17:49.200 --> 00:17:50.400
+because otherwise you end up
+
+339
+00:17:50.400 --> 00:17:53.000
+with each chunk on a different line,
+which is hard to read.
+
+340
+00:17:53.000 --> 00:17:56.000
+We get the final result
+by using await on the handler,
+
+341
+00:17:56.300 --> 00:17:59.300
+and then we can print the final result,
+which was emitted from step three.
+
+342
+00:17:59.800 --> 00:18:01.333
+Let's see that happening in practice.
+
+343
+00:18:04.533 --> 00:18:05.900
+You see step one happens.
+
+344
+00:18:05.900 --> 00:18:10.900
+And now you can see that the results
+of the call to the LLM appeared in chunks.
+
+345
+00:18:11.533 --> 00:18:14.533
+They didn't appear all at once.
+
+346
+00:18:14.733 --> 00:18:16.800
+I can run that again just to be
+
+347
+00:18:16.800 --> 00:18:19.533
+just to demonstrate.
+
+348
+00:18:19.533 --> 00:18:20.933
+There you go.
+
+349
+00:18:20.933 --> 00:18:22.533
+So step one is happening.
+
+350
+00:18:22.533 --> 00:18:24.433
+Then you get all of the chunks
+from the response.
+
+351
+00:18:24.433 --> 00:18:27.233
+Then step three is happening.
+And then the final result.
+
+352
+00:18:27.233 --> 00:18:28.400
+Congratulations.
+
+353
+00:18:28.400 --> 00:18:29.600
+You've successfully built
+
+354
+00:18:29.600 --> 00:18:33.600
+a number of increasingly complex workflows
+and you've mastered the basic concepts.
+
+355
+00:18:33.900 --> 00:18:36.500
+In the next lesson,
+you'll add RAG to your workflow.
+

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 测试金字塔 · 完整学习手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf7f1; --paper-2:#f1ece1; --ink:#1b1e23; --ink-soft:#4a4f57;
+    --faint:#8a8f99; --line:#e0d9cc;
+    --ocean:#082a2c; --ocean-2:#0c3b3a;
+    --trace:#2257d6; --trace-s:#dde6fb;
+    --eval:#0f766e;  --eval-s:#d8efe9;
+    --red:#be123c;   --red-s:#fbe0e6;
+    --guard:#6d28d9; --guard-s:#ece6fb;
+    --amber:#b45309; --amber-s:#fbe6cf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Hanken Grotesk','Noto Sans SC',sans-serif;background:var(--paper);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .serif{font-family:'Fraunces','Noto Serif SC',serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* HERO */
+  .hero{
+    background:
+      radial-gradient(1100px 480px at 85% -10%, rgba(34,87,214,.40), transparent 60%),
+      radial-gradient(900px 480px at -5% 120%, rgba(109,40,217,.32), transparent 55%),
+      linear-gradient(160deg, var(--ocean), var(--ocean-2));
+    color:#eaf3f1;padding:74px 8vw 60px;position:relative;overflow:hidden;
+  }
+  .hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:22px 22px;opacity:.6;}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#7fb0ff;margin-bottom:14px;}
+  .hero h1{font-family:'Fraunces','Noto Serif SC',serif;font-weight:900;font-size:clamp(34px,6vw,60px);line-height:1.04;letter-spacing:-.01em;max-width:18ch;}
+  .hero h1 em{font-style:italic;color:#9fd5cd;font-weight:500;}
+  .hero p{margin-top:20px;max-width:58ch;font-size:clamp(15px,1.6vw,18px);color:#bcd4cf;}
+  .meta{margin-top:28px;display:flex;gap:9px;flex-wrap:wrap;}
+  .pill{font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:6px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.22);color:#d6e8e4;background:rgba(255,255,255,.05);}
+  .reveal{opacity:0;transform:translateY(16px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .d1{animation-delay:.05s}.d2{animation-delay:.18s}.d3{animation-delay:.31s}.d4{animation-delay:.44s}
+
+  main{max-width:940px;margin:0 auto;padding:0 28px;}
+  section{padding:62px 0;border-bottom:1px solid var(--line);}
+  .sec-no{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;}
+  h2{font-family:'Fraunces','Noto Serif SC',serif;font-weight:900;font-size:clamp(26px,4.2vw,38px);line-height:1.1;letter-spacing:-.01em;margin:10px 0 8px;}
+  .lede{font-size:18px;color:var(--ink-soft);max-width:62ch;margin-bottom:12px;}
+  p{margin:13px 0;color:var(--ink-soft);}
+  p strong,li strong{color:var(--ink);font-weight:700;}
+  .tool{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9em;padding:1px 6px;border-radius:5px;background:#fff;color:var(--ink);border:1px solid var(--line);white-space:nowrap;display:inline-block;margin:2px 1px;}
+
+  /* INSIGHT */
+  .insight{margin:26px 0;padding:26px 30px;border-radius:14px;background:linear-gradient(135deg,var(--ocean),var(--ocean-2));color:#eaf3f1;position:relative;}
+  .insight .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7fb0ff;}
+  .insight h3{font-family:'Fraunces','Noto Serif SC',serif;font-size:clamp(20px,3vw,28px);font-weight:600;margin:8px 0 10px;line-height:1.3;}
+  .insight h3 b{color:#9fd5cd;}
+  .insight p{color:#bcd4cf;margin:0;font-size:15px;}
+  .math{font-family:'JetBrains Mono',monospace;color:#ffd9a8;font-weight:700;}
+
+  /* PYRAMID */
+  .pyr-wrap{margin:30px 0 6px;display:flex;justify-content:center;}
+  .pyr-wrap svg{width:100%;max-width:680px;height:auto;}
+  .pyr-cap{text-align:center;color:var(--faint);font-size:12.5px;margin-top:2px;}
+
+  /* LAYER cards anchor nav */
+  .toc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:26px 0 4px;}
+  @media(max-width:680px){.toc{grid-template-columns:1fr 1fr;}}
+  .toc a{text-decoration:none;border-radius:11px;padding:13px 14px;border:1px solid var(--line);background:#fff;transition:transform .2s ease;}
+  .toc a:hover{transform:translateY(-3px);}
+  .toc .n{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;}
+  .toc .t{font-weight:700;color:var(--ink);font-size:14px;display:block;margin-top:3px;}
+  .toc a.l1{border-top:3px solid var(--trace);} .toc .l1 .n{color:var(--trace);}
+  .toc a.l2{border-top:3px solid var(--eval);}  .toc .l2 .n{color:var(--eval);}
+  .toc a.l3{border-top:3px solid var(--red);}   .toc .l3 .n{color:var(--red);}
+  .toc a.l4{border-top:3px solid var(--guard);} .toc .l4 .n{color:var(--guard);}
+
+  /* layer section header */
+  .lhead{display:flex;align-items:center;gap:14px;}
+  .lbadge{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;}
+  .when{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;}
+  .w-off{background:#e2e8f0;color:#475569;}
+  .w-on{background:#dcfce7;color:#15803d;}
+  .w-both{background:var(--trace-s);color:#1d4ed8;}
+
+  /* dimension list */
+  .dims{margin:18px 0;border-radius:14px;overflow:hidden;border:1px solid var(--line);}
+  .dim{display:flex;gap:14px;padding:15px 18px;background:#fff;border-top:1px solid var(--line);}
+  .dim:first-child{border-top:none;}
+  .dim .d-h{font-weight:700;color:var(--ink);min-width:150px;font-size:14.5px;}
+  .dim .d-b{font-size:14px;color:var(--ink-soft);}
+
+  /* tool row */
+  .tools-row{margin:16px 0;padding:16px 18px;border-radius:12px;}
+  .tr-trace{background:var(--trace-s);} .tr-eval{background:var(--eval-s);}
+  .tr-red{background:var(--red-s);} .tr-guard{background:var(--guard-s);}
+  .tools-row .h{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+  .tr-trace .h{color:var(--trace);} .tr-eval .h{color:var(--eval);}
+  .tr-red .h{color:var(--red);} .tr-guard .h{color:var(--guard);}
+
+  .callout{display:flex;gap:14px;align-items:flex-start;margin:22px 0;background:var(--amber-s);border:1px solid #e7c98f;border-left:5px solid var(--amber);border-radius:0 12px 12px 0;padding:17px 19px;}
+  .callout .ic{font-size:20px;}
+  .callout p{margin:0;color:#6b4310;font-size:14px;}
+  .callout strong{color:#5a3a0e;}
+
+  .sub{font-family:'Fraunces','Noto Serif SC',serif;font-size:18px;font-weight:600;color:var(--ink);margin:24px 0 2px;}
+
+  /* reference table */
+  .tbl-scroll{overflow-x:auto;margin:22px 0;border:1px solid var(--line);border-radius:14px;}
+  table{border-collapse:collapse;width:100%;min-width:640px;background:#fff;font-size:14px;}
+  thead th{background:var(--ocean);color:#dbeee9;text-align:left;padding:13px 15px;font-weight:600;}
+  tbody td{padding:12px 15px;border-top:1px solid var(--line);vertical-align:top;color:var(--ink-soft);}
+  tbody tr:nth-child(even){background:var(--paper);}
+  td.lbl{font-weight:700;color:var(--ink);}
+
+  /* stack box */
+  .stack{margin-top:24px;background:var(--eval-s);border:1px solid #a9d9d0;border-radius:14px;padding:24px 26px;}
+  .stack .tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--eval);font-weight:700;}
+  .stack h4{font-family:'Fraunces','Noto Serif SC',serif;font-size:22px;margin:6px 0 12px;color:#0a4d47;}
+  .stack ol{margin:0;padding-left:20px;color:#11514b;}
+  .stack li{margin:8px 0;font-size:14.5px;}
+  .stack li b{color:#063b35;}
+
+  footer{padding:46px 28px 64px;text-align:center;color:var(--faint);font-size:12.5px;}
+  footer .mono{color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker reveal d1">学习手册 · Agent Evaluation &amp; Observability</div>
+  <h1 class="reveal d2">AI Agent 测试金字塔</h1>
+  <p class="reveal d3">从 <em>底层追踪</em> → <em>离线评估</em> → <em>红队</em> → <em>运行时护栏</em>。一套完整框架,讲清楚 Agent 开发到底要测哪几层、每层测什么、用什么工具。</p>
+  <div class="meta reveal d4">
+    <span class="pill">轨迹评估</span>
+    <span class="pill">可观测性</span>
+    <span class="pill">红队 / 安全</span>
+    <span class="pill">运行时护栏</span>
+    <span class="pill">CI 门禁</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- INTRO -->
+  <section id="intro">
+    <div class="sec-no" style="color:var(--eval);">00 — 起点</div>
+    <h2>为什么 Agent 要分四层来测</h2>
+    <p class="lede">Agent 不是「一问一答」。它是一连串决策:调哪个工具、传什么参数、拿到结果怎么处理、失败怎么恢复、整体计划是否连贯、任务最终有没有完成。</p>
+
+    <div class="insight">
+      <div class="lbl">核心认知</div>
+      <h3>Agent 评估的单位是 <b>「轨迹 trajectory」</b>,不是「最终答案」。</h3>
+      <p>轨迹 = 系统提示 + 推理步骤 + 带参数和返回值的工具调用 + 每一步的中间状态,这一整条有序序列。</p>
+    </div>
+
+    <p>为什么必须看整条轨迹?因为<strong>误差会累积</strong>:<span class="math">每步 95% × 8 步 ≈ 66%</span> 的端到端完成率。只看最终答案,你永远不知道失败发生在哪一步。所以 Agent 的失败会聚成几类<strong>互相独立</strong>的维度——某一维好,不能弥补另一维的崩。这就是为什么要分层、逐层兜住。</p>
+
+    <!-- PYRAMID SVG -->
+    <div class="pyr-wrap">
+      <svg viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" font-family="'Hanken Grotesk','Noto Sans SC',sans-serif">
+        <!-- axis -->
+        <line x1="20" y1="372" x2="20" y2="60" stroke="#cbd5e1" stroke-width="1.5"/>
+        <polygon points="16,64 20,56 24,64" fill="#cbd5e1"/>
+        <text x="30" y="370" font-size="11" fill="#94a3b8">全量 · 每步</text>
+        <text x="30" y="70" font-size="11" fill="#94a3b8">关键闸口 · 每请求</text>
+        <!-- tiers -->
+        <polygon points="60,372 360,372 332,300 88,300" fill="#2257d6"/>
+        <text x="210" y="342" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">① 可观测 / 追踪</text>
+        <polygon points="88,300 332,300 304,228 116,228" fill="#0f766e"/>
+        <text x="210" y="270" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">② 离线质量评估</text>
+        <polygon points="116,228 304,228 276,156 144,156" fill="#be123c"/>
+        <text x="210" y="198" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">③ 安全 / 红队</text>
+        <polygon points="144,156 276,156 250,84 170,84" fill="#6d28d9"/>
+        <text x="210" y="126" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">④ 运行时护栏</text>
+        <!-- right labels -->
+        <line x1="362" y1="336" x2="400" y2="336" stroke="#cbd5e1"/>
+        <text x="408" y="333" font-size="12.5" fill="#2257d6" font-weight="700">Phoenix · LangSmith · Langfuse</text>
+        <text x="408" y="349" font-size="11" fill="#64748b">离线+在线 · 一切的地基</text>
+        <line x1="334" y1="264" x2="400" y2="264" stroke="#cbd5e1"/>
+        <text x="408" y="261" font-size="12.5" fill="#0f766e" font-weight="700">DeepEval · RAGAS · TruLens · Giskard</text>
+        <text x="408" y="277" font-size="11" fill="#64748b">离线 · CI 门禁</text>
+        <line x1="306" y1="192" x2="400" y2="192" stroke="#cbd5e1"/>
+        <text x="408" y="189" font-size="12.5" fill="#be123c" font-weight="700">Garak · Promptfoo · PyRIT · DeepTeam</text>
+        <text x="408" y="205" font-size="11" fill="#64748b">离线 · 定期</text>
+        <line x1="278" y1="120" x2="400" y2="120" stroke="#cbd5e1"/>
+        <text x="408" y="117" font-size="12.5" fill="#6d28d9" font-weight="700">Guardrails AI · NeMo · Llama Guard</text>
+        <text x="408" y="133" font-size="11" fill="#64748b">在线 · 实时拦截</text>
+      </svg>
+    </div>
+    <p class="pyr-cap">越往上 = 越接近用户、闸口越关键;越往下 = 覆盖越全、频率越高。</p>
+
+    <div class="toc">
+      <a class="l1" href="#trace"><span class="n">LAYER 1</span><span class="t">可观测 / 追踪</span></a>
+      <a class="l2" href="#eval"><span class="n">LAYER 2</span><span class="t">离线质量评估</span></a>
+      <a class="l3" href="#red"><span class="n">LAYER 3</span><span class="t">安全 / 红队</span></a>
+      <a class="l4" href="#guard"><span class="n">LAYER 4</span><span class="t">运行时护栏</span></a>
+    </div>
+  </section>
+
+  <!-- LAYER 1 -->
+  <section id="trace">
+    <div class="lhead">
+      <div class="lbadge" style="background:var(--trace);">①</div>
+      <div>
+        <div class="sec-no" style="color:var(--trace);">LAYER 1 — 地基</div>
+        <h2 style="margin:2px 0 0;">可观测 / 追踪</h2>
+      </div>
+      <span class="when w-both" style="margin-left:auto;">离线 + 在线</span>
+    </div>
+    <p class="lede" style="margin-top:14px;">没有 trace,后面所有评估都是盲的。这一层全量记录每一步,是整个金字塔的地基。</p>
+    <p><strong>测什么:</strong>调用链可视化、延迟、成本、token 用量、错误追溯、工具选择路径。把多 Agent 的调用渲染成图,让你看到「这一次运行到底发生了什么」。</p>
+    <div class="tools-row tr-trace">
+      <div class="h">对应工具</div>
+      <span class="tool">Phoenix</span>(开源/本地最强)
+      <span class="tool">LangSmith</span>(LangGraph 原生最顺)
+      <span class="tool">Langfuse</span>(开源全栈)
+      <span class="tool">W&amp;B Weave</span>
+      <span class="tool">Helicone</span>(代理式,最快接入)
+      <span class="tool">Datadog LLM Obs</span><br>
+      <span style="font-size:13px;color:var(--ink-soft);">标准底座:<span class="tool">OpenTelemetry</span> + <span class="tool">OpenInference</span> / <span class="tool">OpenLLMetry</span> 语义约定</span>
+    </div>
+  </section>
+
+  <!-- LAYER 2 -->
+  <section id="eval">
+    <div class="lhead">
+      <div class="lbadge" style="background:var(--eval);">②</div>
+      <div>
+        <div class="sec-no" style="color:var(--eval);">LAYER 2 — 核心</div>
+        <h2 style="margin:2px 0 0;">离线质量评估</h2>
+      </div>
+      <span class="when w-off" style="margin-left:auto;">离线 · CI 门禁</span>
+    </div>
+    <p class="lede" style="margin-top:14px;">每次提交代码时跑,达不到阈值就拦住。这层最杂,内部分三块。</p>
+
+    <div class="sub">2A · Agent 执行质量(Agent 专属,最核心)</div>
+    <p>普通 LLM 评估的「相关性 / 毒性」抓不到 Agent 的失败模式。需要单独打分的维度:</p>
+    <div class="dims">
+      <div class="dim"><div class="d-h">工具选择 / 正确性</div><div class="d-b">调对工具了吗?不需要工具时能正确地不调用吗?(常见错误:工具描述语义相近时按关键词瞎匹配)</div></div>
+      <div class="dim"><div class="d-h">参数正确性</div><div class="d-b">传给工具的参数对不对。</div></div>
+      <div class="dim"><div class="d-h">轨迹 / 计划遵循度</div><div class="d-b">走的推理路径对不对,计划质量如何。答对了但路径混乱 = 生产隐患。</div></div>
+      <div class="dim"><div class="d-h">任务完成 / 目标达成</div><div class="d-b">最终目标到底实现了没有。</div></div>
+      <div class="dim"><div class="d-h">错误恢复</div><div class="d-b">工具失败时 Agent 是否优雅地处理、重试。</div></div>
+      <div class="dim"><div class="d-h">推理连贯性</div><div class="d-b">中间步骤在回答层和轨迹层是否逻辑一致。</div></div>
+      <div class="dim"><div class="d-h">任务放弃的诚实度</div><div class="d-b">无法完成时是否如实报告,而不是硬编一个答案(拒答校准)。</div></div>
+    </div>
+    <div class="tools-row tr-eval">
+      <div class="h">对应工具</div>
+      <span class="tool">DeepEval</span>(6 个 agent 指标 + DAG 决策树确定性打分)
+      <span class="tool">TruLens</span>(专门的 agentic 评估器)
+      <span class="tool">LangSmith</span>(多轮轨迹评分)
+      <span class="tool">Phoenix evals</span>
+    </div>
+
+    <div class="sub">2B · 输出 / RAG / 对话质量</div>
+    <p>如果 Agent 有检索或多轮对话,这层单独测:RAG 三元组(context relevance / groundedness / answer relevance)、输出 faithfulness、多轮对话的 role adherence、记忆保持、对话完整度。</p>
+    <div class="tools-row tr-eval">
+      <div class="h">对应工具</div>
+      <span class="tool">RAGAS</span>(最轻,只测 RAG)
+      <span class="tool">TruLens</span>(RAG Triad 首创)
+      <span class="tool">DeepEval</span>(多轮 ConversationalTestCase + G-Eval 自定义)
+    </div>
+
+    <div class="sub">2C · 内容安全</div>
+    <p>幻觉、毒性、偏见、PII 泄露。这是「内容层」的安全,区别于下一层的「对抗层」安全。</p>
+    <div class="tools-row tr-eval">
+      <div class="h">对应工具</div>
+      <span class="tool">DeepEval</span>(开箱即用)
+      <span class="tool">Giskard</span>
+      <span class="tool">Phoenix evals</span>
+    </div>
+  </section>
+
+  <!-- LAYER 3 -->
+  <section id="red">
+    <div class="lhead">
+      <div class="lbadge" style="background:var(--red);">③</div>
+      <div>
+        <div class="sec-no" style="color:var(--red);">LAYER 3 — 对抗</div>
+        <h2 style="margin:2px 0 0;">安全 / 红队</h2>
+      </div>
+      <span class="when w-off" style="margin-left:auto;">离线 · 定期</span>
+    </div>
+    <p class="lede" style="margin-top:14px;">常被忽略,但对金融 / DeFi Agent 是必做项。Agent 特别容易中<strong>间接 prompt 注入</strong>——攻击者把恶意指令藏在 Agent 会读取的外部数据里(行情、链上数据、网页)。</p>
+
+    <div class="callout">
+      <span class="ic">🔥</span>
+      <p><strong>真实教训:</strong>2025 年 3 月,某金融科技公司的 AI Agent 在对账时陷入失控循环,跑了 <strong>11 天</strong>、烧掉 <strong>$47,000</strong> 才被发现。这正是缺少红队 + 护栏的代价。</p>
+    </div>
+
+    <p><strong>测什么:</strong>jailbreak(越狱)、prompt 注入(尤其间接注入)、多轮渐进式越狱(crescendo)、内容安全绕过。</p>
+    <div class="tools-row tr-red">
+      <div class="h">对应工具</div>
+      <span class="tool">Garak</span>(NVIDIA,37+ 漏洞探针)
+      <span class="tool">Promptfoo</span>(50+ 漏洞类型,带 CI/CD)
+      <span class="tool">PyRIT</span>(Microsoft,多轮 / 多模态,crescendo·TAP)
+      <span class="tool">DeepTeam</span>(DeepEval 红队套件)
+    </div>
+    <p style="font-size:14px;"><strong>推荐节奏:</strong>上线前必做一次 + 模型升级 / prompt 改动后重跑 + 按月或季定期跑(捕捉新出现的攻击技术)。把注入成功率从 15%→3% 是可量化的进步;模型更新让越狱率从 1%→8% 是必须立刻处理的回归。</p>
+  </section>
+
+  <!-- LAYER 4 -->
+  <section id="guard">
+    <div class="lhead">
+      <div class="lbadge" style="background:var(--guard);">④</div>
+      <div>
+        <div class="sec-no" style="color:var(--guard);">LAYER 4 — 闸口</div>
+        <h2 style="margin:2px 0 0;">运行时护栏</h2>
+      </div>
+      <span class="when w-on" style="margin-left:auto;">在线 · 实时</span>
+    </div>
+    <p class="lede" style="margin-top:14px;">前三层都是「事后 / 离线」,这一层是「实时挡在用户前面」。每个生产请求都要过。</p>
+
+    <div class="insight" style="background:linear-gradient(135deg,#3a1d6e,#5b2bb0);">
+      <div class="lbl" style="color:#c4a8ff;">原则</div>
+      <h3 style="margin-bottom:0;">护栏<b>必须活在 LLM 之外</b>。</h3>
+      <p style="color:#d8caf5;margin-top:8px;">评估是事后兜底,护栏是实时拦截。靠模型自己「克制」不算护栏。</p>
+    </div>
+
+    <p><strong>测什么 / 拦什么:</strong>实时校验输出格式与内容、注入检测、把危险动作挡下来。</p>
+    <div class="tools-row tr-guard">
+      <div class="h">对应工具</div>
+      <span class="tool">Guardrails AI</span>(RAIL 校验)
+      <span class="tool">NeMo Guardrails</span>(NVIDIA)
+      <span class="tool">Llama Guard / LlamaFirewall</span>(Meta,带对齐检查防注入)
+      <span class="tool">Galileo Luna</span>
+    </div>
+    <div class="callout">
+      <span class="ic">🛑</span>
+      <p><strong>对 DeFi Agent 最关键的一条:</strong>不可逆动作(下单、转账、调仓)绝不能让 Agent 自动执行——卡在<strong>人工审批</strong>或 <strong>kill switch</strong> 之后。这呼应「文件型防火墙 + 人工批准 + 急停开关」的护栏三件套。</p>
+    </div>
+  </section>
+
+  <!-- CROSS-CUTTING -->
+  <section id="infra">
+    <div class="sec-no" style="color:var(--eval);">跨切面 — 支撑设施</div>
+    <h2>贯穿四层的测试基础设施</h2>
+    <p class="lede">这些不属于某一层,而是「怎么把评估跑起来、跑得久」。</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>能力</th><th>作用</th><th>对应工具</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">回归 / CI 门禁</td><td>每次提交自动跑,防止改坏</td><td>DeepEval(Pytest 原生)· Promptfoo</td></tr>
+          <tr><td class="lbl">生产监控 / 在线评估</td><td>线上 trace 持续打分,防 eval 集过时</td><td>Phoenix · LangSmith · Langfuse</td></tr>
+          <tr><td class="lbl">数据集 + 合成数据</td><td>从真实 trace 造稳定测试集 / 造边界场景</td><td>DeepEval · Phoenix · LangSmith</td></tr>
+          <tr><td class="lbl">实验 / A-B 对比</td><td>同输入下对比不同版本</td><td>Phoenix · LangSmith · W&amp;B Weave</td></tr>
+          <tr><td class="lbl">模拟 / 重放</td><td>从任意步重跑复现问题</td><td>LangSmith · Phoenix(span replay)</td></tr>
+          <tr><td class="lbl">人工标注</td><td>专家审查 relevance / correctness</td><td>LangSmith · Phoenix</td></tr>
+          <tr><td class="lbl">效率(成本 / 延迟 / 步数)</td><td>token 用量、完成时间、工具调用次数</td><td>由追踪工具自带</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- YOUR STACK -->
+  <section id="stack" style="border-bottom:none;">
+    <div class="sec-no" style="color:var(--eval);">落地 — 你的场景</div>
+    <h2>给多 Agent DeFi 平台的推荐配方</h2>
+    <p class="lede">LangGraph + 四个分析域(链上数据 / 交易策略 / 风险评估 / 投资研究)。不是四选一,而是「1 个追踪 + 1–2 个评估库 + 红队 + 护栏」。</p>
+    <div class="stack">
+      <div class="tag">Recommended Stack</div>
+      <h4>从金字塔底两层先落地,再往上补</h4>
+      <ol>
+        <li><b>追踪</b> — Phoenix(本地、数据不出环境)或 LangSmith(你那四个 Agent 调用链最直观)。</li>
+        <li><b>Agent 执行评估</b> — DeepEval 的 6 个 agent 指标(工具 / 轨迹 / 任务完成)+ DAG 做确定性门禁。</li>
+        <li><b>RAG / 研究质量</b> — TruLens RAG Triad(契合重严谨可审计)或 RAGAS(更快)。</li>
+        <li><b>红队</b> — Promptfoo 或 DeepTeam。金融 Agent 必须测<b>间接注入</b>(它要读链上数据 / 外部行情这类外部源)。</li>
+        <li><b>运行时护栏</b> — Guardrails AI 之类;关键是把「下单 / 转账」卡在<b>人工审批 / kill switch</b> 后面——对应你关注的「自动化动作边界」。</li>
+      </ol>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="mono">AI Agent 测试金字塔 · 完整学习手册</p>
+  <p style="margin-top:6px;">追踪 → 离线评估 → 红队 → 运行时护栏　|　工具能力随版本演进,使用前建议查阅各自最新文档。</p>
+</footer>
+
+</body>
+</html>

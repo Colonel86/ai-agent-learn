@@ -1,0 +1,183 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:06.029 --> 00:00:05.920
+When building agentic workflows, I'll often advise teams to focus on getting high-quality outputs
+
+2
+00:00:05.920 --> 00:00:11.760
+and to optimize cost and latency only later. It's not that cost and latency don't matter,
+
+3
+00:00:11.760 --> 00:00:18.319
+but I think getting the performance or the output quality to be high is usually the hardest part,
+
+4
+00:00:18.319 --> 00:00:22.639
+and then only when it's really working, then maybe focus on the other things.
+
+5
+00:00:22.639 --> 00:00:26.639
+One thing that's happened to me a few times was my team built an agentic workflow,
+
+6
+00:00:26.639 --> 00:00:31.600
+and we shipped it to users, and then we were fortunate enough to have so many users use it
+
+7
+00:00:31.600 --> 00:00:36.799
+that the cost actually became a problem, and then we had to, you know, stramble to bring the cost
+
+8
+00:00:36.799 --> 00:00:41.680
+back down. But that's a good problem to have, so I tend to worry about cost, usually less.
+
+9
+00:00:42.880 --> 00:00:47.040
+Not that I ignore it completely, but it's just lower down my list of things to worry about,
+
+10
+00:00:47.040 --> 00:00:51.439
+and so we have so many users that we really need to bring the cost down per user.
+
+11
+00:00:51.439 --> 00:00:57.439
+And then latency, I tend to worry a bit about it, but again, not as much as just making sure
+
+12
+00:00:57.439 --> 00:01:03.119
+the output quality is high. But when you do get there, it will be useful to have tools to optimize
+
+13
+00:01:03.119 --> 00:01:06.800
+latency and cost. Let's take a look at some ideas on how to do that.
+
+14
+00:01:06.800 --> 00:01:12.959
+If you want to optimize the latency of an agentic workflow, one thing I will often do is then
+
+15
+00:01:13.599 --> 00:01:20.480
+benchmark or time the workflow. So in this research agent, it takes a number of steps,
+
+16
+00:01:20.480 --> 00:01:26.400
+and if I were to time each of the steps, maybe LLM takes 7 seconds to generate the search terms.
+
+17
+00:01:26.400 --> 00:01:30.000
+Web search takes 5 seconds, this takes 3 seconds, this takes 11 seconds,
+
+18
+00:01:30.000 --> 00:01:35.120
+and then writing the final essay takes 18 seconds on average. And it is then by looking at this
+
+19
+00:01:35.120 --> 00:01:43.680
+overall timeline that I can get a sense of which components have the most room for making faster.
+
+20
+00:01:43.680 --> 00:01:47.919
+In this example, there may be multiple things you could try. If you haven't already taken
+
+21
+00:01:47.919 --> 00:01:53.599
+advantage of parallelism for some steps, like maybe web fetch, maybe it's worth considering
+
+22
+00:01:53.599 --> 00:01:59.120
+doing some of these operations in parallel. Or if you find that some of the LLMs sets are
+
+23
+00:01:59.120 --> 00:02:04.319
+taking too long, so if this first step takes 7 seconds, this last LLMs set takes 18 seconds,
+
+24
+00:02:04.319 --> 00:02:09.520
+I might also consider trying a smaller, maybe slightly less intelligent model to see if it
+
+25
+00:02:09.520 --> 00:02:14.960
+still works well enough for that, or if I can find a faster LLM provider. There are lots of APIs online
+
+26
+00:02:14.960 --> 00:02:20.880
+for different LLMs interfaces, and some companies have specialized hardware to allow them to serve
+
+27
+00:02:20.880 --> 00:02:26.479
+certain LLMs much faster, so sometimes it's worth trying different LLMs providers to see which ones
+
+28
+00:02:26.479 --> 00:02:32.320
+can return tokens the fastest. But at least doing this type of timing analysis can give you a sense
+
+29
+00:02:32.320 --> 00:02:39.039
+of which components to focus on in terms of reducing latency. In terms of optimizing costs,
+
+30
+00:02:39.039 --> 00:02:43.839
+a similar calculation where you calculate the cost of each step would also let you benchmark
+
+31
+00:02:43.839 --> 00:02:49.360
+and decide which steps to focus on. Many LLMs providers charge per token based on the input
+
+32
+00:02:49.360 --> 00:02:55.679
+and output length. Many API providers charge per API call, and the computational steps may have
+
+33
+00:02:55.679 --> 00:03:00.559
+different costs based on how you pay for server capacity and how much the service costs. And so
+
+34
+00:03:00.559 --> 00:03:06.720
+for a process like this, you might decide in this example that the tokens for this LLMs step on
+
+35
+00:03:06.720 --> 00:03:14.000
+average cost 0.04 cents, each web search API maybe costs 1.6 cents, tokens cost this much,
+
+36
+00:03:14.000 --> 00:03:19.119
+API call costs this much, PDF to text costs this much, tokens for the final SA generation cost this
+
+37
+00:03:19.119 --> 00:03:23.600
+much, and this would maybe again give you a sense of are there cheaper components you could use or
+
+38
+00:03:23.600 --> 00:03:29.279
+cheaper LLMs you could use to see where the biggest opportunity is for optimizing costs. And I found
+
+39
+00:03:29.279 --> 00:03:34.000
+that these benchmarking exercises can be very clarifying, and sometimes they'll clearly tell
+
+40
+00:03:34.000 --> 00:03:38.880
+me that certain components are just not worth worrying about because they're not that material
+
+41
+00:03:38.880 --> 00:03:45.279
+or contributor to either cost or to latency. So I find that when either cost or latency becomes
+
+42
+00:03:45.279 --> 00:03:51.440
+an issue, by simply measuring the cost and or latency of each step, that often gives you a
+
+43
+00:03:51.440 --> 00:03:58.320
+basis with which to decide which components to focus on optimizing. So we're nearly at the end
+
+44
+00:03:58.320 --> 00:04:02.559
+of this module. I know we've covered a lot, but thank you for sticking with me. Let's go on to
+
+45
+00:04:02.559 --> 00:04:06.320
+the final video of this module to wrap up.
+

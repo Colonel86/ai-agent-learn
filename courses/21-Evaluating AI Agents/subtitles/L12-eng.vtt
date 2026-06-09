@@ -1,0 +1,383 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:04.070
+For this lesson, you'll dive into
+how you can improve your LLM
+
+2
+00:00:04.070 --> 00:00:07.173
+evaluators and LLM as-a-Judge
+evaluations within your agent.
+
+3
+00:00:07.874 --> 00:00:12.078
+The idea here is that as you use
+LLM as-a-Judge, you may want to improve
+
+4
+00:00:12.245 --> 00:00:16.182
+the evaluators themselves, as
+those are never going to be 100% accurate
+
+5
+00:00:16.349 --> 00:00:18.218
+as you've learned in previous lessons.
+
+6
+00:00:18.218 --> 00:00:22.122
+So this serves as a bonus lesson here
+where you can learn how to improve those
+
+7
+00:00:22.122 --> 00:00:25.825
+evaluators as you go through the process
+of improving your agent itself.
+
+8
+00:00:26.559 --> 00:00:27.460
+So if you think back
+
+9
+00:00:27.460 --> 00:00:31.297
+to the previous slides lesson,
+you might have noticed a case where
+
+10
+00:00:31.898 --> 00:00:36.898
+you used both a code-based comparison
+against ground truth and an LLM as-a-Judge
+
+11
+00:00:37.437 --> 00:00:40.707
+function calling evaluation
+to measure the performance of your router.
+
+12
+00:00:41.408 --> 00:00:42.709
+And you might be thinking,
+
+13
+00:00:42.709 --> 00:00:46.146
+why would you need to use two different
+evaluators to evaluate the same thing?
+
+14
+00:00:46.713 --> 00:00:50.350
+Especially because the code based
+evaluator is going to be 100% accurate.
+
+15
+00:00:50.550 --> 00:00:52.185
+So why would you add in the
+
+16
+00:00:52.185 --> 00:00:54.120
+LLM as-a-Judge evaluator?
+
+17
+00:00:54.120 --> 00:00:56.823
+Well, the answer there is
+that you can use this technique
+
+18
+00:00:56.823 --> 00:01:01.461
+to actually measure how effective
+and how closely your LLM as-a-Judge
+
+19
+00:01:01.461 --> 00:01:06.461
+evaluator aligns to your 100% accurate
+code base comparison against ground truth.
+
+20
+00:01:07.734 --> 00:01:08.201
+Because as you
+
+21
+00:01:08.201 --> 00:01:11.571
+remember, LLM as-a-Judge is not 100%
+accurate method.
+
+22
+00:01:12.138 --> 00:01:16.476
+However, it can scale a lot further beyond
+the comparison against ground truth.
+
+23
+00:01:16.676 --> 00:01:20.447
+You could apply an LLM as-a-Judge eval
+to all of the runs of your application
+
+24
+00:01:20.447 --> 00:01:24.584
+if you want it to,
+but it pays to know how accurate that LLM
+
+25
+00:01:24.584 --> 00:01:28.721
+as-a-Judge is compared
+to your 100% accurate evaluation method.
+
+26
+00:01:29.856 --> 00:01:34.294
+So you can use experiments to actually
+improve your LLM as-a-Judge itself.
+
+27
+00:01:35.095 --> 00:01:35.562
+The experiments
+
+28
+00:01:35.562 --> 00:01:39.099
+that you just learned about in a previous
+lesson, can still be applied
+
+29
+00:01:39.332 --> 00:01:43.169
+this time to your LLM as-a-Judge,
+as opposed to to your agent itself.
+
+30
+00:01:43.770 --> 00:01:44.571
+It's a little bit meta,
+
+31
+00:01:44.571 --> 00:01:48.174
+but you can use the same techniques
+to judge your judge in this case.
+
+32
+00:01:49.142 --> 00:01:49.776
+So you could set up
+
+33
+00:01:49.776 --> 00:01:52.779
+an experiment on the function
+calling LLM judge.
+
+34
+00:01:53.546 --> 00:01:56.549
+And you might have an example test case
+that looks something like we see here
+
+35
+00:01:56.716 --> 00:01:57.684
+where you have an input.
+
+36
+00:01:57.684 --> 00:02:00.920
+That's which stores
+have the best sales performance in 2021
+
+37
+00:02:01.421 --> 00:02:04.424
+and then an output in this case
+the database lookup.
+
+38
+00:02:04.657 --> 00:02:05.325
+And the important thing
+
+39
+00:02:05.325 --> 00:02:09.562
+is that everything in red
+there is the input to your LLM judge,
+
+40
+00:02:09.896 --> 00:02:14.467
+because you're having your LLM judge
+judge the performance of that agent.
+
+41
+00:02:14.968 --> 00:02:17.403
+So everything in red there is the input.
+
+42
+00:02:17.403 --> 00:02:20.807
+And then you'd have your expected output
+in this case is correct.
+
+43
+00:02:21.007 --> 00:02:24.010
+So that expected output
+is your ground truth data.
+
+44
+00:02:24.144 --> 00:02:27.247
+And then you could set up the experiment
+to test different versions of your
+
+45
+00:02:27.514 --> 00:02:28.915
+LLM as-a-Judge prompt.
+
+46
+00:02:28.915 --> 00:02:30.483
+You might change
+some of the wording there.
+
+47
+00:02:30.483 --> 00:02:33.620
+Or you could add things
+like few shot examples.
+
+48
+00:02:33.620 --> 00:02:37.390
+So you could add in some examples
+of previous judgments made
+
+49
+00:02:37.390 --> 00:02:40.927
+that were correct to help align
+the judge into that prompt as well.
+
+50
+00:02:41.828 --> 00:02:44.464
+And then you can evaluate
+the performance of your LLM as-a-Judge
+
+51
+00:02:44.464 --> 00:02:47.534
+using the code-based comparison
+against ground truth.
+
+52
+00:02:47.734 --> 00:02:51.638
+In this case, comparing to that correct
+or incorrect expected output label.
+
+53
+00:02:52.405 --> 00:02:54.774
+And you can use the same approach
+for another LLM as-a-Judge
+
+54
+00:02:54.774 --> 00:02:56.576
+that you're using, in this case
+the one you're using
+
+55
+00:02:56.576 --> 00:02:59.279
+to evaluate analysis clarity.
+
+56
+00:02:59.279 --> 00:03:00.580
+And so in that example,
+
+57
+00:03:00.580 --> 00:03:03.550
+you might have an input
+that looks something like you see here:
+
+58
+00:03:03.550 --> 00:03:06.553
+in 2021 the stores that perform the best,
+yada yada.
+
+59
+00:03:07.187 --> 00:03:11.324
+And then the expected output of the
+analysis is clearer because of x, y and z.
+
+60
+00:03:12.358 --> 00:03:15.528
+And this time
+you might judge different types of models
+
+61
+00:03:15.528 --> 00:03:18.531
+that are being used to create that
+judge label.
+
+62
+00:03:18.698 --> 00:03:20.266
+You could also test different LLM
+
+63
+00:03:20.266 --> 00:03:23.269
+as a judge prompts similar
+to what you did in the previous example.
+
+64
+00:03:23.503 --> 00:03:26.506
+Now the question here though becomes
+how do you evaluate that output?
+
+65
+00:03:26.539 --> 00:03:30.376
+Because while you have expected output,
+it's no longer a clean
+
+66
+00:03:30.376 --> 00:03:32.445
+just correct or incorrect label.
+
+67
+00:03:32.445 --> 00:03:36.282
+It's this expected output of the analysis
+is clear because of something.
+
+68
+00:03:37.116 --> 00:03:39.552
+And so what if your LLM as-a-Judge
+comes back with
+
+69
+00:03:39.552 --> 00:03:42.789
+the analysis is easy to understand
+because of x, y, and z.
+
+70
+00:03:43.189 --> 00:03:44.090
+That should be correct.
+
+71
+00:03:44.090 --> 00:03:46.593
+But you can't just compare
+those strings exactly.
+
+72
+00:03:46.593 --> 00:03:49.128
+That's where you can use something
+like semantic similarity
+
+73
+00:03:49.128 --> 00:03:52.332
+to compare the meaning
+of each of those strings in a numeric way,
+
+74
+00:03:52.632 --> 00:03:55.969
+as opposed to doing a direct comparison
+between output, unexpected output.
+
+75
+00:03:56.603 --> 00:04:00.106
+So in this lesson, you've learned
+how you can measure and improve your LLM
+
+76
+00:04:00.106 --> 00:04:00.607
+as-a-Judge
+
+77
+00:04:00.607 --> 00:04:03.343
+evals using structured experiments.
+
+78
+00:04:03.343 --> 00:04:06.646
+And your next and final lesson,
+you'll learn about moving your agents
+
+79
+00:04:06.646 --> 00:04:09.449
+into production
+and monitoring those agents in production,
+
+80
+00:04:09.449 --> 00:04:12.518
+as well as wrap up all the lessons
+that you've learned here in the course.
+

@@ -1,0 +1,975 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.035 --> 00:00:05.438
+So far, our queries
+have been done in a single forward pass.
+
+2
+00:00:05.939 --> 00:00:08.808
+Given the query, call the right tool
+with the right parameters
+
+3
+00:00:08.808 --> 00:00:10.510
+and get back the response.
+
+4
+00:00:10.510 --> 00:00:12.545
+But this is still quite limiting.
+
+5
+00:00:12.545 --> 00:00:16.683
+What if the user asks a complex question
+consisting of multiple steps,
+
+6
+00:00:16.683 --> 00:00:19.419
+or a vague question
+that needs clarification?
+
+7
+00:00:19.419 --> 00:00:22.155
+In this lesson,
+you will learn how to define a complete
+
+8
+00:00:22.155 --> 00:00:25.892
+agent reasoning loop. Instead of tool
+calling it in a single shot setting,
+
+9
+00:00:26.092 --> 00:00:29.462
+an agent is able to reason over tools
+and multiple steps.
+
+10
+00:00:30.263 --> 00:00:34.000
+You will use the function calling
+agent implementation, which is an agent
+
+11
+00:00:34.000 --> 00:00:37.470
+that natively integrates with the function
+calling capabilities of LLMs.
+
+12
+00:00:38.204 --> 00:00:38.772
+All right.
+
+13
+00:00:38.772 --> 00:00:41.908
+Let's have some fun. To get started,
+
+14
+00:00:42.108 --> 00:00:45.111
+we'll set up our OpenAI key.
+
+15
+00:00:46.413 --> 00:00:48.281
+And then we'll set up and import asyncio.
+
+16
+00:00:48.281 --> 00:00:48.681
+17
+00:00:50,483 --&gt; 00:00:50,950
+For now
+
+17
+00:00:50.950 --> 00:00:54.120
+we use the same Meta GPT paper as the previous
+two lessons.
+
+18
+00:00:54.721 --> 00:00:57.290
+In the next lesson
+we'll expand to the multi-doc setting.
+
+19
+00:00:57.290 --> 00:01:00.326
+And we will also set up
+the auto retrieval factor search tool
+
+20
+00:01:00.360 --> 00:01:02.896
+and the summarization tool
+from the last lesson.
+
+21
+00:01:02.896 --> 00:01:04.064
+To make this more concise,
+
+22
+00:01:04.064 --> 00:01:06.933
+we've packaged this
+into a single line of code
+
+23
+00:01:06.933 --> 00:01:09.702
+that you can just import
+from the utils module.
+
+24
+00:01:09.702 --> 00:01:12.505
+We now set up our function calling agent.
+
+25
+00:01:12.505 --> 00:01:13.840
+As with the previous notebooks,
+
+26
+00:01:13.840 --> 00:01:16.142
+we use Jupyter 3.5 turbo
+
+27
+00:01:16.142 --> 00:01:19.712
+as our LLM.
+We will then define our agent.
+
+28
+00:01:20.947 --> 00:01:22.115
+In LlamaIndex,
+
+29
+00:01:22.115 --> 00:01:25.051
+an agent consists of two main components:
+
+30
+00:01:25.051 --> 00:01:28.021
+an agent worker,
+as well as an agent runner.
+
+31
+00:01:28.488 --> 00:01:30.890
+Think of an agent worker that's responsble
+
+32
+00:01:30.890 --> 00:01:35.528
+for executing the next step
+of a given agent and an agent runner, or a
+
+33
+00:01:35.628 --> 00:01:39.399
+the overall task dispatcher,
+which is responsible for creating a task
+
+34
+00:01:39.732 --> 00:01:43.069
+orchestrating runs of agent worker
+on top of a given task,
+
+35
+00:01:43.470 --> 00:01:46.473
+and being able to return back
+the final response to the user.
+
+36
+00:01:49.442 --> 00:01:51.177
+So we import both function calling
+
+37
+00:01:51.177 --> 00:01:54.414
+agent worker from LlamaIndex
+and also the agent runner.
+
+38
+00:01:55.515 --> 00:01:59.252
+And for the function calling agent worker,
+we pass in the two set of tools,
+
+39
+00:01:59.786 --> 00:02:02.789
+the vector tool,
+as well as the summary tool.
+
+40
+00:02:03.957 --> 00:02:07.327
+We also pass in the LLM
+and set verbose equal to true
+
+41
+00:02:07.327 --> 00:02:10.330
+to look at the intermediate outputs.
+
+42
+00:02:11.364 --> 00:02:14.534
+Think about the function calling
+agent workers primary responsibility
+
+43
+00:02:14.934 --> 00:02:18.271
+as given the existing conversation
+history, memory
+
+44
+00:02:18.271 --> 00:02:21.241
+and any passed state
+along with the current user input.
+
+45
+00:02:21.875 --> 00:02:24.878
+Use function
+calling to decide the next quote or call.
+
+46
+00:02:25.378 --> 00:02:28.781
+Call that tool and decide
+whether or not to return a final response.
+
+47
+00:02:29.382 --> 00:02:32.785
+The overall agent interface
+is behind the agent runner, and that's
+
+48
+00:02:32.785 --> 00:02:35.788
+what we're going to use to query
+the agent.
+
+49
+00:02:37.223 --> 00:02:39.225
+Well, first ask this question.
+
+50
+00:02:39.225 --> 00:02:42.195
+"Tell me about the agent roles
+in Meta GPT
+
+51
+00:02:42.195 --> 00:02:43.997
+and then how they
+communicate with each other."
+
+52
+00:02:53.173 --> 00:02:56.142
+So let's
+trace through the outputs of this agent.
+
+53
+00:02:56.142 --> 00:03:01.142
+We see that the agent is able to break
+down this overall question into steps.
+
+54
+00:03:01.314 --> 00:03:04.717
+So the first part is asking
+about agent roles and Meta GPT.
+
+55
+00:03:05.652 --> 00:03:08.655
+And it calls the summary tool
+to answer this question.
+
+56
+00:03:08.988 --> 00:03:12.158
+Now a quick note is that the summary tool
+isn't necessarily the most precise.
+
+57
+00:03:12.425 --> 00:03:16.396
+You could argue that the vector tool
+will actually give you back a more concise
+
+58
+00:03:16.396 --> 00:03:20.033
+set of context that better represents
+this relevant pieces of text
+
+59
+00:03:20.033 --> 00:03:20.934
+that you're looking for.
+
+60
+00:03:20.934 --> 00:03:23.937
+However, a summary tool
+is still a reasonable tool for the job.
+
+61
+00:03:24.070 --> 00:03:29.070
+And of course, more powerful models like
+Four Turbo or Cloud three, Sonnet or Opus
+
+62
+00:03:29.509 --> 00:03:33.046
+might be able to pick the more precise
+vector tool to help answer this question.
+
+63
+00:03:33.446 --> 00:03:37.083
+In any case, we see that we're able
+to get back the output, the agent roles
+
+64
+00:03:37.083 --> 00:03:40.086
+in Meta GPT include product Manager, architect,
+
+65
+00:03:40.286 --> 00:03:43.289
+project manager, QA, engineer, etc.
+
+66
+00:03:43.456 --> 00:03:47.527
+And then it uses this to perform
+chain of thought to then trigger
+
+67
+00:03:47.527 --> 00:03:52.232
+the next question, which is communication
+between agent roles and Meta GPT.
+
+68
+00:03:54.000 --> 00:03:56.536
+We see we're able to get back an answer
+about that too.
+
+69
+00:03:56.536 --> 00:03:58.972
+You know, communication
+between agent roles and Meta GPT
+
+70
+00:03:58.972 --> 00:04:01.741
+is structured and efficient,
+and we're able to combine this
+
+71
+00:04:01.741 --> 00:04:04.711
+entire conversation history
+to generate a final response.
+
+72
+00:04:06.546 --> 00:04:07.580
+Communication.
+
+73
+00:04:07.580 --> 00:04:10.583
+And Meta GPT include the agent roles include these.
+
+74
+00:04:10.650 --> 00:04:14.120
+They collaborate in a sequential manner
+to follow standard operating procedures.
+
+75
+00:04:14.821 --> 00:04:17.156
+And they use a shared message
+
+76
+00:04:17.156 --> 00:04:20.159
+and subscription method mechanism.
+
+77
+00:04:20.393 --> 00:04:22.462
+When you run a multi-step query like this,
+
+78
+00:04:22.462 --> 00:04:25.465
+you want to make sure that you're
+actually able to trace the sources.
+
+79
+00:04:25.832 --> 00:04:28.368
+And so luckily,
+similar to the previous lessons,
+
+80
+00:04:28.368 --> 00:04:30.570
+we're able to look at response
+that source notes
+
+81
+00:04:30.570 --> 00:04:33.573
+take a look
+at the content of these notes.
+
+82
+00:04:33.840 --> 00:04:38.011
+So this allows you to for instance,
+inspect the content of the first source
+
+83
+00:04:38.011 --> 00:04:41.014
+note that's retrieved,
+which is just the first page of the paper.
+
+84
+00:04:41.581 --> 00:04:44.083
+Calling agent query allows you to query
+
+85
+00:04:44.083 --> 00:04:47.086
+the agent in a one off manner,
+but does not preserve state.
+
+86
+00:04:47.353 --> 00:04:50.123
+So now let's try maintaining
+conversation history over time.
+
+87
+00:04:51.391 --> 00:04:51.958
+The agent
+
+88
+00:04:51.958 --> 00:04:55.128
+is able to maintain chats
+in a conversational memory buffer.
+
+89
+00:04:55.862 --> 00:05:00.099
+The memory module can be customized,
+but by default it's a flat list of items
+
+90
+00:05:00.099 --> 00:05:03.403
+that's a rolling buffer depending on the
+size of the context window of the LLM.
+
+91
+00:05:04.437 --> 00:05:07.440
+Therefore,
+when the agent decides to use a tool
+
+92
+00:05:07.674 --> 00:05:11.744
+and not only uses a current chat,
+but also the previous conversation history
+
+93
+00:05:11.744 --> 00:05:14.747
+to take the next step or perform
+the next action.
+
+94
+00:05:16.049 --> 00:05:18.951
+So instead of query, we'll do agent dot chat.
+
+95
+00:05:18.951 --> 00:05:21.754
+The first thing we'll ask
+is "tell me about the evaluation
+
+96
+00:05:21.754 --> 00:05:24.757
+data sets used."
+
+97
+00:05:27.393 --> 00:05:28.561
+Here we see that
+
+98
+00:05:28.561 --> 00:05:31.998
+it uses the summary tool to ask
+what are the evaluation data sets.
+
+99
+00:05:31.998 --> 00:05:34.200
+Use and Meta GPT.
+
+100
+00:05:34.200 --> 00:05:36.135
+And we see the eval data sets used
+
+101
+00:05:36.135 --> 00:05:39.439
+include human eval MVP and software dev.
+
+102
+00:05:43.976 --> 00:05:45.511
+You'll see an example of this
+
+103
+00:05:45.511 --> 00:05:49.082
+ability to maintain conversation history
+because we'll ask a follow up question.
+
+104
+00:05:49.549 --> 00:05:52.485
+Tell me the results over one of the above
+data sets.
+
+105
+00:05:52.485 --> 00:05:55.922
+Obviously, to know what the above data
+sets are, you have to have that stored
+
+106
+00:05:55.922 --> 00:05:58.891
+in the conversation history somewhere.
+
+107
+00:06:00.693 --> 00:06:01.294
+So let's run
+
+108
+00:06:01.294 --> 00:06:05.365
+this and it's able to translate this query
+plus conversation
+
+109
+00:06:05.365 --> 00:06:08.468
+history
+into a query on the vector tool actually.
+
+110
+00:06:08.735 --> 00:06:11.738
+And it asks results over the human eval
+data set
+
+111
+00:06:11.771 --> 00:06:14.540
+which is one of the eval
+data sets are used.
+
+112
+00:06:14.540 --> 00:06:17.543
+And it's able to give you back
+final answer.
+
+113
+00:06:17.710 --> 00:06:21.280
+So we just provided a nice high level
+interface for interacting with an agent.
+
+114
+00:06:22.315 --> 00:06:24.584
+And this next section
+will show you capabilities
+
+115
+00:06:24.584 --> 00:06:28.221
+that let you step through and control
+the agent in a much more granular fashion.
+
+116
+00:06:28.488 --> 00:06:31.290
+This allows you to not only create
+a higher level research assistant
+
+117
+00:06:31.290 --> 00:06:34.293
+over your RAG pipelines,
+but also debug and control it.
+
+118
+00:06:34.761 --> 00:06:38.431
+Some of the benefits include greater
+debug ability and to the execution
+
+119
+00:06:38.431 --> 00:06:42.402
+of each step, as well as steerability
+by allowing you to inject user feedback.
+
+120
+00:06:42.802 --> 00:06:46.806
+Having this low level agent interface
+is powerful for two main reasons.
+
+121
+00:06:47.407 --> 00:06:49.308
+The first is debug ability.
+
+122
+00:06:49.308 --> 00:06:52.111
+If you're a developer building an agent,
+you might want to have greater
+
+123
+00:06:52.111 --> 00:06:56.549
+transparency and visibility into what's
+actually going on under the hood.
+
+124
+00:06:56.816 --> 00:06:59.952
+Especially, say, if your agent isn't
+working the first time around.
+
+125
+00:07:00.453 --> 00:07:04.791
+Then you can actually go in and trace
+through the execution of the agent,see
+
+126
+00:07:04.791 --> 00:07:05.725
+where it's failing,
+
+127
+00:07:05.725 --> 00:07:09.228
+and actually try out different
+inputs to see if that actually modifies
+
+128
+00:07:09.228 --> 00:07:12.198
+the agent execution
+into a correct response.
+
+129
+00:07:12.198 --> 00:07:16.402
+Another reason why this could be useful
+is actually enable richer UXs,
+
+130
+00:07:16.602 --> 00:07:20.139
+where you're building a product experience
+around this core agent capability.
+
+131
+00:07:20.706 --> 00:07:24.043
+For instance, let's say you want to listen
+to human feedback
+
+132
+00:07:24.310 --> 00:07:26.279
+in the middle of agent execution,
+
+133
+00:07:26.279 --> 00:07:29.916
+as opposed to only after the agent
+execution is complete for a given task.
+
+134
+00:07:30.550 --> 00:07:33.553
+Then, you can imagine
+creating some sort of async queue,
+
+135
+00:07:33.753 --> 00:07:34.754
+where you're able to listen
+
+136
+00:07:34.754 --> 00:07:39.025
+to inputs from humans
+throughout the middle of agent execution.
+
+137
+00:07:39.392 --> 00:07:43.863
+And if human input actually comes
+in, you can actually interrupt and modify
+
+138
+00:07:43.863 --> 00:07:47.700
+the execution of an agent
+as it's going on through a larger
+
+139
+00:07:47.700 --> 00:07:51.070
+task, as opposed to having to wait
+until the agent task is complete.
+
+140
+00:07:51.671 --> 00:07:54.073
+So we'll start by defining our agent again
+
+141
+00:07:54.073 --> 00:07:57.443
+through the function calling agent worker,
+as well as the agent runner setup.
+
+142
+00:07:57.677 --> 00:08:00.446
+And then we start using the low level API.
+
+143
+00:08:00.446 --> 00:08:03.449
+We'll first create a task object
+from the user query.
+
+144
+00:08:03.850 --> 00:08:06.953
+And then we'll start running through steps
+for even interjecting our own.
+
+145
+00:08:07.286 --> 00:08:10.389
+Now let's try executing
+a single step of this task.
+
+146
+00:08:10.957 --> 00:08:12.558
+So let's create a task for this agent.
+
+147
+00:08:12.558 --> 00:08:15.761
+And we'll use the same question we used
+in the very first part of this lesson.
+
+148
+00:08:16.229 --> 00:08:18.364
+"Tell me about the agent roles in Meta GPT
+
+149
+00:08:18.364 --> 00:08:20.366
+and then how they communicate
+with each other."
+
+150
+00:08:20.366 --> 00:08:23.369
+This will return a task object
+which contains the input
+
+151
+00:08:23.669 --> 00:08:26.672
+as well as additional state
+in the task object.
+
+152
+00:08:26.906 --> 00:08:29.909
+And now let's try executing
+a single step of this task.
+
+153
+00:08:30.676 --> 00:08:33.646
+We'll call agent dot run step task dot
+
+154
+00:08:33.646 --> 00:08:35.615
+Task ID.
+
+155
+00:08:35.615 --> 00:08:39.018
+And the agent will execute a step of that
+task through the task ID
+
+156
+00:08:39.252 --> 00:08:40.553
+and give you back a step output.
+
+157
+00:08:46.225 --> 00:08:46.626
+We'll see
+
+158
+00:08:46.626 --> 00:08:49.695
+that it calls the summary tool
+with the input agent
+
+159
+00:08:49.695 --> 00:08:52.698
+roles and Meta GPT, which is a very first part
+of this question.
+
+160
+00:08:53.366 --> 00:08:56.369
+And then it stops there.
+
+161
+00:08:58.304 --> 00:08:59.705
+When we inspect the logs
+
+162
+00:08:59.705 --> 00:09:04.043
+and the output of the agent, we see
+that the first part was actually executed.
+
+163
+00:09:05.144 --> 00:09:08.447
+So we call agent that completed
+steps on the task I.D..
+
+164
+00:09:09.081 --> 00:09:12.084
+And we're able to look at NUM
+completed for the task.
+
+165
+00:09:14.587 --> 00:09:17.290
+We see that one step has been completed.
+
+166
+00:09:17.290 --> 00:09:20.293
+And this is a current output so far.
+
+167
+00:09:20.993 --> 00:09:24.297
+We can also take a look
+at any upcoming steps for the agent.
+
+168
+00:09:24.664 --> 00:09:27.667
+And we can do this through agent
+to get upcoming steps.
+
+169
+00:09:29.902 --> 00:09:33.072
+Again we pass the task
+that task ID and to the agent,
+
+170
+00:09:33.506 --> 00:09:36.609
+and we're able to print out the number
+of upcoming steps for the task.
+
+171
+00:09:37.376 --> 00:09:40.780
+We see that it's also
+one and we're able to look at a task step
+
+172
+00:09:40.780 --> 00:09:44.216
+object with a task
+ID as well as an existing input.
+
+173
+00:09:44.550 --> 00:09:48.020
+This input is currently "none",
+because the way the agent works
+
+174
+00:09:48.020 --> 00:09:52.291
+is actually just auto generates, action
+from the conversation history
+
+175
+00:09:52.558 --> 00:09:55.461
+and doesn't need to generate
+an additional external input.
+
+176
+00:09:55.461 --> 00:09:57.330
+The nice thing about this
+debugging interface
+
+177
+00:09:57.330 --> 00:10:00.333
+is that if you wanted to pause execution
+now, you can.
+
+178
+00:10:00.666 --> 00:10:03.703
+You can take the intermediate results
+without completing the agent flow.
+
+179
+00:10:04.704 --> 00:10:05.905
+But let's keep going,
+
+180
+00:10:05.905 --> 00:10:10.076
+and let's run the next two steps
+and actually try and drafting user input.
+
+181
+00:10:11.677 --> 00:10:14.347
+So let's actually ask:
+"what about how agents
+
+182
+00:10:14.347 --> 00:10:17.350
+share information as user input."
+
+183
+00:10:17.483 --> 00:10:21.687
+This was not part of the original
+task query, but by injecting this,
+
+184
+00:10:21.687 --> 00:10:24.957
+this can actually modify agent execution
+to give you back the result
+
+185
+00:10:24.957 --> 00:10:27.960
+that you want.
+
+186
+00:10:28.427 --> 00:10:31.430
+We'll see that
+we added the user message to memory,
+
+187
+00:10:31.530 --> 00:10:34.100
+and that the next call here
+is how agents actually
+
+188
+00:10:34.100 --> 00:10:37.103
+share information in Meta GPT.
+
+189
+00:10:38.838 --> 00:10:39.538
+And we see here
+
+190
+00:10:39.538 --> 00:10:42.508
+that is able to give back the response.
+
+191
+00:10:42.942 --> 00:10:45.211
+The overall task is roughly complete.
+
+192
+00:10:45.211 --> 00:10:48.214
+And we just need to run one final step
+to synthesize the answer
+
+193
+00:10:48.247 --> 00:10:50.816
+and to double check
+that this output is the last step,
+
+194
+00:10:50.816 --> 00:10:53.052
+we just need to
+do step output.is_last.
+
+195
+00:10:57.123 --> 00:10:58.324
+So we see we're able to get
+
+196
+00:10:58.324 --> 00:11:01.627
+back the answer about how agents
+and Meta GPT share information.
+
+197
+00:11:02.161 --> 00:11:04.797
+And this is indeed the last step.
+
+198
+00:11:04.797 --> 00:11:07.867
+To translate this into an agent response
+
+199
+00:11:07.867 --> 00:11:11.303
+similar to what we've seen in
+some of the previous notebook cells,
+
+200
+00:11:11.737 --> 00:11:14.306
+then all you have to do is call
+response equals
+
+201
+00:11:14.306 --> 00:11:17.276
+agent dot finalist response.
+
+202
+00:11:18.577 --> 00:11:21.580
+And we're able to get back
+the final answer.
+
+203
+00:11:25.384 --> 00:11:26.986
+So that's it for lesson three.
+
+204
+00:11:26.986 --> 00:11:28.888
+You've learned both
+about the high level interface
+
+205
+00:11:28.888 --> 00:11:31.857
+for an agent as well as a low level
+debugging interface.
+
+206
+00:11:32.058 --> 00:11:34.727
+And in the next lesson
+we'll show you how to build an agent
+
+207
+00:11:34.727 --> 00:11:35.761
+over multiple documents.
+

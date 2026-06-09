@@ -1,0 +1,45 @@
+欢迎来到《事件驱动的智能文档工作流》课程，由 DeepLearning.AI 与 LlamaIndex 联合推出。本课程的讲师是 LlamaIndex 开发者关系副总裁 **Laurie Voss**，由 Andrew Ng 开场介绍。
+
+## 什么是智能文档工作流？
+
+**智能文档工作流（Agentic Document Workflows，简称 ADW）** 是一类基于智能体（Agent）的应用，用来自动化端到端的文档处理流程。
+
+- 传统的 RAG（检索增强生成，Retrieval Augmented Generation）只能回答关于数据的简单问题；
+- 而智能文档工作流在 RAG 之上叠加了"代理策略"，可以用更复杂的方式处理输入文档。
+
+在本课程构建的架构中，智能体会：
+
+1. 识别完成任务所需的关键信息；
+2. 用 RAG 检索相关材料；
+3. 把收集到的信息汇总成结构化的输出。
+
+## 现实中的应用场景
+
+ADW 已经被广泛用在真实业务里，例如：
+
+- **合规审查**：让智能体解析合同，抽取关键条款，再与法规知识库中的相关条款匹配，最后生成一份合规摘要。
+- **发票信息增强**：从发票中提取商品描述，用 RAG 匹配产品目录中最接近的产品代码，再把标准化信息补回发票上。
+
+本课程的实战项目是：构建一个智能体，能够根据**简历（Resume）**自动填写**求职申请表（Job Application Form）**。
+
+## 你将学到什么
+
+讲师 Laurie Voss 会带你用 LlamaIndex 的**工作流（Workflow）抽象**从零搭建这个系统。Workflow 是构建事件驱动系统的一个非常好的工具，而事件驱动正是设计高效 Agent 集群的关键模式。
+
+LlamaIndex 的 Workflow 是一种**事件驱动架构（Event-Driven Architecture）**：
+
+- 你把智能体的逻辑封装成一连串"步骤（step）"；
+- 每个步骤通过**发射事件（emit events）** 来触发后续步骤；
+- 你可以在工作流中实现**分支（branching）**、**循环（looping）**、**并发事件（concurrent events）**，以及在某个步骤**汇集多个事件（collect events）**。
+
+围绕表单填写智能体的搭建路径如下：
+
+- 先搭好 RAG 能力：用 **LlamaParse** 解析简历 → 写入向量库（Vector Store）→ 建立查询引擎（Query Engine）。
+- 让智能体解析职位申请表，把空白字段转换成一连串的小问题，再发送给 RAG 管道。
+- 加入人类反馈环节，先通过**文本**给出反馈并迭代答案，然后再用**语音**完成相同的反馈循环。
+
+## 致谢
+
+课程内容由多人协作完成，特别感谢来自 LlamaIndex 的 **Logan Markewich** 和来自 DeepLearning.AI 的 **Hawraa Salami**。
+
+事件驱动工作流正在成为越来越多企业构建 LLM 应用时的核心设计模式。下个视频，我们正式开始。

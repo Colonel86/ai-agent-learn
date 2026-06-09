@@ -1,0 +1,167 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.206 --> 00:00:12.800
+In this module, you learn about tool use by LLMs, and that means letting your LLM decide when it might want to request to have a function called to take some action, or gather some information, or do something else.
+
+2
+00:00:12.800 --> 00:00:23.040
+Just as we as humans can do a lot more with tools than we can with just our bare hands, LLMs too can also do a lot more with access to tools.
+
+3
+00:00:23.040 --> 00:00:33.759
+But rather than using hammers and spanners and pliers, when we give tools, that is, functions, for an LLM to request a call, that's what lets it do a lot more.
+
+4
+00:00:33.759 --> 00:00:34.880
+Let's take a look.
+
+5
+00:00:34.880 --> 00:00:40.240
+If you were to ask an LLM that's been trained maybe many months ago, what time is it right now?
+
+6
+00:00:40.240 --> 00:00:48.479
+Well, that trained model does not know exactly what time it is, and so hopefully it responds, sorry, I do not have access to the current time.
+
+7
+00:00:48.479 --> 00:00:56.080
+But if you were to write a function and give the LLM access to this function, then that lets it respond with a more useful answer.
+
+8
+00:00:56.080 --> 00:01:08.480
+When we let LLMs call functions, or more precisely, let an LLM request to call functions, that's what we mean by tool use, and the tools are just functions that we provide to the LLM that it can request to call.
+
+9
+00:01:08.480 --> 00:01:11.680
+In detail, this is how tool use works.
+
+10
+00:01:11.680 --> 00:01:18.000
+In this example, I'm going to give the getCurrentTime function that I showed on the previous slide to the LLM.
+
+11
+00:01:18.000 --> 00:01:23.919
+When you then prompt it, what time is it, the LLM can decide to call the getCurrentTime function.
+
+12
+00:01:23.919 --> 00:01:33.519
+That will return the current time, which is then fed back to the LLM in the conversational history, and finally the LLM can output is, say, 3.20pm.
+
+13
+00:01:33.519 --> 00:01:36.639
+So the sequence of steps is, there's the input prompt.
+
+14
+00:01:36.639 --> 00:01:47.120
+The LLM, in this case, looks at the set of tools, which is just one tool in this example, but looks at the set of tools available, and it will decide in this example to call the tool.
+
+15
+00:01:47.120 --> 00:01:54.639
+The tool is a function that then returns a value, that value is fed back to the LLM, and then finally the LLM generates its output.
+
+16
+00:01:54.639 --> 00:02:03.360
+Now, one important aspect of tool use is, we can leave it up to the LLM to decide whether or not to use any of the tools.
+
+17
+00:02:03.360 --> 00:02:12.320
+So for the same setup, if I was asking it, how much caffeine is in green tea, the LLM doesn't need to know the current time to answer this, and so it can generate an answer directly,
+
+18
+00:02:12.320 --> 00:02:18.559
+green tea typically has this much caffeine, and it does so without invoking the getCurrentTime function.
+
+19
+00:02:18.559 --> 00:02:30.479
+In my slides, I'm going to use this notation with this dashed box on top of the LLM to indicate that we're providing a set of tools to the LLM for the LLM to choose to use when it deems appropriate.
+
+20
+00:02:30.479 --> 00:02:41.919
+This is as opposed to some examples you saw in earlier videos, where I, as a developer, had hard-coded in, for example, that I will always do a web search at this point in the research agent.
+
+21
+00:02:41.919 --> 00:02:51.520
+In contrast, the getCurrentTime function call is not hard-coded in, it's up to the LLM to decide whether or not it wants to request a call to the getCurrentTime function.
+
+22
+00:02:51.520 --> 00:03:02.720
+And again, we're going to use this dashed box notation to indicate when we're giving one or more tools to the LLM for the LLM to decide what tools, if any, it wants to call.
+
+23
+00:03:02.720 --> 00:03:08.320
+Here are some more examples of when tool use may help an LLM-based app generate better answers.
+
+24
+00:03:08.320 --> 00:03:12.160
+If you were to ask it, can you find some Italian restaurants near Mountain View, California?
+
+25
+00:03:12.160 --> 00:03:23.919
+If it has a web search tool, then an LLM might elect to call a web search engine for a query, restaurants near Mountain View, California, and use the results that fetches to generate the output.
+
+26
+00:03:23.919 --> 00:03:44.559
+Or if you are running a retail store and you want to be able to answer questions like, show me customers who bought white sunglasses, if your LLM is given access to a query database tool, then it might look up the table of sales for what entries had a pair of white sunglasses sold and then use that to then generate the output.
+
+27
+00:03:44.559 --> 00:03:53.839
+Finally, if you wanted to do an interest rate calculation, if I were to deposit $500 and after 10 years, an interest rate of 5%, what would I have?
+
+28
+00:03:53.839 --> 00:04:01.839
+If you happen to have an interest calculation tool, then it could invoke the interest calculation function to calculate that.
+
+29
+00:04:01.839 --> 00:04:16.079
+Or it turns out, one thing you see later is letting an LLM write code, like just write a mathematical expression like this, and then to evaluate it, that would be another way to let an LLM calculate the right answer.
+
+30
+00:04:16.079 --> 00:04:39.600
+So as a developer, it'll be up to you to think through what are the sorts of things you want an application to really do, and then to create the functions or the tools that are needed to make them available to the LLM to let it use the appropriate tools to complete the sorts of tasks that maybe a restaurant recommender or a retail question answer or a finance assistant may want to do.
+
+31
+00:04:39.600 --> 00:04:46.239
+So depending on your application, you may have to implement and make different tools available to your LLM.
+
+32
+00:04:46.239 --> 00:04:52.559
+So far, most of the examples we've gone through made only one tool or one function available to the LLM.
+
+33
+00:04:52.559 --> 00:04:59.839
+But there are many use cases where you want to make multiple tools or multiple functions available for the LLM for it to choose which of any to call.
+
+34
+00:04:59.839 --> 00:05:11.040
+For example, if you're building a calendar assistant agent, you might then want it to be able to fulfill requests like, please find a free slot on Thursday in my calendar and make an appointment with Alice.
+
+35
+00:05:11.040 --> 00:05:26.399
+So in this example, we might make available to the LLM a tool or a function to make an appointment, that is, to send a calendar invite, to check the calendar to see when I might be free, as well as to delete the appointment if it ever wants to cancel an existing calendar entry.
+
+36
+00:05:26.399 --> 00:05:35.119
+And so given the set of instructions, the LLM would first decide that of the different tools available, probably the first one it should use is check calendar.
+
+37
+00:05:35.119 --> 00:05:40.480
+So call a check calendar function that will return when I am free on Thursday.
+
+38
+00:05:40.480 --> 00:05:56.480
+Based on that information, which is fed back to the LLM, it can then decide that the next step is to pick a slot, let's say 3 p.m., and then to call the make appointment function to send a calendar invite to Alice, as well as to add it to my calendar.
+
+39
+00:05:56.480 --> 00:06:08.079
+The output of that, which hopefully is a confirmation that the calendar entry was sent out successfully, is fed back to the LLM, and then lastly, the LLM might tell me your appointment is set up with Alice at 3 p.m. Thursday.
+
+40
+00:06:08.160 --> 00:06:15.279
+Being able to give your LLM access to tools is a pretty big deal. It will make your applications much more powerful.
+
+41
+00:06:15.279 --> 00:06:24.239
+In the next video, we'll take a look at how to write functions, how to create tools to then make them available to your LLM. Let's go on to the next video.
+

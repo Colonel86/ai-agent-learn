@@ -1,0 +1,199 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.943 --> 00:00:07.199
+MCP, the Model Context Protocol, was a standard proposed by Anthropic but now adopted by many
+
+2
+00:00:07.199 --> 00:00:13.600
+other companies and by many developers as a way to give an LLM access to more context and to
+
+3
+00:00:13.600 --> 00:00:18.959
+more tools. There are a lot of developers developing around the MCP ecosystem and so
+
+4
+00:00:18.959 --> 00:00:24.079
+learning about this will give you a lot more access to resources for your applications.
+
+5
+00:00:24.079 --> 00:00:31.040
+Let's take a look. This is the pain points that MCP attempts to solve. If one developer is writing
+
+6
+00:00:31.040 --> 00:00:37.119
+an application that wants to integrate with data from Slack and Google Drive and GitHub or access
+
+7
+00:00:37.119 --> 00:00:42.639
+data from a Postgres database, then they might have to write code to wrap around Slack APIs
+
+8
+00:00:42.639 --> 00:00:47.919
+to have functions to provide to the application, write code to wrap around Google Drive APIs to
+
+9
+00:00:47.919 --> 00:00:54.240
+parse the application, and similarly for these other tools or data sources. Then what has been
+
+10
+00:00:54.240 --> 00:00:59.119
+happening in the developer community is if a different team is building a different application,
+
+11
+00:00:59.119 --> 00:01:04.639
+then they too will integrate by themselves with Slack and Google Drive and GitHub and so on.
+
+12
+00:01:04.639 --> 00:01:10.559
+So many developers were all building custom wrappers around these types of data sources.
+
+13
+00:01:10.559 --> 00:01:16.480
+And so if there are M applications being developed and there are N tools out there,
+
+14
+00:01:16.480 --> 00:01:24.000
+the total amount of work done by the community was M times N. What MCP did was propose a standard
+
+15
+00:01:24.000 --> 00:01:29.760
+for applications to get access to tools and data sources so that the total work that needs to be
+
+16
+00:01:29.760 --> 00:01:38.080
+done by the community is now M plus N rather than M times N. The initial design of MCP focused a lot
+
+17
+00:01:38.080 --> 00:01:44.879
+on how to give more context to an LLM or how to fetch data. So a lot of the initial tools were
+
+18
+00:01:44.879 --> 00:01:51.599
+ones that would just fetch data. And if you read the MCP documentation, that refers to these as
+
+19
+00:01:51.599 --> 00:01:57.599
+resources. But MCP gives access to both data as well as the more general functions that an
+
+20
+00:01:57.599 --> 00:02:04.080
+application may want to call. And it turns out that there are many MCP clients. These are the
+
+21
+00:02:04.080 --> 00:02:11.039
+applications that want access to tools or to data as well as service, which are often the software
+
+22
+00:02:11.039 --> 00:02:16.639
+wrappers that then give access to data in Slack or GitHub or Google Drive or allows you to take
+
+23
+00:02:16.639 --> 00:02:23.279
+actions at these different types of resources. So today there's a rapidly growing list of MCP
+
+24
+00:02:23.279 --> 00:02:28.880
+clients that consume the tools or the resources as well as MCP service that provide the tools and
+
+25
+00:02:28.880 --> 00:02:35.520
+the resources. And I hope that you find it useful to build your own MCP client. Your application
+
+26
+00:02:35.520 --> 00:02:40.479
+maybe one day will be an MCP client. And if you want to provide resources to other developers,
+
+27
+00:02:40.479 --> 00:02:46.399
+maybe you can build your own MCP server someday. Let me show you a quick example of using an MCP
+
+28
+00:02:46.399 --> 00:02:54.880
+client. This is a cloud desktop app and it has been connected to a GitHub MCP server. So when
+
+29
+00:02:54.880 --> 00:03:00.160
+I enter this query, summarize the readme.md from the GitHub repo at this URL, this is actually
+
+30
+00:03:00.160 --> 00:03:07.600
+an AI suite repo. Then this application, which is an MCP client, uses the GitHub MCP server with
+
+31
+00:03:07.600 --> 00:03:14.080
+the request, please get the file readme.md from the repo AI suite from this repo. And then it
+
+32
+00:03:14.080 --> 00:03:21.520
+gets this response, which is pretty long. All this is then fed back to the LLMs context and the LLM
+
+33
+00:03:21.520 --> 00:03:27.919
+then generates the summary of the markdown file. Now let me enter another request, which is let me
+
+34
+00:03:27.919 --> 00:03:36.080
+enter what are the latest pull requests. This in turn causes the LLMs to use the MCP server to make
+
+35
+00:03:36.080 --> 00:03:42.720
+a different request, to list the pull request. This is another tool provided by GitHub's MCP
+
+36
+00:03:42.720 --> 00:03:50.160
+server. And so it makes this request with repo AI suite, sort, going to update it, list 20, and so on.
+
+37
+00:03:50.160 --> 00:03:55.679
+And then it gives this response, which is fed back to the LLM and the LLM then writes this nice
+
+38
+00:03:55.679 --> 00:04:01.440
+text summary of the latest pull request for this repo. MCP is an important standard. If you want to
+
+39
+00:04:01.440 --> 00:04:08.479
+learn more about it, DeepLearning.ai also has a short course that goes much deeper into just the MCP
+
+40
+00:04:08.479 --> 00:04:13.199
+protocol that you can check out after finishing the course, if you're interested. I hope this
+
+41
+00:04:13.199 --> 00:04:20.000
+video gives you a brief overview of why it's useful and also why many developers are now building to
+
+42
+00:04:20.000 --> 00:04:27.040
+this standard. This brings us to the last video on tool use. And I hope that by giving your own access
+
+43
+00:04:27.119 --> 00:04:34.239
+to tools, you build and build agentic applications that are much more powerful. In the next module,
+
+44
+00:04:34.239 --> 00:04:41.119
+we'll talk about evaluations and error analysis. It turns out that one of the things I've seen
+
+45
+00:04:41.119 --> 00:04:47.440
+that distinguishes people that can execute agentic workflows really well versus teams that are not
+
+46
+00:04:47.440 --> 00:04:55.279
+as efficient at it is your ability to drive a disciplined evaluation process. In the next
+
+47
+00:04:55.279 --> 00:05:00.239
+set of videos, which I think is maybe the most important module of this entire course,
+
+48
+00:05:00.239 --> 00:05:05.040
+I hope to share with you some of the best practices of how to use evals to drive
+
+49
+00:05:05.040 --> 00:05:10.000
+development of agentic workflows. Look forward to seeing you in the next module.
+

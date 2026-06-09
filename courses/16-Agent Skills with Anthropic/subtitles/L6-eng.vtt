@@ -1,0 +1,1588 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.203
+In the first lesson, you saw how skills work with Claude AI.
+
+2
+00:00:03.670 --> 00:00:05.772
+Now, we'll work with the Claude API
+
+3
+00:00:05.972 --> 00:00:08.775
+to test the two skills we made from the previous lesson.
+
+4
+00:00:09.275 --> 00:00:11.277
+To use skills with the Claude API,
+
+5
+00:00:11.678 --> 00:00:15.482
+we'll need to use the code execution tool and the files API.
+
+6
+00:00:16.082 --> 00:00:18.485
+This will equip Claude with file system access
+
+7
+00:00:18.885 --> 00:00:22.489
+for reading and writing files and with bash for executing code.
+
+8
+00:00:22.522 --> 00:00:25.225
+Let's get to it. We've talked quite a bit
+
+9
+00:00:25.325 --> 00:00:28.128
+about how skills work and how to create them.
+
+10
+00:00:28.328 --> 00:00:29.896
+And we talked a little bit
+
+11
+00:00:29.896 --> 00:00:31.731
+as well about the portability of skills
+
+12
+00:00:32.032 --> 00:00:34.701
+across different environments in the Claude ecosystem,
+
+13
+00:00:35.335 --> 00:00:37.504
+as well as many other agentic applications.
+
+14
+00:00:38.004 --> 00:00:41.808
+We started by looking at skills in Claude AI and Claude Desktop,
+
+15
+00:00:41.808 --> 00:00:44.044
+and now we're going to move to talk about
+
+16
+00:00:44.044 --> 00:00:46.279
+how to use skills using the Claude Messages API.
+
+17
+00:00:46.279 --> 00:00:48.581
+There are two things that are important to note.
+
+18
+00:00:48.615 --> 00:00:52.519
+First, skills that you create in Claude AI and Claude Desktop
+
+19
+00:00:52.919 --> 00:00:56.523
+are not shared in The Claude API or Claude Code.
+
+20
+00:00:57.123 --> 00:01:00.693
+The second important piece is that in order for skills to work,
+
+21
+00:01:01.094 --> 00:01:04.397
+we need the ability for Claude to execute code,
+
+22
+00:01:04.597 --> 00:01:07.500
+create and edit documents, presentations, PDFs,
+
+23
+00:01:07.500 --> 00:01:10.503
+and data reports, and work with a file system.
+
+24
+00:01:10.837 --> 00:01:13.039
+This is something that we're going to have to manually do
+
+25
+00:01:13.039 --> 00:01:14.641
+when we work with the Claude API.
+
+26
+00:01:14.641 --> 00:01:17.043
+And this is something that is actually configured for you
+
+27
+00:01:17.043 --> 00:01:20.346
+right away when using Claude AI and Claude Desktop.
+
+28
+00:01:20.847 --> 00:01:23.049
+In Claude Desktop or Claude AI
+
+29
+00:01:23.383 --> 00:01:25.485
+If I go to settings
+
+30
+00:01:25.485 --> 00:01:27.587
+and I take a look at the capabilities,
+
+31
+00:01:27.787 --> 00:01:29.889
+you can see here that there's a section
+
+32
+00:01:29.889 --> 00:01:32.192
+for code execution and file creation.
+
+33
+00:01:32.292 --> 00:01:34.594
+This is what we're going to talk about in more depth
+
+34
+00:01:34.594 --> 00:01:36.296
+when we work with the API directly.
+
+35
+00:01:36.329 --> 00:01:40.133
+But this is a setting that is enabled by default
+
+36
+00:01:40.133 --> 00:01:44.137
+that allows Claude to execute code, create docs, spreadsheets, presentations, and more.
+
+37
+00:01:44.537 --> 00:01:47.507
+This essentially gives Claude AI and Claude Desktop
+
+38
+00:01:47.507 --> 00:01:49.809
+a computer or a virtual machine
+
+39
+00:01:49.809 --> 00:01:54.114
+to execute code and perform all those tasks that make Skills happen.
+
+40
+00:01:54.481 --> 00:01:57.283
+If this is disabled, we'll actually see
+
+41
+00:01:57.383 --> 00:01:59.252
+that we need to turn this on
+
+42
+00:01:59.252 --> 00:02:01.087
+to even be able to use skills.
+
+43
+00:02:01.488 --> 00:02:03.690
+Now let's shift back and talk a little bit
+
+44
+00:02:03.790 --> 00:02:07.393
+about how this code execution tool and file creation works,
+
+45
+00:02:07.494 --> 00:02:09.395
+because we're going to need to enable
+
+46
+00:02:09.395 --> 00:02:11.598
+this manually when we work with the API.
+
+47
+00:02:11.931 --> 00:02:15.735
+When working with tools like Claude Code and the Claude agent,
+
+48
+00:02:15.735 --> 00:02:17.837
+you have direct access to a file system.
+
+49
+00:02:18.238 --> 00:02:21.441
+Whereas using the Claude API, we do not,
+
+50
+00:02:21.441 --> 00:02:23.076
+and need a container to execute code
+
+51
+00:02:23.076 --> 00:02:24.744
+and a file system to work with.
+
+52
+00:02:25.011 --> 00:02:27.113
+Claude AI and Claude Desktop,
+
+53
+00:02:27.413 --> 00:02:29.916
+that containerized environment and file system
+
+54
+00:02:29.916 --> 00:02:32.418
+is given to you and not something you have to implement.
+
+55
+00:02:32.752 --> 00:02:35.855
+At the end of the day, the functionality is all the same,
+
+56
+00:02:35.855 --> 00:02:39.259
+but the way in which we utilize skills is slightly different.
+
+57
+00:02:39.559 --> 00:02:41.761
+The skills themselves do not change,
+
+58
+00:02:41.761 --> 00:02:44.230
+the format of those skills do not change,
+
+59
+00:02:44.230 --> 00:02:46.533
+but depending on the environment that you're in,
+
+60
+00:02:46.533 --> 00:02:49.536
+you may utilize the way in which skills work slightly differently.
+
+61
+00:02:49.802 --> 00:02:52.038
+As we start to explore the Messages API,
+
+62
+00:02:52.038 --> 00:02:54.274
+we're going to use the code execution tool.
+
+63
+00:02:54.674 --> 00:02:57.777
+The code execution tool allows Claude to run
+
+64
+00:02:58.178 --> 00:02:59.879
+Bash or shell commands
+
+65
+00:02:59.879 --> 00:03:02.682
+to perform all these actions that we saw
+
+66
+00:03:02.682 --> 00:03:05.885
+when working with skills. Creating, viewing, editing files,
+
+67
+00:03:05.885 --> 00:03:08.988
+and writing code, all in a sandboxed environment.
+
+68
+00:03:09.289 --> 00:03:10.890
+The code execution tool
+
+69
+00:03:10.890 --> 00:03:13.660
+gives our application the ability
+
+70
+00:03:13.660 --> 00:03:15.862
+to have a separate dedicated container
+
+71
+00:03:15.862 --> 00:03:19.165
+to execute code and work with a file system.
+
+72
+00:03:19.332 --> 00:03:22.135
+as you've seen with all the things that skills can do,
+
+73
+00:03:22.135 --> 00:03:24.837
+that is mission critical for reading our skills,
+
+74
+00:03:24.837 --> 00:03:28.841
+executing code within those skills, and working with other files
+
+75
+00:03:28.841 --> 00:03:31.244
+that we might want to edit and view and create.
+
+76
+00:03:31.511 --> 00:03:34.013
+To give you a visualization of what this looks like,
+
+77
+00:03:34.414 --> 00:03:36.716
+when we include the code execution tool,
+
+78
+00:03:37.317 --> 00:03:40.720
+we give Claude an execution sandbox or a container.
+
+79
+00:03:41.321 --> 00:03:44.023
+When we ask Claude to create and execute files,
+
+80
+00:03:44.424 --> 00:03:47.527
+these are executed in a safe and isolated environment.
+
+81
+00:03:47.860 --> 00:03:51.731
+There are limitations for the RAM, the disk, the CPU,
+
+82
+00:03:51.965 --> 00:03:55.068
+and more importantly, there is no internet connection provided
+
+83
+00:03:55.435 --> 00:03:58.304
+and there are pre-installed libraries that you get out of the box.
+
+84
+00:03:58.671 --> 00:04:01.874
+So this does not work with every single kind of coding environment.
+
+85
+00:04:01.874 --> 00:04:04.377
+There are some limitations here to be mindful of.
+
+86
+00:04:04.877 --> 00:04:07.180
+At the same time, we also get access to a file system
+
+87
+00:04:07.580 --> 00:04:09.849
+that we can start adding directories to.
+
+88
+00:04:10.149 --> 00:04:12.452
+You might have even seen hints of that
+
+89
+00:04:12.452 --> 00:04:14.454
+when we worked with Claude desktop and Claude AI.
+
+90
+00:04:14.754 --> 00:04:17.056
+This limitation of no internet connection
+
+91
+00:04:17.056 --> 00:04:19.959
+is something that is specific to the Messages API.
+
+92
+00:04:20.159 --> 00:04:22.262
+When we're using the code execution tool
+
+93
+00:04:22.262 --> 00:04:24.163
+in Claude AI or Claude desktop,
+
+94
+00:04:24.163 --> 00:04:26.666
+we do have access to an internet connection
+
+95
+00:04:26.666 --> 00:04:28.768
+and we can download and install packages.
+
+96
+00:04:29.002 --> 00:04:31.804
+The Code Execution Tool works quite nicely
+
+97
+00:04:31.804 --> 00:04:33.673
+with another set of APIs that the
+
+98
+00:04:33.673 --> 00:04:35.575
+Claude API allows us to work with.
+
+99
+00:04:35.975 --> 00:04:38.878
+As you can imagine, when we're working with files,
+
+100
+00:04:39.379 --> 00:04:42.782
+adding, creating, writing, modifying files,
+
+101
+00:04:42.982 --> 00:04:46.486
+we need some mechanism for actually storing those underlying files.
+
+102
+00:04:46.786 --> 00:04:50.890
+The Claude API includes a set of APIs called the Files API
+
+103
+00:04:51.190 --> 00:04:53.293
+to upload and download files
+
+104
+00:04:53.593 --> 00:04:56.996
+that can be run and worked on inside of the container.
+
+105
+00:04:57.330 --> 00:04:59.065
+You can imagine a scenario where
+
+106
+00:04:59.065 --> 00:05:01.134
+the user asks to summarize some input
+
+107
+00:05:01.234 --> 00:05:03.636
+and save the summary to a text file.
+
+108
+00:05:03.936 --> 00:05:05.638
+We upload that input file,
+
+109
+00:05:05.938 --> 00:05:08.941
+send it to the container, download generated files
+
+110
+00:05:09.142 --> 00:05:10.810
+with this Files API. We're going
+
+111
+00:05:10.810 --> 00:05:12.779
+to be seeing this shortly in code.
+
+112
+00:05:12.779 --> 00:05:14.580
+When we see the IDs that we get back
+
+113
+00:05:14.580 --> 00:05:16.582
+from uploading and downloading files
+
+114
+00:05:16.582 --> 00:05:18.985
+and how this works nicely with skills
+
+115
+00:05:18.985 --> 00:05:20.787
+and our Code Execution Tool.
+
+116
+00:05:21.220 --> 00:05:23.823
+And this is exactly where skills come into play.
+
+117
+00:05:24.424 --> 00:05:26.526
+The library of skills that we get
+
+118
+00:05:27.126 --> 00:05:29.228
+out of the box in tools like Claude AI
+
+119
+00:05:29.629 --> 00:05:32.332
+or that we can include if we want using the API,
+
+120
+00:05:32.832 --> 00:05:35.735
+those live in a directory that are powered in the container.
+
+121
+00:05:35.935 --> 00:05:38.738
+As we start to read from this skills directory,
+
+122
+00:05:38.938 --> 00:05:41.941
+as we start to add information to our skills
+
+123
+00:05:42.041 --> 00:05:44.944
+or use those underlying skills to create new files
+
+124
+00:05:45.044 --> 00:05:46.746
+that we can download or upload,
+
+125
+00:05:46.746 --> 00:05:48.748
+this is where skills come into play.
+
+126
+00:05:48.948 --> 00:05:52.151
+And we're going to see a requirement when working with the API,
+
+127
+00:05:52.251 --> 00:05:54.487
+when we want to use skills, we need
+
+128
+00:05:54.487 --> 00:05:56.756
+to use the Code Execution Tool as well.
+
+129
+00:05:57.223 --> 00:05:58.624
+Now that we have a good
+
+130
+00:05:58.624 --> 00:06:00.226
+sense of what the Code Execution Tool
+
+131
+00:06:00.226 --> 00:06:01.861
+and Files API allow us to do,
+
+132
+00:06:01.861 --> 00:06:03.730
+let's see how to use this in action.
+
+133
+00:06:04.030 --> 00:06:06.733
+We're going to go and revisit the two previous custom skills
+
+134
+00:06:06.733 --> 00:06:08.901
+that we built for generating practice
+
+135
+00:06:08.901 --> 00:06:11.437
+questions as well as time series analysis.
+
+136
+00:06:11.738 --> 00:06:14.741
+So let's head over to a Jupyter notebook and explore this.
+
+137
+00:06:14.741 --> 00:06:16.476
+Right here, I have my two
+
+138
+00:06:16.476 --> 00:06:18.444
+custom skills that we've worked with before.
+
+139
+00:06:18.745 --> 00:06:20.146
+I also have a folder for
+
+140
+00:06:20.146 --> 00:06:21.748
+data that I'm going to be using
+
+141
+00:06:21.748 --> 00:06:24.250
+to analyze time series data.
+
+142
+00:06:24.550 --> 00:06:27.553
+I also have a folder for lecture notes that I'll be using
+
+143
+00:06:27.553 --> 00:06:30.256
+when I use my generating practice questions skill.
+
+144
+00:06:30.590 --> 00:06:32.592
+To get started in this notebook,
+
+145
+00:06:32.592 --> 00:06:35.395
+I'm going to load the environment variables that I need
+
+146
+00:06:35.395 --> 00:06:36.963
+as well as a helper to help
+
+147
+00:06:36.963 --> 00:06:38.498
+me find particular files from a directory.
+
+148
+00:06:38.498 --> 00:06:39.832
+We're going to see this in
+
+149
+00:06:39.832 --> 00:06:41.401
+action when we start using our skills.
+
+150
+00:06:41.567 --> 00:06:45.571
+To start, I'm going to begin using my generating practice questions skill.
+
+151
+00:06:45.972 --> 00:06:47.573
+So let's go ahead and take a look
+
+152
+00:06:47.573 --> 00:06:49.375
+at the first part that I need to do.
+
+153
+00:06:49.776 --> 00:06:52.378
+To begin, I need to upload the skill directory.
+
+154
+00:06:52.779 --> 00:06:56.149
+Here you can see we're using that files_from_dir helper function,
+
+155
+00:06:56.349 --> 00:06:58.384
+as well as the necessary beta
+
+156
+00:06:58.384 --> 00:07:00.753
+headers for skills. Once this is done,
+
+157
+00:07:00.820 --> 00:07:04.223
+I should be able to see the skill ID that I've created.
+
+158
+00:07:04.791 --> 00:07:08.795
+This betas list are particular headers that I add when
+
+159
+00:07:08.895 --> 00:07:11.197
+I make a request to the Messages API.
+
+160
+00:07:11.497 --> 00:07:13.699
+Under the hood, these are turning into request headers
+
+161
+00:07:13.699 --> 00:07:16.402
+to make sure that I'm getting the right data back
+
+162
+00:07:16.402 --> 00:07:19.305
+and communicating appropriately with the API.
+
+163
+00:07:19.605 --> 00:07:21.507
+To take a look at all the skills that I have,
+
+164
+00:07:21.507 --> 00:07:23.376
+I can use this .list method,
+
+165
+00:07:23.376 --> 00:07:26.012
+and I'm going to pass in a source of custom
+
+166
+00:07:26.012 --> 00:07:28.314
+so that we don't load all the built-in skills
+
+167
+00:07:28.314 --> 00:07:32.318
+and instead just confirm that I've created the ones as expected.
+
+168
+00:07:32.718 --> 00:07:34.320
+And here I can see the title,
+
+169
+00:07:34.320 --> 00:07:35.922
+as well as the unique skill ID
+
+170
+00:07:35.922 --> 00:07:37.924
+that I'm going to be using shortly.
+
+171
+00:07:38.524 --> 00:07:40.526
+In order for this to work as expected,
+
+172
+00:07:40.526 --> 00:07:43.129
+we're going to need to make use of the LaTeX file
+
+173
+00:07:43.129 --> 00:07:45.631
+where we're going to generate practice questions from.
+
+174
+00:07:46.232 --> 00:07:48.234
+Here, I'll use the Files API
+
+175
+00:07:48.234 --> 00:07:51.037
+to upload this particular LaTeX file.
+
+176
+00:07:51.304 --> 00:07:53.306
+make sure that it's set for reading
+
+177
+00:07:53.606 --> 00:07:55.808
+and then get back a file object.
+
+178
+00:07:56.509 --> 00:08:01.113
+I'll be using this file object in conjunction with the skills necessary
+
+179
+00:08:01.314 --> 00:08:03.616
+to make sure that it's all
+
+180
+00:08:03.616 --> 00:08:06.285
+working as expected. I'm using Sonnet here,
+
+181
+00:08:06.285 --> 00:08:10.289
+and I'm passing in the necessary beta headers, not only for skills,
+
+182
+00:08:10.289 --> 00:08:12.291
+but in order for skills to work
+
+183
+00:08:12.291 --> 00:08:14.293
+as expected when talking to the model,
+
+184
+00:08:14.293 --> 00:08:15.695
+I need to make sure I
+
+185
+00:08:15.695 --> 00:08:17.296
+have the code execution beta as well.
+
+186
+00:08:17.697 --> 00:08:20.066
+And since I'm sending a file here, we have to
+
+187
+00:08:20.066 --> 00:08:22.468
+make sure we have the files API header as well.
+
+188
+00:08:22.969 --> 00:08:25.071
+When working with skills, these skills are
+
+189
+00:08:25.071 --> 00:08:27.173
+set in a keyword argument called container,
+
+190
+00:08:27.473 --> 00:08:30.176
+and here is where I pass in the list of skills.
+
+191
+00:08:30.576 --> 00:08:33.079
+These could be custom ones or built-in ones.
+
+192
+00:08:33.379 --> 00:08:36.182
+As I create many different versions of the skills,
+
+193
+00:08:36.582 --> 00:08:38.584
+I can reference a particular timestamp
+
+194
+00:08:38.885 --> 00:08:41.187
+or just use the latest one that I have.
+
+195
+00:08:41.587 --> 00:08:43.589
+As I start to communicate with the model,
+
+196
+00:08:43.589 --> 00:08:45.892
+I ask it to generate practice questions
+
+197
+00:08:46.192 --> 00:08:48.594
+and then specify the file that I'm working with.
+
+198
+00:08:48.895 --> 00:08:51.597
+This file object was previously created
+
+199
+00:08:51.898 --> 00:08:53.599
+when I uploaded the LaTeX file.
+
+200
+00:08:53.900 --> 00:08:55.501
+We finally make sure we're bringing
+
+201
+00:08:55.501 --> 00:08:57.403
+in the correct tools for code execution.
+
+202
+00:08:57.570 --> 00:08:59.639
+and send a message to our API.
+
+203
+00:09:00.239 --> 00:09:01.374
+Now let's go take a look
+
+204
+00:09:01.374 --> 00:09:02.708
+at the response that we got back.
+
+205
+00:09:03.242 --> 00:09:06.546
+We can see here that there are multiple different pieces being used.
+
+206
+00:09:07.046 --> 00:09:11.050
+Tools on the server, code execution, additional tools being used,
+
+207
+00:09:11.350 --> 00:09:14.053
+and then finally, a bash code execution result.
+
+208
+00:09:14.253 --> 00:09:15.755
+To make this a little bit cleaner
+
+209
+00:09:15.755 --> 00:09:17.456
+to look at, let's add some nice formatting
+
+210
+00:09:17.857 --> 00:09:20.059
+so that we can go ahead and take a look
+
+211
+00:09:20.459 --> 00:09:23.062
+and analyze different text responses and tool use.
+
+212
+00:09:23.229 --> 00:09:26.032
+We're going to go ahead and see in this particular series
+
+213
+00:09:26.232 --> 00:09:28.234
+what's happening one step at a time.
+
+214
+00:09:28.434 --> 00:09:30.403
+When we take a look at what the response is,
+
+215
+00:09:30.403 --> 00:09:33.606
+which includes our text and our tool use and tool results,
+
+216
+00:09:33.606 --> 00:09:35.908
+the first thing the model is telling us
+
+217
+00:09:35.908 --> 00:09:38.210
+is it can help generate questions from these notes
+
+218
+00:09:38.210 --> 00:09:40.413
+and it's going to start by reading the skill file
+
+219
+00:09:40.413 --> 00:09:42.415
+and examining the lecture notes.
+
+220
+00:09:42.882 --> 00:09:46.452
+Notice here, it's detected the skill that it needs to use,
+
+221
+00:09:46.752 --> 00:09:48.955
+but it's only reading the SKILL.md
+
+222
+00:09:49.455 --> 00:09:51.223
+We're going to see later on if there
+
+223
+00:09:51.223 --> 00:09:52.959
+are additional files that need to be read,
+
+224
+00:09:53.159 --> 00:09:55.161
+we'll make use of that progressive disclosure.
+
+225
+00:09:55.661 --> 00:09:57.563
+We're also going to review in
+
+226
+00:09:57.563 --> 00:09:59.765
+our input that LaTeX file as well.
+
+227
+00:10:00.066 --> 00:10:02.268
+We're going to go ahead and see the underlying data
+
+228
+00:10:02.268 --> 00:10:05.237
+that comes from these files. This is the YAML front matter
+
+229
+00:10:05.237 --> 00:10:07.940
+that we've seen before, as well as the LaTeX
+
+230
+00:10:07.940 --> 00:10:10.242
+from our notes04.tex file.
+
+231
+00:10:10.476 --> 00:10:13.245
+Next, we're going to go ahead and check the markdown template
+
+232
+00:10:13.245 --> 00:10:15.247
+to use the proper structure because we
+
+233
+00:10:15.247 --> 00:10:17.249
+want our output to be in markdown.
+
+234
+00:10:17.249 --> 00:10:19.318
+Here is where we're going to leverage
+
+235
+00:10:19.318 --> 00:10:21.354
+a bit more of that progressive disclosure.
+
+236
+00:10:21.387 --> 00:10:24.590
+Here's where we're going to read inside of the assets folder
+
+237
+00:10:24.590 --> 00:10:26.892
+that markdown_template.md
+
+238
+00:10:26.892 --> 00:10:28.995
+We'll get back the response that we've read
+
+239
+00:10:28.995 --> 00:10:30.896
+and now we'll generate the questions
+
+240
+00:10:30.896 --> 00:10:33.165
+based on the lecture notes that we've passed.
+
+241
+00:10:33.165 --> 00:10:35.968
+Here we're going to use our code execution tool
+
+242
+00:10:36.068 --> 00:10:38.371
+to create a particular file.
+
+243
+00:10:38.471 --> 00:10:40.573
+We'll give that file text in markdown,
+
+244
+00:10:41.073 --> 00:10:43.075
+and we'll get back the result of that file.
+
+245
+00:10:43.376 --> 00:10:46.545
+We're going to go ahead and copy that to an output directory
+
+246
+00:10:46.846 --> 00:10:49.949
+and use our Files API to get back a file_id
+
+247
+00:10:50.049 --> 00:10:52.151
+that we can download later on.
+
+248
+00:10:52.852 --> 00:10:54.453
+Once we get back that result,
+
+249
+00:10:54.820 --> 00:10:57.623
+We can take a look at the underlying file that's been generated
+
+250
+00:10:58.024 --> 00:11:01.627
+and make use of that file ID to programmatically download it.
+
+251
+00:11:02.328 --> 00:11:05.431
+We can see here it's been saved and is ready for use.
+
+252
+00:11:05.831 --> 00:11:08.234
+Using that file ID that we saw above
+
+253
+00:11:08.467 --> 00:11:10.770
+Let's go ahead and download the file.
+
+254
+00:11:11.771 --> 00:11:13.839
+We'll go ahead and check in this response and
+
+255
+00:11:13.839 --> 00:11:16.175
+make sure that we have the file ID correctly extracted.
+
+256
+00:11:16.475 --> 00:11:18.678
+And if we have that, which we expect to do,
+
+257
+00:11:18.978 --> 00:11:21.280
+we should be able to download that particular file.
+
+258
+00:11:21.781 --> 00:11:23.849
+We'll go ahead and write to
+
+259
+00:11:23.849 --> 00:11:26.285
+a file called notes04.md with that content.
+
+260
+00:11:26.585 --> 00:11:28.587
+includes the file ID
+
+261
+00:11:28.688 --> 00:11:32.091
+as well as the necessary beta headers to communicate with the API.
+
+262
+00:11:33.092 --> 00:11:36.195
+We can see here, we've downloaded that notes04.md file,
+
+263
+00:11:37.096 --> 00:11:39.098
+and this is coming from the Files API
+
+264
+00:11:39.398 --> 00:11:41.100
+with the code execution tool,
+
+265
+00:11:41.400 --> 00:11:43.903
+all generated with the model and a skill.
+
+266
+00:11:44.270 --> 00:11:46.572
+Inside of this file that we've downloaded,
+
+267
+00:11:46.605 --> 00:11:48.541
+we can see that we're following those
+
+268
+00:11:48.541 --> 00:11:50.776
+exact parts that we had in the skill.
+
+269
+00:11:50.976 --> 00:11:53.079
+Starting with true and false questions,
+
+270
+00:11:53.079 --> 00:11:56.082
+moving on to explanatory questions, to coding questions,
+
+271
+00:11:56.082 --> 00:11:58.784
+and finally, to use case applications.
+
+272
+00:11:59.251 --> 00:12:00.519
+We can preview this in markdown
+
+273
+00:12:00.519 --> 00:12:02.054
+to see what that would look like.
+
+274
+00:12:02.455 --> 00:12:04.090
+And here we can see our
+
+275
+00:12:04.090 --> 00:12:06.058
+use case application, all the things necessary.
+
+276
+00:12:06.726 --> 00:12:09.428
+Now is a good time to evaluate this particular output.
+
+277
+00:12:09.729 --> 00:12:10.996
+Did we do exactly what the
+
+278
+00:12:10.996 --> 00:12:12.431
+skill wanted? It looks good to start.
+
+279
+00:12:13.032 --> 00:12:14.433
+bringing in some unit tests can
+
+280
+00:12:14.433 --> 00:12:16.035
+really take this to the next level.
+
+281
+00:12:16.335 --> 00:12:18.304
+If we need, we can go back and
+
+282
+00:12:18.304 --> 00:12:20.239
+modify the skill, just like we saw before,
+
+283
+00:12:20.639 --> 00:12:22.475
+using the API, the code execution
+
+284
+00:12:22.475 --> 00:12:24.643
+tool, and the Files API as well.
+
+285
+00:12:25.411 --> 00:12:28.214
+We also have the ability to delete skills programmatically.
+
+286
+00:12:28.481 --> 00:12:29.815
+In order to delete a skill, we
+
+287
+00:12:29.815 --> 00:12:31.517
+first have to find all of the versions
+
+288
+00:12:31.817 --> 00:12:34.620
+associated with that skill and then delete them.
+
+289
+00:12:35.020 --> 00:12:36.822
+Once those versions are deleted,
+
+290
+00:12:37.022 --> 00:12:39.425
+we should be able to delete the underlying skill. Right here.
+
+291
+00:12:41.727 --> 00:12:43.395
+Next, we're going to go ahead
+
+292
+00:12:43.395 --> 00:12:45.364
+and use our analyzing time series skill
+
+293
+00:12:45.364 --> 00:12:46.932
+alongside another skill.
+
+294
+00:12:47.433 --> 00:12:49.335
+This is going to look pretty familiar to what
+
+295
+00:12:49.335 --> 00:12:51.237
+we saw above, so let's go through these steps.
+
+296
+00:12:51.737 --> 00:12:53.739
+First, we're going to upload our custom skill.
+
+297
+00:12:53.973 --> 00:12:55.975
+get back a skill ID and
+
+298
+00:12:55.975 --> 00:12:58.277
+confirm that we've done that as expected.
+
+299
+00:12:58.677 --> 00:13:00.279
+Here, we can also see that
+
+300
+00:13:00.279 --> 00:13:02.181
+we're not loading only the custom skills,
+
+301
+00:13:02.281 --> 00:13:04.583
+we can see the built-in skills as well.
+
+302
+00:13:04.884 --> 00:13:06.619
+These should look pretty familiar, as we
+
+303
+00:13:06.619 --> 00:13:08.387
+saw them as well in Claude AI.
+
+304
+00:13:08.854 --> 00:13:11.857
+Next, we're going to go ahead and upload our input file.
+
+305
+00:13:11.857 --> 00:13:14.660
+This is going to be our retail sales CSV file.
+
+306
+00:13:15.161 --> 00:13:17.630
+We're going to build a message to send to the API,
+
+307
+00:13:17.630 --> 00:13:19.498
+and just like before, we're going
+
+308
+00:13:19.498 --> 00:13:21.634
+to go ahead and use our skill,
+
+309
+00:13:21.634 --> 00:13:25.638
+but here we're also going to include the docx skill as well.
+
+310
+00:13:26.338 --> 00:13:28.707
+We're going to use this because we want to
+
+311
+00:13:28.707 --> 00:13:31.343
+create a word doc summarizing the results and the plots.
+
+312
+00:13:31.343 --> 00:13:34.046
+So here we're seeing a combination of custom skills
+
+313
+00:13:34.046 --> 00:13:37.550
+with the skill ID that we have as well as the version.
+
+314
+00:13:37.550 --> 00:13:40.419
+and using Anthropic built-in skills
+
+315
+00:13:40.419 --> 00:13:42.421
+in this case, the docx skill.
+
+316
+00:13:43.022 --> 00:13:44.323
+We're passing in the same headers
+
+317
+00:13:44.323 --> 00:13:45.825
+that we had to pass in before,
+
+318
+00:13:46.025 --> 00:13:49.028
+skills, code execution, and the files API.
+
+319
+00:13:49.995 --> 00:13:51.997
+Now that this is finished running,
+
+320
+00:13:51.997 --> 00:13:55.568
+we can examine the particular type of response that we get.
+
+321
+00:13:55.768 --> 00:13:58.270
+We're going to see something similar to what we saw before,
+
+322
+00:13:58.270 --> 00:14:00.873
+but this time there's just a little bit more happening.
+
+323
+00:14:01.407 --> 00:14:02.875
+Let's go and see what's happening
+
+324
+00:14:02.875 --> 00:14:04.610
+under the hood with our nice formatting.
+
+325
+00:14:04.977 --> 00:14:07.413
+So here, the model is going to respond
+
+326
+00:14:07.413 --> 00:14:09.615
+by helping us analyze time series data.
+
+327
+00:14:10.015 --> 00:14:12.384
+And just like before, we're going to start reading
+
+328
+00:14:12.384 --> 00:14:14.587
+the entirety of these SKILL.md files.
+
+329
+00:14:14.887 --> 00:14:17.890
+We're going to read our custom skill as well as the built-in
+
+330
+00:14:17.890 --> 00:14:20.392
+docx skill, which we're going to need to use.
+
+331
+00:14:20.626 --> 00:14:23.429
+We can see the result of those include the content,
+
+332
+00:14:23.529 --> 00:14:25.231
+starting from the beginning of the file
+
+333
+00:14:25.331 --> 00:14:27.433
+and including the entire SKILL.md
+
+334
+00:14:27.733 --> 00:14:30.336
+Next, we're going to go ahead and examine the data
+
+335
+00:14:30.436 --> 00:14:32.137
+to run our time series analysis.
+
+336
+00:14:32.271 --> 00:14:33.606
+We're going to look at just
+
+337
+00:14:33.606 --> 00:14:35.174
+the first 20 lines of this CSV
+
+338
+00:14:35.274 --> 00:14:38.077
+to examine the names of the columns
+
+339
+00:14:38.177 --> 00:14:40.379
+and the type of data that we're working with.
+
+340
+00:14:40.479 --> 00:14:42.781
+Since this is working as expected,
+
+341
+00:14:42.882 --> 00:14:45.885
+we're going to go ahead and run the diagnostics
+
+342
+00:14:45.985 --> 00:14:47.586
+and create the visualizations.
+
+343
+00:14:47.753 --> 00:14:50.556
+These particular commands that we need to run
+
+344
+00:14:50.556 --> 00:14:52.558
+are coming directly from our skill.
+
+345
+00:14:52.958 --> 00:14:56.562
+Here is where we're going to go ahead, read those underlying files,
+
+346
+00:14:56.562 --> 00:15:00.532
+execute that code and hand that back to Claude to work with.
+
+347
+00:15:01.033 --> 00:15:03.836
+We're going to get back the result of these executions.
+
+348
+00:15:03.936 --> 00:15:07.539
+We're going to get that back for diagnostics as well as visualize.
+
+349
+00:15:08.240 --> 00:15:11.043
+We're then going to read the summary and diagnostics,
+
+350
+00:15:11.143 --> 00:15:13.679
+which is the result of our script
+
+351
+00:15:13.679 --> 00:15:16.248
+that comes in a file called summary.txt
+
+352
+00:15:16.882 --> 00:15:19.385
+Once we have that particular file created,
+
+353
+00:15:19.685 --> 00:15:22.655
+we can then go ahead
+and create a Word document.
+
+354
+00:15:23.222 --> 00:15:24.857
+The built-in docx skill
+
+355
+00:15:24.857 --> 00:15:28.961
+includes the correct content for how to work
+with Word docs.
+
+356
+00:15:29.361 --> 00:15:31.330
+We're going to go ahead and take a look
+
+357
+00:15:31.430 --> 00:15:33.432
+at how best to generate that document
+
+358
+00:15:33.732 --> 00:15:35.734
+and leverage progressive disclosure here.
+
+359
+00:15:36.035 --> 00:15:38.237
+We don't need everything from the docx skill,
+
+360
+00:15:38.737 --> 00:15:41.540
+just using a way to get to those markdown files.
+
+361
+00:15:41.941 --> 00:15:45.377
+Once we have that, we'll create a comprehensive Word document
+
+362
+00:15:45.778 --> 00:15:49.782
+using the skill necessary, execute the code to make it do that,
+
+363
+00:15:49.949 --> 00:15:52.051
+and generate the underlying Word document.
+
+364
+00:15:52.384 --> 00:15:54.053
+Once we have that Word document,
+
+365
+00:15:54.053 --> 00:15:55.988
+we'll copy that to the output directory
+
+366
+00:15:56.288 --> 00:15:58.991
+and just like we saw before, get back a file ID
+
+367
+00:15:59.091 --> 00:16:02.394
+that we can use if we want to download this Word document.
+
+368
+00:16:02.828 --> 00:16:05.431
+We can see a summary of what this data looks like.
+
+369
+00:16:05.931 --> 00:16:07.733
+And now we can download the file.
+
+370
+00:16:08.233 --> 00:16:11.203
+Similarly, we'll go ahead and find that file_id if it exists.
+
+371
+00:16:11.603 --> 00:16:14.306
+We're going to go ahead and download that particular file
+
+372
+00:16:14.606 --> 00:16:17.910
+with the necessary contents as a docx file.
+
+373
+00:16:18.410 --> 00:16:20.512
+If we take a look at what this looks like,
+
+374
+00:16:20.512 --> 00:16:22.614
+we now have a Word document
+
+375
+00:16:22.614 --> 00:16:25.017
+with our findings, our overview, our statistics.
+
+376
+00:16:25.017 --> 00:16:28.320
+We can see that we brought in those plots and visualizations,
+
+377
+00:16:28.320 --> 00:16:31.223
+as well as the statistical analysis that we've requested.
+
+378
+00:16:31.690 --> 00:16:34.393
+This is also a great time to not only evaluate
+
+379
+00:16:34.493 --> 00:16:37.496
+if what we're doing is expected in the skill,
+
+380
+00:16:37.596 --> 00:16:40.499
+but that we're doing this in a predictable fashion.
+
+381
+00:16:40.899 --> 00:16:42.901
+As we continue to evaluate, we can always
+
+382
+00:16:42.901 --> 00:16:44.903
+modify this skill as much as we want.
+
+383
+00:16:45.404 --> 00:16:47.873
+But all this data is coming in from the skill
+
+384
+00:16:48.173 --> 00:16:50.275
+as well as the docx skill.
+
+385
+00:16:50.309 --> 00:16:53.012
+to create this individual file.
+
+386
+00:16:53.212 --> 00:16:55.514
+Like we saw before, if we want to delete this skill,
+
+387
+00:16:55.614 --> 00:16:58.317
+we can list all the versions and delete all those versions.
+
+388
+00:16:58.917 --> 00:17:01.286
+And once those versions are deleted,
+
+389
+00:17:01.286 --> 00:17:04.089
+delete the underlying skill. In this lesson,
+
+390
+00:17:04.089 --> 00:17:07.092
+We've combined our knowledge of the Messages API,
+
+391
+00:17:07.092 --> 00:17:10.596
+the Code Execution tool, the Files API, and skills
+
+392
+00:17:10.596 --> 00:17:14.199
+to take our custom skills and work with them programmatically.
+
+393
+00:17:14.466 --> 00:17:17.269
+In the next lesson, we're going to move to Claude code
+
+394
+00:17:17.269 --> 00:17:19.671
+and see how to add our own custom skills
+
+395
+00:17:19.671 --> 00:17:21.673
+inside of a .claude folder
+
+396
+00:17:21.673 --> 00:17:24.676
+and build a more sophisticated command line application.

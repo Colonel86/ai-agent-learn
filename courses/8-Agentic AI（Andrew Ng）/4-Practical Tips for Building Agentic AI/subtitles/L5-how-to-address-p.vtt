@@ -1,0 +1,439 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:06.890 --> 00:00:05.199
+An agentic workflow may comprise many different types of components, and so your tools for
+
+2
+00:00:05.199 --> 00:00:09.600
+improving different components will be pretty different. But I'd like to share with you some
+
+3
+00:00:09.600 --> 00:00:15.119
+general patterns I've seen. Some components in your agentic workflow will be non-LLM-based,
+
+4
+00:00:15.119 --> 00:00:20.000
+so it may be something like a web search engine or a text retrieval component,
+
+5
+00:00:20.000 --> 00:00:24.879
+if that's part of your RAG or Retrieval Augmented Generating System, something for code execution,
+
+6
+00:00:24.879 --> 00:00:28.959
+or maybe with a separately trained machine learning model, maybe for speech recognition
+
+7
+00:00:28.959 --> 00:00:34.720
+or detecting people in pictures, and so on. So sometimes these non-LLM-based components will
+
+8
+00:00:34.720 --> 00:00:39.279
+have parameters or hyperparameters that you can tune. So for web search, you can tune things like
+
+9
+00:00:39.279 --> 00:00:44.080
+the number of results or maybe the date range that you ask the web search engine to consider.
+
+10
+00:00:44.080 --> 00:00:49.279
+For a RAG text retrieval component, you might change the similarity threshold that determines
+
+11
+00:00:49.279 --> 00:00:54.959
+what pieces of text it considers similar, or the chunk size. Often RAG systems will take text and
+
+12
+00:00:55.040 --> 00:01:00.080
+chop it up into smaller chunks for matching, so the main hyperparameters you could use. Or for
+
+13
+00:01:00.080 --> 00:01:05.040
+people detection, you might change the detection threshold, so how sensitive it is and how likely
+
+14
+00:01:05.040 --> 00:01:08.959
+it is to declare this found a person, and this will trade off the false positives and false
+
+15
+00:01:08.959 --> 00:01:12.639
+negatives. If they follow all the details of the hyperparameters I just discussed, don't worry
+
+16
+00:01:12.639 --> 00:01:16.720
+about it. The details aren't that important, but often the components were parameters that
+
+17
+00:01:16.720 --> 00:01:21.839
+you can tune. And then of course, you can also try to replace the component. I do this a lot
+
+18
+00:01:21.839 --> 00:01:26.639
+in my agentic workflows, where I'll swap in different RAG search engines or swap in different
+
+19
+00:01:26.639 --> 00:01:32.000
+RAG providers and so on, just to see if some other provider might work better. Because of the
+
+20
+00:01:32.000 --> 00:01:37.279
+diversity of non-LLM-based components, I think the techniques for how to improve it will be
+
+21
+00:01:37.279 --> 00:01:43.680
+more diverse and dependent on exactly what that component is doing. For an LLM-based component,
+
+22
+00:01:43.680 --> 00:01:49.680
+here are some options you might consider. One would be to try to improve your prompts. So maybe
+
+23
+00:01:49.680 --> 00:01:55.120
+try to add more explicit instructions. Or if you know what few-shot prompting is, that refers to
+
+24
+00:01:55.120 --> 00:02:01.360
+adding one or more concrete examples of an example of an input and a desired output. And so few-shot
+
+25
+00:02:01.360 --> 00:02:06.160
+prompting, which you can learn about from some deep learning short courses as well, is a technique
+
+26
+00:02:06.160 --> 00:02:12.880
+that can give your LLM some examples to hopefully help it get better performing outputs written. Or
+
+27
+00:02:12.880 --> 00:02:19.440
+you can also try a different LLM. So with AI Suite or other tools, it could be pretty easy to try
+
+28
+00:02:19.440 --> 00:02:25.600
+multiple LLMs and then you can use evals to pick the best model for your application. Sometimes,
+
+29
+00:02:25.600 --> 00:02:30.399
+if a single step is too complex for one LLM to do, you can consider if you want to decompose
+
+30
+00:02:30.399 --> 00:02:35.440
+the task into smaller steps. Or maybe decompose it into a generation step and then a reflection
+
+31
+00:02:35.440 --> 00:02:40.960
+step. But more generally, if you have instructions that are very complex all within one step, maybe a
+
+32
+00:02:40.960 --> 00:02:45.360
+single LLM has a hard time following all those instructions. And you can break the task down
+
+33
+00:02:45.360 --> 00:02:51.520
+to smaller steps that may be easier for, say, two or three calls in a row to carry out accurately.
+
+34
+00:02:51.520 --> 00:02:56.559
+And lastly, something to try when the other methods aren't working well enough is to consider
+
+35
+00:02:56.559 --> 00:03:02.399
+fine-tuning a model. This tends to be quite a bit more complex than the other options, so it can be
+
+36
+00:03:02.399 --> 00:03:06.639
+quite a bit more expensive as well in terms of developer time to implement. But if you have some
+
+37
+00:03:06.639 --> 00:03:14.080
+data that you can use to fine-tune an LLM on, that could give you much better performance than
+
+38
+00:03:14.080 --> 00:03:19.199
+prompting alone. So I tend not to fine-tune a model until I've really exhausted the other
+
+39
+00:03:19.199 --> 00:03:25.199
+options, because fine-tuning tends to be quite complex. But for applications where after trying
+
+40
+00:03:25.199 --> 00:03:30.800
+everything else, if I'm still at, say, 90% performance or 95% performance, and I really
+
+41
+00:03:30.800 --> 00:03:35.679
+need to eke out those last few percentage points of improvement, then sometimes fine-tuning my own
+
+42
+00:03:35.679 --> 00:03:41.440
+custom model is a great technique to use. I tend to do this only on the more mature applications
+
+43
+00:03:41.440 --> 00:03:47.279
+because of how costly it is. It turns out that when you're trying to choose an LLM to use,
+
+44
+00:03:47.279 --> 00:03:52.320
+one thing that's very hopeful for you as a developer is if you have good intuitions about
+
+45
+00:03:52.320 --> 00:03:56.880
+how intelligent or how capable different large language models are. One thing you can do is just
+
+46
+00:03:56.880 --> 00:04:00.880
+try a lot of models and see what works best. But I find that as I work with different models,
+
+47
+00:04:00.880 --> 00:04:06.000
+I start to hone intuitions about which models work best for what types of tasks. And when you hone
+
+48
+00:04:06.000 --> 00:04:10.880
+those intuitions, you can be more efficient as well in writing good prompts for the model as
+
+49
+00:04:10.880 --> 00:04:16.399
+well as choosing good models for your tasks. So I'd like to share with you some thoughts on how to
+
+50
+00:04:16.399 --> 00:04:22.640
+hone your intuition on what models will work well for your application. Let's illustrate this with
+
+51
+00:04:22.640 --> 00:04:29.279
+an example of using an LLM to follow instructions to remove or to redact PII or personally
+
+52
+00:04:29.279 --> 00:04:34.640
+identifiable information. So you're now to remove private sensitive information. For example,
+
+53
+00:04:34.640 --> 00:04:41.920
+if you are using an LLM to summarize customer calls, then maybe one summary is on July 14th,
+
+54
+00:04:41.920 --> 00:04:46.640
+2023, Jessica Alvarez with a social security number, a certain address, a business support
+
+55
+00:04:46.640 --> 00:04:52.239
+ticket, and so on. So this piece of text has a lot of sensitive, personally identifiable
+
+56
+00:04:52.239 --> 00:04:58.640
+information. Now, let's say we want to remove all PII from such summaries because we want to use the
+
+57
+00:04:58.640 --> 00:05:03.679
+data for downstream statistical analysis of what customers are calling about. And to protect customer
+
+58
+00:05:03.679 --> 00:05:08.959
+information, we want to strip out that PII before we do that downstream statistical analysis. So you
+
+59
+00:05:08.959 --> 00:05:15.679
+might prompt an LLM with instructions to identify all cases of PII in the text below and then return
+
+60
+00:05:15.679 --> 00:05:23.920
+the redacted text with redacted colon and so on. It turns out that the larger frontier models tend
+
+61
+00:05:23.920 --> 00:05:29.440
+to be much better at following instructions, whereas the smaller models tend to be pretty
+
+62
+00:05:29.440 --> 00:05:34.239
+good at answering simple factual questions, but are just not as good at following instructions.
+
+63
+00:05:34.239 --> 00:05:40.239
+If you run this prompt on the smaller model, the OpenWay Llama 3.1 model with 8 billion parameters,
+
+64
+00:05:40.239 --> 00:05:45.359
+then it may generate an output like this. It says the identified PII is social security number and
+
+65
+00:05:45.359 --> 00:05:50.559
+address, and then it redacts it as follows and so on. And it actually makes a few errors. It didn't
+
+66
+00:05:50.559 --> 00:05:56.720
+follow the instructions properly. It showed the list, then redacted the text, then returned another
+
+67
+00:05:56.720 --> 00:06:02.320
+list, which it wasn't supposed to. And in this list of PII, it missed the name. And then I think
+
+68
+00:06:02.320 --> 00:06:07.440
+it also didn't redact partly the address. So details aren't important, but it didn't follow these instructions
+
+69
+00:06:07.440 --> 00:06:12.959
+perfectly, and maybe it missed a little bit of PII. In contrast, if you use a more intelligent model,
+
+70
+00:06:12.959 --> 00:06:17.200
+one that's better at following instructions, you may get a better result like this, where it's
+
+71
+00:06:17.200 --> 00:06:24.720
+actually correctly listed all the PII and correctly redacted all of the PII. And so I find that as
+
+72
+00:06:24.720 --> 00:06:30.160
+different LLM providers specialize on different tasks, different models really are better for
+
+73
+00:06:30.160 --> 00:06:34.720
+different tasks. Some are better at coding, some are better at following instructions, some are better
+
+74
+00:06:34.720 --> 00:06:40.799
+at certain niche types of facts. And if you can hold your intuition for what models are more or
+
+75
+00:06:40.799 --> 00:06:44.959
+less intelligent, and what type of instructions they're more or less able to follow, then you'll
+
+76
+00:06:44.959 --> 00:06:50.720
+be able to make better decisions as to what models to use. So to share a couple tips on how to do this,
+
+77
+00:06:50.720 --> 00:06:55.440
+I encourage you to play with different models often. So whenever I do a new model release,
+
+78
+00:06:55.440 --> 00:07:00.559
+I'll often go try it out and try out different queries on it, both closed-weight proprietary
+
+79
+00:07:00.559 --> 00:07:06.000
+models as well as open-weight models. And I find that sometimes having a personal set of evals might
+
+80
+00:07:06.000 --> 00:07:10.559
+also be helpful, where there's a set of things you ask a lot of different models that might help you
+
+81
+00:07:10.559 --> 00:07:16.880
+calibrate how well they do on different types of tasks. One other thing that I do a lot that I hope
+
+82
+00:07:16.880 --> 00:07:22.480
+will be useful to you is I spend a lot of time reading other people's prompts. So sometimes
+
+83
+00:07:22.480 --> 00:07:27.600
+people will publish their prompts on the internet, and I'll often go and read them to understand
+
+84
+00:07:27.600 --> 00:07:32.559
+what best practices in prompting look like. Or I'll often chat to my friends at various companies,
+
+85
+00:07:32.559 --> 00:07:36.640
+including some of the frontier model companies, and share my prompts with them, take a look at
+
+86
+00:07:36.640 --> 00:07:42.640
+how they prompt. And sometimes I'll also go to open-source packages written by people I really
+
+87
+00:07:42.640 --> 00:07:48.160
+respect and download the open-source package and dig through that open-source package to find the
+
+88
+00:07:48.160 --> 00:07:53.359
+prompts the authors have written in order to read it, in order to hold my intuition about how to
+
+89
+00:07:53.359 --> 00:07:58.640
+write good prompts. This is one technique that I encourage you to consider, is by reading lots of
+
+90
+00:07:58.640 --> 00:08:04.480
+other people's prompts that will help you get better at writing prompts yourself. And I certainly
+
+91
+00:08:04.480 --> 00:08:09.679
+do this a lot, and I encourage you to do so too. And this will hone your intuition about what types
+
+92
+00:08:09.679 --> 00:08:14.799
+of instructions models are good at following, and when to say certain things to different models.
+
+93
+00:08:14.799 --> 00:08:19.440
+In addition to playing with models and reading other people's prompts, if you try out lots of
+
+94
+00:08:19.440 --> 00:08:24.880
+different models in your agentic workflows, that also lets you hone your intuition. So you see
+
+95
+00:08:24.880 --> 00:08:30.880
+which models work best for which types of tasks, and either looking at traces to get an informal
+
+96
+00:08:30.880 --> 00:08:36.479
+sense, or looking at either component-wise or end-to-end evals can help you assess how well
+
+97
+00:08:36.479 --> 00:08:40.000
+different models are working for different parts of your workflow. And then you start to hone
+
+98
+00:08:40.000 --> 00:08:46.320
+intuitions about not just performance, but maybe also price and speed trade-offs for the use of
+
+99
+00:08:46.320 --> 00:08:51.440
+different models. And one of the reasons I tend to develop my agentic workflows with AI Suite is
+
+100
+00:08:51.440 --> 00:08:56.000
+because it then makes it easy to quickly swap out and try out different models. And this makes me
+
+101
+00:08:56.000 --> 00:09:02.719
+more efficient in terms of trying out and assessing which models work best for my workflow. So we've
+
+102
+00:09:02.719 --> 00:09:08.960
+talked a lot about how to improve the performance of different components to hopefully improve the
+
+103
+00:09:08.960 --> 00:09:15.679
+overall performance of your end-to-end system. In addition to improving the quality of the output,
+
+104
+00:09:15.679 --> 00:09:21.039
+one other thing you might want to do in your workflows is to optimize the latency as well as
+
+105
+00:09:21.039 --> 00:09:25.440
+cost. I find that for a lot of teams, when you start developing, usually the number one thing
+
+106
+00:09:25.440 --> 00:09:31.679
+to worry about is just are the outputs sufficiently high quality. But then when the system is working
+
+107
+00:09:31.679 --> 00:09:37.119
+well and you put in the production, then there's often value to make it run faster as well as run
+
+108
+00:09:37.119 --> 00:09:42.880
+at lower cost as well. So in the next video, let's take a look at some ideas for improving
+
+109
+00:09:42.880 --> 00:09:46.880
+cost and latency for agentic workflows.
+

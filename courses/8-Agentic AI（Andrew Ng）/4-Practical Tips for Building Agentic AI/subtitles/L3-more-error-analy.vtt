@@ -1,0 +1,319 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:05.661 --> 00:00:05.599
+I found that for many developers, it's only by seeing multiple examples that you can then
+
+2
+00:00:05.599 --> 00:00:09.840
+get practice and hone your intuitions about how to carry out error analysis.
+
+3
+00:00:09.840 --> 00:00:14.000
+So let's take a look at two more examples, and we'll look at invoice processing
+
+4
+00:00:14.000 --> 00:00:16.399
+and responding to customer emails.
+
+5
+00:00:16.399 --> 00:00:21.920
+Here's the workflow that we had for invoice processing, where we had a clear process to
+
+6
+00:00:21.920 --> 00:00:27.040
+follow an agentic workflow of identifying the four required fields and then recording
+
+7
+00:00:27.040 --> 00:00:28.639
+them in a database.
+
+8
+00:00:28.639 --> 00:00:32.880
+In the example from the first video of this module, we said that the system was often
+
+9
+00:00:32.880 --> 00:00:36.159
+making a mistake in the due date of the invoice.
+
+10
+00:00:36.159 --> 00:00:40.799
+So we can carry out error analysis to try to figure out which of the components it may
+
+11
+00:00:40.799 --> 00:00:41.840
+have been due to.
+
+12
+00:00:41.840 --> 00:00:47.439
+So for example, did the PDF to text make a mistake, or did the LLM extract the wrong date
+
+13
+00:00:47.439 --> 00:00:51.439
+out of whatever was output from the PDF to text component?
+
+14
+00:00:51.439 --> 00:00:56.560
+To carry out an error analysis, I would try to find a number of examples where the data
+
+15
+00:00:56.560 --> 00:00:58.080
+extracted is incorrect.
+
+16
+00:00:58.080 --> 00:01:02.400
+So same as the last video, it's useful to focus on the examples where the performance
+
+17
+00:01:02.400 --> 00:01:05.839
+is subpar to try to figure out what went wrong with those examples.
+
+18
+00:01:05.839 --> 00:01:10.720
+So ignore the examples that got the date right, but try to find somewhere between 10 and 100
+
+19
+00:01:10.720 --> 00:01:12.800
+invoices where it got the date wrong.
+
+20
+00:01:12.800 --> 00:01:18.160
+And then I would look through to try to figure out was the cause of the problem that PDF
+
+21
+00:01:18.160 --> 00:01:24.080
+to text got the date wrong, or was it that the LLM, given the PDF to text output, pulled
+
+22
+00:01:24.080 --> 00:01:25.519
+out the wrong date.
+
+23
+00:01:25.519 --> 00:01:30.080
+And so you might build up a little spreadsheet like this and go through 20 invoices and just
+
+24
+00:01:30.080 --> 00:01:35.680
+count up how often did PDF to text extract the dates or the text incorrectly so that
+
+25
+00:01:35.680 --> 00:01:40.559
+even a human couldn't tell what is the due date versus the PDF to text look good enough,
+
+26
+00:01:40.559 --> 00:01:44.639
+but the LLM, when asked to pull the dates, somehow pulled out the wrong date, like maybe
+
+27
+00:01:44.639 --> 00:01:48.720
+identifying the invoice date rather than the due date of the invoice.
+
+28
+00:01:48.720 --> 00:01:52.639
+So in this example, it looks like the LLM data extraction was responsible for a lot
+
+29
+00:01:52.639 --> 00:01:53.199
+more errors.
+
+30
+00:01:53.199 --> 00:01:57.680
+So this tells me that maybe I should focus my efforts on the LLM data extraction component
+
+31
+00:01:57.680 --> 00:01:59.839
+rather than on PDF to text.
+
+32
+00:01:59.839 --> 00:02:04.879
+And this is important because if not for this error analysis, I can imagine some teams spending
+
+33
+00:02:05.440 --> 00:02:10.320
+weeks or months trying to tune the PDF to text only to discover after that time that
+
+34
+00:02:10.320 --> 00:02:14.479
+it did not make much of an impact to the final system's performance.
+
+35
+00:02:14.479 --> 00:02:20.000
+Oh, and by the way, these percentages here at the bottom can add up not to 100% because
+
+36
+00:02:20.000 --> 00:02:22.240
+these errors are not mutually exclusive.
+
+37
+00:02:22.240 --> 00:02:27.279
+To look at one last example, let's go back to the agentic workflow for responding to
+
+38
+00:02:27.279 --> 00:02:34.240
+customer emails, where the LLM, given a customer email like this, asking for an order, would
+
+39
+00:02:34.240 --> 00:02:39.440
+pull up the order details, fetch the information from the database, then draft a response for
+
+40
+00:02:39.440 --> 00:02:40.479
+a human to review.
+
+41
+00:02:40.479 --> 00:02:46.320
+So again, I would find a number of examples where, for whatever reason, the final output
+
+42
+00:02:46.320 --> 00:02:50.399
+is unsatisfactory and then try to figure out what had gone wrong.
+
+43
+00:02:50.399 --> 00:02:52.240
+And so some things that could go wrong.
+
+44
+00:02:52.240 --> 00:02:56.160
+Maybe the LLM had written an incorrect database query.
+
+45
+00:02:56.160 --> 00:03:01.600
+So when the query was sent to the database, it just did not successfully pull up the customer
+
+46
+00:03:01.600 --> 00:03:02.000
+info.
+
+47
+00:03:02.000 --> 00:03:05.039
+Or maybe the database has corrupted data.
+
+48
+00:03:05.039 --> 00:03:10.080
+So even though the LLM wrote a completely appropriate database query, maybe in SQL or some other
+
+49
+00:03:10.080 --> 00:03:13.119
+query language, the database did not have the correct information.
+
+50
+00:03:13.119 --> 00:03:17.679
+Or maybe given the correct information about the customer order, the LLM wrote an email
+
+51
+00:03:17.679 --> 00:03:20.080
+that was somehow not quite right.
+
+52
+00:03:20.080 --> 00:03:25.119
+So again, I would look through a handful of emails where the final output was unsatisfactory
+
+53
+00:03:25.119 --> 00:03:26.720
+and try to figure out what had gone wrong.
+
+54
+00:03:26.720 --> 00:03:31.440
+So maybe in email one, we find that the LLM had asked for the wrong table in the query,
+
+55
+00:03:31.440 --> 00:03:34.080
+just asked for the wrong data in the way it created the database.
+
+56
+00:03:34.080 --> 00:03:38.639
+In email two, maybe I find that the database actually has an error.
+
+57
+00:03:38.639 --> 00:03:44.000
+And maybe given that input, the LLM somehow wrote a subalternate email as well, and so
+
+58
+00:03:44.000 --> 00:03:44.559
+on.
+
+59
+00:03:44.559 --> 00:03:50.559
+And in this example, after going through many emails, maybe I find that the most common
+
+60
+00:03:50.559 --> 00:03:57.039
+error is in the way the LLM is writing a database query, say a SQL query, in order to fetch
+
+61
+00:03:57.039 --> 00:03:58.240
+the relevant information.
+
+62
+00:03:58.240 --> 00:04:02.399
+Whereas the database is mostly correct, although there's a little bit of data errors there.
+
+63
+00:04:02.399 --> 00:04:05.679
+And the way the LLM writes the email also has some errors.
+
+64
+00:04:05.679 --> 00:04:08.639
+Maybe it doesn't quite where they write 30% of the time.
+
+65
+00:04:08.639 --> 00:04:13.440
+And this tells me that it'd be most worthwhile maybe for me to improve the way the LLM is
+
+66
+00:04:13.440 --> 00:04:14.479
+writing queries.
+
+67
+00:04:14.479 --> 00:04:20.000
+Second most important would be maybe improve the prompting for how I write the final email.
+
+68
+00:04:20.000 --> 00:04:25.119
+That an analysis like this can tell you that 75% of the errors, maybe the system gets lots
+
+69
+00:04:25.119 --> 00:04:29.040
+of things right, but of all the things it gets not quite right, 75% of the problems
+
+70
+00:04:29.040 --> 00:04:31.040
+is from the database query.
+
+71
+00:04:31.040 --> 00:04:36.000
+This is incredibly helpful information to tell you where to focus your efforts.
+
+72
+00:04:36.000 --> 00:04:40.320
+When I'm developing Agentic AI workflows, I'll often use this type of error analysis
+
+73
+00:04:40.320 --> 00:04:45.200
+to tell me where to focus my attention in terms of what to work on next.
+
+74
+00:04:45.200 --> 00:04:49.679
+When you've made that determination, it turns out that to complement the end-to-end
+
+75
+00:04:49.679 --> 00:04:54.880
+evals that we spoke about earlier in this module, it's often useful to evaluate not
+
+76
+00:04:54.880 --> 00:04:59.839
+just the entire end-to-end system, but also individual components, because that can make
+
+77
+00:04:59.839 --> 00:05:05.359
+you more efficient in how you improve the one component that, say, error analysis has
+
+78
+00:05:05.359 --> 00:05:08.079
+caused you to decide to focus your attention on.
+
+79
+00:05:08.079 --> 00:05:15.040
+So let's go on to the next video to learn about component-level evals.
+

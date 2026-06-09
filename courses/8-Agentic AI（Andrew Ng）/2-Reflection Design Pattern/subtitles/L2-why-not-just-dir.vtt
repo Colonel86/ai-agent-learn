@@ -1,0 +1,247 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.500 --> 00:00:04.320
+Let's take a look at why we might prefer to use a reflection workflow rather than just
+
+2
+00:00:04.320 --> 00:00:09.119
+prompting an LLM once and having it directly generate the answer and be done with it.
+
+3
+00:00:09.119 --> 00:00:14.720
+With direct generation, you just prompt the LLM with an instruction and let it generate an answer.
+
+4
+00:00:14.720 --> 00:00:19.760
+So you can ask an LLM to write an essay about black holes and have it just generate the text,
+
+5
+00:00:19.760 --> 00:00:22.879
+or have it write the Python functions to calculate
+
+6
+00:00:22.879 --> 00:00:25.840
+compound interest and have it just write the code directly.
+
+7
+00:00:25.840 --> 00:00:31.200
+The prompt examples you see here are also called zero-shot prompting.
+
+8
+00:00:31.200 --> 00:00:35.680
+Let me explain what zero-shot means. In contrast to zero-shot prompting,
+
+9
+00:00:35.680 --> 00:00:41.040
+a related approach is to include one or more examples of what you want the output to look like
+
+10
+00:00:41.040 --> 00:00:45.759
+in your prompt. And this is known as one-shot prompting, if in the prompt you include
+
+11
+00:00:45.759 --> 00:00:50.000
+one example of a desired input-output pair, or two-shot or few-shot prompting,
+
+12
+00:00:50.000 --> 00:00:53.119
+depending on how many such examples you include in your prompt.
+
+13
+00:00:53.119 --> 00:00:57.759
+And so zero-shot prompting refers to if you include zero examples and if you don't include
+
+14
+00:00:57.759 --> 00:01:02.959
+any examples of the desired outputs that you want. But don't worry if you aren't yet familiar
+
+15
+00:01:02.959 --> 00:01:07.519
+with these terms. The important thing is that in the examples you see here, you're just prompting
+
+16
+00:01:07.519 --> 00:01:13.360
+the LLM to directly generate an answer in one go, which I'm also calling zero-shot prompting
+
+17
+00:01:13.360 --> 00:01:17.279
+because we include zero examples. It turns out that multiple studies have
+
+18
+00:01:17.279 --> 00:01:23.040
+shown that reflection improves on the performance of direct generation on a variety of tasks.
+
+19
+00:01:23.279 --> 00:01:30.720
+This diagram is adapted from the research paper by Madaan and others, and this shows a range of
+
+20
+00:01:30.720 --> 00:01:35.919
+different tasks being implemented with different models and with and without reflection.
+
+21
+00:01:35.919 --> 00:01:41.040
+The way to read this diagram is to look at these pairs of adjacent light followed by
+
+22
+00:01:41.040 --> 00:01:46.879
+dark-colored bars, where the light bar shows zero-shot prompting and the dark bar
+
+23
+00:01:46.879 --> 00:01:52.559
+shows the same model but with reflection. And the colors blue, green, and red show
+
+24
+00:01:52.559 --> 00:01:58.480
+experiments run with different models, such as GPT-3.5 and GPT-4. And what you see is,
+
+25
+00:01:58.480 --> 00:02:04.959
+for many different applications, the dark bar that is with reflection is quite a bit higher
+
+26
+00:02:04.959 --> 00:02:10.160
+than the light bar. But of course, your knowledge may vary depending on your specific application.
+
+27
+00:02:10.160 --> 00:02:14.160
+Here are some more examples where reflection might be helpful.
+
+28
+00:02:14.160 --> 00:02:20.559
+If you are generating structured data, such as an HTML table, sometimes it may have incorrect
+
+29
+00:02:20.559 --> 00:02:26.160
+formatting of the output. So a reflection prompt to validate the HTML code could be helpful.
+
+30
+00:02:26.160 --> 00:02:31.440
+If it's basic HTML, this may not help that much, since LLMs are pretty good at basic HTML. But
+
+31
+00:02:31.440 --> 00:02:36.160
+especially if you have more complex structured outputs, like maybe a JSON data structure with
+
+32
+00:02:36.160 --> 00:02:41.600
+a lot of nesting, then reflection may be more likely to spot bugs. Or if you ask an LLM to
+
+33
+00:02:41.600 --> 00:02:45.919
+generate a sequence of steps that comprise a set of instructions to do something, such as how to
+
+34
+00:02:45.919 --> 00:02:51.679
+brew a perfect cup of tea, sometimes the LLM may miss steps and a reflection prompt to ask to check
+
+35
+00:02:51.679 --> 00:02:56.240
+instructions for coherence and completeness might help spot errors. Or something that I've actually
+
+36
+00:02:56.240 --> 00:03:01.679
+worked on was using an LLM to generate domain names, but sometimes the names it generates has
+
+37
+00:03:01.679 --> 00:03:06.880
+an unintended meaning or may be really hard to pronounce. And so I've used reflection prompts
+
+38
+00:03:06.880 --> 00:03:11.360
+to double check if the domain name has any problematic connotations or problematic meanings,
+
+39
+00:03:11.360 --> 00:03:16.720
+or if the name is hard to pronounce. And we actually used this at one of my team's AI fund
+
+40
+00:03:16.720 --> 00:03:21.279
+to help brainstorm domain names for startups that we're working on. I want to show you a couple of
+
+41
+00:03:21.279 --> 00:03:26.320
+examples of reflection prompts. For brainstorming domain names, you might ask it to review the
+
+42
+00:03:26.320 --> 00:03:30.960
+domain names you suggested, and then ask it to check if each name is easy to pronounce. Check
+
+43
+00:03:30.960 --> 00:03:35.199
+if each name might mean something negative in English or other languages, and then output a
+
+44
+00:03:35.199 --> 00:03:41.039
+short list of only the names that satisfy these criteria. Or to improve an email, you can write a
+
+45
+00:03:41.039 --> 00:03:46.399
+reflection prompt to tell it to review the email first draft, check the tone, verify all fact states
+
+46
+00:03:46.399 --> 00:03:51.520
+and promises are accurate. This would make sense in the context of the LLM having been fed a number
+
+47
+00:03:51.520 --> 00:03:56.559
+of facts and dates and so on in order to write the email drafts. All this would be provided as part
+
+48
+00:03:56.559 --> 00:04:02.240
+of the LLM context. And then based on any problems it may find, write the next draft of the email.
+
+49
+00:04:02.240 --> 00:04:07.440
+So some tips for writing reflection prompts. It helps to clearly indicate that you want it to
+
+50
+00:04:07.440 --> 00:04:13.520
+review or to reflect on the first draft of the output. And if you can specify a clear set of
+
+51
+00:04:13.520 --> 00:04:17.440
+criteria, such as whether the domain name is easy to pronounce and whether it may have negative
+
+52
+00:04:17.440 --> 00:04:22.959
+connotations or for email, check the tone and verify the facts. Then that guides the LLM better
+
+53
+00:04:22.959 --> 00:04:28.799
+in reflecting and critiquing on the criteria that you care the most about. I found that one of the
+
+54
+00:04:28.799 --> 00:04:34.640
+ways I've learned to write better prompts is to read a lot of other prompts that other people
+
+55
+00:04:34.640 --> 00:04:40.720
+have written. Sometimes I'll actually download open source software and go and find the prompts
+
+56
+00:04:40.720 --> 00:04:45.359
+in a piece of software that I think is especially well done to just go and read the prompts that
+
+57
+00:04:45.359 --> 00:04:51.359
+the authors have written. So that I hope you have a sense of how to write a basic reflection prompt
+
+58
+00:04:51.359 --> 00:04:56.480
+and that maybe you even try it out in your own work to see if it helps give you better performance.
+
+59
+00:04:57.440 --> 00:05:02.000
+In the next video, I'd like to share with you a fun example where we'll start to look at
+
+60
+00:05:02.000 --> 00:05:06.640
+multi-modal inputs and outputs. We'll have an algorithm reflect
+
+61
+00:05:06.640 --> 00:05:11.839
+on an image being generated or a chart being generated. Let's go take a look.
+

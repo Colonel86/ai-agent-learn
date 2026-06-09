@@ -1,0 +1,1547 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:01.601
+In this final notebook here,
+
+2
+00:00:01.601 --> 00:00:03.103
+you can take everything
+that you've learned
+
+3
+00:00:03.103 --> 00:00:06.940
+and compose it all together
+to create one large experiment, to be able
+
+4
+00:00:06.940 --> 00:00:09.776
+to test out all the different parts
+of your agent at once.
+
+5
+00:00:09.776 --> 00:00:13.580
+So you'll combine some of the evaluators
+that you created in previous notebooks,
+
+6
+00:00:13.847 --> 00:00:15.815
+along with the experiment structure
+
+7
+00:00:15.815 --> 00:00:18.952
+here, to create an easy
+way to iterate on your agent.
+
+8
+00:00:19.586 --> 00:00:21.021
+As before,
+
+9
+00:00:21.021 --> 00:00:23.990
+import some different libraries
+that you're going to use.
+
+10
+00:00:24.124 --> 00:00:26.159
+These should look familiar
+at this point in your LLM classify
+
+11
+00:00:26.159 --> 00:00:29.162
+by some of the experiment functions
+that you might use.
+
+12
+00:00:29.496 --> 00:00:33.033
+And then from utils some functions
+including the agent
+
+13
+00:00:33.033 --> 00:00:35.101
+that you've been working on so far.
+
+14
+00:00:35.101 --> 00:00:37.737
+Now, you're going to run a few different
+evaluators.
+
+15
+00:00:37.737 --> 00:00:41.708
+So it's helpful to define a few eval model
+at the beginning saying
+
+16
+00:00:41.708 --> 00:00:44.711
+this is the evaluator LLM judge model
+you're going to use throughout.
+
+17
+00:00:45.412 --> 00:00:47.847
+And then you're also going
+to be accessing the Phoenix client.
+
+18
+00:00:47.847 --> 00:00:50.850
+So you can go ahead and add
+in the Phoenix client.
+
+19
+00:00:51.484 --> 00:00:55.855
+Now, you're going to use one big experiment
+to actually structure this code here.
+
+20
+00:00:56.222 --> 00:00:58.258
+And so the first step is creating the data
+
+21
+00:00:58.258 --> 00:01:01.261
+set that will be run
+through for that experiment.
+
+22
+00:01:01.494 --> 00:01:04.330
+So to start out with
+you can create a data set here.
+
+23
+00:01:04.330 --> 00:01:05.765
+and this is a pretty big data set.
+
+24
+00:01:05.765 --> 00:01:08.735
+Here you have the questions
+that are being inputted.
+
+25
+00:01:08.802 --> 00:01:12.572
+You also have some ground truth data
+like the SQL results that you expect
+
+26
+00:01:12.572 --> 00:01:14.074
+for those questions,
+
+27
+00:01:14.074 --> 00:01:16.509
+as well as some ground truth data
+about the SQL
+
+28
+00:01:16.509 --> 00:01:18.411
+generated for some of those questions.
+
+29
+00:01:18.411 --> 00:01:21.081
+Because you're combining multiple
+different evaluators here, you have
+
+30
+00:01:21.081 --> 00:01:24.084
+some multiple examples
+of ground truth data that's being added.
+
+31
+00:01:24.784 --> 00:01:28.188
+But again, you'll use the same syntax
+as you used previously to create a data
+
+32
+00:01:28.188 --> 00:01:31.524
+frame out of those examples
+and then upload that data frame
+
+33
+00:01:31.524 --> 00:01:34.861
+into Phoenix
+under the name Overall Experiment Inputs.
+
+34
+00:01:35.695 --> 00:01:38.865
+Now, one of the thing that's important
+to note is because you have multiple keys
+
+35
+00:01:38.865 --> 00:01:42.502
+this time, when you upload a data
+set into Phoenix, you define
+
+36
+00:01:42.735 --> 00:01:44.838
+which of those keys are input values,
+
+37
+00:01:44.838 --> 00:01:46.606
+so in this case just the question.
+
+38
+00:01:46.606 --> 00:01:48.842
+And then which of them are output values.
+
+39
+00:01:48.842 --> 00:01:50.477
+So these are your expected outputs.
+
+40
+00:01:50.477 --> 00:01:53.179
+So your SQL result and SQL generated keys.
+
+41
+00:01:54.214 --> 00:01:57.217
+Run that and your
+data set will be uploaded into Phoenix.
+
+42
+00:01:57.617 --> 00:02:01.421
+You can take a look in Phoenix
+within the data sets section.
+
+43
+00:02:02.088 --> 00:02:04.991
+You may need to refresh your Phoenix
+to have that appear.
+
+44
+00:02:04.991 --> 00:02:08.161
+And then you'll now see you have this
+overall experiments input data set.
+
+45
+00:02:08.928 --> 00:02:09.729
+And if you click into
+
+46
+00:02:09.729 --> 00:02:13.666
+any of these examples you'll see that
+each one has input keys for question
+
+47
+00:02:14.067 --> 00:02:17.904
+and then expected output keys
+for SQL result and SQL generated.
+
+48
+00:02:18.505 --> 00:02:19.339
+Now you might be asking
+
+49
+00:02:19.339 --> 00:02:22.876
+why we just have ground truth data
+for the SQL result in SQL generated.
+
+50
+00:02:23.309 --> 00:02:26.045
+The reason for that
+is that you can still use LLM as-a-Judge
+
+51
+00:02:26.045 --> 00:02:28.848
+when you don't have expected ground
+truth data to compare against.
+
+52
+00:02:28.848 --> 00:02:31.918
+So for some of the other tools
+you can use LLM as-a-Judge approach
+
+53
+00:02:32.218 --> 00:02:35.021
+where you don't need that expected value.
+
+54
+00:02:35.021 --> 00:02:37.824
+So on the subject of LLM as-a-Judge, now
+
+55
+00:02:37.824 --> 00:02:40.860
+it's time to define all of your different
+evaluators that you're going to use.
+
+56
+00:02:41.494 --> 00:02:43.997
+And there's two different LLM as-a-Judge
+prompts
+
+57
+00:02:43.997 --> 00:02:45.798
+that you might want to use here.
+
+58
+00:02:45.798 --> 00:02:49.068
+And these should look familiar
+from the previous notebooks that you run.
+
+59
+00:02:49.102 --> 00:02:53.373
+So if one is your LLM as-a-Judge
+for clarity and your response.
+
+60
+00:02:54.908 --> 00:02:56.242
+And then another here
+
+61
+00:02:56.242 --> 00:02:59.245
+is for what
+we're calling entity correctness.
+
+62
+00:02:59.913 --> 00:03:02.682
+So in this case,
+this is another type of LLM as-a-Judge
+
+63
+00:03:02.682 --> 00:03:06.052
+that you can run on the output
+of your model or your data analyzer
+
+64
+00:03:06.052 --> 00:03:09.155
+step to check to make sure that any,
+
+65
+00:03:09.522 --> 00:03:13.660
+any variables that are mentioned,
+any SQL columns or anything like that
+
+66
+00:03:14.294 --> 00:03:18.031
+are mapped correctly in the input,
+the data throughout the run,
+
+67
+00:03:18.031 --> 00:03:19.265
+and then the output.
+
+68
+00:03:19.265 --> 00:03:22.835
+This is basically making sure
+that your agent doesn't start referring
+
+69
+00:03:22.835 --> 00:03:26.105
+to SKU or skew columns
+
+70
+00:03:26.105 --> 00:03:29.108
+as store IDs, or something
+along those lines.
+
+71
+00:03:29.609 --> 00:03:32.345
+Now you can define
+your evaluator functions.
+
+72
+00:03:32.345 --> 00:03:35.348
+And so you can go one by one for these
+starting with the router.
+
+73
+00:03:35.949 --> 00:03:38.952
+So, for your router
+you're doing a function calling eval.
+
+74
+00:03:39.352 --> 00:03:42.255
+And because you're using this
+in the context of an experiment,
+
+75
+00:03:42.255 --> 00:03:45.191
+you can expect that
+this is going to be sent an input.
+
+76
+00:03:45.191 --> 00:03:46.159
+And then an output.
+
+77
+00:03:47.160 --> 00:03:49.462
+In some
+cases you also have expected output.
+
+78
+00:03:49.462 --> 00:03:52.298
+In this case you don't have ground truth
+data for function calling.
+
+79
+00:03:52.298 --> 00:03:54.867
+So you just have an input
+and then the output.
+
+80
+00:03:54.867 --> 00:03:57.770
+This is the original input that agent got.
+
+81
+00:03:57.770 --> 00:04:01.441
+And then this is going to be your output
+from running your agent.
+
+82
+00:04:01.808 --> 00:04:06.679
+So what you'll do is from that output grab
+some of the tool calls that were made.
+
+83
+00:04:06.980 --> 00:04:09.282
+That'll be one of the entries
+in the output.
+
+84
+00:04:09.282 --> 00:04:11.751
+And then you can construct together a data
+
+85
+00:04:11.751 --> 00:04:14.754
+frame using the question as one key.
+
+86
+00:04:15.088 --> 00:04:18.992
+And then any of the different function
+calls as the other rows here.
+
+87
+00:04:19.525 --> 00:04:21.094
+And the reason that you're constructing
+a data
+
+88
+00:04:21.094 --> 00:04:24.430
+frame is one so that it works nicely
+with the LLM classify method.
+
+89
+00:04:24.931 --> 00:04:28.501
+And two, because you might actually have
+multiple tool calls per question here.
+
+90
+00:04:28.501 --> 00:04:29.402
+So you might have a case
+
+91
+00:04:29.402 --> 00:04:32.939
+where a question came in and your agent
+decided to call two different tools.
+
+92
+00:04:33.439 --> 00:04:36.442
+So this structure here
+will create a data frame that's two rows
+
+93
+00:04:36.609 --> 00:04:39.279
+with the question
+and the tool call column.
+
+94
+00:04:39.279 --> 00:04:41.514
+And then you're going to use your LLM
+as-a-Judge,
+
+95
+00:04:41.514 --> 00:04:44.484
+LLM classify method here again
+using that data frame.
+
+96
+00:04:44.784 --> 00:04:48.454
+The tool calling prompt template as before
+exactly the same code that you ran.
+
+97
+00:04:48.921 --> 00:04:51.924
+Previously to run your LLM
+as-a-Judge for function calling.
+
+98
+00:04:52.258 --> 00:04:54.127
+A couple notebooks I got there.
+
+99
+00:04:54.127 --> 00:04:58.631
+So you can define that method, and
+then here you're returning back the score.
+
+100
+00:04:59.032 --> 00:05:00.967
+This is going to be the mean score here.
+
+101
+00:05:00.967 --> 00:05:03.970
+Because again, you could have
+two different LLM as a judge
+
+102
+00:05:04.437 --> 00:05:06.973
+or two different functions
+that were called by your agent.
+
+103
+00:05:06.973 --> 00:05:09.809
+So you're going to have to have some way
+of reporting back the overall score
+
+104
+00:05:09.809 --> 00:05:11.177
+for this run.
+
+105
+00:05:11.177 --> 00:05:13.646
+Now, you can start evaluating your tools.
+
+106
+00:05:13.646 --> 00:05:17.016
+So one of those tools is going to be
+your database lookup tool.
+
+107
+00:05:17.817 --> 00:05:18.785
+And so you can grab
+
+108
+00:05:20.553 --> 00:05:23.156
+a method to evaluate your database
+lookup tool.
+
+109
+00:05:23.156 --> 00:05:25.725
+And so in this case
+it's evaluating the SQL result.
+
+110
+00:05:25.725 --> 00:05:27.493
+And now if you think back to the data
+frame,
+
+111
+00:05:27.493 --> 00:05:29.996
+you'll remember that you have some ground
+truth data.
+
+112
+00:05:29.996 --> 00:05:33.366
+You have some expected responses
+for SQL generation.
+
+113
+00:05:33.900 --> 00:05:36.869
+So in this case you will still have
+the output of your agent.
+
+114
+00:05:36.869 --> 00:05:39.038
+But then you're also going to ask
+for the expected value.
+
+115
+00:05:39.038 --> 00:05:40.506
+So these are going to be
+the expected ground
+
+116
+00:05:40.506 --> 00:05:43.476
+truth responses that you have
+that you defined in your data frame.
+
+117
+00:05:43.943 --> 00:05:46.679
+And so first it's
+checking to make sure the outputs there.
+
+118
+00:05:46.679 --> 00:05:49.649
+And then it's grabbing
+any kind of SQL result
+
+119
+00:05:49.649 --> 00:05:52.385
+from the actual output that was run.
+
+120
+00:05:52.385 --> 00:05:55.388
+And in this case it's going to grab
+all the two responses from the output.
+
+121
+00:05:55.888 --> 00:05:59.025
+And then this code here will actually loop
+through
+
+122
+00:05:59.025 --> 00:06:02.028
+all the different tools that were called
+in that particular run of the agent.
+
+123
+00:06:02.328 --> 00:06:05.698
+And then it's going to look for one
+that matches the name lookup sales data.
+
+124
+00:06:06.399 --> 00:06:07.934
+And the idea there is
+you want to make sure that you're
+
+125
+00:06:07.934 --> 00:06:10.203
+just looking at the tool
+call responses here
+
+126
+00:06:10.203 --> 00:06:12.238
+that are for that lookup sales data
+method.
+
+127
+00:06:12.238 --> 00:06:13.873
+You don't want to look
+for your other two tools
+
+128
+00:06:13.873 --> 00:06:15.241
+in this case.
+
+129
+00:06:15.241 --> 00:06:18.745
+And then once you have
+that as your SQL result, then you're going
+
+130
+00:06:18.745 --> 00:06:21.748
+to grab the actual response
+from that particular tool.
+
+131
+00:06:21.748 --> 00:06:26.748
+So all of this code here is just getting
+you to a point where the SQL result equals
+
+132
+00:06:27.487 --> 00:06:31.524
+the SQL that was generated by your agent
+when it ran.
+
+133
+00:06:32.425 --> 00:06:36.662
+And now you can do one more step here,
+which is to pull the numbers,
+
+134
+00:06:36.662 --> 00:06:40.233
+specifically the numerical values
+out of that SQL result.
+
+135
+00:06:41.134 --> 00:06:44.103
+And then also out of the expected
+target SQL result.
+
+136
+00:06:44.103 --> 00:06:47.340
+So this here is your expected value
+that's in your data set.
+
+137
+00:06:48.141 --> 00:06:51.277
+And the reason to pull out
+just the numbers is because in SQL
+
+138
+00:06:51.277 --> 00:06:54.647
+you can define columns in your responses
+and things like that
+
+139
+00:06:54.647 --> 00:06:55.915
+using different names.
+
+140
+00:06:55.915 --> 00:06:58.684
+And this just allows you
+to make sure that you're not having a case
+
+141
+00:06:58.684 --> 00:07:02.922
+where your agent use a slightly different
+column name in its response.
+
+142
+00:07:03.556 --> 00:07:06.359
+And still got
+the correct numerical result.
+
+143
+00:07:06.359 --> 00:07:09.796
+And then this will return true or false,
+depending on if those numbers match.
+
+144
+00:07:11.197 --> 00:07:13.299
+Now, one thing you'll notice here
+is that in this case,
+
+145
+00:07:13.299 --> 00:07:17.637
+you're using a code-based evaluator
+to evaluate your SQL generation.
+
+146
+00:07:17.970 --> 00:07:20.973
+If you think back to a couple notebooks
+ago, you actually used an
+
+147
+00:07:21.073 --> 00:07:23.709
+LLM as a judge to evaluate your SQL response.
+
+148
+00:07:23.709 --> 00:07:26.946
+Either of those approaches can be used.
+If you think back to the slides,
+
+149
+00:07:27.180 --> 00:07:28.981
+LLM as-a-Judge will work.
+
+150
+00:07:28.981 --> 00:07:30.583
+It may not be 100% accurate.
+
+151
+00:07:30.583 --> 00:07:33.920
+So the method you're looking at here
+to compare against ground truth
+
+152
+00:07:34.086 --> 00:07:37.089
+is generally going to be a more accurate
+kind of evaluation.
+
+153
+00:07:37.089 --> 00:07:40.560
+But at the same time it relies on
+you having some of that ground truth data.
+
+154
+00:07:40.626 --> 00:07:43.496
+So it relies on
+you having those expected values
+
+155
+00:07:43.496 --> 00:07:47.099
+which you may not have in large amounts
+or large scales.
+
+156
+00:07:48.000 --> 00:07:48.401
+Okay.
+
+157
+00:07:48.401 --> 00:07:49.769
+Now moving on to your second tool.
+
+158
+00:07:49.769 --> 00:07:52.138
+You have your data analysis tool.
+
+159
+00:07:52.138 --> 00:07:54.874
+And there's actually
+two different evaluations
+
+160
+00:07:54.874 --> 00:07:58.845
+you can run for your data analysis tool
+that match the two prompts you saw above.
+
+161
+00:07:58.978 --> 00:08:01.981
+One is to evaluate
+the clarity of the response.
+
+162
+00:08:02.348 --> 00:08:05.284
+And so in this case you can use
+an evaluate clarity method here
+
+163
+00:08:05.284 --> 00:08:08.821
+that takes in the output of your agent
+and the original input to your agent.
+
+164
+00:08:09.355 --> 00:08:10.389
+And then it will construct
+
+165
+00:08:10.389 --> 00:08:14.193
+a quick data frame out of those
+using the query and response columns,
+
+166
+00:08:14.527 --> 00:08:17.530
+because that's what's expected by your
+LLM as-a-Judge prompt.
+
+167
+00:08:17.563 --> 00:08:20.166
+And then it will call the LLM classify
+method.
+
+168
+00:08:20.166 --> 00:08:24.136
+And classify the result of that particular
+run of your agent.
+
+169
+00:08:24.770 --> 00:08:27.807
+So this one is exactly the same
+as the previous
+
+170
+00:08:27.807 --> 00:08:30.810
+LLM as-a-Judge that you ran
+a couple notebooks ago for clarity.
+
+171
+00:08:30.910 --> 00:08:33.813
+It's just now put into this function
+that you can call that knows
+
+172
+00:08:33.813 --> 00:08:36.382
+to expect things like the input in the
+output from different steps.
+
+173
+00:08:37.550 --> 00:08:38.518
+Similarly, you can add
+
+174
+00:08:38.518 --> 00:08:41.521
+another evaluator here
+for entity correctness.
+
+175
+00:08:41.687 --> 00:08:44.390
+Again, same exact kind of flow.
+
+176
+00:08:44.390 --> 00:08:46.025
+So you'll have a method.
+
+177
+00:08:46.025 --> 00:08:48.861
+You'll create a data frame
+out of the input and the output.
+
+178
+00:08:48.861 --> 00:08:52.498
+And then you'll call LLM classify
+using your LLM as-a-Judge prompt.
+
+179
+00:08:53.366 --> 00:08:56.202
+So now you've got evaluators
+for your router your tool one.
+
+180
+00:08:56.202 --> 00:08:57.537
+Your tool two.
+
+181
+00:08:57.537 --> 00:09:01.741
+Finally, the last piece here is your tool
+three. Which again you can use one
+
+182
+00:09:01.741 --> 00:09:05.211
+that you've used previously here to check
+if the generated code is runnable.
+
+183
+00:09:06.078 --> 00:09:10.216
+To evaluate tool three
+you can use a code is runnable evaluation
+
+184
+00:09:10.216 --> 00:09:12.285
+here
+this time you don't need the input.
+
+185
+00:09:12.285 --> 00:09:14.320
+You don't have any expected values
+to compare against.
+
+186
+00:09:14.320 --> 00:09:16.155
+You just have the output.
+
+187
+00:09:16.155 --> 00:09:18.791
+So what you can do is
+you can take that output
+
+188
+00:09:18.791 --> 00:09:22.962
+and you can again
+pull out any tool call responses.
+
+189
+00:09:23.162 --> 00:09:26.332
+This is similar to what you did
+for the database lookup tool.
+
+190
+00:09:26.332 --> 00:09:30.169
+So all of this code here is just getting
+you to a point where generated code
+
+191
+00:09:30.469 --> 00:09:34.407
+equals the code that was generated
+when the tool name equals
+
+192
+00:09:34.407 --> 00:09:35.541
+generate visualization.
+
+193
+00:09:36.742 --> 00:09:38.210
+And then you can take that
+
+194
+00:09:38.210 --> 00:09:42.214
+and make sure that you have stripped away
+any extra characters that are used there.
+
+195
+00:09:42.615 --> 00:09:47.019
+And then at the end here, you can just run
+your execute on that generated code.
+
+196
+00:09:47.553 --> 00:09:49.388
+If it executes correctly, return true.
+
+197
+00:09:49.388 --> 00:09:50.790
+If not, return false.
+
+198
+00:09:50.790 --> 00:09:53.793
+So this is the same evaluation
+that you used a couple of notebooks ago,
+
+199
+00:09:53.826 --> 00:09:55.328
+just with some extra manipulation
+
+200
+00:09:55.328 --> 00:09:58.331
+to get it to look for the specific output
+here.
+
+201
+00:09:58.965 --> 00:09:59.599
+Great.
+
+202
+00:09:59.599 --> 00:10:00.900
+And now you have your data set,
+
+203
+00:10:00.900 --> 00:10:03.903
+as well as all the evaluators
+that you want to run on your experiment.
+
+204
+00:10:04.303 --> 00:10:06.839
+The last piece that you need is your task.
+
+205
+00:10:06.839 --> 00:10:09.408
+And so you can define a task method here.
+
+206
+00:10:09.408 --> 00:10:11.377
+In this case run agent task.
+
+207
+00:10:11.377 --> 00:10:13.679
+And it's going to take that example.
+
+208
+00:10:13.679 --> 00:10:18.084
+Grab the input question from it
+and then run your agent on that.
+
+209
+00:10:18.551 --> 00:10:21.020
+Now you can define that.
+
+210
+00:10:21.020 --> 00:10:24.023
+And one other thing to call out here
+is there's this process messages
+
+211
+00:10:24.123 --> 00:10:25.324
+method that's called.
+
+212
+00:10:25.324 --> 00:10:27.026
+This is also in your utils function.
+
+213
+00:10:27.026 --> 00:10:28.961
+And it's just going to take the output
+of your agent
+
+214
+00:10:28.961 --> 00:10:32.431
+and process the messages to match
+a little bit cleaner of a format to read.
+
+215
+00:10:33.633 --> 00:10:36.902
+Now with your data set and your task
+and all of your evaluators
+
+216
+00:10:36.902 --> 00:10:39.905
+defined, you're ready
+to run your giant experiment here.
+
+217
+00:10:40.139 --> 00:10:42.441
+So you can use the run experiment method.
+
+218
+00:10:42.441 --> 00:10:45.444
+You're passing in the data
+set the run agent task.
+
+219
+00:10:45.611 --> 00:10:48.614
+And for evaluators, you can pass in all
+your different evaluator functions here.
+
+220
+00:10:49.115 --> 00:10:49.715
+And what will happen
+
+221
+00:10:49.715 --> 00:10:53.586
+is now each row of that data
+set will be run through that agent task.
+
+222
+00:10:53.886 --> 00:10:57.023
+And then the outputs of that will be run
+through all of your different evaluators.
+
+223
+00:10:57.757 --> 00:10:58.591
+Go ahead and run that.
+
+224
+00:10:58.591 --> 00:11:01.160
+And that will take a second to run.
+
+225
+00:11:01.160 --> 00:11:03.796
+So once that completes
+you'll see that you run
+
+226
+00:11:03.796 --> 00:11:05.665
+seven different tasks through your agent.
+
+227
+00:11:05.665 --> 00:11:09.669
+And then you'll see a bunch of output here
+around all of the different evaluations.
+
+228
+00:11:10.670 --> 00:11:14.040
+So you'll see again, you're running
+35 evaluations here
+
+229
+00:11:14.040 --> 00:11:17.410
+total because it's five evaluations
+for each seven case.
+
+230
+00:11:17.843 --> 00:11:19.812
+So you'll have quite a bit of output here.
+
+231
+00:11:19.812 --> 00:11:21.580
+That's all normal
+and it's all looking good.
+
+232
+00:11:21.580 --> 00:11:22.848
+You'll have some graphs and then you'll
+
+233
+00:11:22.848 --> 00:11:26.085
+finally have some scores at the bottom
+for some of those different runs.
+
+234
+00:11:26.852 --> 00:11:30.589
+And now if you jump over into Phoenix
+you'll see a detailed view there as well.
+
+235
+00:11:30.589 --> 00:11:33.926
+To make sure you go
+to your overall experiments input here.
+
+236
+00:11:34.360 --> 00:11:37.296
+And then you'll see a bunch of different
+columns for all those different evals.
+
+237
+00:11:37.296 --> 00:11:39.699
+So it looks like all the code is runnable.
+
+238
+00:11:39.699 --> 00:11:42.134
+The evaluation analysis is clear.
+
+239
+00:11:42.134 --> 00:11:43.536
+The entities are correct.
+
+240
+00:11:43.536 --> 00:11:46.706
+It looks like some issues with
+SQL generation and then function calling.
+
+241
+00:11:47.206 --> 00:11:50.209
+So you could jump into this experiment
+and see it in more detail.
+
+242
+00:11:50.209 --> 00:11:51.677
+So you could see all the tool calls
+
+243
+00:11:51.677 --> 00:11:55.047
+and all the format of response that
+you have here for some of these pieces.
+
+244
+00:11:55.081 --> 00:11:58.084
+So you could click into those and see more
+if you wanted to.
+
+245
+00:11:58.150 --> 00:12:00.686
+And now the question becomes
+what do you do with this information?
+
+246
+00:12:00.686 --> 00:12:02.455
+How do you improve your agent?
+
+247
+00:12:02.455 --> 00:12:05.458
+And so you've got really two options here
+for how to improve your agent.
+
+248
+00:12:05.925 --> 00:12:07.526
+One is in code.
+
+249
+00:12:07.526 --> 00:12:11.163
+You can go in and start
+making some changes to your agent
+
+250
+00:12:11.664 --> 00:12:14.900
+and running different versions
+of your agent using the experiment.
+
+251
+00:12:15.434 --> 00:12:17.870
+So SQL generation was a little bit
+tough there.
+
+252
+00:12:17.870 --> 00:12:21.373
+So why not start with changing up
+the SQL generation prompt.
+
+253
+00:12:21.807 --> 00:12:24.910
+So this is your base SQL generation prompt
+that's being used by our agent.
+
+254
+00:12:25.444 --> 00:12:28.914
+We can add something here like think
+before you respond.
+
+255
+00:12:29.381 --> 00:12:30.983
+You might make bigger changes to it.
+
+256
+00:12:30.983 --> 00:12:32.351
+This is just a pretty basic change.
+
+257
+00:12:32.351 --> 00:12:34.320
+But one you could try out.
+
+258
+00:12:34.320 --> 00:12:37.189
+And then we have a helper function here
+
+259
+00:12:37.189 --> 00:12:40.192
+to just update that SQL generation prompt.
+
+260
+00:12:40.526 --> 00:12:42.661
+In practice,
+you probably go into your agent code.
+
+261
+00:12:42.661 --> 00:12:45.131
+You would actually make the change
+in the agent code.
+
+262
+00:12:45.131 --> 00:12:47.633
+This way, we'll do that
+same kind of thing here.
+
+263
+00:12:47.633 --> 00:12:50.269
+And then you can rerun your experiment
+
+264
+00:12:50.269 --> 00:12:53.272
+and you'll because you've updated
+your agent,
+
+265
+00:12:53.272 --> 00:12:54.974
+that task is now a new task.
+
+266
+00:12:54.974 --> 00:12:58.010
+So you might want actually change
+this experiment name to say V2
+
+267
+00:12:58.611 --> 00:13:00.446
+and evaluating the overall experiment
+
+268
+00:13:01.514 --> 00:13:04.550
+with changes to SQL prompt.
+
+269
+00:13:05.651 --> 00:13:09.088
+And then you can run that experiment again
+and you'll get a comparable line.
+
+270
+00:13:10.489 --> 00:13:12.558
+And so now if you scroll
+through those results,
+
+271
+00:13:12.558 --> 00:13:15.561
+you'll see similar kinds of outputs before.
+
+272
+00:13:16.061 --> 00:13:19.064
+And then you can continue going down,
+see all the results that were run.
+
+273
+00:13:19.398 --> 00:13:21.934
+And you'll have your same scores
+from before.
+
+274
+00:13:21.934 --> 00:13:24.436
+You can jump over into Phoenix
+to see those in detail.
+
+275
+00:13:24.436 --> 00:13:26.872
+And now you may have to refresh your page.
+
+276
+00:13:26.872 --> 00:13:29.708
+You should see a new entry for your
+in second experiment
+
+277
+00:13:29.708 --> 00:13:32.711
+for your V2
+and then changes to the SQL prompt.
+
+278
+00:13:33.212 --> 00:13:36.182
+And so it looks like
+if you look at the scores there,
+
+279
+00:13:36.482 --> 00:13:38.551
+looks like SQL didn't
+really have the change that you wanted.
+
+280
+00:13:38.551 --> 00:13:40.619
+So you might have to have
+some more changes from there.
+
+281
+00:13:40.619 --> 00:13:43.455
+And one of the things it looks like
+some of the responses
+
+282
+00:13:43.455 --> 00:13:46.458
+that came back are less clear or correct
+this time.
+
+283
+00:13:46.659 --> 00:13:48.060
+That could be due to the change you made.
+
+284
+00:13:48.060 --> 00:13:49.862
+It could be due to just the fact
+that you're running
+
+285
+00:13:49.862 --> 00:13:52.598
+with seven test cases here,
+which is a sort of small amount.
+
+286
+00:13:52.598 --> 00:13:55.201
+So it's always good to do
+multiple runs of each experiment
+
+287
+00:13:55.201 --> 00:13:56.402
+to get some more statistically
+
+288
+00:13:56.402 --> 00:13:59.638
+significant kind of data back as you're
+testing your agent's performance.
+
+289
+00:14:00.506 --> 00:14:03.409
+So you can continue to make changes
+inside of your agent,
+
+290
+00:14:03.409 --> 00:14:04.944
+either to one part of your agent
+
+291
+00:14:04.944 --> 00:14:08.147
+or multiple parts of your agent
+to try to boost these scores over time.
+
+292
+00:14:08.981 --> 00:14:10.683
+And you could continue
+to make those code changes
+
+293
+00:14:10.683 --> 00:14:12.852
+until you get to the results
+that you want with your agent.
+
+294
+00:14:13.919 --> 00:14:17.089
+There is one other approach that you can
+use as well too, which is in Phoenix,
+
+295
+00:14:17.089 --> 00:14:20.693
+there's a tool called playground
+where you can jump into the playground
+
+296
+00:14:20.693 --> 00:14:24.396
+button here, and that will bring your data
+set into a playground environment
+
+297
+00:14:24.630 --> 00:14:27.633
+where you can make whatever queries
+you want over your data set.
+
+298
+00:14:27.933 --> 00:14:31.036
+And so you could actually take that
+same SQL generation prompt
+
+299
+00:14:31.437 --> 00:14:34.440
+and run it directly here on your data
+if you want it to.
+
+300
+00:14:35.274 --> 00:14:39.178
+So you could copy over your prompt
+from your notebook and paste that in here.
+
+301
+00:14:39.545 --> 00:14:41.413
+And then in this case,
+you might want to have it
+
+302
+00:14:41.413 --> 00:14:44.483
+look for specific variables
+from your inputs and outputs.
+
+303
+00:14:44.483 --> 00:14:48.921
+So in this case if I use curly braces
+you can add these curly braces.
+
+304
+00:14:48.921 --> 00:14:52.224
+And then you'll actually pull
+in the question from that particular row.
+
+305
+00:14:52.791 --> 00:14:53.993
+So you could use this.
+
+306
+00:14:53.993 --> 00:14:55.394
+And if you then ran this you would
+
+307
+00:14:55.394 --> 00:14:58.397
+then have results for each row
+that you could look at.
+
+308
+00:14:58.497 --> 00:15:01.500
+You can use the compare button that will
+add a second iteration of the prompt.
+
+309
+00:15:02.101 --> 00:15:04.103
+In this case you're using GPT-4o-mini.
+
+310
+00:15:04.103 --> 00:15:06.071
+So you can switch that to 4o-mini.
+
+311
+00:15:06.071 --> 00:15:09.575
+And then similarly over here
+have consistency there.
+
+312
+00:15:10.142 --> 00:15:10.509
+And so you could
+
+313
+00:15:10.509 --> 00:15:13.979
+actually make your changes
+to your prompts directly in the UI here.
+
+314
+00:15:14.380 --> 00:15:18.817
+And then this will give you a side by side
+comparison of the responses.
+
+315
+00:15:19.184 --> 00:15:22.655
+So you could always make the changes
+to your agent in your code itself
+
+316
+00:15:22.655 --> 00:15:24.590
+and then run them as a new experiment.
+
+317
+00:15:24.590 --> 00:15:28.427
+Alternatively, you can use this
+prompt playground tool to run changes
+
+318
+00:15:28.427 --> 00:15:29.862
+directly in the UI
+
+319
+00:15:29.862 --> 00:15:32.531
+and have a little bit faster
+of an iteration cycle as you change them.
+
+320
+00:15:33.666 --> 00:15:35.701
+No matter if you
+use either of these different techniques,
+
+321
+00:15:35.701 --> 00:15:39.438
+you can make changes to your agent and use
+your new experiment that you've created
+
+322
+00:15:39.605 --> 00:15:42.574
+to have a really easy apples
+to apples way to compare
+
+323
+00:15:42.641 --> 00:15:45.044
+what are the actual facts
+of each of those changes,
+
+324
+00:15:45.044 --> 00:15:47.880
+so that you're not just moving
+things around without understanding
+
+325
+00:15:47.880 --> 00:15:50.416
+what the effect of each change situation
+might be.
+
+326
+00:15:50.416 --> 00:15:52.551
+So you now have a structure
+that you can use
+
+327
+00:15:52.551 --> 00:15:56.488
+to iterate on your agent and compare
+all of those different iterations to each
+
+328
+00:15:56.488 --> 00:15:57.523
+other in a structured way.
+

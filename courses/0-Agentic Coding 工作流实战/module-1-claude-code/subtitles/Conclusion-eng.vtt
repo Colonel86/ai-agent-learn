@@ -1,0 +1,58 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.202 --> 00:00:04.104
+Congratulations on making it this far.
+
+2
+00:00:04.104 --> 00:00:06.239
+You've learned how to use Claude Code
+
+3
+00:00:06.239 --> 00:00:10.410
+to explore, test, refactor, and debug code bases.
+
+4
+00:00:10.410 --> 00:00:12.579
+You can make the best out of Claude Code
+
+5
+00:00:12.579 --> 00:00:14.414
+when you give it clear instructions,
+
+6
+00:00:14.414 --> 00:00:16.016
+clarify the context,
+
+7
+00:00:16.016 --> 00:00:18.485
+and point it to the relevant files in your codebase.
+
+8
+00:00:18.485 --> 00:00:20.987
+Make sure to add your codebase rules to CLAUDE.md
+
+9
+00:00:20.987 --> 00:00:22.956
+and any information that you'd like
+
+10
+00:00:22.956 --> 00:00:25.291
+Claude Code to remember about your project.
+
+11
+00:00:25.992 --> 00:00:28.395
+Consider extending Claude Code capabilities
+
+12
+00:00:28.395 --> 00:00:31.297
+and connecting it to MCP servers like Playwright and Figma.
+
+13
+00:00:31.498 --> 00:00:33.099
+Thank you for joining me on this journey.
+
+14
+00:00:33.299 --> 00:00:36.002
+and I can't wait to see what you'll build with Claude Code.

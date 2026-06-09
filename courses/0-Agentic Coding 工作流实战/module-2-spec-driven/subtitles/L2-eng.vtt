@@ -1,0 +1,274 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.503
+Spec-driven development tells the agent how to build what you want.
+
+2
+00:00:03.970 --> 00:00:06.072
+up front for the project, then for
+
+3
+00:00:06.072 --> 00:00:08.174
+each feature, getting better as you go.
+
+4
+00:00:08.875 --> 00:00:13.079
+With SDD, we help the agent with the best quality context.
+
+5
+00:00:13.580 --> 00:00:15.782
+First with decisions about the project,
+
+6
+00:00:15.982 --> 00:00:17.984
+then with details about each feature.
+
+7
+00:00:18.485 --> 00:00:20.487
+This spec is very detailed.
+
+8
+00:00:20.687 --> 00:00:24.791
+One key skill in SDD is knowing the right level of detail.
+
+9
+00:00:25.358 --> 00:00:29.195
+If you treat your agent as a highly capable pair programmer,
+
+10
+00:00:29.396 --> 00:00:31.231
+you'll often hit the right level.
+
+11
+00:00:31.831 --> 00:00:34.234
+Lots of context about the Goals, mission,
+
+12
+00:00:34.634 --> 00:00:36.636
+target audience and constraints.
+
+13
+00:00:36.736 --> 00:00:39.506
+and less about the low-level decisions
+
+14
+00:00:39.506 --> 00:00:42.208
+the agent can figure out on its own.
+
+15
+00:00:42.909 --> 00:00:45.512
+What does this SDD workflow look like?
+
+16
+00:00:46.112 --> 00:00:48.214
+First, we specify the Constitution.
+
+17
+00:00:49.015 --> 00:00:52.018
+What is the mission, the Tech stack, the Roadmap?
+
+18
+00:00:52.719 --> 00:00:57.323
+A Constitution is just one way to formalize these project level details.
+
+19
+00:00:57.524 --> 00:01:00.126
+Many developers use a top-level
+
+20
+00:01:00.126 --> 00:01:02.529
+agents.md file for this purpose.
+
+21
+00:01:02.562 --> 00:01:07.562
+But a project Constitution is agent agnostic and more structured.
+
+22
+00:01:08.468 --> 00:01:11.004
+The Constitution captures the agreement on key
+
+23
+00:01:11.004 --> 00:01:13.540
+decisions between the human and the agent,
+
+24
+00:01:14.040 --> 00:01:16.342
+but also the agreement between the humans.
+
+25
+00:01:16.643 --> 00:01:18.645
+The mission explains the why.
+
+26
+00:01:19.145 --> 00:01:22.949
+This project's vision, audiences, scope, etc.
+
+27
+00:01:23.550 --> 00:01:27.554
+Defining these parameters in advance is very common in software projects
+
+28
+00:01:27.854 --> 00:01:29.856
+and helps guide ongoing decisions.
+
+29
+00:01:30.557 --> 00:01:32.559
+The tech stack is for the engineering team,
+
+30
+00:01:32.859 --> 00:01:37.764
+a common understanding of development and deployment technologies and constraints.
+
+31
+00:01:38.164 --> 00:01:40.266
+The Roadmap is a living document
+
+32
+00:01:40.266 --> 00:01:42.368
+with a sequence of phases,
+
+33
+00:01:42.368 --> 00:01:45.772
+each implemented with their own feature spec process.
+
+34
+00:01:46.172 --> 00:01:48.675
+Once the Constitution has been drafted,
+
+35
+00:01:48.675 --> 00:01:51.978
+we work on each feature with a repeatable process.
+
+36
+00:01:52.545 --> 00:01:55.849
+First, plan the feature, implement it,
+
+37
+00:01:56.349 --> 00:01:58.451
+and finally, validate the result.
+
+38
+00:01:59.152 --> 00:02:02.555
+In between features, it's time for the Replanning phase.
+
+39
+00:02:03.156 --> 00:02:06.126
+Revise your Constitution, update the road map,
+
+40
+00:02:06.326 --> 00:02:08.428
+even improve the process itself.
+
+41
+00:02:08.661 --> 00:02:10.396
+As you heard a moment ago,
+
+42
+00:02:10.396 --> 00:02:12.432
+one of the key skills of SDD
+
+43
+00:02:12.832 --> 00:02:14.834
+is providing the right level of detail
+
+44
+00:02:15.235 --> 00:02:18.138
+to create the highest quality context.
+
+45
+00:02:18.538 --> 00:02:22.942
+In the feature phase and the replanning phases, you steer the agent.
+
+46
+00:02:23.009 --> 00:02:26.613
+Look at it this way. Imagine that you are an architect
+
+47
+00:02:26.813 --> 00:02:29.782
+and you give detailed drawings of a building to builders.
+
+48
+00:02:30.183 --> 00:02:33.586
+Then it's up to them. Your role is to design,
+
+49
+00:02:34.154 --> 00:02:36.156
+supervise the construction,
+
+50
+00:02:36.656 --> 00:02:38.658
+then review and accept the results,
+
+51
+00:02:39.058 --> 00:02:40.660
+or ask for changes.
+
+52
+00:02:41.060 --> 00:02:44.664
+You'll want to avoid telling the builders how to do their jobs
+
+53
+00:02:45.064 --> 00:02:48.668
+and focus on providing the context they don't know.
+
+54
+00:02:49.135 --> 00:02:52.639
+Spec-Driven Development gets you from thinking at the start
+
+55
+00:02:52.639 --> 00:02:54.741
+to delivering at the finish.
+
+56
+00:02:55.141 --> 00:02:58.444
+Best of all, it keeps you improving from there.
+
+57
+00:02:59.145 --> 00:03:01.114
+This is one SDD workflow
+
+58
+00:03:01.114 --> 00:03:03.216
+that modern developers are starting to use.
+
+59
+00:03:03.283 --> 00:03:06.786
+Soon we'll look at the start, the project constitution.
+
+60
+00:03:07.287 --> 00:03:10.056
+But first, let's do a little setup preparation.
+
+61
+00:03:10.757 --> 00:03:13.259
+To get set up with the project repo,
+
+62
+00:03:13.359 --> 00:03:16.062
+follow instructions in the next reading item.
+
+63
+00:03:16.462 --> 00:03:19.265
+The following video setup is optional.
+
+64
+00:03:19.465 --> 00:03:21.467
+If you're already comfortable with setting up
+
+65
+00:03:21.467 --> 00:03:23.770
+a coding agent like Claude Code
+
+66
+00:03:24.070 --> 00:03:26.472
+in an IDE such as WebStorm,
+
+67
+00:03:26.773 --> 00:03:29.075
+feel free to skip this optional video.
+
+68
+00:03:29.475 --> 00:03:32.245
+See you in the next video or the next one.

@@ -1,0 +1,1798 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.033 --> 00:00:02.535
+In this final lesson, we'll create a research agent
+
+2
+00:00:02.535 --> 00:00:04.804
+using the Claude Agent SDK.
+
+3
+00:00:04.904 --> 00:00:07.807
+The agent will use a skill to create a learning guide
+
+4
+00:00:07.807 --> 00:00:10.810
+for an open source tool based on its documentation,
+
+5
+00:00:10.810 --> 00:00:12.812
+GitHub repo, and web search.
+
+6
+00:00:13.246 --> 00:00:16.249
+Let's go. Now that we've seen how to use skills
+
+7
+00:00:16.750 --> 00:00:19.452
+on the web with Claude using the messages API
+
+8
+00:00:19.753 --> 00:00:21.755
+and Claude Code, let's talk about
+
+9
+00:00:21.821 --> 00:00:24.824
+how to use skills with the Claude Agent SDK.
+
+10
+00:00:24.858 --> 00:00:27.160
+As a refresher, the Claude Agent SDK
+
+11
+00:00:27.460 --> 00:00:29.863
+is a programmatic way of building your own
+
+12
+00:00:30.063 --> 00:00:32.465
+agentic applications that use the same
+
+13
+00:00:32.665 --> 00:00:34.968
+internal harness that Claude Code does.
+
+14
+00:00:35.201 --> 00:00:36.803
+What we're going to be building
+
+15
+00:00:36.803 --> 00:00:38.705
+here is a general purpose research agent.
+
+16
+00:00:39.139 --> 00:00:42.008
+The main agent is going to be able to research information
+
+17
+00:00:42.008 --> 00:00:45.011
+from multiple sources and synthesize a summary.
+
+18
+00:00:45.412 --> 00:00:47.514
+It will dispatch three different subagents
+
+19
+00:00:47.814 --> 00:00:49.416
+for analyzing documentation,
+
+20
+00:00:49.816 --> 00:00:51.985
+analyzing and downloading repositories,
+
+21
+00:00:52.252 --> 00:00:55.055
+and researching information by searching the web.
+
+22
+00:00:55.355 --> 00:00:56.923
+Let's take a look at those prompts, and
+
+23
+00:00:56.923 --> 00:00:58.458
+then we'll take a look at a Skill
+
+24
+00:00:58.558 --> 00:01:01.861
+that's used to guide the Main Agent with a research methodology
+
+25
+00:01:02.062 --> 00:01:04.464
+and what needs to be extracted and synthesized.
+
+26
+00:01:04.831 --> 00:01:07.233
+To start, we have our main agent prompt.
+
+27
+00:01:07.634 --> 00:01:09.636
+This is the orchestrator that has access
+
+28
+00:01:09.636 --> 00:01:13.039
+to three available subagents with the following capabilities:
+
+29
+00:01:13.440 --> 00:01:15.442
+finding information from documentation,
+
+30
+00:01:15.742 --> 00:01:17.644
+analyzing repository structures,
+
+31
+00:01:17.744 --> 00:01:21.347
+finding articles, videos, and community content to bring it all together.
+
+32
+00:01:21.448 --> 00:01:25.652
+In this particular application, we mention that if the Skill is provided,
+
+33
+00:01:26.152 --> 00:01:27.954
+we want it to follow a particular pattern.
+
+34
+00:01:28.455 --> 00:01:31.257
+It's possible that Skills may or may not be provided
+
+35
+00:01:31.458 --> 00:01:33.259
+for the application we're building,
+
+36
+00:01:33.460 --> 00:01:35.462
+but in our case we're going to provide one.
+
+37
+00:01:35.528 --> 00:01:37.697
+If the skill matches the user's request,
+
+38
+00:01:37.797 --> 00:01:41.000
+we need to follow that skill's instructions precisely.
+
+39
+00:01:41.501 --> 00:01:44.404
+Since we're starting from scratch with this agentic application,
+
+40
+00:01:44.704 --> 00:01:46.606
+we want to be very intentional about
+
+41
+00:01:46.606 --> 00:01:48.508
+what to do when skills are provided
+
+42
+00:01:48.708 --> 00:01:50.810
+or when they're not. As we continue,
+
+43
+00:01:50.810 --> 00:01:53.179
+we have a couple high level delegation guidelines
+
+44
+00:01:53.480 --> 00:01:56.282
+for how to spawn subagents and after receiving results,
+
+45
+00:01:56.583 --> 00:01:59.385
+how to synthesize all of those pieces of information.
+
+46
+00:01:59.953 --> 00:02:02.956
+Let's briefly dive into some of the prompts for our subagents.
+
+47
+00:02:03.356 --> 00:02:05.358
+For the documentation researcher,
+
+48
+00:02:05.458 --> 00:02:07.760
+we'll have access to WebSearch and WebFetch.
+
+49
+00:02:07.927 --> 00:02:10.029
+We provide a process to locate documentation.
+
+50
+00:02:10.530 --> 00:02:13.333
+particular input formats, guidelines, and an output
+
+51
+00:02:13.333 --> 00:02:15.835
+to return findings in a certain way.
+
+52
+00:02:16.336 --> 00:02:20.340
+For the repository analyzer, we also provide WebSearch to find repositories,
+
+53
+00:02:20.340 --> 00:02:22.442
+Bash commands to clone and run git,
+
+54
+00:02:22.742 --> 00:02:24.544
+and then the ability to read and find
+
+55
+00:02:24.544 --> 00:02:26.646
+files and data within files.
+
+56
+00:02:26.913 --> 00:02:28.915
+Similarly, we provide a process,
+
+57
+00:02:29.015 --> 00:02:31.618
+an input format, guidelines, and an output.
+
+58
+00:02:31.918 --> 00:02:33.920
+Finally, our Web Researcher
+
+59
+00:02:34.020 --> 00:02:36.422
+makes use of WebSearch and WebFetch as well.
+
+60
+00:02:36.523 --> 00:02:40.026
+This allows us to search for content relevant to that topic
+
+61
+00:02:40.126 --> 00:02:43.930
+and to receive extraction instructions as well from the main agent.
+
+62
+00:02:43.997 --> 00:02:48.401
+We also provide guidelines as well as an output format that's necessary,
+
+63
+00:02:48.501 --> 00:02:52.405
+and if no output format is specified, follow a default structure.
+
+64
+00:02:52.472 --> 00:02:54.674
+All of these prompts will be used together
+
+65
+00:02:54.674 --> 00:02:57.677
+when we set up the code necessary to make our agent work.
+
+66
+00:02:58.378 --> 00:03:01.281
+Finally, let's talk about the skill we're going to be using here.
+
+67
+00:03:01.481 --> 00:03:03.683
+We have a skill named learning-a-tool.
+
+68
+00:03:04.484 --> 00:03:07.987
+The purpose of this skill here is to guide the main orchestrator.
+
+69
+00:03:08.188 --> 00:03:11.791
+We will not be using the skill in our individual subagents,
+
+70
+00:03:11.991 --> 00:03:13.826
+but we're using this skill as
+
+71
+00:03:13.826 --> 00:03:15.995
+a way to create a predictable pattern
+
+72
+00:03:16.196 --> 00:03:18.698
+so that the main agent knows the ideal workflow
+
+73
+00:03:18.898 --> 00:03:21.301
+and what and how to dispatch subagents.
+
+74
+00:03:21.668 --> 00:03:23.870
+We give the skill a name and a description.
+
+75
+00:03:24.170 --> 00:03:26.439
+And in this case, we want to create learning paths
+
+76
+00:03:26.539 --> 00:03:29.542
+for programming tools, define what information should be researched,
+
+77
+00:03:29.842 --> 00:03:33.446
+and specify how best to follow an approach to researching
+
+78
+00:03:33.546 --> 00:03:36.549
+all the way towards creating a comprehensive learning path.
+
+79
+00:03:36.783 --> 00:03:40.587
+To start, we have a very particular workflow that we have here.
+
+80
+00:03:40.887 --> 00:03:44.891
+We start with a research phase and we specify for official documentation
+
+81
+00:03:44.891 --> 00:03:47.594
+for that subagent exactly what to look for.
+
+82
+00:03:47.994 --> 00:03:51.297
+For the repository analyzer, a similar kind of approach.
+
+83
+00:03:51.698 --> 00:03:54.567
+And for our web researcher, very similar as well.
+
+84
+00:03:54.767 --> 00:03:59.272
+So we're using this skill to provide a constant and predictable workflow
+
+85
+00:03:59.272 --> 00:04:00.907
+for how best to work alongside
+
+86
+00:04:00.907 --> 00:04:02.775
+the subagents that the main agent has.
+
+87
+00:04:03.076 --> 00:04:05.478
+Once that data is given to us,
+
+88
+00:04:05.578 --> 00:04:08.381
+we then organize that content into progressive levels.
+
+89
+00:04:08.881 --> 00:04:11.084
+Here, we're using progressive disclosure
+
+90
+00:04:11.184 --> 00:04:13.286
+to lean into loading another markdown file
+
+91
+00:04:13.586 --> 00:04:16.889
+as the source of truth. In our progressive learning file,
+
+92
+00:04:16.990 --> 00:04:18.591
+we can see there's quite a bit
+
+93
+00:04:18.591 --> 00:04:20.193
+around the individual levels that we want.
+
+94
+00:04:20.393 --> 00:04:22.996
+starting from an overview and motivation,
+
+95
+00:04:23.396 --> 00:04:25.598
+all the way towards installing core concepts,
+
+96
+00:04:25.632 --> 00:04:28.001
+practical patterns, and then where to go next.
+
+97
+00:04:28.501 --> 00:04:31.204
+This progressive learning allows us to build levels
+
+98
+00:04:31.204 --> 00:04:33.706
+so that we know how to start from the beginning
+
+99
+00:04:33.706 --> 00:04:36.009
+and know eventually where to go deeper.
+
+100
+00:04:36.042 --> 00:04:38.945
+While this initial skill is useful for learning a tool,
+
+101
+00:04:39.345 --> 00:04:41.948
+you can also imagine that we might have additional skills
+
+102
+00:04:42.048 --> 00:04:44.150
+for maybe comparing one tool with another
+
+103
+00:04:44.450 --> 00:04:46.452
+depending on the data that we're working with.
+
+104
+00:04:46.819 --> 00:04:50.323
+As we move towards the additional phases of working with this skill,
+
+105
+00:04:50.623 --> 00:04:52.792
+we take that data and specify
+
+106
+00:04:52.792 --> 00:04:55.328
+a structure, and then specify an output.
+
+107
+00:04:55.628 --> 00:04:59.432
+We're very, very particular with the exact format that we're working with.
+
+108
+00:04:59.432 --> 00:05:02.602
+The goal here is to get access to a learning environment
+
+109
+00:05:02.602 --> 00:05:05.405
+that gives us an overview, resources, a path,
+
+110
+00:05:05.405 --> 00:05:07.206
+and code examples.
+
+111
+00:05:07.407 --> 00:05:09.175
+The goal here is to combine
+
+112
+00:05:09.175 --> 00:05:11.210
+the research from all of our subagents
+
+113
+00:05:11.210 --> 00:05:13.913
+into a particular output format that we want
+
+114
+00:05:13.913 --> 00:05:16.215
+and do that with consistency and predictability.
+
+115
+00:05:16.482 --> 00:05:18.117
+Now that we've seen at a high
+
+116
+00:05:18.117 --> 00:05:19.986
+level of the application we're going to build,
+
+117
+00:05:20.086 --> 00:05:22.088
+there's one last piece that we'll layer on.
+
+118
+00:05:22.288 --> 00:05:24.223
+We can imagine that we want to take
+
+119
+00:05:24.223 --> 00:05:26.392
+the output and write it to a centralized place
+
+120
+00:05:26.492 --> 00:05:29.495
+that we can share with teammates that might have a nicer interface.
+
+121
+00:05:29.595 --> 00:05:31.297
+And to do that, we're going to use Notion.
+
+122
+00:05:31.631 --> 00:05:34.534
+to connect to Notion, we're going to use an MCP server
+
+123
+00:05:34.834 --> 00:05:38.204
+and bring in the tools necessary to go ahead and execute that.
+
+124
+00:05:38.638 --> 00:05:41.641
+Now that we've examined the underlying prompts for our Main Agent
+
+125
+00:05:42.041 --> 00:05:44.844
+and Subagents, as well as the Skill we're going to be using,
+
+126
+00:05:45.144 --> 00:05:48.648
+Let's go ahead and begin by running uv init
+
+127
+00:05:48.648 --> 00:05:52.352
+and initialize a project and add the necessary dependencies
+
+128
+00:05:52.352 --> 00:05:57.352
+like claude-agent-sdk, python-dotenv, and asyncio.
+
+129
+00:05:58.024 --> 00:06:00.226
+Once we've installed these dependencies,
+
+130
+00:06:00.426 --> 00:06:03.429
+let's go ahead and create a file called agent.py.
+
+131
+00:06:03.730 --> 00:06:07.033
+So I'll go ahead, make a new file, call that agent.py.
+
+132
+00:06:08.134 --> 00:06:11.838
+Inside of our agent.py, I'm going to be adding the necessary code
+
+133
+00:06:12.138 --> 00:06:14.640
+To just get started with a small example
+
+134
+00:06:14.640 --> 00:06:16.809
+using the Claude agent SDK.
+
+135
+00:06:17.310 --> 00:06:20.012
+The boilerplate here brings in asyncio
+
+136
+00:06:20.012 --> 00:06:23.916
+to run this environment, dotenv to load environment variables,
+
+137
+00:06:24.183 --> 00:06:27.987
+And then from our utils, the display_message function.
+
+138
+00:06:28.388 --> 00:06:30.690
+Just to give some context, display_message
+
+139
+00:06:30.990 --> 00:06:34.394
+gives us a bunch of helpers for truncating and formatting input,
+
+140
+00:06:34.694 --> 00:06:36.996
+and it gives us a nice way to visually display
+
+141
+00:06:37.296 --> 00:06:39.966
+information from the main agent and the subagent.
+
+142
+00:06:40.299 --> 00:06:42.502
+This is very similar code to what we saw
+
+143
+00:06:42.502 --> 00:06:44.804
+when we worked with the API
+
+144
+00:06:44.804 --> 00:06:46.806
+and we got that nice output for what's happening
+
+145
+00:06:46.806 --> 00:06:49.108
+in each tool action and iteration.
+
+146
+00:06:51.511 --> 00:06:53.813
+To start, we set up our Claude agent.
+
+147
+00:06:53.946 --> 00:06:57.550
+We pass in a system_prompt here. This is going to change.
+
+148
+00:06:57.550 --> 00:06:59.886
+We pass in allowed_tools. This is also going to change,
+
+149
+00:06:59.886 --> 00:07:02.255
+but we just want to start with the basics here.
+
+150
+00:07:02.655 --> 00:07:06.058
+To get started with a simple conversation, we set up a loop.
+
+151
+00:07:06.392 --> 00:07:10.296
+accept some user input, run that through our model,
+
+152
+00:07:10.596 --> 00:07:13.099
+and take back the response and send that back to the user.
+
+153
+00:07:13.299 --> 00:07:15.101
+Let's go and see what that looks like.
+
+154
+00:07:15.234 --> 00:07:17.336
+I'm going to open the terminal again.
+
+155
+00:07:17.737 --> 00:07:21.040
+And we're going to go ahead and run uv run agent.py.
+
+156
+00:07:21.641 --> 00:07:24.444
+This is going to provide a terminal environment to us
+
+157
+00:07:24.444 --> 00:07:26.446
+where we can start a conversation.
+
+158
+00:07:26.913 --> 00:07:29.115
+I'll just start by asking, how are you?
+
+159
+00:07:29.715 --> 00:07:31.083
+In this case, I'm not going to
+
+160
+00:07:31.083 --> 00:07:32.418
+get a ton of valuable information here
+
+161
+00:07:32.518 --> 00:07:34.520
+because I just have a helpful assistant.
+
+162
+00:07:34.921 --> 00:07:37.423
+So what we're going to start layering on now
+
+163
+00:07:37.423 --> 00:07:41.127
+is the ability for our agent to get access to MCP servers
+
+164
+00:07:41.427 --> 00:07:43.429
+and the correct tools as well.
+
+165
+00:07:44.230 --> 00:07:47.133
+Let's go ahead and make some modifications to our main function.
+
+166
+00:07:47.667 --> 00:07:50.470
+Like we mentioned, the allowed_tools are going to change.
+
+167
+00:07:50.870 --> 00:07:52.472
+So what we're going to start doing
+
+168
+00:07:52.472 --> 00:07:56.175
+is adding the tools that our subagents need to use
+
+169
+00:07:56.175 --> 00:07:58.478
+so that they can be working as expected.
+
+170
+00:07:58.811 --> 00:08:02.615
+Read-only tools like read and Grep and Glob are allowed by default.
+
+171
+00:08:03.015 --> 00:08:05.418
+But when we want to start doing things like writing files,
+
+172
+00:08:05.718 --> 00:08:08.387
+searching the web, and executing commands by bash,
+
+173
+00:08:08.588 --> 00:08:10.389
+we need to pass that in explicitly.
+
+174
+00:08:10.656 --> 00:08:14.460
+So we'll bring in the Write tool, the Bash tool,
+
+175
+00:08:15.127 --> 00:08:17.463
+and our WebSearch and WebFetch tools.
+
+176
+00:08:19.165 --> 00:08:21.467
+We saw previously that our subagents
+
+177
+00:08:21.467 --> 00:08:23.669
+are going to be making use of these particular tools.
+
+178
+00:08:24.070 --> 00:08:26.672
+Our agent that's analyzing repositories needs Bash
+
+179
+00:08:26.672 --> 00:08:28.774
+to run git commands and writing files,
+
+180
+00:08:29.075 --> 00:08:30.977
+and our docs researcher and web researcher
+
+181
+00:08:30.977 --> 00:08:32.879
+will make use of searching and fetching.
+
+182
+00:08:32.979 --> 00:08:34.747
+Now that we brought in these tools,
+
+183
+00:08:34.747 --> 00:08:36.482
+the next thing we're going to add
+
+184
+00:08:36.782 --> 00:08:38.885
+are mcp_servers to connect to.
+
+185
+00:08:39.185 --> 00:08:41.587
+We'll use the mcp_servers keyword argument
+
+186
+00:08:41.787 --> 00:08:44.290
+and specify the name of the MCP server,
+
+187
+00:08:44.590 --> 00:08:48.194
+which in our case is notion. We're going to pass in
+
+188
+00:08:48.294 --> 00:08:50.396
+some default configuration.
+
+189
+00:08:50.596 --> 00:08:54.100
+And we're going to specify the command to run the notion server
+
+190
+00:08:54.300 --> 00:08:58.104
+alongside a notion environment variable that we have.
+
+191
+00:08:58.304 --> 00:09:00.406
+So we're going to make sure before
+
+192
+00:09:00.406 --> 00:09:02.508
+we go ahead from our .env file,
+
+193
+00:09:03.109 --> 00:09:06.512
+load in our notion token and import the OS module
+
+194
+00:09:06.812 --> 00:09:09.315
+to make sure that we can read that file correctly.
+
+195
+00:09:09.649 --> 00:09:12.051
+Now that we've loaded our MCP server correctly,
+
+196
+00:09:12.351 --> 00:09:15.154
+we need to make use of the tools that Notion provides.
+
+197
+00:09:15.454 --> 00:09:18.157
+If we would like, we can ask Claude right now,
+
+198
+00:09:18.457 --> 00:09:21.861
+what are all the tools that you get from this MCP server?
+
+199
+00:09:22.161 --> 00:09:24.864
+Or, we can go ahead and add those explicitly.
+
+200
+00:09:25.398 --> 00:09:27.633
+by using mcp, the name of our
+
+201
+00:09:27.633 --> 00:09:30.202
+server, followed by the name of the tool.
+
+202
+00:09:30.503 --> 00:09:32.471
+In this case, we're going to be using
+
+203
+00:09:32.471 --> 00:09:34.674
+all of the tools that Notion provides to us.
+
+204
+00:09:35.374 --> 00:09:39.679
+We need to make sure that this mcp_notion_* exists in allowed_tools
+
+205
+00:09:39.679 --> 00:09:41.547
+so that we can give the main
+
+206
+00:09:41.547 --> 00:09:43.683
+agent permission to use this set of tools.
+
+207
+00:09:43.983 --> 00:09:46.185
+We can explicitly add the name of the tool
+
+208
+00:09:46.185 --> 00:09:48.588
+or in our case, we're just going to include
+
+209
+00:09:48.588 --> 00:09:50.990
+all the tools available that mcp_notion provides to us.
+
+210
+00:09:51.223 --> 00:09:54.994
+Now that we've set up our mcp_servers and our allowed_tools,
+
+211
+00:09:54.994 --> 00:09:58.998
+let's go ahead and bring in our subagents and definitions for them.
+
+212
+00:09:59.398 --> 00:10:02.001
+We mentioned that our system_prompt is going to change.
+
+213
+00:10:02.001 --> 00:10:04.070
+And to start, we're going to go ahead
+
+214
+00:10:04.070 --> 00:10:06.405
+and load all of the prompts that we have.
+
+215
+00:10:06.739 --> 00:10:09.942
+We'll bring in a constant and a helper function
+
+216
+00:10:09.942 --> 00:10:12.745
+that we have to load all of these prompts.
+
+217
+00:10:13.913 --> 00:10:16.248
+We're going to go ahead and call that function
+
+218
+00:10:16.349 --> 00:10:18.351
+to go ahead and bring in these prompts.
+
+219
+00:10:18.351 --> 00:10:20.453
+inside of our main function.
+
+220
+00:10:20.653 --> 00:10:22.555
+We're going to make use of these
+
+221
+00:10:22.555 --> 00:10:24.757
+markdown files to load in the text necessary
+
+222
+00:10:25.157 --> 00:10:27.226
+and pass them to our agent options.
+
+223
+00:10:27.727 --> 00:10:30.229
+Before we go ahead and update the main agent,
+
+224
+00:10:30.329 --> 00:10:32.498
+we're going to add a dictionary that
+
+225
+00:10:32.498 --> 00:10:34.934
+references all of our agents with a definition.
+
+226
+00:10:35.234 --> 00:10:37.436
+We're bringing in the AgentDefinition class,
+
+227
+00:10:37.536 --> 00:10:39.639
+which we'll want to make sure we import correctly.
+
+228
+00:10:40.640 --> 00:10:42.642
+We can see in the AgentDefinition,
+
+229
+00:10:42.742 --> 00:10:44.744
+we have a description for our subagent,
+
+230
+00:10:44.844 --> 00:10:47.246
+a prompt that specifies the instructions for the agent,
+
+231
+00:10:47.346 --> 00:10:50.149
+and then the tools that we want that agent to use.
+
+232
+00:10:50.549 --> 00:10:53.352
+similar configuration to what we did in Claude code.
+
+233
+00:10:53.753 --> 00:10:56.555
+You can see here, we still need to use our main_agent_prompt
+
+234
+00:10:56.555 --> 00:10:59.058
+as well as this dictionary of agents.
+
+235
+00:10:59.759 --> 00:11:01.560
+So we'll update our system_prompt
+
+236
+00:11:02.061 --> 00:11:04.030
+with the main_agent_prompt.
+
+237
+00:11:04.196 --> 00:11:06.198
+and then we'll make sure to pass
+
+238
+00:11:06.198 --> 00:11:08.167
+in an additional keyword argument of agents
+
+239
+00:11:08.167 --> 00:11:11.504
+that references our dictionary with our agent definitions.
+
+240
+00:11:12.104 --> 00:11:14.206
+As you can see here, our researcher,
+
+241
+00:11:14.206 --> 00:11:17.143
+our analyzer, and our web researcher are
+
+242
+00:11:17.143 --> 00:11:20.513
+using tools that we've defined here as well.
+
+243
+00:11:21.013 --> 00:11:24.417
+It's important to make sure that you list all of the tools
+
+244
+00:11:24.417 --> 00:11:26.552
+that your main agent and your subagents will
+
+245
+00:11:26.552 --> 00:11:28.721
+need to use inside of your allowed tools.
+
+246
+00:11:29.188 --> 00:11:31.290
+or else your subagents will not allow them
+
+247
+00:11:31.691 --> 00:11:33.693
+even if you include the tools here.
+
+248
+00:11:34.193 --> 00:11:36.996
+Now that we've set up our agents, we need to make sure
+
+249
+00:11:36.996 --> 00:11:39.699
+we also include the all-important Task tool
+
+250
+00:11:39.799 --> 00:11:41.367
+to make sure that we can
+
+251
+00:11:41.367 --> 00:11:43.202
+dispatch subagents and assign tasks to them.
+
+252
+00:11:43.569 --> 00:11:45.771
+last piece we need to add here are skills.
+
+253
+00:11:46.172 --> 00:11:48.474
+And the good news is, in order to add skills,
+
+254
+00:11:48.574 --> 00:11:50.876
+there's just one more tool that we need to add.
+
+255
+00:11:51.277 --> 00:11:53.179
+And that is the Skill tool.
+
+256
+00:11:53.479 --> 00:11:56.182
+Since we have an environment here where there's a file system
+
+257
+00:11:56.382 --> 00:11:58.884
+and the ability to execute code using the Bash tool,
+
+258
+00:11:59.218 --> 00:12:01.520
+All we need to add is this Skill tool
+
+259
+00:12:01.520 --> 00:12:04.023
+so that we can correctly read skills
+
+260
+00:12:04.023 --> 00:12:06.125
+and understand how best to use them.
+
+261
+00:12:06.425 --> 00:12:09.128
+Similar to Claude code, skills are defined
+
+262
+00:12:09.128 --> 00:12:13.065
+inside of a .claude folder followed by a folder called skills.
+
+263
+00:12:13.666 --> 00:12:16.068
+Make sure your markdown files are SKILL.md
+
+264
+00:12:16.368 --> 00:12:19.271
+and your folder is called skills in the plural.
+
+265
+00:12:19.772 --> 00:12:22.675
+Now that we've added the tool for working with skills,
+
+266
+00:12:23.075 --> 00:12:26.078
+there's one more keyword argument that we need to pass in here.
+
+267
+00:12:26.579 --> 00:12:30.649
+We need to specify where we find this particular set of skills.
+
+268
+00:12:30.950 --> 00:12:33.853
+And we do so with a keyword argument called setting_sources.
+
+269
+00:12:34.286 --> 00:12:37.156
+And here we're going to specify that we want to find skills
+
+270
+00:12:37.456 --> 00:12:39.358
+inside of the user directory,
+
+271
+00:12:39.358 --> 00:12:41.360
+if we have skills in our home directory,
+
+272
+00:12:41.660 --> 00:12:43.362
+as well as project,
+
+273
+00:12:43.662 --> 00:12:47.066
+which is where we've loaded the skills for this particular application.
+
+274
+00:12:47.466 --> 00:12:49.268
+Now that we put this all together,
+
+275
+00:12:49.268 --> 00:12:51.270
+let's go ahead and test out our agent.
+
+276
+00:12:51.871 --> 00:12:53.506
+We open up the terminal
+
+277
+00:12:53.506 --> 00:12:55.374
+again. I'm going to go ahead and exit
+
+278
+00:12:55.875 --> 00:12:58.778
+and let's run this application again with the changes that we've made.
+
+279
+00:12:59.211 --> 00:13:02.414
+We're going to start by learning a little bit about MinerU.
+
+280
+00:13:02.915 --> 00:13:05.117
+For those of you not familiar, MinerU
+
+281
+00:13:05.117 --> 00:13:07.319
+is an open library for PDF extraction.
+
+282
+00:13:07.720 --> 00:13:09.155
+And the reason we're using this
+
+283
+00:13:09.155 --> 00:13:10.823
+example, is because this is not something
+
+284
+00:13:11.123 --> 00:13:14.326
+that Claude might know a ton of from its initial training data.
+
+285
+00:13:14.727 --> 00:13:18.330
+This is going to require external research, analyzing code repositories,
+
+286
+00:13:18.731 --> 00:13:21.033
+community documents, and other sources.
+
+287
+00:13:21.534 --> 00:13:23.435
+We're going to ask to create a learning
+
+288
+00:13:23.435 --> 00:13:25.337
+guide and then show me the plan first.
+
+289
+00:13:25.738 --> 00:13:28.340
+Here, we're going to start to see that the skill is invoked
+
+290
+00:13:28.440 --> 00:13:31.544
+and the input here is that skill called learning-a-tool
+
+291
+00:13:31.744 --> 00:13:33.445
+with the args that we specified.
+
+292
+00:13:33.979 --> 00:13:37.483
+So here, we can see that we first specified the plan.
+
+293
+00:13:37.983 --> 00:13:39.485
+We still have to go ahead and
+
+294
+00:13:39.485 --> 00:13:41.187
+run what the subagents are going to do,
+
+295
+00:13:41.487 --> 00:13:43.889
+but just like with Claude code and plan mode,
+
+296
+00:13:44.089 --> 00:13:45.191
+we might want to see what
+
+297
+00:13:45.191 --> 00:13:46.492
+the plan is before we start acting
+
+298
+00:13:46.792 --> 00:13:48.794
+and consuming tokens and taking time.
+
+299
+00:13:48.994 --> 00:13:51.463
+We can see the research phase of parallel investigation
+
+300
+00:13:51.764 --> 00:13:53.766
+with our different researchers.
+
+301
+00:13:53.799 --> 00:13:56.602
+We can see the structure necessary according to the skill,
+
+302
+00:13:57.102 --> 00:13:59.405
+and then finally, the output that we're expecting.
+
+303
+00:14:00.606 --> 00:14:02.441
+This looks like a good plan. So we'll
+
+304
+00:14:02.441 --> 00:14:04.310
+just go ahead and ask it to proceed.
+
+305
+00:14:04.643 --> 00:14:07.847
+It's going to start by spawning the docs_researcher subagent,
+
+306
+00:14:08.147 --> 00:14:10.850
+spawning the repo_analyzer and web_researcher,
+
+307
+00:14:11.150 --> 00:14:13.152
+and executing these in parallel,
+
+308
+00:14:13.252 --> 00:14:16.155
+using the tools that we've added under the allowed tools
+
+309
+00:14:16.255 --> 00:14:18.858
+that we've also passed in to our subagent.
+
+310
+00:14:19.191 --> 00:14:21.093
+We can see in parallel, the
+
+311
+00:14:21.093 --> 00:14:23.295
+docs researcher is heading to the documentation,
+
+312
+00:14:23.596 --> 00:14:25.898
+the repo analyzer is looking on GitHub,
+
+313
+00:14:25.998 --> 00:14:29.902
+and the web researcher is searching across tutorials and YouTube guides.
+
+314
+00:14:30.102 --> 00:14:32.705
+We're extracting the information from GitHub repositories
+
+315
+00:14:32.705 --> 00:14:35.507
+using the bash commands, while at the same time,
+
+316
+00:14:35.507 --> 00:14:38.210
+searching a YouTube channel for video demonstrations.
+
+317
+00:14:38.711 --> 00:14:41.013
+These agents are interacting in parallel,
+
+318
+00:14:41.013 --> 00:14:42.915
+fetching from different data sources
+
+319
+00:14:42.915 --> 00:14:45.918
+to bring this all together into a compelling tutorial.
+
+320
+00:14:46.619 --> 00:14:49.521
+Now that the subagents have finished completing their work,
+
+321
+00:14:49.622 --> 00:14:52.424
+We're going to create the comprehensive guide,
+
+322
+00:14:52.424 --> 00:14:54.260
+pull together all the necessary files based
+
+323
+00:14:54.260 --> 00:14:56.128
+on this research that we have here.
+
+324
+00:14:56.629 --> 00:15:00.432
+As instructed in the repository analyzer, we've cloned the repository
+
+325
+00:15:00.432 --> 00:15:02.935
+for MinerU, and keeping that here.
+
+326
+00:15:03.202 --> 00:15:06.372
+and we started to build the folder structure for learning this.
+
+327
+00:15:06.872 --> 00:15:09.208
+We can see here, we have our readme and resources,
+
+328
+00:15:09.408 --> 00:15:12.111
+as well as code examples that are being put together.
+
+329
+00:15:12.711 --> 00:15:14.413
+We can see here in the readme file,
+
+330
+00:15:14.513 --> 00:15:16.215
+it provides the learning path to us.
+
+331
+00:15:16.615 --> 00:15:19.218
+What we're going to learn, how to use this guide,
+
+332
+00:15:19.418 --> 00:15:22.021
+and importantly, time estimates that we might need.
+
+333
+00:15:22.154 --> 00:15:26.258
+We can see here, it's created for us the README, the resources,
+
+334
+00:15:26.258 --> 00:15:27.960
+and the learning path is still in progress.
+
+335
+00:15:28.360 --> 00:15:31.964
+Inside of our resources, we have links and references for MinerU.
+
+336
+00:15:32.164 --> 00:15:34.266
+So let's take a look at that.
+
+337
+00:15:34.266 --> 00:15:36.402
+Inside of our resources, we have documentation,
+
+338
+00:15:36.402 --> 00:15:38.704
+the repository, PyPI package,
+
+339
+00:15:38.704 --> 00:15:40.806
+and the paper underlying this library.
+
+340
+00:15:41.106 --> 00:15:44.009
+We have quick start guides, documentation, and related projects.
+
+341
+00:15:44.510 --> 00:15:47.313
+as we pull in additional information from the community.
+
+342
+00:15:47.713 --> 00:15:49.415
+We have all kinds of deep dives
+
+343
+00:15:49.415 --> 00:15:52.418
+across a variety of different articles and news coverage.
+
+344
+00:15:53.319 --> 00:15:55.587
+Now we can see that the learning path has been created
+
+345
+00:15:56.889 --> 00:15:58.424
+and it's time to create the code examples.
+
+346
+00:15:59.992 --> 00:16:01.226
+Let's take a look at this learning path.
+
+347
+00:16:02.494 --> 00:16:04.296
+starting with an Overview &amp; Motivation,
+
+348
+00:16:04.396 --> 00:16:06.365
+What Problem does it Solve?
+
+349
+00:16:06.465 --> 00:16:08.667
+We describe the Origin Story of the library,
+
+350
+00:16:08.767 --> 00:16:12.471
+What Existed Before, and some of the problems with those libraries.
+
+351
+00:16:12.504 --> 00:16:14.006
+We can see here this is
+
+352
+00:16:14.006 --> 00:16:15.774
+quite an in-depth guide and learning path,
+
+353
+00:16:16.008 --> 00:16:17.309
+and you can imagine this is
+
+354
+00:16:17.309 --> 00:16:18.811
+something that would last a long time
+
+355
+00:16:19.011 --> 00:16:21.413
+as you start to get up to speed knowing very little
+
+356
+00:16:21.513 --> 00:16:23.816
+to becoming an expert in working with this library.
+
+357
+00:16:24.316 --> 00:16:26.285
+We move into some of the distinct
+
+358
+00:16:26.285 --> 00:16:28.520
+features of the back end of this library,
+
+359
+00:16:28.520 --> 00:16:32.524
+all the way to code examples and many different characteristics
+
+360
+00:16:32.524 --> 00:16:34.994
+for how to use this as efficiently as possible.
+
+361
+00:16:34.994 --> 00:16:38.497
+We can start to see that our code files are being written
+
+362
+00:16:38.797 --> 00:16:41.500
+for hello world examples, concepts, and patterns.
+
+363
+00:16:42.001 --> 00:16:44.003
+For our hello world example,
+
+364
+00:16:44.003 --> 00:16:46.505
+we've got a nice README to get started with some first steps,
+
+365
+00:16:46.805 --> 00:16:49.808
+simple extraction to see how to start using this library,
+
+366
+00:16:50.009 --> 00:16:51.810
+as well as installation steps.
+
+367
+00:16:52.111 --> 00:16:54.713
+If there were particular libraries we wanted to use for installing
+
+368
+00:16:54.713 --> 00:16:57.616
+or patterns here, we could always add that to our skill.
+
+369
+00:16:57.916 --> 00:16:59.918
+But right now, this is going to give us a great start
+
+370
+00:16:59.918 --> 00:17:01.920
+to get up and running with this library.
+
+371
+00:17:02.488 --> 00:17:04.690
+as we look at some of the core concepts,
+
+372
+00:17:04.690 --> 00:17:06.291
+those are being created currently.
+
+373
+00:17:06.692 --> 00:17:08.227
+Now that those are done, we can
+
+374
+00:17:08.227 --> 00:17:09.962
+see in the README where we go next.
+
+375
+00:17:10.262 --> 00:17:12.464
+Once we've gotten up and running with the library,
+
+376
+00:17:12.464 --> 00:17:14.266
+we can start to look at some
+
+377
+00:17:14.266 --> 00:17:16.268
+of the fundamental concepts that the library possesses,
+
+378
+00:17:16.268 --> 00:17:19.271
+as well as comparing different speeds across backends.
+
+379
+00:17:19.972 --> 00:17:21.840
+Finally, we're going to create practical
+
+380
+00:17:21.840 --> 00:17:23.976
+patterns and examples with this third folder.
+
+381
+00:17:24.710 --> 00:17:26.245
+We can take a look at
+
+382
+00:17:26.245 --> 00:17:28.013
+this folder, and we can see here
+
+383
+00:17:28.013 --> 00:17:31.316
+that we have real-world processing pipelines and production use cases.
+
+384
+00:17:31.316 --> 00:17:34.119
+This includes examples for certain patterns,
+
+385
+00:17:34.119 --> 00:17:37.623
+as well as quite in-depth code examples using this library.
+
+386
+00:17:37.790 --> 00:17:41.093
+with doc strings, comments, and everything necessary
+
+387
+00:17:41.093 --> 00:17:43.495
+to use this library to its fullest extent.
+
+388
+00:17:43.996 --> 00:17:46.565
+We'll wrap up by validating and creating a
+
+389
+00:17:46.565 --> 00:17:49.468
+summary document, making sure everything has been done correctly.
+
+390
+00:17:50.069 --> 00:17:51.470
+We can take a look at the
+
+391
+00:17:51.470 --> 00:17:53.072
+output, which gives us a complete learning guide,
+
+392
+00:17:53.372 --> 00:17:56.075
+the directory structure as specified in our skill,
+
+393
+00:17:56.308 --> 00:17:59.111
+the learning path with the levels that we requested,
+
+394
+00:17:59.511 --> 00:18:00.813
+and then key features and a
+
+395
+00:18:00.813 --> 00:18:02.314
+quick start to get up and running.
+
+396
+00:18:03.315 --> 00:18:05.317
+The final thing we're going to do here
+
+397
+00:18:05.417 --> 00:18:08.120
+is write this particular file, the resources.md,
+
+398
+00:18:08.320 --> 00:18:10.823
+to a resources subpage in Notion.
+
+399
+00:18:11.323 --> 00:18:12.825
+This page already exists, so let's take
+
+400
+00:18:12.825 --> 00:18:14.326
+a look at what that looks like,
+
+401
+00:18:14.526 --> 00:18:16.562
+and then we'll prompt to go ahead and
+
+402
+00:18:16.562 --> 00:18:18.831
+use our MCP server to do the writing necessary.
+
+403
+00:18:19.131 --> 00:18:22.935
+We can see here in Notion under this learning section,
+
+404
+00:18:22.935 --> 00:18:24.937
+I have a sub page called resources.
+
+405
+00:18:24.937 --> 00:18:27.439
+The goal here is to use the MCP server
+
+406
+00:18:27.439 --> 00:18:31.210
+to populate what we had in our resources.md to this right here.
+
+407
+00:18:31.710 --> 00:18:35.514
+So let's go ahead and ask our agent to write that file
+
+408
+00:18:35.514 --> 00:18:37.516
+to that sub page in Notion.
+
+409
+00:18:39.084 --> 00:18:40.285
+We're going to be explicit with
+
+410
+00:18:40.285 --> 00:18:41.687
+the tools that we use in Notion
+
+411
+00:18:41.687 --> 00:18:43.689
+and allow it to use what we have available.
+
+412
+00:18:44.389 --> 00:18:45.991
+We've found the resources page.
+
+413
+00:18:45.991 --> 00:18:47.693
+We're going to read the resources.md
+
+414
+00:18:47.693 --> 00:18:50.696
+and convert it to the correct format in Notion
+
+415
+00:18:50.696 --> 00:18:52.898
+using rich Notion blocks. You can see
+
+416
+00:18:52.898 --> 00:18:55.134
+here we're using multiple tools from Notion,
+
+417
+00:18:55.334 --> 00:18:58.137
+doing this in batches, adding the quick start guides,
+
+418
+00:18:58.337 --> 00:19:00.739
+API Documentation, and the rest of the information
+
+419
+00:19:00.839 --> 00:19:03.108
+inside of our resources.md
+
+420
+00:19:03.442 --> 00:19:05.944
+We can see here in the resources file,
+
+421
+00:19:05.944 --> 00:19:08.947
+it's dynamically updating based on the documentation
+
+422
+00:19:08.947 --> 00:19:10.949
+in our resources.md
+
+423
+00:19:11.250 --> 00:19:13.452
+And as this finishes up, we're going to see all the content
+
+424
+00:19:13.452 --> 00:19:15.954
+from that file appear on our Notion page.
+
+425
+00:19:16.455 --> 00:19:18.557
+Now that it's finished, let's go take a look
+
+426
+00:19:18.657 --> 00:19:20.659
+at what our Notion page looks like.
+
+427
+00:19:20.859 --> 00:19:23.061
+We can see here, we've got our official documentation,
+
+428
+00:19:23.162 --> 00:19:26.064
+our tutorials, video resources, community channels,
+
+429
+00:19:26.265 --> 00:19:28.567
+all the data that came from that markdown file,
+
+430
+00:19:28.767 --> 00:19:30.469
+we've now written to Notion.
+
+431
+00:19:30.669 --> 00:19:34.473
+We made use of skills, MCP servers, agents, and subagents
+
+432
+00:19:34.473 --> 00:19:36.575
+all using the agent SDK.
+
+433
+00:19:37.176 --> 00:19:41.280
+You can imagine layering on additional skills for more complex workflow
+
+434
+00:19:41.280 --> 00:19:44.283
+or additional subagents to perform a variety of tasks.
+
+435
+00:19:44.750 --> 00:19:47.252
+We've just started to scratch the surface with functionality,
+
+436
+00:19:47.252 --> 00:19:50.756
+and there's still some security concerns that we should be mindful of.
+
+437
+00:19:50.756 --> 00:19:54.760
+For starters, we're allowing commands like write and bash to be executed
+
+438
+00:19:54.760 --> 00:19:57.462
+without requiring permission from the user.
+
+439
+00:19:57.763 --> 00:19:59.364
+The next step here is to
+
+440
+00:19:59.364 --> 00:20:01.266
+build an interface just like Claude code
+
+441
+00:20:01.266 --> 00:20:03.602
+that ensures that we allow the user to
+
+442
+00:20:03.602 --> 00:20:06.238
+confirm that they want to use those particular tools
+
+443
+00:20:06.238 --> 00:20:07.940
+for a certain action.
+
+444
+00:20:08.307 --> 00:20:10.509
+We've also just started to scratch the surface
+
+445
+00:20:10.509 --> 00:20:13.111
+with the ability to even add things like interrupts
+
+446
+00:20:13.111 --> 00:20:15.814
+for our agents and subagents, similar to Claude code.
+
+447
+00:20:16.114 --> 00:20:17.816
+So we've given you the foundation
+
+448
+00:20:17.816 --> 00:20:20.419
+to continue to build powerful agentic applications,
+
+449
+00:20:20.419 --> 00:20:22.187
+and we can't wait to see what you build next.

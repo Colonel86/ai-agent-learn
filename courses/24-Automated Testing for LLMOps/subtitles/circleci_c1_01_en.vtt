@@ -1,0 +1,371 @@
+WEBVTT
+1
+00:00:00.300 --> 00:00:04.020
+Welcome to this short course,
+Automated Testing for LLM Ops,
+
+2
+00:00:04.020 --> 00:00:05.880
+built in partnership with CircleCI.
+
+3
+00:00:07.300 --> 00:00:09.640
+Software testing helps
+you identify bugs
+
+4
+00:00:09.640 --> 00:00:11.980
+and security vulnerabilities
+in your applications,
+
+5
+00:00:11.980 --> 00:00:17.050
+and automated testing frees up your
+time and energy further, so they can
+
+6
+00:00:17.050 --> 00:00:20.560
+focus on the creative parts of
+designing and building
+
+7
+00:00:20.560 --> 00:00:23.460
+your application. In this course,
+you learn modern
+
+8
+00:00:23.460 --> 00:00:26.460
+software engineering practices
+focused on testing
+
+9
+00:00:26.460 --> 00:00:30.360
+for the practical
+development and deployment of LLM-based
+
+10
+00:00:30.360 --> 00:00:31.260
+applications.
+
+11
+00:00:32.680 --> 00:00:36.270
+Two kinds of LLM
+evaluations that you implement
+
+12
+00:00:36.270 --> 00:00:40.300
+in this course are rule-based
+evaluations and model-graded evaluations.
+
+13
+00:00:41.720 --> 00:00:44.700
+Rule-based evals use string
+or pattern matching, for
+
+14
+00:00:44.700 --> 00:00:47.280
+example, regular
+expression matching, and
+
+15
+00:00:47.280 --> 00:00:49.140
+are fast and cost-effective to
+run.
+
+16
+00:00:49.800 --> 00:00:52.300
+I use these whenever I
+want to evaluate outputs that
+
+17
+00:00:52.300 --> 00:00:54.460
+have a clear right answer,
+such as sentiment
+
+18
+00:00:54.460 --> 00:00:57.600
+classification and if, say,
+you have ground-truth labels.
+
+19
+00:00:59.100 --> 00:01:01.500
+Rule-based
+evals are quick and cheap to run, so
+
+20
+00:01:01.500 --> 00:01:03.630
+you can run these
+tests every time you
+
+21
+00:01:03.630 --> 00:01:05.760
+commit a code change
+to get fast feedback
+
+22
+00:01:05.760 --> 00:01:07.360
+on the health of
+your application.
+
+23
+00:01:09.000 --> 00:01:11.300
+Model graded evaluations
+are relevant for
+
+24
+00:01:11.300 --> 00:01:14.740
+applications where there
+are many possible good or bad
+
+25
+00:01:14.740 --> 00:01:15.120
+outputs.
+
+26
+00:01:15.780 --> 00:01:20.040
+For example, if you ask an LLM
+to write text content for you,
+
+27
+00:01:20.040 --> 00:01:23.060
+there can be more than one high-quality
+response.
+
+28
+00:01:24.120 --> 00:01:27.420
+Here, you might prompt
+an evaluation LLM to have it
+
+29
+00:01:27.420 --> 00:01:31.540
+assess the quality of the output
+of your application LLM.
+
+30
+00:01:32.140 --> 00:01:35.000
+In other words,
+use an LLM to evaluate
+
+31
+00:01:35.000 --> 00:01:36.780
+the output of another LLM.
+
+32
+00:01:37.760 --> 00:01:41.380
+Model-graded evals take more time
+and cost more, but
+
+33
+00:01:41.380 --> 00:01:43.920
+they allow you to
+assess more complex outputs.
+
+34
+00:01:44.480 --> 00:01:47.940
+I'm delighted to introduce our
+instructor for this course, Rob
+
+35
+00:01:47.940 --> 00:01:51.200
+Zuber, Chief
+Technology Officer for CircleCI.
+
+36
+00:01:52.320 --> 00:01:54.820
+Rob has spent
+decades leading engineering
+
+37
+00:01:54.820 --> 00:01:57.320
+teams and also
+helping customers scale
+
+38
+00:01:57.320 --> 00:01:59.820
+up their software
+delivery practice by
+
+39
+00:01:59.820 --> 00:02:02.320
+making processes repeatable,
+scalable, and reliable.
+
+40
+00:02:02.960 --> 00:02:05.800
+He'll show you how to do this for your
+applications as well with
+
+41
+00:02:05.800 --> 00:02:07.140
+an emphasis on testing.
+
+42
+00:02:08.260 --> 00:02:09.080
+Thanks, Andrew.
+
+43
+00:02:09.820 --> 00:02:13.190
+In your software development process,
+you and your teammates may commit
+
+44
+00:02:13.190 --> 00:02:15.940
+code updates or bug fixes multiple
+times per day.
+
+45
+00:02:16.580 --> 00:02:19.760
+In this course, you'll learn to set
+triggers that automatically
+
+46
+00:02:19.760 --> 00:02:21.670
+run your evaluations
+whenever you or
+
+47
+00:02:21.670 --> 00:02:23.580
+your teammates commit
+code changes to
+
+48
+00:02:23.580 --> 00:02:24.220
+the repository.
+
+49
+00:02:25.540 --> 00:02:27.960
+Your team may also
+release updated versions of
+
+50
+00:02:27.960 --> 00:02:31.280
+the app on a broader cadence,
+perhaps once every two weeks.
+
+51
+00:02:31.860 --> 00:02:35.740
+Before deploying to users,
+you can also automate more holistic,
+
+52
+00:02:35.740 --> 00:02:38.700
+comprehensive, pre-release
+evaluations.
+
+53
+00:02:40.220 --> 00:02:43.000
+For per-commit evals, you
+can include rules-based evaluations
+
+54
+00:02:43.000 --> 00:02:45.440
+because they're fast and
+cheap to run.
+
+55
+00:02:46.280 --> 00:02:46.890
+And for those pre-release evals, you
+can include rules-based evaluations
+
+56
+00:02:46.890 --> 00:02:48.300
+because they're fast and
+cheap to run. And for those
+
+57
+00:02:48.300 --> 00:02:52.870
+pre-release evals, it may be very
+helpful to use model-graded evals to do more
+
+58
+00:02:52.870 --> 00:02:54.180
+thorough testing before deployment.
+
+59
+00:02:55.580 --> 00:02:59.960
+By the end of the course,
+you will combine per-commit and pre-release evals
+
+60
+00:02:59.960 --> 00:03:01.640
+into an automated
+testing suite.
+
+61
+00:03:02.200 --> 00:03:04.840
+And for this course, you'll
+design tests to detect
+
+62
+00:03:04.840 --> 00:03:07.200
+hallucinations in LLM responses.
+
+63
+00:03:08.160 --> 00:03:10.940
+Many people have worked
+to make this course possible. I'd
+
+64
+00:03:10.940 --> 00:03:15.980
+like to thank on the CircleCI side, Michael
+Webster, Jacob Schmidt, and
+
+65
+00:03:15.980 --> 00:03:16.460
+Emma Webb.
+
+66
+00:03:16.980 --> 00:03:20.580
+From DeepLearning.ai, Eddie Hsu and Eshmal
+Gargari have also
+
+67
+00:03:20.580 --> 00:03:22.180
+contributed to this course.
+
+68
+00:03:22.780 --> 00:03:25.350
+The first lesson will
+be a quick overview
+
+69
+00:03:25.350 --> 00:03:27.910
+of continuous integration terms
+and technologies that we'll
+
+70
+00:03:27.910 --> 00:03:30.480
+use as the foundation
+for building our automated
+
+71
+00:03:30.480 --> 00:03:31.440
+LLM testing pipeline.
+
+72
+00:03:32.200 --> 00:03:34.840
+When you finish this course,
+that will be a
+
+73
+00:03:34.840 --> 00:03:39.000
+real testament to your
+dedication to building good
+
+74
+00:03:39.000 --> 00:03:39.680
+applications.
+
+75
+00:03:40.220 --> 00:03:43.940
+Or if you're not sure how much you'll use
+these ideas, you can
+
+76
+00:03:43.940 --> 00:03:45.480
+still test the waters.
+
+77
+00:03:46.320 --> 00:03:48.960
+So let's go on to the next
+video to get started.

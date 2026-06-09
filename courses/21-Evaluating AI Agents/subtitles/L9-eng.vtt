@@ -1,0 +1,911 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.333 --> 00:00:04.738
+So now that you've added some evaluations
+to your router and skills for your agent,
+
+2
+00:00:05.171 --> 00:00:07.474
+the next step is to evaluate the path
+
+3
+00:00:07.474 --> 00:00:10.677
+or understand if it's taking an efficient
+path for a given query.
+
+4
+00:00:11.144 --> 00:00:13.313
+So in order to do that, again,
+you're going to start
+
+5
+00:00:13.313 --> 00:00:16.316
+by importing a few libraries
+that will be useful here.
+
+6
+00:00:16.416 --> 00:00:18.785
+Most of the things
+you've already seen for Phoenix.
+
+7
+00:00:18.785 --> 00:00:20.720
+And then now you've got some new things
+from Phoenix
+
+8
+00:00:20.720 --> 00:00:23.857
+for what's called experiments, which
+you'll learn about in just a second here.
+
+9
+00:00:24.657 --> 00:00:27.660
+So you can import those libraries.
+And one other thing to call out
+
+10
+00:00:27.660 --> 00:00:32.265
+is that, again, the agent's been imported
+from your utils method here.
+
+11
+00:00:32.265 --> 00:00:35.301
+So, you have the same agent that you've
+been working with the whole time.
+
+12
+00:00:35.435 --> 00:00:37.037
+You're importing that run agent method.
+
+13
+00:00:37.037 --> 00:00:38.972
+So just know that that code
+is sitting in the background.
+
+14
+00:00:40.073 --> 00:00:41.074
+And then
+
+15
+00:00:41.074 --> 00:00:44.244
+here you're still going
+to need to connect to the Phoenix client.
+
+16
+00:00:44.310 --> 00:00:47.347
+So in this case I'll just save that
+Phoenix client variable.
+
+17
+00:00:48.281 --> 00:00:51.818
+And then the way that you can evaluate
+your trajectory as you learned
+
+18
+00:00:51.818 --> 00:00:55.622
+in the previous slides, is by running
+a set of queries through your agent
+
+19
+00:00:55.922 --> 00:00:59.559
+and then tracing the number of steps
+taken by each of those queries.
+
+20
+00:01:00.560 --> 00:01:03.029
+So in order to evaluate the trajectory
+here,
+
+21
+00:01:03.029 --> 00:01:06.399
+you have to actually compare multiple
+runs of the agent together.
+
+22
+00:01:06.499 --> 00:01:07.367
+So in order to do
+
+23
+00:01:07.367 --> 00:01:10.336
+that, you're going to use a tool
+called a run experiment within Phoenix,
+
+24
+00:01:10.537 --> 00:01:13.540
+which allows you to run
+multiple different runs of your agent
+
+25
+00:01:13.606 --> 00:01:16.576
+and then compare those
+to each other in certain ways.
+
+26
+00:01:16.776 --> 00:01:20.680
+So here's a good point to pause
+and dive a little more into experiments
+
+27
+00:01:20.680 --> 00:01:21.281
+and how they work.
+
+28
+00:01:22.449 --> 00:01:25.085
+Experiments in Phoenix
+are made up of a few different steps.
+
+29
+00:01:25.085 --> 00:01:28.054
+First, it's taking a data
+set of different test cases,
+
+30
+00:01:28.388 --> 00:01:32.892
+then sending those into a particular task
+or job to run
+
+31
+00:01:33.359 --> 00:01:36.129
+and then evaluating
+the results of that task.
+
+32
+00:01:36.129 --> 00:01:39.732
+So a data set of test cases
+is going to have a bunch of different
+
+33
+00:01:40.033 --> 00:01:42.836
+queries or questions
+that you might run through your agent.
+
+34
+00:01:42.836 --> 00:01:45.371
+And typically you'll have an input value
+inside of those.
+
+35
+00:01:45.371 --> 00:01:48.374
+examples
+as well as maybe an expected output.
+
+36
+00:01:48.475 --> 00:01:50.376
+In this first case,
+you won't have an expected output.
+
+37
+00:01:50.376 --> 00:01:51.644
+You'll just have an input.
+
+38
+00:01:51.644 --> 00:01:54.214
+Sometimes you have expected outputs,
+sometimes you don't.
+
+39
+00:01:54.214 --> 00:01:57.217
+And that dictates some of the evaluators
+you can use later on.
+
+40
+00:01:57.517 --> 00:01:59.552
+So you have a set of examples here.
+
+41
+00:01:59.552 --> 00:02:02.455
+And then you'll run those
+through a version of your agent.
+
+42
+00:02:02.455 --> 00:02:05.458
+So in this case just going to use
+one single version of your agent.
+
+43
+00:02:05.625 --> 00:02:08.628
+You'll get the outputs
+from that particular round.
+
+44
+00:02:09.129 --> 00:02:12.699
+And you'll see actually that you made
+some slight modifications to your agent
+
+45
+00:02:12.699 --> 00:02:16.002
+to actually track the number of steps
+taken as well as part of that task.
+
+46
+00:02:16.803 --> 00:02:19.038
+So you can define the task
+for your experiment.
+
+47
+00:02:19.038 --> 00:02:22.442
+And then once you've collected
+all the results of each example
+
+48
+00:02:22.442 --> 00:02:25.845
+through your task, you can
+then send those to a set of evaluators.
+
+49
+00:02:26.346 --> 00:02:29.249
+And those evaluators could be
+the ones you set up in previous rounds.
+
+50
+00:02:29.249 --> 00:02:32.252
+Or in this case you can do
+more of a comparative evaluator,
+
+51
+00:02:32.552 --> 00:02:34.854
+comparing different runs of your agent.
+
+52
+00:02:34.854 --> 00:02:36.122
+And so in this case,
+
+53
+00:02:36.122 --> 00:02:38.391
+there's another variable
+that will be added to each example,
+
+54
+00:02:38.391 --> 00:02:42.228
+which is the output of that
+particular example through the task.
+
+55
+00:02:42.896 --> 00:02:45.331
+And you'll learn a lot more
+about experiments in the next lesson
+
+56
+00:02:45.331 --> 00:02:46.232
+as well too.
+
+57
+00:02:46.232 --> 00:02:48.434
+This is sort of
+just your primer for them in this case.
+
+58
+00:02:49.502 --> 00:02:51.004
+So step one there
+
+59
+00:02:51.004 --> 00:02:54.007
+is creating a dataset of test cases.
+
+60
+00:02:54.741 --> 00:02:57.744
+So the way that you can do that
+is you have a set of questions.
+
+61
+00:02:58.144 --> 00:02:59.779
+In this case convergence questions.
+
+62
+00:02:59.779 --> 00:03:01.414
+And if you think back to the slides,
+
+63
+00:03:01.414 --> 00:03:02.982
+one of the ways that you test
+for convergence
+
+64
+00:03:02.982 --> 00:03:06.286
+here is you send a lot of different
+variations of a similar
+
+65
+00:03:06.286 --> 00:03:09.489
+type of query through your agent
+and then track the number of steps taken.
+
+66
+00:03:09.956 --> 00:03:12.559
+So notice
+that each of these different examples here
+
+67
+00:03:12.559 --> 00:03:16.362
+is all about the number or the average
+quantity of items per transaction.
+
+68
+00:03:16.396 --> 00:03:20.934
+So you see the average quantity sold per
+transaction mean number of items for sale.
+
+69
+00:03:21.167 --> 00:03:23.369
+Calculate
+the typical quantity for transactions.
+
+70
+00:03:23.369 --> 00:03:26.372
+You see these are all kind of variations
+on the same question.
+
+71
+00:03:26.506 --> 00:03:28.541
+So the agent should take the same path
+for each of these.
+
+72
+00:03:28.541 --> 00:03:30.043
+But sometimes there's variation.
+
+73
+00:03:30.977 --> 00:03:33.613
+So you can take this list of questions,
+create a data
+
+74
+00:03:33.613 --> 00:03:36.816
+frame out of them and then upload
+that data frame into Phoenix.
+
+75
+00:03:37.584 --> 00:03:40.253
+So now you have a data
+set that lives in Phoenix.
+
+76
+00:03:40.253 --> 00:03:43.256
+If you want to,
+you can quickly visualize it here
+
+77
+00:03:43.656 --> 00:03:44.958
+Now, if you want to look in your Phoenix
+
+78
+00:03:44.958 --> 00:03:47.961
+window, you can actually see
+under the datasets tab here,
+
+79
+00:03:48.094 --> 00:03:51.097
+you'll now have an entry for the data
+set that you have just uploaded.
+
+80
+00:03:51.164 --> 00:03:52.031
+You can click into that.
+
+81
+00:03:52.031 --> 00:03:55.034
+And you can see all of the different
+examples that you've uploaded.
+
+82
+00:03:55.435 --> 00:03:58.438
+And now you can use this data
+set to start running experiments.
+
+83
+00:03:58.838 --> 00:04:01.874
+So for the next step here you have to
+define the task for your agent.
+
+84
+00:04:02.609 --> 00:04:05.411
+Now you could just run these examples
+through your agent.
+
+85
+00:04:05.411 --> 00:04:08.815
+But again you want to have some count
+of the number of steps that were taken.
+
+86
+00:04:08.848 --> 00:04:10.617
+You might want to format
+some of the messages
+
+87
+00:04:10.617 --> 00:04:13.086
+so you can make slight tweaks
+to your agent as well.
+
+88
+00:04:13.086 --> 00:04:15.054
+When you're setting it up as a task.
+
+89
+00:04:15.054 --> 00:04:17.690
+So in this case, I do a couple of things
+here.
+
+90
+00:04:17.690 --> 00:04:21.527
+One is actually create
+a method that will format
+
+91
+00:04:21.527 --> 00:04:24.530
+some of the message steps
+which you can come back to in a second.
+
+92
+00:04:24.631 --> 00:04:29.435
+And then you'll create a task here
+that is run agent and track path.
+
+93
+00:04:29.502 --> 00:04:32.972
+So starting with this task
+you'll see it takes in an example.
+
+94
+00:04:33.006 --> 00:04:36.009
+So if you remember each row of that data
+set is an example.
+
+95
+00:04:36.342 --> 00:04:39.379
+So you can see in this case
+you're taking in an example variable.
+
+96
+00:04:39.846 --> 00:04:41.014
+And then it's calling.
+
+97
+00:04:41.014 --> 00:04:43.683
+It's taking the input value
+from that example.
+
+98
+00:04:43.683 --> 00:04:46.919
+And then calling the run agent method
+on that particular example.
+
+99
+00:04:47.353 --> 00:04:50.089
+And then finally calling
+that format messages step.
+
+100
+00:04:50.089 --> 00:04:53.459
+So the return from this run
+agent and track path, it's going to be
+
+101
+00:04:53.459 --> 00:04:57.096
+the length of the messages
+inside the agent as the path length.
+
+102
+00:04:57.630 --> 00:05:00.133
+And then the actual message is object.
+
+103
+00:05:00.133 --> 00:05:03.369
+And then this format message step really
+just is going to go
+
+104
+00:05:03.369 --> 00:05:06.372
+through all of the messages
+in your agent's log.
+
+105
+00:05:06.572 --> 00:05:09.575
+And it's going to format them in
+a little bit easier to read sort of way.
+
+106
+00:05:09.575 --> 00:05:12.312
+So you can see the two calls that are made
+and make it a little bit easier to
+
+107
+00:05:12.312 --> 00:05:13.046
+compare here.
+
+108
+00:05:14.013 --> 00:05:16.449
+So now with your task ready
+
+109
+00:05:16.449 --> 00:05:19.452
+and your data set defined,
+you can start an experiment.
+
+110
+00:05:20.320 --> 00:05:23.956
+So to do that
+you'll call this run experiment method.
+
+111
+00:05:24.624 --> 00:05:28.261
+And then what this will do is it'll take
+in your data set as well as your task
+
+112
+00:05:28.261 --> 00:05:31.364
+or your function that gets applied
+to each row of that data set.
+
+113
+00:05:32.198 --> 00:05:33.466
+And then you can come up with a name.
+
+114
+00:05:33.466 --> 00:05:36.436
+So in this case convergence eval
+and a description.
+
+115
+00:05:36.436 --> 00:05:39.772
+So if you run that now,
+each row of your dataset
+
+116
+00:05:39.772 --> 00:05:42.842
+will be run through the run
+agent and track path method.
+
+117
+00:05:43.142 --> 00:05:44.610
+And you'll get results back.
+
+118
+00:05:44.610 --> 00:05:47.747
+That'll take a second to run because
+it's equivalent to 17 runs of your agent.
+
+119
+00:05:47.747 --> 00:05:50.383
+So give that a second to complete.
+
+120
+00:05:50.383 --> 00:05:52.552
+Now you should have some results
+that look like this.
+
+121
+00:05:52.552 --> 00:05:54.220
+You'll see all those runs completed.
+
+122
+00:05:54.220 --> 00:05:56.089
+And you can actually click
+and see the results
+
+123
+00:05:56.089 --> 00:05:58.191
+of that experiment inside of Phoenix.
+
+124
+00:05:58.191 --> 00:06:02.662
+So if you click into that,
+what you'll see is in your dataset,
+
+125
+00:06:03.029 --> 00:06:05.365
+you now have an entry for experiments.
+
+126
+00:06:05.365 --> 00:06:07.266
+And you have this first run
+of your experiment
+
+127
+00:06:07.266 --> 00:06:09.302
+that you named convergence eval.
+
+128
+00:06:09.302 --> 00:06:12.438
+And you can actually click and see
+all of the outputs for you to run there.
+
+129
+00:06:13.639 --> 00:06:13.873
+In this
+
+130
+00:06:13.873 --> 00:06:16.876
+case looks fairly successful
+on each of our runs.
+
+131
+00:06:17.076 --> 00:06:20.546
+And so now what you can do is
+you can actually go back into the code
+
+132
+00:06:20.546 --> 00:06:24.417
+and you can apply evaluators to each of
+those different experiment runs.
+
+133
+00:06:24.684 --> 00:06:28.821
+And so here's where you can essentially
+implement your convergence evaluator.
+
+134
+00:06:29.355 --> 00:06:32.658
+And so because you just run
+your experiment, you have written that
+
+135
+00:06:32.658 --> 00:06:36.696
+experiment has something that
+you can apply and access in your code.
+
+136
+00:06:36.963 --> 00:06:39.399
+So you can always view the results
+of that experiment as a data frame
+
+137
+00:06:39.399 --> 00:06:42.702
+where you have the output, input
+and other various columns there.
+
+138
+00:06:43.369 --> 00:06:44.237
+And so that's one thing
+
+139
+00:06:44.237 --> 00:06:47.240
+that you can actually use
+to run your convergence eval as well.
+
+140
+00:06:47.306 --> 00:06:47.874
+And so
+
+141
+00:06:47.874 --> 00:06:51.644
+in order to calculate the convergence
+first you need to calculate the minimum
+
+142
+00:06:51.644 --> 00:06:54.647
+number of steps that was taken
+by all the runs of your agent.
+
+143
+00:06:54.714 --> 00:06:57.984
+And so to do that add in code here
+
+144
+00:06:58.351 --> 00:07:01.821
+to first take your experiment as a data
+frame like you've just done above.
+
+145
+00:07:02.155 --> 00:07:05.425
+And then look at the output column
+and turn all of those different,
+
+146
+00:07:05.691 --> 00:07:10.329
+variables into values that you can access,
+and then calculate the minimum
+
+147
+00:07:10.329 --> 00:07:14.700
+or optimal path by using the minimum
+function on the path length
+
+148
+00:07:14.867 --> 00:07:17.303
+variable
+within each of those different outputs.
+
+149
+00:07:17.303 --> 00:07:21.073
+So this is just going to give you a number
+for the minimum path length taken.
+
+150
+00:07:22.775 --> 00:07:23.776
+So if you run that you should get
+
+151
+00:07:23.776 --> 00:07:27.580
+something says the optimal path length is
+you should probably see five in here.
+
+152
+00:07:27.580 --> 00:07:30.516
+That's a that is the optimal path length
+that's being used.
+
+153
+00:07:30.516 --> 00:07:32.919
+And one important thing to note
+is just the way that this has been set up
+
+154
+00:07:32.919 --> 00:07:34.053
+so far is it's counting.
+
+155
+00:07:34.053 --> 00:07:35.822
+Every message has the path length.
+
+156
+00:07:35.822 --> 00:07:38.858
+So it is including things like
+the system message and the user message.
+
+157
+00:07:39.292 --> 00:07:43.062
+That's fine in this case because you're
+comparing a bunch of different examples
+
+158
+00:07:43.062 --> 00:07:46.065
+that all include both those variables
+or both those messages.
+
+159
+00:07:46.365 --> 00:07:47.767
+You just want to make sure
+that you're consistent.
+
+160
+00:07:47.767 --> 00:07:50.736
+So if you include the user message
+in the system message again that's fine.
+
+161
+00:07:50.736 --> 00:07:54.073
+You just got to make sure that you do it
+on every example that you're testing with.
+
+162
+00:07:55.074 --> 00:07:55.608
+So now you can
+
+163
+00:07:55.608 --> 00:07:58.611
+create a method to use as your evaluator.
+
+164
+00:07:59.045 --> 00:08:03.149
+And in this case you can use
+this, evaluate path length method
+
+165
+00:08:03.249 --> 00:08:07.186
+which is going to take an output
+and compare it, the path length of that
+
+166
+00:08:07.186 --> 00:08:11.591
+output to the minimum or optimal
+path length that you calculated earlier.
+
+167
+00:08:12.291 --> 00:08:15.828
+You're also you're going to use this
+create evaluator decorator here.
+
+168
+00:08:15.828 --> 00:08:16.963
+This is totally optional
+
+169
+00:08:16.963 --> 00:08:21.000
+but it allows you to name the evaluator
+that you're going to run here and see.
+
+170
+00:08:21.000 --> 00:08:24.003
+Or it'll mark
+how it shows up inside of Phoenix.
+
+171
+00:08:24.504 --> 00:08:27.940
+And so now you can take the experiment
+that you've already run
+
+172
+00:08:28.374 --> 00:08:32.078
+and use this evaluate experiment
+method to take in the experiment.
+
+173
+00:08:32.245 --> 00:08:35.214
+And then this evaluate path length
+method that you run above.
+
+174
+00:08:35.248 --> 00:08:38.584
+And that will take all of the results
+from your experiment and run them through
+
+175
+00:08:38.618 --> 00:08:40.786
+any evaluators that you add in here.
+
+176
+00:08:40.786 --> 00:08:42.154
+AKA in this case,
+
+177
+00:08:42.154 --> 00:08:45.658
+the evaluate path length and it will give
+you a score at the end of it.
+
+178
+00:08:47.126 --> 00:08:47.527
+That'll go
+
+179
+00:08:47.527 --> 00:08:50.530
+pretty quick
+because it's just a basic code-based eval.
+
+180
+00:08:50.563 --> 00:08:53.566
+And if you jump over into Phoenix now,
+
+181
+00:08:53.799 --> 00:08:57.036
+you'll see that your experiment,
+if you go back to your dataset,
+
+182
+00:08:57.436 --> 00:09:00.806
+you'll now have a column here
+for convergence eval.
+
+183
+00:09:01.274 --> 00:09:03.976
+It's named that because of the decorator
+that you attached.
+
+184
+00:09:03.976 --> 00:09:06.979
+And in this case
+we've got a perfect score of one.
+
+185
+00:09:06.979 --> 00:09:09.215
+Our agent has taken the correct path.
+
+186
+00:09:09.215 --> 00:09:10.616
+Every example here.
+
+187
+00:09:10.616 --> 00:09:12.451
+You might see a different value here.
+
+188
+00:09:12.451 --> 00:09:14.520
+Every time we've run
+this we've gotten a different value.
+
+189
+00:09:14.520 --> 00:09:17.390
+So you may see a different value
+here for one.
+
+190
+00:09:17.390 --> 00:09:18.257
+And that'll give you an idea
+
+191
+00:09:18.257 --> 00:09:21.561
+of whether or not your agent
+is converging towards the correct path.
+

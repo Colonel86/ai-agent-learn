@@ -1,0 +1,1642 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.266 --> 00:00:00.600
+In this
+
+2
+00:00:00.600 --> 00:00:03.837
+lesson, you're going to take the agent
+that you've already built and traced,
+
+3
+00:00:03.837 --> 00:00:06.873
+and now add some evaluations
+to measure its performance.
+
+4
+00:00:07.640 --> 00:00:10.577
+Similar to before, you're going to start
+by importing some libraries
+
+5
+00:00:10.577 --> 00:00:12.178
+that'll be used here.
+
+6
+00:00:12.178 --> 00:00:15.048
+So there's some that you've seen
+before like Phoenix
+
+7
+00:00:15.048 --> 00:00:16.616
+and some other libraries here.
+
+8
+00:00:16.616 --> 00:00:18.218
+And then you're adding in some new ones.
+
+9
+00:00:18.218 --> 00:00:20.887
+So, specifically from Phoenix evals,
+
+10
+00:00:20.887 --> 00:00:24.324
+importing some things like an LLM
+as-a-Judge prompt template
+
+11
+00:00:24.324 --> 00:00:27.627
+that's going to be used,
+and some methods like LMM classify
+
+12
+00:00:27.827 --> 00:00:30.830
+that are going to help you run
+LLM as-a-Judge, evaluations.
+
+13
+00:00:31.998 --> 00:00:35.602
+One other one that's important
+to call out here is this nest_asyncio
+
+14
+00:00:35.668 --> 00:00:39.239
+you might see.
+This is used to run multiple calls
+
+15
+00:00:39.239 --> 00:00:42.509
+asynchronously and simultaneously
+to speed up some of your evaluation.
+
+16
+00:00:42.742 --> 00:00:44.210
+You'll see where
+that comes in in a second.
+
+17
+00:00:45.245 --> 00:00:47.947
+Now again
+in Phoenix there's a concept of projects.
+
+18
+00:00:47.947 --> 00:00:50.850
+And so just to separate things out
+from a previous notebook,
+
+19
+00:00:50.850 --> 00:00:53.420
+you may want to use a different project
+name here.
+
+20
+00:00:53.420 --> 00:00:56.423
+So in this case
+you could use evaluating agent.
+
+21
+00:00:56.589 --> 00:00:59.359
+And then in this notebook
+just to keep things simple,
+
+22
+00:00:59.359 --> 00:01:03.663
+what's been provided for you
+is the entire agent that you run that
+
+23
+00:01:03.663 --> 00:01:08.334
+you set up previously is in the utils file
+that's attached to this notebook.
+
+24
+00:01:09.069 --> 00:01:11.905
+And so you're going to import
+a few different methods from there.
+
+25
+00:01:11.905 --> 00:01:15.542
+But if you run this you'll see
+the same output that you saw before
+
+26
+00:01:15.542 --> 00:01:19.012
+in the previous notebook saying "tracing
+has been connected and set up there."
+
+27
+00:01:19.546 --> 00:01:22.115
+Again this is all the code
+that you created in the last notebook.
+
+28
+00:01:22.115 --> 00:01:23.616
+It's just a pretty long notebook already,
+
+29
+00:01:23.616 --> 00:01:26.586
+so it's been separated out
+into a utils file for you.
+
+30
+00:01:26.719 --> 00:01:28.221
+But this has been set up with your agent
+
+31
+00:01:28.221 --> 00:01:31.724
+to run and connected
+to the Evaluating Agents project.
+
+32
+00:01:32.192 --> 00:01:36.663
+So here, anything that you call to run
+an agent, start main spans
+
+33
+00:01:36.663 --> 00:01:40.633
+either of those methods will be traced and
+sent through into the Evaluating Agents
+
+34
+00:01:40.633 --> 00:01:42.068
+project within Phoenix.
+
+35
+00:01:42.068 --> 00:01:44.871
+It just lives in that separate
+utils file to keep things clean here.
+
+36
+00:01:46.206 --> 00:01:47.006
+You've also imported
+
+37
+00:01:47.006 --> 00:01:50.210
+tools which are going to be used
+for one of your evaluations as well too.
+
+38
+00:01:51.177 --> 00:01:53.646
+So now when you're evaluating your agent,
+
+39
+00:01:53.646 --> 00:01:56.816
+you can go for two different
+kind of approaches to start evaluating it.
+
+40
+00:01:57.117 --> 00:01:59.285
+One starts from a data set of examples.
+
+41
+00:01:59.285 --> 00:02:00.520
+You can run through your agent
+
+42
+00:02:00.520 --> 00:02:01.788
+and you'll learn more about that
+
+43
+00:02:01.788 --> 00:02:04.724
+in the next modules
+where you'll cover experiments.
+
+44
+00:02:04.724 --> 00:02:08.194
+The other way is to run
+real-world examples through your agent.
+
+45
+00:02:08.528 --> 00:02:11.397
+Trace those examples
+and then evaluate the performance
+
+46
+00:02:11.397 --> 00:02:14.400
+of the agent using those traces.
+
+47
+00:02:14.534 --> 00:02:18.605
+So, in order to do that, you can set up
+some basic questions for your agent.
+
+48
+00:02:18.938 --> 00:02:22.475
+Things like what was the most popular
+product skew, total revenue across
+
+49
+00:02:22.475 --> 00:02:25.478
+stores, some other kind of queries
+that are going to come through there.
+
+50
+00:02:25.745 --> 00:02:29.549
+And then you can loop through your agent
+and call the start
+
+51
+00:02:29.549 --> 00:02:33.052
+main span method that you imported above
+with each of those questions.
+
+52
+00:02:33.086 --> 00:02:34.821
+So this will just loop through
+
+53
+00:02:34.821 --> 00:02:37.824
+each of those questions to your agent
+and have those traced in Phoenix.
+
+54
+00:02:38.525 --> 00:02:41.027
+So this cell will take a minute or two to run.
+
+55
+00:02:41.027 --> 00:02:41.995
+Go ahead and kick off.
+
+56
+00:02:43.163 --> 00:02:43.496
+Great.
+
+57
+00:02:43.496 --> 00:02:47.700
+Now once your calls have all finished
+running, you can jump back in to Phoenix
+
+58
+00:02:47.700 --> 00:02:50.703
+and see the traces
+for all of those different runs.
+
+59
+00:02:50.737 --> 00:02:51.905
+If you start from the projects view,
+
+60
+00:02:51.905 --> 00:02:54.908
+you should now have a new project
+that says Evaluating Agent.
+
+61
+00:02:55.275 --> 00:02:57.110
+And you got six traces in there.
+
+62
+00:02:57.110 --> 00:03:00.113
+So you'll see a row
+for each run of your agent.
+
+63
+00:03:00.380 --> 00:03:05.151
+And you could click into those and see
+more details on what that agent executed
+
+64
+00:03:05.151 --> 00:03:08.388
+for that given step, including some calls
+
+65
+00:03:08.388 --> 00:03:11.391
+that are using multiple different tools
+that you can trace.
+
+66
+00:03:11.691 --> 00:03:15.061
+Now, in order to evaluate your agent,
+there's a few different pieces
+
+67
+00:03:15.061 --> 00:03:18.531
+of the agent that make sense to evaluate
+as you learned in the previous slides.
+
+68
+00:03:18.965 --> 00:03:20.600
+So, one of those is the router.
+
+69
+00:03:20.600 --> 00:03:24.204
+So you could evaluate this router call
+that's being made
+
+70
+00:03:24.204 --> 00:03:27.207
+where it's deciding
+which particular tool to call.
+
+71
+00:03:27.740 --> 00:03:29.542
+So that would be one thing to evaluate.
+
+72
+00:03:29.542 --> 00:03:33.146
+Or you can evaluate
+some of the skills like the sales lookup
+
+73
+00:03:33.146 --> 00:03:36.182
+data skill
+or the generate visualization skill.
+
+74
+00:03:37.450 --> 00:03:39.586
+And now the pattern of evaluation
+in Phoenix
+
+75
+00:03:39.586 --> 00:03:43.423
+typically involves exporting spans
+from your Phoenix instance,
+
+76
+00:03:44.123 --> 00:03:48.194
+either using LLM as-a-Judge
+or a code-based eval to add labels
+
+77
+00:03:48.194 --> 00:03:52.599
+to each row of those spans
+and then uploading them back into Phoenix.
+
+78
+00:03:53.733 --> 00:03:57.403
+So let's start
+by evaluating the router itself
+
+79
+00:03:57.804 --> 00:04:01.708
+and using an LLM as-a-Judge to do that
+router evaluation.
+
+80
+00:04:02.242 --> 00:04:05.245
+So you're going to want to export
+some of these spans from Phoenix.
+
+81
+00:04:05.545 --> 00:04:07.280
+You can do that using code.
+
+82
+00:04:07.280 --> 00:04:11.050
+But just to show how you would filter down
+to the spans that you care about.
+
+83
+00:04:12.118 --> 00:04:15.321
+For the router here
+you really care about within the router
+
+84
+00:04:15.321 --> 00:04:18.324
+call this first LLM call
+that's being made.
+
+85
+00:04:18.758 --> 00:04:20.226
+So if you look at this first
+LLM calling,
+
+86
+00:04:20.226 --> 00:04:23.229
+you can see
+this is where you have a users question.
+
+87
+00:04:23.630 --> 00:04:25.198
+And then you have the response
+
+88
+00:04:25.198 --> 00:04:27.600
+here, is one of these tools.
+
+89
+00:04:27.600 --> 00:04:29.435
+So in this case the lookup sales data tool.
+
+90
+00:04:29.435 --> 00:04:31.671
+That was the response
+back from the router.
+
+91
+00:04:31.671 --> 00:04:32.872
+So this is all the information
+
+92
+00:04:32.872 --> 00:04:35.842
+that you want to be able
+to grab and export from Phoenix.
+
+93
+00:04:36.109 --> 00:04:38.978
+And you can actually look at some of
+the attributes here to see the information
+
+94
+00:04:38.978 --> 00:04:40.546
+associated with these.
+
+95
+00:04:40.546 --> 00:04:44.450
+The first is that you can see that there's
+an open inference span kind of LLM.
+
+96
+00:04:45.084 --> 00:04:47.153
+So that's one way
+that you could filter by this.
+
+97
+00:04:47.153 --> 00:04:50.423
+Or you could use any of the other
+information inside of the attributes here
+
+98
+00:04:50.690 --> 00:04:53.693
+to filter for this particular
+kind of span that you want to use.
+
+99
+00:04:54.260 --> 00:04:57.664
+Now back in your notebook to evaluate
+your router using an LLM as-a-Judge.
+
+100
+00:04:58.364 --> 00:05:01.334
+There's a template that's provided
+as part of the Phoenix Library
+
+101
+00:05:01.334 --> 00:05:02.669
+for this kind of evaluation,
+
+102
+00:05:02.669 --> 00:05:05.972
+because this is a very common evaluation
+that oftentimes people want to run.
+
+103
+00:05:06.906 --> 00:05:11.244
+So this tool calling Prompt template is an
+LLM as-a-Judge template
+
+104
+00:05:11.878 --> 00:05:14.947
+that you can use to evaluate your function
+calling of your router.
+
+105
+00:05:15.815 --> 00:05:17.917
+So if you look through
+what this is looking for,
+
+106
+00:05:17.917 --> 00:05:20.720
+you can see all of the instructions
+given to the judge.
+
+107
+00:05:20.720 --> 00:05:23.856
+And one thing that you see here
+is that there's two variables in this case
+
+108
+00:05:23.856 --> 00:05:27.560
+up here, and one variable down below
+that need to be passed in to the template.
+
+109
+00:05:28.161 --> 00:05:32.065
+So, first is the question the user asked
+and then the tool call that was made.
+
+110
+00:05:33.266 --> 00:05:34.967
+It also looks for the tool definitions,
+
+111
+00:05:34.967 --> 00:05:37.303
+which is a set of
+all of the possible tools
+
+112
+00:05:37.303 --> 00:05:38.971
+and their definitions
+that could be called
+
+113
+00:05:38.971 --> 00:05:41.641
+so the LLM can compare against that.
+
+114
+00:05:41.641 --> 00:05:44.777
+So, next you can export the required spans
+from Phoenix
+
+115
+00:05:45.078 --> 00:05:47.947
+using some of those filters
+you just saw in Phoenix.
+
+116
+00:05:47.947 --> 00:05:49.549
+So there's a few things
+that you can do here.
+
+117
+00:05:49.549 --> 00:05:52.618
+So, first off you can use this span
+
+118
+00:05:52.618 --> 00:05:57.618
+query method to set some sort of filter
+that will filter down the spans
+
+119
+00:05:57.623 --> 00:06:00.626
+in your project and export
+any spans that match the filter.
+
+120
+00:06:01.361 --> 00:06:04.163
+Here, you can use span kind of equals LLM.
+
+121
+00:06:04.163 --> 00:06:07.967
+And this will give you all of the LLM spans
+for both the router calls
+
+122
+00:06:07.967 --> 00:06:09.936
+as well as other LLM spans.
+
+123
+00:06:09.936 --> 00:06:12.939
+So you're going to do a little bit
+more filtering in a second there.
+
+124
+00:06:12.939 --> 00:06:15.208
+And then you can choose
+which columns or attributes
+
+125
+00:06:15.208 --> 00:06:17.477
+you want to export as part of that call.
+
+126
+00:06:17.477 --> 00:06:20.313
+And so here you want to export import dot
+
+127
+00:06:20.313 --> 00:06:23.316
+value and LLM dot tools.
+
+128
+00:06:23.449 --> 00:06:27.220
+And you want to export them
+using the headers question and tool call.
+
+129
+00:06:28.154 --> 00:06:30.723
+Those headers are important
+because they match, you
+
+130
+00:06:30.723 --> 00:06:31.924
+scroll up a bit,
+
+131
+00:06:31.924 --> 00:06:33.993
+they match what's going to be looked for
+by your template.
+
+132
+00:06:33.993 --> 00:06:38.993
+So question and tool call and then ask for
+the input dot value and LLM tools.
+
+133
+00:06:39.565 --> 00:06:42.568
+Those are attribute
+names inside of Phoenix.
+
+134
+00:06:42.602 --> 00:06:45.738
+So if you want to quickly jump
+in over to Phoenix one more time,
+
+135
+00:06:46.272 --> 00:06:47.507
+you can see in this case
+
+136
+00:06:48.608 --> 00:06:49.375
+in your attributes.
+
+137
+00:06:49.375 --> 00:06:51.043
+You can see input here
+
+138
+00:06:51.043 --> 00:06:55.481
+dot value will give you the full messages
+object that was input there.
+
+139
+00:06:56.315 --> 00:06:58.851
+And if you scroll down further, you can see
+
+140
+00:06:58.851 --> 00:07:02.054
+LLM dot tools
+
+141
+00:07:02.054 --> 00:07:05.024
+here, you can see the tools
+that that were chosen.
+
+142
+00:07:05.458 --> 00:07:08.194
+So now you can export
+those different values.
+
+143
+00:07:08.194 --> 00:07:11.063
+Run this query on your Phoenix client
+
+144
+00:07:11.063 --> 00:07:13.966
+and that will export
+those particular spans.
+
+145
+00:07:13.966 --> 00:07:16.936
+You can see
+they're also passing in the project name.
+
+146
+00:07:16.936 --> 00:07:19.539
+And then one other thing
+that's being done here to filter down.
+
+147
+00:07:19.539 --> 00:07:23.776
+Because again this will pull up all of the
+LLM spans, even those that are not to do
+
+148
+00:07:23.776 --> 00:07:26.779
+with tool calling or routing in this case.
+
+149
+00:07:26.813 --> 00:07:30.149
+So you can also just use this dropna
+method to remove
+
+150
+00:07:30.149 --> 00:07:33.619
+any spans that were exported
+that don't have a tool call.
+
+151
+00:07:33.619 --> 00:07:36.622
+So they have no value here for LLM tools.
+
+152
+00:07:36.823 --> 00:07:40.159
+That's an easy way
+to just filter down to just the LLM spans
+
+153
+00:07:40.159 --> 00:07:41.027
+that have to do with routing.
+
+154
+00:07:42.195 --> 00:07:42.829
+So if you run the
+
+155
+00:07:42.829 --> 00:07:45.832
+cell now you should see your tool calls
+data frame.
+
+156
+00:07:45.832 --> 00:07:49.235
+It's been exported. Should have two columns
+question and tool call.
+
+157
+00:07:49.235 --> 00:07:52.238
+And again those match what
+the template above is going to look for.
+
+158
+00:07:52.738 --> 00:07:53.573
+And then you'll have
+
+159
+00:07:53.573 --> 00:07:56.843
+the question from the user
+as well as the tool calls that were made.
+
+160
+00:07:57.443 --> 00:08:00.446
+You'll also have this context dot span
+ID column.
+
+161
+00:08:00.580 --> 00:08:03.916
+This is what corresponds
+to the particular span inside of Phoenix.
+
+162
+00:08:03.916 --> 00:08:07.253
+And it's going to be what allows you
+to upload the data back into Phoenix
+
+163
+00:08:07.253 --> 00:08:09.689
+and have it
+match up in a little bit here.
+
+164
+00:08:09.689 --> 00:08:10.990
+So now you have this data frame.
+
+165
+00:08:10.990 --> 00:08:14.260
+The next step is to add labels
+to each row of that data frame
+
+166
+00:08:14.927 --> 00:08:17.930
+based on your template above.
+
+167
+00:08:18.464 --> 00:08:19.432
+So here's how you can do that.
+
+168
+00:08:21.100 --> 00:08:22.502
+There's a few things going on here.
+
+169
+00:08:22.502 --> 00:08:27.502
+First, the LLM classify method is a method
+that's supplied by Phoenix that will take
+
+170
+00:08:27.974 --> 00:08:32.278
+each row of your data frame
+and run it through some provided template.
+
+171
+00:08:32.478 --> 00:08:35.314
+So in this case
+your tool calling prompt template.
+
+172
+00:08:35.314 --> 00:08:37.049
+And then it will take a response.
+
+173
+00:08:37.049 --> 00:08:41.420
+And in this case it will snap it to either
+a correct or incorrect value.
+
+174
+00:08:41.888 --> 00:08:46.025
+That just ensures that you have really
+specific labels that are being used.
+
+175
+00:08:46.359 --> 00:08:49.228
+Sometimes the LLM might respond
+with correct with a capital C
+
+176
+00:08:49.228 --> 00:08:50.429
+as opposed to lowercase.
+
+177
+00:08:50.429 --> 00:08:52.965
+And so this rails function here
+will snap it.
+
+178
+00:08:52.965 --> 00:08:55.334
+So all the values are consistent.
+
+179
+00:08:55.334 --> 00:08:59.305
+And then providing a model that's going
+to be used to actually run this prompt.
+
+180
+00:08:59.305 --> 00:09:02.441
+So this is your judge model
+in this case using GPT-4o.
+
+181
+00:09:03.476 --> 00:09:05.244
+And then this variable here
+
+182
+00:09:05.244 --> 00:09:08.848
+will allow to provide an explanation
+for why it shows that particular label.
+
+183
+00:09:10.082 --> 00:09:12.752
+There's a couple other things
+going on inside the code here.
+
+184
+00:09:12.752 --> 00:09:16.289
+One is that this suppress tracing
+tag up top.
+
+185
+00:09:17.023 --> 00:09:20.192
+This has been added
+because if you remember, your agent
+
+186
+00:09:20.192 --> 00:09:23.429
+is set up to trace
+any calls that are made to OpenAI.
+
+187
+00:09:23.930 --> 00:09:25.097
+So if you didn't have this
+
+188
+00:09:25.097 --> 00:09:28.634
+method saying, hey, turn off tracing
+for everything happening inside here,
+
+189
+00:09:29.168 --> 00:09:32.438
+then you would actually see some spans
+tracked to your project
+
+190
+00:09:32.738 --> 00:09:35.708
+for all of the evaluation calls
+that are being made.
+
+191
+00:09:36.008 --> 00:09:38.544
+So you want to make sure your LLM
+as-a-Judge spans themselves
+
+192
+00:09:38.544 --> 00:09:39.378
+don't get traced.
+
+193
+00:09:39.378 --> 00:09:41.781
+So you're suppressing training there.
+
+194
+00:09:41.781 --> 00:09:46.118
+And then on the template row here, there's
+some kind of wizardry going on here
+
+195
+00:09:46.118 --> 00:09:51.118
+to add in and replace the tool definitions
+with your tools object.
+
+196
+00:09:52.625 --> 00:09:57.363
+That's the idea here. So if you quickly
+see your template from earlier,
+
+197
+00:09:58.264 --> 00:10:01.300
+it's being passed in this tool's
+definition, which is a definition
+
+198
+00:10:01.300 --> 00:10:03.903
+of all of the possible tools
+that could be called.
+
+199
+00:10:03.903 --> 00:10:08.174
+And you want to make sure that that's
+being replaced with the Json
+
+200
+00:10:08.174 --> 00:10:10.643
+dictionary of tools
+that your agent is using,
+
+201
+00:10:10.643 --> 00:10:12.878
+so that your LLM judge knows
+all the possible tools
+
+202
+00:10:12.878 --> 00:10:15.348
+that could have been called,
+so it can make its judgment appropriately.
+
+203
+00:10:17.350 --> 00:10:20.186
+And finally, one other thing
+that's happening here after your LLM
+
+204
+00:10:20.186 --> 00:10:25.186
+judge runs, is you're also adding
+in a score column that is just one
+
+205
+00:10:26.692 --> 00:10:30.162
+if the LLM judge
+label is correct, zero otherwise,
+
+206
+00:10:30.763 --> 00:10:34.367
+that's used to have a numeric value
+attached to your LLM judge,
+
+207
+00:10:34.367 --> 00:10:37.370
+which is used in
+some of the visualization.
+
+208
+00:10:37.737 --> 00:10:39.138
+So now you can go ahead and run that
+
+209
+00:10:39.138 --> 00:10:42.842
+and you'll see some LLM classified progress
+bar being made.
+
+210
+00:10:43.476 --> 00:10:46.579
+These calls are made asynchronously
+because of the nest_asyncio
+
+211
+00:10:46.879 --> 00:10:49.882
+library you imported all the way
+at the beginning of this notebook.
+
+212
+00:10:50.416 --> 00:10:52.518
+And then you should see a response
+that looks like this,
+
+213
+00:10:52.518 --> 00:10:56.222
+where you have some labels
+as well as explanations.
+
+214
+00:10:56.789 --> 00:10:57.757
+And then if you scroll to the right
+
+215
+00:10:57.757 --> 00:11:01.894
+you'll also see
+you have some scores, values 1 or 0.
+
+216
+00:11:03.062 --> 00:11:03.663
+So now you've
+
+217
+00:11:03.663 --> 00:11:06.632
+appended some labels onto your span IDs.
+
+218
+00:11:06.732 --> 00:11:09.735
+The last thing to do
+here is upload these back into Phoenix
+
+219
+00:11:10.069 --> 00:11:13.072
+so you can visualize the data there.
+
+220
+00:11:13.973 --> 00:11:18.277
+So you can use this log evaluations method
+which will take a couple things here.
+
+221
+00:11:18.377 --> 00:11:22.648
+It'll take the name of the eval
+that you want to use as well as the data
+
+222
+00:11:22.648 --> 00:11:26.686
+frame that you just created with
+all of those labels and context dot span IDs.
+
+223
+00:11:28.254 --> 00:11:32.324
+Now, if you jump back into Phoenix,
+you may need to refresh your project,
+
+224
+00:11:32.558 --> 00:11:36.529
+and then you'll see there's a new value
+at the top here of your tool calling eval.
+
+225
+00:11:37.029 --> 00:11:40.666
+And so you'll see a numeric value. Again
+because you added that score
+
+226
+00:11:40.833 --> 00:11:43.836
+and it's able to have a numeric
+and a percentage value here.
+
+227
+00:11:44.170 --> 00:11:47.173
+And then if you start
+going into any of your runs
+
+228
+00:11:47.606 --> 00:11:50.676
+and you click on your router span
+
+229
+00:11:50.676 --> 00:11:54.246
+right here, you'll now see that
+the feedback tab here has a new entry.
+
+230
+00:11:54.814 --> 00:11:57.817
+And you'll see it's now labeled either
+correct or incorrect.
+
+231
+00:11:58.217 --> 00:12:01.721
+And then it has an explanation as to why
+that particular label was chosen.
+
+232
+00:12:02.722 --> 00:12:03.756
+And so you can use these to
+
+233
+00:12:03.756 --> 00:12:06.759
+get some more information about what's
+happening inside of your application.
+
+234
+00:12:07.326 --> 00:12:10.529
+And you can actually filter down as well
+if you want to go
+
+235
+00:12:10.529 --> 00:12:13.866
+to spans as opposed to traces,
+to see all of your spans in Phoenix.
+
+236
+00:12:14.567 --> 00:12:19.371
+And then you can set a filter
+for your evals to be
+
+237
+00:12:20.673 --> 00:12:23.309
+tool calling eval, as a name of your eval.
+
+238
+00:12:23.309 --> 00:12:26.312
+And then let's look at just
+the incorrect ones.
+
+239
+00:12:26.579 --> 00:12:27.780
+You can look at...
+
+240
+00:12:27.780 --> 00:12:31.083
+And now you'll see there's cases
+where your router was incorrect there.
+
+241
+00:12:31.550 --> 00:12:34.820
+And you could click into those
+and see the feedback
+
+242
+00:12:34.820 --> 00:12:37.823
+as to why that particular run
+was incorrect.
+
+243
+00:12:38.090 --> 00:12:39.925
+Awesome.
+
+244
+00:12:39.925 --> 00:12:42.895
+So now you've evaluated
+your router using LLM as-a-Judge.
+
+245
+00:12:42.895 --> 00:12:45.898
+You can add in some evaluations
+for your skills as well.
+
+246
+00:12:46.132 --> 00:12:48.968
+One that might make sense to do
+would be evaluating
+
+247
+00:12:48.968 --> 00:12:52.738
+your generated code
+for your generate visualizations.
+
+248
+00:12:53.472 --> 00:12:55.908
+And so one way you could do this
+you can say okay
+
+249
+00:12:55.908 --> 00:12:59.512
+I've got my tool here,
+called Generate visualization.
+
+250
+00:12:59.779 --> 00:13:01.781
+Why not export all of the spans for that
+
+251
+00:13:01.781 --> 00:13:02.815
+Generate visualization.
+
+252
+00:13:02.815 --> 00:13:05.718
+And then you can evaluate the code
+that's been generated
+
+253
+00:13:05.718 --> 00:13:06.852
+there.
+
+254
+00:13:06.852 --> 00:13:09.622
+So you'll follow the same kind of pattern
+as before.
+
+255
+00:13:09.622 --> 00:13:12.758
+Start by exporting the spans
+that you want to evaluate.
+
+256
+00:13:13.325 --> 00:13:15.761
+And in this case
+you can just use the name of the span
+
+257
+00:13:15.761 --> 00:13:17.530
+equals generate visualization.
+
+258
+00:13:17.530 --> 00:13:18.931
+Super easy there.
+
+259
+00:13:18.931 --> 00:13:21.934
+And then you'll want to export
+the output of that span.
+
+260
+00:13:22.301 --> 00:13:23.469
+So you can run this.
+
+261
+00:13:23.469 --> 00:13:26.672
+You probably just have one entry here
+given the examples that have been run.
+
+262
+00:13:27.606 --> 00:13:30.476
+And then instead of using LLM
+as-a-Judge here,
+
+263
+00:13:30.476 --> 00:13:32.444
+you can define a
+code-based evaluator instead.
+
+264
+00:13:33.445 --> 00:13:35.981
+So in this case you
+can do a very simple evaluation of just:
+
+265
+00:13:35.981 --> 00:13:38.150
+Is the generated code runnable?
+
+266
+00:13:38.150 --> 00:13:41.153
+And so you could say okay
+here is a method that will check for that.
+
+267
+00:13:41.253 --> 00:13:43.556
+It will take some generated code.
+
+268
+00:13:43.556 --> 00:13:46.725
+And it will do some quick checks
+to make sure it doesn't have any extra
+
+269
+00:13:46.759 --> 00:13:48.928
+string values inside of it.
+
+270
+00:13:48.928 --> 00:13:51.530
+And then it will try to execute that code
+returning
+
+271
+00:13:51.530 --> 00:13:54.533
+true or false
+depending on if there were exceptions.
+
+272
+00:13:54.900 --> 00:13:57.903
+And now you can take that method
+
+273
+00:13:58.504 --> 00:14:02.908
+and apply it to your code
+gen data frame that you exported above.
+
+274
+00:14:03.342 --> 00:14:05.978
+So you can apply the code
+
+275
+00:14:05.978 --> 00:14:09.114
+as runnable method
+here to your generated code column,
+
+276
+00:14:09.882 --> 00:14:12.852
+and then map to the return values of true
+
+277
+00:14:12.852 --> 00:14:15.855
+to runnable and false to not runnable.
+
+278
+00:14:15.855 --> 00:14:17.389
+And then again, you want to add a score.
+
+279
+00:14:17.389 --> 00:14:21.093
+So you can say that one is runnable
+and zero is not runnable.
+
+280
+00:14:21.994 --> 00:14:24.697
+And now if you run that method
+you'll add in some labels
+
+281
+00:14:24.697 --> 00:14:24.964
+there.
+
+282
+00:14:26.131 --> 00:14:29.101
+You can
+take a look at your generated data frame.
+
+283
+00:14:29.201 --> 00:14:32.204
+And now you have some labels and scores.
+
+284
+00:14:32.371 --> 00:14:35.140
+And finally you can upload this data back
+
+285
+00:14:35.140 --> 00:14:38.143
+into Phoenix
+using that same log evaluation method.
+
+286
+00:14:38.911 --> 00:14:41.714
+And now if you look in Phoenix
+you'll have a new entry
+
+287
+00:14:41.714 --> 00:14:44.850
+at the top this time for runnable code.
+
+288
+00:14:44.850 --> 00:14:46.619
+And it looks like the generated code
+wasn't runnable.
+
+289
+00:14:46.619 --> 00:14:49.355
+So in this case it's good eval
+caught that for us.
+
+290
+00:14:49.355 --> 00:14:54.026
+So you could use this at scale to run
+more checks of your runnable code,
+
+291
+00:14:54.560 --> 00:14:58.530
+this time using a code-based evaluator
+as opposed to an LLM as-a-Judge evaluator.
+
+292
+00:15:00.132 --> 00:15:03.135
+And there's a couple other tools that
+you had that might make sense to evaluate.
+
+293
+00:15:04.136 --> 00:15:07.139
+Another good example would be the data
+analysis tool that you're using
+
+294
+00:15:07.139 --> 00:15:10.843
+to generate analysis on top of any data
+that's been exported.
+
+295
+00:15:11.343 --> 00:15:14.346
+And so this one's another good one to use
+LLM as a judge for.
+
+296
+00:15:14.680 --> 00:15:19.451
+However, there's not actually a template
+built into Phoenix for clarity of analysis.
+
+297
+00:15:19.852 --> 00:15:22.855
+So you might wanna actually
+define your own template in this case.
+
+298
+00:15:22.888 --> 00:15:25.791
+So you can actually just define
+your own template as text
+
+299
+00:15:25.791 --> 00:15:28.794
+using whatever variables make sense here.
+
+300
+00:15:29.194 --> 00:15:30.996
+And so in this case
+you can create your own template
+
+301
+00:15:32.031 --> 00:15:35.034
+and then follow the same pattern
+as before.
+
+302
+00:15:35.134 --> 00:15:37.536
+Export the information you care about.
+
+303
+00:15:37.536 --> 00:15:40.839
+And in this case, one way you could export
+relevant information is that
+
+304
+00:15:41.140 --> 00:15:42.942
+you could look
+for all of your agent spans,
+
+305
+00:15:42.942 --> 00:15:46.612
+which are that top-level span,
+and just look at the overall output value,
+
+306
+00:15:46.879 --> 00:15:49.782
+because that's what you can evaluate
+whether or not that was,
+
+307
+00:15:49.782 --> 00:15:52.751
+correctly and clearly communicated.
+
+308
+00:15:53.218 --> 00:15:55.988
+So you can export your top-level
+agent spans.
+
+309
+00:15:55.988 --> 00:15:56.722
+And then again
+
+310
+00:15:56.722 --> 00:16:00.259
+make sure that when you're doing this,
+you're matching any of the names here
+
+311
+00:16:00.592 --> 00:16:04.196
+or the column headers here to whatever
+is expected by your LLM as-a-Judge
+
+312
+00:16:04.196 --> 00:16:05.898
+prompt.
+
+313
+00:16:05.898 --> 00:16:07.800
+And now you can use the same
+
+314
+00:16:07.800 --> 00:16:11.670
+LLM classify method, with tracing
+suppressed this time
+
+315
+00:16:11.670 --> 00:16:16.442
+using your manually defined
+prompt to run your LLM as-a-Judge.
+
+316
+00:16:17.543 --> 00:16:19.011
+And then once that completes,
+
+317
+00:16:19.011 --> 00:16:22.982
+you'll have your new data frame
+that you can upload back into Phoenix.
+
+318
+00:16:23.649 --> 00:16:26.618
+You can call this one
+a response clarity eval.
+
+319
+00:16:26.618 --> 00:16:30.789
+And you should see that appear in Phoenix
+under response clarity.
+
+320
+00:16:30.923 --> 00:16:33.926
+In this case, it looks like 100% out 100%.
+
+321
+00:16:34.193 --> 00:16:36.428
+And you had one third and final tool,
+
+322
+00:16:36.428 --> 00:16:39.865
+which is your SQL code
+generation and database lookup tool.
+
+323
+00:16:40.532 --> 00:16:42.835
+So you can add a similar evaluation
+for that.
+
+324
+00:16:42.835 --> 00:16:45.838
+Again, defining an LLM as-a-Judge prompt.
+
+325
+00:16:45.904 --> 00:16:48.907
+So in this case
+you can see a SQL eval gen prompt.
+
+326
+00:16:49.308 --> 00:16:51.110
+And then you can export relevant spans.
+
+327
+00:16:51.110 --> 00:16:54.113
+So again in this case
+you can export your LLM spans.
+
+328
+00:16:54.213 --> 00:16:57.216
+And then you can later
+filter down a little bit more specifically
+
+329
+00:16:57.216 --> 00:17:00.919
+here to filter whether the question
+that's being asked contains this:
+
+330
+00:17:01.220 --> 00:17:04.223
+generate
+a SQL query based on a prompt method.
+
+331
+00:17:04.356 --> 00:17:07.626
+Oftentimes the hardest part of setting up
+the evals is filtering down
+
+332
+00:17:07.659 --> 00:17:10.229
+the right set of spans
+and coming up with the right criteria.
+
+333
+00:17:10.229 --> 00:17:12.998
+So just know that you can filter
+based on anything inside of the spans,
+
+334
+00:17:12.998 --> 00:17:15.868
+including string manipulation here,
+or just looking to see
+
+335
+00:17:15.868 --> 00:17:18.437
+if the prompt contains
+a certain kind of value.
+
+336
+00:17:18.437 --> 00:17:20.472
+Export your data there.
+
+337
+00:17:20.472 --> 00:17:22.307
+Once again, run your
+
+338
+00:17:23.308 --> 00:17:24.209
+LLM as-a-Judge
+
+339
+00:17:24.209 --> 00:17:25.344
+prompt.
+
+340
+00:17:25.344 --> 00:17:28.347
+And then finally upload
+that data into Phoenix.
+
+341
+00:17:28.814 --> 00:17:31.216
+And so now you should have four different
+evaluators
+
+342
+00:17:31.216 --> 00:17:31.650
+in Phoenix.
+
+343
+00:17:31.650 --> 00:17:34.653
+You have one evaluator for your tool
+calling and your router.
+
+344
+00:17:34.920 --> 00:17:37.689
+You'll have one evaluator
+for your SQL code gen, your response
+
+345
+00:17:37.689 --> 00:17:41.260
+clarity
+and your generated code visualizations.
+
+346
+00:17:41.760 --> 00:17:42.428
+So at this point,
+
+347
+00:17:42.428 --> 00:17:45.764
+you now have at least one evaluator
+set up for each main part of your agent.
+
+348
+00:17:46.198 --> 00:17:48.400
+And you can use these
+to get some directional indications
+
+349
+00:17:48.400 --> 00:17:51.236
+of how your agent is performing
+across different types of queries.
+

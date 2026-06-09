@@ -1,0 +1,2280 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.402
+We'll now switch to Claude Code and
+
+2
+00:00:02.402 --> 00:00:05.171
+use skills for code generation, reviewing, and testing.
+
+3
+00:00:05.672 --> 00:00:08.775
+We'll also set up sub-agents and equip them with skills.
+
+4
+00:00:09.175 --> 00:00:11.878
+Let's have some fun. So far we've seen how to use skills
+
+5
+00:00:12.178 --> 00:00:15.782
+in Claude AI and using the Claude messages API.
+
+6
+00:00:15.882 --> 00:00:17.817
+Now let's talk about how to use skills
+
+7
+00:00:17.817 --> 00:00:19.786
+in Claude Code in a bit more depth.
+
+8
+00:00:19.786 --> 00:00:21.888
+The application that I'm using
+
+9
+00:00:21.888 --> 00:00:25.258
+is a command line application for creating to-dos
+
+10
+00:00:25.258 --> 00:00:27.961
+that need to be completed and listing them,
+
+11
+00:00:27.961 --> 00:00:30.163
+and eventually editing and clearing.
+
+12
+00:00:30.397 --> 00:00:32.365
+I'm going to show the CLAUDE.md file to
+
+13
+00:00:32.365 --> 00:00:34.567
+give you a sense of what this project does.
+
+14
+00:00:34.868 --> 00:00:36.870
+And now we're going to do a little demo
+
+15
+00:00:36.870 --> 00:00:38.872
+before we jump into each of the individual files.
+
+16
+00:00:39.272 --> 00:00:43.643
+In Claude code, you have the ability
+to create a claude.md file.
+
+17
+00:00:43.643 --> 00:00:48.314
+This file is created using
+the /init command or manually by the user.
+
+18
+00:00:48.882 --> 00:00:52.619
+This file is always in your context
+and specific to your project.
+
+19
+00:00:52.986 --> 00:00:55.955
+This is where you can specify
+general instructions
+
+20
+00:00:55.955 --> 00:00:59.626
+about the code base project
+you're working on, technology stack,
+
+21
+00:00:59.859 --> 00:01:03.530
+and things that Claude needs to know
+in every single conversation.
+
+22
+00:01:04.164 --> 00:01:07.567
+So again, we're building a command line task management application
+
+23
+00:01:07.567 --> 00:01:10.870
+using Python, Typer as our CLI framework,
+
+24
+00:01:11.171 --> 00:01:14.174
+using dataclasses, Rich, we're storing information
+
+25
+00:01:14.174 --> 00:01:16.176
+in a JSON file for persistence,
+
+26
+00:01:16.176 --> 00:01:18.645
+and using uv for dependency management.
+
+27
+00:01:18.645 --> 00:01:21.448
+Our architecture follows according to this pattern.
+
+28
+00:01:21.848 --> 00:01:24.150
+We've got our entry point and all of our commands
+
+29
+00:01:24.150 --> 00:01:26.453
+get their own individual Python file.
+
+30
+00:01:26.853 --> 00:01:29.155
+We set up our data class in our models.py
+
+31
+00:01:29.689 --> 00:01:34.194
+our logic for storing, serializing, deserializing in our storage.py,
+
+32
+00:01:34.594 --> 00:01:37.697
+and then to display things nicely in the terminal, our display.py.
+
+33
+00:01:37.997 --> 00:01:40.500
+We have a couple constants and then our tests.
+
+34
+00:01:41.301 --> 00:01:42.969
+We can see in this file, we
+
+35
+00:01:42.969 --> 00:01:44.904
+have our Priority, our Task as Data Models,
+
+36
+00:01:45.105 --> 00:01:48.908
+how data is persisted. And remember again for this CLAUDE.md,
+
+37
+00:01:49.109 --> 00:01:51.344
+this is data that is always available
+
+38
+00:01:51.344 --> 00:01:53.880
+in context in every conversation that we have.
+
+39
+00:01:54.280 --> 00:01:57.283
+This is useful information to help Claude figure out
+
+40
+00:01:57.484 --> 00:02:00.286
+where to find things and how best to structure information.
+
+41
+00:02:00.687 --> 00:02:02.355
+So with that in mind, let's hop
+
+42
+00:02:02.355 --> 00:02:04.023
+in and play around with this application.
+
+43
+00:02:04.524 --> 00:02:07.694
+First, I'm going to go ahead and activate the virtual environment.
+
+44
+00:02:08.495 --> 00:02:10.597
+So I'll source .venv
+
+45
+00:02:10.797 --> 00:02:12.899
+then activate.
+
+46
+00:02:12.899 --> 00:02:14.801
+Once I've got that set up,
+
+47
+00:02:14.801 --> 00:02:17.303
+make sure my dependencies are in order with uv sync.
+
+48
+00:02:25.311 --> 00:02:26.813
+And once I've done that,
+
+49
+00:02:26.813 --> 00:02:28.414
+I can actually start using this
+
+50
+00:02:28.414 --> 00:02:30.316
+task command directly in the command line.
+
+51
+00:02:30.316 --> 00:02:31.918
+If I take a look at the command,
+
+52
+00:02:31.918 --> 00:02:35.021
+I see I have commands like add and done and list,
+
+53
+00:02:35.021 --> 00:02:37.624
+as well as some additional options.
+
+54
+00:02:37.757 --> 00:02:39.526
+So let's go ahead and take a look
+
+55
+00:02:39.526 --> 00:02:41.261
+at the tasks that I have right here.
+
+56
+00:02:41.561 --> 00:02:43.763
+Right now, I have none of them that are found.
+
+57
+00:02:43.963 --> 00:02:46.266
+I'll clear the terminal so I can start from the top.
+
+58
+00:02:46.366 --> 00:02:48.368
+Let's go ahead and add a task.
+
+59
+00:02:48.468 --> 00:02:51.070
+Right here, we'll call this write the final report.
+
+60
+00:02:51.371 --> 00:02:54.174
+and we'll give this a priority of high
+
+61
+00:02:54.774 --> 00:02:58.178
+and we'll give this a date to be done with the following.
+
+62
+00:02:58.878 --> 00:03:00.580
+We can see here I've added that
+
+63
+00:03:00.580 --> 00:03:02.248
+successfully, so let's go take a look.
+
+64
+00:03:02.715 --> 00:03:04.517
+We've got our task right there.
+
+65
+00:03:04.717 --> 00:03:07.921
+our display.py doing some nice formatting of that information.
+
+66
+00:03:08.221 --> 00:03:10.190
+Now let's go ahead and complete it. I'll go
+
+67
+00:03:10.190 --> 00:03:12.392
+ahead and mark that as done with the correct ID.
+
+68
+00:03:12.892 --> 00:03:13.960
+And then if I go ahead
+
+69
+00:03:13.960 --> 00:03:15.195
+and take a look at my list,
+
+70
+00:03:16.196 --> 00:03:18.198
+I can see with that flag
+
+71
+00:03:18.598 --> 00:03:20.700
+that I have this task that is done.
+
+72
+00:03:21.367 --> 00:03:23.102
+The plan for this lesson here
+
+73
+00:03:23.303 --> 00:03:26.072
+is to add another command line command for edit.
+
+74
+00:03:26.239 --> 00:03:28.441
+So we're going to have to go to src
+
+75
+00:03:28.441 --> 00:03:32.245
+to task and add another command here for editing.
+
+76
+00:03:32.245 --> 00:03:34.247
+But we also want to make sure
+
+77
+00:03:34.247 --> 00:03:36.249
+that when we add these additional commands,
+
+78
+00:03:36.249 --> 00:03:38.751
+we're following the correct workflow.
+
+79
+00:03:38.751 --> 00:03:42.255
+We're following a proper way of adding commands the right way
+
+80
+00:03:42.255 --> 00:03:43.856
+to pattern match a bit of
+
+81
+00:03:43.856 --> 00:03:45.758
+what we've done in this code base.
+
+82
+00:03:45.758 --> 00:03:48.761
+In order to do so, we're going to be using
+
+83
+00:03:48.761 --> 00:03:51.764
+a skill here that we've added called adding CLI command.
+
+84
+00:03:52.232 --> 00:03:55.401
+Skills are defined inside of a .claude folder
+
+85
+00:03:55.401 --> 00:03:57.971
+followed by a folder called skills.
+
+86
+00:03:57.971 --> 00:03:59.572
+When we take a look at this skill,
+
+87
+00:03:59.672 --> 00:04:01.975
+first not only we can see that
+
+88
+00:04:01.975 --> 00:04:04.244
+this is available at the project level.
+
+89
+00:04:04.344 --> 00:04:06.679
+We can also create skills at the user level
+
+90
+00:04:06.679 --> 00:04:08.915
+in our home directory if we'd like as well.
+
+91
+00:04:09.182 --> 00:04:12.485
+For this example, we'll be focusing in project specific skills.
+
+92
+00:04:13.019 --> 00:04:16.723
+So let's dive into what's happening for this particular skill.
+
+93
+00:04:17.123 --> 00:04:19.726
+Just like we saw before, we have a name and a description,
+
+94
+00:04:20.126 --> 00:04:22.528
+and here we're going to really lean
+
+95
+00:04:22.528 --> 00:04:24.931
+into the particular coding styles and functionality
+
+96
+00:04:25.031 --> 00:04:27.734
+that we want when creating new commands.
+
+97
+00:04:28.101 --> 00:04:31.104
+We're going to start by identifying the workflow necessary
+
+98
+00:04:31.604 --> 00:04:34.007
+and creating files in the appropriate directories.
+
+99
+00:04:34.607 --> 00:04:37.310
+Just like we have commands for add and done and list,
+
+100
+00:04:37.510 --> 00:04:39.612
+we want to make sure that when we
+
+101
+00:04:39.612 --> 00:04:41.714
+make new files for commands, it lives there.
+
+102
+00:04:41.981 --> 00:04:44.884
+We also want to make sure that these commands are registered
+
+103
+00:04:45.084 --> 00:04:46.886
+in our __init__.py file
+
+104
+00:04:46.986 --> 00:04:48.788
+that lives in the command folder.
+
+105
+00:04:49.289 --> 00:04:51.791
+When we think about how to create different commands,
+
+106
+00:04:51.991 --> 00:04:53.793
+there may be lots of different kinds.
+
+107
+00:04:54.093 --> 00:04:56.195
+There may be commands that involve subcommands
+
+108
+00:04:56.396 --> 00:04:58.498
+or flags or additional arguments.
+
+109
+00:04:58.831 --> 00:05:01.634
+You can provide plain text instructions to Claude,
+
+110
+00:05:01.634 --> 00:05:03.636
+but especially for coding examples,
+
+111
+00:05:03.636 --> 00:05:06.339
+Claude does really well when you tell it exactly
+
+112
+00:05:06.339 --> 00:05:08.708
+what pattern and style you want to follow.
+
+113
+00:05:09.108 --> 00:05:11.010
+In the Typer library, there are
+
+114
+00:05:11.010 --> 00:05:13.212
+many different ways of accomplishing particular tasks.
+
+115
+00:05:13.613 --> 00:05:16.316
+For example, there are many different ways of adding
+
+116
+00:05:16.316 --> 00:05:19.218
+type annotations to arguments that are being decorated.
+
+117
+00:05:19.652 --> 00:05:23.156
+In this particular case, this is the convention we want to follow
+
+118
+00:05:23.156 --> 00:05:24.791
+as it's a little bit more modern.
+
+119
+00:05:25.191 --> 00:05:27.760
+You can imagine in libraries and code bases that you use,
+
+120
+00:05:28.027 --> 00:05:29.962
+there are many different ways of doing things.
+
+121
+00:05:30.363 --> 00:05:32.832
+But what's useful about skills is it gives
+
+122
+00:05:32.832 --> 00:05:35.635
+us that predictable workflow for a set of tasks.
+
+123
+00:05:35.968 --> 00:05:39.839
+We also want to make sure we're using this display object here
+
+124
+00:05:40.039 --> 00:05:42.241
+and calling methods like success and info
+
+125
+00:05:42.542 --> 00:05:44.243
+to make sure that when we add a command,
+
+126
+00:05:44.344 --> 00:05:46.346
+we're not only executing the business logic,
+
+127
+00:05:46.646 --> 00:05:49.449
+but displaying the correct information to the user at the end.
+
+128
+00:05:49.882 --> 00:05:52.685
+When we work with flags, we want particular shorthand,
+
+129
+00:05:52.685 --> 00:05:55.088
+we want particular longer ways of addressing it.
+
+130
+00:05:55.088 --> 00:05:57.690
+We want to make sure that there's help text as well.
+
+131
+00:05:58.091 --> 00:06:00.893
+All of these pieces, type annotations, default arguments,
+
+132
+00:06:00.893 --> 00:06:04.397
+certain return values, are valuable to add in your skill
+
+133
+00:06:04.397 --> 00:06:06.232
+so that you know how best
+
+134
+00:06:06.232 --> 00:06:08.368
+to pattern match and follow predictable workflows.
+
+135
+00:06:08.634 --> 00:06:11.037
+As we think about commands with subcommands,
+
+136
+00:06:11.137 --> 00:06:13.039
+not only can you see here
+
+137
+00:06:13.039 --> 00:06:15.241
+how we want to structure individual commands,
+
+138
+00:06:15.441 --> 00:06:17.844
+but also how we want to display
+
+139
+00:06:17.844 --> 00:06:20.546
+when things like migrations or versions are changed.
+
+140
+00:06:20.913 --> 00:06:23.116
+As we imagine commands that might be destructive,
+
+141
+00:06:23.116 --> 00:06:25.518
+as we start adding functionality to clear,
+
+142
+00:06:25.518 --> 00:06:28.721
+we might want to specify what kind of delete we're doing.
+
+143
+00:06:29.122 --> 00:06:30.656
+If we choose to do a hard delete,
+
+144
+00:06:30.656 --> 00:06:32.225
+we want to make sure that we confirm
+
+145
+00:06:32.225 --> 00:06:35.428
+before we go ahead and delete that particular task.
+
+146
+00:06:35.928 --> 00:06:38.831
+This pattern can be followed as Claude starts to see
+
+147
+00:06:38.831 --> 00:06:42.135
+additional commands that might need to involve some kind of deletion.
+
+148
+00:06:42.368 --> 00:06:45.071
+As we think about registering, we want to be intentional
+
+149
+00:06:45.071 --> 00:06:47.940
+about how to add single commands and command groups.
+
+150
+00:06:48.241 --> 00:06:50.109
+So not only are we giving
+
+151
+00:06:50.109 --> 00:06:52.245
+Claude instructions for how to register commands,
+
+152
+00:06:52.445 --> 00:06:55.148
+we're being very specific with what conventions to follow.
+
+153
+00:06:55.581 --> 00:06:57.750
+And finally, as we talk about conventions,
+
+154
+00:06:58.050 --> 00:07:00.853
+here's where we can lean into requirements on our doc strings,
+
+155
+00:07:01.254 --> 00:07:04.457
+being mindful of exit codes and following constants that we have,
+
+156
+00:07:04.857 --> 00:07:06.526
+being mindful of commands that are
+
+157
+00:07:06.526 --> 00:07:08.461
+destructive. This is a really useful place
+
+158
+00:07:08.561 --> 00:07:10.563
+so that when we build our predictable workflows,
+
+159
+00:07:10.863 --> 00:07:13.065
+we know exactly what conventions we're following.
+
+160
+00:07:13.366 --> 00:07:15.368
+These are not conventions that have to exist
+
+161
+00:07:15.468 --> 00:07:16.936
+everywhere in the code base and
+
+162
+00:07:16.936 --> 00:07:18.671
+have to be loaded everywhere in context.
+
+163
+00:07:19.071 --> 00:07:21.073
+If so, we could put them in the CLAUDE.md.
+
+164
+00:07:21.073 --> 00:07:23.876
+But in this case, just for adding individual commands,
+
+165
+00:07:23.976 --> 00:07:25.978
+there's a subset of conventions to follow.
+
+166
+00:07:26.078 --> 00:07:27.980
+Let's only load those when necessary.
+
+167
+00:07:28.581 --> 00:07:32.285
+And not only are we using generic naming like CLI app,
+
+168
+00:07:32.385 --> 00:07:34.620
+we can use this skill across any
+
+169
+00:07:34.620 --> 00:07:36.889
+platform that follows the agent skills convention.
+
+170
+00:07:37.290 --> 00:07:39.492
+And depending on whatever CLI you're building,
+
+171
+00:07:39.592 --> 00:07:41.861
+if you want Claude to follow these particular patterns,
+
+172
+00:07:41.961 --> 00:07:44.363
+this skill can easily be adapted to do that.
+
+173
+00:07:44.530 --> 00:07:47.333
+Now that we have a skill for adding CLI commands,
+
+174
+00:07:47.633 --> 00:07:50.036
+let's also make sure that when we start to do
+
+175
+00:07:50.336 --> 00:07:52.538
+this particular workflow of adding commands,
+
+176
+00:07:53.039 --> 00:07:54.807
+we're being mindful of testing and
+
+177
+00:07:54.807 --> 00:07:56.843
+also validating the commands that we write.
+
+178
+00:07:57.076 --> 00:07:59.579
+This is another great use case for another skill.
+
+179
+00:07:59.979 --> 00:08:02.849
+In our second skill, for generating CLI tests,
+
+180
+00:08:03.049 --> 00:08:06.552
+we generate pytest tests for Typer commands.
+
+181
+00:08:06.953 --> 00:08:10.056
+We include here what kinds of fixtures we want,
+
+182
+00:08:10.556 --> 00:08:12.191
+how to handle edge cases, and
+
+183
+00:08:12.191 --> 00:08:14.060
+this is really important that we add
+
+184
+00:08:14.260 --> 00:08:17.063
+what to do and how to trigger this particular skill.
+
+185
+00:08:17.330 --> 00:08:20.733
+You can see here, use when the user asks to write tests,
+
+186
+00:08:20.733 --> 00:08:23.002
+for my CLI or add test coverage.
+
+187
+00:08:23.436 --> 00:08:26.105
+It's always important to be very explicit not only
+
+188
+00:08:26.205 --> 00:08:28.174
+in what the description is, but how
+
+189
+00:08:28.174 --> 00:08:30.109
+Claude can detect how to run it.
+
+190
+00:08:30.276 --> 00:08:34.080
+Similar to other skills, we specify the workflow that we want.
+
+191
+00:08:34.280 --> 00:08:37.783
+When writing tests, it's often best practice to leverage fixtures.
+
+192
+00:08:38.084 --> 00:08:40.486
+You can think of fixtures as information
+
+193
+00:08:40.586 --> 00:08:44.090
+that is run each time as you arrange your tests
+
+194
+00:08:44.290 --> 00:08:47.460
+to set up information, to set up dummy data,
+
+195
+00:08:47.560 --> 00:08:50.463
+as well as any kind of mocking or test infrastructure
+
+196
+00:08:50.563 --> 00:08:52.865
+that you need for each of the tests that you write.
+
+197
+00:08:52.965 --> 00:08:57.069
+For example here, we specify what our temporary storage might look like
+
+198
+00:08:57.470 --> 00:09:00.473
+and we specify what some sample data might look like.
+
+199
+00:09:00.873 --> 00:09:04.777
+As we run each of these tests, this information will be exposed
+
+200
+00:09:04.777 --> 00:09:07.880
+to allow us to arrange and set up the tests necessary
+
+201
+00:09:08.281 --> 00:09:11.884
+when we test individual files, folders, and workflows.
+
+202
+00:09:12.251 --> 00:09:13.886
+As we take a look at the
+
+203
+00:09:13.886 --> 00:09:15.755
+test structure, we're following a pattern of arranging
+
+204
+00:09:15.755 --> 00:09:18.758
+like we mentioned with our fixtures, invoking some kind of action,
+
+205
+00:09:18.758 --> 00:09:21.160
+and then asserting that the result is the case.
+
+206
+00:09:21.460 --> 00:09:24.063
+Right here, we're simply trying to build patterns
+
+207
+00:09:24.063 --> 00:09:27.567
+that Claude can use and follow when this skill is leveraged.
+
+208
+00:09:27.767 --> 00:09:29.302
+We can continue on with how we
+
+209
+00:09:29.302 --> 00:09:30.870
+want this test runner to be done.
+
+210
+00:09:31.037 --> 00:09:33.339
+and how to test scenarios by a command type.
+
+211
+00:09:33.539 --> 00:09:35.675
+As we read, as we add, here are examples
+
+212
+00:09:35.675 --> 00:09:37.843
+for what we want our test to look like.
+
+213
+00:09:38.444 --> 00:09:40.012
+As with many testing libraries,
+
+214
+00:09:40.413 --> 00:09:43.015
+there are lots of ways to accomplish a similar kind of task.
+
+215
+00:09:43.215 --> 00:09:45.818
+For these examples, here is the pattern we want to follow.
+
+216
+00:09:47.520 --> 00:09:49.221
+As we wrap towards the end of this skill,
+
+217
+00:09:49.422 --> 00:09:51.824
+we want to think a little bit about edge cases to cover.
+
+218
+00:09:52.024 --> 00:09:54.827
+When writing tests, we want to think about invalid input,
+
+219
+00:09:55.227 --> 00:09:57.730
+any kind of state, confirmation, or what happens
+
+220
+00:09:57.730 --> 00:10:00.232
+when things are not found or don't exist.
+
+221
+00:10:00.566 --> 00:10:03.369
+We want to make sure that we're following a checklist as well
+
+222
+00:10:03.569 --> 00:10:05.538
+when we go ahead and write our tests.
+
+223
+00:10:05.638 --> 00:10:08.441
+And then finally, to make sure we're running tests correctly,
+
+224
+00:10:08.841 --> 00:10:11.143
+providing the correct commands as well as how to run
+
+225
+00:10:11.243 --> 00:10:13.446
+in a verbose mode and for specific files.
+
+226
+00:10:13.879 --> 00:10:15.247
+The last skill that we have
+
+227
+00:10:15.247 --> 00:10:16.849
+here is to wrap up and review
+
+228
+00:10:17.049 --> 00:10:20.386
+and make sure that we're executing the commands as expected.
+
+229
+00:10:20.586 --> 00:10:22.955
+Once we've generated the tests and the tests are running,
+
+230
+00:10:23.356 --> 00:10:25.758
+let's make sure we're following the correct conventions.
+
+231
+00:10:26.158 --> 00:10:27.960
+Just like we saw with other skills,
+
+232
+00:10:28.361 --> 00:10:30.963
+there are ways in which we can execute the task necessary
+
+233
+00:10:31.163 --> 00:10:34.066
+and then come back and validate that things are working as expected.
+
+234
+00:10:34.467 --> 00:10:36.569
+As we think about reviewing these commands,
+
+235
+00:10:36.969 --> 00:10:39.271
+not only do we think about the underlying structure,
+
+236
+00:10:39.572 --> 00:10:42.575
+is this in the right location? Is this using the right decorator?
+
+237
+00:10:42.875 --> 00:10:45.778
+Is this registered correctly? But we're also making sure
+
+238
+00:10:45.778 --> 00:10:48.981
+that some of those practices we wanted around type annotations
+
+239
+00:10:49.281 --> 00:10:53.686
+or options for parameters or flags when possible, always are included.
+
+240
+00:10:53.953 --> 00:10:57.056
+It's often helpful to provide positive and negative examples.
+
+241
+00:10:57.056 --> 00:10:59.825
+So as we mentioned, using this Annotated type
+
+242
+00:10:59.825 --> 00:11:03.429
+versus a different kind of way to type your arguments.
+
+243
+00:11:04.430 --> 00:11:07.033
+As we think more about error handling and output,
+
+244
+00:11:07.233 --> 00:11:09.335
+we make sure that this checklist exists
+
+245
+00:11:09.535 --> 00:11:12.238
+so that the skill can go through and confirm
+
+246
+00:11:12.438 --> 00:11:14.740
+that all of these pieces are as expected.
+
+247
+00:11:15.041 --> 00:11:17.243
+We're not telling Claude how to perform
+
+248
+00:11:17.543 --> 00:11:20.746
+these actions like adding commands and generating tests.
+
+249
+00:11:20.846 --> 00:11:23.115
+We're making sure that it's working as expected.
+
+250
+00:11:23.416 --> 00:11:26.018
+You can think of this like an evaluation almost
+
+251
+00:11:26.218 --> 00:11:28.487
+for the other skills that we have and
+
+252
+00:11:28.487 --> 00:11:30.723
+including this skill as part of our workflow.
+
+253
+00:11:31.023 --> 00:11:33.025
+As we take a look at the bottom,
+
+254
+00:11:33.025 --> 00:11:35.027
+making sure that our best practices are followed,
+
+255
+00:11:35.528 --> 00:11:37.196
+as well as examples of mistakes
+
+256
+00:11:37.196 --> 00:11:39.131
+we might see and fixes for those.
+
+257
+00:11:39.532 --> 00:11:41.834
+As we take a look at the output format of the skill,
+
+258
+00:11:42.034 --> 00:11:44.837
+we want to make sure that all of our checklist is addressed,
+
+259
+00:11:45.237 --> 00:11:47.540
+including a summary and suggested fixes.
+
+260
+00:11:48.074 --> 00:11:50.176
+It's very useful to have this underlying review
+
+261
+00:11:50.276 --> 00:11:52.278
+so that when features are finished,
+
+262
+00:11:52.378 --> 00:11:54.480
+we can start by taking a look at this review,
+
+263
+00:11:54.580 --> 00:11:56.582
+include this even as part of our code review,
+
+264
+00:11:56.682 --> 00:11:58.684
+make sure we're building production grade features,
+
+265
+00:11:58.784 --> 00:12:00.986
+backed by tests, following best practices.
+
+266
+00:12:01.320 --> 00:12:02.822
+With that in mind, let's start
+
+267
+00:12:02.822 --> 00:12:04.590
+to put all of these skills together.
+
+268
+00:12:05.091 --> 00:12:06.592
+The first thing we're going to do
+
+269
+00:12:06.592 --> 00:12:08.094
+here is to add a new command
+
+270
+00:12:08.194 --> 00:12:10.296
+that allows us to edit individual tasks.
+
+271
+00:12:10.796 --> 00:12:11.931
+We're going to want to make
+
+272
+00:12:11.931 --> 00:12:13.199
+sure we edit the title and priority
+
+273
+00:12:13.499 --> 00:12:15.501
+and pass in an ID that is valid.
+
+274
+00:12:15.801 --> 00:12:18.804
+Now, let's hop into Claude Code and use these skills.
+
+275
+00:12:19.805 --> 00:12:22.308
+To make sure that I've registered these correctly,
+
+276
+00:12:22.608 --> 00:12:25.311
+I'm first going to just type in /skills.
+
+277
+00:12:26.011 --> 00:12:28.147
+This is going to list the available skills
+
+278
+00:12:28.147 --> 00:12:30.583
+that I have to me. These are project skills.
+
+279
+00:12:30.983 --> 00:12:33.786
+We also mentioned we can add skills in our home directory,
+
+280
+00:12:34.286 --> 00:12:36.288
+but right now we're just dealing with project skills.
+
+281
+00:12:36.589 --> 00:12:37.990
+We can also see the amount
+
+282
+00:12:37.990 --> 00:12:39.592
+of tokens that these skills are taking
+
+283
+00:12:39.992 --> 00:12:42.595
+as we just think about the name and description necessary.
+
+284
+00:12:42.795 --> 00:12:44.997
+When you create a new skill in Claude Code,
+
+285
+00:12:45.498 --> 00:12:47.800
+you want to make sure that you close Claude Code
+
+286
+00:12:47.800 --> 00:12:51.103
+and open it up again so that skill can be identified.
+
+287
+00:12:51.504 --> 00:12:53.706
+So if you find yourself looking at your list of skills
+
+288
+00:12:53.706 --> 00:12:56.408
+but you're missing the one that you might have just created,
+
+289
+00:12:56.509 --> 00:12:58.410
+make sure to close that instance of Claude Code,
+
+290
+00:12:58.511 --> 00:13:00.880
+open it up again and you should be in good shape.
+
+291
+00:13:01.247 --> 00:13:03.349
+Now that our skills are loaded correctly,
+
+292
+00:13:03.649 --> 00:13:06.252
+let's go ahead and add a new edit command
+
+293
+00:13:06.252 --> 00:13:09.054
+to allow users to edit the title and priority.
+
+294
+00:13:09.455 --> 00:13:11.257
+We're adding a little example here
+
+295
+00:13:11.257 --> 00:13:13.259
+and ensuring that we follow the conventions
+
+296
+00:13:13.259 --> 00:13:17.163
+for creating a new CLI command. So let's give this a shot.
+
+297
+00:13:17.296 --> 00:13:19.799
+We can see here that Claude Code is prompting
+
+298
+00:13:19.799 --> 00:13:22.401
+to use the adding-cli-command skill.
+
+299
+00:13:22.401 --> 00:13:23.836
+And that's great. We'll go ahead
+
+300
+00:13:23.836 --> 00:13:25.504
+and make sure that in the future,
+
+301
+00:13:25.504 --> 00:13:27.206
+it doesn't prompt us to do so.
+
+302
+00:13:27.506 --> 00:13:29.642
+We can see here, we're going to read
+
+303
+00:13:29.642 --> 00:13:32.077
+the existing files and storage to understand the convention,
+
+304
+00:13:32.578 --> 00:13:34.413
+as well as take a look
+
+305
+00:13:34.413 --> 00:13:36.615
+at examples of other commands for reference.
+
+306
+00:13:37.316 --> 00:13:39.151
+Now that we know the conventions, let's
+
+307
+00:13:39.151 --> 00:13:40.986
+go ahead and create that particular file.
+
+308
+00:13:41.487 --> 00:13:44.323
+We can see here there's a new file edit.py being created,
+
+309
+00:13:44.523 --> 00:13:46.525
+and we're going to go ahead and make that change.
+
+310
+00:13:47.359 --> 00:13:48.961
+We'll see here edit.py appears
+
+311
+00:13:49.461 --> 00:13:51.463
+and we're now going to register that command,
+
+312
+00:13:51.764 --> 00:13:54.366
+following the order that the skill has set out for us.
+
+313
+00:13:54.867 --> 00:13:57.570
+We can see here that the command is being registered
+
+314
+00:13:57.570 --> 00:13:59.572
+inside of our __init__.py as expected.
+
+315
+00:13:59.772 --> 00:14:01.874
+We're going to go ahead and make that change as well.
+
+316
+00:14:02.074 --> 00:14:05.077
+So we'll go ahead and let it proceed and run this command
+
+317
+00:14:05.077 --> 00:14:07.580
+to test out and make sure it's working as expected.
+
+318
+00:14:08.080 --> 00:14:11.283
+Looks like we're seeing what we expect and that's in good shape.
+
+319
+00:14:11.884 --> 00:14:14.086
+So now going to run the add command and
+
+320
+00:14:14.086 --> 00:14:15.721
+then go ahead and run the
+
+321
+00:14:15.721 --> 00:14:17.590
+list to make sure we've added successfully.
+
+322
+00:14:17.957 --> 00:14:19.758
+It's seeding some data so that we can
+
+323
+00:14:19.758 --> 00:14:21.760
+then make sure the edit command works as expected.
+
+324
+00:14:22.795 --> 00:14:24.730
+We'll go ahead and edit that particular task.
+
+325
+00:14:25.331 --> 00:14:28.434
+And we'll see here that we didn't specify a title or priority.
+
+326
+00:14:28.834 --> 00:14:30.736
+We'll then go ahead and put in that title.
+
+327
+00:14:30.970 --> 00:14:33.772
+And here, we'll see that edited as expected.
+
+328
+00:14:35.474 --> 00:14:37.776
+It's going to ask me again to edit this task,
+
+329
+00:14:37.877 --> 00:14:39.979
+and this is going to happen over and over
+
+330
+00:14:40.079 --> 00:14:42.281
+as we start to test all kinds of examples.
+
+331
+00:14:42.615 --> 00:14:44.817
+And while I could proceed over and over again,
+
+332
+00:14:44.817 --> 00:14:46.619
+we can imagine that this might start to
+
+333
+00:14:46.619 --> 00:14:48.420
+fill up the context window quite a bit,
+
+334
+00:14:48.420 --> 00:14:50.823
+and if this were a larger scale system,
+
+335
+00:14:50.823 --> 00:14:53.425
+maybe very time intensive and even compute intensive.
+
+336
+00:14:53.726 --> 00:14:56.428
+So what we're going to do here is something slightly different.
+
+337
+00:14:56.729 --> 00:14:58.998
+We're going to leverage the functionality
+
+338
+00:14:58.998 --> 00:15:01.634
+that Claude Code has for using sub-agents.
+
+339
+00:15:01.934 --> 00:15:04.937
+We're going to have one sub-agent to review code
+
+340
+00:15:05.137 --> 00:15:07.373
+and follow the criteria so that the
+
+341
+00:15:07.373 --> 00:15:09.642
+main agent can focus on the development.
+
+342
+00:15:09.842 --> 00:15:12.745
+We're then going to have another sub-agent
+
+343
+00:15:12.845 --> 00:15:15.147
+to generate and run the tests using the skill that we have.
+
+344
+00:15:15.648 --> 00:15:17.850
+What's going to be useful about this
+
+345
+00:15:17.850 --> 00:15:20.152
+is that we can have the main agent focus on development,
+
+346
+00:15:20.152 --> 00:15:23.656
+while sub-agents in their own context window
+
+347
+00:15:23.656 --> 00:15:26.558
+focus on generating the tests and reviewing the code.
+
+348
+00:15:26.659 --> 00:15:29.561
+We can then take the feedback and tests generated,
+
+349
+00:15:29.561 --> 00:15:31.263
+bring it back to the main agent,
+
+350
+00:15:31.263 --> 00:15:33.365
+with a much more context-efficient approach.
+
+351
+00:15:33.899 --> 00:15:35.734
+It's important to note that sub-agents
+
+352
+00:15:35.734 --> 00:15:37.970
+do not inherit skills from a parent,
+
+353
+00:15:37.970 --> 00:15:39.972
+so we need to be explicit with the skills that we give
+
+354
+00:15:39.972 --> 00:15:42.574
+to each sub-agent that we make.
+
+355
+00:15:43.175 --> 00:15:46.578
+There are multiple ways of passing skills to sub-agents.
+
+356
+00:15:46.979 --> 00:15:49.581
+One way we're going to show you is being explicit
+
+357
+00:15:49.581 --> 00:15:51.884
+with the name of the skill in the sub-agent.
+
+358
+00:15:52.117 --> 00:15:54.320
+Another option that we'll link in the notes
+
+359
+00:15:54.320 --> 00:15:57.122
+is where you can provide the exact agent name
+
+360
+00:15:57.122 --> 00:15:59.925
+and how best to run it from the skill directly.
+
+361
+00:16:00.426 --> 00:16:03.329
+With that in mind, let's go ahead and create our sub-agents.
+
+362
+00:16:05.531 --> 00:16:08.233
+The first agent we're going to make is our code reviewer.
+
+363
+00:16:08.434 --> 00:16:11.637
+And we're going to create these agents using the /agents command.
+
+364
+00:16:12.137 --> 00:16:13.839
+We're going to create a new agent.
+
+365
+00:16:14.039 --> 00:16:15.741
+We're going to do that on a project basis,
+
+366
+00:16:16.141 --> 00:16:17.743
+but instead of generating with Claude,
+
+367
+00:16:17.743 --> 00:16:19.645
+we're going to follow a manual configuration
+
+368
+00:16:19.945 --> 00:16:21.747
+so you can see what it looks
+
+369
+00:16:21.747 --> 00:16:23.549
+like to add a name, description, tools,
+
+370
+00:16:23.749 --> 00:16:26.452
+and the most importantly, skills for each of our agents.
+
+371
+00:16:26.785 --> 00:16:29.188
+The first one I'll make, we'll call code-reviewer.
+
+372
+00:16:29.688 --> 00:16:31.590
+This will be the unique identifier for our
+
+373
+00:16:31.590 --> 00:16:33.692
+agent, and then we'll pass a prompt to it.
+
+374
+00:16:34.093 --> 00:16:35.828
+We're going to paste in a prompt that
+
+375
+00:16:35.828 --> 00:16:37.796
+we'll take a look at once we've created this,
+
+376
+00:16:38.197 --> 00:16:40.799
+but it's going to look very familiar to how we review
+
+377
+00:16:41.000 --> 00:16:43.135
+and how we're specific and actionable in the
+
+378
+00:16:43.135 --> 00:16:45.304
+insights we make when doing the code review.
+
+379
+00:16:45.738 --> 00:16:48.540
+We're going to go ahead and give this agent a description
+
+380
+00:16:48.540 --> 00:16:51.043
+for when it should go ahead and be used.
+
+381
+00:16:51.243 --> 00:16:54.246
+We're going to review for code quality, security, and so on.
+
+382
+00:16:54.546 --> 00:16:57.249
+We're going to try to make this agent as generic as possible
+
+383
+00:16:57.549 --> 00:16:59.752
+for the set of tools that we want here.
+
+384
+00:17:00.052 --> 00:17:01.854
+We want to be very specific with
+
+385
+00:17:01.854 --> 00:17:03.922
+the tools that our sub-agent has access to.
+
+386
+00:17:04.356 --> 00:17:05.524
+So we'll make sure that if
+
+387
+00:17:05.524 --> 00:17:06.925
+there's code that needs to be executed,
+
+388
+00:17:07.026 --> 00:17:09.928
+we give it Bash, Glob and grep for finding files,
+
+389
+00:17:10.362 --> 00:17:14.466
+and Read to read underlying files that we're going to be reviewing.
+
+390
+00:17:14.733 --> 00:17:17.936
+Once we've selected these tools, we can go ahead and continue.
+
+391
+00:17:18.737 --> 00:17:20.372
+We'll decide to inherit from the
+
+392
+00:17:20.372 --> 00:17:22.241
+parent with the model that we use.
+
+393
+00:17:22.541 --> 00:17:24.743
+And we'll go ahead and give this a color of purple.
+
+394
+00:17:25.744 --> 00:17:27.146
+Once we've got this set up,
+
+395
+00:17:27.146 --> 00:17:28.747
+we'll go ahead and save this agent.
+
+396
+00:17:29.148 --> 00:17:31.950
+We can see here now in our agents folder
+
+397
+00:17:31.950 --> 00:17:34.653
+that we have a code reviewer agent to work with.
+
+398
+00:17:35.154 --> 00:17:37.856
+We've got the code reviewer, a description, tools,
+
+399
+00:17:37.956 --> 00:17:40.359
+and all the wonderful pieces that we added.
+
+400
+00:17:40.426 --> 00:17:42.528
+It's now time to make sure we specify the skills
+
+401
+00:17:42.528 --> 00:17:45.030
+that we want this sub-agent to use.
+
+402
+00:17:45.731 --> 00:17:47.833
+We'll do that using the skills field
+
+403
+00:17:48.233 --> 00:17:51.837
+and specify the name of the skill that we're working with.
+
+404
+00:17:52.438 --> 00:17:55.040
+In our case, reviewing-cli-command.
+
+405
+00:17:55.741 --> 00:17:58.710
+Before we create our next agent, let's do a quick review
+
+406
+00:17:58.710 --> 00:18:00.779
+of what we made here. Our agent
+
+407
+00:18:00.779 --> 00:18:02.848
+has a name and description, tools available,
+
+408
+00:18:02.948 --> 00:18:04.783
+a model that we inherit, a
+
+409
+00:18:04.783 --> 00:18:06.919
+color, and skills that we brought in.
+
+410
+00:18:07.319 --> 00:18:08.787
+We can add multiple skills, but right
+
+411
+00:18:08.787 --> 00:18:10.222
+now we're going to stick with one.
+
+412
+00:18:10.522 --> 00:18:14.326
+In our prompt, we mention it's a code reviewer ensuring high standards.
+
+413
+00:18:14.726 --> 00:18:18.730
+As we specify what this agent is, we specify when it's invoked,
+
+414
+00:18:19.331 --> 00:18:22.034
+general quality checks. If we're working with Python,
+
+415
+00:18:22.334 --> 00:18:24.703
+how to be intentional, CLI commands the
+
+416
+00:18:24.703 --> 00:18:27.106
+same way, and a particular output format.
+
+417
+00:18:27.106 --> 00:18:29.908
+Like we mentioned, this agent is a bit more generic.
+
+418
+00:18:30.109 --> 00:18:33.112
+And while we're using it in the context of our specific application,
+
+419
+00:18:33.312 --> 00:18:35.581
+skills can help us be more particular.
+
+420
+00:18:35.881 --> 00:18:37.883
+But this agent might need to be
+
+421
+00:18:37.883 --> 00:18:39.885
+used across a different variety of applications,
+
+422
+00:18:40.085 --> 00:18:41.420
+so we want to be a little bit
+
+423
+00:18:41.420 --> 00:18:42.888
+more generic with what we're trying to do here.
+
+424
+00:18:43.288 --> 00:18:45.591
+It's important to note that skills operate
+
+425
+00:18:45.591 --> 00:18:48.594
+slightly differently as sub-agents in Claude Code.
+
+426
+00:18:49.194 --> 00:18:51.697
+When this sub-agent is dispatched and created,
+
+427
+00:18:52.164 --> 00:18:55.667
+the skill is not only loading the name and description,
+
+428
+00:18:55.667 --> 00:18:57.536
+but the entire SKILL.md
+
+429
+00:18:57.903 --> 00:19:00.539
+The skills are pre-loaded when the agent is dispatched.
+
+430
+00:19:01.039 --> 00:19:03.542
+If there is additional progressive disclosure,
+
+431
+00:19:03.542 --> 00:19:07.546
+reading of other files or other commands, that is not done.
+
+432
+00:19:07.546 --> 00:19:10.048
+but the entire SKILL.md is read
+
+433
+00:19:10.048 --> 00:19:12.117
+when the sub-agent is dispatched.
+
+434
+00:19:12.117 --> 00:19:14.319
+Now that we've got our code reviewer agent,
+
+435
+00:19:14.720 --> 00:19:18.524
+let's add another agent for generating and running our tests.
+
+436
+00:19:19.324 --> 00:19:21.360
+Let's go ahead and make our second agent.
+
+437
+00:19:21.360 --> 00:19:23.428
+We're going to go create a new agent
+
+438
+00:19:23.595 --> 00:19:26.498
+in our project using the manual configuration.
+
+439
+00:19:27.199 --> 00:19:29.201
+and we'll call that test-generator-runner.
+
+440
+00:19:29.701 --> 00:19:31.436
+We're going to go ahead and add a
+
+441
+00:19:31.436 --> 00:19:33.405
+prompt here that we'll review a little bit later,
+
+442
+00:19:33.405 --> 00:19:35.607
+but it's going to follow similar patterns to what
+
+443
+00:19:35.607 --> 00:19:37.809
+we saw with the other agent that we made.
+
+444
+00:19:38.110 --> 00:19:40.712
+We'll go ahead and specify a description for this agent,
+
+445
+00:19:41.113 --> 00:19:42.981
+where we'll specify that it should
+
+446
+00:19:42.981 --> 00:19:45.184
+run tests and generate them if missing.
+
+447
+00:19:45.484 --> 00:19:47.786
+When the user asks to test or run tests,
+
+448
+00:19:48.086 --> 00:19:51.390
+let's go ahead and make sure that this agent is dispatched.
+
+449
+00:19:51.723 --> 00:19:55.027
+Like we saw before, instead of giving access to all tools,
+
+450
+00:19:55.327 --> 00:19:56.929
+let's go to our advanced options.
+
+451
+00:19:57.529 --> 00:19:59.398
+In our advanced options, we're going to
+
+452
+00:19:59.398 --> 00:20:01.533
+go ahead and disable all of our tools.
+
+453
+00:20:01.533 --> 00:20:03.635
+and here we'll make sure we have a
+
+454
+00:20:03.635 --> 00:20:05.737
+Bash tool, Glob and Grep, Read as well.
+
+455
+00:20:05.938 --> 00:20:09.107
+But we're also going to need to Edit and Write individual files,
+
+456
+00:20:09.408 --> 00:20:12.511
+and in our case, Edit files that may already exist.
+
+457
+00:20:13.111 --> 00:20:14.913
+Once we've got these tools set up,
+
+458
+00:20:15.113 --> 00:20:16.715
+let's move on, talk a little bit
+
+459
+00:20:16.715 --> 00:20:18.517
+about the model we're going to be using.
+
+460
+00:20:18.684 --> 00:20:21.186
+Just like before, we'll inherit from the parent
+
+461
+00:20:21.486 --> 00:20:24.189
+and we'll go ahead and use yellow for this sub-agent.
+
+462
+00:20:24.489 --> 00:20:26.892
+This looks good to us, so we'll go ahead and save it.
+
+463
+00:20:27.492 --> 00:20:30.696
+Once we've created this agent, we also want to make sure
+
+464
+00:20:30.896 --> 00:20:33.198
+we specify what skills are being used.
+
+465
+00:20:33.532 --> 00:20:36.235
+In this case, the skills that we're going to be using
+
+466
+00:20:36.535 --> 00:20:39.438
+is the generating-cli-tests skill.
+
+467
+00:20:39.938 --> 00:20:41.940
+Again, we could add multiple skills,
+
+468
+00:20:41.940 --> 00:20:44.443
+but in this case, we're just going to use that individual one.
+
+469
+00:20:44.743 --> 00:20:48.046
+As we saw before, We specify when it's invoked,
+
+470
+00:20:48.347 --> 00:20:49.881
+we show how to discover tests
+
+471
+00:20:49.881 --> 00:20:51.650
+and the output format that we want,
+
+472
+00:20:52.050 --> 00:20:53.952
+and then some underlying rules to make
+
+473
+00:20:53.952 --> 00:20:55.854
+sure that things are working as expected.
+
+474
+00:20:56.255 --> 00:20:57.990
+And just like our other agent, to be
+
+475
+00:20:57.990 --> 00:20:59.958
+a little bit more generic and lean on skills
+
+476
+00:21:00.058 --> 00:21:01.760
+to provide consistent workflows.
+
+477
+00:21:01.960 --> 00:21:04.763
+Now that we've created our sub-agents and our skills,
+
+478
+00:21:04.763 --> 00:21:06.498
+let's put this all together to make
+
+479
+00:21:06.498 --> 00:21:08.267
+sure that when we add new commands,
+
+480
+00:21:08.267 --> 00:21:10.469
+we dispatch sub-agents when necessary,
+
+481
+00:21:10.469 --> 00:21:12.471
+using the skills that we want.
+
+482
+00:21:13.105 --> 00:21:16.108
+Let's go ahead and start by using our code-reviewer subagent
+
+483
+00:21:16.108 --> 00:21:19.311
+to review the edit.py command that we made.
+
+484
+00:21:19.811 --> 00:21:21.913
+This should not only dispatch the subagent,
+
+485
+00:21:21.913 --> 00:21:23.615
+but also make use of the
+
+486
+00:21:23.615 --> 00:21:25.617
+skill that we provided to that subagent.
+
+487
+00:21:25.851 --> 00:21:27.452
+we're going to see here that
+
+488
+00:21:27.452 --> 00:21:29.254
+the code reviewer agent has been dispatched.
+
+489
+00:21:29.855 --> 00:21:31.757
+And now we're going to go ahead and
+
+490
+00:21:31.757 --> 00:21:33.859
+use the necessary skills and tools that we've defined.
+
+491
+00:21:35.861 --> 00:21:38.063
+We can see here what's working and what's not working.
+
+492
+00:21:38.664 --> 00:21:40.866
+No critical results, but we've got some warnings.
+
+493
+00:21:41.233 --> 00:21:43.635
+issues to fix and suggested fixes.
+
+494
+00:21:44.036 --> 00:21:45.637
+We can go ahead and use the
+
+495
+00:21:45.637 --> 00:21:47.439
+main agent to implement those if we'd like.
+
+496
+00:21:47.839 --> 00:21:50.742
+We're then going to use our test runner sub agent
+
+497
+00:21:50.742 --> 00:21:54.513
+to generate the tests for our edit.py command. So we'll go ahead
+
+498
+00:21:54.513 --> 00:21:57.416
+and make sure that we're referencing the edit.py file
+
+499
+00:21:59.318 --> 00:22:01.820
+and go ahead and dispatch the second sub-agent.
+
+500
+00:22:03.055 --> 00:22:05.657
+We can see here it's generated the necessary commands
+
+501
+00:22:06.091 --> 00:22:07.592
+and it's prompting me to make sure
+
+502
+00:22:07.592 --> 00:22:09.094
+that we want to make this edit.
+
+503
+00:22:09.494 --> 00:22:10.796
+So we'll go ahead and do
+
+504
+00:22:10.796 --> 00:22:12.331
+so as we add tests for editing.
+
+505
+00:22:13.598 --> 00:22:15.300
+I can confirm that these tests
+
+506
+00:22:15.300 --> 00:22:17.269
+are working using this command uv run.
+
+507
+00:22:17.869 --> 00:22:19.338
+And then we'll go ahead and run
+
+508
+00:22:19.338 --> 00:22:20.806
+all of our tests with verbose mode
+
+509
+00:22:21.006 --> 00:22:23.775
+to make sure things are passing and there are no regressions.
+
+510
+00:22:24.609 --> 00:22:26.011
+Once this is done, we can see
+
+511
+00:22:26.011 --> 00:22:27.412
+that all of our tests are passing,
+
+512
+00:22:27.713 --> 00:22:30.215
+none are failing, and here's a summary as well.
+
+513
+00:22:31.116 --> 00:22:34.720
+We made use of two different sub-agents, leveraging multiple skills,
+
+514
+00:22:35.120 --> 00:22:37.022
+and as we start to add more features
+
+515
+00:22:37.022 --> 00:22:38.924
+and functionality, we can put these all together.
+
+516
+00:22:39.124 --> 00:22:40.859
+The next thing we're going to do
+
+517
+00:22:40.859 --> 00:22:42.627
+is see our code reviewer sub agent
+
+518
+00:22:42.627 --> 00:22:45.130
+and our test runner sub agent in action.
+
+519
+00:22:45.630 --> 00:22:47.933
+Let's imagine there's a clear.py file,
+
+520
+00:22:47.933 --> 00:22:50.335
+a new command that's been added by someone on the team
+
+521
+00:22:50.335 --> 00:22:53.438
+who hasn't followed best practices and maybe didn't use
+
+522
+00:22:53.438 --> 00:22:55.907
+all the skills and infrastructure that we set up.
+
+523
+00:22:56.174 --> 00:22:58.977
+We're going to go ahead and use our code reviewer sub agent
+
+524
+00:22:59.277 --> 00:23:01.279
+as well as our test runner sub agent
+
+525
+00:23:01.680 --> 00:23:04.383
+to figure out how best to fix the clear.py file.
+
+526
+00:23:06.318 --> 00:23:08.220
+We're going to dispatch our code reviewer
+
+527
+00:23:08.420 --> 00:23:10.622
+to review the clear.py command.
+
+528
+00:23:11.223 --> 00:23:13.225
+then we're going to use our test generator runner
+
+529
+00:23:13.325 --> 00:23:15.527
+to generate the test necessary for this command.
+
+530
+00:23:15.994 --> 00:23:18.563
+We'll validate finally that things are working as expected,
+
+531
+00:23:18.964 --> 00:23:20.966
+and make sure all the tests are passing
+
+532
+00:23:20.966 --> 00:23:22.968
+and following the best practices that we've standardized.
+
+533
+00:23:23.568 --> 00:23:24.836
+We can see here there are
+
+534
+00:23:24.836 --> 00:23:26.271
+quite a few issues and some warnings.
+
+535
+00:23:26.571 --> 00:23:28.740
+Now that we found these issues, let's make sure that
+
+536
+00:23:28.740 --> 00:23:30.876
+the main agent is reading the files and fixing them.
+
+537
+00:23:31.209 --> 00:23:32.744
+We're going to want to make sure
+
+538
+00:23:32.744 --> 00:23:34.513
+that we allow for these edits to clear.py.
+
+539
+00:23:35.113 --> 00:23:38.016
+And here we can see things like displaying things to the console
+
+540
+00:23:38.417 --> 00:23:40.719
+are done using the correct methods like
+
+541
+00:23:40.719 --> 00:23:43.021
+display as mentioned in our best practices.
+
+542
+00:23:43.321 --> 00:23:46.124
+We also want to make sure that we're registering this command correctly
+
+543
+00:23:46.124 --> 00:23:48.126
+inside of our __init__.py
+
+544
+00:23:48.427 --> 00:23:51.530
+The main agent itself is not adding additional context
+
+545
+00:23:51.530 --> 00:23:53.832
+for the reviewing and generating tests.
+
+546
+00:23:54.132 --> 00:23:55.834
+It's simply taking the output of
+
+547
+00:23:55.834 --> 00:23:57.836
+the sub-agent to better execute these tasks.
+
+548
+00:23:58.336 --> 00:24:01.139
+Next up, it's time to generate tests for the clear command
+
+549
+00:24:01.440 --> 00:24:03.542
+that is following our best practices.
+
+550
+00:24:03.842 --> 00:24:05.343
+We can see here it's adding
+
+551
+00:24:05.343 --> 00:24:07.112
+a file to test this clear command.
+
+552
+00:24:07.245 --> 00:24:11.450
+Let's go ahead and approve that. Now that we've created this file,
+
+553
+00:24:11.450 --> 00:24:12.851
+let's go ahead and run the
+
+554
+00:24:12.851 --> 00:24:14.453
+tests, make sure they're working as expected.
+
+555
+00:24:15.754 --> 00:24:18.056
+And now we can get a summary of what's been completed.
+
+556
+00:24:18.457 --> 00:24:21.760
+Six critical issues, four warnings, and all of them fixed.
+
+557
+00:24:22.461 --> 00:24:24.463
+Instead of using incorrect methods,
+
+558
+00:24:24.963 --> 00:24:26.398
+instead of using flags that are
+
+559
+00:24:26.398 --> 00:24:28.066
+not the right format that we want,
+
+560
+00:24:28.467 --> 00:24:31.269
+incorrect exit codes, we fixed quite a few different issues.
+
+561
+00:24:31.770 --> 00:24:33.738
+We've then added tests on top of that
+
+562
+00:24:34.039 --> 00:24:35.974
+to make sure that we're confirming that
+
+563
+00:24:35.974 --> 00:24:38.143
+all these best practices are done as expected,
+
+564
+00:24:38.443 --> 00:24:40.445
+and the functionality is working that we like.
+
+565
+00:24:40.812 --> 00:24:43.415
+In the next lesson, we'll shift away from Claude Code
+
+566
+00:24:43.415 --> 00:24:45.717
+and move to the Claude Agent SDK
+
+567
+00:24:45.717 --> 00:24:48.820
+and showcase how to use skills when building your own agents
+
+568
+00:24:48.820 --> 00:24:51.389
+using the same harness that Claude Code uses.

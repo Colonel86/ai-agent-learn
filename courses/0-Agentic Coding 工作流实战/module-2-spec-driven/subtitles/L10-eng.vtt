@@ -1,0 +1,222 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.033 --> 00:00:02.135
+We made a lot of progress.
+
+2
+00:00:02.135 --> 00:00:05.005
+Two features implemented with our spec workflow.
+
+3
+00:00:05.505 --> 00:00:09.209
+But management just asked, of course, for an MVP.
+
+4
+00:00:09.209 --> 00:00:12.612
+Have we made enough progress to do an experiment?
+
+5
+00:00:12.746 --> 00:00:16.249
+Let's do a variation of our standard feature spec prompt.
+
+6
+00:00:16.916 --> 00:00:18.385
+This time we'll tell it
+
+7
+00:00:18.385 --> 00:00:20.320
+to implement the rest of the roadmap
+
+8
+00:00:20.720 --> 00:00:23.823
+and give some guidance about existing feature specs.
+
+9
+00:00:24.424 --> 00:00:28.294
+In general, you should only implement such a large chunk
+
+10
+00:00:28.294 --> 00:00:32.198
+if you feel confident in the quality of your constitution and spec.
+
+11
+00:00:32.599 --> 00:00:34.901
+The better the context you provide your agent,
+
+12
+00:00:35.135 --> 00:00:37.604
+the more confident you can be in getting a result
+
+13
+00:00:37.904 --> 00:00:39.706
+aligned with your intentions.
+
+14
+00:00:40.707 --> 00:00:44.210
+And you should be sure that you can handle review and validation.
+
+15
+00:00:45.211 --> 00:00:48.915
+But since we've taken this risk now, let's view the MVP
+
+16
+00:00:48.915 --> 00:00:53.319
+as an extreme test of our constitution and completed feature specs.
+
+17
+00:00:53.853 --> 00:00:56.656
+If we now get something different from what we wanted,
+
+18
+00:00:56.856 --> 00:00:58.958
+it means we need to very responsibly
+
+19
+00:00:59.659 --> 00:01:02.062
+carry out another replanning phase
+
+20
+00:01:02.562 --> 00:01:05.031
+to eliminate whatever led the agent astray.
+
+21
+00:01:05.365 --> 00:01:07.667
+The agent asked me some questions.
+
+22
+00:01:07.667 --> 00:01:10.570
+Again, these are good questions and recommendations.
+
+23
+00:01:11.171 --> 00:01:13.139
+A lot of spec files start as
+
+24
+00:01:13.139 --> 00:01:15.375
+a back and forth conversation with an agent.
+
+25
+00:01:16.576 --> 00:01:19.779
+Finished with the interview and we selected Submit Answers.
+
+26
+00:01:20.080 --> 00:01:22.082
+Let's write the MVP specs to disk.
+
+27
+00:01:24.784 --> 00:01:26.786
+It's always good to review the specs.
+
+28
+00:01:27.087 --> 00:01:31.791
+You'll often notice incorrect assumptions the agent made to fill the gaps.
+
+29
+00:01:32.292 --> 00:01:34.260
+Let's give a quick look at the plan.
+
+30
+00:01:34.427 --> 00:01:37.230
+the requirements and the validation.
+
+31
+00:01:38.331 --> 00:01:42.335
+As always, we like to work in small steps with frequent commits.
+
+32
+00:01:43.036 --> 00:01:46.339
+Let's save the planning stages feature spec.
+
+33
+00:01:47.540 --> 00:01:49.275
+We are finished with planning. It's
+
+34
+00:01:49.275 --> 00:01:51.311
+time for the agent to go do
+
+35
+00:01:51.311 --> 00:01:53.012
+a big implementation step.
+
+36
+00:01:53.780 --> 00:01:55.982
+The agent now does a lot of work.
+
+37
+00:01:56.583 --> 00:01:59.652
+Once it's finished, it's showtime. Let's see the MVP.
+
+38
+00:02:00.253 --> 00:02:02.455
+We'll go to our scripts to run the application.
+
+39
+00:02:05.358 --> 00:02:08.461
+As you can see, each section now has much more
+
+40
+00:02:08.728 --> 00:02:13.333
+driven by sample data queried from the database.
+
+41
+00:02:14.200 --> 00:02:17.904
+At this point, usually we would validate the code results,
+
+42
+00:02:18.404 --> 00:02:20.440
+but this is an MVP. Let's
+
+43
+00:02:20.440 --> 00:02:22.809
+ask the agent to validate the specs.
+
+44
+00:02:24.611 --> 00:02:26.613
+As it turns out, this was useful.
+
+45
+00:02:26.913 --> 00:02:31.217
+The agent showed places where the MVP found holes in our planning.
+
+46
+00:02:31.684 --> 00:02:35.488
+We can share this evaluation with the stakeholders for their MVP review,
+
+47
+00:02:36.189 --> 00:02:38.191
+then merge or archive the branch.
+
+48
+00:02:39.192 --> 00:02:41.494
+Our spec-driven workflow succeeded.
+
+49
+00:02:42.195 --> 00:02:44.497
+After a constitution and two features,
+
+50
+00:02:44.497 --> 00:02:48.701
+the MVP produced a useful demo, thanks to our guidance.
+
+51
+00:02:49.202 --> 00:02:52.906
+Of course, not all software projects involve building an MVP.
+
+52
+00:02:53.273 --> 00:02:56.276
+Many projects are so-called brownfield.
+
+53
+00:02:56.476 --> 00:02:59.078
+They start from an existing code base.
+
+54
+00:02:59.279 --> 00:03:02.182
+Next, let's see how to introduce this workflow
+
+55
+00:03:02.248 --> 00:03:03.783
+to legacy projects.

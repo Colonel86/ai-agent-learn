@@ -1,0 +1,1114 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.369 --> 00:00:04.871
+You can open multiple sessions with Claude
+
+2
+00:00:04.871 --> 00:00:07.741
+Code to work on many features in parallel.
+
+3
+00:00:08.541 --> 00:00:11.211
+To manage these sessions and make sure you're not
+
+4
+00:00:11.211 --> 00:00:13.880
+overwriting the same file, you can use Git worktrees.
+
+5
+00:00:14.614 --> 00:00:16.783
+So let's add Git worktrees to add
+
+6
+00:00:16.783 --> 00:00:18.985
+three features to the chatbot in parallel.
+
+7
+00:00:19.352 --> 00:00:21.588
+I'll see you there. So I'm going to hop back into Claude.
+
+8
+00:00:21.654 --> 00:00:24.157
+And as we saw earlier, Claude Code comes built in
+
+9
+00:00:24.758 --> 00:00:26.526
+with quite a few slash commands.
+
+10
+00:00:27.160 --> 00:00:28.461
+But you can also make your
+
+11
+00:00:28.461 --> 00:00:29.963
+own. To make your own custom commands,
+
+12
+00:00:29.963 --> 00:00:32.399
+inside of the dot claude folder.
+
+13
+00:00:32.399 --> 00:00:34.267
+Let's make a new folder called commands.
+
+14
+00:00:34.701 --> 00:00:37.637
+And inside of here, we're going to make a markdown file
+
+15
+00:00:38.071 --> 00:00:40.540
+with the name of the command that we'd like.
+
+16
+00:00:40.874 --> 00:00:44.444
+The command here that I'm going to make is called implement feature.
+
+17
+00:00:44.444 --> 00:00:48.348
+So I'll create a markdown file called implement-feature.md
+
+18
+00:00:48.615 --> 00:00:51.418
+Inside here, I can place whatever I'd like.
+
+19
+00:00:51.951 --> 00:00:54.454
+But what I want to show you that's very special
+
+20
+00:00:54.788 --> 00:00:56.990
+is if you have any arguments you
+
+21
+00:00:56.990 --> 00:01:00.527
+want to pass to your custom command, you can reference it using
+
+22
+00:01:01.061 --> 00:01:03.430
+this $ARGUMENTS variable.
+
+23
+00:01:03.596 --> 00:01:04.831
+So what I'm asking for here
+
+24
+00:01:04.831 --> 00:01:06.299
+is that when this command is used,
+
+25
+00:01:06.933 --> 00:01:09.335
+I'll be specifying that you're implementing a new feature.
+
+26
+00:01:09.669 --> 00:01:12.372
+The user can then specify whatever that feature is,
+
+27
+00:01:13.039 --> 00:01:14.140
+and then I want to make
+
+28
+00:01:14.140 --> 00:01:15.408
+sure that Claude Code is well aware
+
+29
+00:01:15.975 --> 00:01:17.877
+to only do this for front-end features,
+
+30
+00:01:18.411 --> 00:01:22.382
+and to write the changes made to a file called frontend-changes.md
+
+31
+00:01:22.715 --> 00:01:26.119
+You can imagine there are many different use cases for custom commands,
+
+32
+00:01:26.453 --> 00:01:28.788
+certain ways you want to run tests or run files.
+
+33
+00:01:29.089 --> 00:01:31.858
+and anything that you put in here
+
+34
+00:01:31.858 --> 00:01:34.327
+does not automatically get added to your context,
+
+35
+00:01:34.327 --> 00:01:36.763
+unlike a CLAUDE.md
+
+36
+00:01:36.996 --> 00:01:39.332
+So if you want something to be applied
+
+37
+00:01:39.332 --> 00:01:42.168
+to every single instance of Claude Code that you make,
+
+38
+00:01:42.368 --> 00:01:44.137
+use your CLAUDE.md file.
+
+39
+00:01:44.737 --> 00:01:46.739
+But if you just have specific commands
+
+40
+00:01:46.840 --> 00:01:50.143
+that you may or may not use across different conversations,
+
+41
+00:01:50.443 --> 00:01:52.378
+right here is a great place to put them.
+
+42
+00:01:52.579 --> 00:01:54.414
+I'm going to be using this custom command
+
+43
+00:01:54.714 --> 00:01:56.449
+when I start talking about worktrees.
+
+44
+00:01:56.883 --> 00:01:59.552
+But before we do that, let's quit out of Claude Code,
+
+45
+00:01:59.552 --> 00:02:01.488
+hop back in and just verify
+
+46
+00:02:01.488 --> 00:02:03.556
+that we can see that custom command.
+
+47
+00:02:04.023 --> 00:02:07.727
+And here, I see implement feature, and I see the description
+
+48
+00:02:07.727 --> 00:02:10.597
+is coming from the first part of this markdown file.
+
+49
+00:02:10.997 --> 00:02:12.732
+Now that I've added this custom command,
+
+50
+00:02:13.166 --> 00:02:15.201
+let's go ahead and add and commit it.
+
+51
+00:02:15.201 --> 00:02:17.270
+I could do this from the command line,
+
+52
+00:02:17.270 --> 00:02:19.706
+but I'm actually going to ask Claude to do that for me.
+
+53
+00:02:20.507 --> 00:02:22.142
+Add and commit changes made.
+
+54
+00:02:22.142 --> 00:02:24.577
+This is nice so that Claude Code can create
+
+55
+00:02:24.878 --> 00:02:26.379
+a nice commit message
+
+56
+00:02:26.713 --> 00:02:29.015
+with some descriptive information for what was done.
+
+57
+00:02:29.249 --> 00:02:30.984
+We'll see that it's adding the .claude folder
+
+58
+00:02:31.985 --> 00:02:33.920
+and committing with the commands necessary.
+
+59
+00:02:34.420 --> 00:02:36.990
+We can see here that this has been added to the repository.
+
+60
+00:02:37.624 --> 00:02:39.859
+And since we've granted permissions for this already,
+
+61
+00:02:40.693 --> 00:02:42.362
+we don't have to respond again.
+
+62
+00:02:42.695 --> 00:02:44.364
+If you're ever curious where that lives,
+
+63
+00:02:44.697 --> 00:02:46.266
+inside of the claude folder,
+
+64
+00:02:46.733 --> 00:02:49.335
+there is a settings.local.json file
+
+65
+00:02:49.569 --> 00:02:51.571
+Inside of this file, we can specify
+
+66
+00:02:52.172 --> 00:02:54.741
+what commands we've allowed so that we don't need
+
+67
+00:02:54.807 --> 00:02:57.076
+to confirm every single time.
+
+68
+00:02:57.343 --> 00:02:58.711
+As you can see here, as well,
+
+69
+00:02:58.711 --> 00:03:00.046
+when we use playwright, we gave permissions.
+
+70
+00:03:00.046 --> 00:03:02.315
+And if you'd like to add your own,
+
+71
+00:03:02.315 --> 00:03:04.551
+you can easily do so in this file,
+
+72
+00:03:04.551 --> 00:03:08.755
+or even with the handy /permissions command.
+
+73
+00:03:08.755 --> 00:03:10.857
+Now that we've got that custom command set up,
+
+74
+00:03:10.857 --> 00:03:12.725
+let's talk a little bit about how we
+
+75
+00:03:12.725 --> 00:03:14.861
+might want to work in parallel with Claude Code.
+
+76
+00:03:14.861 --> 00:03:17.564
+Instead of just opening up multiple terminal
+
+77
+00:03:17.564 --> 00:03:20.667
+windows and working directly on this code base,
+
+78
+00:03:20.667 --> 00:03:23.937
+we're going to use Git to make sure
+
+79
+00:03:23.937 --> 00:03:27.640
+that we don't overwrite existing files when we have
+
+80
+00:03:27.640 --> 00:03:29.342
+multiple instances of Claude Code.
+
+81
+00:03:29.776 --> 00:03:31.778
+I might have two different instances of
+
+82
+00:03:31.778 --> 00:03:33.780
+Claude Code operating on the same file.
+
+83
+00:03:34.147 --> 00:03:35.515
+And if I do that with
+
+84
+00:03:35.515 --> 00:03:37.116
+the environment that I'm in right now,
+
+85
+00:03:37.383 --> 00:03:39.385
+there's going to be overwriting, bug
+
+86
+00:03:39.385 --> 00:03:41.754
+creation and quite a bit of confusion.
+
+87
+00:03:42.088 --> 00:03:44.390
+Thankfully, Git has an excellent option here
+
+88
+00:03:44.691 --> 00:03:46.492
+to use a feature called worktrees.
+
+89
+00:03:46.893 --> 00:03:51.331
+And worktrees allow me to essentially create copies of the codebase,
+
+90
+00:03:51.864 --> 00:03:53.399
+operate in isolation,
+
+91
+00:03:53.866 --> 00:03:57.237
+and then at the end, merge those in together. And in fact,
+
+92
+00:03:57.237 --> 00:04:00.073
+I can use Claude to help with that merging
+
+93
+00:04:00.073 --> 00:04:02.008
+and management of my worktrees.
+
+94
+00:04:02.308 --> 00:04:03.943
+To get started with worktrees,
+
+95
+00:04:03.943 --> 00:04:06.346
+I'm going to first make a folder called .trees
+
+96
+00:04:06.913 --> 00:04:09.215
+And inside of this worktrees folder,
+
+97
+00:04:09.215 --> 00:04:11.751
+I'm going to go ahead and add a couple worktrees.
+
+98
+00:04:12.151 --> 00:04:15.355
+Let's add a work tree using the Git worktree add command.
+
+99
+00:04:15.955 --> 00:04:19.325
+and then we'll specify the folder as well
+
+100
+00:04:19.325 --> 00:04:21.661
+as the name of the work tree that I want to add.
+
+101
+00:04:21.961 --> 00:04:23.830
+We'll call this one ui_feature. We'll
+
+102
+00:04:23.830 --> 00:04:25.999
+then go ahead and add another one
+
+103
+00:04:26.466 --> 00:04:27.600
+called testing_feature,
+
+104
+00:04:27.934 --> 00:04:30.770
+and then finally a third one called quality_feature.
+
+105
+00:04:31.337 --> 00:04:34.607
+To confirm I've created all of these, I can take a look
+
+106
+00:04:35.141 --> 00:04:36.943
+and I can see that I'm on the main branch currently
+
+107
+00:04:37.377 --> 00:04:40.013
+and that I've created three separate worktrees.
+
+108
+00:04:40.580 --> 00:04:43.449
+To set up correctly in each of these environments,
+
+109
+00:04:43.583 --> 00:04:45.785
+I'm going to open up the trees folder,
+
+110
+00:04:46.252 --> 00:04:47.520
+and I'm going to open up
+
+111
+00:04:47.520 --> 00:04:48.955
+a terminal for each one of them.
+
+112
+00:04:49.355 --> 00:04:52.525
+I'll start with my ui_feature and bring that over here.
+
+113
+00:04:53.059 --> 00:04:54.961
+I'll then go ahead, bring in my testing feature,
+
+114
+00:04:55.328 --> 00:04:57.397
+and I'll move that right to the side.
+
+115
+00:04:57.563 --> 00:04:59.332
+Finally, let's bring in our quality_feature.
+
+116
+00:04:59.866 --> 00:05:02.335
+Go ahead, bring that over up here.
+
+117
+00:05:02.769 --> 00:05:04.037
+To give us a little more
+
+118
+00:05:04.037 --> 00:05:05.505
+room, we'll make this a bit smaller.
+
+119
+00:05:05.638 --> 00:05:08.441
+And now we have three dedicated terminal windows.
+
+120
+00:05:08.808 --> 00:05:10.576
+And we'll hide the explorer as well.
+
+121
+00:05:10.810 --> 00:05:14.347
+Now, let's open up Claude for each one of these environments.
+
+122
+00:05:14.714 --> 00:05:18.818
+What we can do now is run Claude Code in parallel and
+
+123
+00:05:18.818 --> 00:05:22.955
+make sure that if the same files are modified, we're not overwriting
+
+124
+00:05:23.256 --> 00:05:24.924
+and we can fix that later
+
+125
+00:05:24.924 --> 00:05:26.893
+when we merge in these worktrees.
+
+126
+00:05:26.993 --> 00:05:29.962
+I'm going to use this implement-feature command.
+
+127
+00:05:29.962 --> 00:05:31.798
+And then I'm going to put in
+
+128
+00:05:31.798 --> 00:05:33.599
+a particular feature that I'd like here.
+
+129
+00:05:33.599 --> 00:05:36.102
+And that feature allows me to add a
+
+130
+00:05:36.102 --> 00:05:38.938
+toggle button to switch between dark and light themes.
+
+131
+00:05:38.938 --> 00:05:42.442
+So let's go ahead and create a toggle button, position it,
+
+132
+00:05:42.442 --> 00:05:46.245
+and make sure that I can navigate for this particular toggle button.
+
+133
+00:05:46.245 --> 00:05:47.947
+We'll start with this part and
+
+134
+00:05:47.947 --> 00:05:49.916
+then add in the light theme variant.
+
+135
+00:05:49.916 --> 00:05:53.252
+While this is running, I can now move to another work tree.
+
+136
+00:05:53.252 --> 00:05:55.722
+And in this second work tree, let's start thinking
+
+137
+00:05:55.722 --> 00:05:57.056
+a little bit about what I
+
+138
+00:05:57.056 --> 00:05:58.591
+want to do for this testing framework.
+
+139
+00:05:58.958 --> 00:06:00.793
+going to pass in a prompt here to enhance
+
+140
+00:06:01.527 --> 00:06:05.965
+the existing testing framework and add additional tests for FastAPI endpoints.
+
+141
+00:06:06.566 --> 00:06:08.801
+While that's going, let's add some essential
+
+142
+00:06:08.801 --> 00:06:11.070
+code quality tools to our development workflow.
+
+143
+00:06:11.537 --> 00:06:13.206
+As we do this, we can start
+
+144
+00:06:13.206 --> 00:06:14.841
+to see that changes are being requested.
+
+145
+00:06:15.575 --> 00:06:17.543
+So let's go ahead and shift between these
+
+146
+00:06:17.543 --> 00:06:19.145
+environments and confirm the changes that
+
+147
+00:06:19.145 --> 00:06:20.980
+we want. Our tests are being written
+
+148
+00:06:21.147 --> 00:06:25.385
+and our additional development dependencies for analyzing
+
+149
+00:06:25.385 --> 00:06:28.054
+code base structure and formatting are being added as well.
+
+150
+00:06:28.554 --> 00:06:30.156
+What we're going to see here
+
+151
+00:06:30.156 --> 00:06:33.059
+is that we're modifying a file called pyproject.toml
+
+152
+00:06:33.659 --> 00:06:37.163
+And we're also going to see that there's a request being added
+
+153
+00:06:37.163 --> 00:06:39.866
+to edit that particular file as well.
+
+154
+00:06:40.366 --> 00:06:42.068
+As we continue these options
+
+155
+00:06:42.268 --> 00:06:43.970
+will make edits to these files,
+
+156
+00:06:44.470 --> 00:06:46.372
+and we'll go ahead and see at the same time
+
+157
+00:06:46.372 --> 00:06:48.274
+that our front end code is being done as expected.
+
+158
+00:06:48.674 --> 00:06:51.577
+We can work in parallel and make sure
+
+159
+00:06:51.577 --> 00:06:54.680
+that none of these particular changes are being overwritten by
+
+160
+00:06:55.014 --> 00:06:57.116
+other parts of the codebase. If there happen
+
+161
+00:06:57.116 --> 00:06:59.519
+to be changes that we've made to similar files,
+
+162
+00:06:59.919 --> 00:07:02.121
+we can ensure that those merge conflicts are fixed.
+
+163
+00:07:02.321 --> 00:07:04.023
+and we can do that using Claude.
+
+164
+00:07:04.223 --> 00:07:06.025
+Our front-end changes are being written,
+
+165
+00:07:06.325 --> 00:07:08.928
+we're adding more tests, and we're adding some
+
+166
+00:07:08.928 --> 00:07:11.531
+formatting tools and development scripts for quality checks.
+
+167
+00:07:12.198 --> 00:07:13.900
+So we're going to proceed as expected,
+
+168
+00:07:13.900 --> 00:07:16.002
+making sure that quality scripts are being done,
+
+169
+00:07:16.002 --> 00:07:18.805
+and it looks like our front-end features are being added.
+
+170
+00:07:19.205 --> 00:07:20.807
+Now, add that light theme,
+
+171
+00:07:21.307 --> 00:07:24.610
+the same way that we did previously. We'll use our implement feature,
+
+172
+00:07:24.644 --> 00:07:27.547
+custom command to make sure we're writing that to our change log.
+
+173
+00:07:28.347 --> 00:07:29.982
+and we'll add a light theme as
+
+174
+00:07:29.982 --> 00:07:31.851
+well. Once that's done, we'll go ahead and
+
+175
+00:07:31.851 --> 00:07:33.653
+cue up a few other prompts we'd like
+
+176
+00:07:34.053 --> 00:07:36.556
+for JavaScript functionality and implementation details.
+
+177
+00:07:36.756 --> 00:07:39.459
+So while that's running, I can check in on other scripts.
+
+178
+00:07:39.859 --> 00:07:41.561
+I can confirm I want to run those,
+
+179
+00:07:41.861 --> 00:07:45.565
+and if there's something going on, Claude Code can fix per necessary.
+
+180
+00:07:45.665 --> 00:07:47.967
+Seems like there are some scripts that Claude doesn't know about,
+
+181
+00:07:48.468 --> 00:07:50.603
+so we'll go ahead and either install dependencies
+
+182
+00:07:50.603 --> 00:07:52.772
+or make sure we're running things as expected.
+
+183
+00:07:53.072 --> 00:07:55.107
+You can see here, we're starting from code quality checks.
+
+184
+00:07:55.775 --> 00:07:59.178
+We've written our API endpoint testing and we're adding more
+
+185
+00:07:59.178 --> 00:08:01.013
+front end functionality. Once this is all
+
+186
+00:08:01.013 --> 00:08:03.082
+done, we can head over to the browser.
+
+187
+00:08:03.082 --> 00:08:04.951
+We can confirm our checks are done,
+
+188
+00:08:04.951 --> 00:08:07.119
+but before we go ahead and do that,
+
+189
+00:08:07.119 --> 00:08:09.489
+let's bring in all of these individual changes.
+
+190
+00:08:09.922 --> 00:08:11.557
+If we wanted to run the tests,
+
+191
+00:08:11.557 --> 00:08:13.192
+we can confirm this is as expected.
+
+192
+00:08:13.192 --> 00:08:14.560
+We want to head to the browser
+
+193
+00:08:14.560 --> 00:08:16.128
+for our UI testing, we can do so.
+
+194
+00:08:16.496 --> 00:08:19.999
+And here we can see Codebase formatting is done, Development scripts have
+
+195
+00:08:19.999 --> 00:08:21.868
+been added, and documentation has been
+
+196
+00:08:21.868 --> 00:08:24.036
+updated. We saw before there was a
+
+197
+00:08:24.036 --> 00:08:27.773
+the pyproject.toml file that was added across two different worktrees.
+
+198
+00:08:27.773 --> 00:08:31.010
+So there might be some conflicts when figuring out these individual pieces.
+
+199
+00:08:31.010 --> 00:08:33.346
+Now that we feel good about each
+
+200
+00:08:33.346 --> 00:08:37.116
+of these changes, let's add and commit with a descriptive message.
+
+201
+00:08:37.116 --> 00:08:39.752
+Let's also do the same thing on this work tree.
+
+202
+00:08:39.752 --> 00:08:42.522
+Since we're going to be merging in these particular commits,
+
+203
+00:08:42.522 --> 00:08:44.824
+we're going to want to make sure we have descriptive commit messages
+
+204
+00:08:44.824 --> 00:08:47.894
+we can understand what was done in each of these worktrees.
+
+205
+00:08:47.894 --> 00:08:50.496
+We've committed this particular commit,
+
+206
+00:08:50.496 --> 00:08:52.164
+we're doing the same on this one right here.
+
+207
+00:08:52.164 --> 00:08:54.834
+We finished up our UI enhancement. So let's do the same.
+
+208
+00:08:55.368 --> 00:08:57.570
+add and commit with a descriptive message.
+
+209
+00:08:58.070 --> 00:09:00.273
+If you find yourself writing these kinds of
+
+210
+00:09:00.273 --> 00:09:02.742
+prompts like add and commit with a descriptive message,
+
+211
+00:09:02.742 --> 00:09:04.877
+this also could be another use case for
+
+212
+00:09:04.877 --> 00:09:07.013
+a nice custom command where we can specify
+
+213
+00:09:07.013 --> 00:09:09.148
+exactly some styling that we want or the
+
+214
+00:09:09.148 --> 00:09:11.551
+way that our company operates with best Git practices.
+
+215
+00:09:11.851 --> 00:09:14.520
+Now that I finished committing across all three of these,
+
+216
+00:09:14.954 --> 00:09:16.522
+I can now go back to my
+
+217
+00:09:16.522 --> 00:09:18.190
+main branch and merge some things in.
+
+218
+00:09:18.190 --> 00:09:19.892
+So I'm going to close these terminal
+
+219
+00:09:19.892 --> 00:09:21.561
+environments and hop back to our main one.
+
+220
+00:09:22.128 --> 00:09:23.629
+So now I'm going to ask Claude...
+
+221
+00:09:23.763 --> 00:09:26.132
+To use the Git merge command
+
+222
+00:09:26.132 --> 00:09:30.069
+to merge in all of the worktrees in the .trees folder
+
+223
+00:09:30.469 --> 00:09:33.372
+and fix any conflicts if there are any.
+
+224
+00:09:33.673 --> 00:09:37.109
+So let's have Claude Code merge all of these particular trees
+
+225
+00:09:37.577 --> 00:09:39.512
+and make sure that they work as expected.
+
+226
+00:09:39.745 --> 00:09:41.480
+We can see here there are three worktrees available.
+
+227
+00:09:41.480 --> 00:09:44.517
+So we're going to start by merging in each of these worktrees.
+
+228
+00:09:44.917 --> 00:09:47.053
+We'll confirm this is the command we want to use,
+
+229
+00:09:47.520 --> 00:09:49.088
+and then this should work as expected.
+
+230
+00:09:49.488 --> 00:09:52.191
+Looks like our testing feature doesn't have any conflicts.
+
+231
+00:09:52.592 --> 00:09:54.026
+Let's bring on our UI feature.
+
+232
+00:09:54.226 --> 00:09:56.629
+And again, we could write these commands on our own,
+
+233
+00:09:56.629 --> 00:09:59.165
+but Claude Code knows exactly what to do from our prompt.
+
+234
+00:09:59.231 --> 00:10:01.834
+Now we can merge in the quality feature branch.
+
+235
+00:10:01.968 --> 00:10:03.769
+And here we'll see if there are any conflicts.
+
+236
+00:10:04.103 --> 00:10:07.740
+and as we can see, in this particular file, there are conflicts.
+
+237
+00:10:08.007 --> 00:10:10.676
+So what we're going to have Claude Code do
+
+238
+00:10:10.676 --> 00:10:12.745
+is analyze these conflicts and complete the merge.
+
+239
+00:10:12.979 --> 00:10:15.715
+This can be quite valuable when you have small merge conflicts
+
+240
+00:10:15.715 --> 00:10:17.850
+that you don't want to manually go through each time.
+
+241
+00:10:18.317 --> 00:10:20.119
+Having tests here is also quite valuable
+
+242
+00:10:20.119 --> 00:10:22.388
+to make sure that once we've finished, we could
+
+243
+00:10:22.521 --> 00:10:24.824
+run our tests and the code base works as expected.
+
+244
+00:10:25.424 --> 00:10:27.627
+It's now continuing with the merge as expected.
+
+245
+00:10:27.927 --> 00:10:29.695
+and it's going to commit all of
+
+246
+00:10:29.695 --> 00:10:31.464
+these changes with the resolved merge conflicts.
+
+247
+00:10:31.931 --> 00:10:34.200
+If I'd like after, I can ask for it to remove
+
+248
+00:10:34.200 --> 00:10:36.636
+these worktrees or I can keep them there if I need.
+
+249
+00:10:36.869 --> 00:10:38.504
+So I'll do a quick test to
+
+250
+00:10:38.504 --> 00:10:40.172
+make sure that these files are here
+
+251
+00:10:40.172 --> 00:10:41.807
+as expected and that the merge configurations
+
+252
+00:10:41.807 --> 00:10:43.442
+are what are expected here as well.
+
+253
+00:10:43.943 --> 00:10:46.045
+We can also head back to the browser and
+
+254
+00:10:46.045 --> 00:10:48.381
+see if our front end changes are implemented as expected.
+
+255
+00:10:48.748 --> 00:10:52.351
+Looks like Claude Code has finished up, we've added necessary dependencies,
+
+256
+00:10:52.485 --> 00:10:54.387
+we've modified our pyproject.toml
+
+257
+00:10:54.387 --> 00:10:55.955
+We've added tests.
+
+258
+00:10:56.288 --> 00:10:58.290
+we've implemented the light dark themes.
+
+259
+00:10:58.624 --> 00:11:01.360
+We've implemented our black code formatter
+
+260
+00:11:01.360 --> 00:11:04.063
+to make sure that code is as expected in a certain format.
+
+261
+00:11:04.063 --> 00:11:06.666
+and added that configuration in the same file
+
+262
+00:11:06.666 --> 00:11:09.235
+that we worked on with another work tree.
+
+263
+00:11:09.568 --> 00:11:11.070
+We fixed up any conflicts.
+
+264
+00:11:11.070 --> 00:11:12.605
+Let's make sure this is working
+
+265
+00:11:12.605 --> 00:11:14.440
+as expected. So back in the browser,
+
+266
+00:11:14.740 --> 00:11:17.610
+I now see here, I have this lovely theme
+
+267
+00:11:17.610 --> 00:11:19.378
+and as I toggle through, I can
+
+268
+00:11:19.378 --> 00:11:21.414
+see a light theme and a dark theme.
+
+269
+00:11:21.814 --> 00:11:22.848
+So there might be some more things
+
+270
+00:11:22.848 --> 00:11:23.883
+I want to tweak here and there,
+
+271
+00:11:24.583 --> 00:11:26.952
+but I've been able to edit across all parts of the stack,
+
+272
+00:11:27.586 --> 00:11:31.691
+even do things in the linting and DevOps side of things,
+
+273
+00:11:32.324 --> 00:11:33.859
+all without overwriting,
+
+274
+00:11:34.193 --> 00:11:37.496
+causing challenging headaches through the power of Git worktrees.
+
+275
+00:11:37.830 --> 00:11:40.132
+In the next lesson, we're going to see how
+
+276
+00:11:40.132 --> 00:11:42.435
+we can use Claude Code outside of the terminal
+
+277
+00:11:42.802 --> 00:11:46.706
+through an integration with GitHub to allow for reviewing pull requests,
+
+278
+00:11:47.406 --> 00:11:51.110
+making changes and being helpful outside of the terminal ecosystem.

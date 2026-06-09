@@ -1,0 +1,294 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.603
+It's nice to have a feature ready, but don't merge yet.
+
+2
+00:00:03.870 --> 00:00:07.073
+In this last feature step, we collaborate with the agent
+
+3
+00:00:07.173 --> 00:00:09.175
+to review the work.
+
+4
+00:00:09.476 --> 00:00:11.378
+Fortunately, programmers have good tools
+
+5
+00:00:11.478 --> 00:00:13.546
+for this validation task.
+
+6
+00:00:13.546 --> 00:00:16.349
+After all, programmers have long spent
+
+7
+00:00:16.349 --> 00:00:18.752
+several hours per week on code review.
+
+8
+00:00:19.052 --> 00:00:22.055
+Start with the commit view. Let's go through the changes.
+
+9
+00:00:22.355 --> 00:00:25.358
+Focus your review on high-level concerns
+
+10
+00:00:25.358 --> 00:00:28.328
+like whether the features work and reflect the spec,
+
+11
+00:00:28.528 --> 00:00:32.332
+rather than details like which CSS classes were implemented.
+
+12
+00:00:32.899 --> 00:00:37.070
+For example, the Home.tsx is minimal.
+
+13
+00:00:37.470 --> 00:00:39.472
+Nano really meant nano.
+
+14
+00:00:40.073 --> 00:00:42.375
+We want a layout component
+
+15
+00:00:42.375 --> 00:00:45.478
+with clear landmarks for header, main, and footer,
+
+16
+00:00:45.979 --> 00:00:48.081
+but do these as sub-components.
+
+17
+00:00:48.481 --> 00:00:50.483
+And create a CSS file.
+
+18
+00:00:50.850 --> 00:00:54.054
+As it turns out, this mistake in the code
+
+19
+00:00:54.054 --> 00:00:56.056
+flowed from a mistake in the plan.
+
+20
+00:00:56.056 --> 00:00:58.058
+We didn't ask for this.
+
+21
+00:00:58.558 --> 00:01:00.860
+Let's ask the agent to do the fix,
+
+22
+00:01:00.860 --> 00:01:03.663
+thus correcting both spec and implementation.
+
+23
+00:01:04.330 --> 00:01:08.134
+This process that consists of the agent generating something
+
+24
+00:01:08.201 --> 00:01:12.605
+and us verifying it is known as the human in the loop.
+
+25
+00:01:13.106 --> 00:01:15.809
+Because agents are so fast at writing code,
+
+26
+00:01:16.109 --> 00:01:20.413
+software developers have lately been talking about cognitive debt,
+
+27
+00:01:20.814 --> 00:01:24.017
+the mental load of tracking what your code is doing
+
+28
+00:01:24.017 --> 00:01:26.319
+and how it has evolved.
+
+29
+00:01:27.020 --> 00:01:29.022
+That is why in order for this process
+
+30
+00:01:29.022 --> 00:01:31.424
+to be fast and easy to control,
+
+31
+00:01:31.458 --> 00:01:35.929
+and to reduce cognitive debt, the changes should be manageable.
+
+32
+00:01:36.663 --> 00:01:39.132
+The agent is making our changes, but
+
+33
+00:01:39.132 --> 00:01:41.935
+also validating that these changes didn't break anything.
+
+34
+00:01:47.841 --> 00:01:50.777
+Good news, the agent finished and gave us a quick summary.
+
+35
+00:01:51.945 --> 00:01:54.180
+You can also see this in the editor.
+
+36
+00:01:55.548 --> 00:01:58.685
+The feature plan was changed to add a Group 5
+
+37
+00:01:58.952 --> 00:02:00.687
+to list these new steps.
+
+38
+00:02:01.521 --> 00:02:03.990
+The code now has a layout component.
+
+39
+00:02:05.525 --> 00:02:07.527
+and a CSS file was added.
+
+40
+00:02:09.929 --> 00:02:11.731
+It looks like the three subcomponents
+
+41
+00:02:11.731 --> 00:02:13.833
+were just put in the same file,
+
+42
+00:02:13.833 --> 00:02:16.236
+but that doesn't follow conventions.
+
+43
+00:02:16.769 --> 00:02:19.172
+Let's put these in their own files
+
+44
+00:02:19.172 --> 00:02:21.674
+using the IDE move tool.
+
+45
+00:02:22.675 --> 00:02:25.178
+These kinds of changes are easy in editors
+
+46
+00:02:25.178 --> 00:02:27.480
+and we've always been good at this.
+
+47
+00:02:27.680 --> 00:02:30.683
+No need for an agent, right? Let's just do it.
+
+48
+00:02:39.092 --> 00:02:41.628
+Not so fast. This can lead to drift
+
+49
+00:02:42.028 --> 00:02:46.366
+where other artifacts, specs, readmes, get out of sync.
+
+50
+00:02:46.799 --> 00:02:49.602
+Let's ask the agent to fix any mentions
+
+51
+00:02:49.702 --> 00:02:52.572
+and to make sure this doesn't waste some time later.
+
+52
+00:02:52.939 --> 00:02:56.109
+All changes are done. Did we break something?
+
+53
+00:02:56.409 --> 00:03:00.813
+Tests would help, but the agent didn't install our testing package.
+
+54
+00:03:01.714 --> 00:03:03.716
+Since this is needed for all features,
+
+55
+00:03:03.716 --> 00:03:05.718
+we'll cover it in the next lesson.
+
+56
+00:03:06.920 --> 00:03:08.588
+Now we're ready to mark this
+
+57
+00:03:08.588 --> 00:03:10.523
+work as complete and merge our results.
+
+58
+00:03:13.193 --> 00:03:15.295
+Notice that the part of the constitution
+
+59
+00:03:15.295 --> 00:03:18.598
+was updated alongside the feature in this branch.
+
+60
+00:03:20.800 --> 00:03:23.703
+How to handle versioning of the specs and how to associate
+
+61
+00:03:23.703 --> 00:03:26.139
+which specs created which code changes
+
+62
+00:03:26.472 --> 00:03:28.675
+is an evolving topic in the community.
+
+63
+00:03:29.442 --> 00:03:31.477
+The change to the roadmap is small,
+
+64
+00:03:31.778 --> 00:03:33.680
+just checking off a step in the roadmap.
+
+65
+00:03:33.947 --> 00:03:36.849
+So it's okay to keep these updates on the same branch.
+
+66
+00:03:37.317 --> 00:03:40.186
+If the overall constitution update is more complicated,
+
+67
+00:03:40.687 --> 00:03:42.956
+it might be better to do this in a separate branch.
+
+68
+00:03:43.690 --> 00:03:46.192
+Now we're ready to mark this work as complete
+
+69
+00:03:46.392 --> 00:03:48.394
+and merge our results.
+
+70
+00:03:48.595 --> 00:03:50.597
+We just use Spec-Driven Development
+
+71
+00:03:51.197 --> 00:03:54.300
+to develop and validate our first feature.
+
+72
+00:03:55.001 --> 00:03:57.403
+But wait, shouldn't we take another look
+
+73
+00:03:57.604 --> 00:03:59.572
+at the project's broader scope?

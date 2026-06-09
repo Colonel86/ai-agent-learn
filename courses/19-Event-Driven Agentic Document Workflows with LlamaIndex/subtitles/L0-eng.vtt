@@ -1,0 +1,266 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.033 --> 00:00:03.733
+Welcome to Event-Driven
+
+2
+00:00:03.733 --> 00:00:07.800
+Agentic Document Workflows
+built in partnership with LlamaIndex.
+
+3
+00:00:08.200 --> 00:00:09.000
+I'm delighted that
+
+4
+00:00:09.000 --> 00:00:10.333
+the instructor for this course
+
+5
+00:00:10.333 --> 00:00:14.400
+is Laurie Voss, whose VP of developer relations at LlamaIndex.
+
+6
+00:00:15.000 --> 00:00:15.833
+Thanks, Andrew.
+
+7
+00:00:15.833 --> 00:00:18.633
+I'm jazzed to be back here with you
+and teach this course.
+
+8
+00:00:18.633 --> 00:00:19.900
+Agentic document workflows are
+
+9
+00:00:19.900 --> 00:00:23.000
+are agent-based applications
+that you can use
+
+10
+00:00:23.000 --> 00:00:26.200
+to automate an end-to-end document
+processing workflow.
+
+11
+00:00:26.733 --> 00:00:29.833
+While RAG systems answers
+simple questions about your data,
+
+12
+00:00:30.133 --> 00:00:34.000
+agentic workflows can be built on
+top of RAG to help you process
+
+13
+00:00:34.000 --> 00:00:37.733
+input documents in more sophisticated ways.
+In the architecture you learn about,
+
+14
+00:00:38.066 --> 00:00:42.266
+an agent will identify key information
+that you will need to carry the tasks
+
+15
+00:00:42.666 --> 00:00:45.900
+and then retrieve relevant materials
+using RAG.
+
+16
+00:00:46.166 --> 00:00:50.466
+And finally, combine collected information
+into a structured output.
+
+17
+00:00:51.066 --> 00:00:51.966
+For example,
+
+18
+00:00:51.966 --> 00:00:55.866
+say you want to review a contract
+for compliance with certain regulations.
+
+19
+00:00:55.933 --> 00:00:59.033
+The agent could parse the contracts,
+extract the key
+
+20
+00:00:59.033 --> 00:01:02.833
+clauses, and match them with relevant
+clauses from a knowledge base
+
+21
+00:01:02.833 --> 00:01:06.666
+of regulatory requirements,
+and finally generate a compliance summary.
+
+22
+00:01:07.266 --> 00:01:09.933
+As another example, say you want to enrich
+
+23
+00:01:09.933 --> 00:01:12.966
+a set of invoices
+with standardized product information.
+
+24
+00:01:13.433 --> 00:01:17.033
+The agent can extract the item
+descriptions from the invoice,
+
+25
+00:01:17.100 --> 00:01:20.600
+match them with the closest product code
+from the catalog using RAG,
+
+26
+00:01:20.866 --> 00:01:24.566
+and it append the standardized information
+to that invoice.
+
+27
+00:01:24.566 --> 00:01:28.966
+In this course, you apply this type
+of workflow to a practical application
+
+28
+00:01:28.966 --> 00:01:33.100
+in which you build an agent that use the
+resume to follow the job application form.
+
+29
+00:01:34.066 --> 00:01:34.966
+Laurie will walk you through
+
+30
+00:01:34.966 --> 00:01:38.200
+how to build this from scratch
+using LlamaIndex's
+
+31
+00:01:38.200 --> 00:01:43.200
+workflow abstraction, which is a good way
+to build event-driven systems,
+
+32
+00:01:44.266 --> 00:01:47.866
+which is a key design pattern for building
+efficient sets of agents.
+
+33
+00:01:48.666 --> 00:01:50.566
+That's right. LlamaIndex's
+
+34
+00:01:50.566 --> 00:01:54.466
+workflows is an event-driven architecture
+that you will use to create your agent.
+
+35
+00:01:54.900 --> 00:01:58.566
+You will encapsulate the agent's logic
+in a chain of steps, where each
+
+36
+00:01:58.566 --> 00:02:01.566
+step emits events to trigger
+further steps.
+
+37
+00:02:01.666 --> 00:02:04.966
+You will learn how you can use code
+branching and looping within the workflow.
+
+38
+00:02:05.166 --> 00:02:08.800
+Create concurrent events, and collect
+multiple events at a given step.
+
+39
+00:02:08.866 --> 00:02:12.566
+You'll apply these concepts to build
+your form filling agent step by step.
+
+40
+00:02:13.066 --> 00:02:16.966
+You'll start by setting up your agent's
+RAG capability to parse the given resume,
+
+41
+00:02:17.266 --> 00:02:20.266
+load it into a vector store,
+and create a query engine.
+
+42
+00:02:20.566 --> 00:02:24.300
+Then you'll get your agent to parse
+the job application form, convert the
+
+43
+00:02:24.300 --> 00:02:28.366
+blank spaces into a series of questions,
+and send them to the RAG pipeline.
+
+44
+00:02:28.866 --> 00:02:29.566
+You'll then provide
+
+45
+00:02:29.566 --> 00:02:33.166
+feedback to your agent and iterate
+together on the returned answers.
+
+46
+00:02:33.600 --> 00:02:37.566
+You will communicate your feedback
+through text and then using your voice.
+
+47
+00:02:37.866 --> 00:02:40.066
+Many people have worked
+to create this course.
+
+48
+00:02:40.066 --> 00:02:43.466
+I'd like to thank Logan Markewich
+from LlamaIndex,
+
+49
+00:02:43.466 --> 00:02:46.866
+who helped a great deal,
+and from DeepLearning.AI, Hawraa Salami
+
+50
+00:02:46.866 --> 00:02:49.366
+also contributed to this course.
+
+51
+00:02:49.366 --> 00:02:51.666
+Event-driven
+workflows are really important
+
+52
+00:02:51.666 --> 00:02:54.100
+design pattern,
+and I see more and more businesses
+
+53
+00:02:54.100 --> 00:02:57.966
+using it to design large language
+model-powered applications.
+
+54
+00:02:58.466 --> 00:03:00.966
+I think you enjoy learning
+about these concepts.
+
+55
+00:03:00.966 --> 00:03:03.666
+So, please go on to the next
+video and let's get started.
+

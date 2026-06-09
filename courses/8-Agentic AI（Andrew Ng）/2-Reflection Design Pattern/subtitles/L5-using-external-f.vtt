@@ -1,0 +1,215 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.160 --> 00:00:05.280
+Reflection with external feedback, if you can get it, is much more powerful than reflection
+
+2
+00:00:05.280 --> 00:00:09.600
+using the LLM as the only source of feedback. Let's take a look.
+
+3
+00:00:09.600 --> 00:00:14.159
+When I'm building an application, and if I'm just prompt engineering for direct generation
+
+4
+00:00:14.159 --> 00:00:18.239
+of a zero-shot prompting, this is what performance might look like over time,
+
+5
+00:00:18.239 --> 00:00:21.840
+where initially, as I tune the prompt, the performance improves for a while,
+
+6
+00:00:21.840 --> 00:00:27.680
+but then after a while, it sort of plateaus or flattens out, and despite further engineering
+
+7
+00:00:27.680 --> 00:00:31.360
+the prompt, it's just hard to get that much better level of performance.
+
+8
+00:00:31.360 --> 00:00:35.919
+So instead of wasting all this time on tuning the prompt, sometimes it'd be better if only
+
+9
+00:00:35.919 --> 00:00:41.439
+earlier on in the process, I had started adding reflection, and sometimes that gives a bump in
+
+10
+00:00:41.439 --> 00:00:46.000
+performance. Sometimes it's smaller, sometimes a bigger bump, but that adds complexity.
+
+11
+00:00:46.000 --> 00:00:49.840
+But if I had started adding in reflection, maybe at this point in the process,
+
+12
+00:00:49.840 --> 00:00:54.080
+and then started tuning the reflection prompt, then maybe I end up with a performance that
+
+13
+00:00:54.080 --> 00:00:58.799
+looks like this. But it turns out that if I'm able to get external feedback,
+
+14
+00:00:58.799 --> 00:01:03.599
+so that the only source of new information isn't just an LLM reflecting on the same
+
+15
+00:01:03.599 --> 00:01:08.000
+information as it had before, but some new external information, then sometimes,
+
+16
+00:01:08.000 --> 00:01:12.239
+as I continue to tune the prompts and tune the external feedback, you end up with
+
+17
+00:01:12.239 --> 00:01:17.919
+an even much higher level of performance. So something to consider if you are working
+
+18
+00:01:17.919 --> 00:01:23.440
+on prompt engineering, and you feel that your efforts are seeing diminishing returns,
+
+19
+00:01:23.440 --> 00:01:26.720
+that you're tuning a lot of prompts, but it's just not getting that much better,
+
+20
+00:01:26.720 --> 00:01:31.440
+then maybe consider if there's reflection, or even better, if there's some external feedback
+
+21
+00:01:31.440 --> 00:01:36.959
+you can interject to bump the performance curve off this fattening out red line to maybe
+
+22
+00:01:36.959 --> 00:01:42.160
+some higher trajectory of performance improvement. Just as a reminder, we saw earlier,
+
+23
+00:01:42.160 --> 00:01:47.680
+one source of feedback for if you're writing code would be if you were to just execute the code
+
+24
+00:01:47.680 --> 00:01:53.519
+and see what output it generates, output or error messages, and feed that output back to the LLM
+
+25
+00:01:53.519 --> 00:01:58.959
+to let it have that new information to reflect, and then use that information to write a new
+
+26
+00:01:58.959 --> 00:02:05.919
+version of the code. Here are a few more examples of when software codes or tools can create new
+
+27
+00:02:05.919 --> 00:02:10.720
+information to help the reflection process. If you're using LLM to write emails, and it
+
+28
+00:02:10.720 --> 00:02:15.759
+sometimes mentions competitors' names, then if you write codes or build a software tool
+
+29
+00:02:15.759 --> 00:02:20.559
+to just carry out pattern matching, maybe via regular expression pattern matching to search
+
+30
+00:02:20.559 --> 00:02:25.440
+for competitors' names in the output, then whenever you find a competitor's name, you just feed that
+
+31
+00:02:25.440 --> 00:02:32.080
+back to the LLM as a criticism or as input. That's very useful information to tell it to just rewrite
+
+32
+00:02:32.080 --> 00:02:39.119
+the text without mentioning those competitors. Or as another example, you might use web search
+
+33
+00:02:39.119 --> 00:02:44.320
+or look at other trusted sources in order to fact-check an essay. So if you're a research
+
+34
+00:02:44.320 --> 00:02:51.279
+agent that says the Taj Mahal was built in 1648, technically the Taj Mahal was actually commissioned
+
+35
+00:02:51.279 --> 00:02:58.559
+in 1631, and it was finished in 1648. So maybe this isn't exactly incorrect, but it doesn't
+
+36
+00:02:58.559 --> 00:03:04.720
+capture the accurate history either. In order to more accurately represent when this beautiful
+
+37
+00:03:04.720 --> 00:03:11.039
+building was built, if you do a web search to cuddle the snippet explaining exactly the period
+
+38
+00:03:11.039 --> 00:03:16.160
+that the Taj Mahal was built and give that as additional input to your reflection agent, then
+
+39
+00:03:16.160 --> 00:03:21.199
+it may be able to use that to write a better version of the text on the history of the Taj Mahal.
+
+40
+00:03:21.199 --> 00:03:27.039
+One last example, if you're using an LLM to write copy, maybe for a blog post or for a research
+
+41
+00:03:27.039 --> 00:03:32.000
+paper abstract, but what it writes is sometimes over the word limit. LLMs are still not very good
+
+42
+00:03:32.000 --> 00:03:37.600
+at following exact word limits. Then if you implement a word count tool, just write code to
+
+43
+00:03:37.600 --> 00:03:44.479
+count the exact number of words, and if it exceeds the word limit, then feed that word count back to
+
+44
+00:03:44.479 --> 00:03:51.440
+the LLM and ask it to try again. Then this helps it to more accurately hit the desired length of
+
+45
+00:03:51.440 --> 00:03:57.039
+the output you wanted to generate. So in each of these three examples, you can write a piece of
+
+46
+00:03:57.039 --> 00:04:04.000
+code to help find additional facts about the initial output to then give those facts, be it
+
+47
+00:04:04.000 --> 00:04:09.759
+that you found the competitor's name or information web search or the exact word count, to feed into
+
+48
+00:04:09.759 --> 00:04:17.119
+the reflection LLM in order to help it do a better job thinking about how to improve the output.
+
+49
+00:04:17.119 --> 00:04:23.920
+Reflections are powerful too, and I hope you find it useful in a lot of your own work. In the next
+
+50
+00:04:23.920 --> 00:04:29.920
+module, we'll build on this to talk about tool use, where in addition to the handful of tool examples
+
+51
+00:04:29.920 --> 00:04:35.519
+you saw, you learn how to systematically get your LLM to call different functions, and this will make
+
+52
+00:04:35.519 --> 00:04:41.679
+your agenting applications much more powerful. I hope you enjoyed learning about reflection.
+
+53
+00:04:41.679 --> 00:04:49.839
+I'm going to now reflect on what you just learned. I hope to see you in the next video.
+

@@ -1,0 +1,614 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.100 --> 00:00:05.400
+In this lesson, you'll start
+giving your agent more complex tasks.
+
+2
+00:00:05.600 --> 00:00:08.433
+You will get your agent to parse the job
+application form,
+
+3
+00:00:08.433 --> 00:00:11.433
+convert the parsed form
+into a series of simple questions,
+
+4
+00:00:11.433 --> 00:00:14.433
+and use those questions to query
+the RAG pipeline.
+
+5
+00:00:14.600 --> 00:00:17.300
+You'll again use Llama Parse
+to extract the fields that need
+
+6
+00:00:17.300 --> 00:00:20.300
+to be filled before
+generating the queries to the RAG system.
+
+7
+00:00:20.800 --> 00:00:23.300
+Let's get coding. In your previous lesson,
+
+8
+00:00:23.300 --> 00:00:26.833
+you used Llama Parse to parse a resume
+and included parsing instructions.
+
+9
+00:00:27.100 --> 00:00:28.700
+You're going to do that again this time
+
+10
+00:00:28.700 --> 00:00:30.833
+when the instructions
+are going to be more advanced.
+
+11
+00:00:30.833 --> 00:00:33.133
+You're going to get it to read
+an application form
+
+12
+00:00:33.133 --> 00:00:36.100
+and convert it into a list of fields
+that need to be filled in,
+
+13
+00:00:36.100 --> 00:00:39.000
+and return that as a Json object.
+
+14
+00:00:39.000 --> 00:00:40.800
+So let's bring in our imports.
+
+15
+00:00:40.800 --> 00:00:43.300
+These are all the same imports
+that we brought in last time,
+
+16
+00:00:43.300 --> 00:00:46.100
+including our helper functions
+to get our API keys.
+
+17
+00:00:46.100 --> 00:00:49.133
+We're going to need asyncio
+just like we did last time.
+
+18
+00:00:50.100 --> 00:00:50.900
+And we're going to fetch
+
+19
+00:00:50.900 --> 00:00:53.900
+our API keys again,
+just like we did last time.
+
+20
+00:00:54.800 --> 00:00:57.200
+Let's execute those three.
+
+21
+00:00:57.200 --> 00:00:59.000
+Now we're going to parse a new form.
+
+22
+00:00:59.000 --> 00:01:01.433
+So let's set up our parser first.
+
+23
+00:01:01.433 --> 00:01:04.433
+Again, we're asking
+for a result type of markdown.
+
+24
+00:01:04.433 --> 00:01:06.333
+But now we're doing two things.
+
+25
+00:01:06.333 --> 00:01:09.133
+We're providing content guideline
+instructions.
+
+26
+00:01:09.133 --> 00:01:11.400
+We're saying this is a job application
+form.
+
+27
+00:01:11.400 --> 00:01:14.100
+Create a list of all the fields
+that need to be filled in.
+
+28
+00:01:14.100 --> 00:01:16.533
+And we're providing
+formatting instructions.
+
+29
+00:01:16.533 --> 00:01:19.433
+Return a bulleted list of the fields only.
+
+30
+00:01:19.433 --> 00:01:22.100
+This will get us a nice simple result.
+
+31
+00:01:22.100 --> 00:01:25.200
+We can now call load data
+on our fake application form.
+
+32
+00:01:25.500 --> 00:01:28.500
+When it's done,
+we'll be able to print out the results.
+
+33
+00:01:31.200 --> 00:01:34.300
+As you can see, it
+follows the instructions exactly.
+
+34
+00:01:34.400 --> 00:01:35.700
+We have a bulleted list
+
+35
+00:01:35.700 --> 00:01:39.500
+of just the fields in the form.
+A useful thing that LLMs can do
+
+36
+00:01:39.500 --> 00:01:43.433
+is turn human-readable formats
+like this list into machine-readable ones.
+
+37
+00:01:43.500 --> 00:01:44.900
+We're going to do that here
+
+38
+00:01:44.900 --> 00:01:48.700
+by asking it to turn the list into a Json
+object with an array of fields.
+
+39
+00:01:48.700 --> 00:01:51.133
+To do that, we'll need an LLM.
+
+40
+00:01:51.133 --> 00:01:52.500
+So let's bring in OpenAI.
+
+41
+00:01:54.000 --> 00:01:54.400
+We're going to
+
+42
+00:01:54.400 --> 00:01:57.733
+give our LLM a prompt
+and our list of fields.
+
+43
+00:01:58.333 --> 00:02:00.233
+We're going to say this is a parsed form.
+
+44
+00:02:00.233 --> 00:02:02.433
+Here's the data and return Json
+
+45
+00:02:02.433 --> 00:02:07.233
+only. When we execute that will be able
+to print out the raw Json
+
+46
+00:02:07.500 --> 00:02:09.100
+and see what we got.
+
+47
+00:02:09.100 --> 00:02:12.100
+You can see it's given us Json.
+
+48
+00:02:12.233 --> 00:02:17.233
+So now we can parse the Json and print out
+the list of fields programmatically.
+
+49
+00:02:18.300 --> 00:02:19.100
+Perfect.
+
+50
+00:02:19.100 --> 00:02:19.633
+We've now
+
+51
+00:02:19.633 --> 00:02:23.800
+got a nice array of fields that we can use
+for all of our programmatic work later.
+
+52
+00:02:24.000 --> 00:02:28.733
+So now let's take the workflow you built
+in the last lesson and add your parser.
+
+53
+00:02:29.200 --> 00:02:33.300
+We're going to need two new events
+the parse form event and the query event.
+
+54
+00:02:34.200 --> 00:02:36.833
+And here is your new workflow.
+
+55
+00:02:36.833 --> 00:02:37.900
+It's a lot longer.
+
+56
+00:02:37.900 --> 00:02:40.133
+So we're going to step through it
+line by line.
+
+57
+00:02:40.133 --> 00:02:42.900
+Just like before
+you've got a RAG workflow class
+
+58
+00:02:42.900 --> 00:02:46.633
+with a storage directory
+an LLM and a query engine. In our setup,
+
+59
+00:02:46.700 --> 00:02:51.200
+we're now going to emit a parse form event
+which triggers your new step, parse form.
+
+60
+00:02:51.600 --> 00:02:54.300
+So here you see
+parse form event happening.
+
+61
+00:02:54.300 --> 00:02:56.533
+And here's our new method, parse form.
+
+62
+00:02:56.533 --> 00:03:01.200
+This is the code that we just wrote above
+incorporated into our workflow.
+
+63
+00:03:01.300 --> 00:03:03.000
+There's our parser.
+
+64
+00:03:03.000 --> 00:03:05.200
+There's this converting it into Json.
+
+65
+00:03:05.200 --> 00:03:06.133
+And there's this
+
+66
+00:03:06.133 --> 00:03:07.633
+printing out our Json.
+
+67
+00:03:07.633 --> 00:03:09.833
+We're going to leave
+the rest of the workflow untouched
+
+68
+00:03:09.833 --> 00:03:11.400
+and handle the rest of it later.
+
+69
+00:03:11.400 --> 00:03:13.233
+So let's execute this to get it going.
+
+70
+00:03:14.200 --> 00:03:15.933
+And now
+
+71
+00:03:15.933 --> 00:03:18.933
+let's execute the workflow.
+
+72
+00:03:19.200 --> 00:03:19.900
+Great.
+
+73
+00:03:19.900 --> 00:03:21.433
+It did exactly the same thing
+
+74
+00:03:21.433 --> 00:03:24.433
+the code outside of the workflow did,
+which is all we needed it to do.
+
+75
+00:03:24.600 --> 00:03:29.600
+So now your workflow knows what fields it
+needs answers for. In the next iteration,
+
+76
+00:03:29.600 --> 00:03:30.833
+you can fire off one
+
+77
+00:03:30.833 --> 00:03:34.900
+query event for each of the fields,
+and they'll be executed concurrently.
+
+78
+00:03:35.033 --> 00:03:38.300
+You'll remember in lesson two
+we talked about doing concurrent steps.
+
+79
+00:03:38.300 --> 00:03:41.100
+The changes you're going to make
+are: you're going to generate
+
+80
+00:03:41.100 --> 00:03:44.233
+a query event for each of the questions
+you pulled out of the form.
+
+81
+00:03:44.300 --> 00:03:46.800
+You're going to create a fill
+in application step,
+
+82
+00:03:46.800 --> 00:03:49.300
+which will take all of the responses
+to the questions
+
+83
+00:03:49.300 --> 00:03:51.700
+and aggregate them
+into a coherent response.
+
+84
+00:03:51.700 --> 00:03:55.400
+And you're going to add a response event
+to pass the results of queries
+
+85
+00:03:55.400 --> 00:03:56.933
+to fill in application.
+
+86
+00:03:56.933 --> 00:03:59.233
+So let's see what that looks like.
+
+87
+00:03:59.233 --> 00:04:00.333
+Here are events.
+
+88
+00:04:00.333 --> 00:04:02.500
+There's a new one, response event.
+
+89
+00:04:02.500 --> 00:04:03.600
+And here's our workflow.
+
+90
+00:04:05.800 --> 00:04:06.400
+As we saw
+
+91
+00:04:06.400 --> 00:04:09.400
+earlier, we have a parse form event.
+
+92
+00:04:09.600 --> 00:04:12.500
+And now we have a new step.
+
+93
+00:04:12.500 --> 00:04:15.700
+Instead of just printing out the fields,
+for each of the fields,
+
+94
+00:04:15.700 --> 00:04:18.700
+we're going to send an event,
+specifically a query event.
+
+95
+00:04:18.933 --> 00:04:22.800
+The query event will accept the field
+that we're talking about and a query.
+
+96
+00:04:23.133 --> 00:04:24.800
+It's going to be a pretty simple query.
+
+97
+00:04:24.800 --> 00:04:27.800
+Just, how would you answer this question
+about the candidate?
+
+98
+00:04:27.800 --> 00:04:29.133
+The other thing we're going to do is
+
+99
+00:04:29.133 --> 00:04:32.633
+we're going to store the number of fields,
+so we know how many to wait for later.
+
+100
+00:04:32.900 --> 00:04:36.500
+The next thing that will happen
+is that the ask
+
+101
+00:04:36.500 --> 00:04:40.500
+questions step will be fired off
+as many times as we had query events.
+
+102
+00:04:40.533 --> 00:04:42.933
+Each of them
+is going to return a response event,
+
+103
+00:04:42.933 --> 00:04:45.600
+which is going to trigger
+the fill-in application step.
+
+104
+00:04:45.600 --> 00:04:46.300
+The response
+
+105
+00:04:46.300 --> 00:04:50.300
+event will run into our collect events
+method that we talked about earlier.
+
+106
+00:04:50.400 --> 00:04:54.033
+In this case, we're going to wait
+for a number of response event
+
+107
+00:04:54.033 --> 00:04:57.233
+equivalent to the number of total fields
+that we saw earlier.
+
+108
+00:04:57.500 --> 00:04:59.500
+Remember
+we're storing this in the context.
+
+109
+00:04:59.500 --> 00:05:00.433
+So it's available
+
+110
+00:05:00.433 --> 00:05:04.500
+across steps even though we haven't passed
+it using an event. As before,
+
+111
+00:05:04.733 --> 00:05:07.200
+if collect events returns nothing, we'll do
+
+112
+00:05:07.200 --> 00:05:07.700
+nothing.
+
+113
+00:05:07.700 --> 00:05:11.833
+But once we've got all of the responses,
+we'll turn them into a list that we can
+
+114
+00:05:11.833 --> 00:05:14.833
+then pass into our LLM
+with another prompt.
+
+115
+00:05:15.200 --> 00:05:18.200
+In this case, we're going to ask it
+to answer the questions.
+
+116
+00:05:18.500 --> 00:05:20.600
+Then we're going to emit a stop event.
+
+117
+00:05:20.600 --> 00:05:22.733
+So now let's execute that workflow.
+
+118
+00:05:25.100 --> 00:05:25.933
+Just like before,
+
+119
+00:05:25.933 --> 00:05:28.933
+we're passing in a fake resume
+and a fake application form.
+
+120
+00:05:30.000 --> 00:05:31.500
+And we're printing our result.
+
+121
+00:05:31.500 --> 00:05:34.300
+It might take a little while
+because it has to ask a bunch of questions
+
+122
+00:05:34.300 --> 00:05:37.300
+this time.
+
+123
+00:05:37.400 --> 00:05:39.400
+Great.
+
+124
+00:05:39.400 --> 00:05:42.100
+As you can see,
+the LLM has helpfully explained what
+
+125
+00:05:42.100 --> 00:05:45.800
+it's done and given us a numbered list
+of all of the fields and their answers.
+
+126
+00:05:46.133 --> 00:05:47.100
+Your workflow takes
+
+127
+00:05:47.100 --> 00:05:50.600
+all the fields in the form and generates
+plausible answers to all of them.
+
+128
+00:05:51.133 --> 00:05:53.900
+There are a couple of fields
+where I think it can do better.
+
+129
+00:05:53.900 --> 00:05:54.700
+Portfolio
+
+130
+00:05:54.700 --> 00:05:58.400
+for instance. In the original document,
+the portfolio has a link,
+
+131
+00:05:58.700 --> 00:06:01.333
+whereas here it's trying to list out
+a portfolio.
+
+132
+00:06:01.333 --> 00:06:04.333
+We'll use our feedback
+to see if we can correct that.
+
+133
+00:06:04.600 --> 00:06:08.233
+In the next lesson, you'll add the ability
+to give that feedback to the agent
+
+134
+00:06:08.333 --> 00:06:09.500
+and get it to try again.
+

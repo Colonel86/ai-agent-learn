@@ -1,0 +1,504 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.100 --> 00:00:04.633
+In this lesson, we'll go through
+the basic concepts
+
+2
+00:00:04.633 --> 00:00:08.900
+behind agentic document workflows,
+which include RAG agents and workflows.
+
+3
+00:00:09.200 --> 00:00:12.033
+You will learn how RAG helps
+answer questions about your data,
+
+4
+00:00:12.033 --> 00:00:14.500
+how workflows
+prescribe data flows to agents,
+
+5
+00:00:14.500 --> 00:00:17.500
+and how event-driven document
+processing enhances RAG.
+
+6
+00:00:17.700 --> 00:00:19.333
+Let's dive in.
+
+7
+00:00:19.333 --> 00:00:22.100
+What I want to tell you about today
+are agentic document
+
+8
+00:00:22.100 --> 00:00:23.000
+workflows.
+
+9
+00:00:23.000 --> 00:00:25.700
+You're going to build a simple one today.
+
+10
+00:00:25.700 --> 00:00:27.800
+These are a new paradigm
+that we've introduced
+
+11
+00:00:27.800 --> 00:00:32.400
+for applications built on top of LLMs,
+like ChatGPT based on RAG,
+
+12
+00:00:32.400 --> 00:00:34.500
+but addressing the limitations of RAG
+
+13
+00:00:34.500 --> 00:00:37.800
+and moving beyond them with
+the application of agentic strategies.
+
+14
+00:00:38.200 --> 00:00:41.200
+But that's a lot of unfamiliar words
+all at once.
+
+15
+00:00:41.233 --> 00:00:44.233
+What is RAG? What is an agentic strategy?
+
+16
+00:00:44.233 --> 00:00:47.400
+Before you get started,
+let's define what those things are.
+
+17
+00:00:47.700 --> 00:00:50.600
+RAG stands for Retrieval Augmented
+Generation.
+
+18
+00:00:50.600 --> 00:00:53.700
+RAG is a response
+to a fundamental limitation of LLMs.
+
+19
+00:00:54.000 --> 00:00:57.133
+They are trained on mountains of data,
+but they aren't trained on your data.
+
+20
+00:00:57.433 --> 00:01:01.600
+And usually when you're solving a problem,
+you don't just need general knowledge,
+
+21
+00:01:01.800 --> 00:01:05.400
+you need to process your private data.
+To get an LLM to answer questions
+
+22
+00:01:05.400 --> 00:01:06.600
+about your data,
+
+23
+00:01:06.600 --> 00:01:09.433
+you have to give the LLM your data,
+but that runs into
+
+24
+00:01:09.433 --> 00:01:12.800
+another fundamental limitation of our LLMs,
+the context window.
+
+25
+00:01:13.300 --> 00:01:16.300
+You can only give an LLM so much data
+at one time.
+
+26
+00:01:16.600 --> 00:01:20.033
+Even the most capable LLMs
+can only handle about a million tokens
+
+27
+00:01:20.033 --> 00:01:21.633
+of information at one time.
+
+28
+00:01:21.633 --> 00:01:25.200
+And you have way more data than that
+in your organization, probably tens
+
+29
+00:01:25.200 --> 00:01:26.433
+or hundreds of millions.
+
+30
+00:01:26.433 --> 00:01:29.600
+So you have to be selective
+about what data you give an LLM.
+
+31
+00:01:29.900 --> 00:01:31.600
+That exposes a challenge.
+
+32
+00:01:31.600 --> 00:01:35.133
+How do you select the data?
+You want to give your LLM the most relevant
+
+33
+00:01:35.133 --> 00:01:36.033
+possible data.
+
+34
+00:01:36.033 --> 00:01:39.533
+It turns out the same technology
+that produced LLMs, produced
+
+35
+00:01:39.533 --> 00:01:43.100
+things called embedding models, which are
+part of the solution to that problem.
+
+36
+00:01:43.533 --> 00:01:47.500
+Embedding models take strings of data
+and encode them into arrays of numbers
+
+37
+00:01:47.500 --> 00:01:48.933
+called vectors.
+
+38
+00:01:48.933 --> 00:01:52.333
+The total set of possible
+vectors is known as vector space.
+
+39
+00:01:52.500 --> 00:01:56.033
+These vectors encode the meaning
+of the data that you've encoded.
+
+40
+00:01:56.533 --> 00:01:59.300
+You can
+then store these vectors in a database.
+
+41
+00:01:59.300 --> 00:02:02.133
+Now, if you have a question
+about your data,
+
+42
+00:02:02.133 --> 00:02:05.100
+you can run your question
+through the same embedding model.
+
+43
+00:02:05.100 --> 00:02:07.600
+And your question will also be encoded
+as a vector.
+
+44
+00:02:07.600 --> 00:02:12.333
+The magic of embedding models is that
+because they encode meaning, your question,
+
+45
+00:02:12.333 --> 00:02:16.200
+and the data that answers your question,
+they're about similar things.
+
+46
+00:02:16.200 --> 00:02:17.700
+They mean similar things.
+
+47
+00:02:17.700 --> 00:02:21.233
+So they end up mathematically nearby
+to each other in vector space.
+
+48
+00:02:21.800 --> 00:02:24.800
+You can use your database
+to search for nearby vectors.
+
+49
+00:02:25.033 --> 00:02:29.000
+And this is how you find the relevant data
+to give to an LLM when you have a query.
+
+50
+00:02:29.433 --> 00:02:32.900
+You can then take your query
+and the relevant data called the context,
+
+51
+00:02:33.200 --> 00:02:36.900
+and give both of those to another
+LLM and ask it to answer the question
+
+52
+00:02:36.900 --> 00:02:38.300
+using the context.
+
+53
+00:02:38.300 --> 00:02:41.433
+We call this step generation
+because it's generating an answer,
+
+54
+00:02:41.800 --> 00:02:44.600
+and the step where we search for
+relevant data retrieval.
+
+55
+00:02:44.600 --> 00:02:45.633
+Hence Retrieval
+
+56
+00:02:45.633 --> 00:02:48.400
+Augmented Generation or RAG.
+
+57
+00:02:48.400 --> 00:02:52.100
+RAG is an incredibly powerful technique,
+but it does have some limitations.
+
+58
+00:02:52.500 --> 00:02:55.500
+One of them is complex or multi-part
+questions.
+
+59
+00:02:55.733 --> 00:02:58.833
+This limitation makes sense
+because RAG is based on search.
+
+60
+00:02:59.400 --> 00:03:03.133
+If you have a question with lots of parts,
+RAG is going to search your embeddings
+
+61
+00:03:03.133 --> 00:03:06.900
+for lots of things at once, and so
+the results you get will be less focused.
+
+62
+00:03:07.000 --> 00:03:08.500
+You'll get a ton of results,
+
+63
+00:03:08.500 --> 00:03:11.500
+but they might not contain
+all the information you need.
+
+64
+00:03:11.500 --> 00:03:13.300
+There's a solution to this problem,
+
+65
+00:03:13.300 --> 00:03:16.633
+which is to split up your complex question
+into a lot of simpler questions.
+
+66
+00:03:17.000 --> 00:03:18.000
+Each of those simpler
+
+67
+00:03:18.000 --> 00:03:21.933
+questions will get a much more focused
+and comprehensive set of search results.
+
+68
+00:03:22.033 --> 00:03:22.100
+This is a great task for our LLMs
+because they are good at looking
+
+69
+00:03:22.100 --> 00:03:24.833
+This is a great task for our LLMs
+because they are good at looking
+
+70
+00:03:24.833 --> 00:03:28.500
+at a complicated question and splitting it
+up into smaller questions,
+
+71
+00:03:29.000 --> 00:03:31.833
+and at the other end,
+they can take a bunch of answers
+
+72
+00:03:31.833 --> 00:03:35.600
+to simple questions and synthesize them
+into a single, coherent answer.
+
+73
+00:03:35.933 --> 00:03:38.033
+This is what you're going to be doing
+today,
+
+74
+00:03:38.033 --> 00:03:41.033
+and the way you're going to do
+it, is by building an agent.
+
+75
+00:03:41.200 --> 00:03:43.833
+I mentioned agents and agentic
+strategies earlier.
+
+76
+00:03:43.833 --> 00:03:45.233
+So what is an agent?
+
+77
+00:03:45.233 --> 00:03:48.500
+Well,
+it's a pretty fuzzy term at LlamaIndex,
+
+78
+00:03:48.500 --> 00:03:52.400
+when we say an agent, what we mean
+is a piece of semi-autonomous software
+
+79
+00:03:52.533 --> 00:03:56.700
+which can be given tools and a goal
+and will work out how to solve the problem
+
+80
+00:03:56.700 --> 00:03:59.900
+without needing to be given explicit step
+by step instructions
+
+81
+00:03:59.900 --> 00:04:01.233
+on how to achieve that goal.
+
+82
+00:04:01.233 --> 00:04:03.500
+This is very different
+from traditional programing,
+
+83
+00:04:03.500 --> 00:04:06.933
+where every step is
+precisely defined. In LlamaIndex,
+
+84
+00:04:06.933 --> 00:04:09.933
+the way that you build an agent
+is by using workflows.
+
+85
+00:04:10.100 --> 00:04:13.500
+Workflows are the building blocks
+of agentic systems in LlamaIndex.
+
+86
+00:04:13.900 --> 00:04:17.500
+They are an event-based system
+that lets you define a series of steps
+
+87
+00:04:17.500 --> 00:04:20.833
+connected by events and pass information
+from step to step.
+
+88
+00:04:21.400 --> 00:04:25.100
+As you'll see, you can create
+quite complex workflows with branches,
+
+89
+00:04:25.100 --> 00:04:28.500
+loops, and parallel execution
+to achieve any task that you need.
+
+90
+00:04:28.900 --> 00:04:32.400
+Workflows provide your agent
+with structure as fine grained or as loose
+
+91
+00:04:32.400 --> 00:04:33.800
+as you need it to be.
+
+92
+00:04:33.800 --> 00:04:37.500
+Some agent frameworks have no structure
+at all, which can lead to chaotic results.
+
+93
+00:04:37.900 --> 00:04:41.100
+Others go with a graph-based approach
+which makes looping and other structures
+
+94
+00:04:41.100 --> 00:04:41.933
+more difficult.
+
+95
+00:04:41.933 --> 00:04:44.933
+I think workflows provides
+the best of both worlds.
+
+96
+00:04:45.100 --> 00:04:48.333
+That brings us to agentic document
+workflows or ADW.
+
+97
+00:04:49.033 --> 00:04:53.733
+We've already discussed the basics, RAG
+workflows, and agents. Agentic document
+
+98
+00:04:53.733 --> 00:04:57.500
+workflows are a way of building software
+that solves real business problems
+
+99
+00:04:57.500 --> 00:04:59.833
+by applying agent workflows to them
+
+100
+00:04:59.833 --> 00:05:02.400
+and building them into larger
+pieces of software.
+
+101
+00:05:02.400 --> 00:05:05.000
+ADW builds on top of the Power of RAG.
+
+102
+00:05:05.000 --> 00:05:08.200
+But unlike RAG,
+which is mostly about simple questions,
+
+103
+00:05:08.200 --> 00:05:11.900
+agentic document workflows tackle
+complex problems and results
+
+104
+00:05:11.900 --> 00:05:15.600
+in structured specific output
+and not just plain English answers.
+
+105
+00:05:16.000 --> 00:05:19.800
+Now that we've covered the basics, in the
+next lesson, we'll get started building.
+

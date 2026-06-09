@@ -1,0 +1,1152 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.233 --> 00:00:02.669
+Now it's
+time to start setting up your evals.
+
+2
+00:00:02.669 --> 00:00:06.072
+In this lesson, you'll focus on evaluating
+each of your agent's skills,
+
+3
+00:00:06.373 --> 00:00:07.640
+as well as the router's ability
+
+4
+00:00:07.640 --> 00:00:11.644
+to choose the correct tool and execute
+it correctly given a user's request.
+
+5
+00:00:11.945 --> 00:00:14.647
+You will learn about three types
+of evaluators: code based
+
+6
+00:00:14.647 --> 00:00:17.717
+evaluators,
+LLM as a judge, and human annotations.
+
+7
+00:00:17.917 --> 00:00:20.687
+You will then apply the appropriate
+evaluators to your agent
+
+8
+00:00:20.687 --> 00:00:23.390
+example. Let's get to it.
+
+9
+00:00:23.390 --> 00:00:26.393
+There are three main techniques
+used for running evaluations.
+
+10
+00:00:26.626 --> 00:00:28.528
+The first is code-based evals.
+
+11
+00:00:28.528 --> 00:00:30.797
+Second is LLMs and judge evaluations.
+
+12
+00:00:30.797 --> 00:00:33.433
+And finally, human annotations.
+
+13
+00:00:33.433 --> 00:00:36.503
+Each of these techniques
+can be applied to agents to measure
+
+14
+00:00:36.503 --> 00:00:38.371
+and evaluate
+different parts of your agent,
+
+15
+00:00:38.371 --> 00:00:41.441
+but they can also be applied to other LLM
+based applications.
+
+16
+00:00:41.641 --> 00:00:44.077
+So each of these techniques
+works for both agents
+
+17
+00:00:44.077 --> 00:00:47.147
+and your more traditional LLM
+applications as well.
+
+18
+00:00:47.881 --> 00:00:51.117
+Code-base evaluations
+are the simplest kind of evaluations
+
+19
+00:00:51.117 --> 00:00:54.587
+when it comes to LLM or agent evals,
+and are the most similar
+
+20
+00:00:54.587 --> 00:00:57.891
+to traditional software
+integration tests or evaluations.
+
+21
+00:00:58.458 --> 00:00:59.392
+Code-based evaluations
+
+22
+00:00:59.392 --> 00:01:02.629
+involve running some sort of code
+on the outputs of your application.
+
+23
+00:01:03.363 --> 00:01:06.533
+Some common
+examples of these are checking to see
+
+24
+00:01:06.533 --> 00:01:08.835
+if your output matches a certain regex.
+
+25
+00:01:08.835 --> 00:01:11.838
+So maybe you want a response
+to only contain numbers
+
+26
+00:01:12.105 --> 00:01:13.940
+or no alphanumeric characters.
+
+27
+00:01:13.940 --> 00:01:17.811
+You can use a regex to check to make sure
+that your response matches that filter.
+
+28
+00:01:18.311 --> 00:01:21.214
+You might also want to make sure
+that your response is Json passable.
+
+29
+00:01:21.214 --> 00:01:23.883
+or a very common
+one that you see, especially in chatbots,
+
+30
+00:01:23.883 --> 00:01:27.487
+is checking to see if the chatbots
+response contains certain keywords.
+
+31
+00:01:27.620 --> 00:01:31.324
+Like most often, companies don't want
+their chatbots to mention a competitor,
+
+32
+00:01:31.324 --> 00:01:33.059
+so you can do a code-based eval
+
+33
+00:01:33.059 --> 00:01:36.296
+to see if that competitor name is ever
+in one of the agent responses.
+
+34
+00:01:37.097 --> 00:01:41.301
+But perhaps, maybe the most common type
+of code-based eval is to use these evals
+
+35
+00:01:41.301 --> 00:01:44.571
+to compare your applications outputs
+to expected outputs.
+
+36
+00:01:44.838 --> 00:01:48.975
+So if you have ground truth data of what
+the expected output is for an input,
+
+37
+00:01:49.576 --> 00:01:52.946
+then it's very effective
+to use code-based evals to either directly
+
+38
+00:01:52.946 --> 00:01:55.949
+compare the output of your application
+to that expected output,
+
+39
+00:01:56.216 --> 00:02:00.053
+or to use something like cosine similarity
+or cosine distance
+
+40
+00:02:00.320 --> 00:02:03.356
+to do more of a semantic match
+between those two different values.
+
+41
+00:02:04.924 --> 00:02:05.859
+The next technique for
+
+42
+00:02:05.859 --> 00:02:08.862
+running evaluations is called
+LLM as a judge.
+
+43
+00:02:08.862 --> 00:02:11.297
+LLM is a judge,
+as the name implies, involves
+
+44
+00:02:11.297 --> 00:02:14.634
+using a separate LLM to measure the outputs
+of your application.
+
+45
+00:02:15.602 --> 00:02:18.404
+Typically,
+the way that it's done is by grabbing
+
+46
+00:02:18.404 --> 00:02:23.076
+the input and output of your application,
+as well as potentially a few other key
+
+47
+00:02:23.076 --> 00:02:26.079
+pieces of information
+from one run of your application.
+
+48
+00:02:26.279 --> 00:02:29.249
+Constructing a separate prompt
+that's going to evaluate
+
+49
+00:02:29.249 --> 00:02:32.785
+a specific criteria
+based on those inputs and outputs.
+
+50
+00:02:33.520 --> 00:02:37.190
+Sending that prompt over
+to a separate judge or evaluator LLM,
+
+51
+00:02:37.924 --> 00:02:40.660
+and then having that a LLM, assign a label
+
+52
+00:02:40.660 --> 00:02:43.663
+on a specific access to that response.
+
+53
+00:02:43.730 --> 00:02:45.798
+For one more example of how that works.
+
+54
+00:02:45.798 --> 00:02:49.302
+You can examine this case
+of evaluating the relevance of a document
+
+55
+00:02:49.302 --> 00:02:51.037
+that was retrieved in a RAG system.
+
+56
+00:02:52.639 --> 00:02:53.239
+The retrieval
+
+57
+00:02:53.239 --> 00:02:56.242
+span in this case
+is made up of a user query.
+
+58
+00:02:56.376 --> 00:02:59.479
+And then the documents
+that were retrieved for that given query.
+
+59
+00:03:00.713 --> 00:03:01.347
+That query
+
+60
+00:03:01.347 --> 00:03:03.249
+and then the reference documents are then
+
+61
+00:03:03.249 --> 00:03:06.452
+sent into the separate,
+eval template that you see here
+
+62
+00:03:07.120 --> 00:03:10.123
+and then populated
+so as to ask another LLM,
+
+63
+00:03:10.690 --> 00:03:15.295
+"Are these reference retrieved documents
+relevant to the user's question?"
+
+64
+00:03:16.029 --> 00:03:18.765
+And then that separate
+LLM will either say those documents
+
+65
+00:03:18.765 --> 00:03:21.768
+are relevant or irrelevant.
+
+66
+00:03:21.935 --> 00:03:25.071
+An LLM as-a-Judge is really powerful
+because you're able to run
+
+67
+00:03:25.071 --> 00:03:29.409
+large-scale evaluations across
+both quantitative and qualitative metrics.
+
+68
+00:03:30.043 --> 00:03:33.413
+However, it's important to keep a few
+things in mind when using LLM as a judge.
+
+69
+00:03:34.180 --> 00:03:37.183
+The first is
+that only really the best models
+
+70
+00:03:37.217 --> 00:03:39.819
+actually
+align closely with human judgment.
+
+71
+00:03:39.819 --> 00:03:44.424
+So if you're going to run LLM as a judge,
+you often need to use a GPT-4o
+
+72
+00:03:44.724 --> 00:03:48.328
+or Claude3.5 Sonnet
+or similarly high-end model to do so.
+
+73
+00:03:49.429 --> 00:03:49.929
+Even with
+
+74
+00:03:49.929 --> 00:03:53.132
+these, though, a LLM as a judge
+is never going to be 100% accurate.
+
+75
+00:03:53.833 --> 00:03:56.836
+There will always be some margin of error,
+because at the end of the day,
+
+76
+00:03:56.836 --> 00:03:59.839
+you are using an LLM
+to assign that particular label.
+
+77
+00:04:00.707 --> 00:04:04.644
+You can mitigate some of this by tuning
+either your LLM judge prompt
+
+78
+00:04:04.644 --> 00:04:06.779
+or even your LLM judge model,
+
+79
+00:04:06.779 --> 00:04:09.782
+and you'll learn a little bit more about
+these in later modules in this course.
+
+80
+00:04:10.450 --> 00:04:13.853
+Finally, it's always important to remember
+to use discrete classification labels
+
+81
+00:04:13.853 --> 00:04:17.991
+as opposed to undefined scores when
+setting up the outputs of your LLM judge.
+
+82
+00:04:18.424 --> 00:04:22.462
+So you should always use things like
+correct versus incorrect, relevant versus
+
+83
+00:04:22.462 --> 00:04:27.462
+irrelevant, and never a measure like "score
+this response on a scale from 1 to 100."
+
+84
+00:04:28.134 --> 00:04:31.304
+The reason for that is that LLMs
+don't have a great sense of what
+
+85
+00:04:31.304 --> 00:04:35.174
+constitutes an 83 out of 100 versus
+a 79 out of 100,
+
+86
+00:04:35.675 --> 00:04:38.678
+especially when they're evaluating
+each case independently.
+
+87
+00:04:39.078 --> 00:04:42.015
+So always use discrete
+classification labels wherever you can.
+
+88
+00:04:43.016 --> 00:04:44.217
+The third evaluation technique
+
+89
+00:04:44.217 --> 00:04:47.520
+that you can use
+is using annotations or human labels.
+
+90
+00:04:48.554 --> 00:04:52.959
+The idea here is that you can use tools
+like Phoenix or other observability
+
+91
+00:04:52.959 --> 00:04:56.963
+platforms to construct a queue of lots
+of runs of your application
+
+92
+00:04:57.297 --> 00:05:01.134
+to construct an annotation queue,
+and then have human labelers
+
+93
+00:05:01.501 --> 00:05:04.337
+work their way
+through that queue and attach feedback,
+
+94
+00:05:04.337 --> 00:05:07.106
+or judge
+the responses of your application.
+
+95
+00:05:07.106 --> 00:05:10.143
+The other method that you can use
+is actually gathering feedback
+
+96
+00:05:10.143 --> 00:05:11.177
+from your end users.
+
+97
+00:05:11.177 --> 00:05:14.681
+So you might have seen cases in the wild
+where LLM systems have a thumbs
+
+98
+00:05:14.681 --> 00:05:18.518
+up, thumbs down response system
+where you can rate the responses of that
+
+99
+00:05:18.818 --> 00:05:20.119
+LLM system.
+
+100
+00:05:20.119 --> 00:05:22.955
+And you can use the same technique
+inside your application to gather
+
+101
+00:05:22.955 --> 00:05:26.125
+some feedback or evaluation metrics
+about how your app is performing.
+
+102
+00:05:27.427 --> 00:05:28.828
+When you
+have these few different techniques
+
+103
+00:05:28.828 --> 00:05:31.831
+it can be tricky to decide
+which one to use for a given evaluation.
+
+104
+00:05:32.365 --> 00:05:35.635
+One way to think about
+this is how qualitative versus
+
+105
+00:05:35.635 --> 00:05:38.938
+quantifiable or quantitative is the metric
+that you're trying to measure.
+
+106
+00:05:39.706 --> 00:05:42.842
+If you have something like evaluating
+the quality of a summarization
+
+107
+00:05:43.109 --> 00:05:46.746
+or evaluating the clarity of analysis,
+that's a very hard
+
+108
+00:05:46.746 --> 00:05:51.417
+metric to assign, quantitative
+or code-based measurement to.
+
+109
+00:05:51.851 --> 00:05:54.620
+So that's where you might want to rely on
+LLM as a judge
+
+110
+00:05:54.620 --> 00:05:57.690
+or human labels
+to understand that qualitative metric.
+
+111
+00:05:58.191 --> 00:06:01.527
+If you have something that's a little bit
+more flexible or can be defined in code,
+
+112
+00:06:01.527 --> 00:06:04.163
+like whether an output matches
+a certain regex,
+
+113
+00:06:04.163 --> 00:06:07.166
+then a code-based evaluation will work
+in that case.
+
+114
+00:06:07.367 --> 00:06:10.503
+The other way to think about these
+is whether the evaluation needs
+
+115
+00:06:10.503 --> 00:06:15.408
+to be 100% accurate, or if it can afford
+to be less than 100% accurate.
+
+116
+00:06:16.042 --> 00:06:18.578
+If you remember, LLM
+as a judge is never going to be 100%
+
+117
+00:06:18.578 --> 00:06:21.547
+accurate
+or 100% deterministic kind of technique.
+
+118
+00:06:22.014 --> 00:06:25.485
+So if you need 100% accuracy,
+then you'll need to rely on either
+
+119
+00:06:25.485 --> 00:06:27.153
+human labels or code-based evals.
+
+120
+00:06:28.454 --> 00:06:28.888
+What you might
+
+121
+00:06:28.888 --> 00:06:32.825
+notice here is that human labels
+is sort of the best version of evaluation.
+
+122
+00:06:32.825 --> 00:06:35.628
+In this case, it's
+flexible and it's deterministic.
+
+123
+00:06:35.628 --> 00:06:38.765
+However, in practice it can be hard
+to get human labels at scale
+
+124
+00:06:38.898 --> 00:06:40.933
+because it's a very labor
+intensive process to do
+
+125
+00:06:40.933 --> 00:06:42.635
+lots of labeling on your data.
+
+126
+00:06:42.635 --> 00:06:45.638
+And if you rely on end users to provide
+feedback,
+
+127
+00:06:45.772 --> 00:06:49.509
+there is some selection bias there over
+who chooses to supply
+
+128
+00:06:49.509 --> 00:06:51.577
+feedback to your application.
+So it's generally
+
+129
+00:06:51.577 --> 00:06:54.547
+not advisable to use that as a large scale
+evaluation technique.
+
+130
+00:06:55.715 --> 00:06:57.683
+Now that you understand
+that the techniques that you can use
+
+131
+00:06:57.683 --> 00:07:01.888
+to evaluate an agent or really
+an LLM application, now you'll learn
+
+132
+00:07:01.888 --> 00:07:05.158
+about the different pieces of your agent
+that you can apply these techniques to
+
+133
+00:07:05.191 --> 00:07:07.560
+to run these evaluations. This lesson
+
+134
+00:07:07.560 --> 00:07:10.263
+we'll go through evaluating the router
+and the skills.
+
+135
+00:07:10.263 --> 00:07:11.330
+And you'll have a future lesson
+
+136
+00:07:11.330 --> 00:07:14.333
+in this course that goes into evaluating
+the path in detail.
+
+137
+00:07:14.867 --> 00:07:16.335
+Starting off with a router.
+
+138
+00:07:16.335 --> 00:07:19.338
+Routers are typically evaluated
+in two different ways.
+
+139
+00:07:19.639 --> 00:07:23.176
+First, you'll evaluate the function
+calling choice, aka
+
+140
+00:07:23.176 --> 00:07:26.179
+did the router make the right choice
+and choosing a function to call.
+
+141
+00:07:26.746 --> 00:07:30.383
+And if you're using an NLP-based classifier
+as opposed to an LLM with function
+
+142
+00:07:30.383 --> 00:07:33.619
+calling, you can still evaluate
+the function calling choice.
+
+143
+00:07:34.053 --> 00:07:36.055
+And you still use this
+sort of evaluation metric.
+
+144
+00:07:37.089 --> 00:07:38.090
+The second kind of thing that
+
+145
+00:07:38.090 --> 00:07:41.060
+gets evaluated in routers is typically
+the parameter extraction.
+
+146
+00:07:41.327 --> 00:07:44.330
+So once the router chooses
+which function to call,
+
+147
+00:07:44.330 --> 00:07:47.600
+does it extract the right parameters
+from the question to pass those
+
+148
+00:07:47.600 --> 00:07:50.603
+into whatever function
+it's decided to call.
+
+149
+00:07:50.636 --> 00:07:53.906
+One way to evaluate
+a router is by using an LLM as-a-Judge.
+
+150
+00:07:54.440 --> 00:07:57.710
+This is an example of the prompt,
+the template that you would use
+
+151
+00:07:57.710 --> 00:08:01.080
+for your LLM as a judge
+to evaluate a router in this case.
+
+152
+00:08:01.314 --> 00:08:05.084
+So you'll notice at the top
+you have some instructions
+
+153
+00:08:05.084 --> 00:08:08.087
+for the LLM judge
+to say what it's going to be evaluating.
+
+154
+00:08:08.421 --> 00:08:12.024
+You have some places where data will be
+added into the prompt, in this case
+
+155
+00:08:12.024 --> 00:08:15.027
+the user's question,
+and then the tool call that was chosen.
+
+156
+00:08:15.261 --> 00:08:17.797
+And then you have some instructions
+saying the LLM judge
+
+157
+00:08:17.797 --> 00:08:20.800
+should respond with a single word,
+either correct or incorrect.
+
+158
+00:08:21.300 --> 00:08:23.135
+And then you have some more details on
+
+159
+00:08:23.135 --> 00:08:26.138
+what incorrect means
+and what correct means in this case.
+
+160
+00:08:26.572 --> 00:08:29.141
+And finally,
+you have some tool definitions information
+
+161
+00:08:29.141 --> 00:08:32.845
+so that the LLM judge knows
+all of the possible options
+
+162
+00:08:33.145 --> 00:08:35.515
+that your application had
+when choosing which tool to call.
+
+163
+00:08:36.516 --> 00:08:39.719
+Looking at the example here,
+you might have a case where a user asks
+
+164
+00:08:39.719 --> 00:08:42.788
+your agent, can you help me
+check on the status of my order?
+
+165
+00:08:43.089 --> 00:08:45.191
+Number 1234.
+
+166
+00:08:45.191 --> 00:08:47.994
+And the agent says
+"definitely" makes a tool call.
+
+167
+00:08:47.994 --> 00:08:50.997
+In this case, choosing to call an order
+status check method
+
+168
+00:08:51.397 --> 00:08:54.767
+and then extracts that one two, three,
+four and says this is an order number.
+
+169
+00:08:54.800 --> 00:08:58.704
+So it passes it through as an order number
+to that order status check method.
+
+170
+00:08:59.639 --> 00:09:00.573
+And this all looks good.
+
+171
+00:09:00.573 --> 00:09:03.409
+And it gets back a response
+saying the order has been shipped.
+
+172
+00:09:03.409 --> 00:09:06.412
+It goes back to
+the user says your order has been shipped,
+
+173
+00:09:06.546 --> 00:09:09.549
+and the user follows up and says
+"okay, when will arrive?"
+
+174
+00:09:09.749 --> 00:09:12.285
+And the agent decides
+to make another call here,
+
+175
+00:09:12.285 --> 00:09:14.954
+this time using the shipping and status
+check method.
+
+176
+00:09:14.954 --> 00:09:18.024
+That all looks good so far,
+and then it takes that same one,
+
+177
+00:09:18.024 --> 00:09:21.127
+two three, four and this time
+as it has a shipping tracking ID
+
+178
+00:09:22.228 --> 00:09:25.231
+in this case that's an order number
+and not a shipping tracking ID.
+
+179
+00:09:25.298 --> 00:09:28.834
+So here the agent actually failed
+in the parameter extraction task,
+
+180
+00:09:29.135 --> 00:09:32.371
+even though it succeeded in the function
+calling task that it had.
+
+181
+00:09:33.406 --> 00:09:36.809
+Now, when it comes to evaluating skills,
+you can use a few different techniques
+
+182
+00:09:36.809 --> 00:09:40.646
+to evaluate skills either
+standard LLM-based evaluations
+
+183
+00:09:40.646 --> 00:09:43.716
+or LLM as-a-Judge evaluations
+or code-base evals.
+
+184
+00:09:44.417 --> 00:09:48.654
+And one important thing to call out here
+is that skills themselves are really
+
+185
+00:09:48.654 --> 00:09:53.092
+either just other LLM applications
+that have been composed into a skill.
+
+186
+00:09:53.092 --> 00:09:57.430
+The agent can use, or other software
+applications like API calls
+
+187
+00:09:57.430 --> 00:10:00.466
+or application code that have again
+been compressed into a skill.
+
+188
+00:10:01.167 --> 00:10:04.637
+So all the techniques that you can use to
+evaluate skills are really
+
+189
+00:10:04.637 --> 00:10:06.606
+just the same techniques
+that you can use to evaluate
+
+190
+00:10:06.606 --> 00:10:10.076
+either standard software
+applications or LLM applications.
+
+191
+00:10:10.676 --> 00:10:13.879
+So you might use an LLM as-a-Judge
+to evaluate things like relevance,
+
+192
+00:10:14.246 --> 00:10:17.216
+hallucination, question
+answer correctness,
+
+193
+00:10:17.249 --> 00:10:20.252
+generated code
+readability, or summarization.
+
+194
+00:10:20.353 --> 00:10:25.353
+And then you might use code
+based evaluators to evaluate regex matches
+
+195
+00:10:25.391 --> 00:10:29.395
+Json parse ability in your response
+or comparison against ground truth.
+
+196
+00:10:30.630 --> 00:10:33.399
+Looking at your example agent,
+you have three different skills
+
+197
+00:10:33.399 --> 00:10:36.569
+here. You have a database
+lookup skill, a data analysis skill,
+
+198
+00:10:37.003 --> 00:10:39.872
+and a data visualization code gen skill.
+
+199
+00:10:39.872 --> 00:10:43.342
+I invite you to pause the video here
+and think of a few different evaluations
+
+200
+00:10:43.342 --> 00:10:46.379
+that can be used to evaluate
+each of these three different skills,
+
+201
+00:10:46.979 --> 00:10:50.683
+whether the entire skill
+or one single part of the skill. As
+
+202
+00:10:50.683 --> 00:10:53.853
+in the case of this lookup sales
+data tool, you have a step
+
+203
+00:10:53.853 --> 00:10:57.123
+to prepare the database,
+generate SQL, execute SQL.
+
+204
+00:10:57.590 --> 00:11:00.793
+So you might have evaluations
+on the full lookup sales data tool,
+
+205
+00:11:01.160 --> 00:11:03.863
+or on one step of that process.
+
+206
+00:11:03.863 --> 00:11:07.033
+So here are a set of evaluators
+that you could use to evaluate
+
+207
+00:11:07.033 --> 00:11:08.601
+each of those different tools.
+
+208
+00:11:08.601 --> 00:11:12.271
+So for the database lookup tool
+you could use either LLM
+
+209
+00:11:12.271 --> 00:11:16.208
+as-a-Judge or a code-based eval
+to do SQL generation correctness
+
+210
+00:11:16.208 --> 00:11:20.646
+and see if the SQL that's generated
+is correct. For the data analysis tool,
+
+211
+00:11:20.713 --> 00:11:24.583
+you could use an LLM as-a-Judge
+to check for clarity in the analysis,
+
+212
+00:11:24.850 --> 00:11:27.620
+and make sure all of the entities
+that are mentioned in that analysis
+
+213
+00:11:27.620 --> 00:11:28.587
+are correct and match
+
+214
+00:11:28.587 --> 00:11:32.024
+back to entities in the input
+or other sections of their data.
+
+215
+00:11:32.858 --> 00:11:35.194
+And for the data visualization
+code gen tool,
+
+216
+00:11:35.194 --> 00:11:38.764
+you can use a code-based eval to make sure
+the code is runnable.
+
+217
+00:11:39.198 --> 00:11:41.934
+Fairly straightforward eval
+that you can run there.
+
+218
+00:11:41.934 --> 00:11:45.004
+Now, it's important to mention
+that you could have come up with different
+
+219
+00:11:45.004 --> 00:11:46.272
+evals to use here.
+
+220
+00:11:46.272 --> 00:11:49.542
+And again, eval is sometimes
+more of an art than a science.
+
+221
+00:11:49.942 --> 00:11:53.079
+And so if you came up with different ideas
+don't be discouraged.
+
+222
+00:11:53.112 --> 00:11:55.881
+Those could be just as correct
+or in some cases more correct here too.
+
+223
+00:11:56.882 --> 00:11:59.518
+The last thing
+to mention is that you have SQL generation
+
+224
+00:11:59.518 --> 00:12:03.222
+correctness being run with either LLM
+as-a-Judge or code-based evals.
+
+225
+00:12:03.522 --> 00:12:05.891
+You'll see what both
+those look like in future notebooks.
+
+226
+00:12:05.891 --> 00:12:09.462
+You can either use an LLM
+as-a-Judge to judge whether this equals
+
+227
+00:12:09.528 --> 00:12:13.165
+correctly generated, or you can use a code-based
+eval to compare
+
+228
+00:12:13.399 --> 00:12:16.168
+the SQL that's generated
+against some ground truth data,
+
+229
+00:12:16.168 --> 00:12:19.171
+or the result of that SQL
+against some ground truth data.
+
+230
+00:12:20.072 --> 00:12:23.709
+In this lesson, you've learned three
+different techniques to run Agent evals:
+
+231
+00:12:23.776 --> 00:12:26.779
+LLM as a judge, code-based
+evaluations, and human annotations.
+
+232
+00:12:27.613 --> 00:12:28.414
+You've also learned
+
+233
+00:12:28.414 --> 00:12:31.417
+common types of evaluations
+to run using each of these techniques.
+
+234
+00:12:31.851 --> 00:12:34.754
+And finally, which pieces of your agent
+should apply these techniques
+
+235
+00:12:34.754 --> 00:12:35.621
+to you to evaluate.
+
+236
+00:12:36.722 --> 00:12:36.956
+In the
+
+237
+00:12:36.956 --> 00:12:40.760
+next notebook, you're going to apply an LLM
+as-a-Judge and code-based eval
+
+238
+00:12:40.926 --> 00:12:43.796
+to understand how these work in detail
+with your example agent.
+

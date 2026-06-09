@@ -6,8 +6,8 @@ LangChain Lesson 4: Q&A over Documents
 import os
 from dotenv import load_dotenv, find_dotenv
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain.document_loaders import CSVLoader
-from langchain.vectorstores import DocArrayInMemorySearch
+from langchain_community.document_loaders import CSVLoader
+from langchain_community.vectorstores import DocArrayInMemorySearch
 from langchain.chains import RetrievalQA
 
 load_dotenv(find_dotenv())

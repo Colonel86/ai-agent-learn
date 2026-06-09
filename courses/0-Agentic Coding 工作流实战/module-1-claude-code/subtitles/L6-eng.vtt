@@ -1,0 +1,1055 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.469 --> 00:00:05.438
+In this lesson, you'll learn how to use Claude
+
+2
+00:00:05.438 --> 00:00:08.408
+Code outside of the terminal with a GitHub integration.
+
+3
+00:00:08.742 --> 00:00:11.211
+You'll see how to set up Claude Code
+
+4
+00:00:11.211 --> 00:00:13.947
+to review pull requests and fix issues in GitHub.
+
+5
+00:00:14.414 --> 00:00:17.217
+You'll then learn how to execute code before
+
+6
+00:00:17.217 --> 00:00:21.287
+and after using tools through Claude Code hooks. Let's dive in.
+
+7
+00:00:21.788 --> 00:00:24.958
+We left off in the last section merging our wortrees together,
+
+8
+00:00:25.291 --> 00:00:28.194
+but we forgot to ask Claude to remove those worktrees.
+
+9
+00:00:28.428 --> 00:00:30.597
+So we're going to hop back into Claude. So
+
+10
+00:00:30.597 --> 00:00:32.766
+I'm going to go and pass in the resume flag
+
+11
+00:00:32.766 --> 00:00:35.101
+to go back to a previous
+
+12
+00:00:35.101 --> 00:00:37.871
+conversation that I had with my worktrees.
+
+13
+00:00:38.405 --> 00:00:40.440
+In this particular conversation, we can now
+
+14
+00:00:40.440 --> 00:00:42.475
+go back to where we were before
+
+15
+00:00:42.475 --> 00:00:44.711
+and finish up with removing our worktrees.
+
+16
+00:00:45.078 --> 00:00:47.781
+So let's ask Claude, remove the .trees folder
+
+17
+00:00:47.781 --> 00:00:50.850
+and the underlying worktrees, and once you're done,
+
+18
+00:00:50.850 --> 00:00:52.685
+push this code to GitHub. So
+
+19
+00:00:52.685 --> 00:00:54.788
+let's go ahead and give Claude Code
+
+20
+00:00:54.788 --> 00:00:56.890
+a second to run the necessary git commands
+
+21
+00:00:56.890 --> 00:00:59.759
+to remove that folder and then pushed our merge code
+
+22
+00:00:59.826 --> 00:01:03.229
+to GitHub. We'll go ahead and give Claude Code access to
+
+23
+00:01:03.229 --> 00:01:05.632
+see the underlying worktrees so that we not only
+
+24
+00:01:05.999 --> 00:01:08.134
+remove the worktrees,
+
+25
+00:01:08.234 --> 00:01:10.537
+but also delete the corresponding branches.
+
+26
+00:01:11.237 --> 00:01:13.706
+We'll go ahead and remove these particular trees.
+
+27
+00:01:14.074 --> 00:01:16.976
+now remove the directory and then remove the underlying branches.
+
+28
+00:01:17.444 --> 00:01:18.945
+Now that we've done that, let's go ahead
+
+29
+00:01:19.045 --> 00:01:21.448
+make sure that worked as expected, which is good.
+
+30
+00:01:21.548 --> 00:01:23.083
+we don't have that folder. And
+
+31
+00:01:23.083 --> 00:01:24.918
+now, let's push this code to GitHub.
+
+32
+00:01:25.285 --> 00:01:26.586
+We'll confirm that we want to
+
+33
+00:01:26.586 --> 00:01:28.088
+run the git push origin main command
+
+34
+00:01:28.621 --> 00:01:30.690
+and it looks like our code is pushed to GitHub.
+
+35
+00:01:31.157 --> 00:01:34.227
+Now that we've committed and pushed our code to GitHub,
+
+36
+00:01:34.561 --> 00:01:38.465
+let's start installing the GitHub integration that comes with Claude Code.
+
+37
+00:01:38.865 --> 00:01:41.835
+I'll do that using the /install-GitHub-app command.
+
+38
+00:01:42.135 --> 00:01:44.938
+Here you might see that you need to
+
+39
+00:01:44.938 --> 00:01:47.740
+include additional authentication using the command line interface.
+
+40
+00:01:48.208 --> 00:01:51.544
+So if you see those setup instructions, make sure to follow them.
+
+41
+00:01:51.744 --> 00:01:54.013
+We'll now be able to install the GitHub
+
+42
+00:01:54.013 --> 00:01:56.549
+app for the current repository that we're working in.
+
+43
+00:01:56.783 --> 00:01:58.051
+So let's go ahead and do
+
+44
+00:01:58.051 --> 00:01:59.586
+that. This will open up the browser.
+
+45
+00:01:59.786 --> 00:02:01.421
+And if I have not yet configured
+
+46
+00:02:01.421 --> 00:02:03.056
+this, I'll have the option to install.
+
+47
+00:02:04.090 --> 00:02:07.594
+What this integration allows us to do is use Claude Code
+
+48
+00:02:07.594 --> 00:02:09.462
+in pull requests and issues
+
+49
+00:02:09.796 --> 00:02:12.165
+to respond to feedback, fix errors,
+
+50
+00:02:12.432 --> 00:02:14.534
+modify code, and much more.
+
+51
+00:02:15.235 --> 00:02:16.870
+In order for this functionality to exist,
+
+52
+00:02:17.203 --> 00:02:19.939
+it's built on top of the software development kit
+
+53
+00:02:19.939 --> 00:02:23.543
+that comes with Claude Code. This SDK allows you
+
+54
+00:02:23.676 --> 00:02:25.612
+to use Claude Code outside
+
+55
+00:02:25.612 --> 00:02:28.748
+of the terminal interface. So let's head back to the terminal.
+
+56
+00:02:29.482 --> 00:02:32.118
+specify the workflows we want to install.
+
+57
+00:02:32.118 --> 00:02:35.388
+These workflows allow for tagging Claude in issues
+
+58
+00:02:35.388 --> 00:02:40.388
+and using Claude to automatically review code in our pull requests.
+
+59
+00:02:40.660 --> 00:02:43.263
+Let's install both. We'll create a long-lived token.
+
+60
+00:02:44.898 --> 00:02:47.767
+and here we'll have to authorize and authenticate with Claude.
+
+61
+00:02:48.234 --> 00:02:49.769
+Once that's done, we can head back
+
+62
+00:02:49.769 --> 00:02:52.305
+and we'll see that it's creating the repository information,
+
+63
+00:02:53.106 --> 00:02:55.208
+setting up any additional information I need,
+
+64
+00:02:55.208 --> 00:02:57.277
+and sending me right back to GitHub
+
+65
+00:02:57.277 --> 00:02:59.379
+to open a pull request.
+
+66
+00:02:59.379 --> 00:03:00.980
+with the changes that had been made.
+
+67
+00:03:01.181 --> 00:03:03.049
+We can see here automatically,
+
+68
+00:03:03.950 --> 00:03:06.219
+this pull request allows for GitHub Actions
+
+69
+00:03:06.653 --> 00:03:09.756
+to enable bug fixes, writing tests and code reviews.
+
+70
+00:03:10.190 --> 00:03:11.758
+We can change this if we like,
+
+71
+00:03:11.958 --> 00:03:14.160
+or we can go ahead and create a pull request
+
+72
+00:03:14.928 --> 00:03:18.364
+with the default information. In this pull request, we can see
+
+73
+00:03:18.865 --> 00:03:20.667
+that not only have we created
+
+74
+00:03:20.667 --> 00:03:22.735
+a YAML file for Claude to operate,
+
+75
+00:03:23.002 --> 00:03:24.637
+we also have one for code reviews.
+
+76
+00:03:24.938 --> 00:03:26.739
+Here we can see out of the
+
+77
+00:03:26.739 --> 00:03:29.275
+box, we have some pretty sane defaults. We can filter
+
+78
+00:03:29.275 --> 00:03:32.078
+by authors, we can specify what this is running on.
+
+79
+00:03:32.278 --> 00:03:33.680
+But out of the box, we get
+
+80
+00:03:33.680 --> 00:03:35.081
+quite a bit of really nice functionality.
+
+81
+00:03:35.381 --> 00:03:36.983
+If you'd like to modify the prompt
+
+82
+00:03:36.983 --> 00:03:39.986
+that you have in your code review, you can do that here.
+
+83
+00:03:40.186 --> 00:03:42.789
+And since this is a file that is tracked by git,
+
+84
+00:03:42.956 --> 00:03:45.058
+you can constantly edit this if you need.
+
+85
+00:03:45.458 --> 00:03:47.360
+I'm going to go ahead now and merge this in,
+
+86
+00:03:47.460 --> 00:03:49.762
+so we can start using Claude Code in GitHub.
+
+87
+00:03:50.163 --> 00:03:52.198
+We can go ahead and see right out of
+
+88
+00:03:52.198 --> 00:03:54.467
+the box that a Claude GitHub action has actually started.
+
+89
+00:03:54.867 --> 00:03:56.669
+This is what we're going to see out
+
+90
+00:03:56.669 --> 00:03:58.471
+of the box in our future pull requests.
+
+91
+00:03:58.972 --> 00:04:01.674
+It's going to read and analyze files, check code quality,
+
+92
+00:04:01.975 --> 00:04:05.078
+identify security considerations, and out of the box,
+
+93
+00:04:05.078 --> 00:04:07.080
+we now have a new teammate, Claude,
+
+94
+00:04:07.080 --> 00:04:08.548
+to check the work that we
+
+95
+00:04:08.548 --> 00:04:10.283
+and our other team members are doing.
+
+96
+00:04:10.483 --> 00:04:11.818
+This sometimes takes a little bit of
+
+97
+00:04:11.818 --> 00:04:13.386
+time to start, but once this has finished,
+
+98
+00:04:13.386 --> 00:04:15.355
+we'll get some detailed assessments from Claude,
+
+99
+00:04:15.355 --> 00:04:17.223
+and we'll be able to merge in the pull request
+
+100
+00:04:17.223 --> 00:04:19.259
+when we're ready. So it looks like the review is done,
+
+101
+00:04:19.459 --> 00:04:23.062
+and depending on the prompt that we give it, we can specify
+
+102
+00:04:23.263 --> 00:04:25.365
+how much depth and information we want here.
+
+103
+00:04:25.365 --> 00:04:27.066
+We see some things that are working well,
+
+104
+00:04:27.267 --> 00:04:29.068
+maybe some considerations that we
+
+105
+00:04:29.235 --> 00:04:31.471
+you may need. And if this looks good to us,
+
+106
+00:04:31.471 --> 00:04:33.439
+we can merge in that pull request. Now
+
+107
+00:04:33.439 --> 00:04:35.441
+we're going to see out of the box,
+
+108
+00:04:35.441 --> 00:04:37.844
+in future pull requests, Claude will help review our code.
+
+109
+00:04:37.944 --> 00:04:41.014
+This is really helpful when humans might miss certain things
+
+110
+00:04:41.414 --> 00:04:43.583
+and you need an extra step to check
+
+111
+00:04:43.583 --> 00:04:45.785
+that what you have is working as expected.
+
+112
+00:04:45.985 --> 00:04:48.254
+Let's imagine there's a situation where an issue comes up.
+
+113
+00:04:48.421 --> 00:04:50.523
+Someone on our team decides to add a new issue.
+
+114
+00:04:50.523 --> 00:04:52.225
+We could do this in GitHub, we
+
+115
+00:04:52.225 --> 00:04:53.893
+could even do this in Claude Code.
+
+116
+00:04:54.193 --> 00:04:56.663
+As you might have noticed, as we kept building on
+
+117
+00:04:56.663 --> 00:04:59.132
+top of this application, we started to see a new
+
+118
+00:04:59.198 --> 00:05:01.100
+new header that was added. This new header
+
+119
+00:05:01.501 --> 00:05:03.536
+might look kind of nice, but maybe we
+
+120
+00:05:03.536 --> 00:05:05.571
+want to revert to what we had previously.
+
+121
+00:05:05.772 --> 00:05:07.173
+So let's add an issue and
+
+122
+00:05:07.173 --> 00:05:08.841
+see if Claude can help us out.
+
+123
+00:05:08.941 --> 00:05:10.877
+You can imagine we have an issue here.
+
+124
+00:05:10.977 --> 00:05:14.614
+The application has a new header that was added,
+
+125
+00:05:14.614 --> 00:05:16.182
+Let's go back to the old one.
+
+126
+00:05:16.349 --> 00:05:19.052
+Make sure to keep the toggle theme but just
+
+127
+00:05:19.052 --> 00:05:23.289
+make the header look like what it was before. We'll also specify,
+
+128
+00:05:23.289 --> 00:05:27.060
+make sure to remove the Course Materials Assistant header.
+
+129
+00:05:27.293 --> 00:05:28.995
+Remove the subheader.
+
+130
+00:05:28.995 --> 00:05:31.631
+around ask questions, and then remove the
+
+131
+00:05:32.732 --> 00:05:36.102
+horizontal row below the subheader.
+
+132
+00:05:39.505 --> 00:05:41.007
+Now that we created this issue,
+
+133
+00:05:41.007 --> 00:05:42.775
+we could assign someone to tackle it.
+
+134
+00:05:42.975 --> 00:05:44.911
+But why don't we just ask Claude to help us out?
+
+135
+00:05:44.911 --> 00:05:47.847
+Claude, can you fix this for me? Once we tag in Claude,
+
+136
+00:05:47.980 --> 00:05:49.982
+we're going to start to give Claude a little bit of time
+
+137
+00:05:49.982 --> 00:05:51.617
+to fix the issue at hand.
+
+138
+00:05:51.818 --> 00:05:53.686
+When Claude has fixed that issue,
+
+139
+00:05:53.786 --> 00:05:55.722
+it should be able to generate a pull request
+
+140
+00:05:55.722 --> 00:05:57.123
+to fix that particular one. So
+
+141
+00:05:57.123 --> 00:05:58.758
+let's give Claude a little bit of
+
+142
+00:05:58.758 --> 00:06:00.626
+time to find that action. Here we're
+
+143
+00:06:00.626 --> 00:06:02.462
+going to see Claude Code is working,
+
+144
+00:06:02.462 --> 00:06:04.630
+and if we want to see the underlying job that's run,
+
+145
+00:06:04.630 --> 00:06:06.032
+we can go ahead and do that. So
+
+146
+00:06:06.032 --> 00:06:07.467
+let's give Claude a little bit of time
+
+147
+00:06:07.467 --> 00:06:09.135
+and see what it can come up with.
+
+148
+00:06:09.135 --> 00:06:11.537
+What you're seeing is going to look very familiar
+
+149
+00:06:11.537 --> 00:06:13.773
+to what we saw in the command line.
+
+150
+00:06:13.773 --> 00:06:16.342
+Analyze the structure, remove the header.
+
+151
+00:06:16.342 --> 00:06:20.279
+And here, I can even choose what to prioritize if I'd like.
+
+152
+00:06:20.279 --> 00:06:22.315
+But what you're seeing here is the same
+
+153
+00:06:22.315 --> 00:06:24.050
+thing we saw just outside of the
+
+154
+00:06:24.050 --> 00:06:25.785
+terminal. Not only can we use Claude
+
+155
+00:06:25.785 --> 00:06:28.187
+to tackle issues and pull requests,
+
+156
+00:06:28.187 --> 00:06:30.890
+we can also use Claude to review code as we saw before.
+
+157
+00:06:30.890 --> 00:06:33.559
+As we start to see its plan, we'll notice
+
+158
+00:06:33.559 --> 00:06:35.728
+what the changes are that are being
+
+159
+00:06:35.728 --> 00:06:38.197
+made, where in the codebase it's proposing things,
+
+160
+00:06:38.197 --> 00:06:40.800
+and as we see the pull request, we can start to
+
+161
+00:06:40.800 --> 00:06:43.403
+see some of the thinking and logic behind what's being done.
+
+162
+00:06:43.403 --> 00:06:44.971
+Seems like this one isn't too tough,
+
+163
+00:06:44.971 --> 00:06:46.873
+so it's going to follow these steps,
+
+164
+00:06:46.873 --> 00:06:48.775
+test the changes, commit and push those.
+
+165
+00:06:48.775 --> 00:06:50.376
+It's now made the commit necessary.
+
+166
+00:06:50.376 --> 00:06:52.678
+We can see the underlying description here.
+
+167
+00:06:53.446 --> 00:06:55.615
+If we'd like, we can create this pull request,
+
+168
+00:06:55.615 --> 00:06:57.817
+or we can just have Claude do all that work for us.
+
+169
+00:06:58.317 --> 00:06:59.185
+When we create the pull request.
+
+170
+00:06:59.619 --> 00:07:01.988
+We see exactly what was generated in the commit.
+
+171
+00:07:02.355 --> 00:07:04.724
+And now, let's go take a look and see what Claude did.
+
+172
+00:07:05.191 --> 00:07:07.693
+We can take a look at the underlying files that we changed.
+
+173
+00:07:08.227 --> 00:07:10.096
+There wasn't too much here. We can merge this in.
+
+174
+00:07:10.363 --> 00:07:12.598
+As we saw before, Claude's also going to take
+
+175
+00:07:12.598 --> 00:07:14.834
+some time and review the code that Claude wrote.
+
+176
+00:07:15.168 --> 00:07:16.536
+And this can actually be quite helpful because
+
+177
+00:07:16.536 --> 00:07:17.937
+as much as we want to trust Claude,
+
+178
+00:07:18.137 --> 00:07:20.540
+it's nice to have another Claude double checking its work.
+
+179
+00:07:21.107 --> 00:07:22.208
+So it looks like Claude Code
+
+180
+00:07:22.208 --> 00:07:23.476
+has approved the task I have here.
+
+181
+00:07:23.743 --> 00:07:26.412
+Let's merge this in. And then we'll head back to the terminal
+
+182
+00:07:26.979 --> 00:07:29.282
+and make sure to pull down the changes. is that we have.
+
+183
+00:07:29.282 --> 00:07:32.251
+So I'll head over to VS Code, pull down the changes.
+
+184
+00:07:34.220 --> 00:07:36.355
+And let's see if our front end looks any better.
+
+185
+00:07:37.657 --> 00:07:39.091
+And there we have it. The header
+
+186
+00:07:39.091 --> 00:07:40.760
+is taken out, the horizontal rows taken out.
+
+187
+00:07:40.760 --> 00:07:42.728
+We might want to bring back that
+
+188
+00:07:42.728 --> 00:07:44.497
+horizontal row or move this to another place.
+
+189
+00:07:44.497 --> 00:07:46.265
+But now we know how to do it,
+
+190
+00:07:46.566 --> 00:07:49.368
+not only in the terminal, but also in GitHub.
+
+191
+00:07:49.368 --> 00:07:51.471
+One more piece of functionality that I want
+
+192
+00:07:51.471 --> 00:07:53.539
+to show is something that was recently released,
+
+193
+00:07:53.673 --> 00:07:55.441
+which is the ability to add
+
+194
+00:07:55.441 --> 00:07:57.543
+what's called a hook to Claude Code.
+
+195
+00:07:57.543 --> 00:07:59.512
+If you're familiar here with this idea of
+
+196
+00:07:59.512 --> 00:08:01.481
+hooks. This is going to feel very similar.
+
+197
+00:08:01.481 --> 00:08:05.184
+The idea is that as we have different operations in Claude Code,
+
+198
+00:08:05.184 --> 00:08:09.088
+like executing a tool or something happening after a tool,
+
+199
+00:08:09.322 --> 00:08:12.959
+we can inject specific code to run at any
+
+200
+00:08:12.959 --> 00:08:16.596
+point in the life cycle of Claude Code's operation.
+
+201
+00:08:16.596 --> 00:08:17.697
+Let me show you what I mean
+
+202
+00:08:17.697 --> 00:08:18.998
+by that. Back in VS code, I'm going
+
+203
+00:08:18.998 --> 00:08:21.000
+to hop in back to Claude again. And
+
+204
+00:08:21.000 --> 00:08:23.035
+while we can make these changes manually, I
+
+205
+00:08:23.035 --> 00:08:25.304
+want to show you the editor that we have.
+
+206
+00:08:25.605 --> 00:08:28.174
+So I'm going to type in slash hooks.
+
+207
+00:08:28.241 --> 00:08:30.376
+manage configurations for tool events.
+
+208
+00:08:30.510 --> 00:08:32.745
+What you're seeing might look a little bit scary,
+
+209
+00:08:33.646 --> 00:08:35.281
+but it's our obligation to let you know.
+
+210
+00:08:35.681 --> 00:08:38.017
+If you are running arbitrary shell commands,
+
+211
+00:08:38.684 --> 00:08:40.319
+you have to be very careful about what you're doing.
+
+212
+00:08:40.686 --> 00:08:43.122
+There are quite a few different events that we can run hooks.
+
+213
+00:08:43.589 --> 00:08:45.491
+Before a tool is executed, we can
+
+214
+00:08:45.491 --> 00:08:47.426
+even stop that tool from being executed.
+
+215
+00:08:48.060 --> 00:08:50.796
+We can do something after, when a notification is sent,
+
+216
+00:08:51.097 --> 00:08:53.666
+when the user submits a prompt, when something stops,
+
+217
+00:08:53.833 --> 00:08:56.002
+or even before a subagent concludes its
+
+218
+00:08:56.002 --> 00:08:58.137
+response. So we have the ability to
+
+219
+00:08:58.137 --> 00:09:01.974
+programmatically to tap in to any of these events.
+
+220
+00:09:02.675 --> 00:09:06.045
+I want to show a simple example with a PostToolUse hook.
+
+221
+00:09:06.579 --> 00:09:08.881
+Start by adding a matcher. In this matcher,
+
+222
+00:09:08.881 --> 00:09:11.150
+I can specify the tools that I want
+
+223
+00:09:11.884 --> 00:09:13.786
+to be matched for this hook to run.
+
+224
+00:09:14.086 --> 00:09:15.988
+I'm going to add a very, very
+
+225
+00:09:15.988 --> 00:09:18.157
+simple example here. Anytime there is a Read
+
+226
+00:09:18.658 --> 00:09:20.993
+or anytime there is a Grep,
+
+227
+00:09:21.494 --> 00:09:23.396
+I'm going to run a simple terminal command.
+
+228
+00:09:23.996 --> 00:09:25.431
+The new hook or command I'm
+
+229
+00:09:25.431 --> 00:09:27.099
+going to run is the say command.
+
+230
+00:09:27.433 --> 00:09:29.535
+The say command, runs the computer's audio
+
+231
+00:09:29.535 --> 00:09:32.939
+and a path for what text you'd like it to say.
+
+232
+00:09:33.072 --> 00:09:36.075
+So if I've done this correctly, after we have read something
+
+233
+00:09:36.075 --> 00:09:38.210
+or use the grep tool to find something
+
+234
+00:09:38.210 --> 00:09:40.613
+in a file, our machine should say, all done.
+
+235
+00:09:41.614 --> 00:09:43.616
+Let's add this again in our project settings.
+
+236
+00:09:43.816 --> 00:09:48.816
+We mentioned earlier the settings.local.json file
+where we can specify permissions.
+
+237
+00:09:49.221 --> 00:09:51.057
+This is also where your hooks live.
+
+238
+00:09:51.223 --> 00:09:52.858
+Inside of our .claude,
+
+239
+00:09:53.025 --> 00:09:55.995
+we can see in our settings.local.json,
+
+240
+00:09:56.362 --> 00:09:58.164
+not only do we have our permissions,
+
+241
+00:09:58.264 --> 00:10:00.099
+but we now have a hook that we've defined.
+
+242
+00:10:00.099 --> 00:10:02.835
+PostToolUse is the name of the hook,
+
+243
+00:10:02.835 --> 00:10:06.572
+the matcher, which if you take out will apply to anything.
+
+244
+00:10:06.572 --> 00:10:09.175
+But here, reading or grep,
+
+245
+00:10:09.175 --> 00:10:11.677
+go run the command say 'All done!' when we're done.
+
+246
+00:10:11.677 --> 00:10:14.213
+Let's try this out. I'm going to quit out of Claude Code.
+
+247
+00:10:14.213 --> 00:10:16.182
+I'm going to open it up again.
+
+248
+00:10:16.182 --> 00:10:19.151
+read the contents of the run.sh file.
+
+249
+00:10:19.151 --> 00:10:22.355
+This should use the read tool as expected. All done.
+
+250
+00:10:22.355 --> 00:10:25.358
+And once it's done, it notifies us and tells us all done.
+
+251
+00:10:25.358 --> 00:10:28.027
+Well, this is kind of a fun little example, you can
+
+252
+00:10:28.027 --> 00:10:31.564
+imagine executing code like running tests or running linters
+
+253
+00:10:31.564 --> 00:10:33.299
+or potentially stopping tools from being
+
+254
+00:10:33.299 --> 00:10:35.334
+used if that's not what we want
+
+255
+00:10:35.334 --> 00:10:38.037
+or even having Claude review itself when certain things happen.
+
+256
+00:10:38.037 --> 00:10:39.605
+There's a lot you can do with
+
+257
+00:10:39.605 --> 00:10:41.407
+hooks and there's so much more that's coming.
+
+258
+00:10:41.407 --> 00:10:42.241
+So make sure to look at the
+
+259
+00:10:42.241 --> 00:10:44.777
+documentation to see everything you can do.
+
+260
+00:10:44.777 --> 00:10:47.146
+And you can always use Claude Code to
+
+261
+00:10:47.146 --> 00:10:49.515
+write hooks for you and modify them accordingly.
+
+262
+00:10:49.515 --> 00:10:52.952
+In the next section, we'll explore using Claude Code with Jupyter notebooks
+
+263
+00:10:52.952 --> 00:10:57.390
+to create visualizations, refactor code, and operate in a slightly different environment.

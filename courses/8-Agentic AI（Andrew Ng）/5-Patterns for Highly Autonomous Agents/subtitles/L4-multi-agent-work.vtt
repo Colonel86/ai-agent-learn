@@ -1,0 +1,519 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.275 --> 00:00:04.960
+We've talked a lot about how to build a single agent to complete tasks for you.
+
+2
+00:00:04.960 --> 00:00:09.960
+In a multi-agent or multi-agentic workflow, we instead have a collection of multiple agents
+
+3
+00:00:09.960 --> 00:00:12.520
+collaborate to do things for you.
+
+4
+00:00:12.520 --> 00:00:16.959
+When some people hear for the first time about multi-agent systems, they wonder, why do I
+
+5
+00:00:16.959 --> 00:00:18.159
+need multiple agents?
+
+6
+00:00:18.159 --> 00:00:22.819
+It's just the same LLM that I'm prompting over and over, or just one computer.
+
+7
+00:00:22.819 --> 00:00:25.200
+Why do I need multiple agents?
+
+8
+00:00:25.200 --> 00:00:31.399
+I find that one useful analogy is, even though I may do things on a single computer, we do
+
+9
+00:00:31.399 --> 00:00:37.439
+decompose work in a single computer into maybe multiple processes or multiple threads.
+
+10
+00:00:37.439 --> 00:00:42.799
+And as a developer, thinking, even though it's one CPU on a computer, say, thinking
+
+11
+00:00:42.799 --> 00:00:47.759
+about how to take work and decompose it into multiple processes and multi-computer programs
+
+12
+00:00:47.759 --> 00:00:52.919
+to run, that makes it easier for me as a developer to write code.
+
+13
+00:00:52.919 --> 00:00:59.479
+And in a similar way too, if you have a complex task to carry out, sometimes, instead of thinking
+
+14
+00:00:59.479 --> 00:01:04.319
+about how to hire one person to do it for you, you might think about hiring a team of
+
+15
+00:01:04.319 --> 00:01:08.559
+a few people to do different pieces of the task for you.
+
+16
+00:01:08.559 --> 00:01:12.959
+And so in practice, I found that for many developers of agentic systems, having this
+
+17
+00:01:12.959 --> 00:01:17.839
+mental framework of not asking, what's the one person I might hire to do something, but
+
+18
+00:01:17.839 --> 00:01:22.199
+instead, would it make sense to hire people with three or four different roles to do this
+
+19
+00:01:22.199 --> 00:01:28.360
+overall task for me, that helps give another way to take a complex thing and decompose
+
+20
+00:01:28.360 --> 00:01:33.199
+it into sub-tasks and to build for those individual sub-tasks one at a time.
+
+21
+00:01:33.199 --> 00:01:36.000
+Let's take a look at some examples of how this works.
+
+22
+00:01:36.000 --> 00:01:40.800
+Take the task of creating marketing assets, say you want to market sunglasses.
+
+23
+00:01:40.800 --> 00:01:43.519
+Can you come up with a marketing brochure for that?
+
+24
+00:01:43.519 --> 00:01:48.440
+You might need a researcher on your team to look at trends on sunglasses and what competitors
+
+25
+00:01:48.440 --> 00:01:49.440
+are offering.
+
+26
+00:01:49.680 --> 00:01:54.400
+You might also have a graphic designer on your team to render charts or nice-looking
+
+27
+00:01:54.400 --> 00:01:56.000
+graphics of your sunglasses.
+
+28
+00:01:56.000 --> 00:02:00.480
+And then also a writer to take the research, take the graphic assets and put it all together
+
+29
+00:02:00.480 --> 00:02:02.319
+into a nice-looking brochure.
+
+30
+00:02:02.319 --> 00:02:06.959
+Or to write a research article, you might want a researcher to do online research, a
+
+31
+00:02:06.959 --> 00:02:10.880
+statistician to calculate statistics, a lead writer, and then an editor to come up with
+
+32
+00:02:10.880 --> 00:02:11.960
+a polished report.
+
+33
+00:02:11.960 --> 00:02:16.880
+Or to prepare a legal case, real law firms will often have associates, paralegals, maybe
+
+34
+00:02:16.880 --> 00:02:18.119
+an investigator.
+
+35
+00:02:18.119 --> 00:02:24.440
+And we naturally, because of the way human teams do work, can think of different ways
+
+36
+00:02:24.440 --> 00:02:31.559
+that complex tasks can be broken down into different individuals with different roles.
+
+37
+00:02:31.559 --> 00:02:38.000
+So these are examples of when a complex task were already naturally decomposed into sub-tasks
+
+38
+00:02:38.000 --> 00:02:41.600
+that different people with different skills can carry out.
+
+39
+00:02:41.600 --> 00:02:44.600
+Take the example of creating marketing assets.
+
+40
+00:02:44.600 --> 00:02:49.559
+Look into detail into what a researcher, graphic designer, and writer might do.
+
+41
+00:02:49.559 --> 00:02:55.720
+A researcher might have the task of analyzing market trends and researching competitors.
+
+42
+00:02:55.720 --> 00:03:01.679
+And when designing the research agents, one question to keep in mind is what are the tools
+
+43
+00:03:01.679 --> 00:03:06.600
+that the researcher may need in order to come up with a research report on market trends
+
+44
+00:03:06.600 --> 00:03:07.880
+and what competitors are doing.
+
+45
+00:03:07.880 --> 00:03:14.000
+So one natural tool that an agentic researcher might need to use would be web search.
+
+46
+00:03:14.000 --> 00:03:18.119
+Because as a human researcher, asked to do these tasks might need to search online in
+
+47
+00:03:18.119 --> 00:03:20.880
+order to come up with their report.
+
+48
+00:03:20.880 --> 00:03:25.639
+Or for a graphic designer agent, they might be tasked with creating visualizations and
+
+49
+00:03:25.639 --> 00:03:26.639
+artwork.
+
+50
+00:03:26.639 --> 00:03:31.800
+And so what are the tools that an agentic software graphic designer might need?
+
+51
+00:03:31.800 --> 00:03:36.000
+Well, they may need image generation and manipulation APIs.
+
+52
+00:03:36.000 --> 00:03:41.520
+Or maybe, similar to what you saw with the coffee machine example, maybe it needs code
+
+53
+00:03:41.520 --> 00:03:43.839
+execution to generate charts.
+
+54
+00:03:44.679 --> 00:03:49.039
+And lastly, the writer has transformed the research into report text and marketing copy.
+
+55
+00:03:49.039 --> 00:03:54.240
+And in this case, they don't need any tools other than what an LLM can already do to generate
+
+56
+00:03:54.240 --> 00:03:55.240
+text.
+
+57
+00:03:55.240 --> 00:04:00.880
+In this and the next video, I'm going to use these purple boxes to denote an agent.
+
+58
+00:04:00.880 --> 00:04:06.080
+And the way you build individual agents is by prompting an LLM to play the role of a
+
+59
+00:04:06.080 --> 00:04:11.360
+researcher or a graphic designer or a writer, depending on which agent it is part of.
+
+60
+00:04:11.360 --> 00:04:15.960
+So for example, for the research agents, you might prompt it to say, you are a research
+
+61
+00:04:15.960 --> 00:04:22.000
+agent, expert at analyzing market trends and competitors, carry out online research to
+
+62
+00:04:22.000 --> 00:04:26.160
+analyze market trends for the sunglasses product and give a summary as well of what competitors
+
+63
+00:04:26.160 --> 00:04:27.160
+are doing.
+
+64
+00:04:27.160 --> 00:04:30.480
+So that would allow you to build a researcher agent.
+
+65
+00:04:30.480 --> 00:04:35.279
+And similarly, by prompting an LLM to act as a graphic designer with the appropriate
+
+66
+00:04:35.279 --> 00:04:41.239
+tools and to act as a writer, that's how you can build a graphic designer as well as
+
+67
+00:04:41.239 --> 00:04:43.239
+a writer agent.
+
+68
+00:04:43.239 --> 00:04:49.279
+Having built these three agents, one way to have them work together to generate your final
+
+69
+00:04:49.279 --> 00:04:56.179
+reports would be to use a simple linear audit workflow or a linear plan in this case.
+
+70
+00:04:56.179 --> 00:05:00.880
+So if you want to create a summer marketing campaign for sunglasses, you might give that
+
+71
+00:05:00.880 --> 00:05:02.760
+prompt to the research agents.
+
+72
+00:05:02.760 --> 00:05:06.920
+The research agent then writes a report that says, here are the current sunglasses trends
+
+73
+00:05:06.920 --> 00:05:08.399
+and competitive offerings.
+
+74
+00:05:08.399 --> 00:05:13.320
+This research report can then be fed to the graphic designer that looks at the data the
+
+75
+00:05:13.320 --> 00:05:17.519
+research has found and creates a few data visualizations and artwork options.
+
+76
+00:05:17.519 --> 00:05:23.440
+All these assets can then be passed to the writer that then takes the research and the
+
+77
+00:05:23.440 --> 00:05:27.440
+graphic output and writes the final marketing brochure.
+
+78
+00:05:27.440 --> 00:05:32.940
+The advantage of building a multi-agent workflow in this case is when designing a researcher
+
+79
+00:05:32.940 --> 00:05:36.920
+or graphic designer or writer, you can focus on one thing at a time.
+
+80
+00:05:36.920 --> 00:05:41.359
+So I can spend some time building maybe the best graphic designer agents I can, while
+
+81
+00:05:41.359 --> 00:05:45.239
+maybe my collaborators are building research agents and writer agents.
+
+82
+00:05:45.239 --> 00:05:50.279
+And in the end, we string it all together to come up with this multi-agent system.
+
+83
+00:05:50.279 --> 00:05:56.200
+And in some cases, I'm seeing developers start to reuse some agents as well.
+
+84
+00:05:56.200 --> 00:06:01.040
+So having built a graphic designer for marketing brochures, maybe I'll think about if I can
+
+85
+00:06:01.040 --> 00:06:05.320
+build a more general graphic designer that can help me write marketing brochures as well
+
+86
+00:06:05.320 --> 00:06:10.399
+as social media posts, as well as help me illustrate online webpages.
+
+87
+00:06:10.399 --> 00:06:16.859
+So by coming up with what are the agents you might hire to do a task, and this will sometimes
+
+88
+00:06:16.859 --> 00:06:22.679
+correspond to who are the types of human employees you might hire to do a task.
+
+89
+00:06:22.679 --> 00:06:27.839
+You can come up with a workflow like this with maybe even building agents that you could
+
+90
+00:06:27.839 --> 00:06:30.679
+choose to reuse in other applications as well.
+
+91
+00:06:30.679 --> 00:06:36.440
+Now, what you see here is a linear plan where one agent, the researcher does his work, then
+
+92
+00:06:36.440 --> 00:06:38.720
+the graphic designer, and then the writer.
+
+93
+00:06:38.720 --> 00:06:44.160
+With agents, you can also, as an alternative to a linear plan, you can also have agents
+
+94
+00:06:44.160 --> 00:06:47.119
+interact with each other in more complex ways.
+
+95
+00:06:47.119 --> 00:06:51.600
+Let me illustrate with an example of planning using multiple agents.
+
+96
+00:06:51.600 --> 00:06:56.720
+So previously, you saw how we may give an LLM a set of tools that we can call to carry
+
+97
+00:06:56.720 --> 00:06:57.720
+out different tasks.
+
+98
+00:06:57.880 --> 00:07:03.440
+In what I want to show you, we will instead give an LLM the option to call on different
+
+99
+00:07:03.440 --> 00:07:07.720
+agents to ask the different agents to help complete different tasks.
+
+100
+00:07:07.720 --> 00:07:11.519
+So in detail, you might write a prompt like you're a marketing manager, have the following
+
+101
+00:07:11.519 --> 00:07:14.920
+team of agents to work with, and then give a description of the agents.
+
+102
+00:07:14.920 --> 00:07:19.079
+And this is very much similar to what we're doing with planning and using tools, except
+
+103
+00:07:19.079 --> 00:07:24.279
+the tools, the green boxes, are replaced with agents, these purple boxes that the LLM can
+
+104
+00:07:24.279 --> 00:07:25.279
+call on.
+
+105
+00:07:25.279 --> 00:07:28.399
+You can also ask it to return a step-by-step plan to carry out the user's request.
+
+106
+00:07:28.399 --> 00:07:33.679
+And in this case, the LLM may ask the researcher to research current sunglasses trends and
+
+107
+00:07:33.679 --> 00:07:34.679
+then report back.
+
+108
+00:07:34.679 --> 00:07:38.200
+Then it will ask the graphic designer to create the images and then report back, then ask
+
+109
+00:07:38.200 --> 00:07:42.079
+the writer to create a report, and then maybe the LLM will choose to review or reflect on
+
+110
+00:07:42.079 --> 00:07:45.600
+and improve the report one final time.
+
+111
+00:07:45.600 --> 00:07:50.519
+In executing this plan, you would then take the step one text of the researcher, carry
+
+112
+00:07:50.519 --> 00:07:55.480
+out research, then pass that to the graphic designer, pass it to the writer, and then
+
+113
+00:07:55.480 --> 00:07:59.559
+maybe do one final reflection step, and then you'd be done.
+
+114
+00:07:59.559 --> 00:08:04.920
+One interesting view of this workflow is as if you have these three agents up here, but
+
+115
+00:08:04.920 --> 00:08:10.720
+this LLM on the left is actually like a fourth agent that's a marketing manager, that is
+
+116
+00:08:10.720 --> 00:08:15.359
+a manager of a marketing team, that is setting direction and then delegating tasks to the
+
+117
+00:08:15.359 --> 00:08:18.140
+researcher, the graphic designer, and the writer agents.
+
+118
+00:08:18.260 --> 00:08:22.660
+So this becomes actually a collection of four agents for a marketing manager agent coordinating
+
+119
+00:08:22.660 --> 00:08:26.739
+the work of the researcher, the graphic designer, and the writer.
+
+120
+00:08:26.739 --> 00:08:30.179
+In this video, you saw two communication patterns.
+
+121
+00:08:30.179 --> 00:08:35.020
+One was a linear one where your agents took actions one at a time until you got to the
+
+122
+00:08:35.020 --> 00:08:36.020
+end.
+
+123
+00:08:36.020 --> 00:08:41.380
+And the second had a marketing manager coordinating the activity of a few other agents.
+
+124
+00:08:41.380 --> 00:08:46.179
+It turns out that one of the key design decisions you may end up having to make when building
+
+125
+00:08:46.179 --> 00:08:51.140
+multi-agentic systems is what is the communication pattern between your different agents?
+
+126
+00:08:51.140 --> 00:08:56.059
+This is an area of hard research and there are multiple patterns emerging, but in the
+
+127
+00:08:56.059 --> 00:08:59.979
+next video, I want to show you what are some of the most common communication patterns
+
+128
+00:08:59.979 --> 00:09:02.419
+for getting your agents to work with each other.
+
+129
+00:09:02.419 --> 00:09:04.419
+Let's go see that in the next video.
+

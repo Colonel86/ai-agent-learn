@@ -1,0 +1,457 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:02.502
+Now that
+you understand your agent example,
+
+2
+00:00:02.502 --> 00:00:05.505
+the next step is to add
+observability to your agent code.
+
+3
+00:00:05.705 --> 00:00:08.742
+This will give you insight
+into the trajectory or sequence of steps
+
+4
+00:00:08.742 --> 00:00:11.711
+your agent takes to respond
+to a user's query.
+
+5
+00:00:11.711 --> 00:00:13.279
+You'll learn how to instrument your agent,
+
+6
+00:00:13.279 --> 00:00:16.182
+which means adding code
+to track your agent steps,
+
+7
+00:00:16.182 --> 00:00:19.786
+and then visualize the collected
+information or traces in the Phoenix UI.
+
+8
+00:00:20.620 --> 00:00:22.522
+All right. Let's have some fun.
+
+9
+00:00:22.522 --> 00:00:24.124
+When it comes to observing your agent,
+
+10
+00:00:24.124 --> 00:00:26.693
+there are a few key concepts
+that are important to know.
+
+11
+00:00:26.693 --> 00:00:28.595
+The first is observability.
+
+12
+00:00:28.595 --> 00:00:31.131
+Observability is a general software
+concept
+
+13
+00:00:31.131 --> 00:00:35.502
+that refers to having complete visibility
+into every layer of your application.
+
+14
+00:00:36.069 --> 00:00:40.040
+In the context of LLM applications, that's
+often tracking things like the prompt,
+
+15
+00:00:40.040 --> 00:00:43.043
+the response, token usage,
+and then any calls
+
+16
+00:00:43.043 --> 00:00:46.046
+that happen around the calls
+that you're making to LLMs.
+
+17
+00:00:46.813 --> 00:00:50.083
+Observability
+is typically made up of traces and spans.
+
+18
+00:00:50.750 --> 00:00:53.753
+Traces refer to full run
+through of your application,
+
+19
+00:00:53.787 --> 00:00:56.756
+so a single trace would be one and end
+
+20
+00:00:56.756 --> 00:01:00.193
+run of your application from an input
+all the way through to an output.
+
+21
+00:01:00.827 --> 00:01:04.030
+And then traces are comprised
+of multiple spans.
+
+22
+00:01:04.297 --> 00:01:07.167
+Spans are individual steps of calls
+
+23
+00:01:07.167 --> 00:01:11.237
+to LLMs or code, or lookups to databases
+or whatever might be.
+
+24
+00:01:11.471 --> 00:01:15.008
+So one trace is made of multiple spans,
+and they're typically presented
+
+25
+00:01:15.008 --> 00:01:18.378
+in this hierarchical way where spans
+can be nested underneath each other
+
+26
+00:01:18.678 --> 00:01:21.681
+to show that they're operating
+within another span.
+
+27
+00:01:21.815 --> 00:01:24.818
+And then a set of spans
+will make up one trace hierarchy.
+
+28
+00:01:25.418 --> 00:01:28.855
+Spans are typically presented
+in this hierarchical manner here
+
+29
+00:01:28.855 --> 00:01:31.925
+where you have individual spans
+that are nested
+
+30
+00:01:31.925 --> 00:01:34.928
+within each other,
+all making up one trace.
+
+31
+00:01:35.161 --> 00:01:38.465
+And you might have spans for LLM calls
+as you see in the image here.
+
+32
+00:01:38.498 --> 00:01:40.200
+You might have spans for tools.
+
+33
+00:01:40.200 --> 00:01:41.501
+You might have chain spans
+
+34
+00:01:41.501 --> 00:01:44.537
+which are just general logic steps
+that happen within a trace.
+
+35
+00:01:45.238 --> 00:01:48.408
+Traces and spans come from a framework
+called OpenTelemetry.
+
+36
+00:01:49.008 --> 00:01:51.311
+OpenTelemetry is often
+abbreviated to OTEL,
+
+37
+00:01:51.311 --> 00:01:54.214
+and it's one of the most widely used
+standards for application
+
+38
+00:01:54.214 --> 00:01:57.750
+observability,
+even outside of LLMs and AI agents.
+
+39
+00:01:58.518 --> 00:02:01.554
+OTEL includes the idea of traces and spans
+that are captured within your
+
+40
+00:02:01.554 --> 00:02:05.058
+application, as well as some standards
+for how to capture those traces and spans.
+
+41
+00:02:05.525 --> 00:02:06.259
+Often this process
+
+42
+00:02:06.259 --> 00:02:09.262
+is referred to as instrumentation,
+which you'll learn more about in a second.
+
+43
+00:02:10.130 --> 00:02:14.467
+And then OpenTelemetry also includes
+the concept of collectors and processors
+
+44
+00:02:14.467 --> 00:02:19.105
+to receive those traces and spans,
+and then enumerate them in a platform
+
+45
+00:02:19.539 --> 00:02:22.876
+that allows you to visualize those traces
+and run later evaluation on them.
+
+46
+00:02:23.343 --> 00:02:25.044
+Throughout this course,
+you're going to use a tool
+
+47
+00:02:25.044 --> 00:02:28.248
+called Arize Phoenix,
+which serves as one of those collectors
+
+48
+00:02:28.248 --> 00:02:31.351
+to allow you to receive,
+visualize, and evaluate traces.
+
+49
+00:02:32.652 --> 00:02:34.687
+This is
+what a trace looks like in Phoenix.
+
+50
+00:02:34.687 --> 00:02:36.589
+You're going to see a lot more of this
+throughout the notebooks
+
+51
+00:02:36.589 --> 00:02:38.858
+as you start
+implementing some of these techniques.
+
+52
+00:02:38.858 --> 00:02:41.995
+But you'll notice
+there's one trace here of Agent Run
+
+53
+00:02:41.995 --> 00:02:44.964
+in the image
+that's made up of multiple spans.
+
+54
+00:02:45.298 --> 00:02:47.767
+You have an LLM span in orange.
+
+55
+00:02:47.767 --> 00:02:49.869
+You have your chain spans in blue.
+
+56
+00:02:49.869 --> 00:02:52.672
+And then your tool spans in yellow.
+
+57
+00:02:52.672 --> 00:02:55.475
+Traces and spans are captured
+in your application through a process
+
+58
+00:02:55.475 --> 00:02:56.943
+called instrumentation.
+
+59
+00:02:56.943 --> 00:03:00.747
+Instrumentation refers
+to the practice of marking which functions
+
+60
+00:03:00.747 --> 00:03:02.282
+or code blocks within your code
+
+61
+00:03:02.282 --> 00:03:05.351
+you want to track as spans
+and what attributes
+
+62
+00:03:05.351 --> 00:03:07.687
+you want to attach to those spans.
+
+63
+00:03:07.687 --> 00:03:10.356
+You can do this
+manually with clauses or decorators,
+
+64
+00:03:10.356 --> 00:03:12.559
+as you'll see
+in the next notebook as well.
+
+65
+00:03:12.559 --> 00:03:16.729
+However, tools like Phoenix do automate
+some of this process for you, especially
+
+66
+00:03:16.729 --> 00:03:21.367
+if you're using popular libraries
+like OpenAI or LlamaIndex or LangChain.
+
+67
+00:03:22.402 --> 00:03:25.171
+Observability
+is important for a few different reasons.
+
+68
+00:03:25.171 --> 00:03:28.174
+First, when you're getting off the ground
+and building your application,
+
+69
+00:03:28.341 --> 00:03:31.244
+observability
+really simplifies the debugging process.
+
+70
+00:03:31.244 --> 00:03:32.345
+As you're building.
+
+71
+00:03:32.345 --> 00:03:35.915
+It's much easier to debug
+by going through a nice visual trace
+
+72
+00:03:35.915 --> 00:03:39.686
+than it is to pore over print statements
+and logs in your application,
+
+73
+00:03:40.286 --> 00:03:42.222
+so it makes it easier to get going.
+
+74
+00:03:42.222 --> 00:03:44.624
+But then, as you start
+launching your application to multiple
+
+75
+00:03:44.624 --> 00:03:47.927
+different users, you start moving towards
+production or testing
+
+76
+00:03:47.927 --> 00:03:51.965
+even. Then, it gives you a detailed log
+of all of the calls made to
+
+77
+00:03:51.965 --> 00:03:54.968
+your application and all of the different
+inputs that you're receiving.
+
+78
+00:03:55.068 --> 00:03:57.637
+So it gives you a large database
+of information
+
+79
+00:03:57.637 --> 00:04:00.673
+of all of your different application runs,
+so you can monitor how it's performing.
+
+80
+00:04:01.507 --> 00:04:06.246
+And then these traces will become the
+bedrock that is used to run evaluation.
+
+81
+00:04:06.646 --> 00:04:11.117
+So later notebooks will have you export
+data from Phoenix that you can then use
+
+82
+00:04:11.351 --> 00:04:15.021
+for evaluations at scale across
+multiple runs of your application.
+
+83
+00:04:15.722 --> 00:04:17.757
+Finally, putting these together,
+
+84
+00:04:17.757 --> 00:04:20.326
+observability helps
+you really start to understand
+
+85
+00:04:20.326 --> 00:04:23.863
+and eventually control some of the more
+unpredictable behavior of LLMs.
+
+86
+00:04:24.397 --> 00:04:27.400
+LLMs are by their very nature,
+unpredictable in some cases,
+
+87
+00:04:27.800 --> 00:04:28.768
+and the best way to deal with
+
+88
+00:04:28.768 --> 00:04:32.772
+that is by monitoring them and later
+evaluating them within your application.
+
+89
+00:04:33.573 --> 00:04:36.909
+In this lesson, you've learned
+what observability is, how it works,
+
+90
+00:04:36.909 --> 00:04:38.378
+and why it's important,
+
+91
+00:04:38.378 --> 00:04:41.614
+as well as some of the basic building
+blocks of observability like traces
+
+92
+00:04:41.614 --> 00:04:44.651
+and spans, and how those traces in spans
+are collected.
+
+93
+00:04:45.585 --> 00:04:48.921
+In the next notebook, you'll implement
+some of the instrumentation techniques
+
+94
+00:04:48.921 --> 00:04:50.723
+that you saw in these slides,
+
+95
+00:04:50.723 --> 00:04:53.760
+and you'll set up your first Phoenix
+instance here to collect those traces.
+

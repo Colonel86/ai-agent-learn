@@ -1,0 +1,767 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.043 --> 00:00:04.587
+You'll now take the tools you implemented
+for the chatbot
+
+2
+00:00:04.587 --> 00:00:08.508
+and wrap them in an MCP server
+using the standard IO transport.
+
+3
+00:00:08.967 --> 00:00:13.388
+You'll use fast MCP, which provides a high
+level interface to build an MCP server.
+
+4
+00:00:13.888 --> 00:00:17.267
+Finally, you'll use the MCP inspector
+to test your server.
+
+5
+00:00:17.892 --> 00:00:19.144
+Let's get coding.
+
+6
+00:00:19.144 --> 00:00:22.814
+So we're going to pick up where we left
+off with the last lesson where we defined
+
+7
+00:00:22.856 --> 00:00:27.444
+two functions, search papers
+to go ahead and find papers on archive.
+
+8
+00:00:27.819 --> 00:00:30.155
+And then another function that we had down
+here,
+
+9
+00:00:30.155 --> 00:00:31.406
+extract info.
+
+10
+00:00:31.406 --> 00:00:34.367
+We took these functions
+and we defined them as tools
+
+11
+00:00:34.367 --> 00:00:36.745
+and passed them to our large language
+model.
+
+12
+00:00:36.745 --> 00:00:41.374
+What we're going to do now is abstract
+away the definition of these tools
+
+13
+00:00:41.374 --> 00:00:44.961
+and the schema of these tools,
+and create an MCP server
+
+14
+00:00:45.128 --> 00:00:49.132
+and use a library called fast MCP
+to help us build that quickly.
+
+15
+00:00:49.299 --> 00:00:53.344
+So with just a few lines of code,
+we're going to bring in fast MCP
+
+16
+00:00:53.386 --> 00:00:58.099
+We're going to define each
+of these functions as tools using MCP.
+
+17
+00:00:58.141 --> 00:01:01.144
+And then we're going to go ahead
+and start our MCP server
+
+18
+00:01:01.227 --> 00:01:02.937
+and test that in the browser.
+
+19
+00:01:02.937 --> 00:01:05.940
+So the first thing I'm going to do is
+bring in the necessary import that I need.
+
+20
+00:01:06.274 --> 00:01:09.277
+So from MCP dot server dot fast MCP
+
+21
+00:01:09.569 --> 00:01:12.197
+I'm going to import the fast MCP class.
+
+22
+00:01:12.197 --> 00:01:15.408
+I'm then going to go ahead and initialize
+that MCP server.
+
+23
+00:01:15.825 --> 00:01:18.953
+So I'll initialize our fast MCP server.
+
+24
+00:01:19.746 --> 00:01:24.250
+And I'll declare a variable here,
+which is the result of initializing that.
+
+25
+00:01:24.334 --> 00:01:25.710
+I'll give this server a name.
+
+26
+00:01:25.710 --> 00:01:27.295
+We'll call this research.
+
+27
+00:01:27.295 --> 00:01:30.882
+And let's go ahead
+and make use of that MCP variable.
+
+28
+00:01:31.508 --> 00:01:36.012
+As we saw before, there are quite a few
+primitives in the Model Context Protocol.
+
+29
+00:01:36.054 --> 00:01:39.099
+We saw tools, resources, prompts.
+
+30
+00:01:39.099 --> 00:01:42.268
+And what we're going to start with right
+now is just defining a tool.
+
+31
+00:01:42.685 --> 00:01:47.524
+And that's as easy as decorating
+this function with MCP dot tool.
+
+32
+00:01:47.816 --> 00:01:50.944
+We'll go ahead and make sure we do that
+for our function below as well.
+
+33
+00:01:51.236 --> 00:01:54.989
+And what this is going to do
+is define two tools
+
+34
+00:01:54.989 --> 00:01:58.576
+on our MCP server
+that we can start running and testing.
+
+35
+00:01:58.910 --> 00:02:00.954
+One last thing we need to do here
+
+36
+00:02:00.954 --> 00:02:04.415
+is make sure that we have the right
+command to start this server.
+
+37
+00:02:04.582 --> 00:02:07.794
+So what I'm going to bring in
+is a very standard bit of Python.
+
+38
+00:02:08.545 --> 00:02:11.714
+We're going to say
+if __name__ is equal to __main__,
+
+39
+00:02:11.756 --> 00:02:13.925
+this allows me to run this directly.
+
+40
+00:02:13.925 --> 00:02:16.594
+And if there are imports,
+this code does not run.
+
+41
+00:02:16.594 --> 00:02:19.472
+I'll go ahead and initialize and run
+the server.
+
+42
+00:02:19.472 --> 00:02:22.350
+I'll do that by calling MCP dot run.
+
+43
+00:02:22.350 --> 00:02:24.394
+And I'm going to pass in a transport.
+
+44
+00:02:24.394 --> 00:02:28.606
+As we saw before, we can run servers
+locally and we can run them remotely.
+
+45
+00:02:28.648 --> 00:02:32.944
+And when we're running our servers
+locally we almost always use standard IO.
+
+46
+00:02:33.069 --> 00:02:36.072
+So I'll pass in a transport of standard IO.
+
+47
+00:02:36.114 --> 00:02:39.325
+And that's all we need to start
+writing our MCP server.
+
+48
+00:02:39.576 --> 00:02:43.163
+You can see at the top here
+we've got a magic function to go ahead
+
+49
+00:02:43.163 --> 00:02:46.624
+and actually write a file called Research
+Server dot py.
+
+50
+00:02:47.041 --> 00:02:49.460
+So I'm going to go ahead
+and execute this cell.
+
+51
+00:02:49.460 --> 00:02:53.089
+And we're going to see that we write
+a file called Research server dot py.
+
+52
+00:02:53.715 --> 00:02:58.094
+This Python file is going to be used
+when we start our MCP server.
+
+53
+00:02:58.136 --> 00:03:01.431
+So let's go ahead and set up
+our environment and test our server.
+
+54
+00:03:01.681 --> 00:03:04.684
+To do this I'm going to go ahead
+and open up a new terminal.
+
+55
+00:03:04.684 --> 00:03:06.644
+In the environment that we're in,
+
+56
+00:03:06.644 --> 00:03:07.562
+we're going to need this code
+
+57
+00:03:07.562 --> 00:03:11.065
+necessary to create and run code
+inside of a terminal.
+
+58
+00:03:11.649 --> 00:03:14.360
+If you want to run this code
+locally on your own machine,
+
+59
+00:03:14.360 --> 00:03:16.404
+you're more than welcome to do so as well.
+
+60
+00:03:16.404 --> 00:03:19.365
+We can see here,
+I've got a terminal and I'm going to CD
+
+61
+00:03:19.365 --> 00:03:22.660
+into a folder called MCP project
+where my code lives.
+
+62
+00:03:22.785 --> 00:03:25.788
+I can see here
+I have my research server dot py.
+
+63
+00:03:25.830 --> 00:03:29.125
+In fact, this research server dot
+py is all of the code
+
+64
+00:03:29.375 --> 00:03:31.002
+that we just created above.
+
+65
+00:03:31.002 --> 00:03:34.964
+What I need to do here
+is install the necessary dependencies
+
+66
+00:03:35.423 --> 00:03:39.761
+to start working with MCP,
+as well as install the archive SDK.
+
+67
+00:03:39.928 --> 00:03:42.055
+What I'm going to do here
+is instead of using Pip,
+
+68
+00:03:42.055 --> 00:03:44.307
+I'm going to use a package
+manager called UV.
+
+69
+00:03:44.307 --> 00:03:47.685
+UV is slightly faster
+than Pip and provides quite a few other
+
+70
+00:03:47.685 --> 00:03:51.689
+nice tools to make it easier
+to manage your dependencies in Python.
+
+71
+00:03:52.023 --> 00:03:55.485
+Once I run uv init,
+we're going to see I have initialized
+
+72
+00:03:55.526 --> 00:03:59.364
+project called MCP project
+based on the name of the folder.
+
+73
+00:03:59.781 --> 00:04:02.200
+If you're familiar
+with virtual environments
+
+74
+00:04:02.200 --> 00:04:04.953
+or creating a virtual environment,
+this part is going to
+
+75
+00:04:04.953 --> 00:04:08.331
+look familiar if you're not familiar
+with virtual environments,
+
+76
+00:04:08.581 --> 00:04:12.210
+they're simply ways to self-contain
+the dependencies that you have.
+
+77
+00:04:12.502 --> 00:04:16.089
+So that you're not installing things
+globally and potentially conflicting
+
+78
+00:04:16.089 --> 00:04:17.590
+with other installations.
+
+79
+00:04:17.590 --> 00:04:21.344
+So let's go ahead and create
+our virtual environment using uv
+
+80
+00:04:21.469 --> 00:04:24.847
+venv We'll see here
+we have a virtual environment and actually
+
+81
+00:04:24.847 --> 00:04:26.808
+a folder called Dot venv
+
+82
+00:04:26.808 --> 00:04:30.186
+Let's go ahead and activate
+this virtual environment.
+
+83
+00:04:30.561 --> 00:04:32.438
+We'll do that using source dot
+
+84
+00:04:32.438 --> 00:04:34.983
+venv Then activate.
+
+85
+00:04:34.983 --> 00:04:36.985
+And I'm using tab completion here.
+
+86
+00:04:36.985 --> 00:04:38.736
+So I don't make any spelling mistakes.
+
+87
+00:04:38.736 --> 00:04:42.824
+We can see here now that we're in
+a virtual environment called MCP project.
+
+88
+00:04:43.324 --> 00:04:46.327
+And now we need to install the necessary
+dependencies.
+
+89
+00:04:46.536 --> 00:04:48.621
+I'll clear
+so you can see what we have at the top.
+
+90
+00:04:48.621 --> 00:04:52.959
+And I'll go ahead and bring in
+the dependencies of MCP and arxiv.
+
+91
+00:04:53.126 --> 00:04:54.836
+We'll give this a second to install.
+
+92
+00:04:54.836 --> 00:04:55.420
+And we're going to pull
+
+93
+00:04:55.420 --> 00:04:56.462
+in these dependencies
+
+94
+00:04:56.462 --> 00:05:00.717
+so that when we start running our MCP
+server we get the correct information.
+
+95
+00:05:00.842 --> 00:05:03.886
+The next step right now
+is to test our server file.
+
+96
+00:05:04.137 --> 00:05:07.181
+Instead of just running this code
+in Python, to test
+
+97
+00:05:07.181 --> 00:05:10.226
+the server, we're going to use a tool
+developed
+
+98
+00:05:10.643 --> 00:05:14.272
+called the Inspector,
+which gives us a browser-based environment
+
+99
+00:05:14.564 --> 00:05:19.068
+to explore the tools, resources, prompts,
+and other primitives that we have.
+
+100
+00:05:19.110 --> 00:05:22.739
+I'll clear here so we can start
+from the top. In order to use that tool,
+
+101
+00:05:22.864 --> 00:05:27.827
+I'm going to run the command npx
+at Model Context Protocol slash inspector.
+
+102
+00:05:27.869 --> 00:05:32.457
+What this is going to do is pull
+in the command to start this server
+
+103
+00:05:32.457 --> 00:05:34.709
+so that I don't have to install it
+locally.
+
+104
+00:05:34.709 --> 00:05:38.087
+And then the command
+that I want to use to run the application
+
+105
+00:05:38.463 --> 00:05:42.300
+is uv run research server.
+I'm using, uv run
+
+106
+00:05:42.300 --> 00:05:44.635
+so I can sure I have
+the correct dependencies
+
+107
+00:05:44.635 --> 00:05:46.596
+and I'm in my virtual environment.
+
+108
+00:05:46.596 --> 00:05:49.599
+This simply makes it an easier way
+to run Python files.
+
+109
+00:05:49.891 --> 00:05:50.641
+We'll see here
+
+110
+00:05:50.641 --> 00:05:55.521
+that we're starting our MCP inspector
+and the MCP inspector is up and running.
+
+111
+00:05:55.646 --> 00:05:59.650
+So I'm going to head over to the browser
+and hop into that particular inspector
+
+112
+00:05:59.650 --> 00:06:00.276
+that we're looking at.
+
+113
+00:06:01.944 --> 00:06:03.821
+When we take a look at this inspector,
+
+114
+00:06:03.821 --> 00:06:07.033
+we're going to see that we have
+a few different kinds of transport types.
+
+115
+00:06:07.533 --> 00:06:11.829
+We have server-sent events
+and Streamable HTTP, our remote protocols.
+
+116
+00:06:12.205 --> 00:06:14.999
+But remember our server is running on
+standard IO.
+
+117
+00:06:14.999 --> 00:06:16.667
+So let's keep that as is.
+
+118
+00:06:16.667 --> 00:06:21.631
+The command that we use to run is
+uv run research server.py.
+
+119
+00:06:21.714 --> 00:06:24.467
+We saw in the command line
+that's what we passed in
+
+120
+00:06:24.467 --> 00:06:27.261
+and that's being applied right here.
+One small note,
+
+121
+00:06:27.261 --> 00:06:30.390
+since we're running this
+in a slightly different environment, we're
+
+122
+00:06:30.390 --> 00:06:34.435
+going to have to paste in a proxy address
+that we've provided in the notebook.
+
+123
+00:06:35.186 --> 00:06:38.398
+If you're running this locally
+this is not something you'll have to do.
+
+124
+00:06:38.648 --> 00:06:41.651
+So I'm going to go ahead and paste
+in that proxy address.
+
+125
+00:06:41.818 --> 00:06:44.779
+And let's
+go ahead and connect to our server.
+
+126
+00:06:44.779 --> 00:06:49.075
+Once we connect, we're going to see some of
+the primitives that we have access to.
+
+127
+00:06:49.409 --> 00:06:52.412
+We discussed resources, prompts, and tools
+
+128
+00:06:52.495 --> 00:06:55.623
+and what we've created on this server
+right now are just some tools.
+
+129
+00:06:56.124 --> 00:07:00.253
+But what I do want you to see
+is this initialize process right here.
+
+130
+00:07:00.711 --> 00:07:03.047
+If you remember back
+in our previous lesson
+
+131
+00:07:03.047 --> 00:07:06.050
+when we spoke about communication
+and the transports,
+
+132
+00:07:06.509 --> 00:07:11.389
+the first process was a handshake
+or initialization from client to server.
+
+133
+00:07:11.764 --> 00:07:13.474
+We're going to head over to tools,
+
+134
+00:07:13.474 --> 00:07:15.852
+and we're going to go see what tools
+we have available.
+
+135
+00:07:15.852 --> 00:07:19.981
+This list tools is another command
+we can issue to go ahead
+
+136
+00:07:19.981 --> 00:07:23.359
+and find the particular tools
+that the server is providing.
+
+137
+00:07:23.943 --> 00:07:26.904
+We can also go ahead and run these tools.
+
+138
+00:07:27.155 --> 00:07:30.241
+So what's really nice about the inspector
+is without building
+
+139
+00:07:30.241 --> 00:07:34.829
+any kind of MCP client or host,
+you have a sandbox to play around with
+
+140
+00:07:34.829 --> 00:07:38.458
+the tools or prompts or resources
+that the server is returning.
+
+141
+00:07:38.666 --> 00:07:42.503
+We can also see here from the docstring,
+we've inferred a description
+
+142
+00:07:42.837 --> 00:07:45.756
+as well as the parameters
+that are required.
+
+143
+00:07:45.756 --> 00:07:47.800
+Let's go ahead and search for a topic.
+
+144
+00:07:47.800 --> 00:07:52.221
+I'll go search for chemistry
+and let's look for one result.
+
+145
+00:07:52.555 --> 00:07:56.517
+When I run that tool, we're going
+to go ahead and get back the return value.
+
+146
+00:07:57.602 --> 00:07:59.687
+So we have not yet
+
+147
+00:07:59.687 --> 00:08:03.399
+added any kind of large language model
+or functionality here.
+
+148
+00:08:03.691 --> 00:08:06.694
+We're simply just testing the MCP server.
+
+149
+00:08:07.069 --> 00:08:10.698
+I can go ahead and test my other tool
+with that paper ID,
+
+150
+00:08:11.699 --> 00:08:14.702
+and we should expect that I get back
+a success as well.
+
+151
+00:08:14.827 --> 00:08:18.873
+The MCP inspector is extremely valuable
+as you start building servers,
+
+152
+00:08:19.040 --> 00:08:22.710
+and even when you install servers
+that other people have written, it's a
+
+153
+00:08:22.710 --> 00:08:27.089
+great way to have a sandbox to play around
+once you're done using the inspector,
+
+154
+00:08:27.715 --> 00:08:31.010
+we can head back to our notebook
+and if you need to quit the server,
+
+155
+00:08:31.177 --> 00:08:34.180
+you can stop that process using Control+C.
+
+156
+00:08:34.472 --> 00:08:36.057
+And we're back in the terminal.
+
+157
+00:08:36.057 --> 00:08:39.227
+If you ever need to start that again,
+you can always press up
+
+158
+00:08:40.019 --> 00:08:43.606
+to get access to your previous command,
+so you don't have to take the whole thing.
+
+159
+00:08:43.898 --> 00:08:48.236
+In the next lesson, we're going to start
+layering on an MCP host and a client
+
+160
+00:08:48.569 --> 00:08:53.569
+and integrate this MCP server with a chatbot
+that we build all talking with MCP.
+
+161
+00:08:54.242 --> 00:08:54.659
+See you there.
+

@@ -1,0 +1,598 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:03.269
+In this course, you'll build an AI agent
+from scratch and learn how
+
+2
+00:00:03.269 --> 00:00:04.471
+to evaluate it.
+
+3
+00:00:04.471 --> 00:00:07.474
+In this lesson, we'll dive
+into the details of this agent structure
+
+4
+00:00:07.474 --> 00:00:10.677
+and then go through an agent example
+that can perform data analysis.
+
+5
+00:00:11.211 --> 00:00:14.214
+You'll then learn how to code
+such an agent in Python.
+
+6
+00:00:14.280 --> 00:00:16.049
+All right. Let's go.
+
+7
+00:00:16.049 --> 00:00:19.352
+Agents are typically made up
+of three main types of components:
+
+8
+00:00:19.652 --> 00:00:22.689
+a router, skills,
+and then memory and state.
+
+9
+00:00:23.490 --> 00:00:26.493
+The image on the right here
+shows an example of an agent
+
+10
+00:00:26.726 --> 00:00:28.361
+with a router in black,
+
+11
+00:00:28.361 --> 00:00:30.463
+the state
+as the dark purple at the bottom,
+
+12
+00:00:30.463 --> 00:00:33.633
+and then a set of three different skills
+that that agent can call in this case
+
+13
+00:00:33.633 --> 00:00:36.636
+track package,
+look up item, and answer a question.
+
+14
+00:00:36.836 --> 00:00:39.639
+Each of those different components
+can interact with the state,
+
+15
+00:00:39.639 --> 00:00:40.140
+and the router
+
+16
+00:00:40.140 --> 00:00:43.843
+is responsible for handling user input
+and then output back to the user.
+
+17
+00:00:44.411 --> 00:00:47.781
+Looking first at the router, the router is
+the main planner of the agent.
+
+18
+00:00:47.814 --> 00:00:50.216
+Sort of the agent's brain in a way.
+
+19
+00:00:50.216 --> 00:00:53.286
+The router is responsible for deciding
+which skill or function
+
+20
+00:00:53.286 --> 00:00:55.822
+the agent will call to answer
+a user's question.
+
+21
+00:00:55.822 --> 00:00:58.958
+So when the router receives user
+input or a response back
+
+22
+00:00:58.958 --> 00:01:02.662
+from a different skill, the router will
+then decide which other skill to call
+
+23
+00:01:02.662 --> 00:01:03.763
+from there.
+
+24
+00:01:03.763 --> 00:01:05.565
+Routers can take a few different forms.
+
+25
+00:01:05.565 --> 00:01:07.067
+They can either be an LLM
+
+26
+00:01:07.067 --> 00:01:10.070
+equipped with function calling,
+as we'll use in this course,
+
+27
+00:01:10.203 --> 00:01:14.340
+or a more simple NLP classifier,
+or even just a rules-based code.
+
+28
+00:01:15.075 --> 00:01:18.078
+Generally,
+the simpler type of router that you have,
+
+29
+00:01:18.545 --> 00:01:19.846
+the better your performance will be in,
+
+30
+00:01:19.846 --> 00:01:21.848
+the more consistent
+your performance will be,
+
+31
+00:01:21.848 --> 00:01:24.551
+but you'll also scope down
+the capabilities of that router.
+
+32
+00:01:24.551 --> 00:01:27.687
+Something like an LLM with function
+calling has a very broad ranging
+
+33
+00:01:27.687 --> 00:01:31.391
+capabilities, but is a little bit
+more unreliable than rules-based code.
+
+34
+00:01:31.958 --> 00:01:34.694
+That's also where evaluation can help
+you close the gap.
+
+35
+00:01:34.694 --> 00:01:37.263
+Some agents,
+instead of using a single router
+
+36
+00:01:37.263 --> 00:01:40.266
+step, will distribute that logic
+throughout the agent.
+
+37
+00:01:40.600 --> 00:01:44.537
+Popular frameworks that use this are line
+graph as well as OpenAI swarm.
+
+38
+00:01:45.004 --> 00:01:47.974
+They still have routing logic,
+but instead of having one single router
+
+39
+00:01:47.974 --> 00:01:52.579
+step, they distribute that responsibility
+throughout the agent itself.
+
+40
+00:01:53.947 --> 00:01:55.849
+Next, skills are the
+
+41
+00:01:55.849 --> 00:01:59.352
+individual logic blocks and capabilities
+that an agent has.
+
+42
+00:01:59.919 --> 00:02:02.355
+So, skills are what allow the agent
+to actually do anything that would
+
+43
+00:02:02.355 --> 00:02:07.160
+allow it to connect with the outside world
+through APIs or call databases,
+
+44
+00:02:07.193 --> 00:02:10.563
+or really do any of the different tasks
+that your agent can accomplish.
+
+45
+00:02:11.331 --> 00:02:14.167
+Every agent will have either one
+or more skills.
+
+46
+00:02:14.167 --> 00:02:17.070
+An agent without any skills
+doesn't really do anything.
+
+47
+00:02:17.070 --> 00:02:19.272
+Not a real use case there.
+
+48
+00:02:19.272 --> 00:02:22.375
+Skills are made up of individual steps.
+LLM calls,
+
+49
+00:02:22.575 --> 00:02:26.312
+application code, API calls, or really
+any other code that you want to use
+
+50
+00:02:26.312 --> 00:02:27.647
+there.
+
+51
+00:02:27.647 --> 00:02:30.650
+One example of a skill
+that's very common is a RAG skill.
+
+52
+00:02:30.683 --> 00:02:31.351
+So in this case,
+
+53
+00:02:31.351 --> 00:02:34.888
+you could have a retrieval augmented
+generation capability within your agent
+
+54
+00:02:35.321 --> 00:02:38.258
+that would handle everything
+from embeddings to looking up data
+
+55
+00:02:38.258 --> 00:02:42.228
+from a vector database to making an LLM
+call with retrieved context.
+
+56
+00:02:42.395 --> 00:02:45.298
+And all of that is encompassed
+in a single RAG skill.
+
+57
+00:02:45.298 --> 00:02:48.301
+So you can see how skills can encompass
+multiple different steps,
+
+58
+00:02:48.701 --> 00:02:51.404
+and entire LLM applications can be thought of
+
+59
+00:02:51.404 --> 00:02:54.407
+as skills in the context of agents.
+
+60
+00:02:54.407 --> 00:02:57.443
+Once skills is complete,
+they'll also return back to the router
+
+61
+00:02:57.443 --> 00:02:59.012
+in most agent contexts
+
+62
+00:02:59.012 --> 00:03:02.048
+so that they can choose either
+to return to the user or call
+
+63
+00:03:02.048 --> 00:03:02.882
+another skill from there.
+
+64
+00:03:03.850 --> 00:03:06.085
+Memory and state are also used by agents
+
+65
+00:03:06.085 --> 00:03:09.722
+to store information that can be accessed
+by every component within the agent.
+
+66
+00:03:10.089 --> 00:03:13.226
+Typically, memory and state are used
+to store things like retrieved-context,
+
+67
+00:03:13.326 --> 00:03:18.231
+configuration variables, or very commonly,
+a log of previous agent execution steps.
+
+68
+00:03:19.165 --> 00:03:21.568
+This last one is probably the most common
+that you'll see.
+
+69
+00:03:21.568 --> 00:03:24.604
+Many LLM APIs actually rely on being passed
+
+70
+00:03:24.604 --> 00:03:27.607
+in a whole dictionary or list of messages
+
+71
+00:03:27.907 --> 00:03:31.177
+about what the agent has done previously,
+before choosing the next step to call.
+
+72
+00:03:31.744 --> 00:03:35.215
+The OpenAI function calling router
+that you'll use throughout the course
+
+73
+00:03:35.515 --> 00:03:38.518
+uses this approach, so you'll get
+very familiar with that approach.
+
+74
+00:03:39.619 --> 00:03:42.622
+Turning to your example agent that you're
+going to build throughout this course.
+
+75
+00:03:43.189 --> 00:03:46.526
+The example agent that you're going to
+create is a data analysis assistant
+
+76
+00:03:46.693 --> 00:03:50.463
+that can help you understand
+and ask questions over a sales database
+
+77
+00:03:50.463 --> 00:03:51.497
+that you have.
+
+78
+00:03:51.497 --> 00:03:53.466
+That agent has a few different skills.
+
+79
+00:03:53.466 --> 00:03:57.170
+It has a data lookup skill that can query
+information from that attached database.
+
+80
+00:03:57.904 --> 00:04:01.040
+It has a data analysis skill
+that can draw conclusions from that data,
+
+81
+00:04:01.241 --> 00:04:04.244
+spot trends and make calculations.
+
+82
+00:04:04.811 --> 00:04:07.013
+And then finally,
+it has a data visualization skill
+
+83
+00:04:07.013 --> 00:04:11.484
+that can generate Python code
+and create graphs through that code
+
+84
+00:04:11.484 --> 00:04:12.285
+and visualizations.
+
+85
+00:04:13.286 --> 00:04:15.688
+Looking
+at your example agent visually here
+
+86
+00:04:15.688 --> 00:04:19.058
+you see you have a user who's
+sending in queries to a router
+
+87
+00:04:19.092 --> 00:04:22.462
+in this case
+GPT-4o-mini call with function calling.
+
+88
+00:04:22.862 --> 00:04:25.865
+And then that router will call
+one of three different tools here,
+
+89
+00:04:26.099 --> 00:04:29.702
+the lookup sales data tool, data
+analysis tool or data visualization tool.
+
+90
+00:04:30.236 --> 00:04:33.239
+And then those tools will return
+back to the router, which then decides
+
+91
+00:04:33.239 --> 00:04:36.242
+to either return to the user
+or call another tool from there.
+
+92
+00:04:36.876 --> 00:04:40.079
+Now we're using the word tool here
+because that's what's expected by
+
+93
+00:04:40.179 --> 00:04:41.247
+GPT-4o-mini.
+
+94
+00:04:41.247 --> 00:04:43.149
+That's analogous to skills in this case.
+
+95
+00:04:43.149 --> 00:04:46.819
+So your lookup sales data tool would be
+analogous to a lookup sales data skill.
+
+96
+00:04:48.021 --> 00:04:50.490
+Diving into each of these skills
+a little bit more deeply,
+
+97
+00:04:50.490 --> 00:04:52.625
+you see that each
+skill has a few different steps
+
+98
+00:04:52.625 --> 00:04:55.628
+that it can actually go through
+to accomplish its task.
+
+99
+00:04:55.695 --> 00:04:59.565
+The Lookup sales data tool, for example,
+first prepares a database
+
+100
+00:04:59.565 --> 00:05:01.534
+so it loads in a local database
+and make sure
+
+101
+00:05:01.534 --> 00:05:04.037
+that it's ready to query that database.
+
+102
+00:05:04.037 --> 00:05:08.474
+Then it will generate SQL using another
+LLM call to query that database,
+
+103
+00:05:09.042 --> 00:05:12.211
+and then finally execute that SQL
+and return the result
+
+104
+00:05:12.211 --> 00:05:13.246
+all the way back to the router.
+
+105
+00:05:14.180 --> 00:05:15.315
+Similarly, the data
+
+106
+00:05:15.315 --> 00:05:18.618
+analysis tool makes a single call
+to generate an analysis.
+
+107
+00:05:18.618 --> 00:05:21.821
+So it just makes a single LLM call
+and then returns that response
+
+108
+00:05:21.821 --> 00:05:23.189
+back to the router.
+
+109
+00:05:23.189 --> 00:05:23.690
+And finally,
+
+110
+00:05:23.690 --> 00:05:27.093
+the data visualization tool actually
+makes two sequential LLM calls.
+
+111
+00:05:27.560 --> 00:05:29.662
+First, to generate a chart config
+
+112
+00:05:29.662 --> 00:05:32.732
+and then to generate Python code
+based on that config.
+
+113
+00:05:33.633 --> 00:05:38.237
+The reason for the two calls in that case
+is that while you could just ask an LLM
+
+114
+00:05:38.237 --> 00:05:41.240
+to generate code straight away
+and do both steps at once,
+
+115
+00:05:41.641 --> 00:05:44.310
+you'll get more unreliable responses
+that way.
+
+116
+00:05:44.310 --> 00:05:47.980
+And because chart visualizations in Python
+are somewhat formulaic,
+
+117
+00:05:47.980 --> 00:05:52.185
+it helps to first generate this chart
+config with a few key variables
+
+118
+00:05:52.385 --> 00:05:55.722
+and then generate the Python code
+based on that chart config.
+
+119
+00:05:55.922 --> 00:05:58.758
+So splitting up the task into two simpler
+tasks instead of
+
+120
+00:05:58.758 --> 00:06:01.994
+asking for the LLM
+to complete one more difficult task.
+
+121
+00:06:03.329 --> 00:06:04.130
+In this lesson,
+
+122
+00:06:04.130 --> 00:06:08.201
+you've learned about the major components
+of agents, routers, skills, and memory,
+
+123
+00:06:08.634 --> 00:06:11.637
+and you've examined the example agent
+that you're going to build.
+
+124
+00:06:11.671 --> 00:06:12.772
+In the next video,
+
+125
+00:06:12.772 --> 00:06:15.575
+you're going to go through a notebook
+and actually implement and build
+
+126
+00:06:15.575 --> 00:06:16.409
+this example agent.
+

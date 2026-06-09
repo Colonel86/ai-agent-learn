@@ -1,0 +1,231 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:05.830 --> 00:00:06.000
+In a few agentic applications I've worked on, I gave the LLM the option to write code to then
+
+2
+00:00:06.000 --> 00:00:10.720
+carry out the task I wanted it to. And I've been a few times now, I've been really surprised and
+
+3
+00:00:10.720 --> 00:00:17.280
+delighted by the cleverness of the code solutions it generated in order to solve various tasks for
+
+4
+00:00:17.280 --> 00:00:23.600
+me. So if you haven't used code execution much, I think you might be surprised and delighted at
+
+5
+00:00:23.600 --> 00:00:29.760
+what this will let your LLM applications do. Let's take a look. Let's take an example of
+
+6
+00:00:29.760 --> 00:00:36.319
+building an application that can input math word problems and solve them for you. So you might
+
+7
+00:00:36.319 --> 00:00:40.799
+create tools that add numbers, subtract numbers, multiply numbers, and divide numbers. And if
+
+8
+00:00:40.799 --> 00:00:46.240
+someone says, please add 13.2 plus 18.9, then it triggers the add tool and then it gets you the
+
+9
+00:00:46.240 --> 00:00:50.880
+right answer. But what if someone now types in, what is the square root of two? Well, one thing
+
+10
+00:00:50.880 --> 00:00:56.720
+you could do is write a new tool for a square root, but then maybe some new thing is needed to
+
+11
+00:00:56.720 --> 00:01:02.319
+carry out exponentiation. And in fact, if you look at the number of buttons on your modern
+
+12
+00:01:02.319 --> 00:01:06.639
+scientific calculator, are you going to create a separate tool for every one of these buttons and
+
+13
+00:01:06.639 --> 00:01:12.639
+the many more things that we would want to do in math calculation? So instead of trying to implement
+
+14
+00:01:12.639 --> 00:01:19.919
+one tool after another, a different approach is to let it write and execute code. To tell the LLM
+
+15
+00:01:19.919 --> 00:01:24.559
+to write code, you might write a prompt like this. Write code to solve the user's query. Return your
+
+16
+00:01:24.559 --> 00:01:31.839
+answer as Python code delimited with execute Python and closing execute Python tags. So given a query
+
+17
+00:01:31.839 --> 00:01:37.519
+like what is the square root of two, the LLM might generate outputs like this. You can then use
+
+18
+00:01:37.519 --> 00:01:44.400
+pattern matching, for example, a regular expression to look for the start and end execute Python tags
+
+19
+00:01:44.400 --> 00:01:50.319
+and extract the code in between. So here you get these two lines of code shown in the green box,
+
+20
+00:01:50.319 --> 00:01:57.680
+and you can then execute this code for the LLM and get the output, in this case, 1.4142 and so on.
+
+21
+00:01:57.680 --> 00:02:04.559
+Lastly, this numerical answer is then passed back to the LLM and it can write a nicely formatted
+
+22
+00:02:04.559 --> 00:02:08.559
+answer to the original question. There are a few different ways you can carry out the code
+
+23
+00:02:08.559 --> 00:02:15.119
+execution step for the LLM. One is to use Python's exec function. This is a built-in Python function
+
+24
+00:02:15.119 --> 00:02:21.199
+which will execute whatever code you pass in. And this is very powerful for your LLM to really
+
+25
+00:02:21.199 --> 00:02:26.320
+write code and get you to execute that code, although there are some security implications
+
+26
+00:02:26.320 --> 00:02:31.839
+which we'll see later in this video. And then there are also some tools that will let you run the code
+
+27
+00:02:31.839 --> 00:02:38.399
+in a safer sandbox environment. And of course, square root of two is a relatively simple example.
+
+28
+00:02:38.399 --> 00:02:45.839
+An LLM can also accurately write code to, for example, do interest calculations and solve much harder
+
+29
+00:02:45.839 --> 00:02:52.160
+math calculations than this. One refinement to this idea, which you sort of saw in our section
+
+30
+00:02:52.160 --> 00:02:58.559
+on reflection, is that if code execution fails, so if for some reason the LLM had generated code
+
+31
+00:02:58.559 --> 00:03:04.320
+that wasn't quite correct, then passing that error message back to the LLM to let it reflect and
+
+32
+00:03:04.320 --> 00:03:10.320
+maybe revise this code and try another one or two times. That can sometimes also allow it to get a
+
+33
+00:03:10.320 --> 00:03:17.360
+more accurate answer. Now, running arbitrary code that an LLM generates does have a small chance of
+
+34
+00:03:17.360 --> 00:03:24.479
+causing something bad to happen. Recently, one of my team members was using a highly agentic coder
+
+35
+00:03:24.479 --> 00:03:30.880
+and it actually chose to remove star.py within a project directory. So this is actually a real
+
+36
+00:03:30.880 --> 00:03:35.520
+example. And eventually that agentic coder did apologize. It said, yes, that's actually right,
+
+37
+00:03:35.520 --> 00:03:40.720
+that was an incredibly stupid mistake. I guess I was glad that this agentic coder was really sorry,
+
+38
+00:03:40.720 --> 00:03:44.960
+but I already deleted a bunch of Python files. Unfortunately, the team member had it backed
+
+39
+00:03:44.960 --> 00:03:50.000
+up on GitHub repo, so there was no real harm done, but it would have been not great if this
+
+40
+00:03:50.000 --> 00:03:55.279
+arbitrary code, which made the mistake of deleting a bunch of files, had been executed
+
+41
+00:03:55.279 --> 00:04:00.639
+without the backup. So the best practice for code execution is to run it inside a sandbox
+
+42
+00:04:00.639 --> 00:04:07.039
+environment. In practice, the risk for any single line of code is not that high. So if I'm being
+
+43
+00:04:07.039 --> 00:04:12.880
+candid, many developers will execute code from the LLM without too much checking. But if you want to
+
+44
+00:04:12.880 --> 00:04:19.679
+be a bit safer, then the best practice is to create a sandbox so that if an LLM generates bad
+
+45
+00:04:19.679 --> 00:04:26.239
+code, there's a lower risk of data loss or leakage of sensitive data and so on. So sandbox
+
+46
+00:04:26.239 --> 00:04:33.519
+environments like Docker or E2B as a lightweight sandbox environment can reduce the risk of
+
+47
+00:04:33.519 --> 00:04:39.359
+arbitrary codes being executed in a way that damages your system or your environment.
+
+48
+00:04:39.359 --> 00:04:46.000
+It turns out that code execution is so important that a lot of trainers of LLMs actually do special
+
+49
+00:04:46.000 --> 00:04:52.480
+work to make sure that code execution works well on their applications. But I hope that as you add
+
+50
+00:04:52.480 --> 00:04:58.640
+this as one more tool for you to potentially offer to LLMs or let you make your applications
+
+51
+00:04:58.640 --> 00:05:05.200
+much more powerful. So far and what we've discussed, you have to create tools and make them
+
+52
+00:05:05.200 --> 00:05:11.279
+available one at a time to your LLM. It turns out that many different teams are building similar
+
+53
+00:05:11.279 --> 00:05:18.079
+tools and having to do all this work of building functions and making them available to the OMs.
+
+54
+00:05:18.079 --> 00:05:24.959
+But there is recently a new standard called MCP, Model Context Protocol, that's making it much
+
+55
+00:05:24.959 --> 00:05:31.839
+easier for developers to get access to a huge set of tools for LLMs to use. This is an important
+
+56
+00:05:31.839 --> 00:05:37.119
+protocol that more and more teams are using to develop LLM based applications. Let's go learn
+
+57
+00:05:37.119 --> 00:05:40.959
+about MCP in the next video.
+

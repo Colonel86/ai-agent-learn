@@ -1,0 +1,1149 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:02.769
+The codebase is now missing tests
+
+2
+00:00:02.769 --> 00:00:06.539
+for evaluating the RAG pipeline of the chatbot.
+
+3
+00:00:06.539 --> 00:00:09.309
+Let's implement these tests and use them to debug an error
+
+4
+00:00:09.309 --> 00:00:14.309
+that the chatbot is having processing the queries,
+and finally, refactor
+
+5
+00:00:14.848 --> 00:00:17.917
+how the chatbot handles its tool use.
+Let's dive in.
+
+6
+00:00:18.251 --> 00:00:21.821
+So far we've seen how to get up to speed with codebases
+
+7
+00:00:21.821 --> 00:00:25.792
+and implement features to build
+a slightly more powerful experience.
+
+8
+00:00:26.226 --> 00:00:28.094
+Now let's go ahead and imagine that it's
+
+9
+00:00:28.094 --> 00:00:29.963
+been some time since we've worked on this
+
+10
+00:00:29.963 --> 00:00:32.665
+application.
+We're coming back and we want to start using it again.
+
+11
+00:00:32.665 --> 00:00:34.768
+So let's hop back to our application
+
+12
+00:00:34.768 --> 00:00:38.271
+and ask for some details on what's covered in Lesson 5.
+
+13
+00:00:38.671 --> 00:00:40.273
+We might expect to see a response
+
+14
+00:00:40.273 --> 00:00:42.876
+that gives us information, but right now, something's wrong.
+
+15
+00:00:43.476 --> 00:00:45.011
+It might be tempting to just
+
+16
+00:00:45.011 --> 00:00:46.780
+copy this error, put it into Claude,
+
+17
+00:00:46.780 --> 00:00:48.982
+take a screenshot, hope it solves the problem.
+
+18
+00:00:48.982 --> 00:00:51.184
+But we're going to do something a little bit different.
+
+19
+00:00:51.584 --> 00:00:54.788
+Instead of just getting the answer that we might want
+
+20
+00:00:54.788 --> 00:00:57.791
+or leading Claude on some wild goose chase.
+
+21
+00:00:58.091 --> 00:01:00.693
+We're going to take a bit more of a methodical approach here.
+
+22
+00:01:00.894 --> 00:01:02.862
+We know that things are wrong in our application,
+
+23
+00:01:02.862 --> 00:01:05.832
+but we also know that we don't have too many tests here
+
+24
+00:01:05.832 --> 00:01:08.835
+to programmatically verify that that's the case.
+
+25
+00:01:09.102 --> 00:01:11.204
+So what we're going to do is put in a prompt
+
+26
+00:01:11.204 --> 00:01:13.873
+that not only mentions what the error is,
+
+27
+00:01:13.873 --> 00:01:16.009
+but also specifies where we need to write tests.
+
+28
+00:01:17.477 --> 00:01:19.512
+If we go back to our code base,
+
+29
+00:01:19.512 --> 00:01:21.714
+the error we're looking at could be
+
+30
+00:01:21.714 --> 00:01:23.917
+from a variety of different Python files.
+
+31
+00:01:24.250 --> 00:01:28.688
+In our AIGenerator,
+this is where we handle interactions with Anthropic's API.
+
+32
+00:01:28.688 --> 00:01:30.757
+And there could be problems in the prompt
+
+33
+00:01:31.091 --> 00:01:32.459
+or even some of the logic
+
+34
+00:01:32.459 --> 00:01:34.094
+we have for getting this part working.
+
+35
+00:01:35.095 --> 00:01:36.796
+In our rag_system.py,
+
+36
+00:01:36.796 --> 00:01:41.501
+this is the orchestrator for everything
+that's happening with Retrieval Augmented Generation.
+
+37
+00:01:42.602 --> 00:01:46.406
+And in our search_tools,
+here's where we define the underlying tool
+
+38
+00:01:46.406 --> 00:01:48.908
+definition where there could potentially be problems.
+
+39
+00:01:49.309 --> 00:01:51.644
+So what we're going to ask Claude to do
+
+40
+00:01:51.644 --> 00:01:54.247
+is write tests for these specific files just to start.
+
+41
+00:01:54.481 --> 00:01:56.583
+We're then going to ask Claude to run those tests
+
+42
+00:01:56.583 --> 00:01:59.953
+and through that, verify what is not working and make
+
+43
+00:01:59.953 --> 00:02:03.189
+the appropriate fix. What's so powerful about this approach
+
+44
+00:02:03.456 --> 00:02:05.158
+is by starting with our tests, we
+
+45
+00:02:05.158 --> 00:02:06.826
+can start to build a robust foundation
+
+46
+00:02:07.293 --> 00:02:09.229
+for building more off of the codebase
+
+47
+00:02:09.429 --> 00:02:12.565
+and understanding when things go wrong, why they're failing.
+
+48
+00:02:12.999 --> 00:02:15.301
+So let's open up Claude and put in a prompt.
+
+49
+00:02:15.468 --> 00:02:17.604
+Since this is a little bit more challenging,
+
+50
+00:02:18.171 --> 00:02:21.641
+we're also going to ask Claude to think a lot.
+
+51
+00:02:22.041 --> 00:02:23.810
+This is going to trigger Claude's ability
+
+52
+00:02:24.244 --> 00:02:25.912
+to enable extended thinking
+
+53
+00:02:26.212 --> 00:02:27.947
+and allocate a few more tokens
+
+54
+00:02:28.248 --> 00:02:31.484
+towards the thinking process. we're also going to see this process
+
+55
+00:02:32.085 --> 00:02:33.753
+and if something doesn't appear right, we
+
+56
+00:02:33.753 --> 00:02:35.421
+can always stop Claude in its tracks.
+
+57
+00:02:35.688 --> 00:02:37.857
+We'll go ahead and make sure the plan mode is on
+
+58
+00:02:38.124 --> 00:02:41.161
+because first we want to make sure before Claude starts writing tests,
+
+59
+00:02:41.761 --> 00:02:43.163
+it understands what it needs to
+
+60
+00:02:43.163 --> 00:02:44.764
+do and we can approve that process.
+
+61
+00:02:45.298 --> 00:02:46.866
+As we start to read the files necessary,
+
+62
+00:02:47.467 --> 00:02:49.235
+we're going to see Claude's thinking process.
+
+63
+00:02:49.969 --> 00:02:52.438
+We're not only going to see the files that we're reading,
+
+64
+00:02:52.438 --> 00:02:55.108
+but also what it needs to examine and what it should do.
+
+65
+00:02:57.644 --> 00:02:59.946
+So let's go see what Claude's plan has. It's
+
+66
+00:02:59.946 --> 00:03:02.248
+It seems like there's some kind of configuration issue,
+
+67
+00:03:02.749 --> 00:03:05.618
+maybe some complex tool calling with failure points
+
+68
+00:03:05.818 --> 00:03:08.821
+and some limited error propagation between components.
+
+69
+00:03:09.022 --> 00:03:11.925
+So it's possible that the error is just getting caught somewhere.
+
+70
+00:03:12.025 --> 00:03:14.227
+It's then going to propose a structure for tests
+
+71
+00:03:14.427 --> 00:03:17.030
+based on these files, which looks good to us.
+
+72
+00:03:18.131 --> 00:03:19.933
+use the pytest framework and mock whatever
+
+73
+00:03:19.933 --> 00:03:21.734
+it is in ChromaDB that we need
+
+74
+00:03:21.734 --> 00:03:24.837
+to get some unit tests and integration tests up and running.
+
+75
+00:03:26.539 --> 00:03:28.241
+You can see right now it's starting to make
+
+76
+00:03:28.241 --> 00:03:29.909
+a folder for my tests, where it'll be running.
+
+77
+00:03:29.909 --> 00:03:32.011
+writing these. It's a great start.
+
+78
+00:03:32.011 --> 00:03:34.080
+We'll go ahead and make sure we add
+
+79
+00:03:34.080 --> 00:03:36.115
+any necessary dependencies here as well with UV.
+
+80
+00:03:38.117 --> 00:03:40.220
+Let's go install our dependencies,
+
+81
+00:03:40.220 --> 00:03:42.222
+make sure we have pytest working as expected, and that looks good.
+
+82
+00:03:42.422 --> 00:03:44.157
+We're also going to see the thinking part
+
+83
+00:03:44.157 --> 00:03:46.125
+here to make sure that we're doing what's expected.
+
+84
+00:03:46.426 --> 00:03:48.928
+As we start to write these particular tests,
+
+85
+00:03:48.928 --> 00:03:51.431
+we can start exploring the code that's been written for us.
+
+86
+00:03:51.731 --> 00:03:54.534
+Here we can see tests for the course search tool,
+
+87
+00:03:54.634 --> 00:03:56.636
+fixtures and mocks that we need to make.
+
+88
+00:03:56.636 --> 00:03:58.171
+This looks like a good start. We'll
+
+89
+00:03:58.171 --> 00:03:59.906
+see the same thing for our AI generator.
+
+90
+00:03:59.906 --> 00:04:01.674
+and our RAG system and our vector store.
+
+91
+00:04:02.041 --> 00:04:03.876
+It seems like it's identified a critical
+
+92
+00:04:03.876 --> 00:04:05.712
+config issue which may solve the bug,
+
+93
+00:04:06.179 --> 00:04:08.648
+but writing these tests is going to give us complete assurance
+
+94
+00:04:08.648 --> 00:04:10.116
+that this is actually the problem
+
+95
+00:04:10.116 --> 00:04:11.818
+and that this is the correct fix.
+
+96
+00:04:20.226 --> 00:04:23.396
+Now that we've created these tests, let's run them using UV.
+
+97
+00:04:23.663 --> 00:04:25.531
+Let's go make sure we have the correct dependencies
+
+98
+00:04:25.531 --> 00:04:27.433
+so that we can run those tests as expected.
+
+99
+00:04:27.934 --> 00:04:29.902
+So from its finding, it's telling us that it's
+
+100
+00:04:29.902 --> 00:04:33.006
+seems like there's something wrong with these max results
+
+101
+00:04:33.006 --> 00:04:34.907
+or the number of chunks that were
+
+102
+00:04:34.907 --> 00:04:38.211
+returning when we perform our vector search. So let's see
+
+103
+00:04:38.411 --> 00:04:40.413
+what we're getting when we take a look at our MAX_RESULTS.
+
+104
+00:04:40.513 --> 00:04:42.115
+And this confirms the issue that we have.
+
+105
+00:04:42.315 --> 00:04:44.117
+For some reason, this happens to be zero.
+
+106
+00:04:44.317 --> 00:04:46.419
+Once we go ahead and change this, we should expect
+
+107
+00:04:46.419 --> 00:04:48.821
+that not only our tests are working as expected,
+
+108
+00:04:49.222 --> 00:04:51.791
+but that the results we get are complete.
+
+109
+00:04:51.991 --> 00:04:53.893
+We can verify this by taking a look and
+
+110
+00:04:53.893 --> 00:04:55.795
+making sure we get the file that we expect.
+
+111
+00:04:55.995 --> 00:04:57.797
+Now that Claude Code is wrapping up,
+
+112
+00:04:57.797 --> 00:04:59.899
+it can provide a comprehensive summary of its
+
+113
+00:04:59.899 --> 00:05:01.334
+findings, which I can wait to
+
+114
+00:05:01.334 --> 00:05:02.969
+see or if I feel good now,
+
+115
+00:05:02.969 --> 00:05:04.704
+I can stop Claude in its tracks.
+
+116
+00:05:05.004 --> 00:05:06.639
+But I'll take a look at what
+
+117
+00:05:06.639 --> 00:05:08.308
+it gives me. It's completed its debugging.
+
+118
+00:05:08.308 --> 00:05:11.110
+It's found the critical issue, and it's created a few tests,
+
+119
+00:05:11.110 --> 00:05:12.979
+as well as some infrastructure to
+
+120
+00:05:12.979 --> 00:05:15.181
+keep running tests as we go forward.
+
+121
+00:05:15.181 --> 00:05:16.883
+Let's go see if this worked as expected.
+
+122
+00:05:16.883 --> 00:05:19.686
+Back in the browser, I'll start a new conversation,
+
+123
+00:05:19.686 --> 00:05:21.754
+and let's ask that same question again and
+
+124
+00:05:21.754 --> 00:05:23.790
+see if we get the result as expected.
+
+125
+00:05:23.990 --> 00:05:27.694
+Instead of the query failing, we should expect to see information
+
+126
+00:05:27.694 --> 00:05:29.896
+just about the lesson and that's exactly what we did.
+
+127
+00:05:29.896 --> 00:05:31.197
+we have here. So not only have
+
+128
+00:05:31.197 --> 00:05:32.699
+we fixed the bug, we built for ourselves
+
+129
+00:05:32.699 --> 00:05:34.901
+a powerful infrastructure to keep running the application off
+
+130
+00:05:34.901 --> 00:05:37.904
+of and make sure that as we make new changes,
+
+131
+00:05:37.904 --> 00:05:40.873
+things are not breaking and we don't know why.
+
+132
+00:05:40.873 --> 00:05:42.875
+Now that we got this application working,
+
+133
+00:05:42.875 --> 00:05:44.644
+let's talk about a little bit of a refactor
+
+134
+00:05:44.644 --> 00:05:46.379
+that I'd like to make in the codebase.
+
+135
+00:05:46.379 --> 00:05:49.382
+Let's clear and start again with a new feature.
+
+136
+00:05:49.382 --> 00:05:51.884
+So here in our ai_generator.py,
+
+137
+00:05:51.884 --> 00:05:55.888
+we specify that we want one search per query maximum.
+
+138
+00:05:55.888 --> 00:05:59.892
+While this leads to the expected behavior for relatively simple
+
+139
+00:06:00.259 --> 00:06:02.595
+when we want to start doing more complex queries,
+
+140
+00:06:02.595 --> 00:06:05.965
+comparing different courses, comparing their outlines,
+
+141
+00:06:05.965 --> 00:06:08.401
+we're going to need more than one tool call.
+
+142
+00:06:08.401 --> 00:06:10.770
+So what we're going to need is some kind of environment
+
+143
+00:06:10.770 --> 00:06:14.474
+where we can either iteratively go through all the tools necessary
+
+144
+00:06:14.474 --> 00:06:16.809
+or recursively solve that problem.
+
+145
+00:06:17.243 --> 00:06:20.713
+If you're comfortable with this code and ecosystem,
+
+146
+00:06:20.713 --> 00:06:22.815
+you can take a look at the class that we have here,
+
+147
+00:06:22.815 --> 00:06:24.684
+which is a relatively simple way
+
+148
+00:06:24.684 --> 00:06:26.886
+to talk directly to Anthropic models
+
+149
+00:06:26.886 --> 00:06:29.756
+using our SDK, set your base_params and
+
+150
+00:06:29.889 --> 00:06:31.724
+generate a response. But you can see
+
+151
+00:06:31.724 --> 00:06:33.559
+here, as we build our system prompt,
+
+152
+00:06:33.960 --> 00:06:36.662
+as we figure out the messages necessary and any tools,
+
+153
+00:06:37.263 --> 00:06:40.166
+there's no iteration and back and forth to accumulate
+
+154
+00:06:40.166 --> 00:06:42.769
+our tools necessary and have a
+
+155
+00:06:42.769 --> 00:06:45.772
+multi-turn conversation with multiple tools being used.
+
+156
+00:06:46.172 --> 00:06:48.775
+So let's refactor that. I've got a pretty long prompt here,
+
+157
+00:06:49.175 --> 00:06:50.810
+so I'm going to go ahead and make
+
+158
+00:06:50.810 --> 00:06:52.678
+a new markdown file and let's go call this
+
+159
+00:06:53.379 --> 00:06:56.082
+backend-tool-refactor.md
+
+160
+00:06:56.382 --> 00:06:58.017
+In this file, I want to walk through the
+
+161
+00:06:58.017 --> 00:06:59.519
+prompt that I have where I'm
+
+162
+00:06:59.519 --> 00:07:01.287
+going to ask Ask Claude to refactor
+
+163
+00:07:01.287 --> 00:07:03.723
+the backend ai_generator.py
+
+164
+00:07:03.723 --> 00:07:06.659
+to support two calls in separate rounds.
+
+165
+00:07:06.659 --> 00:07:08.928
+The current behavior is what I'm describing
+
+166
+00:07:08.928 --> 00:07:10.897
+as well as the desired behavior.
+
+167
+00:07:10.897 --> 00:07:12.732
+While this might not be required,
+
+168
+00:07:12.732 --> 00:07:15.268
+it's often helpful, as we've seen,
+
+169
+00:07:15.268 --> 00:07:17.837
+to give Claude as much information as possible,
+
+170
+00:07:17.837 --> 00:07:20.907
+especially when the tasks are a little bit more complex.
+
+171
+00:07:20.907 --> 00:07:23.176
+We're also going to give Claude an example flow.
+
+172
+00:07:23.176 --> 00:07:25.845
+Something like search for a course that
+
+173
+00:07:25.845 --> 00:07:28.548
+discusses the same topic as another course.
+
+174
+00:07:28.548 --> 00:07:30.983
+Just to give Claude a sense of what needs to be done.
+
+175
+00:07:30.983 --> 00:07:32.952
+Notice here, there are a couple of different
+
+176
+00:07:32.952 --> 00:07:34.954
+tools that need to be used as expected.
+
+177
+00:07:34.954 --> 00:07:36.889
+We'll give Claude some requirements,
+
+178
+00:07:36.889 --> 00:07:38.558
+and then a couple of notes as well
+
+179
+00:07:38.558 --> 00:07:40.226
+to make sure we're doing the right thing.
+
+180
+00:07:40.226 --> 00:07:42.094
+We're going to make sure that
+
+181
+00:07:42.094 --> 00:07:44.230
+we write tests that verify external behavior
+
+182
+00:07:44.230 --> 00:07:47.433
+instead of worrying about internal state details.
+
+183
+00:07:47.433 --> 00:07:49.836
+Or we're also going to ask Claude to
+
+184
+00:07:49.836 --> 00:07:52.238
+do is figure out a couple different plans.
+
+185
+00:07:52.238 --> 00:07:53.806
+Don't implement any code,
+
+186
+00:07:53.806 --> 00:07:58.377
+but dispatch two subagents to brainstorm potential options.
+
+187
+00:07:58.377 --> 00:08:02.715
+In this situation, I'm not exactly sure what the optimal refactoring is.
+
+188
+00:08:03.082 --> 00:08:05.384
+So instead of letting Claude Code decide just one
+
+189
+00:08:05.384 --> 00:08:07.653
+option, I'm actually going to give it the opportunity
+
+190
+00:08:07.920 --> 00:08:10.756
+to figure out multiple options in parallel.
+
+191
+00:08:11.090 --> 00:08:12.692
+So let's use that particular prompt
+
+192
+00:08:12.892 --> 00:08:14.660
+and I'll turn off auto accept to make sure
+
+193
+00:08:15.061 --> 00:08:16.896
+that as I'm going through, I can
+
+194
+00:08:16.896 --> 00:08:18.331
+confirm each of the changes that
+
+195
+00:08:18.331 --> 00:08:20.066
+I want. So let's run that prompt.
+
+196
+00:08:20.333 --> 00:08:23.035
+We should expect to see the two parallel subagents
+
+197
+00:08:23.135 --> 00:08:25.638
+being dispatched using a tool called task.
+
+198
+00:08:26.138 --> 00:08:28.374
+And as we see those agents dispatched,
+
+199
+00:08:28.608 --> 00:08:30.176
+we'll start to see two plans
+
+200
+00:08:30.176 --> 00:08:32.044
+for how we can solve this problem.
+
+201
+00:08:32.044 --> 00:08:34.447
+It's then up to us to decide which one to implement.
+
+202
+00:08:35.014 --> 00:08:37.750
+We can see that both of these are operating in parallel,
+
+203
+00:08:38.284 --> 00:08:41.888
+reading across files and figuring out two different approaches for this refactor.
+
+204
+00:08:42.288 --> 00:08:44.123
+So it looks like it's come back with
+
+205
+00:08:44.123 --> 00:08:45.992
+some recommendations for how best to tackle this.
+
+206
+00:08:46.559 --> 00:08:50.096
+One approach is iterative, another more comprehensive.
+
+207
+00:08:50.162 --> 00:08:52.498
+We can see here that Claude is actually going
+
+208
+00:08:52.498 --> 00:08:55.101
+to give us an option to choose either option B
+
+209
+00:08:55.101 --> 00:08:59.839
+for better long-term maintainability or option A for a safer implementation.
+
+210
+00:08:59.839 --> 00:09:01.641
+scroll up more. If I scroll up more, I
+
+211
+00:09:01.641 --> 00:09:03.643
+can get some details into what it's trying to do.
+
+212
+00:09:04.310 --> 00:09:07.046
+One option supporting some iteration for handling tools,
+
+213
+00:09:07.413 --> 00:09:10.583
+the other for a slightly more complicated implementation
+
+214
+00:09:11.284 --> 00:09:14.720
+for multi-round logic with different helper methods for that process.
+
+215
+00:09:15.154 --> 00:09:18.057
+From first glance, it seems like approach A is a bit simpler.
+
+216
+00:09:18.558 --> 00:09:19.659
+So why don't we start with
+
+217
+00:09:19.659 --> 00:09:20.927
+that? I'm going to select approach A,
+
+218
+00:09:20.927 --> 00:09:23.663
+but I'm also now going to enable plan mode
+
+219
+00:09:23.996 --> 00:09:26.399
+to make sure I have a comprehensive plan and
+
+220
+00:09:26.399 --> 00:09:28.801
+can accept before making the changes that I want.
+
+221
+00:09:29.168 --> 00:09:30.403
+Let's implement approach A.
+
+222
+00:09:30.403 --> 00:09:32.471
+and get a more detailed plan to verify
+
+223
+00:09:32.471 --> 00:09:34.774
+that this is exactly what we want to do.
+
+224
+00:09:34.974 --> 00:09:36.842
+We know that there needs to be some modification
+
+225
+00:09:36.842 --> 00:09:38.744
+in the way that which we call these tools,
+
+226
+00:09:39.211 --> 00:09:40.813
+but let's make sure this is all being
+
+227
+00:09:40.813 --> 00:09:42.615
+done in the right place before we go ahead
+
+228
+00:09:42.848 --> 00:09:44.850
+and have Claude Code write the solution for us.
+
+229
+00:09:45.051 --> 00:09:46.886
+Now let's take a look at what's being done here.
+
+230
+00:09:47.019 --> 00:09:50.756
+We'll update our method signature for a maximum number of rounds,
+
+231
+00:09:50.890 --> 00:09:53.225
+update our system prompt, and here where the
+
+232
+00:09:53.225 --> 00:09:55.861
+core refactoring is done in our handle tool execution.
+
+233
+00:09:56.128 --> 00:09:57.863
+If this is done as expected, we
+
+234
+00:09:57.863 --> 00:09:59.799
+should see the user query, we should see
+
+235
+00:09:59.799 --> 00:10:03.002
+multiple tools being called and then a final response.
+
+236
+00:10:03.002 --> 00:10:07.506
+This shouldn't modify anything else and should solve the problem for us.
+
+237
+00:10:07.807 --> 00:10:10.009
+We can see here that this is backwards compatible,
+
+238
+00:10:10.009 --> 00:10:14.513
+and we're not changing the internal RAG system or any API endpoints.
+
+239
+00:10:14.814 --> 00:10:16.148
+So let's proceed and see if
+
+240
+00:10:16.148 --> 00:10:17.717
+this can solve our problem for us.
+
+241
+00:10:17.817 --> 00:10:20.019
+As we see what's being implemented,
+
+242
+00:10:20.019 --> 00:10:22.622
+we can see changes to existing methods,
+
+243
+00:10:22.622 --> 00:10:25.224
+and most importantly, we can see here that
+
+244
+00:10:25.224 --> 00:10:27.827
+we're updating the tests and running the tests
+
+245
+00:10:27.827 --> 00:10:30.696
+to verify that the implementation works correctly.
+
+246
+00:10:31.297 --> 00:10:33.299
+Instead of context switching to the browser
+
+247
+00:10:33.299 --> 00:10:35.267
+or asking other people to test,
+
+248
+00:10:35.668 --> 00:10:37.803
+I can do this all from inside the terminal
+
+249
+00:10:37.803 --> 00:10:39.472
+in Claude Code.
+
+250
+00:10:45.144 --> 00:10:46.779
+So we'll see here, we're going to update our system prompt,
+
+251
+00:10:47.246 --> 00:10:49.582
+make sure that our tests are as expected.
+
+252
+00:10:50.116 --> 00:10:51.884
+And then we'll add a test to make
+
+253
+00:10:51.884 --> 00:10:53.653
+sure the sequential tool calling works as expected.
+
+254
+00:10:54.186 --> 00:10:56.589
+Let's run our tests, make sure they're passing as expected.
+
+255
+00:10:57.289 --> 00:10:59.659
+Let's verify in the browser, this is doing what
+
+256
+00:10:59.792 --> 00:11:02.028
+if you want. Let's try asking first
+
+257
+00:11:02.628 --> 00:11:04.196
+for a details of a course's lesson.
+
+258
+00:11:06.732 --> 00:11:07.867
+So here we can see
+
+259
+00:11:07.867 --> 00:11:10.136
+that not only are we getting this information,
+
+260
+00:11:10.136 --> 00:11:12.605
+but also the title here as well, as expected.
+
+261
+00:11:12.838 --> 00:11:14.674
+We're getting information about this lesson,
+
+262
+00:11:14.974 --> 00:11:17.810
+as well as some of the sections and topics discussed.
+
+263
+00:11:18.077 --> 00:11:19.979
+Now let's do something a little more complex.
+
+264
+00:11:20.379 --> 00:11:22.415
+What's so special about seeing the title here is
+
+265
+00:11:22.415 --> 00:11:24.650
+that we don't get that with just one tool call.
+
+266
+00:11:25.117 --> 00:11:29.121
+The first tool call just gives us an outline of the course.
+
+267
+00:11:29.121 --> 00:11:31.791
+The second tool call gives us that detail
+
+268
+00:11:31.791 --> 00:11:34.593
+of the particular lesson and in our case the title.
+
+269
+00:11:34.593 --> 00:11:37.997
+Now let's ask, Are there any other courses that cover
+
+270
+00:11:37.997 --> 00:11:42.668
+the same topic as Lesson 5 of the MCP course?
+
+271
+00:11:42.902 --> 00:11:44.270
+In order to do this, we're going
+
+272
+00:11:44.270 --> 00:11:45.671
+to need to make multiple tool calls
+
+273
+00:11:45.971 --> 00:11:48.874
+to get information about this particular MCP course
+
+274
+00:11:48.874 --> 00:11:53.779
+and outline and then information about other courses and their outlines
+
+275
+00:11:53.779 --> 00:11:55.581
+to see if there's any overlap.
+
+276
+00:11:55.681 --> 00:11:58.684
+Unfortunately, it looks like there are no other courses
+
+277
+00:11:58.684 --> 00:12:01.921
+that cover building an MCP client, which does seem accurate.
+
+278
+00:12:01.921 --> 00:12:05.558
+In this lesson, we've seen how to use Claude Code to
+
+279
+00:12:05.558 --> 00:12:09.195
+not only fix bugs, but write tests throughout the entire process.
+
+280
+00:12:09.195 --> 00:12:12.665
+We built for ourselves a solid foundation to keep coding on
+
+281
+00:12:12.832 --> 00:12:17.636
+and made a nice refactor to get more complicated query answers appropriately.
+
+282
+00:12:17.636 --> 00:12:20.272
+In the next lesson, we'll improve our
+
+283
+00:12:20.272 --> 00:12:23.275
+productivity by running multiple sessions of Claude Code
+
+284
+00:12:23.476 --> 00:12:26.245
+and making sure we don't have overlaps or
+
+285
+00:12:26.245 --> 00:12:29.014
+overwrites using Git worktrees. I'll see you there.

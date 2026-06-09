@@ -1,0 +1,42 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.066 --> 00:00:03.933
+Thanks for joining me on this course
+and congratulations on completing it.
+
+2
+00:00:04.466 --> 00:00:07.733
+In this course you got to learn about
+Agentic RAG starting from
+
+3
+00:00:07.733 --> 00:00:11.266
+building a router agent to tool
+calling to building your own agent,
+
+4
+00:00:11.266 --> 00:00:15.066
+that can reason not just over a single
+document, but over multiple documents.
+
+5
+00:00:15.800 --> 00:00:19.300
+If you want to build custom agents, submit
+an agent implementation
+
+6
+00:00:19.300 --> 00:00:23.400
+as a community template, or leverage
+advanced document parsing services.
+
+7
+00:00:23.666 --> 00:00:25.566
+Check out the link to resources.
+
+8
+00:00:25.566 --> 00:00:28.900
+I look forward to seeing all the things
+that you'll build using Agentic RAG.
+

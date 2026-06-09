@@ -1,0 +1,195 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.727 --> 00:00:06.239
+When you have a team of people working together, the patterns by which they communicate can be
+
+2
+00:00:06.239 --> 00:00:10.960
+quite complex. And in fact, designing an organizational chart is actually pretty
+
+3
+00:00:10.960 --> 00:00:15.439
+complex to try to figure out what's the best way for people to communicate, to collaborate.
+
+4
+00:00:16.000 --> 00:00:22.000
+It turns out, designing communication patterns for multi-agent systems is also quite complex.
+
+5
+00:00:22.000 --> 00:00:26.799
+But let me show you some of the most common design patterns I see used by different teams today.
+
+6
+00:00:26.799 --> 00:00:31.840
+In a marketing team with a linear plan, where first a researcher worked, then a graphic designer,
+
+7
+00:00:31.840 --> 00:00:36.639
+then a writer, the communication pattern was linear. The researcher would communicate with
+
+8
+00:00:36.639 --> 00:00:40.639
+the graphic designer, and in both the research and the graphic designer, maybe pass the outputs to
+
+9
+00:00:40.639 --> 00:00:46.000
+the writer. And so there's a very linear communication pattern. This is one of the
+
+10
+00:00:46.000 --> 00:00:51.919
+two most common communication plans that I see being used today. The second of the two most
+
+11
+00:00:51.919 --> 00:00:58.639
+common communication plans would be similar to what you saw in this example, with planning using
+
+12
+00:00:58.639 --> 00:01:05.839
+multiple agents, where there is a manager that communicates with a number of team members and
+
+13
+00:01:05.839 --> 00:01:10.639
+coordinates their work. So in this example, the marketing manager decides to call on the researcher
+
+14
+00:01:10.639 --> 00:01:15.519
+to do some work. Then if you think of the marketing manager as getting the report back, and then
+
+15
+00:01:15.519 --> 00:01:20.480
+sending it to the graphic designer, getting a report back, and then sending it to the writer, this would be a
+
+16
+00:01:20.480 --> 00:01:25.279
+hierarchical communication pattern. If you're actually implementing a hierarchical communication
+
+17
+00:01:25.279 --> 00:01:29.760
+pattern, it'll probably be simpler to have the researcher pass the report back to the marketing
+
+18
+00:01:29.760 --> 00:01:34.160
+manager, rather than the researcher pass the results directly to the graphic designer and to
+
+19
+00:01:34.160 --> 00:01:40.000
+the writer. But so this type of hierarchy is also a pretty common way to plan the communication
+
+20
+00:01:40.000 --> 00:01:45.599
+patterns, where you have one manager coordinating the work of a number of other agents. And just to
+
+21
+00:01:45.599 --> 00:01:50.959
+share with you some more advanced and less frequently used, but nonetheless sometimes used in
+
+22
+00:01:50.959 --> 00:01:56.400
+practice communication patterns, one would be a deeper hierarchy, where same as before, if you have
+
+23
+00:01:56.400 --> 00:02:01.680
+a marketing manager send tasks to the researcher, graphic designer, writer, but maybe the researcher has
+
+24
+00:02:01.680 --> 00:02:07.040
+themselves two other agents that they call on, such as a web researcher and a fact checker. Maybe the
+
+25
+00:02:07.040 --> 00:02:13.440
+graphic designer just works by themselves, whereas the writer has an initial style writer and a citation
+
+26
+00:02:13.440 --> 00:02:19.520
+checker. So this would be a hierarchical organization of agents, in which some agents
+
+27
+00:02:19.520 --> 00:02:25.279
+might themselves call other sub-agents. And I also see this used in some applications, but this is
+
+28
+00:02:25.279 --> 00:02:31.520
+much more complex than a one-level hierarchy, so used less often today. And then one final pattern
+
+29
+00:02:31.520 --> 00:02:38.880
+that is quite challenging to execute, but I see a few experimental projects use it, is the all-to-all
+
+30
+00:02:38.880 --> 00:02:44.479
+communication pattern. So in this pattern, anyone is allowed to talk to anyone else at any time. And
+
+31
+00:02:44.479 --> 00:02:50.720
+the way you implement this is you prompt all four of your agents, in this case, to tell them that
+
+32
+00:02:50.720 --> 00:02:55.839
+there are three other agents they could decide to call on. And whenever one of your agents decides
+
+33
+00:02:55.839 --> 00:03:02.479
+to send a message to another agent, that message gets added to the receiver agent's contacts. And
+
+34
+00:03:02.479 --> 00:03:07.520
+then a receiver agent can think for a while and decide when to get back to that first agent. And
+
+35
+00:03:07.520 --> 00:03:13.440
+so if you can all collaborate in a crowd and talk to each other for a while until, say, each of them
+
+36
+00:03:13.440 --> 00:03:18.160
+declares that it is done with this task, and then it starts talking. And maybe when everyone thinks
+
+37
+00:03:18.160 --> 00:03:22.160
+it's done, or maybe when the writer concludes it's good enough, that's when you generate the final
+
+38
+00:03:22.160 --> 00:03:27.279
+output. In practice, I find the results of all-to-all communication patterns a bit hard to predict.
+
+39
+00:03:27.919 --> 00:03:32.960
+So some applications don't need high control. You can run it and see what you get. If the marketing
+
+40
+00:03:32.960 --> 00:03:37.119
+brochure isn't good, maybe that's okay. You just run it again and see if you get a different result.
+
+41
+00:03:37.119 --> 00:03:41.679
+But I think for applications where you're willing to tolerate a little bit of chaos and
+
+42
+00:03:41.679 --> 00:03:47.440
+unpredictability, I do see some developers using this communication pattern. So that, I hope,
+
+43
+00:03:47.440 --> 00:03:54.000
+conveys some of the richness of multi-agent systems. Today, there are quite a lot of software
+
+44
+00:03:54.000 --> 00:04:00.320
+frameworks as well that support easily building multi-agent systems. And they also make implementing
+
+45
+00:04:00.320 --> 00:04:06.399
+some of these communication patterns relatively easy. So maybe if you use your own multi-agent system,
+
+46
+00:04:06.399 --> 00:04:09.679
+you'll find some of these frameworks hopeful for exploring these different
+
+47
+00:04:09.679 --> 00:04:17.279
+communication patterns as well. And so that now brings us to the final video
+
+48
+00:04:17.279 --> 00:04:24.399
+of this module and of this course. Let's go on to the final video to wrap up.
+

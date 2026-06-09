@@ -1,0 +1,277 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.002 --> 00:00:04.295
+Welcome to MCP: Build
+
+2
+00:00:04.295 --> 00:00:08.299
+Rich-Context AI Apps with Anthropic built
+in partnership with Anthropic.
+
+3
+00:00:08.508 --> 00:00:11.553
+In this course,
+you'll learn the core concepts of MCP
+
+4
+00:00:11.553 --> 00:00:14.514
+and how to implement it in your
+AI application.
+
+5
+00:00:15.181 --> 00:00:19.185
+The Model Context Protocol,
+or MCP, is an open protocol
+
+6
+00:00:19.185 --> 00:00:23.440
+that standardizes how your LLM applications
+can get access to context
+
+7
+00:00:23.690 --> 00:00:26.693
+in terms of tools and data resources
+
+8
+00:00:26.735 --> 00:00:29.404
+based on the client-server architecture.
+
+9
+00:00:29.404 --> 00:00:33.199
+It defines how communication takes place
+between an MCP client
+
+10
+00:00:33.199 --> 00:00:36.536
+hosted inside your own LLM application,
+and an MCP server
+
+11
+00:00:36.745 --> 00:00:40.915
+that exposes tools and data resources
+and prompt templates to your application.
+
+12
+00:00:41.666 --> 00:00:45.211
+Since Anthropic
+launched MCP in November of 2024,
+
+13
+00:00:45.420 --> 00:00:48.423
+the MCP ecosystem has been growing
+really rapidly.
+
+14
+00:00:48.673 --> 00:00:52.302
+I'm delighted that the instructor for this
+course is Elie Schoppik,
+
+15
+00:00:52.635 --> 00:00:55.638
+who is Head of Technical Education
+at Anthropic.
+
+16
+00:00:55.764 --> 00:00:58.224
+Thanks, Andrew.
+I'm excited to teach this course with you.
+
+17
+00:00:58.224 --> 00:01:01.227
+MCP originated
+as part of an internal project
+
+18
+00:01:01.269 --> 00:01:05.356
+where we recognized an opportunity to
+extend the capabilities of Claude Desktop
+
+19
+00:01:05.607 --> 00:01:09.569
+so that it can interact with local file
+systems and other external systems.
+
+20
+00:01:10.028 --> 00:01:13.531
+We found the protocol we developed
+was useful in many AI applications,
+
+21
+00:01:13.740 --> 00:01:17.160
+with similar needs. To make this available
+to more developers,
+
+22
+00:01:17.368 --> 00:01:18.953
+we published the specification
+
+23
+00:01:18.953 --> 00:01:21.414
+and opened its development
+to the open source community.
+
+24
+00:01:21.414 --> 00:01:25.752
+The MCP ecosystem includes
+a growing number of MCP service
+
+25
+00:01:25.752 --> 00:01:30.340
+developed by the open source community,
+as well as by Anthropic's MCP team.
+
+26
+00:01:31.091 --> 00:01:34.344
+MCP is model agnostic
+and is designed to be easy
+
+27
+00:01:34.344 --> 00:01:36.638
+to plug into multiple applications.
+
+28
+00:01:36.638 --> 00:01:39.182
+Say you're building a research
+assistant agent,
+
+29
+00:01:39.182 --> 00:01:42.977
+and you'd like for this agent to interact
+with your GitHub repos, read notes
+
+30
+00:01:42.977 --> 00:01:46.106
+from your Google Drive documents,
+maybe create a summary stored
+
+31
+00:01:46.106 --> 00:01:50.193
+in your local system. Instead of you
+writing your own custom LLM tools,
+
+32
+00:01:50.276 --> 00:01:55.073
+you can connect your agent to the GitHub,
+Google Drive and File System service,
+
+33
+00:01:55.406 --> 00:01:58.326
+which will provide the tool or the API call
+
+34
+00:01:58.326 --> 00:02:01.913
+definitions
+and also handle the tool execution.
+
+35
+00:02:02.038 --> 00:02:05.291
+Elie will walk you
+through the details of the MCP protocol.
+
+36
+00:02:05.834 --> 00:02:09.921
+We'll first dive into the details
+of the MCP client-server architecture.
+
+37
+00:02:10.004 --> 00:02:13.675
+You'll then work on a chatbot
+application to make it MCP compatible.
+
+38
+00:02:14.134 --> 00:02:17.720
+You'll build and test an MCP server
+and connect your chatbot to it.
+
+39
+00:02:18.263 --> 00:02:18.930
+Your MCP
+
+40
+00:02:18.930 --> 00:02:23.059
+server will provide tools, prompt
+templates, and resources to your chatbot.
+
+41
+00:02:23.643 --> 00:02:26.896
+You'll also connect your chatbot
+to other trusted third-party servers
+
+42
+00:02:27.063 --> 00:02:29.107
+to extend its capabilities.
+
+43
+00:02:29.107 --> 00:02:31.901
+You'll then re-use your MCP server
+and connect it
+
+44
+00:02:31.901 --> 00:02:34.904
+to other MCP applications
+like Claude Desktop.
+
+45
+00:02:35.155 --> 00:02:38.741
+Finally, you'll learn how you can deploy
+your MCP server remotely.
+
+46
+00:02:39.117 --> 00:02:41.828
+I'd like to thank from DeepLearning.AI,
+
+47
+00:02:41.828 --> 00:02:44.831
+Hawraa Salami,
+who had contributed to this course.
+
+48
+00:02:45.081 --> 00:02:47.458
+MCP is a really important technology
+
+49
+00:02:47.458 --> 00:02:50.670
+that's making it much easier for LLM application
+developers
+
+50
+00:02:50.670 --> 00:02:53.673
+to connect the systems
+to many tools and data resources.
+
+51
+00:02:54.257 --> 00:02:57.135
+And for teams
+building tools or providing data,
+
+52
+00:02:57.135 --> 00:02:59.012
+it is also making it much easier
+
+53
+00:02:59.012 --> 00:03:02.223
+to make what they build
+available to many developers.
+
+54
+00:03:02.891 --> 00:03:05.727
+So this is a technology
+worth learning about.
+
+55
+00:03:05.727 --> 00:03:09.272
+The next video goes through
+why connecting LLM applications
+
+56
+00:03:09.314 --> 00:03:14.314
+to resources had been so difficult before,
+and how MCP addresses this.
+
+57
+00:03:14.694 --> 00:03:17.280
+So, please
+go on to the next video to learn more.
+

@@ -1,0 +1,949 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.000 --> 00:00:04.300
+You're now ready to start building
+your agent.
+
+2
+00:00:04.300 --> 00:00:08.000
+You're given a fake resume that you will
+use to fill out a fake job application.
+
+3
+00:00:08.333 --> 00:00:11.533
+In this lesson, you will set up
+the RAG capability of your agent.
+
+4
+00:00:11.900 --> 00:00:14.300
+You will use Llama parse to parse the resume,
+
+5
+00:00:14.300 --> 00:00:16.833
+load the extracted information
+into a vector store,
+
+6
+00:00:16.833 --> 00:00:19.400
+and then run basic queries to test it.
+
+7
+00:00:19.400 --> 00:00:21.033
+All right, let's go.
+
+8
+00:00:21.033 --> 00:00:24.000
+You need nested
+async for this notebook to work.
+
+9
+00:00:24.000 --> 00:00:27.000
+So, let's enable it here.
+
+10
+00:00:27.000 --> 00:00:29.233
+First we bring in our imports
+
+11
+00:00:29.233 --> 00:00:32.233
+and then we bring in nested async.
+
+12
+00:00:32.800 --> 00:00:35.300
+And we execute both of the cells
+just to get them ready.
+
+13
+00:00:35.300 --> 00:00:38.200
+We're also going to need our API keys.
+
+14
+00:00:38.200 --> 00:00:40.000
+OpenAI we used earlier.
+
+15
+00:00:40.000 --> 00:00:42.800
+And we're also going to need a Llama
+cloud API key
+
+16
+00:00:42.800 --> 00:00:46.600
+because we're going to be using Llama parse
+to parse the PDFs. Llama parce
+
+17
+00:00:46.600 --> 00:00:49.300
+is an advanced document parser
+that can read PDFs,
+
+18
+00:00:49.300 --> 00:00:52.300
+word files, PowerPoints,
+Excel spreadsheets, stuff like that.
+
+19
+00:00:52.333 --> 00:00:56.000
+It's really great at getting information
+out of complicated PDFs into a form
+
+20
+00:00:56.000 --> 00:00:58.033
+LLMs find easy to understand.
+
+21
+00:00:58.033 --> 00:01:01.600
+You can get a key at cloud
+dot LlamaIndex.AI for free.
+
+22
+00:01:01.933 --> 00:01:04.500
+Let's start by parsing a resume.
+
+23
+00:01:04.500 --> 00:01:07.700
+One of the coolest features of Llama
+Parse is the ability to tell it
+
+24
+00:01:07.700 --> 00:01:11.533
+what kind of document it's parsing,
+so that it will more intelligently parse
+
+25
+00:01:11.533 --> 00:01:12.633
+the contents.
+
+26
+00:01:12.633 --> 00:01:15.233
+In this case, you can tell it
+that it's reading a resume.
+
+27
+00:01:16.233 --> 00:01:17.400
+So let's
+
+28
+00:01:17.400 --> 00:01:20.400
+import Llama Parse and then let's pass
+a document.
+
+29
+00:01:21.300 --> 00:01:23.400
+You do this by calling Llama Parse
+
+30
+00:01:23.400 --> 00:01:26.500
+passing in your API key telling it
+what result type you want.
+
+31
+00:01:26.533 --> 00:01:29.000
+This could be markdown or text
+or a number of other types.
+
+32
+00:01:29.000 --> 00:01:31.800
+And then we're going to give it a content
+guideline instruction
+
+33
+00:01:31.800 --> 00:01:33.600
+saying: this is a resume.
+
+34
+00:01:33.600 --> 00:01:37.100
+Gather related facts together and format
+it as bullet points with headers.
+
+35
+00:01:37.333 --> 00:01:41.033
+Once you've created a parser on parser,
+you can call load data.
+
+36
+00:01:41.300 --> 00:01:44.033
+With our fake resume,
+it starts parsing the file
+
+37
+00:01:44.033 --> 00:01:46.600
+depending on the size of the file,
+
+38
+00:01:46.600 --> 00:01:47.900
+this can take a little while,
+
+39
+00:01:47.900 --> 00:01:51.000
+but our resume is pretty short,
+so it shouldn't take too long.
+
+40
+00:01:51.200 --> 00:01:52.900
+Once it's done, we can print
+
+41
+00:01:52.900 --> 00:01:56.700
+what we get back from the parser,
+which is an array of documents.
+
+42
+00:01:56.700 --> 00:01:58.100
+So in this case, we're going to take
+
+43
+00:01:58.100 --> 00:02:01.533
+the third element of the array
+and print out the text of that document.
+
+44
+00:02:02.033 --> 00:02:05.100
+You can see that
+it's passed out some projects
+
+45
+00:02:05.533 --> 00:02:09.200
+and said
+what's in the resume with headers.
+
+46
+00:02:09.700 --> 00:02:11.000
+Remember it's doing markdown.
+
+47
+00:02:11.000 --> 00:02:12.800
+So it's got a project's header.
+
+48
+00:02:12.800 --> 00:02:14.600
+It's got a company name.
+
+49
+00:02:14.600 --> 00:02:17.500
+It's got bullet points saying what
+
+50
+00:02:17.500 --> 00:02:20.500
+our fake candidate
+did and all of those jobs.
+
+51
+00:02:20.500 --> 00:02:24.033
+Now that we've got our documents,
+we can pass in to our vector store index.
+
+52
+00:02:24.100 --> 00:02:26.600
+The vector store
+index will embed the text,
+
+53
+00:02:26.600 --> 00:02:29.400
+meaning it'll turn it into vectors
+that we can search.
+
+54
+00:02:29.400 --> 00:02:32.000
+To do this,
+it needs to use an embedding API.
+
+55
+00:02:32.000 --> 00:02:36.000
+We'll be using one provided by OpenAI,
+which is why we needed an OpenAI key
+
+56
+00:02:36.000 --> 00:02:36.800
+for this.
+
+57
+00:02:36.800 --> 00:02:41.233
+So here we've imported OpenAI's embeddings
+and our vector store index.
+
+58
+00:02:41.900 --> 00:02:44.900
+And now we're going to create an index
+using vector store index.
+
+59
+00:02:45.400 --> 00:02:47.733
+Vector store index has a from documents
+method
+
+60
+00:02:47.733 --> 00:02:50.733
+that takes the documents
+that were returned by Llama Parse.
+
+61
+00:02:51.133 --> 00:02:53.000
+And here we're passing
+in the embedding model.
+
+62
+00:02:53.000 --> 00:02:55.900
+Just to be absolutely clear
+what embeddings we should use.
+
+63
+00:02:55.900 --> 00:02:59.333
+We're using text embedding through small,
+which is a very good embedding model
+
+64
+00:02:59.333 --> 00:03:00.500
+provided by OpenAI.
+
+65
+00:03:01.500 --> 00:03:02.800
+Now once again we're going
+
+66
+00:03:02.800 --> 00:03:05.800
+to bring in our OpenAI LLM.
+
+67
+00:03:07.300 --> 00:03:10.300
+And we're going to instantiate it.
+
+68
+00:03:11.833 --> 00:03:13.300
+Again we're going to use the
+
+69
+00:03:13.300 --> 00:03:16.533
+GPT-4o-mini model
+because it's quick and it's cheap.
+
+70
+00:03:16.900 --> 00:03:18.100
+Once you've got an index,
+
+71
+00:03:18.100 --> 00:03:21.833
+you can create a query engine
+using the as query engine method.
+
+72
+00:03:22.400 --> 00:03:25.500
+You pass in which LLM
+you want your query engine to use,
+
+73
+00:03:25.733 --> 00:03:29.433
+and you pass in similarity
+top K when your query engine
+
+74
+00:03:29.433 --> 00:03:32.100
+is retrieving context
+to answer the question,
+
+75
+00:03:32.100 --> 00:03:35.500
+it will rank
+all of the content that it finds
+
+76
+00:03:35.700 --> 00:03:40.200
+by how relevant it is to your query,
+rather than return all of it.
+
+77
+00:03:40.233 --> 00:03:42.500
+It only returns a top number.
+
+78
+00:03:42.500 --> 00:03:45.500
+In this case, it's
+going to return the top five.
+
+79
+00:03:45.500 --> 00:03:50.033
+Once we've got our query engine set up,
+we can call query with a question.
+
+80
+00:03:50.500 --> 00:03:51.600
+A really basic question.
+
+81
+00:03:51.600 --> 00:03:54.600
+In this case, what is their name
+and what was their most recent job.
+
+82
+00:03:54.900 --> 00:03:56.900
+And then we can print out the response.
+
+83
+00:03:56.900 --> 00:03:59.000
+Our fake developer's name is Sarah Chen.
+
+84
+00:03:59.000 --> 00:04:03.533
+And their most recent job is senior
+full Stack developer at TechFlow Solutions.
+
+85
+00:04:03.833 --> 00:04:05.633
+One thing that you might need to do
+
+86
+00:04:05.633 --> 00:04:08.600
+is store vector Store,
+so that you can use it later.
+
+87
+00:04:08.600 --> 00:04:11.333
+Vector stores are easily
+persisted to disk.
+
+88
+00:04:11.333 --> 00:04:14.500
+You define a storage directory
+in which you want to store your data,
+
+89
+00:04:14.800 --> 00:04:16.400
+and you call the persist method.
+
+90
+00:04:16.400 --> 00:04:17.800
+That's all you need to do.
+
+91
+00:04:17.800 --> 00:04:19.733
+It's now stored on your disk.
+
+92
+00:04:19.733 --> 00:04:23.533
+To load it back, you need a new method
+load index from storage
+
+93
+00:04:23.800 --> 00:04:26.600
+and a new class the storage context.
+
+94
+00:04:26.600 --> 00:04:30.700
+Here, you're going to check whether or not
+you've already run this notebook.
+
+95
+00:04:30.900 --> 00:04:34.533
+If you've already run this notebook,
+then the storage directory will exist
+
+96
+00:04:34.533 --> 00:04:39.100
+and your content will already be there,
+in which case you'll load storage context
+
+97
+00:04:39.100 --> 00:04:43.000
+from defaults,
+giving it the same persistence directory
+
+98
+00:04:43.000 --> 00:04:44.300
+that you used earlier,
+
+99
+00:04:44.300 --> 00:04:47.733
+and you'll create your index
+by calling load index from storage.
+
+100
+00:04:48.500 --> 00:04:50.733
+Otherwise
+it will say that it didn't find it.
+
+101
+00:04:52.533 --> 00:04:55.033
+We already
+called persist, so that just worked.
+
+102
+00:04:55.033 --> 00:04:59.233
+Now that we've got our restored index,
+we can call it with as query
+
+103
+00:04:59.233 --> 00:05:02.233
+engine dot query again,
+just like we did before.
+
+104
+00:05:02.300 --> 00:05:06.233
+Again, it knows that our fake developers
+name is Sarah Chen.
+
+105
+00:05:06.500 --> 00:05:07.600
+Congratulations.
+
+106
+00:05:07.600 --> 00:05:11.633
+What you've done is you've performed
+retrieval augmented generation on a resume
+
+107
+00:05:11.633 --> 00:05:14.900
+document. RAG is a very powerful technique
+that with proper
+
+108
+00:05:14.900 --> 00:05:17.900
+scaling, can work across databases
+of thousands of documents.
+
+109
+00:05:18.033 --> 00:05:20.200
+With our RAG pipeline in hand,
+
+110
+00:05:20.200 --> 00:05:23.933
+let's turn it into a tool that can be used
+by an agent to answer questions.
+
+111
+00:05:24.000 --> 00:05:25.133
+This is a stepping stone
+
+112
+00:05:25.133 --> 00:05:28.433
+towards creating an agentic system
+that can perform your larger goal.
+
+113
+00:05:28.900 --> 00:05:32.300
+We'll need two new classes for this:
+a function tool and a function
+
+114
+00:05:32.300 --> 00:05:33.300
+calling agent.
+
+115
+00:05:33.300 --> 00:05:35.800
+The first step is to create
+a regular Python function
+
+116
+00:05:35.800 --> 00:05:37.533
+that performs a RAG query.
+
+117
+00:05:37.533 --> 00:05:41.333
+It's important to give this function
+a descriptive name to markets, inputs,
+
+118
+00:05:41.333 --> 00:05:44.000
+and output types,
+and to include a docstring
+
+119
+00:05:44.000 --> 00:05:46.700
+that is the thing in triple quotes
+that you're about to see.
+
+120
+00:05:46.700 --> 00:05:48.733
+This describes what it does.
+
+121
+00:05:48.733 --> 00:05:52.500
+The framework will give all of this
+metadata to the LLM, the name,
+
+122
+00:05:52.500 --> 00:05:57.100
+the types, and the docstring and the LLM
+will use that metadata to decide
+
+123
+00:05:57.400 --> 00:06:00.600
+whether or not this tool is useful
+and how to use this tool.
+
+124
+00:06:00.633 --> 00:06:02.300
+Once we've defined our function,
+
+125
+00:06:02.300 --> 00:06:06.600
+we turn it into a tool that can be used
+by an agent using the from defaults
+
+126
+00:06:06.600 --> 00:06:09.600
+function, a function tool,
+and we pass in the function.
+
+127
+00:06:10.000 --> 00:06:13.500
+Now you can instantiate a function
+calling agent that uses this tool.
+
+128
+00:06:14.133 --> 00:06:16.733
+There are a number of different
+agent types supported by the LlamaIndex.
+
+129
+00:06:16.733 --> 00:06:17.833
+This one is particularly
+
+130
+00:06:17.833 --> 00:06:20.700
+capable and efficient
+and it works well with OpenAI.
+
+131
+00:06:20.700 --> 00:06:23.600
+To create it,
+you pass in an array of tools.
+
+132
+00:06:23.600 --> 00:06:24.200
+Just one
+
+133
+00:06:24.200 --> 00:06:28.200
+in this case, you pass it the LLM
+that it should use to power the agent.
+
+134
+00:06:28.500 --> 00:06:31.500
+And in this case
+we're going to set verbose equals true
+
+135
+00:06:31.500 --> 00:06:33.900
+so that we can see what it's doing
+when it works.
+
+136
+00:06:33.900 --> 00:06:37.700
+Now that we've created our agent
+we can chat with it and ask it a question.
+
+137
+00:06:37.900 --> 00:06:40.800
+In this case we're going to ask it
+how many years of experience
+
+138
+00:06:40.800 --> 00:06:42.100
+the applicant has.
+
+139
+00:06:42.100 --> 00:06:45.100
+You can see the output being very noisy
+because we've set
+
+140
+00:06:45.100 --> 00:06:46.700
+verbose is equal to true.
+
+141
+00:06:46.700 --> 00:06:48.833
+So it tells us when it's running steps.
+
+142
+00:06:48.833 --> 00:06:52.333
+It says that it's added this user
+message to memory, which is our question.
+
+143
+00:06:52.600 --> 00:06:54.500
+And then you can see it's
+calling the function.
+
+144
+00:06:54.500 --> 00:06:57.500
+You can see which function it's calling,
+query resume.
+
+145
+00:06:57.600 --> 00:06:59.833
+And you can see what parameters
+it's passing in.
+
+146
+00:06:59.833 --> 00:07:02.933
+The query is how many years of experience
+does the applicant have.
+
+147
+00:07:03.000 --> 00:07:05.533
+This is the output
+that it got from the function.
+
+148
+00:07:05.533 --> 00:07:08.300
+And this is what the LLM responded with.
+
+149
+00:07:08.300 --> 00:07:12.200
+You see it twice because verbose
+printed it once and we printed it once.
+
+150
+00:07:12.533 --> 00:07:15.800
+Now you've got a RAG pipeline
+and an agent.
+
+151
+00:07:15.933 --> 00:07:16.833
+Let's wrap them up
+
+152
+00:07:16.833 --> 00:07:20.300
+neatly into a workflow
+that you can extend in your later lessons.
+
+153
+00:07:20.700 --> 00:07:23.900
+You won't rely on any of the things
+you've already created in this lesson.
+
+154
+00:07:24.233 --> 00:07:26.733
+You will start this one from scratch.
+
+155
+00:07:26.733 --> 00:07:31.000
+So just like we did in the last lesson,
+we're going to import our events
+
+156
+00:07:31.000 --> 00:07:33.400
+and our other workflow related
+core classes.
+
+157
+00:07:33.400 --> 00:07:36.300
+You'll see
+start event and stop event, steps,
+
+158
+00:07:36.300 --> 00:07:39.300
+event and context,
+all of which you've seen before.
+
+159
+00:07:39.433 --> 00:07:41.200
+We're going to define our query event,
+
+160
+00:07:41.200 --> 00:07:44.433
+which is the only event that we need
+in this particular workflow so far.
+
+161
+00:07:44.900 --> 00:07:47.700
+And now we're going to create a RAG
+workflow.
+
+162
+00:07:47.700 --> 00:07:49.400
+This is pretty complicated.
+
+163
+00:07:49.400 --> 00:07:54.333
+So let's step through it line by line.
+A RAG workflow is a class.
+
+164
+00:07:54.333 --> 00:07:57.300
+So you can give it class variables
+just like any other class.
+
+165
+00:07:57.300 --> 00:07:59.200
+It's got a storage directory.
+
+166
+00:07:59.200 --> 00:08:02.900
+We've given it an LLM
+and we've given it a query engine.
+
+167
+00:08:03.100 --> 00:08:04.400
+These are the types here.
+
+168
+00:08:04.400 --> 00:08:06.300
+The first step is going to be set up.
+
+169
+00:08:06.300 --> 00:08:09.700
+We're going to check that
+we've been given a resume file
+
+170
+00:08:10.400 --> 00:08:13.300
+which is attached to the start event.
+
+171
+00:08:13.300 --> 00:08:17.233
+And we're going to instantiate
+our LLM as OpenAI
+
+172
+00:08:17.233 --> 00:08:19.700
+again. This section you've seen before.
+
+173
+00:08:19.700 --> 00:08:23.033
+We're going to check
+if our storage signature already exists.
+
+174
+00:08:23.033 --> 00:08:25.333
+And if it does
+we're going to load it from disk.
+
+175
+00:08:25.333 --> 00:08:28.500
+If it doesn't, then we're going to parse
+and load our documents.
+
+176
+00:08:29.000 --> 00:08:32.000
+This is exactly the same thing
+that we did earlier in the lesson.
+
+177
+00:08:32.100 --> 00:08:35.300
+We then create a vector store index
+just like we did earlier in the lesson,
+
+178
+00:08:35.900 --> 00:08:39.933
+and we persist it to disk
+just like we did earlier in the lesson.
+
+179
+00:08:40.033 --> 00:08:44.100
+Either way, you've now got an index
+and you turned it into a query engine.
+
+180
+00:08:44.200 --> 00:08:45.700
+Now, you've got a query engine.
+
+181
+00:08:45.700 --> 00:08:47.300
+You can fire off the query event.
+
+182
+00:08:48.600 --> 00:08:49.700
+The query event
+
+183
+00:08:49.700 --> 00:08:53.700
+will trigger ask question
+and ask a question will simply query
+
+184
+00:08:53.700 --> 00:08:56.700
+the query engine with a question
+about the applicant.
+
+185
+00:08:59.800 --> 00:09:02.800
+So, let's instantiate that workflow
+
+186
+00:09:03.000 --> 00:09:06.000
+and we'll run it
+just like we've run any other workflow.
+
+187
+00:09:07.700 --> 00:09:10.700
+In this case,
+the workflow is expecting two parameters.
+
+188
+00:09:10.733 --> 00:09:13.733
+One is the location of the resume file
+that it can parse,
+
+189
+00:09:14.300 --> 00:09:17.300
+and one is the query about the applicant.
+
+190
+00:09:17.300 --> 00:09:20.533
+As you can see,
+it worked very quickly because
+
+191
+00:09:20.533 --> 00:09:22.533
+we'd already persisted this to disk.
+
+192
+00:09:22.533 --> 00:09:24.400
+It didn't need to reparse the document.
+
+193
+00:09:24.400 --> 00:09:26.900
+It was able to just immediately
+answer the question.
+
+194
+00:09:26.900 --> 00:09:29.500
+There's nothing in this workflow
+that you haven't done before.
+
+195
+00:09:29.500 --> 00:09:32.200
+It's just making things neat
+and encapsulated. If you're
+
+196
+00:09:32.200 --> 00:09:35.833
+particularly suspicious, you might note
+that there's a small bug here.
+
+197
+00:09:36.300 --> 00:09:39.200
+If you run this a second time
+with a different resume,
+
+198
+00:09:39.200 --> 00:09:41.833
+this code will find
+the old resume on disk,
+
+199
+00:09:41.833 --> 00:09:44.700
+and therefore it won't bother to parse
+the new resume.
+
+200
+00:09:44.700 --> 00:09:47.933
+You don't need to fix that now,
+but think about how you might fix that.
+
+201
+00:09:48.233 --> 00:09:49.033
+Congratulations!
+
+202
+00:09:49.033 --> 00:09:52.033
+Once you've successfully created
+an agent with the RAG tools.
+
+203
+00:09:52.333 --> 00:09:55.500
+In the next lesson, you'll give your agent
+some more complicated tasks.
+

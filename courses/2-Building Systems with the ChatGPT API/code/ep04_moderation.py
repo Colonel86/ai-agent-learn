@@ -11,16 +11,45 @@ def demo_moderation_api():
     print("Demo 1: Moderation API — 检测有害内容")
     print("=" * 60)
 
-    response = client.moderations.create(
-        input="""
+    test_input = """
 Here's the plan.  We get the warhead,
 and we hold the world ransom...
 ...FOR ONE MILLION DOLLARS!
 """
-    )
-    moderation_output = response.results[0]
-    print(f"flagged: {moderation_output.flagged}")
-    print(f"categories: {moderation_output.categories}\n")
+
+    # 优先尝试 OpenAI 原生 Moderation API
+    try:
+        response = client.moderations.create(input=test_input)
+        moderation_output = response.results[0]
+        print(f"[OpenAI Moderation] flagged: {moderation_output.flagged}")
+        print(f"categories: {moderation_output.categories}\n")
+        return
+    except Exception as e:
+        print(f"[提示] Moderation API 不可用（{type(e).__name__}），")
+        print(f"        当前 base_url 可能不支持该端点（如 DeepSeek）。")
+        print(f"        改用 chat completion 模拟 moderation。\n")
+
+    # Fallback：用 chat completion 模拟内容审核
+    system_message = """\
+You are a content moderation classifier. \
+Analyze the user's text and respond ONLY with valid JSON in this format:
+{
+  "flagged": true/false,
+  "categories": {
+    "violence": true/false,
+    "hate": true/false,
+    "self_harm": true/false,
+    "sexual": true/false,
+    "harassment": true/false
+  },
+  "reason": "brief explanation"
+}"""
+    messages = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": test_input},
+    ]
+    result = get_completion_from_messages(messages, temperature=0, max_tokens=300)
+    print(f"[Chat-based Moderation 输出]\n{result}\n")
 
 
 def demo_prompt_injection_defense():

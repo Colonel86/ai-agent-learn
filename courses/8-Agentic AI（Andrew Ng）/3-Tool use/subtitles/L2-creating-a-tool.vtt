@@ -1,0 +1,431 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.304 --> 00:00:05.840
+The process of how an LLM decides to call a function maybe seems a little bit mysterious
+
+2
+00:00:05.840 --> 00:00:11.039
+initially because an LLM is just trained to generate output text or output text tokens.
+
+3
+00:00:11.039 --> 00:00:15.600
+So how does that work? In this video, I'd like to walk through with you step-by-step
+
+4
+00:00:15.600 --> 00:00:21.120
+what the process of getting an LLM to be able to get a function called really looks like.
+
+5
+00:00:21.120 --> 00:00:22.239
+Let's take a look.
+
+6
+00:00:22.239 --> 00:00:27.680
+So tools are just codes or functions that an LLM can request to be executed,
+
+7
+00:00:27.680 --> 00:00:31.680
+like this getCurrentTime function that we saw from the previous video.
+
+8
+00:00:31.680 --> 00:00:36.080
+Now, today's leading LLMs are all trained directly to use tools,
+
+9
+00:00:36.080 --> 00:00:41.439
+but I want to walk through with you what it would look like if you had to write prompts yourself
+
+10
+00:00:41.439 --> 00:00:46.479
+to tell it when to use tools, and this is what we had to do in an earlier era
+
+11
+00:00:46.479 --> 00:00:49.040
+before LLMs were trained directly to use tools.
+
+12
+00:00:49.040 --> 00:00:51.680
+And even though we don't do it exactly this way anymore,
+
+13
+00:00:51.680 --> 00:00:54.560
+this will hopefully give you a better understanding of the process,
+
+14
+00:00:54.560 --> 00:00:57.680
+and we'll walk through the more modern syntax in the next video.
+
+15
+00:00:57.680 --> 00:01:00.720
+If you've implemented this function to getCurrentTime,
+
+16
+00:01:00.720 --> 00:01:05.440
+then in order to give this tool to the LLM, you might write a prompt like this.
+
+17
+00:01:05.440 --> 00:01:09.199
+You may tell it, LLM, you have access to a tool called getCurrentTime.
+
+18
+00:01:09.199 --> 00:01:12.239
+To use it, I want you to print out the following text.
+
+19
+00:01:12.239 --> 00:01:15.519
+Print out all caps function and then print out getCurrentTime.
+
+20
+00:01:15.519 --> 00:01:19.040
+And if I ever see this text, all caps function and then getCurrentTime,
+
+21
+00:01:19.040 --> 00:01:23.120
+that's when I know you want me to call the getCurrentTime function for you.
+
+22
+00:01:23.120 --> 00:01:25.360
+When a user asks, what time is it?
+
+23
+00:01:25.360 --> 00:01:29.919
+The LLM will then realize it needs to call or request to get called the getCurrentTime function.
+
+24
+00:01:29.919 --> 00:01:32.319
+And so the LLM will then output what it was told.
+
+25
+00:01:32.319 --> 00:01:35.599
+It'll output all caps function: getCurrentTime.
+
+26
+00:01:35.599 --> 00:01:40.080
+Now, I then have to have written code to look at the output of the LLM
+
+27
+00:01:40.080 --> 00:01:42.559
+to see if there is this all caps function.
+
+28
+00:01:42.559 --> 00:01:47.040
+And if so, then I need to pull out the argument of this getCurrentTime
+
+29
+00:01:47.040 --> 00:01:49.279
+to figure out what function the LLM wants to call.
+
+30
+00:01:49.279 --> 00:01:53.839
+And then I need to write code to actually call the getCurrentTime function
+
+31
+00:01:53.839 --> 00:01:57.680
+and then pull out the output, which is, let's say, 8 a.m.
+
+32
+00:01:57.680 --> 00:02:00.800
+And then it is the developer written code, my code,
+
+33
+00:02:00.800 --> 00:02:04.239
+that has to take 8 a.m. and feed that time, 8 a.m.,
+
+34
+00:02:04.239 --> 00:02:07.279
+back into the LLM as part of this conversational history.
+
+35
+00:02:07.279 --> 00:02:10.399
+And the conversational history, of course, includes the initial user prompt,
+
+36
+00:02:10.399 --> 00:02:13.119
+the fact that the request is a function call, and so on.
+
+37
+00:02:13.119 --> 00:02:17.119
+And lastly, the LLM, knowing what had happened earlier,
+
+38
+00:02:17.119 --> 00:02:19.679
+that the user asks a question, requests a function call,
+
+39
+00:02:19.679 --> 00:02:23.119
+and then also that I call the function and return 8 a.m.
+
+40
+00:02:23.119 --> 00:02:26.960
+Finally, the LLM can look at all this and generate the final response,
+
+41
+00:02:26.960 --> 00:02:28.639
+which is, it is 8 a.m.
+
+42
+00:02:28.639 --> 00:02:31.679
+So to be clear, in order to call a function,
+
+43
+00:02:31.679 --> 00:02:34.240
+the LLM doesn't call the function directly.
+
+44
+00:02:34.240 --> 00:02:38.160
+It instead outputs something in a specific format like this
+
+45
+00:02:38.160 --> 00:02:41.199
+that tells me that I need to call the function for the LLM
+
+46
+00:02:41.199 --> 00:02:45.279
+and then tell the LLM what was the output of the function I requested.
+
+47
+00:02:45.279 --> 00:02:49.360
+In this example, we had given the LLM only a single function,
+
+48
+00:02:49.360 --> 00:02:52.399
+but you can imagine if we gave it three or four functions,
+
+49
+00:02:52.399 --> 00:02:55.279
+we could tell it to output functions in all caps,
+
+50
+00:02:55.279 --> 00:02:57.440
+then the name of the function it wants called,
+
+51
+00:02:57.440 --> 00:03:00.559
+and maybe even some arguments of these functions.
+
+52
+00:03:00.559 --> 00:03:03.520
+In fact, now let's take a look at a slightly more complex example
+
+53
+00:03:03.520 --> 00:03:08.399
+where the getCurrentTime function accepts an argument for the time zone
+
+54
+00:03:08.399 --> 00:03:10.240
+at which you want the current time.
+
+55
+00:03:10.240 --> 00:03:14.160
+For this second example, I've written a function
+
+56
+00:03:14.160 --> 00:03:16.880
+that gets the current time in a specified time zone,
+
+57
+00:03:16.880 --> 00:03:19.759
+where here the time zone is the input argument
+
+58
+00:03:19.759 --> 00:03:22.160
+to the getCurrentTime function.
+
+59
+00:03:22.160 --> 00:03:25.039
+So to let the LLM use this tool to answer questions
+
+60
+00:03:25.039 --> 00:03:27.360
+like maybe, what time is it in New Zealand?
+
+61
+00:03:27.360 --> 00:03:29.759
+Because my answer is there, so before I call her up,
+
+62
+00:03:29.759 --> 00:03:31.919
+I do look up what time it is in New Zealand.
+
+63
+00:03:31.919 --> 00:03:35.520
+To let the LLM use this tool, you might modify the system prompt
+
+64
+00:03:35.520 --> 00:03:39.119
+to say you can use the getCurrentTime tool for a specific time zone.
+
+65
+00:03:39.119 --> 00:03:41.919
+To use it, I'll put the following, getCurrentTime,
+
+66
+00:03:41.919 --> 00:03:43.759
+and then, you know, include the time zone.
+
+67
+00:03:43.759 --> 00:03:45.279
+And this is an abbreviated prompt.
+
+68
+00:03:45.279 --> 00:03:48.080
+In practice, you might put more details than this into the prompt
+
+69
+00:03:48.080 --> 00:03:50.800
+to tell it what is the function, how to use it, and so on.
+
+70
+00:03:50.800 --> 00:03:53.199
+In this example, the LLM will then realize
+
+71
+00:03:53.199 --> 00:03:56.160
+it needs to fetch the time in New Zealand,
+
+72
+00:03:56.160 --> 00:03:58.960
+and so it will generate output like this,
+
+73
+00:03:58.960 --> 00:04:02.399
+function: getCurrentTime Pacific/Auckland.
+
+74
+00:04:02.399 --> 00:04:04.080
+This is the New Zealand time zone
+
+75
+00:04:04.080 --> 00:04:06.639
+because Auckland is a major city in New Zealand.
+
+76
+00:04:06.639 --> 00:04:10.160
+Then I have to write code to search for whether or not
+
+77
+00:04:10.160 --> 00:04:13.440
+this function all caps appeared in the LLM output,
+
+78
+00:04:13.440 --> 00:04:17.040
+and if so, then I need to pull out the function to call.
+
+79
+00:04:17.040 --> 00:04:19.600
+Lastly, I will then call getCurrentTime
+
+80
+00:04:19.600 --> 00:04:22.079
+with the specified arguments, which is generated by the LLM,
+
+81
+00:04:22.079 --> 00:04:25.359
+which is Pacific/Auckland, and maybe returns is 4 a.m.
+
+82
+00:04:25.359 --> 00:04:28.640
+Then as usual, I feed this to the LLM and the LLM outputs.
+
+83
+00:04:28.640 --> 00:04:30.640
+It is 4 a.m. in New Zealand.
+
+84
+00:04:30.640 --> 00:04:34.480
+To summarize, here's the process for getting LLM to use tools.
+
+85
+00:04:34.480 --> 00:04:37.279
+First, you have to provide the tool to the LLM,
+
+86
+00:04:37.279 --> 00:04:40.239
+implement the function, and then tell the LLM that it is available.
+
+87
+00:04:40.880 --> 00:04:42.399
+When the LLM decides to call a tool,
+
+88
+00:04:42.399 --> 00:04:45.760
+it then generates a specific output that lets you know
+
+89
+00:04:45.760 --> 00:04:48.959
+that you need to call the function for the LLM.
+
+90
+00:04:48.959 --> 00:04:51.359
+Then you call the function, get its output,
+
+91
+00:04:51.359 --> 00:04:53.359
+take the output of the function you just called,
+
+92
+00:04:53.359 --> 00:04:55.279
+and give that output back to the LLM,
+
+93
+00:04:55.279 --> 00:04:59.119
+and the LLM then uses that to go on to whatever it decides to do next,
+
+94
+00:04:59.119 --> 00:05:03.279
+which in our examples in this video was to just generate the final output,
+
+95
+00:05:03.279 --> 00:05:05.440
+but sometimes it may even decide that the next step
+
+96
+00:05:05.440 --> 00:05:09.200
+is to go call yet another tool, and the process continues.
+
+97
+00:05:09.200 --> 00:05:13.679
+Now, it turns out that this all-caps function syntax is a little bit clunky.
+
+98
+00:05:13.679 --> 00:05:17.040
+This is what we used to do before LLMs were trained natively
+
+99
+00:05:17.040 --> 00:05:21.200
+or to know by themselves how to request that tools be called.
+
+100
+00:05:21.200 --> 00:05:25.679
+With modern LLMs, you don't need to tell it to output all-caps function,
+
+101
+00:05:25.679 --> 00:05:27.760
+then search for all-caps function, and so on.
+
+102
+00:05:27.760 --> 00:05:31.119
+Instead, LLMs are trained to use a specific syntax
+
+103
+00:05:31.119 --> 00:05:33.839
+to request very clearly when it wants a tool called.
+
+104
+00:05:34.399 --> 00:05:36.320
+In the next video, I want to share with you
+
+105
+00:05:36.320 --> 00:05:38.880
+what the modern syntax actually looks like
+
+106
+00:05:38.880 --> 00:05:42.399
+for letting LLMs request to have tools be called.
+
+107
+00:05:42.399 --> 00:05:44.399
+Let's go on to the next video.
+

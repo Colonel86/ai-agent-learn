@@ -1,0 +1,722 @@
+WEBVTT
+
+1
+00:00:02.043 --> 00:00:04.546
+Your AI application can also connect.
+
+2
+00:00:04.546 --> 00:00:07.257
+To MCP servers running remotely.
+
+3
+00:00:07.257 --> 00:00:10.260
+In this lesson,
+you'll learn how to build a remote server,
+
+4
+00:00:10.343 --> 00:00:12.637
+test it, and then deploy it.
+
+5
+00:00:12.637 --> 00:00:13.722
+Let's jump in.
+
+6
+00:00:13.722 --> 00:00:18.059
+So far we've seen how to build servers,
+build clients and hosts,
+
+7
+00:00:18.393 --> 00:00:21.396
+but it's all been done
+locally using standard IO.
+
+8
+00:00:21.688 --> 00:00:25.358
+Now let's see what it looks like to create
+and deploy a remote server.
+
+9
+00:00:25.650 --> 00:00:26.276
+The good news is
+
+10
+00:00:26.276 --> 00:00:30.030
+we don't actually have to change
+that much. Inside of the research server
+
+11
+00:00:30.238 --> 00:00:33.992
+I've made a small configuration
+for our port to allow connecting
+
+12
+00:00:33.992 --> 00:00:36.953
+a little bit easier.
+Everything else is going to feel the same.
+
+13
+00:00:36.953 --> 00:00:38.413
+We still have our tools.
+
+14
+00:00:38.413 --> 00:00:39.831
+We still have our resources.
+
+15
+00:00:39.831 --> 00:00:41.041
+We still have our prompts.
+
+16
+00:00:41.041 --> 00:00:42.542
+But where things are going to look
+a little bit
+
+17
+00:00:42.542 --> 00:00:46.588
+different, is at the very bottom here,
+where we specify the transport
+
+18
+00:00:46.588 --> 00:00:49.215
+that we're using.
+At the time of this recording,
+
+19
+00:00:49.215 --> 00:00:53.178
+the SDK in Python don't yet
+support HTTP streamable.
+
+20
+00:00:53.553 --> 00:00:55.221
+So we're going to be using SSE.
+
+21
+00:00:55.221 --> 00:00:57.932
+The good news is once
+those SDKs are released,
+
+22
+00:00:57.932 --> 00:01:00.935
+it should be a very quick change
+to modify the transport.
+
+23
+00:01:01.269 --> 00:01:05.106
+Now that we've seen how to modify
+our research server to get up and running
+
+24
+00:01:05.106 --> 00:01:08.651
+with SSE, let's go ahead and connect to it
+with the inspector.
+
+25
+00:01:09.110 --> 00:01:11.946
+From this code that we provided,
+you can see that the server
+
+26
+00:01:11.946 --> 00:01:14.949
+is already running at this particular URL.
+
+27
+00:01:15.075 --> 00:01:18.369
+So there's nothing you need to do here
+to get the server up and running.
+
+28
+00:01:18.703 --> 00:01:21.539
+Now that the server is running,
+let's bring in the terminal
+
+29
+00:01:21.539 --> 00:01:24.542
+and connect to that server
+using the Inspector.
+
+30
+00:01:29.339 --> 00:01:32.300
+So I'll run npx @ Model Context Protocol
+
+31
+00:01:33.384 --> 00:01:36.346
+slash inspector.
+
+32
+00:01:37.097 --> 00:01:39.265
+This will get the inspector started.
+
+33
+00:01:39.265 --> 00:01:41.976
+And now I can go ahead and visit
+this in the browser.
+
+34
+00:01:41.976 --> 00:01:43.937
+Over here in the inspector,
+
+35
+00:01:43.937 --> 00:01:47.565
+I'm going to make sure that I have
+the proxy address that we had before.
+
+36
+00:01:47.899 --> 00:01:50.151
+And you can find this
+in the notebook as well.
+
+37
+00:01:50.151 --> 00:01:54.114
+And then I'm going to go ahead and
+make sure that my transport type is SSE.
+
+38
+00:01:54.364 --> 00:01:57.575
+I'm now going to put in the URL
+to connect via SSE.
+
+39
+00:01:57.867 --> 00:01:59.994
+And we provided this to you as well.
+
+40
+00:01:59.994 --> 00:02:01.037
+Let's go ahead and connect.
+
+41
+00:02:01.037 --> 00:02:03.623
+We can see here
+that we've initialized our connection.
+
+42
+00:02:03.623 --> 00:02:06.835
+And we have our resources, prompts, tools,
+and other primitives.
+
+43
+00:02:07.210 --> 00:02:10.255
+I can list my resources
+and take a look at all of my folders.
+
+44
+00:02:10.463 --> 00:02:13.758
+I can list my templates
+to get access to a particular topic.
+
+45
+00:02:13.967 --> 00:02:16.970
+So let's go see if we can search for math
+like we had before.
+
+46
+00:02:17.178 --> 00:02:20.181
+Go ahead and run
+that search. For the prompts,
+
+47
+00:02:20.390 --> 00:02:23.143
+We have our prompts available.
+And for tools,
+
+48
+00:02:23.143 --> 00:02:25.145
+I have my tools available as well.
+
+49
+00:02:25.145 --> 00:02:28.898
+Now that we're successfully connecting
+to this server using SSE,
+
+50
+00:02:29.691 --> 00:02:33.945
+let's see how we can deploy this
+so that anyone can access our MCP server.
+
+51
+00:02:34.154 --> 00:02:38.032
+Let's go ahead and deploy this server
+using a tool called render.
+
+52
+00:02:38.283 --> 00:02:39.993
+I'll go bring in my terminal here.
+
+53
+00:02:39.993 --> 00:02:42.996
+And right now I'm inside of the MCP
+projects folder.
+
+54
+00:02:43.288 --> 00:02:46.040
+In order to work with render,
+I need to make sure
+
+55
+00:02:46.040 --> 00:02:49.752
+that I have a git repository
+and then push that to GitHub
+
+56
+00:02:49.961 --> 00:02:52.881
+so that render can access
+that particular repository.
+
+57
+00:02:52.881 --> 00:02:54.883
+If you're not familiar
+with git and GitHub,
+
+58
+00:02:54.883 --> 00:02:57.719
+I'll walk you through all those commands
+and what they do.
+
+59
+00:02:57.719 --> 00:02:59.220
+If you're familiar with git,
+
+60
+00:02:59.220 --> 00:03:01.264
+this should be a breeze.
+To get started with git,
+
+61
+00:03:01.264 --> 00:03:04.851
+the first thing I'm going to do
+is initialize an empty git repository.
+
+62
+00:03:05.059 --> 00:03:06.686
+I'm then going to make sure
+
+63
+00:03:06.686 --> 00:03:10.440
+that there are some files and folders
+that are not included in git.
+
+64
+00:03:10.648 --> 00:03:13.651
+So I'm going to go ahead
+and add the string then
+
+65
+00:03:13.902 --> 00:03:15.987
+to a file called dot git ignore.
+
+66
+00:03:15.987 --> 00:03:17.030
+This is going to make sure
+
+67
+00:03:17.030 --> 00:03:21.075
+that when I add and commit files
+the dot then folder is not included.
+
+68
+00:03:21.409 --> 00:03:24.287
+If I take a look at my git status
+right now, I can see that
+
+69
+00:03:24.287 --> 00:03:27.290
+I don't see that dot env folder,
+which is great.
+
+70
+00:03:27.332 --> 00:03:29.876
+The next thing I need to do here,
+is make sure that
+
+71
+00:03:29.876 --> 00:03:32.879
+my dependencies
+are compatible with render.
+
+72
+00:03:32.962 --> 00:03:35.715
+Since render does not support uv
+at the moment.
+
+73
+00:03:35.715 --> 00:03:38.885
+We're going to go ahead
+and make sure that we use Pip instead
+
+74
+00:03:39.093 --> 00:03:40.303
+for dependency management.
+
+75
+00:03:40.303 --> 00:03:42.096
+We're going to have to take
+the dependencies
+
+76
+00:03:42.096 --> 00:03:46.392
+for our server that we set up with uv
+and make them compatible with Pip.
+
+77
+00:03:46.559 --> 00:03:48.937
+The command we want is uv pip compile.
+
+78
+00:03:48.937 --> 00:03:53.399
+So we're going to go ahead and type in uv
+pip compile our pyproject .toml
+
+79
+00:03:54.567 --> 00:03:57.153
+And what you see here is the output
+
+80
+00:03:57.153 --> 00:04:01.157
+of turning our dependencies
+into what Pip needs.
+
+81
+00:04:01.282 --> 00:04:03.534
+So we're going to take the result of that.
+
+82
+00:04:03.534 --> 00:04:06.496
+I'm going to send it
+to a file called requirements.txt
+
+83
+00:04:06.537 --> 00:04:09.374
+Now that we have
+that file called requirements.txt,
+
+84
+00:04:09.374 --> 00:04:11.918
+there's one more file
+that we need to make sure
+
+85
+00:04:11.918 --> 00:04:14.921
+we have the right version of Python
+for render to use.
+
+86
+00:04:14.963 --> 00:04:19.634
+We're going to go ahead
+and send the string Python 3 11 11
+
+87
+00:04:20.134 --> 00:04:23.137
+into a file called runtime dot txt.
+
+88
+00:04:23.263 --> 00:04:26.891
+Now that we have the necessary files,
+let's take a look at git status
+
+89
+00:04:27.475 --> 00:04:31.562
+and we can see that now we have
+requirements.txt as well as runtime txt.
+
+90
+00:04:31.938 --> 00:04:34.941
+Let's go ahead and add and commit.
+
+91
+00:04:35.233 --> 00:04:38.236
+And here our commit message is going
+to be ready for deployment.
+
+92
+00:04:40.780 --> 00:04:43.074
+And now we need to take this code on git
+
+93
+00:04:43.074 --> 00:04:46.494
+locally
+and bring it into a repository on GitHub.
+
+94
+00:04:47.120 --> 00:04:51.624
+We need a GitHub repository so that render
+can pick up and load the project files.
+
+95
+00:04:52.208 --> 00:04:55.003
+So in the browser
+I'm going to head over to github.com
+
+96
+00:04:55.003 --> 00:04:58.006
+slash new to make a new remote repository.
+
+97
+00:04:58.339 --> 00:05:00.800
+And I'll give this repository a name.
+
+98
+00:05:00.800 --> 00:05:03.803
+Let's call this remote research.
+
+99
+00:05:04.137 --> 00:05:07.140
+I'll go ahead and create that repository.
+
+100
+00:05:07.432 --> 00:05:09.684
+And once I've created that repository
+
+101
+00:05:09.684 --> 00:05:12.270
+I'm just going to use
+these last couple steps.
+
+102
+00:05:12.270 --> 00:05:15.273
+In order to push an existing repository
+from the command line,
+
+103
+00:05:15.732 --> 00:05:18.359
+I need to know where I'm sending that to.
+
+104
+00:05:18.359 --> 00:05:21.362
+So I'm going to go ahead and copy
+and paste this command
+
+105
+00:05:21.529 --> 00:05:24.073
+and go back to the terminal to run it.
+
+106
+00:05:24.073 --> 00:05:27.493
+If I've done that successfully,
+I should be able to type in git remote,
+
+107
+00:05:27.493 --> 00:05:31.581
+-v and see origin
+as well as what I put in.
+
+108
+00:05:32.123 --> 00:05:35.126
+I'm now going to go ahead
+and push this code up to GitHub,
+
+109
+00:05:35.293 --> 00:05:39.130
+so I'll type in git
+push origin main. If this has been done
+
+110
+00:05:39.130 --> 00:05:42.175
+successfully, I should be able
+to go back to the browser.
+
+111
+00:05:46.846 --> 00:05:49.849
+Refresh
+the page and see that my code is there.
+
+112
+00:05:50.183 --> 00:05:52.769
+Now that this code is successfully on
+GitHub,
+
+113
+00:05:52.769 --> 00:05:55.813
+let's go ahead
+and make sure that render can pull it in
+
+114
+00:05:56.064 --> 00:05:57.732
+so we can deploy successfully.
+
+115
+00:05:57.732 --> 00:06:00.735
+I'm going to head over to render.com
+
+116
+00:06:00.735 --> 00:06:03.529
+And at render.com I'll make sure I sign up.
+
+117
+00:06:03.529 --> 00:06:07.283
+Once you've signed up or signed in
+you can head over to your dashboard.
+
+118
+00:06:07.825 --> 00:06:11.162
+Once I sign in to the dashboard,
+I can now add a new service.
+
+119
+00:06:11.746 --> 00:06:13.790
+So I'll click on Deploy Web Service.
+
+120
+00:06:13.790 --> 00:06:16.084
+Or I can always go to new
+and have that there.
+
+121
+00:06:16.084 --> 00:06:19.629
+If I authenticate through GitHub
+I can put in repositories that I have.
+
+122
+00:06:19.796 --> 00:06:24.050
+Or I can put in a public git repository
+if I just want to put in the URL.
+
+123
+00:06:24.258 --> 00:06:26.469
+I'll go ahead and select remote research.
+
+124
+00:06:26.469 --> 00:06:28.179
+And the only thing I need to change
+
+125
+00:06:28.179 --> 00:06:31.766
+here is the command
+that we use to start our server.
+
+126
+00:06:32.058 --> 00:06:37.058
+The command to do
+so is Python research_server.py.
+
+127
+00:06:38.356 --> 00:06:41.109
+I'll make
+sure right now I'm using the free plan.
+
+128
+00:06:41.109 --> 00:06:43.444
+And once this is done, I'm ready to deploy.
+
+129
+00:06:43.444 --> 00:06:44.612
+This might take a little bit
+
+130
+00:06:44.612 --> 00:06:47.448
+so give it a second
+while it starts the application.
+
+131
+00:06:47.448 --> 00:06:50.660
+And as we start deploying
+we're going to see the commands necessary
+
+132
+00:06:50.993 --> 00:06:52.787
+to get our application up and running.
+
+133
+00:06:52.787 --> 00:06:55.790
+Things that we actually saw before
+when we were running this locally.
+
+134
+00:06:56.082 --> 00:06:59.419
+So we can see here
+we're using that Python 3 11 11
+
+135
+00:06:59.419 --> 00:07:02.296
+that we specified in our runtime txt
+
+136
+00:07:02.296 --> 00:07:05.508
+We're installing the dependencies
+from our requirements.txt file.
+
+137
+00:07:05.842 --> 00:07:08.886
+Since we're using pip here
+for dependency management. Once
+
+138
+00:07:08.886 --> 00:07:12.140
+this is deployed, when we visit this link
+we're not going to find anything.
+
+139
+00:07:12.140 --> 00:07:14.642
+So we should expect a 404 error.
+
+140
+00:07:14.642 --> 00:07:17.645
+But we do want to see
+is if we go to slash SSE
+
+141
+00:07:17.895 --> 00:07:21.023
+we're seeing a response with the session
+ID back from the server.
+
+142
+00:07:21.357 --> 00:07:24.360
+We're running the command
+Python research_server.py.
+
+143
+00:07:24.610 --> 00:07:26.946
+So let's go ahead
+and see what things look like.
+
+144
+00:07:26.946 --> 00:07:27.989
+The first time you look at this,
+
+145
+00:07:27.989 --> 00:07:30.992
+it might take a second
+as your application is loading.
+
+146
+00:07:30.992 --> 00:07:32.869
+So feel free to give it a minute or two.
+
+147
+00:07:32.869 --> 00:07:35.371
+And we'll refresh the page.
+And as we refresh the page,
+
+148
+00:07:35.371 --> 00:07:38.291
+and as expected I'm getting a 404.
+
+149
+00:07:38.291 --> 00:07:42.795
+If I head over to the SSE endpoint,
+I can now see that I made it
+
+150
+00:07:43.087 --> 00:07:46.090
+with this particular endpoint
+and a session ID.
+
+151
+00:07:46.215 --> 00:07:48.259
+This means that
+I've deployed successfully.
+
+152
+00:07:48.259 --> 00:07:51.262
+If you want to try this out
+in the Inspector or
+
+153
+00:07:51.304 --> 00:07:54.307
+in other tools,
+take a look at the resources we have.
+
+154
+00:07:54.348 --> 00:07:57.018
+Great job getting this deployed
+and I'll see you in the next lesson.
+

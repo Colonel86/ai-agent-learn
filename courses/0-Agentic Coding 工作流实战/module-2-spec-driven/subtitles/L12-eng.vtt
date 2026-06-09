@@ -1,0 +1,490 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:02.669
+You've now mastered an SDD workflow.
+
+2
+00:00:03.069 --> 00:00:05.638
+Want something faster and lightweight?
+
+3
+00:00:06.039 --> 00:00:08.341
+In this lesson, we will automate things
+
+4
+00:00:08.641 --> 00:00:11.344
+but doing it our way with a custom process.
+
+5
+00:00:12.245 --> 00:00:14.347
+We previously showed Agent Skills,
+
+6
+00:00:14.848 --> 00:00:16.950
+an open standard to give agents
+
+7
+00:00:17.250 --> 00:00:19.352
+new capabilities and expertise.
+
+8
+00:00:19.986 --> 00:00:24.090
+For example, we repeat the same prompt when starting a feature spec.
+
+9
+00:00:24.591 --> 00:00:27.594
+Do this, do that, write these three files.
+
+10
+00:00:28.495 --> 00:00:30.797
+Let's automate this with a skill
+
+11
+00:00:30.797 --> 00:00:32.799
+and with help from the agent to write it.
+
+12
+00:00:33.099 --> 00:00:35.502
+Ask the agent to use its skill creator
+
+13
+00:00:35.502 --> 00:00:37.704
+to talk through this with us.
+
+14
+00:00:38.104 --> 00:00:41.207
+As a note, there are many of these skill skills
+
+15
+00:00:41.207 --> 00:00:44.110
+in the community that you can also install and use.
+
+16
+00:00:44.644 --> 00:00:47.847
+As the agent runs, it might ask some follow-up questions.
+
+17
+00:00:48.415 --> 00:00:51.718
+These are usually quite good. When the interview is done,
+
+18
+00:00:51.818 --> 00:00:54.421
+we submit the responses and the agent proceeds.
+
+19
+00:00:56.156 --> 00:00:58.291
+While the agent is working on the skill,
+
+20
+00:00:58.291 --> 00:00:59.826
+keep an eye on the output.
+
+21
+00:00:59.826 --> 00:01:01.761
+Is it making the choices you wanted?
+
+22
+00:01:03.029 --> 00:01:04.798
+Success. As you can see,
+
+23
+00:01:04.798 --> 00:01:07.100
+the agent wrote the skill to this directory.
+
+24
+00:01:07.700 --> 00:01:11.004
+As a note, skills can be per project or global.
+
+25
+00:01:16.643 --> 00:01:19.145
+Skills can be invoked in several ways.
+
+26
+00:01:19.646 --> 00:01:23.149
+In your prompt, refer to the skill before saying what to do.
+
+27
+00:01:24.150 --> 00:01:26.152
+Also, you can ask the agent
+
+28
+00:01:26.152 --> 00:01:28.455
+to call a skill from another skill.
+
+29
+00:01:29.722 --> 00:01:32.325
+According to the skills open standard,
+
+30
+00:01:32.325 --> 00:01:34.427
+agents use the skill description
+
+31
+00:01:34.427 --> 00:01:36.629
+to decide when to call it
+
+32
+00:01:36.996 --> 00:01:39.699
+in a process called progressive disclosure.
+
+33
+00:01:40.300 --> 00:01:42.602
+But their judgment isn't always perfect,
+
+34
+00:01:43.002 --> 00:01:45.605
+especially as the context window gets larger.
+
+35
+00:01:46.106 --> 00:01:48.675
+Use the same heuristic as file tagging.
+
+36
+00:01:49.109 --> 00:01:51.878
+If you know you want a skill used, name it.
+
+37
+00:01:52.345 --> 00:01:54.314
+That saves you some thinking tokens.
+
+38
+00:02:01.488 --> 00:02:05.125
+Agents have built-in / commands like /clear.
+
+39
+00:02:05.425 --> 00:02:08.428
+Though initially popular, many agents are moving
+
+40
+00:02:08.428 --> 00:02:12.031
+from custom/commands over to skills.
+
+41
+00:02:13.633 --> 00:02:16.236
+Sometimes you need to give the agent more resources
+
+42
+00:02:16.236 --> 00:02:19.606
+like access to some API, a private knowledge base,
+
+43
+00:02:19.606 --> 00:02:21.407
+database, and so on.
+
+44
+00:02:21.641 --> 00:02:25.945
+Until now the universal way to extend an agent has been MCP,
+
+45
+00:02:26.446 --> 00:02:28.548
+Model Context Protocol.
+
+46
+00:02:29.749 --> 00:02:33.853
+For example, agents need current quality context about packages.
+
+47
+00:02:34.387 --> 00:02:36.890
+The most popular choice, Context7,
+
+48
+00:02:36.890 --> 00:02:40.193
+an MCP that brings updated documentation of packages
+
+49
+00:02:40.193 --> 00:02:42.195
+into your agent context.
+
+50
+00:02:42.695 --> 00:02:45.565
+Now your agent can stay up to date with React 9.2
+
+51
+00:02:45.565 --> 00:02:49.169
+and higher instead of React 9.0.
+
+52
+00:02:49.736 --> 00:02:52.138
+MCP servers are still popular,
+
+53
+00:02:52.138 --> 00:02:57.138
+but skills that use code tools like a CLI, command line interface,
+
+54
+00:02:58.044 --> 00:03:01.347
+often accomplish the same purpose more elegantly.
+
+55
+00:03:01.814 --> 00:03:04.751
+Context7 now suggests this, a skill
+
+56
+00:03:04.751 --> 00:03:08.188
+that calls a CLI tool for Context7.
+
+57
+00:03:08.988 --> 00:03:11.991
+Let's install the Context7 package for Claude Code.
+
+58
+00:03:14.494 --> 00:03:16.796
+During the setup, we see this immediately.
+
+59
+00:03:17.497 --> 00:03:19.399
+A choice between MCP server
+
+60
+00:03:19.899 --> 00:03:21.601
+and CLI + Skills.
+
+61
+00:03:22.268 --> 00:03:23.870
+We'll use the second choice.
+
+62
+00:03:24.370 --> 00:03:27.574
+If this is your first time, you'll need to make an account.
+
+63
+00:03:27.874 --> 00:03:29.576
+We already did so and logged in.
+
+64
+00:03:30.143 --> 00:03:32.779
+Once done, we can go back into Claude Code
+
+65
+00:03:33.546 --> 00:03:38.017
+and put it to use with an example prompt that uses Context7.
+
+66
+00:03:38.751 --> 00:03:40.687
+As the agent runs, we see
+
+67
+00:03:40.687 --> 00:03:42.922
+it detects the need to use Context7.
+
+68
+00:03:43.122 --> 00:03:45.925
+When it completes, the agent shows
+
+69
+00:03:45.925 --> 00:03:49.329
+it now knows how to find out information about our tech stack.
+
+70
+00:03:51.631 --> 00:03:53.933
+This trend from MCP servers
+
+71
+00:03:53.933 --> 00:03:56.236
+to skills plus CLI is accelerating.
+
+72
+00:03:56.769 --> 00:03:58.871
+People are rethinking MCP
+
+73
+00:03:58.871 --> 00:04:01.574
+because CLI tools can take action
+
+74
+00:04:01.574 --> 00:04:04.577
+with less setup and less context usage.
+
+75
+00:04:05.278 --> 00:04:07.580
+As you scale your workflow implementation,
+
+76
+00:04:07.580 --> 00:04:09.515
+skills, etc.
+
+77
+00:04:09.515 --> 00:04:13.319
+You will want to share it with yourself, across machines,
+
+78
+00:04:13.319 --> 00:04:16.022
+with teammates, perhaps with the outside world.
+
+79
+00:04:17.123 --> 00:04:20.326
+Some agents such as Claude Code have plugins,
+
+80
+00:04:20.326 --> 00:04:24.330
+a collection of agent extensions that can be installed and updated.
+
+81
+00:04:24.831 --> 00:04:27.333
+There's a growing community of free plugins.
+
+82
+00:04:27.533 --> 00:04:31.838
+Check them out to see if any will boost your SDD productivity.
+
+83
+00:04:32.338 --> 00:04:34.440
+Remember, plugins are not yet
+
+84
+00:04:34.440 --> 00:04:36.542
+a cross-agent standard.
+
+85
+00:04:37.043 --> 00:04:40.246
+Like apps or dependencies, plugins can execute code,
+
+86
+00:04:40.546 --> 00:04:43.850
+so make sure you trust them on install and update.
+
+87
+00:04:44.851 --> 00:04:48.354
+GitHub's Spec Kit is one attempt at formalizing
+
+88
+00:04:48.354 --> 00:04:50.857
+a spec-driven development workflow with agents.
+
+89
+00:04:51.324 --> 00:04:53.393
+Installing Spec Kit for a project
+
+90
+00:04:53.393 --> 00:04:56.529
+gives you access to / commands in your agent,
+
+91
+00:04:56.529 --> 00:04:59.165
+similar to the workflow you used in this course.
+
+92
+00:04:59.866 --> 00:05:03.736
+spec-kit constitution, plan, tasks, and implement.
+
+93
+00:05:04.070 --> 00:05:08.174
+Another popular alternative is OpenSpec from Fission AI.
+
+94
+00:05:08.574 --> 00:05:13.574
+OpenSpec follows a similar propose, explore, apply, archive workflow,
+
+95
+00:05:14.580 --> 00:05:17.984
+where propose and explore match with the plan step,
+
+96
+00:05:18.084 --> 00:05:20.086
+apply matches with implement,
+
+97
+00:05:20.186 --> 00:05:22.255
+and archive matches with replanning.
+
+98
+00:05:22.622 --> 00:05:26.125
+It also has canonical patterns for quick features.
+
+99
+00:05:26.926 --> 00:05:30.630
+Both packages include helpful features like branch management,
+
+100
+00:05:30.630 --> 00:05:35.201
+verification scripts, and opinionated spec document formats.
+
+101
+00:05:35.635 --> 00:05:37.737
+I encourage you to experiment with these
+
+102
+00:05:37.737 --> 00:05:40.139
+open source workflows to help refine your own.
+
+103
+00:05:41.140 --> 00:05:44.143
+Sometimes in the middle of a feature, you have an idea.
+
+104
+00:05:44.544 --> 00:05:46.646
+You want to research it with the agent,
+
+105
+00:05:47.146 --> 00:05:49.215
+but you don't want to stop your branch work.
+
+106
+00:05:49.982 --> 00:05:52.985
+For example, a choice of databases.
+
+107
+00:05:53.586 --> 00:05:56.089
+But you're not yet committed to this idea,
+
+108
+00:05:56.189 --> 00:05:58.491
+so you don't want it on the roadmap.
+
+109
+00:06:00.560 --> 00:06:04.564
+The conversation produces some good ideas and some good questions.
+
+110
+00:06:04.964 --> 00:06:07.567
+We accept most of the recommendations,
+
+111
+00:06:07.667 --> 00:06:09.769
+but change our mind on one of them.
+
+112
+00:06:09.936 --> 00:06:12.038
+You don't want to lose it.
+
+113
+00:06:12.138 --> 00:06:14.540
+So, let's keep a backlog of research
+
+114
+00:06:14.640 --> 00:06:19.145
+by telling the agent to write a report in a well-known location.
+
+115
+00:06:23.549 --> 00:06:27.186
+This file is a record of your conversation and results.
+
+116
+00:06:28.321 --> 00:06:31.124
+You can later ask the agent to schedule this research
+
+117
+00:06:31.124 --> 00:06:34.460
+on the roadmap with a link to the backlog file.
+
+118
+00:06:35.128 --> 00:06:38.831
+As this grows, you can write a skill to automate your research.
+
+119
+00:06:39.432 --> 00:06:43.136
+Spec-Driven Development helps the agent write code your way.
+
+120
+00:06:43.536 --> 00:06:47.039
+You can adopt an existing SDD framework or tool,
+
+121
+00:06:47.340 --> 00:06:51.544
+then customize it using skills to operate your projects
+
+122
+00:06:51.844 --> 00:06:54.013
+with your team, your way.

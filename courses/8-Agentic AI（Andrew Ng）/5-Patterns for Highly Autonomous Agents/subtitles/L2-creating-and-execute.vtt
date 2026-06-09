@@ -1,0 +1,119 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.344 --> 00:00:04.239
+In this video, we'll look in detail at how to prompt an LLM to generate a plan,
+
+2
+00:00:04.239 --> 00:00:08.239
+and how to read, interpret, and execute that plan. Let's dive in.
+
+3
+00:00:08.880 --> 00:00:13.439
+This is a plan that you saw in the previous video for the customer service agents,
+
+4
+00:00:13.439 --> 00:00:17.760
+and I have presented this plan at a high level using simple text descriptions.
+
+5
+00:00:17.760 --> 00:00:23.440
+Let's take a look at how you can get an LLM to write very clear plans that go a little bit
+
+6
+00:00:23.440 --> 00:00:30.719
+beyond these simple high-level text descriptions. It turns out that many developers will ask an LLM
+
+7
+00:00:30.719 --> 00:00:36.880
+to format the plan it once executed in JSON format, because this allows downstream code
+
+8
+00:00:36.880 --> 00:00:42.000
+to parse what exactly are the steps of the plan in relatively clear and unambiguous ways,
+
+9
+00:00:42.000 --> 00:00:46.880
+and all of the leading LLMs are pretty good at generating JSON outputs at this point.
+
+10
+00:00:46.880 --> 00:00:50.799
+So the system prompt might say something like this. You have access to the following tools,
+
+11
+00:00:51.599 --> 00:00:56.880
+and then create a step-by-step plan in JSON format, and you might describe the JSON format
+
+12
+00:00:56.880 --> 00:01:02.080
+in enough detail with the goal of getting it to output a plan like that shown here on the right.
+
+13
+00:01:02.080 --> 00:01:09.199
+So in this JSON output, it creates a list where the first list item has clear keys and values
+
+14
+00:01:09.199 --> 00:01:15.599
+that say step one of the plan has the following description, and it should use the following tool
+
+15
+00:01:15.599 --> 00:01:20.160
+with the following arguments parsed to that tool. Then after that, step two of the plan
+
+16
+00:01:20.160 --> 00:01:26.080
+is to carry out this task, and then use this tool, and so on. So this JSON format, as opposed to
+
+17
+00:01:26.080 --> 00:01:32.319
+writing the plan in English, allows downstream code to more clearly parse out exactly what are
+
+18
+00:01:32.319 --> 00:01:38.319
+the steps of the plan so that it can be reliably executed one step at a time. Instead of JSON,
+
+19
+00:01:38.319 --> 00:01:45.680
+I also see some developers use XML, where you can use XML delimiters. You use XML tags
+
+20
+00:01:45.680 --> 00:01:50.319
+to clearly specify what are the steps of the plan and what step number it is.
+
+21
+00:01:50.319 --> 00:01:55.599
+Some developers, I feel like fewer developers, will use markdown, which is just sometimes
+
+22
+00:01:55.599 --> 00:02:00.160
+slightly more ambiguous in terms of how we parse it, and I think plain text is maybe the least
+
+23
+00:02:00.160 --> 00:02:05.120
+reliable of these options. But I think either JSON, which I'm showing here, or XML would be
+
+24
+00:02:05.120 --> 00:02:12.000
+good options for how to ask the LLM to format a plan unambiguously. So that's it. By opening
+
+25
+00:02:12.000 --> 00:02:18.320
+plans in JSON, you can then parse it and have downstream workflows execute different steps of
+
+26
+00:02:18.320 --> 00:02:24.639
+the plan more systematically. Now, in terms of getting LLMs to plan, it turns out there's one
+
+27
+00:02:24.639 --> 00:02:31.279
+other really neat idea that lets an LLM output very complex plans and get them executed reliably,
+
+28
+00:02:31.279 --> 00:02:35.759
+and that's to let them write code and to have code express the plan.
+
+29
+00:02:35.759 --> 00:02:38.880
+Let's take a look at this in the next video.
+

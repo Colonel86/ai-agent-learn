@@ -1,0 +1,150 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:01.735
+We're working on the plan for
+
+2
+00:00:01.735 --> 00:00:03.770
+the first feature in the project roadmap.
+
+3
+00:00:04.270 --> 00:00:05.972
+We finished the feature spec.
+
+4
+00:00:06.072 --> 00:00:08.475
+Let's do the full implementation of this feature.
+
+5
+00:00:09.476 --> 00:00:11.478
+Just to refresh ourselves,
+
+6
+00:00:11.478 --> 00:00:14.581
+we do a quick review of this feature specs plan.
+
+7
+00:00:14.614 --> 00:00:17.417
+This was the first feature, hello Hono.
+
+8
+00:00:17.784 --> 00:00:20.787
+The feature spec documents have what we need.
+
+9
+00:00:21.287 --> 00:00:24.791
+To start your implementation, you'll want to clear out your context
+
+10
+00:00:24.891 --> 00:00:26.893
+with a /clear command.
+
+11
+00:00:27.594 --> 00:00:29.996
+Let's go back to the agent and enter a prompt
+
+12
+00:00:30.096 --> 00:00:32.399
+to implement all the task groups.
+
+13
+00:00:32.699 --> 00:00:35.702
+Sometimes you might choose to do task groups one at a time
+
+14
+00:00:35.702 --> 00:00:38.872
+for even smaller steps and commits.
+
+15
+00:00:39.372 --> 00:00:42.575
+This technique is especially helpful for areas where small mistakes
+
+16
+00:00:42.575 --> 00:00:44.477
+can compound later,
+
+17
+00:00:44.477 --> 00:00:47.580
+like in security or database management.
+
+18
+00:00:48.481 --> 00:00:51.284
+While Claude is running, you can observe the changes
+
+19
+00:00:51.284 --> 00:00:55.288
+it displays in the console to see its progress in real time.
+
+20
+00:00:55.688 --> 00:00:58.391
+Afterwards, we can watch for the final changes
+
+21
+00:00:58.391 --> 00:01:01.294
+in the commit window and visit the changes.
+
+22
+00:01:01.728 --> 00:01:04.230
+This gives us an early jump on reviewing the work.
+
+23
+00:01:04.931 --> 00:01:08.435
+This is the key role of the developer in such a paradigm,
+
+24
+00:01:08.635 --> 00:01:11.638
+to act as an architect or supervisor
+
+25
+00:01:11.938 --> 00:01:16.342
+and ensure that the agent is provided with a clear contract.
+
+26
+00:01:17.243 --> 00:01:19.846
+We can also see the summary of what was done.
+
+27
+00:01:20.380 --> 00:01:23.783
+As you can see, the agent provides extra details
+
+28
+00:01:23.883 --> 00:01:27.187
+on the work performed for each of the task groups.
+
+29
+00:01:27.887 --> 00:01:30.857
+Now, let's go to the package.json file.
+
+30
+00:01:32.492 --> 00:01:34.494
+And in there, let's run the app.
+
+31
+00:01:35.395 --> 00:01:37.397
+The server starts in the console.
+
+32
+00:01:40.967 --> 00:01:43.770
+The browser shows the result of this feature spec.
+
+33
+00:01:44.137 --> 00:01:47.040
+Not much. We said nano,
+
+34
+00:01:47.140 --> 00:01:49.943
+but it's a good feeling to see pixels on the screen.
+
+35
+00:01:50.443 --> 00:01:52.045
+We just implemented a feature.
+
+36
+00:01:52.145 --> 00:01:54.247
+The agent did its validation.
+
+37
+00:01:54.347 --> 00:01:56.616
+In the next lesson, we'll do ours.

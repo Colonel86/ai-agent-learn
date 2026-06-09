@@ -1,0 +1,1026 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:02.135
+Skills are folders of instructions
+
+2
+00:00:02.135 --> 00:00:04.204
+that package repeated workflows,
+
+3
+00:00:04.204 --> 00:00:07.407
+specialized knowledge, or new capabilities for your agent.
+
+4
+00:00:07.407 --> 00:00:10.910
+If you find yourself typing the same prompt across conversations,
+
+5
+00:00:10.910 --> 00:00:13.713
+you should consider transforming that into a skill.
+
+6
+00:00:13.747 --> 00:00:16.249
+Let's explore how to do that using Claude AI.
+
+7
+00:00:16.649 --> 00:00:18.952
+So before we talk a little bit more about skills
+
+8
+00:00:19.052 --> 00:00:22.255
+and dive into what a skill looks like and how it works,
+
+9
+00:00:22.355 --> 00:00:26.559
+let's walk through a scenario to showcase why skills are so useful.
+
+10
+00:00:26.659 --> 00:00:29.462
+Right here, I've got some campaign data in a CSV
+
+11
+00:00:29.462 --> 00:00:32.065
+that I'd like to analyze the performance of.
+
+12
+00:00:32.365 --> 00:00:33.700
+So just to show you what
+
+13
+00:00:33.700 --> 00:00:35.268
+this looks like, I've got a date,
+
+14
+00:00:35.268 --> 00:00:37.937
+a campaign name, impressions, clicks, conversions.
+
+15
+00:00:38.338 --> 00:00:39.773
+You can imagine here that we're
+
+16
+00:00:39.773 --> 00:00:41.441
+going to take in some marketing data
+
+17
+00:00:41.708 --> 00:00:43.910
+use Claude to analyze this information.
+
+18
+00:00:44.310 --> 00:00:46.613
+So in my first prompt, I'm attaching this data,
+
+19
+00:00:46.813 --> 00:00:49.015
+explaining what the input data looks like,
+
+20
+00:00:49.315 --> 00:00:51.718
+asking to check for quality, funnel analysis,
+
+21
+00:00:52.018 --> 00:00:54.421
+and some useful metrics around what I expect
+
+22
+00:00:54.521 --> 00:00:56.623
+for click-through rates and conversion rates.
+
+23
+00:00:56.790 --> 00:00:58.858
+At the bottom, I've got an output format
+
+24
+00:00:58.858 --> 00:01:01.561
+that I'm requesting for this particular piece of data.
+
+25
+00:01:02.262 --> 00:01:04.464
+Now you can imagine it would be valuable
+
+26
+00:01:04.464 --> 00:01:06.232
+to not have to include this prompt
+
+27
+00:01:06.232 --> 00:01:08.268
+every time and to have that packaged up.
+
+28
+00:01:08.701 --> 00:01:10.003
+As we take a look at
+
+29
+00:01:10.003 --> 00:01:11.504
+what we're seeing in our campaign data,
+
+30
+00:01:11.604 --> 00:01:14.007
+Claude is going to read this CSV.
+
+31
+00:01:14.207 --> 00:01:18.211
+It's then going to perform the Data Quality Check and Funnel Analysis
+
+32
+00:01:18.311 --> 00:01:21.014
+and give us back our campaign performance analysis.
+
+33
+00:01:21.414 --> 00:01:23.616
+Here it's going to show the Total Records,
+
+34
+00:01:23.917 --> 00:01:27.620
+any Missing Data, and any Anomalies in the data that exist.
+
+35
+00:01:27.921 --> 00:01:29.756
+If we take a look a little
+
+36
+00:01:29.756 --> 00:01:31.624
+bit further, we'll see our Funnel Analysis
+
+37
+00:01:31.624 --> 00:01:34.527
+versus the benchmark data that we were looking for before.
+
+38
+00:01:34.928 --> 00:01:37.730
+We can see here, some things that are working better,
+
+39
+00:01:37.730 --> 00:01:39.732
+some things that are not working as well. We're getting a
+
+40
+00:01:39.732 --> 00:01:41.734
+lot of useful data back that we can take action around,
+
+41
+00:01:41.734 --> 00:01:45.038
+change our marketing campaigns and move forward.
+
+42
+00:01:45.605 --> 00:01:48.408
+We've got a nice interpretation of what Claude is telling us,
+
+43
+00:01:48.408 --> 00:01:50.210
+what's working, what's not working.
+
+44
+00:01:50.610 --> 00:01:52.545
+And now we're going to go ahead
+
+45
+00:01:52.545 --> 00:01:54.514
+and ask for additional computations of certain
+
+46
+00:01:54.514 --> 00:01:56.716
+efficiency metrics for marketing.
+
+47
+00:01:57.016 --> 00:01:59.018
+These include return on our ad spend,
+
+48
+00:01:59.018 --> 00:02:02.021
+cost per acquisition, and net profit and so on.
+
+49
+00:02:02.322 --> 00:02:04.090
+We're also going to ask for
+
+50
+00:02:04.090 --> 00:02:06.126
+an output format in a certain fashion.
+
+51
+00:02:06.726 --> 00:02:09.129
+We'll see the results from this efficiency analysis,
+
+52
+00:02:09.129 --> 00:02:12.532
+we'll see what's working, again, what's not working and some interpretations.
+
+53
+00:02:12.866 --> 00:02:16.169
+we'll see our portfolio performance and our total net profit.
+
+54
+00:02:16.569 --> 00:02:18.071
+Looks like we're making money here, but there's
+
+55
+00:02:18.071 --> 00:02:19.772
+still much more that I'm sure we can do.
+
+56
+00:02:20.173 --> 00:02:23.042
+The next step that we're going to do here is to
+
+57
+00:02:23.042 --> 00:02:25.945
+take in an additional piece of data, our budget reallocation rules.
+
+58
+00:02:26.346 --> 00:02:27.614
+The idea here is that we
+
+59
+00:02:27.614 --> 00:02:29.048
+have extra money to play around with
+
+60
+00:02:29.048 --> 00:02:32.352
+and think about allocating towards other marketing channels.
+
+61
+00:02:33.052 --> 00:02:35.755
+You can imagine this file has quite a bit of data
+
+62
+00:02:36.356 --> 00:02:38.057
+around the rules for allocating,
+
+63
+00:02:38.558 --> 00:02:40.760
+what we're trying to figure out and how best
+
+64
+00:02:40.827 --> 00:02:43.329
+to decide where to increase our budget.
+
+65
+00:02:43.530 --> 00:02:46.432
+This could also lead to maintaining a budget or decreasing a budget
+
+66
+00:02:46.533 --> 00:02:48.535
+based on this framework that we have here.
+
+67
+00:02:48.735 --> 00:02:50.436
+Again, this is a lot of data
+
+68
+00:02:50.436 --> 00:02:52.438
+that is specific to our particular use case.
+
+69
+00:02:52.639 --> 00:02:54.707
+Claude knows how to handle particular decisions
+
+70
+00:02:54.908 --> 00:02:57.410
+and analyze marketing metrics,
+
+71
+00:02:57.510 --> 00:02:59.179
+but here we're specifying exactly the
+
+72
+00:02:59.179 --> 00:03:01.114
+way that we want to do things.
+
+73
+00:03:01.581 --> 00:03:04.584
+This requires me bringing in external documentation,
+
+74
+00:03:04.584 --> 00:03:06.486
+finding the right people, and even if
+
+75
+00:03:06.486 --> 00:03:08.388
+I'm not the most knowledgeable about this,
+
+76
+00:03:08.388 --> 00:03:10.089
+hoping that I get it right.
+
+77
+00:03:10.089 --> 00:03:13.560
+We're going to go ahead and see these allocation rules, our recommendations.
+
+78
+00:03:13.560 --> 00:03:16.062
+We can see what's passing, what's not passing,
+
+79
+00:03:16.062 --> 00:03:18.064
+and a proposed reallocation here.
+
+80
+00:03:18.064 --> 00:03:20.066
+Freeing up some budget,
+
+81
+00:03:20.066 --> 00:03:23.369
+analyzing what's working and where to allocate additional budget towards.
+
+82
+00:03:23.770 --> 00:03:26.406
+What we've seen here is a step-by-step process
+
+83
+00:03:26.406 --> 00:03:30.376
+that requires us as the user to put in the necessary documentation
+
+84
+00:03:30.376 --> 00:03:33.279
+and have the necessary pre-existing knowledge.
+
+85
+00:03:33.646 --> 00:03:36.616
+Not only that, but everything that I'm putting in here
+
+86
+00:03:36.616 --> 00:03:39.285
+is immediately getting added to the context window.
+
+87
+00:03:39.552 --> 00:03:41.754
+What happens if I want to ask something different?
+
+88
+00:03:41.788 --> 00:03:44.357
+What happens if I want to have a different kind of conversation?
+
+89
+00:03:44.557 --> 00:03:46.559
+This information here is not always
+
+90
+00:03:46.559 --> 00:03:48.595
+necessary for everything I'm going to do.
+
+91
+00:03:49.229 --> 00:03:49.929
+What we're going to take a
+
+92
+00:03:49.929 --> 00:03:51.297
+look at here is how we can
+
+93
+00:03:51.297 --> 00:03:54.367
+take this information
+and package it into a skill.
+
+94
+00:03:54.634 --> 00:03:57.136
+a standalone asset, a folder really,
+
+95
+00:03:57.237 --> 00:04:02.208
+that contains instructions for how to go about performing the campaign analysis
+
+96
+00:04:02.208 --> 00:04:03.843
+while also being intentional
+
+97
+00:04:03.843 --> 00:04:06.913
+about what information
+goes into the context window
+
+98
+00:04:06.913 --> 00:04:08.481
+and what information doesn't.
+
+99
+00:04:08.781 --> 00:04:12.585
+As we've seen, this is a weekly campaign performance analysis.
+
+100
+00:04:12.952 --> 00:04:15.154
+So this isn't something that I want to
+
+101
+00:04:15.154 --> 00:04:17.624
+have to repeat on my own every single week
+
+102
+00:04:17.690 --> 00:04:20.793
+with this particular prompt by copying and pasting.
+
+103
+00:04:21.194 --> 00:04:22.762
+This is going to be much nicer
+
+104
+00:04:22.762 --> 00:04:24.597
+to have pre-packaged that I can use myself,
+
+105
+00:04:24.797 --> 00:04:27.800
+share with members of the team, and edit as necessary.
+
+106
+00:04:27.967 --> 00:04:29.869
+So with that, let's take a
+
+107
+00:04:29.869 --> 00:04:32.071
+look at what a SKILL.md file is.
+
+108
+00:04:32.071 --> 00:04:35.975
+This file needs to be named SKILL.md in markdown format.
+
+109
+00:04:35.975 --> 00:04:38.544
+And this is going to be the underlying set
+
+110
+00:04:38.544 --> 00:04:41.080
+of instructions to perform the task that we saw.
+
+111
+00:04:41.481 --> 00:04:44.117
+In this Markdown file, I have very similar
+
+112
+00:04:44.117 --> 00:04:47.253
+information to what I included
+in the previous prompt.
+
+113
+00:04:47.553 --> 00:04:50.623
+I have my input requirements, a data quality check,
+
+114
+00:04:50.623 --> 00:04:53.726
+funnel analysis with the metrics that we were working at before,
+
+115
+00:04:53.726 --> 00:04:55.528
+and historical benchmarks.
+
+116
+00:04:55.895 --> 00:04:58.097
+I have that same Efficiency Analysis
+
+117
+00:04:58.097 --> 00:05:00.700
+as well as the Output Format that I expect.
+
+118
+00:05:01.401 --> 00:05:03.903
+Finally, I have a note here on Budget Reallocation
+
+119
+00:05:04.404 --> 00:05:06.406
+that references a different file
+
+120
+00:05:06.806 --> 00:05:09.809
+only when the user asks about Budget Reallocation.
+
+121
+00:05:10.176 --> 00:05:11.978
+So we talked a little bit about how
+
+122
+00:05:11.978 --> 00:05:13.780
+this can be much more efficient with context.
+
+123
+00:05:14.180 --> 00:05:15.982
+This is one example where I'm only
+
+124
+00:05:15.982 --> 00:05:18.084
+going to be reading and using this file
+
+125
+00:05:18.184 --> 00:05:21.587
+if a user asks about that particular piece of information.
+
+126
+00:05:22.922 --> 00:05:25.124
+In order to get this skill to work as expected,
+
+127
+00:05:25.758 --> 00:05:27.460
+there's one more piece of data
+
+128
+00:05:27.460 --> 00:05:29.329
+that I need to add to the beginning here.
+
+129
+00:05:29.329 --> 00:05:31.564
+This data is in a data format called
+
+130
+00:05:31.564 --> 00:05:33.466
+YAML, and here's what it looks like.
+
+131
+00:05:34.200 --> 00:05:38.004
+Every skill that you make across the entire standard
+
+132
+00:05:38.004 --> 00:05:40.406
+requires a name as well as a description.
+
+133
+00:05:40.707 --> 00:05:43.710
+The name of the skill is going to be important for referencing
+
+134
+00:05:43.710 --> 00:05:45.712
+when to use it and in the UI
+
+135
+00:05:45.712 --> 00:05:47.714
+that we're working with if it's being used.
+
+136
+00:05:48.014 --> 00:05:50.016
+And the description is important
+
+137
+00:05:50.016 --> 00:05:52.418
+so that the model that we're working with can understand
+
+138
+00:05:52.418 --> 00:05:54.721
+when to use this particular skill.
+
+139
+00:05:55.388 --> 00:05:58.591
+When you make a skill, the name and description are required.
+
+140
+00:05:59.192 --> 00:06:01.194
+So we've got our SKILL.md file,
+
+141
+00:06:01.194 --> 00:06:03.496
+and the second file I want to show you is just this
+
+142
+00:06:03.496 --> 00:06:05.898
+budget_reallocation_rules.md file,
+
+143
+00:06:05.898 --> 00:06:08.901
+which is very similar to the other prompt that we saw.
+
+144
+00:06:08.935 --> 00:06:12.772
+When you make a skill, your skill can reference other files
+
+145
+00:06:12.772 --> 00:06:15.441
+as long as they're all in the same parent folder.
+
+146
+00:06:15.942 --> 00:06:18.745
+These budget reallocation rules are exactly
+
+147
+00:06:18.745 --> 00:06:21.948
+what I put in that previous conversation with Claude AI.
+
+148
+00:06:22.448 --> 00:06:24.650
+So what we're doing here is we're moving away
+
+149
+00:06:24.917 --> 00:06:28.221
+from putting in instructions
+directly in our conversation,
+
+150
+00:06:28.554 --> 00:06:31.224
+and instead putting it into a folder.
+
+151
+00:06:31.524 --> 00:06:33.526
+Now that I've got this SKILL file,
+
+152
+00:06:33.526 --> 00:06:35.695
+as well as any external files,
+
+153
+00:06:35.962 --> 00:06:38.364
+What I'm going to do here is make a new folder.
+
+154
+00:06:38.765 --> 00:06:41.567
+And I'll name that folder the name of the skill,
+
+155
+00:06:41.968 --> 00:06:43.870
+analyzing-marketing-campaign.
+
+156
+00:06:44.170 --> 00:06:46.873
+There are some high-level rules around naming skills.
+
+157
+00:06:47.173 --> 00:06:50.576
+Stick with lowercase letters, use dashes between words,
+
+158
+00:06:50.877 --> 00:06:54.180
+and don't use reserved keywords like Claude or Anthropic.
+
+159
+00:06:54.647 --> 00:06:58.518
+Now that I've created this folder for the skill that I'm making,
+
+160
+00:06:59.051 --> 00:07:02.522
+I'm going to go ahead and make another folder called references.
+
+161
+00:07:03.423 --> 00:07:05.625
+When we look at the open standard for skills,
+
+162
+00:07:05.725 --> 00:07:08.628
+we're going to see that this actually is a specific name
+
+163
+00:07:09.128 --> 00:07:11.631
+that we use when there are external references
+
+164
+00:07:11.731 --> 00:07:15.568
+that the skill uses. And inside of our SKILL.md,
+
+165
+00:07:15.568 --> 00:07:19.272
+we linked to references/budget_reallocation_rules.
+
+166
+00:07:19.572 --> 00:07:22.775
+So I'll go ahead and put that file in this folder.
+
+167
+00:07:23.376 --> 00:07:25.878
+I'll put the folder inside of our marketing campaign.
+
+168
+00:07:26.312 --> 00:07:28.314
+And then I'll put the SKILL.md
+
+169
+00:07:28.614 --> 00:07:30.616
+at the top level of this folder.
+
+170
+00:07:30.917 --> 00:07:32.919
+If we take a quick look at what's inside,
+
+171
+00:07:33.119 --> 00:07:36.422
+we should see our SKILL.md as well as our references folder
+
+172
+00:07:36.923 --> 00:07:39.926
+that contains that additional budget allocation file.
+
+173
+00:07:40.460 --> 00:07:42.361
+Now I'm going to go ahead and
+
+174
+00:07:42.361 --> 00:07:44.263
+create a zip file from this folder
+
+175
+00:07:44.964 --> 00:07:47.633
+and I'm going to go ahead and upload that to Claude AI.
+
+176
+00:07:48.334 --> 00:07:50.436
+Once I upload that skill,
+
+177
+00:07:50.436 --> 00:07:52.939
+I should be able to start using it in future conversations.
+
+178
+00:07:53.806 --> 00:07:56.609
+I'm going to head over to my Settings right over here.
+
+179
+00:07:57.009 --> 00:07:59.011
+And I'm going to go to Capabilities.
+
+180
+00:07:59.812 --> 00:08:02.315
+As I navigate to the bottom of Capabilities,
+
+181
+00:08:02.615 --> 00:08:04.817
+we're going to see this section on Skills.
+
+182
+00:08:04.984 --> 00:08:06.285
+There are some example ones that
+
+183
+00:08:06.285 --> 00:08:07.787
+we'll talk a little bit about later.
+
+184
+00:08:08.187 --> 00:08:09.722
+But right now, I want to add my
+
+185
+00:08:09.722 --> 00:08:11.491
+own. So I'm going to go ahead and add,
+
+186
+00:08:11.791 --> 00:08:14.460
+and I'm going to upload the skill in a zip file
+
+187
+00:08:14.760 --> 00:08:16.462
+that I created. I'm going to go
+
+188
+00:08:16.462 --> 00:08:18.431
+ahead and drag and drop that zip file
+
+189
+00:08:18.431 --> 00:08:20.233
+and give that a second to upload.
+
+190
+00:08:20.633 --> 00:08:22.735
+Once that's done, we can see the name
+
+191
+00:08:22.735 --> 00:08:24.837
+of our skill as well as that description.
+
+192
+00:08:25.304 --> 00:08:28.441
+Now that we've uploaded our skill, let's go see this in action.
+
+193
+00:08:29.041 --> 00:08:31.010
+I'm going to start with a new chat.
+
+194
+00:08:31.010 --> 00:08:32.979
+I'm going to go ahead and ask Claude
+
+195
+00:08:32.979 --> 00:08:34.981
+a similar prompt to what I had before.
+
+196
+00:08:34.981 --> 00:08:37.583
+And I'm going to go ahead now and attach the same CSV
+
+197
+00:08:37.583 --> 00:08:39.585
+that I was working with before.
+
+198
+00:08:39.986 --> 00:08:41.787
+If this works as expected,
+
+199
+00:08:41.787 --> 00:08:44.590
+we should start to see Claude pick up the skill
+
+200
+00:08:44.590 --> 00:08:46.592
+for our weekly marketing campaign.
+
+201
+00:08:46.792 --> 00:08:49.795
+Claude should then perform the tasks required in that skill
+
+202
+00:08:49.795 --> 00:08:51.264
+and the need for us to
+
+203
+00:08:51.264 --> 00:08:52.999
+have all that prompt back and forth
+
+204
+00:08:52.999 --> 00:08:54.600
+is no longer there.
+
+205
+00:08:54.634 --> 00:08:56.836
+So let's go ahead and see what Claude can do here.
+
+206
+00:08:57.436 --> 00:08:59.438
+We'll see here it's going to read this skill file
+
+207
+00:08:59.438 --> 00:09:02.408
+to ensure it's following the right instructions.
+
+208
+00:09:02.708 --> 00:09:05.111
+The name of our skill as well as the description
+
+209
+00:09:05.411 --> 00:09:07.513
+is what is allowing Claude to pick this up.
+
+210
+00:09:07.713 --> 00:09:10.716
+Since we're asking about reallocating the budget,
+
+211
+00:09:10.917 --> 00:09:13.619
+it's going to go ahead and read that additional file
+
+212
+00:09:13.619 --> 00:09:15.521
+that we uploaded to our skill.
+
+213
+00:09:15.922 --> 00:09:17.924
+We'll then go ahead and analyze the data.
+
+214
+00:09:18.190 --> 00:09:19.959
+If you want to see the code
+
+215
+00:09:19.959 --> 00:09:21.694
+that Claude is running and executing here,
+
+216
+00:09:21.794 --> 00:09:23.896
+we can always open this up and take
+
+217
+00:09:23.896 --> 00:09:25.998
+a look at what's happening behind the scenes.
+
+218
+00:09:30.002 --> 00:09:31.737
+What we're going to see here is
+
+219
+00:09:31.737 --> 00:09:33.706
+something very similar to what we saw before.
+
+220
+00:09:33.773 --> 00:09:35.775
+we're going to analyze channels that may
+
+221
+00:09:35.775 --> 00:09:37.777
+have additional challenges, in this case TikTok.
+
+222
+00:09:38.444 --> 00:09:42.048
+We may see things that are working as well as recommended reallocations.
+
+223
+00:09:42.582 --> 00:09:43.816
+But in this case, we didn't
+
+224
+00:09:43.816 --> 00:09:45.251
+have to add all the prompting ourselves.
+
+225
+00:09:45.751 --> 00:09:48.554
+This skill can be shared across many different platforms.
+
+226
+00:09:49.255 --> 00:09:52.258
+And since skills are an open standard, this is supported
+
+227
+00:09:52.558 --> 00:09:56.562
+in other coding environments like Codex, Gemini CLI, and much more.
+
+228
+00:09:56.963 --> 00:09:59.565
+So not only have we created a way to take this data
+
+229
+00:09:59.565 --> 00:10:02.168
+and package it up into a centralized place,
+
+230
+00:10:02.468 --> 00:10:04.770
+we're being more efficient with the context window
+
+231
+00:10:04.770 --> 00:10:07.073
+and the portability here is extremely valuable.
+
+232
+00:10:07.373 --> 00:10:09.976
+Now, let's go ahead and create a report
+
+233
+00:10:09.976 --> 00:10:11.978
+with the data that we found.
+
+234
+00:10:12.178 --> 00:10:14.480
+We're going to go ahead and create an Excel report
+
+235
+00:10:14.480 --> 00:10:16.849
+with the following pieces of information
+
+236
+00:10:16.849 --> 00:10:19.452
+as well as a color coding that we're recommending.
+
+237
+00:10:19.752 --> 00:10:22.521
+Under the hood, the ability to create spreadsheets
+
+238
+00:10:22.521 --> 00:10:24.824
+and execute necessary code to do so,
+
+239
+00:10:25.224 --> 00:10:28.628
+actually lives in a skill that comes built-in to Claude.
+
+240
+00:10:29.028 --> 00:10:31.931
+So we're actually going to see the underlying skill being used,
+
+241
+00:10:32.231 --> 00:10:34.934
+code being run to create this Excel file,
+
+242
+00:10:35.234 --> 00:10:38.638
+and then finally the output based on the requirements that we specified.
+
+243
+00:10:41.874 --> 00:10:43.476
+We've got our spreadsheet now.
+
+244
+00:10:43.476 --> 00:10:45.578
+Here we can see, we've got an Executive Summary,
+
+245
+00:10:45.578 --> 00:10:47.880
+Funnel Analysis, Efficiency Analysis.
+
+246
+00:10:48.547 --> 00:10:50.449
+And we can go and open this in Google Drive
+
+247
+00:10:50.449 --> 00:10:52.151
+or download this spreadsheet.
+
+248
+00:10:52.618 --> 00:10:54.620
+Through the use of our skill to
+
+249
+00:10:54.620 --> 00:10:56.889
+analyze data and give us what we need,
+
+250
+00:10:57.289 --> 00:11:00.192
+as well as built-in skills to create spreadsheets,
+
+251
+00:11:00.192 --> 00:11:04.897
+we can transform data from CSVs into meaningful, actionable insights
+
+252
+00:11:04.897 --> 00:11:07.199
+in many different kinds of file formats.
+
+253
+00:11:07.566 --> 00:11:10.369
+Next, we'll explore in a little bit more depth
+
+254
+00:11:10.469 --> 00:11:12.672
+what a skill looks like, how it works,
+
+255
+00:11:12.772 --> 00:11:16.042
+and where it fits into the entire AI ecosystem.

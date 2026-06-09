@@ -16,6 +16,23 @@
 想法 → 写 Prompt → 运行 → 看结果 → 分析问题 → 改进 Prompt → 循环
 ```
 
+![Iterative Prompt Development 迭代循环](images/ep03-iterative-loop.png)
+
+这张图把循环画得更清楚——四个环节首尾相接、不断重复：
+
+| 环节 | 含义 |
+|---|---|
+| **Idea** | 想法：你想让模型做什么 |
+| **Implementation (code/data) Prompt** | 实现：把想法写成 Prompt（含代码/数据） |
+| **Experimental result** | 实验结果：运行后得到的输出 |
+| **Error Analysis** | 误差分析：为什么没达到预期，再回到 Idea 改进 |
+
+**Prompt 编写准则（Prompt guidelines）：**
+- Be clear and specific —— 清晰、具体
+- Analyze why result does not give desired output —— 分析结果为何没达到预期
+- Refine the idea and the prompt —— 同时打磨想法和 Prompt
+- Repeat —— 重复
+
 Andrew Ng 强调：不要迷信"30 个最佳 Prompt"这类文章，因为没有适合所有场景的完美 Prompt。**关键是掌握开发好 Prompt 的过程，而不是记住某个固定的 Prompt。**
 
 ---
@@ -38,6 +55,21 @@ Andrew Ng 强调：不要迷信"30 个最佳 Prompt"这类文章，因为没有�
 
 **终极版本：** "用 HTML 格式输出，并附上产品尺寸表格"
 - 结果：生成格式完整的 HTML，包含标题、描述、表格
+
+## 迭代流程（Iterative Process）
+
+![Iterative Process 迭代流程四步](images/ep03-iterative-process.png)
+
+同一个循环图，换个角度总结成可操作的四步流程：
+
+1. **Try something** —— 先写个 Prompt 跑起来，别追求一次到位
+2. **Analyze where the result does not give what you want** —— 分析结果哪里没达到预期
+3. **Clarify instructions, give more time to think** —— 把指令写得更清晰，并给模型更多"思考时间"（如要求分步推理）
+4. **Refine prompts with a batch of examples** —— 用一批样本来打磨 Prompt（对应成熟应用阶段的批量评估）
+
+> 对比上一节的 **Prompt guidelines**（写 Prompt 的准则），这里强调的是**整个开发动作的节奏**：先跑 → 分析 → 改清晰度/给思考空间 → 用样本批量校准。
+
+---
 
 ## 关键规律
 
