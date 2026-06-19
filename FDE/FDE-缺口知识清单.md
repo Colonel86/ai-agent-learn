@@ -43,7 +43,7 @@
 | 数据建模与本体（Ontology） | 🔴 `[P]` |
 | Foundry / AIP 平台范式：Pipeline Builder、Workshop、Ontology | 🔴 `[P]` |
 
-> 📘 这两项 `[P]` 的详细学习内容、资源与分阶段计划 → [`Foundry-Ontology-学习计划.md`](./Foundry-Ontology-学习计划.md)
+> 📘 这两项 `[P]` 的详细学习内容、资源与分阶段计划 → [`Palantir-Foundry-Ontology-学习总纲.md`](./Palantir-Foundry-Ontology-学习总纲.md)（含配套一手资料精读）
 
 ## 模块 3 · LLM 应用"生产化" `[共同]` —— 懂原理，缺工程落地
 原理已学过（🟢），缺的是把它**做成可靠上线的工程**（这四条正好是架构师路线图的四条横切线）：
