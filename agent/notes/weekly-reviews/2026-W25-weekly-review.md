@@ -12,7 +12,7 @@
 
 | 日期 | 产出 | 说明 |
 | --- | --- | --- |
-| 6/16 | **AI Agent 分层选型矩阵**（roadmap/agent-selection 整套） | 模型 / 框架 / 检索 / 工具 / 可观测 / 记忆 六层，外加 framework-selector、stack-selector 两个 skill，单次提交约 **1400 行** |
+| 6/16 | **AI Agent 分层选型矩阵**（agent/roadmap/agent-selection 整套） | 模型 / 框架 / 检索 / 工具 / 可观测 / 记忆 六层，外加 framework-selector、stack-selector 两个 skill，单次提交约 **1400 行** |
 | 6/17 | **FDE 能力缺口清单 + Foundry/Ontology 学习计划** | 明确「AI Agent 学习者 → FDE」的真实缺口（几乎都在 AI 之外：后端/持久化/集成/交付） |
 | 6/17 | 课程 2 笔记重命名为「编号 + 中文主题」 | 目录规范延续 |
 | 6/19 | **Palantir Foundry/Ontology** 学习总纲 + 一手资料精读 | 合并文档并新增约 **480 行**，对应 FDE-Palantir 方向 |

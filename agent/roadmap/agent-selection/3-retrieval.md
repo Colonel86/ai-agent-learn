@@ -3,7 +3,7 @@
 > **用途**:为 RAG / 知识检索类 Agent 选整条检索栈的各个环节。
 > **适用**:Spec-Kit `/plan`;或由 `stack-selector` skill 路由进来。
 > **最后核对:2026-06**。结论分级 ✅稳定 / ⚠️快照 / ❓待验证。
-> **边界**:本包是「**知识检索**」(检索文档喂给 LLM);`roadmap/agent-selection/4-tools.md` 是「**工具检索**」(在 100+ 工具里选对工具)——两层不同,别混。
+> **边界**:本包是「**知识检索**」(检索文档喂给 LLM);`agent/roadmap/agent-selection/4-tools.md` 是「**工具检索**」(在 100+ 工具里选对工具)——两层不同,别混。
 
 ---
 
@@ -48,13 +48,13 @@
 | **深度解析平台**(RAGFlow) | 模板化解析 + OCR,中文/PDF 强,端到端 RAG | 偏平台、较重 | 中文/PDF 重场景、想端到端(亦见 §八) |
 | **VLM 解析**(视觉模型读整页) | 把页面当图像,让 VLM 直接输出文字+结构 | 最贵最慢;但扫描/图表/手写最稳 | 扫描 PDF、图表/公式密集、传统 OCR 失败 |
 
-> 🖼 **多模态 = 摄取 × 模型 联合决策**(不再只是模型层一个"可选维度"):文档含扫描页/图表/公式时,先在**摄取层**决定走 OCR/版面解析还是直接交 VLM 解析——这一步同时决定下游**要不要多模态主模型**(见 `roadmap/agent-selection/1-model.md` 多模态维度)。两层一起定,别只在模型层勾一下"多模态"。
+> 🖼 **多模态 = 摄取 × 模型 联合决策**(不再只是模型层一个"可选维度"):文档含扫描页/图表/公式时,先在**摄取层**决定走 OCR/版面解析还是直接交 VLM 解析——这一步同时决定下游**要不要多模态主模型**(见 `agent/roadmap/agent-selection/1-model.md` 多模态维度)。两层一起定,别只在模型层勾一下"多模态"。
 
 > 🔁 **增量刷新**:**最轻 = 全量重建索引**(数据小/低频,直接重跑);量大或频更再升级 → **文档级 upsert**(按 source id)+ **内容哈希去重**(跳过未变文档)+ **删除传播**(源删了要清掉对应向量)。注意:换 parser 或 embedding 都要**重建索引**,属高成本变更,早定(呼应 §三)。
 
 > 👉 **最轻方案起步**:别一上来搭"分类型路由 + VLM"的重摄取栈。先用**单一 parser 直切**(unstructured 或框架自带 loader)跑通,用 RAG Triad(§十)看 **Context Relevance**;等"表格读错 / 扫描件读空 / 图表丢失"真的成为失败主因,再按文档形态升级到 Docling / LlamaParse / VLM 解析。
 
-回溯:本文件 §八(框架地图·反直觉提醒)、§三(embedding 换则重建);相关层 `roadmap/agent-selection/2-framework/`(RAGFlow/LlamaIndex 作为框架在那边)、`roadmap/agent-selection/1-model.md`(多模态主模型)、`roadmap/agent-selection/8-cost-economics.md`(VLM 逐页解析的成本账,定"全量上 vs 按需上")。
+回溯:本文件 §八(框架地图·反直觉提醒)、§三(embedding 换则重建);相关层 `agent/roadmap/agent-selection/2-framework/`(RAGFlow/LlamaIndex 作为框架在那边)、`agent/roadmap/agent-selection/1-model.md`(多模态主模型)、`agent/roadmap/agent-selection/8-cost-economics.md`(VLM 逐页解析的成本账,定"全量上 vs 按需上")。
 
 ---
 
@@ -165,7 +165,7 @@
 
 ## 八、RAG 框架地图(组装层)——别和编排框架层混
 
-上面是检索栈的**零件**;把零件组装起来的**框架**按抽象层分三档。注意:通用编排框架(LangGraph/Haystack 等)的选型在 `roadmap/agent-selection/2-framework/`,这里只给 RAG 视角的速查:
+上面是检索栈的**零件**;把零件组装起来的**框架**按抽象层分三档。注意:通用编排框架(LangGraph/Haystack 等)的选型在 `agent/roadmap/agent-selection/2-framework/`,这里只给 RAG 视角的速查:
 
 | 档位 | 代表 | 何时用 |
 |---|---|---|
@@ -174,7 +174,7 @@
 | **低代码平台** | **Dify**⭐、**FastGPT / AnythingLLM**(自带界面知识库)、**Flowise** | 快速验证/交付,几乎不写代码 |
 
 > **反直觉提醒**:框架降低起步成本,但生产里 RAG 的质量瓶颈几乎都在**解析/切分/检索+重排/评估**——这些恰恰是框架帮不上、要自己打磨的环节。所以**框架选型权重往往低于预期**;成熟团队常最终走"裸向量库 + reranker + 自写 retrieval"以摆脱抽象束缚。
-回溯:`courses/RAG/RAG.md`、`roadmap/agent-selection/2-framework/03-framework-profiles.md`。
+回溯:`courses/RAG/RAG.md`、`agent/roadmap/agent-selection/2-framework/03-framework-profiles.md`。
 
 ---
 
@@ -201,7 +201,7 @@ Step 7 用 RAG Triad 验收(见下)
 | **Groundedness** | 答案是否基于检索内容 | 低 → LLM 在用自有知识硬答 |
 | **Answer Relevance** | 答案是否回应问题 | 低 → 端到端跑偏 |
 
-> 选型不是拍脑袋:每改一个环节,用 Triad 跑一遍看哪个指标动了。详见 `roadmap/agent-selection/5-observability-eval.md`。
+> 选型不是拍脑袋:每改一个环节,用 Triad 跑一遍看哪个指标动了。详见 `agent/roadmap/agent-selection/5-observability-eval.md`。
 
 ---
 
@@ -221,7 +221,7 @@ Step 7 用 RAG Triad 验收(见下)
 ## 十二、接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/3-retrieval.md 为本 RAG feature 选检索栈。
+请用 agent/roadmap/agent-selection/3-retrieval.md 为本 RAG feature 选检索栈。
 - 数据:规模 <…> / 文档形态(纯文本/扫描件/表格/图表)<…> / 结构 <…> / 更新频率 <…> / 语言 <…>
 - 约束:是否出域 <…> / 延迟 <…> / 已有基础设施(有无 Postgres 等)<…>
 请逐子决策给方案(数据摄取·解析/向量库/embedding/chunking/retriever架构/进阶方法/是否上GraphRAG/RAG框架),
@@ -233,5 +233,5 @@ Step 7 用 RAG Triad 验收(见下)
 ## 十三、课程回溯 + 相关资产
 
 - 回溯:`courses/04`、`courses/05`、`courses/06`、`courses/18`、`courses/RAG/RAG.md`、`courses/专业名词解释/{向量数据库-FAISS与Milvus, 检索器架构-BiEncoder-CrossEncoder-ColBERT, 向量相似度与归一化, 知识图谱增强检索-GraphRAG}.md`。
-- 相关层:`roadmap/agent-selection/2-framework/`(LlamaIndex/Haystack 作为编排框架在那边)、`roadmap/agent-selection/5-observability-eval.md`(RAG Triad 评估)、`roadmap/agent-selection/4-tools.md`(工具检索,不同层)。
-- 总览:`roadmap/agent-selection/README.md`。沉淀:`skills/adr-writer`。
+- 相关层:`agent/roadmap/agent-selection/2-framework/`(LlamaIndex/Haystack 作为编排框架在那边)、`agent/roadmap/agent-selection/5-observability-eval.md`(RAG Triad 评估)、`agent/roadmap/agent-selection/4-tools.md`(工具检索,不同层)。
+- 总览:`agent/roadmap/agent-selection/README.md`。沉淀:`agent/skills/adr-writer`。

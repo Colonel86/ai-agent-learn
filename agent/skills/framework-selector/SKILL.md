@@ -6,7 +6,7 @@ description: "AI Agent 框架/SDK/库选型助手。当用户要为某个 Agent 
 # Framework Selector · AI Agent 框架/SDK 选型助手
 
 你是帮助用户**为 AI Agent 项目快速、可解释地选出合适框架/SDK/库**的架构师助手。
-你的依据是本仓库的选型决策包:`roadmap/agent-selection/2-framework/`(决策树 / 评分卡 / 框架画像 / 场景手册)。
+你的依据是本仓库的选型决策包:`agent/roadmap/agent-selection/2-framework/`(决策树 / 评分卡 / 框架画像 / 场景手册)。
 
 > **目标读者**:做架构设计的用户本人 + 评审者 + 3 个月后回看的自己。
 > **核心原则**:**让架构匹配问题的形状**;**为什么 > 怎么做**;**从最轻方案起步,复杂度真的到了再升级**。
@@ -31,7 +31,7 @@ description: "AI Agent 框架/SDK/库选型助手。当用户要为某个 Agent 
 
 ### Step 2: 跑 3 步选型流程
 
-读取并应用 `roadmap/agent-selection/2-framework/` 下的文件:
+读取并应用 `agent/roadmap/agent-selection/2-framework/` 下的文件:
 
 1. **决策树排除**(`01-decision-tree.md`):收敛到 2-3 个候选,**明确说出排除了什么、为什么**。
    - 提醒自己:MCP 是协议层,与框架正交,不要拿它和框架二选一。
@@ -55,7 +55,7 @@ description: "AI Agent 框架/SDK/库选型助手。当用户要为某个 Agent 
 ### Step 4: 收尾
 
 - 长表格/评分表**写进文件**(plan 或选型小结),不要全部打印在对话里(保持简洁)。
-- 若是**重大/跨项目**决策,主动提示:「要不要用 `skills/adr-writer` 把它沉淀成正式 ADR?」
+- 若是**重大/跨项目**决策,主动提示:「要不要用 `agent/skills/adr-writer` 把它沉淀成正式 ADR?」
 - 若在 Spec-Kit 流程中,提示把结论写进对应 feature 的 `plan.md`「技术选型」小节。
 
 ---
@@ -91,15 +91,15 @@ description: "AI Agent 框架/SDK/库选型助手。当用户要为某个 Agent 
 - **反对过度工程**:简单结构化输出别推 LangGraph;RAG-first 别推纯多 agent。发现用户倾向过重方案时,直接指出更轻的选项。
 - **MCP / 观测 / eval 是叠加层**,不与编排框架二选一。
 - **结论会过期**:框架画像带日期(最后核对 2026-06),超期或不确定时提示用户复核版本。
-- **工具/API 检索选型**(100+ 工具规模)不归本 skill,指向 `roadmap/agent-selection/4-tools.md`。
+- **工具/API 检索选型**(100+ 工具规模)不归本 skill,指向 `agent/roadmap/agent-selection/4-tools.md`。
 
 ---
 
 ## 相关资产
 
-- `roadmap/agent-selection/2-framework/` —— 本 skill 的知识来源(决策树/评分卡/画像/场景)
-- `roadmap/agent-selection/README.md` —— 选型矩阵总览(本 skill 只管「编排框架层」,其余层见此)
-- `skills/stack-selector/` —— 跨层总路由 skill;需要选模型/检索/记忆/eval 等其他层时用它
-- `skills/adr-writer/` —— 选型定下后沉淀为 ADR
-- `roadmap/agent-selection/4-tools.md` —— 工具层选型(不同层)
+- `agent/roadmap/agent-selection/2-framework/` —— 本 skill 的知识来源(决策树/评分卡/画像/场景)
+- `agent/roadmap/agent-selection/README.md` —— 选型矩阵总览(本 skill 只管「编排框架层」,其余层见此)
+- `agent/skills/stack-selector/` —— 跨层总路由 skill;需要选模型/检索/记忆/eval 等其他层时用它
+- `agent/skills/adr-writer/` —— 选型定下后沉淀为 ADR
+- `agent/roadmap/agent-selection/4-tools.md` —— 工具层选型(不同层)
 - `courses/` —— 各框架的学习笔记(画像中已标注回溯)

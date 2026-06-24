@@ -139,7 +139,7 @@ SSE → WebSocket                                              ← 真交互式
 ## 九、📋 接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/10-agent-ux.md 为本 feature 选 Agent-UX 呈现方案。
+请用 agent/roadmap/agent-selection/10-agent-ux.md 为本 feature 选 Agent-UX 呈现方案。
 - serving 形态(同步/流式/异步后台,见 9-serving):<…>
 - 前端栈:<React/Next/Vue/无前端…>  既有 UI 基建:<…>
 - 中间态要不要给人看(工具调用/检索来源/思考/节点进度):<…>
@@ -156,6 +156,6 @@ SSE → WebSocket                                              ← 真交互式
 
 - **心智模型**:`../../interview/1.md` «前后端 Stream 流的事件模型」(三段流:provider→框架→AG-UI,5 类事件全景)、«正交横切带 A·协议 → Agent↔UI/客户端 AG-UI」、«HITL 是横切设计模式」(L5 + 横切线)。
 - **相邻层**:`9-serving-deployment.md`(serving 形态决定呈现下限:流式/异步后台/持久执行/断流重连)、`2-framework/06-protocols.md`(AG-UI 作为协议的集中决策,以及与 MCP/A2A 的正交关系)。
-- **总览**:`README.md`。沉淀:定下后用 `skills/adr-writer` 写 ADR。
+- **总览**:`README.md`。沉淀:定下后用 `agent/skills/adr-writer` 写 ADR。
 
 > **最后核对:2026-06**

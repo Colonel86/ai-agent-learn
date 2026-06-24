@@ -2,7 +2,7 @@
 
 > **用途**:在做 AI Agent 架构设计 / 开发前,根据**数据特征 + 业务需求**快速、可复用地选出合适的 **框架 / SDK / 库**。
 > **适用**:可直接被 Spec-Kit 的 `/specify` 与 `/plan` 阶段引用,也可由 `framework-selector` skill 交互式驱动。
-> **本包只是「编排框架层」**:模型/检索/记忆/可观测等其他层的选型见总览 [`roadmap/agent-selection/README.md`](../README.md),或用 `stack-selector` skill 跨层路由。
+> **本包只是「编排框架层」**:模型/检索/记忆/可观测等其他层的选型见总览 [`agent/roadmap/agent-selection/README.md`](../README.md),或用 `stack-selector` skill 跨层路由。
 > **维护者视角**:这是一套"决策资产",不是一次性结论。框架在演进,**结论会过期,但决策方法不会**——所以本包同时给方法(决策树/评分卡)和当下快照(框架画像/场景手册)。
 
 ---
@@ -29,7 +29,7 @@
 | [`04-scenario-playbook.md`](04-scenario-playbook.md) | **场景速查**:典型业务/数据形态 → 推荐技术栈 | 想看"和我类似的场景别人怎么选" |
 
 配套:[`05-spec-kit-integration.md`](05-spec-kit-integration.md) —— 如何把本包接进 Spec-Kit 工作流(含可复制的 prompt 块)。
-配套 skill:`skills/framework-selector/` —— 交互式问答驱动整套流程,产出一份带推荐+理由的选型小结(可直接转 ADR)。
+配套 skill:`agent/skills/framework-selector/` —— 交互式问答驱动整套流程,产出一份带推荐+理由的选型小结(可直接转 ADR)。
 
 ---
 
@@ -51,8 +51,8 @@
 
 ## 四、与已有资产的关系
 
-- **`roadmap/agent-selection/4-tools.md`** —— 工具层 / 工具路由方案的选型(100+ 工具如何路由选对),与本包是**不同层**:本包选"Agent 编排框架",那份选"工具路由方案"。两者常在同一个 plan 里同时被引用。
-- **`skills/adr-writer/`** —— 选型决策定下来后,用它把"为什么选 X 不选 Y"沉淀成正式 ADR。本包负责"怎么选",adr-writer 负责"怎么记"。
+- **`agent/roadmap/agent-selection/4-tools.md`** —— 工具层 / 工具路由方案的选型(100+ 工具如何路由选对),与本包是**不同层**:本包选"Agent 编排框架",那份选"工具路由方案"。两者常在同一个 plan 里同时被引用。
+- **`agent/skills/adr-writer/`** —— 选型决策定下来后,用它把"为什么选 X 不选 Y"沉淀成正式 ADR。本包负责"怎么选",adr-writer 负责"怎么记"。
 - **`courses/`** —— 框架画像里的多数结论可回溯课程笔记(部分框架画像如 MAF/OpenAI Agents SDK/Google ADK 据厂商文档补充,已在 `03-framework-profiles.md` 中标注)。
 
 ---

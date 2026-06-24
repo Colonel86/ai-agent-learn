@@ -3,7 +3,7 @@
 > **用途**:在选编排框架、选工具、搭沙箱**之前**,先定 Agent 的动作原语用哪一档——function/tool calling、CodeAct、还是 computer/browser-use。
 > **适用**:Spec-Kit `/plan` 的第一步(先于 `2-framework/01-decision-tree.md`);或由 `stack-selector` skill 路由进来。
 > **最后核对:2026-06**。⚠️ 具体工具/产品名(Operator、computer use 等)变化快,本包给**选型轴**,产品名按当下**现查**,不固化快照。
-> **层定位**:这是「**0 号·动作范式**」——最上游分叉。它**不是**和模型层/框架层并列的"又一层",而是先于它们的**前置分叉**:选哪档动作原语,会反向决定下游的编排框架、沙箱(→ `roadmap/agent-selection/7-safety-guardrails.md`)、工具路由与观测形态。在五层心智里它属 **L1 action 范式谱**(见 `/Users/ming/Documents/ai-agent-learn/agent/interview/1.md` «L1 底层契约·Action 范式谱»),矩阵里把它前置为 0,是因为它**预先约束**了 1–7 层的可选集。
+> **层定位**:这是「**0 号·动作范式**」——最上游分叉。它**不是**和模型层/框架层并列的"又一层",而是先于它们的**前置分叉**:选哪档动作原语,会反向决定下游的编排框架、沙箱(→ `agent/roadmap/agent-selection/7-safety-guardrails.md`)、工具路由与观测形态。在五层心智里它属 **L1 action 范式谱**(见 `/Users/ming/Documents/ai-agent-learn/agent/interview/1.md` «L1 底层契约·Action 范式谱»),矩阵里把它前置为 0,是因为它**预先约束**了 1–7 层的可选集。
 
 ---
 
@@ -102,7 +102,7 @@ Q0. 目标系统 / 动作面有没有可编程 API(REST/SDK/DB/MCP server)?
 ## 八、接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/0-action-paradigm.md 为本 feature 定**动作范式**(先于框架与工具选型)。
+请用 agent/roadmap/agent-selection/0-action-paradigm.md 为本 feature 定**动作范式**(先于框架与工具选型)。
 - 目标系统/动作面:有无可编程 API(REST/SDK/DB/MCP)<…>
 - 一个任务是否需在多工具间组合 + 控制流(循环/条件/中间变量)<…>
 - 是否需要多模态观察(读截图/图表/视觉布局)<…>
@@ -112,17 +112,17 @@ Q0. 目标系统 / 动作面有没有可编程 API(REST/SDK/DB/MCP server)?
 产品名(Operator / computer use / smolagents 默认等)请现查,不要写死过期快照。
 ```
 
-定下后接力:动作范式 = ① → 进 `roadmap/agent-selection/2-framework/01-decision-tree.md` 选框架;
-= ②/③ → 同时进 `roadmap/agent-selection/7-safety-guardrails.md` 立沙箱/护栏。
+定下后接力:动作范式 = ① → 进 `agent/roadmap/agent-selection/2-framework/01-decision-tree.md` 选框架;
+= ②/③ → 同时进 `agent/roadmap/agent-selection/7-safety-guardrails.md` 立沙箱/护栏。
 
 ---
 
 ## 九、交叉引用 + 相关资产
 
 - 心智模型(权威源):`/Users/ming/Documents/ai-agent-learn/agent/interview/1.md` «L1 底层契约·Action 范式谱»(本页是其在选型矩阵里的前置分叉化)。
-- 下游前置:`roadmap/agent-selection/2-framework/01-decision-tree.md`(框架决策树——本页是它"系统形状 Q0"之前的上游前置问)。
-- 绑定层:`roadmap/agent-selection/7-safety-guardrails.md`(选 ②CodeAct/③GUI 必同时立沙箱·护栏)。
-- 相邻层:`roadmap/agent-selection/1-model.md`(模型层,正交)、`roadmap/agent-selection/4-tools.md`(工具路由)、`roadmap/agent-selection/5-observability-eval.md`(观测形态随范式变)。
-- 总览:`roadmap/agent-selection/README.md`。沉淀:`skills/adr-writer`。
+- 下游前置:`agent/roadmap/agent-selection/2-framework/01-decision-tree.md`(框架决策树——本页是它"系统形状 Q0"之前的上游前置问)。
+- 绑定层:`agent/roadmap/agent-selection/7-safety-guardrails.md`(选 ②CodeAct/③GUI 必同时立沙箱·护栏)。
+- 相邻层:`agent/roadmap/agent-selection/1-model.md`(模型层,正交)、`agent/roadmap/agent-selection/4-tools.md`(工具路由)、`agent/roadmap/agent-selection/5-observability-eval.md`(观测形态随范式变)。
+- 总览:`agent/roadmap/agent-selection/README.md`。沉淀:`agent/skills/adr-writer`。
 
 > **最后核对:2026-06**

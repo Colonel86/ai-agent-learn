@@ -26,12 +26,12 @@
 ```markdown
 ## 技术选型原则(Agent Stack)
 
-1. 选型必须经过 `roadmap/agent-selection/2-framework/` 的 3 步流程(决策树→评分卡→场景验证),
+1. 选型必须经过 `agent/roadmap/agent-selection/2-framework/` 的 3 步流程(决策树→评分卡→场景验证),
    不得凭手感直接拍板。
 2. 任何框架选型必须有 ≥1 个备选(备选可以是"裸 SDK 起步")。
 3. 从能解决问题的最轻方案起步;引入重框架需在 plan 里说明"复杂度为何已到"。
 4. 选型结论须记录:首选 / 备选 / 理由(为什么>怎么做) / 已知代价 / 复核触发条件。
-5. 重大选型落定后用 `skills/adr-writer` 沉淀为 ADR。
+5. 重大选型落定后用 `agent/skills/adr-writer` 沉淀为 ADR。
 6. 工具/数据接入优先走 MCP,与编排框架解耦。
 ```
 
@@ -42,7 +42,7 @@
 在 plan 阶段直接粘贴(把尖括号替换成实际内容):
 
 ```
-请用 roadmap/agent-selection/2-framework/ 这套选型包,为本 feature 选 Agent 框架/SDK。
+请用 agent/roadmap/agent-selection/2-framework/ 这套选型包,为本 feature 选 Agent 框架/SDK。
 
 输入:
 - 业务一句话:<…>
@@ -59,7 +59,7 @@
 保持简洁;若评分表较长,直接写进 plan 文件而不是全部打印在对话里。
 ```
 
-> 也可以不粘 prompt,直接调 skill:`使用 framework-selector 帮我选型`(见 `skills/framework-selector/`)。
+> 也可以不粘 prompt,直接调 skill:`使用 framework-selector 帮我选型`(见 `agent/skills/framework-selector/`)。
 
 ---
 
@@ -77,7 +77,7 @@
 
 一个 plan 里常**同时**有两层选型,别混:
 
-- **编排框架/SDK 选型** → 本包(`roadmap/agent-selection/2-framework/`)
-- **工具/API 检索方案选型(100+ 工具规模)** → `roadmap/agent-selection/4-tools.md`
+- **编排框架/SDK 选型** → 本包(`agent/roadmap/agent-selection/2-framework/`)
+- **工具/API 检索方案选型(100+ 工具规模)** → `agent/roadmap/agent-selection/4-tools.md`
 
 两者独立决策,但都进同一份 plan 的「技术选型」小节。

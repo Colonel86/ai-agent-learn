@@ -100,7 +100,7 @@ Q4 环境?
 ## 八、接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/6-memory.md 为本 Agent 选记忆方案。
+请用 agent/roadmap/agent-selection/6-memory.md 为本 Agent 选记忆方案。
 - 要记住什么/改变什么行为:<事实? 案例? 指令演化?>
 - 跨会话/多用户吗:<…>  延迟敏感吗:<…>  原型还是生产:<…>
 请给:记忆类型(可组合)+ 更新模式(hot/background)+ 存储后端 + 多租户隔离方式,
@@ -112,5 +112,5 @@ Q4 环境?
 ## 九、课程回溯 + 相关资产
 
 - 回溯:`courses/12-Long-Term Agentic Memory With LangGraph/notes/00-总结回顾.md`(及 L2-L5 code)。
-- 相关层:`roadmap/agent-selection/2-framework/`(LangGraph 的 Checkpointer/Store 是记忆基础设施)、`roadmap/agent-selection/3-retrieval.md`(Semantic 记忆用向量检索)。
-- 总览:`roadmap/agent-selection/README.md`。沉淀:`skills/adr-writer`。
+- 相关层:`agent/roadmap/agent-selection/2-framework/`(LangGraph 的 Checkpointer/Store 是记忆基础设施)、`agent/roadmap/agent-selection/3-retrieval.md`(Semantic 记忆用向量检索)。
+- 总览:`agent/roadmap/agent-selection/README.md`。沉淀:`agent/skills/adr-writer`。

@@ -129,4 +129,4 @@
 **复核触发条件**:(什么情况下要重新评估)
 ```
 
-> 填完这张表,直接喂给 `skills/adr-writer` 就能生成正式 ADR。
+> 填完这张表,直接喂给 `agent/skills/adr-writer` 就能生成正式 ADR。

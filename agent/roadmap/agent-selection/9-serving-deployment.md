@@ -110,7 +110,7 @@ Q4 任务长、用户不盯着?        → 完成通知用 webhook / push,别让
 ## 🧩 八、接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/9-serving-deployment.md 为本 feature 选部署 / serving 形态。
+请用 agent/roadmap/agent-selection/9-serving-deployment.md 为本 feature 选部署 / serving 形态。
 - 交互时长 / 延迟预算:<秒级? 几十秒盯着? 分钟~小时?>
 - 用户能否关页面离开:<能 / 不能>
 - 可恢复性:崩溃/重启/隔天回来要接得上吗:<要 / 不要>
@@ -134,6 +134,6 @@ Q4 任务长、用户不盯着?        → 完成通知用 webhook / push,别让
   - `7-safety-guardrails.md` —— 长任务沙箱、危险动作审批闸、取消的安全边界。
   - `8-cost-economics.md` —— 长任务并发占用与单位经济学(后台 worker 池成本)。
   - `0-action-paradigm.md` —— CodeAct / computer-use 长任务更倾向后台 + 沙箱形态。
-- **总览**:`README.md`。沉淀:定下后用 `skills/adr-writer` 写 ADR。
+- **总览**:`README.md`。沉淀:定下后用 `agent/skills/adr-writer` 写 ADR。
 
 > **最后核对:2026-06**。形态分流(同步 / 流式 / 后台+持久)稳定;Temporal / LangGraph Platform / Celery / SQS / Lambda 等具体产品名、执行时长上限与定价属 ⚠️快照,选型前现查官网。

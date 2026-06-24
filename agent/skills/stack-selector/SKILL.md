@@ -16,16 +16,16 @@ description: "AI Agent 架构总选型路由助手。当用户要为 Agent 项�
 
 ## 选型矩阵(你路由的目标)
 
-总览见 `roadmap/agent-selection/README.md`。六层及其决策资产:
+总览见 `agent/roadmap/agent-selection/README.md`。六层及其决策资产:
 
 | 层 | 资产 | 路由方式 |
 |---|---|---|
-| 🧠 模型层 | `roadmap/agent-selection/1-model.md` | 本 skill 读该包跑决策流 |
-| 🏗️ 编排框架层 | `roadmap/agent-selection/2-framework/` | **转交 `framework-selector` skill** |
-| 📚 检索栈层 | `roadmap/agent-selection/3-retrieval.md` | 本 skill 读该包跑决策流 |
-| 🔧 工具层 | `roadmap/agent-selection/4-tools.md` | 本 skill 读该包给方案 |
-| 🔍 可观测/Eval 层 | `roadmap/agent-selection/5-observability-eval.md` | 本 skill 读该包跑决策流 |
-| 🧩 记忆层 | `roadmap/agent-selection/6-memory.md` | 本 skill 读该包跑决策流 |
+| 🧠 模型层 | `agent/roadmap/agent-selection/1-model.md` | 本 skill 读该包跑决策流 |
+| 🏗️ 编排框架层 | `agent/roadmap/agent-selection/2-framework/` | **转交 `framework-selector` skill** |
+| 📚 检索栈层 | `agent/roadmap/agent-selection/3-retrieval.md` | 本 skill 读该包跑决策流 |
+| 🔧 工具层 | `agent/roadmap/agent-selection/4-tools.md` | 本 skill 读该包给方案 |
+| 🔍 可观测/Eval 层 | `agent/roadmap/agent-selection/5-observability-eval.md` | 本 skill 读该包跑决策流 |
+| 🧩 记忆层 | `agent/roadmap/agent-selection/6-memory.md` | 本 skill 读该包跑决策流 |
 
 ---
 
@@ -47,7 +47,7 @@ description: "AI Agent 架构总选型路由助手。当用户要为 Agent 项�
 对每个涉及的层:
 1. 读对应决策包(上表)。
 2. 用包内的"快速决策树"收敛到候选,用"逐个深挖/方案一览"核对甜区与代价。
-3. 编排框架层 → 交给 `framework-selector`(或直接用 `roadmap/agent-selection/2-framework/`)。
+3. 编排框架层 → 交给 `framework-selector`(或直接用 `agent/roadmap/agent-selection/2-framework/`)。
 
 ### Step 3: 多层时按推荐顺序进行
 
@@ -63,7 +63,7 @@ description: "AI Agent 架构总选型路由助手。当用户要为 Agent 项�
 - 单层:给该层的"首选 + 备选 + 理由 + 代价"。
 - 多层:汇总成一份**组合技术栈选型小结**(见模板),指出各层如何配合。
 - 长表格写进文件(plan / 选型小结),不要全打印在对话里(保持简洁)。
-- 重大/跨项目决策:主动提示「要不要用 `skills/adr-writer` 沉淀为 ADR?」
+- 重大/跨项目决策:主动提示「要不要用 `agent/skills/adr-writer` 沉淀为 ADR?」
 
 ---
 
@@ -102,9 +102,9 @@ description: "AI Agent 架构总选型路由助手。当用户要为 Agent 项�
 
 ## 相关资产
 
-- `roadmap/agent-selection/README.md` —— 选型矩阵总览(本 skill 的地图)
-- `roadmap/agent-selection/{1-model,3-retrieval,5-observability-eval,6-memory}.md` —— 各层决策包
-- `roadmap/agent-selection/2-framework/` + `skills/framework-selector/` —— 编排框架层(转交)
-- `roadmap/agent-selection/4-tools.md` —— 工具层
-- `skills/adr-writer/` —— 选型定下后沉淀为 ADR
+- `agent/roadmap/agent-selection/README.md` —— 选型矩阵总览(本 skill 的地图)
+- `agent/roadmap/agent-selection/{1-model,3-retrieval,5-observability-eval,6-memory}.md` —— 各层决策包
+- `agent/roadmap/agent-selection/2-framework/` + `agent/skills/framework-selector/` —— 编排框架层(转交)
+- `agent/roadmap/agent-selection/4-tools.md` —— 工具层
+- `agent/skills/adr-writer/` —— 选型定下后沉淀为 ADR
 - `courses/` —— 各层学习笔记(各包"课程回溯"已标注)

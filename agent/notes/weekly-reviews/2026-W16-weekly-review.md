@@ -45,7 +45,7 @@ gengming，先给你一个大大的赞 👏。虽然追踪表里只勾了 1 个"
 - 还剩 ep07 ~ ep11 笔记待补
 
 ### 5. 工具 / 资源整理
-- `roadmap/agent-selection/4-tools.md`（工具与 API 调研）
+- `agent/roadmap/agent-selection/4-tools.md`（工具与 API 调研）
 
 ---
 

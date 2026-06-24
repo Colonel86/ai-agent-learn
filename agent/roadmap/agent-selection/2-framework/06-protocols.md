@@ -22,7 +22,7 @@
 
 ## 二、🗺️ 协议全景一览表(四条轴,各锚一层)
 
-按「agent 与谁对话」分四条轴,各锚在五层心智模型的不同层(锚层据 `interview/1.md` 横切带 A):
+按「agent 与谁对话」分四条轴,各锚在五层心智模型的不同层(锚层据 `agent/interview/1.md` 横切带 A):
 
 | 协议 | 轴 / 锚哪层 | 原理 / 特点 | 取舍(代价) | 适合场景 |
 |---|---|---|---|---|
@@ -32,7 +32,7 @@
 | **Agent Client Protocol**(ACP/Zed) | Agent ↔ 编辑器/IDE · 锚 L5 | **编辑器 ↔ 编程 agent** 的标准接口,类比「LSP 之于编辑器」 | 面向 IDE 集成这一窄场景 | 要把编程 agent 接进 Zed 等编辑器 |
 
 > **2026 参考架构两层就够记**:**MCP 接工具/数据(L1) + A2A 接 agent(L4)**;UI 侧按客户端形态选 AG-UI(web)或 ACP/Zed(编辑器)。
-> 治理快照(**现查**,据 `interview/1.md`):MCP 由 Anthropic 发起、2025 被 OpenAI/Google 原生采纳、2025-12 捐入 Linux Foundation/AAIF,已是跨厂商**事实标准**;A2A 由 Google 发起、2025-06 起 Linux Foundation 治理。
+> 治理快照(**现查**,据 `agent/interview/1.md`):MCP 由 Anthropic 发起、2025 被 OpenAI/Google 原生采纳、2025-12 捐入 Linux Foundation/AAIF,已是跨厂商**事实标准**;A2A 由 Google 发起、2025-06 起 Linux Foundation 治理。
 
 ---
 
@@ -69,7 +69,7 @@
 - ✅ **用**:agent 分属**不同进程 / 不同团队 / 不同组织**,需要**运行时发现并互调**(你不拥有对端代码、对端独立部署演进)。
 - ⛔ **先不做(最轻起步)**:同一代码库 / 同一进程内的多角色 → 用框架内协作原语(handoff、子 agent、共享 state),**不要为进程内协作套一层 A2A**。绝大多数项目停在这里就对了。
 
-> 升级路径:**单 agent + 好工具(MCP) → 进程内多角色(框架原生) → 真跨边界才上 A2A**。每升一级先确认下一级的「真实需求」存在,而不是用协议复杂度掩盖 prompt/工具没做好(同 `interview/1.md` L4 教训)。
+> 升级路径:**单 agent + 好工具(MCP) → 进程内多角色(框架原生) → 真跨边界才上 A2A**。每升一级先确认下一级的「真实需求」存在,而不是用协议复杂度掩盖 prompt/工具没做好(同 `agent/interview/1.md` L4 教训)。
 
 ---
 
@@ -129,7 +129,7 @@
 ## 九、🧩 接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/2-framework/06-protocols.md 判断本 feature 要不要引入协议层。
+请用 agent/roadmap/agent-selection/2-framework/06-protocols.md 判断本 feature 要不要引入协议层。
 - 工具/数据接入:工具数量 <…> / 是否要跨框架或跨 agent 复用 <…> / 团队规模 <…>
 - agent 协作:是否真多 agent <…> / 是否跨进程·跨团队·跨组织 <…>
 - 客户端表面:web 前端 / 编辑器 IDE / 无 <…>
@@ -147,6 +147,6 @@
 - **同目录**:`./01-decision-tree.md`(前置闸门「协议层 vs 框架层」,本页是其展开)、`./03-framework-profiles.md`（MCP 框架画像,第 12 节)、`./README.md`（编排框架层总览)。
 - **上级层文件**:`../4-tools.md`（工具检索 / RAG-over-tools,与 MCP defer loading 同问题)、`../0-action-paradigm.md`（动作范式,MCP 锚 L1 的上游)、`../7-safety-guardrails.md`（护栏/安全,MCP 攻击面深入)、`../10-agent-ux.md`（AG-UI 呈现层)、`../README.md`（选型矩阵总览)。
 - **课程回溯**:`courses/10-MCP`、`courses/00-.../L13-跨Agent标准与ACP.md`(注:该 L13 的 "ACP" 指 **Agent Client Protocol / Zed**,非已并入 A2A 的 IBM ACP)。
-- 沉淀:定下「用/不用某协议」后,用 `skills/adr-writer` 记一句即可(协议通常不必单独 ADR)。
+- 沉淀:定下「用/不用某协议」后,用 `agent/skills/adr-writer` 记一句即可(协议通常不必单独 ADR)。
 
 > 最后核对:2026-06

@@ -75,13 +75,13 @@
 ## 子决策 3:prompt / agent 版本化与配置管理(eval 的可复现底座)
 
 > **触发时机**:prompt / 工具 schema / 模型版本 / 推理参数一改就怕线上行为变、又复现不出"上次那个好结果";或 §四的 eval 指标动了却**归因不到具体改动**;或想灰度 / 回滚某版 prompt。
-> **核心心智:把 prompt、工具 schema、模型版本、推理参数(temperature/seed)当代码资产**——版本化 prompt 注册表 + 环境/灰度配置 + 与 eval 数据集联动的回归/回滚,避免 **prompt 漂移**、保证线上**可复现**。交叉引用 `interview/1.md` 横切带 B «配置即代码»。
+> **核心心智:把 prompt、工具 schema、模型版本、推理参数(temperature/seed)当代码资产**——版本化 prompt 注册表 + 环境/灰度配置 + 与 eval 数据集联动的回归/回滚,避免 **prompt 漂移**、保证线上**可复现**。交叉引用 `agent/interview/1.md` 横切带 B «配置即代码»。
 > **为什么单列**:§三/§四 解决"怎么判好坏",但判完要能锁定"**是哪一版配置产生的**"——否则指标变化归因不了、好结果复现不出、坏 prompt 回滚不掉。它是 eval 的**前置可复现性底座**,§四已点的"eval 数据集当代码管"在这里补齐另一半:**配置也当代码管**。
 
 **📦 什么算"配置资产"(都要版本化、都要钉死)**
 
 - prompt 模板(system / 各节点 / few-shot 示例)
-- 工具 schema(name/description/params——描述就是 prompt,见 `interview/1.md` L1)
+- 工具 schema(name/description/params——描述就是 prompt,见 `agent/interview/1.md` L1)
 - 模型版本(**钉具体 model id,别用会滚动的 alias**)
 - 推理参数(temperature / top-p / seed / max_tokens / 思考预算)
 - 检索配置(embedding 型号、chunk 参数、top-k、reranker——换 embedding 要重建索引,见 `3-retrieval.md` §三)
@@ -99,11 +99,11 @@
 
 **🔁 与 eval 联动(本层的真正价值)**
 
-- **每个 eval / trace 绑定一份配置快照**(prompt 版本 + model id + 参数),指标一动就能归因到具体改动(见 `interview/1.md` «配置即代码»)。
+- **每个 eval / trace 绑定一份配置快照**(prompt 版本 + model id + 参数),指标一动就能归因到具体改动(见 `agent/interview/1.md` «配置即代码»)。
 - **回归门控**:配置变更 → 对 eval 数据集跑回归(rule-based 每 commit、model-graded 发布前,见 §四)→ 过了才升 prod 标签。
 - **回滚**:线上掉点 → 把 prod 指向上一个通过回归的版本(`git revert` 或平台改 label),而不是手忙脚乱改 prompt。
 - **灰度**:新 prompt 先挂 staging/小流量,线上指标对齐再切 prod。
-- 与**数据飞轮**接续:失败 trace 回流成 eval 样本,推动下一版 prompt——版本化让"这版到底比上版好没好"可判(见 §四、`interview/1.md` 横切带 B)。
+- 与**数据飞轮**接续:失败 trace 回流成 eval 样本,推动下一版 prompt——版本化让"这版到底比上版好没好"可判(见 §四、`agent/interview/1.md` 横切带 B)。
 
 **🪜 最轻起步 → 升级路径**
 
@@ -122,7 +122,7 @@ prompt 进 git + 钉具体 model id + 参数写配置文件          ← 默认,
 **🧩 接入 Spec-Kit(可复制 prompt 块)**
 
 ```
-请用 roadmap/agent-selection/5-observability-eval.md「子决策 3:配置版本化」为本 Agent 定 prompt/配置管理方案。
+请用 agent/roadmap/agent-selection/5-observability-eval.md「子决策 3:配置版本化」为本 Agent 定 prompt/配置管理方案。
 - 谁改 prompt:<只工程 / 含产品·运营>;是否要运行时热更/灰度:<…>
 - 现有栈:是否已用 LangSmith/Langfuse <…>;合规/数据是否出域 <…>
 - 要版本化的配置:prompt / 工具 schema / model id / 推理参数(temperature·seed) / 检索配置 <列出>
@@ -161,7 +161,7 @@ Agent 系统:别只测最终输出,必须加 trajectory 级(路由/工具/路径
 ## 七、接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/5-observability-eval.md 为本 Agent 选可观测平台 + eval 方案。
+请用 agent/roadmap/agent-selection/5-observability-eval.md 为本 Agent 选可观测平台 + eval 方案。
 - 现有栈:<LangChain/LlamaIndex/PydanticAI/裸SDK…>
 - 是否要自托管/OSS:<…>  是否 RAG:<…>  是否多步 agent(需轨迹评估):<…>  合规要求:<…>
 请分别给:① 可观测平台 推荐+备选+理由；② eval 库+方法(类型/节奏/层级)推荐+备选+理由+代价。
@@ -172,5 +172,5 @@ Agent 系统:别只测最终输出,必须加 trajectory 级(路由/工具/路径
 ## 八、课程回溯 + 相关资产
 
 - 回溯:`courses/21-Evaluating AI Agents/notes/`、`courses/24-Automated Testing for LLMOps/notes/{L03-规则评估, L04-模型评分评估, L05-综合测试与幻觉检测}.md`、`courses/05`(RAG Triad)、`courses/eval/agent-eval-landscape.md`。
-- 相关层:`roadmap/agent-selection/3-retrieval.md`(RAG Triad)、`roadmap/agent-selection/2-framework/`(评分卡里 D5/D6 即观测/eval 维度)。
-- 总览:`roadmap/agent-selection/README.md`。沉淀:`skills/adr-writer`。
+- 相关层:`agent/roadmap/agent-selection/3-retrieval.md`(RAG Triad)、`agent/roadmap/agent-selection/2-framework/`(评分卡里 D5/D6 即观测/eval 维度)。
+- 总览:`agent/roadmap/agent-selection/README.md`。沉淀:`agent/skills/adr-writer`。

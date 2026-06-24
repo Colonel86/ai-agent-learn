@@ -12,7 +12,7 @@
 | 大量非结构化文档(PDF/网页/知识库) | 检索质量 | LlamaIndex / Haystack | LangGraph+检索工具 |
 | 结构化数据(DB/API/表格) | 准确性、可解析 | 裸 SDK + Pydantic AI(工具查询) | LangGraph |
 | 实时/流式数据(日志、行情、事件) | 低延迟、事件触发 | 事件驱动(LlamaIndex Workflows)/ 裸 SDK | LangGraph |
-| 100+ 工具/API 要路由 | 选对工具 | 见 `roadmap/agent-selection/4-tools.md` + MCP | LangGraph 工具层 |
+| 100+ 工具/API 要路由 | 选对工具 | 见 `agent/roadmap/agent-selection/4-tools.md` + MCP | LangGraph 工具层 |
 | 多模态(图/表/截图) | 模型能力 | 裸 SDK(强多模态模型)+ 框架编排 | LlamaIndex 多模态 |
 | 私有/敏感数据 | 合规、出域 | 框架正交;重点选模型与托管 | 本地模型 + 任意框架 |
 | 无 API 的 GUI/桌面系统(遗留软件、第三方后台) | 无接口、要操作界面 | computer-use 框架 + 沙箱 + 强护栏(见 `../0-action-paradigm.md`、`../7-safety-guardrails.md`) | RPA 录制脚本(更脆) |

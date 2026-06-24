@@ -142,7 +142,7 @@ Q4. 是否接受绑定单一厂商?
 ## 八、接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/1-model.md 为本 feature 的各 LLM 节点选模型 + 决定运行时路由方式。
+请用 agent/roadmap/agent-selection/1-model.md 为本 feature 的各 LLM 节点选模型 + 决定运行时路由方式。
 - 节点清单 + 每个节点的任务难度:<…>
 - 约束:成本上限 <…> / 延迟要求 <…> / 隐私合规 <…> / 是否接受厂商锁定 <…>
 - 跨厂商/降本诉求:是否需要 fallback / 限流 / 集中成本观测 <…>;简单请求占比 <…>
@@ -157,6 +157,6 @@ Q4. 是否接受绑定单一厂商?
 
 - 回溯:`courses/02-Building Systems with the ChatGPT API/notes/ep02-language-models.md`;`courses/专业名词解释/`。
 - 具体型号/定价:`skills/claude-api`(Claude 系)/ 厂商官网。
-- 相关层:`roadmap/agent-selection/2-framework/`(编排框架)、`roadmap/agent-selection/3-retrieval.md`(嵌入/重排模型在那边)、`roadmap/agent-selection/8-cost-economics.md`(路由/网关的降本账)、`roadmap/agent-selection/5-observability-eval.md`(成本 + 质量度量,路由是否值得用它量化)。
-- 总览:`roadmap/agent-selection/README.md`。
-- 沉淀:定下后用 `skills/adr-writer` 写 ADR。
+- 相关层:`agent/roadmap/agent-selection/2-framework/`(编排框架)、`agent/roadmap/agent-selection/3-retrieval.md`(嵌入/重排模型在那边)、`agent/roadmap/agent-selection/8-cost-economics.md`(路由/网关的降本账)、`agent/roadmap/agent-selection/5-observability-eval.md`(成本 + 质量度量,路由是否值得用它量化)。
+- 总览:`agent/roadmap/agent-selection/README.md`。
+- 沉淀:定下后用 `agent/skills/adr-writer` 写 ADR。

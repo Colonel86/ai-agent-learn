@@ -15,7 +15,7 @@
 - 涉及 **PII / 受监管数据**(医疗/金融/隐私合规)。
 - 用了 **CodeAct / computer-use**(模型直接写代码或操作 GUI)——必须沙箱(见 `0-action-paradigm.md`)。
 
-> 👉 **核心心智:护栏是"在确定性边界上设闸",不是"让模型更乖"**。模型本身概率不可靠(interview/1.md L0),护栏用**确定性规则/分类器/审批**把不确定性吸收在它溢出之前。对应 interview/1.md 的核心张力:**自主性 vs 可控性——权限越大越能干,blast radius 越大;护栏/HITL 都是在买"可控"**。
+> 👉 **核心心智:护栏是"在确定性边界上设闸",不是"让模型更乖"**。模型本身概率不可靠(agent/interview/1.md L0),护栏用**确定性规则/分类器/审批**把不确定性吸收在它溢出之前。对应 agent/interview/1.md 的核心张力:**自主性 vs 可控性——权限越大越能干,blast radius 越大;护栏/HITL 都是在买"可控"**。
 
 | 维度 | 运行时护栏(本篇) | Eval / 可观测(`5-`) |
 |---|---|---|
@@ -71,7 +71,7 @@
 🔴 重(高 blast radius / 受监管 / 用 CodeAct·computer-use):+ 沙箱隔离 + 输出事实校验(grounding) + 发布前红队门控 + 全程审计留痕
 ```
 
-> 👉 **每段都先问"能不能先不做"**:能用确定性代码/白名单解决的,**别加一个会误杀的 LLM 分类器**(呼应 interview/1.md「确定性优先」横切——能查表/规则解决就别上概率件)。护栏每加一层都要能说出它挡的是哪条具体风险。
+> 👉 **每段都先问"能不能先不做"**:能用确定性代码/白名单解决的,**别加一个会误杀的 LLM 分类器**(呼应 agent/interview/1.md「确定性优先」横切——能查表/规则解决就别上概率件)。护栏每加一层都要能说出它挡的是哪条具体风险。
 
 ---
 
@@ -117,7 +117,7 @@
 - 这是**设计模式不是库**——也是性价比最高的一层:
   - **白名单**:每个 Agent/节点只暴露它需要的工具子集。
   - **最小权限凭证**:工具用 scoped/只读 token,别给全权 key;写操作单独授权。
-  - **危险操作 HITL 闸**:转账/删库/对外发消息/不可逆动作走人审批——技术上即 interrupt + `Command(resume)`(见 interview/1.md «HITL» 与 L2 checkpointer);呈现层见 `10-agent-ux.md`。
+  - **危险操作 HITL 闸**:转账/删库/对外发消息/不可逆动作走人审批——技术上即 interrupt + `Command(resume)`(见 agent/interview/1.md «HITL» 与 L2 checkpointer);呈现层见 `10-agent-ux.md`。
   - **副作用幂等**:审批后重跑不能重复扣费(对齐 HITL "节点从头重跑" 坑)。
 - 🟢 **先不做/最轻起步**:**白名单 + 危险操作 HITL** 是默认底线——哪怕其它护栏都不上,这两条也要有。
 
@@ -152,7 +152,7 @@
 ## 七、🔌 接入 Spec-Kit(可复制 prompt 块)
 
 ```
-请用 roadmap/agent-selection/7-safety-guardrails.md 为本 Agent 设计运行时护栏。
+请用 agent/roadmap/agent-selection/7-safety-guardrails.md 为本 Agent 设计运行时护栏。
 - 风险画像:blast radius(只读/能写/转账/执行代码)<…> / 数据敏感度(PII·受监管?)<…> /
   是否对外(不可信用户?)<…> / 是否吃不可信内容(网页·上传·工具返回?)<…> / 动作范式(function-calling·CodeAct·computer-use)<…>
 请按五段(输入/输出/工具权限/沙箱/红队)给:护栏强度档(🟢轻/🟡中/🔴重) + 每段推荐+备选+理由+代价(延迟/误杀)。
@@ -167,7 +167,7 @@
 
 - 权威心智模型:[`../../interview/1.md`](../../interview/1.md) «L5 部署/安全运行时»(prompt 注入/工具权限/沙箱、自主性 vs 可控性张力)、«HITL 横切»(危险操作审批=人当安全闸)、「确定性优先」横切(能规则解决就别上概率件)。
 - 相关层:[`0-action-paradigm.md`](0-action-paradigm.md)(CodeAct/computer-use→何时必须沙箱)、[`5-observability-eval.md`](5-observability-eval.md)(**拦截 vs 判好坏**的另一侧;红队=安全侧 eval)、[`10-agent-ux.md`](10-agent-ux.md)(HITL 审批的呈现)、[`8-cost-economics.md`](8-cost-economics.md)(护栏延迟/误杀也是成本)、[`2-framework/`](2-framework/)(结构化输出=最便宜的输出护栏)。
-- 总览:[`README.md`](README.md)。沉淀:`skills/adr-writer`(把"为什么上/不上某护栏"写成 ADR)。
+- 总览:[`README.md`](README.md)。沉淀:`agent/skills/adr-writer`(把"为什么上/不上某护栏"写成 ADR)。
 - ⚠️ 候选工具的归属/活跃度/价格变化快(如 Promptfoo 2026-03 归 OpenAI),定型前**现查官方**,本页只给选型方法与分界,不固化产品快照。
 
 > **最后核对:2026-06**

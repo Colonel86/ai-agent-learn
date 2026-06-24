@@ -91,11 +91,11 @@
    上生产/要迭代       → 可观测 + Eval(5-observability-eval)
    有外部输入/危险动作 → 护栏·安全(7-safety-guardrails)
    ⚠ eval / 护栏 / 成本 都是横切——平台/工具可晚选,但骨架第一天就要留出钩子:
-     eval 最早搭(eval-as-code、interview/1.md「评测第一个搭」);
+     eval 最早搭(eval-as-code、agent/interview/1.md「评测第一个搭」);
      护栏的 HITL 闸门、成本的埋点同理,事后补救比内建贵得多
         │
 ⑤ 沉淀
-   重大决策 → skills/adr-writer 写 ADR
+   重大决策 → agent/skills/adr-writer 写 ADR
 ```
 
 > ⚠️ **每层都要有备选**(哪怕是"先不做/裸 SDK 起步")。**从最轻方案起步,复杂度真的到了再升级**——过早上重栈是 Agent 项目最常见的过度工程。
@@ -106,7 +106,7 @@
 
 - **快速、交互式**:调 `stack-selector` skill —— 它识别你要选哪几层,逐层跑决策流,最后汇总成一份带备选+理由的选型小结。
 - **手动 / 在 plan 里**:按本表进对应层的决策包,每个包都有"接入 Spec-Kit"的可复制 prompt 块。
-- **沉淀**:定下后用 `skills/adr-writer` 把"为什么选 X 不选 Y"写成 ADR。
+- **沉淀**:定下后用 `agent/skills/adr-writer` 把"为什么选 X 不选 Y"写成 ADR。
 
 ---
 
@@ -114,20 +114,20 @@
 
 | 资产 | 层 | 形态 |
 |---|---|---|
-| `roadmap/agent-selection/0-action-paradigm.md` | ⓪ 动作范式(上游) | 单文件包 |
-| `roadmap/agent-selection/1-model.md` | 模型(含路由/网关) | 单文件包 |
-| `roadmap/agent-selection/2-framework/` | 编排框架 | 多文件包(决策树/评分卡/画像/场景/集成/协议) |
-| `roadmap/agent-selection/2-framework/06-protocols.md` | 协议(横切) | 子页(MCP/A2A + 两个 ACP 消歧) |
-| `roadmap/agent-selection/3-retrieval.md` | 检索栈(含数据摄取) | 单文件包 |
-| `roadmap/agent-selection/4-tools.md` | 工具 | 单文件包 |
-| `roadmap/agent-selection/5-observability-eval.md` | 可观测/Eval(横切) | 单文件包 |
-| `roadmap/agent-selection/6-memory.md` | 记忆 | 单文件包 |
-| `roadmap/agent-selection/7-safety-guardrails.md` | 护栏·安全(横切) | 单文件包 |
-| `roadmap/agent-selection/8-cost-economics.md` | 成本·单位经济学(横切) | 单文件包 |
-| `roadmap/agent-selection/9-serving-deployment.md` | 部署·Serving | 单文件包 |
-| `roadmap/agent-selection/10-agent-ux.md` | Agent-UX 呈现 | 单文件包 |
-| `skills/stack-selector/` | 路由 | skill(总入口) |
-| `skills/framework-selector/` | 编排框架 | skill |
-| `skills/adr-writer/` | 沉淀 | skill |
+| `agent/roadmap/agent-selection/0-action-paradigm.md` | ⓪ 动作范式(上游) | 单文件包 |
+| `agent/roadmap/agent-selection/1-model.md` | 模型(含路由/网关) | 单文件包 |
+| `agent/roadmap/agent-selection/2-framework/` | 编排框架 | 多文件包(决策树/评分卡/画像/场景/集成/协议) |
+| `agent/roadmap/agent-selection/2-framework/06-protocols.md` | 协议(横切) | 子页(MCP/A2A + 两个 ACP 消歧) |
+| `agent/roadmap/agent-selection/3-retrieval.md` | 检索栈(含数据摄取) | 单文件包 |
+| `agent/roadmap/agent-selection/4-tools.md` | 工具 | 单文件包 |
+| `agent/roadmap/agent-selection/5-observability-eval.md` | 可观测/Eval(横切) | 单文件包 |
+| `agent/roadmap/agent-selection/6-memory.md` | 记忆 | 单文件包 |
+| `agent/roadmap/agent-selection/7-safety-guardrails.md` | 护栏·安全(横切) | 单文件包 |
+| `agent/roadmap/agent-selection/8-cost-economics.md` | 成本·单位经济学(横切) | 单文件包 |
+| `agent/roadmap/agent-selection/9-serving-deployment.md` | 部署·Serving | 单文件包 |
+| `agent/roadmap/agent-selection/10-agent-ux.md` | Agent-UX 呈现 | 单文件包 |
+| `agent/skills/stack-selector/` | 路由 | skill(总入口) |
+| `agent/skills/framework-selector/` | 编排框架 | skill |
+| `agent/skills/adr-writer/` | 沉淀 | skill |
 
 > 维护:各包结论为 2026-06 快照,Agent 生态迭代快,建议 6 个月复核;新增层时回填本表。

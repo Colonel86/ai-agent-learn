@@ -45,7 +45,7 @@
 - **隐藏成本**:相对年轻,生态不如 LangChain 广。
 - **成熟度**:⚠️ 上升期,社区活跃。
 - **架构师笔记**:与 Instructor / OpenAI `responses.parse` / Anthropic tool_use 是同一战场——**"结构化输出"问题的首选层**。
-- 课程:`07-Pydantic for LLM Workflows`;skill:`skills/pydantic-ai-agent`。
+- 课程:`07-Pydantic for LLM Workflows`;skill:`agent/skills/pydantic-ai-agent`。
 
 ## 3. LangChain ✅⚠️
 
