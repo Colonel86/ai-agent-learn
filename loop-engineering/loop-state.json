@@ -1,0 +1,8 @@
+{
+  "feature": "001-note-lint",
+  "attempted": 1,
+  "accepted": 1,
+  "blocked": 0,
+  "commits": 0,
+  "note": "记账文件。指标只看一个：接受率 accepted/attempted，低于 0.5 就该停。"
+}
