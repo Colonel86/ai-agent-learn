@@ -15,7 +15,46 @@
 
 > 👉 **核心问题:"Similarity ≠ Relevance"**(课程 06)。通用 embedding 缺任务感知;三类修法分别作用于不同阶段——**检索前**(Query Expansion)、**检索后**(Cross-Encoder 重排)、**嵌入空间**(Embedding Adapter)。
 
-检索栈有 6 个**子决策**(向量库 / embedding / chunking / retriever 架构 / 进阶方法 / 是否上 GraphRAG),外加一张「RAG 框架地图」,逐节给方案。
+检索栈有 7 个**子决策**:**子决策 0 数据摄取/解析**(最上游、最大质量风险,见下)+ 向量库 / embedding / chunking / retriever 架构 / 进阶方法 / 是否上 GraphRAG,外加一张「RAG 框架地图」,逐节给方案。
+
+---
+
+## 子决策 0:数据摄取 / 解析(检索质量的真正瓶颈)
+
+> **触发**:RAG 召回不准、且数据里有 PDF/Word/扫描件/表格/图表时——先查这层。多数"检索差"其实是"**摄取差**":解析丢了表格/版面,后面再强的 embedding/reranker 也救不回。
+> **为什么单列**:本文件 §八 已点破"生产里 RAG 质量瓶颈几乎都在**解析/切分/检索+重排/评估**",却一直没给摄取的决策页——本节补上。摄取是**最上游、最大的质量风险**,排在所有零件之前。
+
+**摄取四步管线**(任一步偷工,下游全栈受拖累):
+
+```
+连接器        → 解析器               → 抽取/去重        → 增量刷新
+(数据源接入)    (版面/表格/OCR/VLM)     (清洗+内容哈希)    (文档级 upsert)
+```
+
+**🧩 选型轴(看四点)**
+
+- **文档形态**:纯文本/HTML → 通用 parser 即可;**扫描件/图表/公式/表格密集** → 版面感知或 VLM 解析(决定性变量)。
+- **是否出域**:不出域 → Docling/unstructured 本地;可出域 → LlamaParse 等托管高精。
+- **版面复杂度**:多栏/嵌套表格/跨页表 → 普通 OCR 会乱序,要版面感知解析。
+- **成本**:VLM 逐页解析最贵最慢,按量评估,别全量上。
+
+**📑 解析器候选(现查,工具迭代快)**
+
+| 方案 | 原理/特点 | 取舍 | 适合场景 |
+|---|---|---|---|
+| **单一通用 parser 直切**(unstructured / 框架内置 loader)⭐ | 一个库把 PDF/Word/HTML 统一转元素再切 | 起步零成本;扫描件/复杂表格会丢结构 | **最轻起步**、纯文本为主 |
+| **版面感知解析**(Docling) | 开源,保留标题/表格/阅读顺序,出结构化 md/JSON | 本地可控、表格/版面强;极端排版仍有限 | 报告/手册/PDF,要保结构且不出域 |
+| **托管高精解析**(LlamaParse) | API,复杂表格/版面/多语种精度高,接 LlamaIndex | 按页计费、数据出域 | 表格密集、版面复杂、不想自己调 |
+| **深度解析平台**(RAGFlow) | 模板化解析 + OCR,中文/PDF 强,端到端 RAG | 偏平台、较重 | 中文/PDF 重场景、想端到端(亦见 §八) |
+| **VLM 解析**(视觉模型读整页) | 把页面当图像,让 VLM 直接输出文字+结构 | 最贵最慢;但扫描/图表/手写最稳 | 扫描 PDF、图表/公式密集、传统 OCR 失败 |
+
+> 🖼 **多模态 = 摄取 × 模型 联合决策**(不再只是模型层一个"可选维度"):文档含扫描页/图表/公式时,先在**摄取层**决定走 OCR/版面解析还是直接交 VLM 解析——这一步同时决定下游**要不要多模态主模型**(见 `roadmap/agent-selection/1-model.md` 多模态维度)。两层一起定,别只在模型层勾一下"多模态"。
+
+> 🔁 **增量刷新**:**最轻 = 全量重建索引**(数据小/低频,直接重跑);量大或频更再升级 → **文档级 upsert**(按 source id)+ **内容哈希去重**(跳过未变文档)+ **删除传播**(源删了要清掉对应向量)。注意:换 parser 或 embedding 都要**重建索引**,属高成本变更,早定(呼应 §三)。
+
+> 👉 **最轻方案起步**:别一上来搭"分类型路由 + VLM"的重摄取栈。先用**单一 parser 直切**(unstructured 或框架自带 loader)跑通,用 RAG Triad(§十)看 **Context Relevance**;等"表格读错 / 扫描件读空 / 图表丢失"真的成为失败主因,再按文档形态升级到 Docling / LlamaParse / VLM 解析。
+
+回溯:本文件 §八(框架地图·反直觉提醒)、§三(embedding 换则重建);相关层 `roadmap/agent-selection/2-framework/`(RAGFlow/LlamaIndex 作为框架在那边)、`roadmap/agent-selection/1-model.md`(多模态主模型)、`roadmap/agent-selection/8-cost-economics.md`(VLM 逐页解析的成本账,定"全量上 vs 按需上")。
 
 ---
 
@@ -42,13 +81,18 @@
 
 | 模型 | 类型 | 特点 | 适合 |
 |---|---|---|---|
-| OpenAI `text-embedding-3-small` ⭐ | API | 便宜、够用 | 默认起步 |
-| OpenAI `text-embedding-3-large` | API | 更准、更贵 | 召回质量优先 |
+| **— 2026 头部(现查 MTEB)—** | | | |
+| Gemini Embedding 001 | API | 英文/综合榜领先 | 质量优先(英文为主) |
+| Qwen3-Embedding | 本地/API | 开源多语种领跑 | 多语种、想自托管求最优 |
+| Cohere embed-v4 | API | 多语种、长文档/多模态强 | 多语种商用 |
+| Voyage-3.x / Jina v4 | API/本地 | 主流备选,各有所长 | 横向对比备选 |
+| **— 够用基线 —** | | | |
+| OpenAI `text-embedding-3-small` ⭐ | API | 便宜、够用 | 便宜默认起步 |
+| OpenAI `text-embedding-3-large` | API | 稳定但已非最优 | 够用基线 |
 | BGE `bge-small/large-en-v1.5` | 本地 | 开源、可自托管 | 数据不出域、控成本 |
-| BGE `bge-m3` ⭐ | 本地 | 跨语言、多粒度 | 中英混合/多语种 |
-| Cohere embed | API | 多语种强 | 多语种商用 |
+| BGE `bge-m3` ⭐ | 本地 | 跨语言、多粒度 | 多语种基线 |
 
-> 选 embedding 看:**语言**(中英→bge-m3/Cohere)、**是否出域**(不出域→本地 BGE)、**成本**(高频→小模型或本地)。换 embedding 必须**重建索引**——属高成本变更,早定。
+> 选 embedding 看:**语言**(多语种→Qwen3-Embedding/bge-m3)、**是否出域**(不出域→本地 BGE/Qwen3)、**成本**(高频→小模型或本地)、**榜单时效**(头部每季度翻盘,定型号前**现查 MTEB**、别认死分数)。换 embedding 必须**重建索引**——属高成本变更,早定。
 回溯:`courses/04/notes/04-vectorstores-and-embeddings.md`、`courses/专业名词解释/向量相似度与归一化.md`。
 
 ## 四、子决策 3:Chunking 策略
@@ -58,6 +102,8 @@
 | **两级切分** ⭐ | `RecursiveCharacterTextSplitter`(语义边界)+ token splitter(`tokens_per_chunk≈256` 兜底) | 通用默认 |
 | **SentenceWindow** | 按句嵌入,合成时带前后窗口(`MetadataReplacementPostProcessor`) | 嵌入精度与上下文连贯解耦 |
 | **Auto-merging 层级** | 父子分块,命中子块自动合并父块 | 长文档、结构化文档 |
+| **Contextual Retrieval**(2026) | Anthropic 方案:embed 前让 LLM 给每个 chunk 拼上整文上下文再嵌入 | 块脱离原文易歧义、要补全局语境 |
+| **Late Chunking**(2026) | 先用长上下文模型整文 embed,再切块池化——保留跨 chunk 上下文 | 长文档、跨块指代/共指多 |
 
 > chunking 常被低估:**先按语义边界切,再用 token 上限兜底**;SentenceWindow 把"嵌入粒度"和"喂给 LLM 的粒度"分开。
 回溯:`courses/05`、`courses/18`。
@@ -84,7 +130,7 @@
 | **② 改索引结构** | **父文档检索(Parent-Document / Small-to-Big)** | 用小块做嵌入命中,返回时换成其所在大块/父文档喂 LLM | 嵌入要精、上下文要全,二者解耦 |
 | | **Auto-merging 层级** | 父子分块,命中多个子块自动合并回父块(见四) | 长/结构化文档 |
 | | **知识图谱增强(GraphRAG)** | 把文档抽成实体-关系图,沿关系多跳检索(见七) | 多跳推理/全局归纳 |
-| **③ 改检索后(精排)** | **Reranker**(`bge-reranker-v2-m3`)⭐ | Cross-Encoder 两阶段精排 | 召回有了但 top 不准 |
+| **③ 改检索后(精排)** | **Reranker** ⭐(开源默认 `bge-reranker-v2-m3`;API:Cohere Rerank 3.5 / Voyage rerank-2.5;另开源 Qwen3-Reranker) | Cross-Encoder 两阶段精排 | 召回有了但 top 不准 |
 | **④ 混合召回** | **Hybrid(BM25 + 向量)** | 关键词+语义并用,RRF 融合 | 有专有名词/术语精确匹配 |
 | **⑤ 改嵌入空间** | **Embedding Adapter** | 嵌入后线性变换到任务空间(±1 标注,MSE) | 有反馈数据、想低成本提质 |
 
@@ -135,6 +181,7 @@
 ## 九、组合决策树(整条栈)
 
 ```
+Step 0 摄取/解析:纯文本→单一parser直切(最轻);PDF/要保结构+不出域→Docling;表格密集/可出域→LlamaParse;扫描件/图表/公式→VLM解析;中文PDF重→RAGFlow
 Step 1 向量库:原型→Chroma;有PG→pgvector;生产海量→Qdrant/Weaviate/Milvus
 Step 2 Embedding:默认 text-embedding-3-small;多语种→bge-m3;不出域→本地BGE
 Step 3 Chunking:默认两级切分;长/结构化文档→Auto-merging;要连贯→SentenceWindow
@@ -175,9 +222,9 @@ Step 7 用 RAG Triad 验收(见下)
 
 ```
 请用 roadmap/agent-selection/3-retrieval.md 为本 RAG feature 选检索栈。
-- 数据:规模 <…> / 结构 <…> / 更新频率 <…> / 语言 <…>
+- 数据:规模 <…> / 文档形态(纯文本/扫描件/表格/图表)<…> / 结构 <…> / 更新频率 <…> / 语言 <…>
 - 约束:是否出域 <…> / 延迟 <…> / 已有基础设施(有无 Postgres 等)<…>
-请逐子决策给方案(向量库/embedding/chunking/retriever架构/进阶方法/是否上GraphRAG/RAG框架),
+请逐子决策给方案(数据摄取·解析/向量库/embedding/chunking/retriever架构/进阶方法/是否上GraphRAG/RAG框架),
 每项:推荐 + 备选 + 理由 + 代价,并给出用 RAG Triad 验收的方式。
 ```
 
