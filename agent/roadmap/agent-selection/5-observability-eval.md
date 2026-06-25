@@ -13,7 +13,69 @@
 - prompt/模型一改就怕回归,需要可重复的 eval。
 - RAG 答非所问、agent 乱调工具,需要定位是哪一步出错。
 
-> 👉 三个子决策:**① 可观测平台**(看运行时发生了什么)+ **② Eval 方案**(系统化判好坏)+ **③ 配置/版本化**(把 prompt·schema·模型版本当**代码资产**,保线上可复现,见下「子决策 3」)。常配套用,但分开选。
+> 👉 **一个前置 + 三个子决策**:**⓪ trace 如何产生**(埋点层/后端分层,先于选平台,见「子决策 0」)→ **① 可观测平台**(看运行时发生了什么)+ **② Eval 方案**(系统化判好坏)+ **③ 配置/版本化**(把 prompt·schema·模型版本当**代码资产**,保线上可复现,见下「子决策 3」)。常配套用,但分开选。
+
+---
+
+## 子决策 0:trace 如何产生(埋点层 vs 后端层)
+
+> **触发时机**:在选"哪个平台"(子决策 1)**之前**先答的问题——"输入→回答"整条链路怎么变成可观测的数据。**选平台只决定 span 落哪、怎么看;这一节决定 span 怎么被吐出来**,且决定后端可不可换。
+> **核心心智**:**trace 不是日志,是一棵 span 树**;**埋点(怎么产生 span)和后端(span 落哪)是两层、要分开选**——埋点走标准就能"埋一次、任意后端"。
+
+### 一、trace 数据模型:一次提问 = 一棵 span 树
+
+一次用户提问 = **一条 trace(root span)**,链路每一步是嵌套**子 span**:
+
+```
+Trace: "北京明天要带伞吗?"          ← root span(一整轮)
+├─ span: retrieve(向量检索)         input=query   output=docs   ⏱80ms
+├─ span: llm.call #1(规划/选工具)   prompt+tools → tool_call    🔢tokens/$
+├─ span: tool.weather_api           args={city,date} → result
+├─ span: llm.call #2(基于结果生成)  context+result → draft
+└─ span: guardrail.check            → pass
+   ↳ output:"建议带伞,降水概率 70%"
+```
+
+**每个 span 至少记五样**:input / output / 耗时 / token·成本 / 状态(ok·error)。LLM span 加记 **model id、推理参数、prompt 版本**;tool span 加记 args 与返回。这棵树是 debug "RAG 答非所问 / agent 乱调工具"时**唯一能定位到具体哪一步**的东西(对应 §一的"定位是哪一步出错")。
+
+### 二、关键分层:埋点层 ≠ 后端平台
+
+```
+你的 agent 代码
+   │  ① 埋点层(怎么把 span 吐出来)
+   ├── OpenTelemetry GenAI 语义约定   ← 标准,厂商中立
+   │     ├─ OpenInference(Arize 系,Phoenix 配套)
+   │     ├─ OpenLLMetry(Traceloop 系)
+   │     └─ 框架原生 callback(LangChain/LlamaIndex 自带 → 自动出 span)
+   │  ② 后端平台(span 落哪、怎么看)= 子决策 1
+   └── LangSmith / Langfuse / Phoenix …
+```
+
+| 埋点方式 | 原理 | 取舍 | 适合 |
+|---|---|---|---|
+| **框架原生 callback** ⭐起步 | LangChain/LlamaIndex 等内置,设环境变量即自动出 span | 零代码、认得 checkpoint/interrupt;**与后端绑死**(如 LangSmith) | 已用某框架 + 配它的官方后端,要最省心 |
+| **OTel + OpenInference / OpenLLMetry** ⭐可换 | auto-instrument 包给 LLM/工具/向量库调用**自动织入** OTel span | **埋一次、后端任意换**(软锁最低);需懂一点 OTel exporter 配置 | 要 OSS/自托管/不锁定、可能换后端 |
+| **手搓 OTel span** | 自己 `start_span` 标每段 | 完全可控;**起步别这么干**(易把一次人审切成两条断 trace) | auto-instrument 盖不到的自定义逻辑,少量补标 |
+
+> **架构师要点**:只要埋点走 OTel(OpenInference/OpenLLMetry),后端就可换——今天 Phoenix 自托管、明天换 Langfuse,**agent 代码一行不改**。直接用某平台原生 callback 最省心,代价是埋点与后端绑死——这是 `2-framework/02-scorecard.md` "软锁"在观测层的同款取舍,写进 ADR。
+> **落地默认**:**先 auto-instrument 拿 80%,不够再手标关键节点**。别一上来手搓 span。
+
+### 三、agent 特有的三个坑(通用 APM 不教)
+
+1. **整轮绑一条,别散成 N 条**:多轮/多次 invoke 用 **session_id / thread_id** 缝成一个会话——正是「子决策 1」⚠️ 里 **HITL × `interrupt()`** 那个坑(naive tracing 把一次人审切成两条断裂 trace、误标 ERROR)。**选后端看它对 session/thread 分组 + LangGraph checkpoint 的原生支持**。
+2. **测轨迹不只测终点**:trace 让你看见 agent 走的**路径**(选对工具没、绕路没)——对应 §四 **Trajectory 评估**,组件级测不出。
+3. **trace 要能回流成 eval 样本**:埋点时就把 **prompt 版本 / model id / 参数写进 span 属性**(对应「子决策 3:配置即代码」),否则指标一动归因不到、失败 trace 也喂不回下一版 prompt(§五数据飞轮)。
+
+### 四、最轻起步 → 升级路径
+
+```
+学习 / 想最快看见整棵树  → Phoenix 本地 pip 起 + OpenInference 自动埋点(零账号、纯 OSS)
+已用 LangChain/LangGraph → LangSmith,设俩环境变量全自动(埋点+后端一体,最省心)
+要上生产又不想锁定       → OTel(OpenLLMetry/OpenInference)埋点 + Langfuse 自托管(后端可换是保险)
+  └─ auto-instrument 盖不到的关键自定义段 → 再手标少量 OTel span
+```
+
+> ⚠️ 具体包名/SDK API/价格变化快(OpenLLMetry、OpenInference、各平台 SDK),**用前现查官网**,别照搬过期快照。结论分级:分层心智 ✅ 稳定;具体工具版本 ⚠️ 快照(2026-06)。
 
 ---
 
