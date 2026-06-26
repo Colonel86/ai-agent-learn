@@ -16,8 +16,6 @@
 想法 → 写 Prompt → 运行 → 看结果 → 分析问题 → 改进 Prompt → 循环
 ```
 
-![Iterative Prompt Development 迭代循环](images/ep03-iterative-loop.png)
-
 这张图把循环画得更清楚——四个环节首尾相接、不断重复：
 
 | 环节 | 含义 |
