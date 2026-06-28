@@ -35,12 +35,13 @@ class AgentState(TypedDict):
 
 **图结构设计**
 
-```
-入口 → [LLM 节点] → 条件边（exists_action）
-                         ↓ True
-                    [Action 节点] → 回到 LLM 节点
-                         ↓ False
-                        END
+```mermaid
+flowchart TB
+    Start(["入口"]) --> LLM["LLM 节点"]
+    LLM --> Cond{"条件边（exists_action）"}
+    Cond -->|"True"| Action["Action 节点"]
+    Cond -->|"False"| END["END"]
+    Action -->|"回到 LLM 节点"| LLM
 ```
 
 **三个函数实现**

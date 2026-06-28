@@ -34,10 +34,11 @@ Plan 模式下：
 
 ## 二、典型的"建特性"循环
 
-```
-@相关文件 → Plan 模式 → 审阅 plan → Auto-accept edits
-→ Claude 写代码（边写边在 VS Code 可视化）
-→ 浏览器测试 → 用截图/反馈继续迭代
+```mermaid
+flowchart LR
+    A["@相关文件"] --> B["Plan 模式"] --> C["审阅 plan"] --> D["Auto-accept edits"]
+    D --> E["Claude 写代码（边写边在 VS Code 可视化）"]
+    E --> F["浏览器测试"] --> G["用截图/反馈继续迭代"]
 ```
 
 ### 用截图迭代视觉问题

@@ -16,13 +16,26 @@
 
 EDD(eval-driven development)= 把 TDD 的"红→绿→重构"搬到 prompt/agent:
 
-```
-传统 TDD                         Eval-Driven Development
-─────────                        ──────────────────────
-先写失败测试(red)        →     先建评测集 + 定义指标(什么叫"好")
-写代码让它过(green)      →     迭代 prompt / 工具 / 模型让分数过线
-重构不破坏测试            →     改任何一处,跑回归套件守住不退化
-CI 红了就 block 合并      →     eval 分数掉线下门槛就 block 发布
+```mermaid
+flowchart LR
+    subgraph TDD["传统 TDD"]
+        direction TB
+        T1["先写失败测试(red)"]
+        T2["写代码让它过(green)"]
+        T3["重构不破坏测试"]
+        T4["CI 红了就 block 合并"]
+    end
+    subgraph EDD["Eval-Driven Development"]
+        direction TB
+        E1["先建评测集 + 定义指标(什么叫『好』)"]
+        E2["迭代 prompt / 工具 / 模型让分数过线"]
+        E3["改任何一处,跑回归套件守住不退化"]
+        E4["eval 分数掉线下门槛就 block 发布"]
+    end
+    T1 --> E1
+    T2 --> E2
+    T3 --> E3
+    T4 --> E4
 ```
 
 > ✅ **一句话**:**先定义"好"的可度量标准,再迭代**——次序反了(先调 prompt、上线后才想起补 eval)就是凭感觉,团队普遍**低估评测、高估模型**。
@@ -40,11 +53,13 @@ CI 红了就 block 合并      →     eval 分数掉线下门槛就 block 发�
 
 从小到大(`5-observability-eval.md`§四的展开):
 
-```
-① Component  单次 LLM 调用 / 单个工具      → 准确率、JSON 合法性、工具选对没
-② Retrieval  RAG 检索质量                  → recall@k、context precision(检索 IR 指标);RAG Triad = context relevance + faithfulness/groundedness + answer relevance
-③ Trajectory agent 走的"路径"            → 步骤对不对、有没有绕路、工具序列最优否  ← agent 特有
-④ Task       端到端                        → 任务完成率、满意度、成本/延迟
+```mermaid
+flowchart TB
+    L1["① Component 单次 LLM 调用 / 单个工具<br/>→ 准确率、JSON 合法性、工具选对没"]
+    L2["② Retrieval RAG 检索质量<br/>→ recall@k、context precision(检索 IR 指标);RAG Triad = context relevance + faithfulness/groundedness + answer relevance"]
+    L3["③ Trajectory agent 走的『路径』(← agent 特有)<br/>→ 步骤对不对、有没有绕路、工具序列最优否"]
+    L4["④ Task 端到端<br/>→ 任务完成率、满意度、成本/延迟"]
+    L1 --> L2 --> L3 --> L4
 ```
 
 > ⚠️ **资深面试官的分水岭就在 ③**:组件级全绿、最终答案也对,agent 仍可能"瞎走对"——绕了 8 步、调错 3 个工具、烧了 5x token 才蒙对。**trajectory eval 测的是过程不是终点**,需要 trace(回链 06)记下完整 span 树才测得了。绝大多数团队的 eval 停在 ①④,缺 ③——这正是 demo 能跑、生产不可控的根因。
@@ -110,18 +125,14 @@ DeepEval 的机制是 **"eval 即单元测试"**:把每个用例建成 `LLMTestC
 
 ### 3.1 整体架构:eval 在开发流里的位置
 
-```
-        ┌─────────────── eval 数据集(版本化,当代码管,进 git)───────────────┐
-        │  cases.yaml / dataset.json:input + expected + 配置快照(prompt版本/model id)│
-        └───────────────────────────────┬──────────────────────────────────────┘
-                                         │
-  开发改 prompt/工具/模型 ──► PR ──► CI ─┤
-                                         ├─① rule-based 套件(每 commit,秒级)──► 红→block 合并
-                                         │     schema/格式/禁词/工具调用断言
-                                         └─② model-graded 套件(发布前/夜间)──► 掉门槛→block 发布
-                                               G-Eval/相关性/忠实度/trajectory
-                                         ▲
-        线上失败 trace(回链 06)────────┘  数据飞轮:失败 case 标注后回流成新 eval 样本
+```mermaid
+flowchart TB
+    DS["eval 数据集(版本化,当代码管,进 git)<br/>cases.yaml / dataset.json:input + expected + 配置快照(prompt版本/model id)"]
+    DEV["开发改 prompt/工具/模型"] --> PR["PR"] --> CI["CI"]
+    DS --> CI
+    CI --> R1["① rule-based 套件(每 commit,秒级)<br/>schema/格式/禁词/工具调用断言"] --> B1["红→block 合并"]
+    CI --> R2["② model-graded 套件(发布前/夜间)<br/>G-Eval/相关性/忠实度/trajectory"] --> B2["掉门槛→block 发布"]
+    PROD["线上失败 trace(回链 06)"] -.->|"数据飞轮:失败 case 标注后回流成新 eval 样本"| DS
 ```
 
 ### 3.2 最小可信例子 ①:Promptfoo 配置(YAML,零代码起步)
@@ -244,18 +255,14 @@ deepeval test run test_agent_eval.py   # 或直接 pytest;红了 CI block(现查
 
 ### 3.5 最轻起步 → 升级路径
 
-```
-手动看 10 个 case(探索期,先别建基建)
-  │ 这事确定要做、要防回归
-  ├─► Promptfoo 一份 YAML 横比 prompt×model + 几条 rule 断言   ← 最轻、零代码、半天上手
-  │ 要进 CI、要 RAG/agent 丰富指标、eval 当单元测试
-  ├─► DeepEval(pytest + G-Eval + assert_test)接 CI gate
-  │ 是 RAG 系统
-  ├─► 叠 Ragas(faithfulness/context precision,RAG 标准选择)
-  │ 要"配置×结果"强绑 + 实验台 + 团队协作看板
-  ├─► Braintrust / 可观测平台自带 dataset+eval(LangSmith/Langfuse)
-  │ agent 能力 + 安全双重评测
-  └─► Inspect AI(AISI 系)/ Promptfoo red-team
+```mermaid
+flowchart TB
+    A["手动看 10 个 case(探索期,先别建基建)"]
+    A -->|"这事确定要做、要防回归"| B["Promptfoo 一份 YAML 横比 prompt×model + 几条 rule 断言(最轻、零代码、半天上手)"]
+    B -->|"要进 CI、要 RAG/agent 丰富指标、eval 当单元测试"| C["DeepEval(pytest + G-Eval + assert_test)接 CI gate"]
+    C -->|"是 RAG 系统"| D["叠 Ragas(faithfulness/context precision,RAG 标准选择)"]
+    D -->|"要『配置×结果』强绑 + 实验台 + 团队协作看板"| E["Braintrust / 可观测平台自带 dataset+eval(LangSmith/Langfuse)"]
+    E -->|"agent 能力 + 安全双重评测"| F["Inspect AI(AISI 系)/ Promptfoo red-team"]
 ```
 
 > ⚠️ **别一上来上重平台**:Promptfoo 一份 YAML 已拿到"横比 + 回归门控"80% 收益。先有**版本化的 eval 数据集**(进 git)才是真资产,工具只是跑它的引擎——工具可换,数据集不能丢。
@@ -278,13 +285,14 @@ deepeval test run test_agent_eval.py   # 或直接 pytest;红了 CI block(现查
 
 ### 4.2 选型轴(决策树)
 
-```
-要不要写代码 / 要不要快速横比矩阵 → 不想写代码、横比 prompt×model → Promptfoo
-要把 eval 当单元测试进 CI、要丰富 agent/RAG 指标 → DeepEval
-是 RAG 系统、要检索质量指标 → Ragas(常与 DeepEval 叠)
-用 PydanticAI / Pydantic 契约栈 → pydantic-evals
-要安全/red-team 对抗评测 → Promptfoo(red-team)/ Inspect AI
-要"配置×模型×参数↔eval 结果"强绑 + 团队看板 → Braintrust / 可观测平台自带
+```mermaid
+flowchart LR
+    C1["要不要写代码 / 要不要快速横比矩阵 → 不想写代码、横比 prompt×model"] --> T1["Promptfoo"]
+    C2["要把 eval 当单元测试进 CI、要丰富 agent/RAG 指标"] --> T2["DeepEval"]
+    C3["是 RAG 系统、要检索质量指标"] --> T3["Ragas(常与 DeepEval 叠)"]
+    C4["用 PydanticAI / Pydantic 契约栈"] --> T4["pydantic-evals"]
+    C5["要安全/red-team 对抗评测"] --> T5["Promptfoo(red-team)/ Inspect AI"]
+    C6["要『配置×模型×参数↔eval 结果』强绑 + 团队看板"] --> T6["Braintrust / 可观测平台自带"]
 ```
 
 > ✅ **不互斥,常组合**:典型生产栈 = **Promptfoo 跑 prompt 横比 + red-team**(发布前/选型期)+ **DeepEval/Ragas 进 CI 当回归 gate**(每 commit rule-based、夜间 model-graded)。JD 同列 Promptfoo / DeepEval 正是这个原因——一个偏"实验台与安全",一个偏"CI 单元测试"。

@@ -262,35 +262,13 @@ print(response)   # 应输出 Y
 
 ## 七、整体安全流程
 
-```
-┌─────────────┐
-│  用户输入    │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────────┐
-│ ① Moderation API    │  ← 挡违法违禁内容
-│   flagged?          │
-└──────┬──────────────┘
-       │ 通过
-       ▼
-┌─────────────────────┐
-│ ② Injection Detect  │  ← 挡越狱/指令覆盖
-│   Y / N?            │
-└──────┬──────────────┘
-       │ N（安全）
-       ▼
-┌─────────────────────┐
-│ ③ 分类 + 路由        │  ← 上一课内容
-└──────┬──────────────┘
-       │
-       ▼
-┌─────────────────────┐
-│ ④ 带分隔符调用主模型 │  ← 策略 1 兜底
-└──────┬──────────────┘
-       │
-       ▼
-    最终回复
+```mermaid
+flowchart TB
+    U["用户输入"] --> M["① Moderation API<br/>flagged?<br/>← 挡违法违禁内容"]
+    M -->|通过| I["② Injection Detect<br/>Y / N?<br/>← 挡越狱/指令覆盖"]
+    I -->|"N（安全）"| C["③ 分类 + 路由<br/>← 上一课内容"]
+    C --> D["④ 带分隔符调用主模型<br/>← 策略 1 兜底"]
+    D --> R["最终回复"]
 ```
 
 ---
@@ -330,13 +308,10 @@ print(response)   # 应输出 Y
 
 一个成熟 Agent 的输入处理链通常是：
 
-```
-Input
- → Moderation           （内容合规）
- → Injection Detection  （指令完整性）
- → Intent Classification（意图分类，上一课）
- → Tool Router          （工具路由，后续课）
- → Execution
+```mermaid
+flowchart LR
+    A["Input"] --> B["Moderation（内容合规）"] --> C["Injection Detection（指令完整性）"]
+    C --> D["Intent Classification（意图分类，上一课）"] --> E["Tool Router（工具路由，后续课）"] --> F["Execution"]
 ```
 
 本课讲的是**前两步**——在 Agent 架构里一般封装成一个 `InputGuard` 中间件。

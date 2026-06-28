@@ -12,16 +12,26 @@
 
 Agent 的"自主性"在机制层就是一句话:**模型产出动作 → 环境返回观察 → 模型基于观察决定下一个动作 → 直到满足终止条件**。它不是魔法,是一个 `while not done` 循环,每一圈做四件事(四相):
 
-```
-            ┌──────────────────────── RUN LOOP(单 agent)─────────────────────────┐
-            │                                                                      │
-   goal ──▶ │  ① 感知 observe ─▶ ② 规划 plan ─▶ ③ 执行 act ─▶ ④ 验证 verify        │ ─▶ done? ─▶ answer
-            │   收集输入 + 上一步    模型决定下一步   调工具(02/08)  结构/工具/critic │       │
-            │   observation        (ReAct/P&E)      失败当数据回喂    校验过不过      │       │ 否
-            │      ▲                                                      │          │       │
-            │      └──────────── observation 回喂(含 VERIFY_FAILED)──────┘          │ ◀──────┘
-            └──────────────────────────────────────────────────────────────────────┘
-              退出闸:done 信号 / step 上限 / 循环检测 / token 预算(07)
+```mermaid
+flowchart LR
+    goal([goal]) --> O
+
+    subgraph LOOP[RUN LOOP · 单 agent]
+        direction LR
+        O["① 感知 observe<br/>收集输入 + 上一步 observation"]
+        P["② 规划 plan<br/>模型决定下一步<br/>(ReAct / P&E)"]
+        A["③ 执行 act<br/>调工具(02/08)<br/>失败当数据回喂"]
+        V["④ 验证 verify<br/>结构 / 工具 / critic 校验"]
+        O --> P --> A --> V
+        V -. "observation 回喂(含 VERIFY_FAILED)" .-> O
+    end
+
+    V --> D{done?}
+    D -- 否 --> O
+    D -- 是 --> ans([answer])
+
+    EXIT["退出闸:done 信号 / step 上限 / 循环检测 / token 预算(07)"]
+    EXIT -. 强制中止 .-> D
 ```
 
 为什么必须是"被驯服"的循环,而不是放任 agent 自己跑到 done:**无界 ReAct 循环会绕圈、会爆成本、没法 debug**。生产共识是"显式状态机 + 有界路径"(见 `../1.md` «L2 状态机/控制流»)。所以四相之外,退出闸(termination)和这个循环本身一样重要。
@@ -170,13 +180,18 @@ def agent_loop(state: RunState, llm, tools, verify) -> RunState:
 
 ### 3.2 升级:Orchestrator–Workers(分解 → 并行 → 验证 → 汇总)
 
-```
-                    ┌─── reduce(只收"已验证摘要",非全量 trace)───┐
-   goal ─▶ Orchestrator ─ decompose ─┬─▶ Worker A(独立 context + 子 loop + 自验证)─┐
-           (1 次 LLM)                 ├─▶ Worker B ────────────────────────────────┤─▶ synthesize ─▶ ④终态 verify ─▶ answer
-           子任务列表(上限护栏)        └─▶ Worker C ────────────────────────────────┘   (1 次 LLM)    覆盖/一致/引用   │ 不过
-                                         ↑ 并行 fan-out(asyncio.gather)                                            └▶ repair/re-plan
-                                         ↑ 单 worker 失败隔离,不拖垮整体(fallback 07)
+```mermaid
+flowchart LR
+    goal([goal]) --> O["Orchestrator · decompose<br/>(1 次 LLM)<br/>子任务列表(上限护栏)"]
+    O -->|"并行 fan-out(asyncio.gather)<br/>单 worker 失败隔离,不拖垮整体(fallback 07)"| WA["Worker A<br/>(独立 context + 子 loop + 自验证)"]
+    O --> WB["Worker B"]
+    O --> WC["Worker C"]
+    WA --> S["synthesize · reduce<br/>(只收已验证摘要,非全量 trace)<br/>(1 次 LLM)"]
+    WB --> S
+    WC --> S
+    S --> V["④ 终态 verify<br/>覆盖/一致/引用"]
+    V -- 过 --> ans([answer])
+    V -- 不过 --> R["repair/re-plan"]
 ```
 
 ```python
@@ -248,15 +263,15 @@ async def orchestrator_workers(goal, llm, worker_runner, verify, max_workers=5):
 
 ### 4.2 单 agent vs 多 agent 选型轴
 
-```
-是否可并行分解(子任务互相独立)?
-├─ 否(强依赖、必须串行)──────────────▶ 单 agent loop(并行无收益,多 agent 纯负担)
-└─ 是
-    └─ 是否需要 context 隔离 / 专业化角色?
-        ├─ 否 ──▶ 单 agent + 好工具(先把 L1–L3 做扎实)
-        └─ 是 ──▶ 任务价值撑得起 ~15x token 成本吗?
-                   ├─ 撑不起 ──▶ 退回单 agent
-                   └─ 撑得起 ──▶ Orchestrator–Workers
+```mermaid
+flowchart TB
+    Q1{"是否可并行分解<br/>(子任务互相独立)?"}
+    Q1 -- "否(强依赖、必须串行)" --> A1["单 agent loop<br/>(并行无收益,多 agent 纯负担)"]
+    Q1 -- 是 --> Q2{"是否需要 context 隔离 / 专业化角色?"}
+    Q2 -- 否 --> A2["单 agent + 好工具<br/>(先把 L1–L3 做扎实)"]
+    Q2 -- 是 --> Q3{"任务价值撑得起 ~15x token 成本吗?"}
+    Q3 -- 撑不起 --> A3["退回单 agent"]
+    Q3 -- 撑得起 --> A4["Orchestrator–Workers"]
 ```
 
 ### 4.3 多 agent 拓扑对比(选错拓扑的代价)

@@ -30,11 +30,13 @@
 > ⚠️ **「更新模式」列 = 写策略(怎么写),不含「读取期把记忆注入 context」**:读取注入属「怎么改变行为」列(Semantic 工具读 / Episodic few-shot 注入),别混进"更新写入"。
 
 **三问定类型:**
-```
-要记住事实/人/物?              → Semantic
-要从过去案例学(给例子)?       → Episodic
-要让指令/规则随反馈演化?        → Procedural
-（常组合:Triage 层用 Episodic+Procedural,Response 层用 Semantic）
+```mermaid
+flowchart LR
+    Q{"三问定类型"}
+    Q -->|"要记住事实/人/物?"| A["Semantic"]
+    Q -->|"要从过去案例学(给例子)?"| B["Episodic"]
+    Q -->|"要让指令/规则随反馈演化?"| C["Procedural"]
+    N["常组合:Triage 层用 Episodic+Procedural,Response 层用 Semantic"]
 ```
 
 ## 三、子决策 2:更新模式
@@ -67,20 +69,20 @@
 
 ## 六、决策树
 
-```
-Q1 需要长期(跨会话)记忆吗?
-├─ 否 → 只用短期 message buffer,不上 Store(别过度工程)
-└─ 是 ↓
-Q2 要改变哪种行为?
-├─ 记事实/偏好 → Semantic(工具读写)
-├─ 给历史例子 → Episodic(few-shot 注入)
-└─ 演化指令 → Procedural(prompt optimizer)
-Q3 更新时机?
-├─ 要立刻生效、可接受延迟 → Hot Path
-└─ 要主路径轻快、可接受滞后 → Background
-Q4 环境?
-├─ 原型 → InMemoryStore
-└─ 生产/多用户 → Postgres/Redis + namespace 分轴:semantic/episodic→(app,user_id,type)、procedural→(app,agent_id,'procedural')
+```mermaid
+flowchart TB
+    Q1{"Q1 需要长期(跨会话)记忆吗?"}
+    Q1 -->|"否"| N["只用短期 message buffer,不上 Store(别过度工程)"]
+    Q1 -->|"是"| Q2{"Q2 要改变哪种行为?"}
+    Q2 -->|"记事实/偏好"| A["Semantic(工具读写)"]
+    Q2 -->|"给历史例子"| B["Episodic(few-shot 注入)"]
+    Q2 -->|"演化指令"| C["Procedural(prompt optimizer)"]
+    Q2 --> Q3{"Q3 更新时机?"}
+    Q3 -->|"要立刻生效、可接受延迟"| H["Hot Path"]
+    Q3 -->|"要主路径轻快、可接受滞后"| BG["Background"]
+    Q3 --> Q4{"Q4 环境?"}
+    Q4 -->|"原型"| IM["InMemoryStore"]
+    Q4 -->|"生产/多用户"| PG["Postgres/Redis+namespace 分轴:semantic/episodic→(app,user_id,type)、procedural→(app,agent_id,'procedural')"]
 ```
 
 ---

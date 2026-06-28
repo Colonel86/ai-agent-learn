@@ -34,27 +34,23 @@
 
 ## 二、架构分层图
 
-```
-   ⓪ 动作范式(最上游,先于框架)  function-calling / CodeAct / computer·browser-use
-      先定"动作原语",决定下面骨架/工具/护栏怎么搭(0-action-paradigm.md)
-┌──────────────────────────────────────────────────────┐
-│  🔍 可观测性 / Eval  (横切:贯穿所有层,上生产必备)        │
-├──────────────────────────────────────────────────────┤
-│  🚀 部署·Serving   同步 / 流式SSE / 异步后台 + 持久执行   │  ← 运行时
-│  🎛️ Agent-UX      流式 / 生成式UI / HITL 呈现           │  ← 呈现
-├──────────────────────────────────────────────────────┤
-│  🏗️ 编排框架层   LangGraph / crewAI / Haystack / 裸SDK  │  ← 系统骨架
-│     ├─ 📚 检索栈   摄取+向量库+embedding+chunk+rerank   │  ← 能力
-│     ├─ 🧩 记忆     semantic/episodic/procedural         │  ← 能力
-│     └─ 🔧 工具层   function calling + 工具路由           │  ← 能力
-├──────────────────────────────────────────────────────┤
-│  🧠 模型层    轻量/主力/旗舰/自托管 + 路由/级联/网关      │  ← 底座
-└──────────────────────────────────────────────────────┘
-   ── 正交横切带(不在层内,贯穿全栈,可晚选但要早搭)──
-   🔌 协议      MCP→接工具/数据 · A2A→接 agent · AG-UI/ACP(Zed)→接 UI/IDE   [2-framework/06-protocols.md]
-   🛡️ 护栏·安全  prompt 注入 / PII / 工具许可 / HITL 闸门                    [7-safety-guardrails.md]
-   💰 成本·经济  以"每任务$"为统一指标,贯穿模型/检索/多Agent/部署各层         [8-cost-economics.md]
-   ⚠ "ACP" 两个无关同名缩写:Agent Communication Protocol(IBM,2025-08 并入 A2A)/ Agent Client Protocol(Zed,≈LSP)
+```mermaid
+flowchart TB
+    Z["⓪ 动作范式(最上游,先于框架):function-calling / CodeAct / computer·browser-use<br/>先定'动作原语',决定下面骨架/工具/护栏怎么搭(0-action-paradigm.md)"]
+    Z --> OBS["🔍 可观测性/Eval(横切:贯穿所有层,上生产必备)"]
+    OBS --> RT["🚀 部署·Serving:同步/流式SSE/异步后台+持久执行(运行时)<br/>🎛️ Agent-UX:流式/生成式UI/HITL 呈现(呈现)"]
+    RT --> ORCH["🏗️ 编排框架层:LangGraph/crewAI/Haystack/裸SDK(系统骨架)"]
+    ORCH --> RET["📚 检索栈:摄取+向量库+embedding+chunk+rerank(能力)"]
+    ORCH --> MEM["🧩 记忆:semantic/episodic/procedural(能力)"]
+    ORCH --> TOOL["🔧 工具层:function calling+工具路由(能力)"]
+    ORCH --> MODEL["🧠 模型层:轻量/主力/旗舰/自托管+路由/级联/网关(底座)"]
+    RET --> MODEL
+    MEM --> MODEL
+    TOOL --> MODEL
+    P["🔌 协议(横切):MCP→接工具/数据 · A2A→接 agent · AG-UI/ACP(Zed)→接 UI/IDE [2-framework/06-protocols.md]"]
+    S["🛡️ 护栏·安全(横切):prompt 注入/PII/工具许可/HITL 闸门 [7-safety-guardrails.md]"]
+    Co["💰 成本·经济(横切):以'每任务$'为统一指标,贯穿模型/检索/多Agent/部署各层 [8-cost-economics.md]"]
+    W["⚠ 'ACP' 两个无关同名缩写:Agent Communication Protocol(IBM,2025-08 并入 A2A)/ Agent Client Protocol(Zed,≈LSP)"]
 ```
 
 > **图注**:本图与 [`../../interview/1.md`](../../interview/1.md) «Agent 开发全栈五层 + L0 模型底座 + 横切带 A/B» **同构**——⓪动作范式 ≈ L1 的 action 范式谱;🚀部署/🎛️Agent-UX ≈ L5 部署·安全运行时;🔌协议/🛡️护栏/💰成本三条横切带 ≈ 横切带 A·协议 + 「成本·HITL·确定性」横切关注点。两套是"选什么(本矩阵)"与"怎么想(五层心智模型)"两种切法,不矛盾。
@@ -65,37 +61,15 @@
 
 不是所有层一起拍,有先后依赖:
 
-```
-⓪ 先定动作范式(最上游,先于框架)
-   目标系统有 API 吗 / 动作要不要组合控制流 / 要不要多模态观察
-                   → 动作范式(0-action-paradigm):function-calling / CodeAct / computer·browser-use
-   ⚠ 它决定下面骨架、工具、护栏怎么搭,所以排在框架之前先问
-        │
-① 再定形状与骨架
-   业务/数据形状 → 编排框架(2-framework/)
-   同时给主循环选 模型档位(1-model)
-        │
-② 再定能力层(按业务需要,可并行)
-   RAG-first?      → 检索栈(3-retrieval,含数据摄取/解析)
-   要跨会话记忆?   → 记忆(6-memory)
-   工具很多?       → 工具路由(4-tools)+ 协议(2-framework/06-protocols:MCP)
-        │
-   〔成本闸〕能力层定型后,先用单位经济学过一遍账 → 成本·经济学(8-cost-economics)
-            "每任务$"撑不住就回头降档/级联/压 token,别带着亏损的栈往下走
-        │
-③ 再定上线形态
-   demo→产品?      → 部署·Serving(9-serving-deployment:同步/流式/异步后台+持久执行)
-   有人机界面?     → Agent-UX(10-agent-ux:流式/生成式UI/HITL 呈现)
-        │
-④ 横切层(贯穿全栈:可晚选,但要早搭钩子)
-   上生产/要迭代       → 可观测 + Eval(5-observability-eval)
-   有外部输入/危险动作 → 护栏·安全(7-safety-guardrails)
-   ⚠ eval / 护栏 / 成本 都是横切——平台/工具可晚选,但骨架第一天就要留出钩子:
-     eval 最早搭(eval-as-code、agent/interview/1.md「评测第一个搭」);
-     护栏的 HITL 闸门、成本的埋点同理,事后补救比内建贵得多
-        │
-⑤ 沉淀
-   重大决策 → agent/skills/adr-writer 写 ADR
+```mermaid
+flowchart TB
+    P0["⓪ 先定动作范式(最上游,先于框架)<br/>目标系统有 API 吗/动作要不要组合控制流/要不要多模态观察<br/>→ 动作范式(0-action-paradigm):function-calling/CodeAct/computer·browser-use<br/>⚠ 它决定下面骨架、工具、护栏怎么搭,所以排在框架之前先问"]
+    P0 --> P1["① 再定形状与骨架<br/>业务/数据形状 → 编排框架(2-framework/)<br/>同时给主循环选 模型档位(1-model)"]
+    P1 --> P2["② 再定能力层(按业务需要,可并行)<br/>RAG-first? → 检索栈(3-retrieval,含数据摄取/解析)<br/>要跨会话记忆? → 记忆(6-memory)<br/>工具很多? → 工具路由(4-tools)+协议(2-framework/06-protocols:MCP)"]
+    P2 --> PC["〔成本闸〕能力层定型后,先用单位经济学过一遍账 → 成本·经济学(8-cost-economics)<br/>'每任务$'撑不住就回头降档/级联/压 token,别带着亏损的栈往下走"]
+    PC --> P3["③ 再定上线形态<br/>demo→产品? → 部署·Serving(9-serving-deployment:同步/流式/异步后台+持久执行)<br/>有人机界面? → Agent-UX(10-agent-ux:流式/生成式UI/HITL 呈现)"]
+    P3 --> P4["④ 横切层(贯穿全栈:可晚选,但要早搭钩子)<br/>上生产/要迭代 → 可观测+Eval(5-observability-eval)<br/>有外部输入/危险动作 → 护栏·安全(7-safety-guardrails)<br/>⚠ eval/护栏/成本 都是横切——平台/工具可晚选,但骨架第一天就要留出钩子:eval 最早搭(eval-as-code、agent/interview/1.md「评测第一个搭」);护栏的 HITL 闸门、成本的埋点同理,事后补救比内建贵得多"]
+    P4 --> P5["⑤ 沉淀<br/>重大决策 → agent/skills/adr-writer 写 ADR"]
 ```
 
 > ⚠️ **每层都要有备选**(哪怕是"先不做/裸 SDK 起步")。**从最轻方案起步,复杂度真的到了再升级**——过早上重栈是 Agent 项目最常见的过度工程。

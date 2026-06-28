@@ -105,14 +105,11 @@ def triage_router(state, config, store) -> Command[...]:
 
 > "**第一次访问就播种，之后用 store 的版本**"——经典模式：
 
-```
-读 store
-   ↓
-None?  ── Yes ──► 写默认值进 store + 用默认值
-   │
-  No
-   ↓
-用 store 里的值
+```mermaid
+flowchart TB
+    A["读 store"] --> B{"None?"}
+    B -->|"Yes"| C["写默认值进 store + 用默认值"]
+    B -->|"No"| D["用 store 里的值"]
 ```
 
 ✅ **新用户首次跑 Agent 也能正常工作**（默认值会被自动播种）。
@@ -406,22 +403,19 @@ else:
 
 ### 9.5 三类记忆的最终架构图
 
-```
-                  📦 Long-Term Memory Store
-                        │
-   ┌────────────────────┼────────────────────┐
-   ↓                    ↓                    ↓
-"examples"         "collection"          (user_id,)
-（Episodic）       （Semantic）         （Procedural）
-   │                    │                    │
-   ↓                    ↓                    ↓
-📋 邮件案例          📋 用户事实           📋 prompts
-   │                    │                    │
-   ↓                    ↓                    ↓
-Triage 注入        Response Agent       Triage + Response
-Few-Shot           工具读写             system prompts
-                                              ↑
-                                     [Optimizer 自动演化]
+```mermaid
+flowchart TB
+    Store["📦 Long-Term Memory Store"]
+    Store --> E1["'examples'（Episodic）"]
+    Store --> S1["'collection'（Semantic）"]
+    Store --> P1["(user_id,)（Procedural）"]
+    E1 --> E2["📋 邮件案例"]
+    S1 --> S2["📋 用户事实"]
+    P1 --> P2["📋 prompts"]
+    E2 --> E3["Triage 注入 Few-Shot"]
+    S2 --> S3["Response Agent 工具读写"]
+    P2 --> P3["Triage + Response system prompts"]
+    Opt["[Optimizer 自动演化]"] -.-> P3
 ```
 
 ---

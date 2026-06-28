@@ -57,15 +57,17 @@ python your_turn.py      # 用内置的键盘评论 + Apple 新闻练习
 
 ## 核心概念
 
-```
-传统 NLP 方案：训练分类模型 → 部署服务 → 维护更新
-LLM 推断方案：写 prompt → 调用 API → 直接获得结构化结果
-
-优势：
-  ✅ 零训练数据
-  ✅ 灵活更改推断维度（改 prompt 即可）
-  ✅ 支持多语言、多领域
-  ✅ 合并多个推断到单次调用（Demo 4）
+```mermaid
+flowchart TB
+    subgraph trad["传统 NLP 方案"]
+        direction LR
+        A1["训练分类模型"] --> A2["部署服务"] --> A3["维护更新"]
+    end
+    subgraph llm["LLM 推断方案"]
+        direction LR
+        B1["写 prompt"] --> B2["调用 API"] --> B3["直接获得结构化结果"]
+    end
+    llm --> ADV["优势<br/>✅ 零训练数据<br/>✅ 灵活更改推断维度（改 prompt 即可）<br/>✅ 支持多语言、多领域<br/>✅ 合并多个推断到单次调用（Demo 4）"]
 ```
 
 ---

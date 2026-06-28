@@ -101,14 +101,15 @@ MCP 把「报文语义」和「怎么传」解耦,当前两种官方传输:
 
 ### 3.0 升级路径总览
 
-```
-L0 框架原生 @tool(1 框架 1 进程)          ← 1-2 个工具,起步就在这
-   │  出现「跨框架/跨 agent 复用」信号
-L1 写一个 MCP server,stdio 本地暴露        ← 端侧 / 单机 / demo
-   │  要远程访问 / 多 client
-L2 Streamable HTTP server + OAuth 2.1      ← 远程单 server
-   │  server 数量 > 3,要统一治理
-L3 MCP Gateway 聚合 N server,单入口治理     ← 企业级,本章 §3.3
+```mermaid
+flowchart TB
+    L0["L0 框架原生 @tool(1 框架 1 进程)<br/>← 1-2 个工具,起步就在这"]
+    L1["L1 写一个 MCP server,stdio 本地暴露<br/>← 端侧 / 单机 / demo"]
+    L2["L2 Streamable HTTP server + OAuth 2.1<br/>← 远程单 server"]
+    L3["L3 MCP Gateway 聚合 N server,单入口治理<br/>← 企业级,本章 §3.3"]
+    L0 -->|"出现「跨框架/跨 agent 复用」信号"| L1
+    L1 -->|"要远程访问 / 多 client"| L2
+    L2 -->|"server 数量 > 3,要统一治理"| L3
 ```
 
 ### 3.1 写一个 MCP Server(Python,FastMCP)
@@ -201,17 +202,18 @@ await server.connect(new StdioServerTransport());
 
 ### 3.4 MCP Gateway 架构(L3:聚合多 server)
 
-```
-                     ┌─────────────── MCP Gateway(单一入口)───────────────┐
-                     │  AuthN/Z   路由   工具过滤   审计/trace   限流   多租户  │
-   Agent / Client ──▶│  ┌────────┐                                          │
-  (一条连接,一套凭据) │  │OAuth 2.1│  identity-based tools/list 裁剪          │
-                     │  │ 校验    │  RFC 8693 token exchange(下放窄 token)  │
-                     │  └────────┘                                          │
-                     └───┬──────────────┬──────────────┬───────────────────┘
-                         ▼              ▼              ▼
-                 MCP server A     MCP server B     MCP server C
-                 (Postgres)       (GitHub)         (内部工单, 高危写)
+```mermaid
+flowchart TB
+    AC["Agent / Client<br/>(一条连接,一套凭据)"]
+    subgraph GW["MCP Gateway(单一入口)"]
+        direction TB
+        F["AuthN/Z · 路由 · 工具过滤 · 审计/trace · 限流 · 多租户"]
+        O["OAuth 2.1 校验<br/>identity-based tools/list 裁剪<br/>RFC 8693 token exchange(下放窄 token)"]
+    end
+    AC --> GW
+    GW --> SA["MCP server A<br/>(Postgres)"]
+    GW --> SB["MCP server B<br/>(GitHub)"]
+    GW --> SC["MCP server C<br/>(内部工单, 高危写)"]
 ```
 
 **Gateway 必须做的事**(把直连 N server 的痛点逐条收编):
@@ -233,16 +235,17 @@ await server.connect(new StdioServerTransport());
 
 ### 4.1 接入方式选型轴
 
-```
-工具数量? ──1-2个──▶ 框架原生 @tool(不引 MCP)
-   │ 多
-跨框架/跨agent复用? ──否──▶ 框架原生(MCP 回不了本)
-   │ 是
-本地 or 远程? ──本地/端侧──▶ MCP server(stdio)
-   │ 远程
-server 数量? ──1~3──▶ Streamable HTTP server + OAuth 2.1(直连)
-   │ >3 或要多租户/统一审计
-            ──▶ MCP Gateway 聚合(L3)
+```mermaid
+flowchart TB
+    Q1{"工具数量?"}
+    Q1 -- "1-2个" --> A1["框架原生 @tool(不引 MCP)"]
+    Q1 -- 多 --> Q2{"跨框架/跨agent复用?"}
+    Q2 -- 否 --> A2["框架原生(MCP 回不了本)"]
+    Q2 -- 是 --> Q3{"本地 or 远程?"}
+    Q3 -- "本地/端侧" --> A3["MCP server(stdio)"]
+    Q3 -- 远程 --> Q4{"server 数量?"}
+    Q4 -- "1~3" --> A4["Streamable HTTP server + OAuth 2.1(直连)"]
+    Q4 -- ">3 或要多租户/统一审计" --> A5["MCP Gateway 聚合(L3)"]
 ```
 
 ### 4.2 主选 vs 备选 vs 代价

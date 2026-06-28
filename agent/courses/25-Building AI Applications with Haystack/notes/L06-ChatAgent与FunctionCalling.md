@@ -129,12 +129,11 @@ chat_agent.connect("function_caller.function_replies",   "message_collector")  #
 
 拓扑：
 
-```
-user_msg ──► message_collector ──► generator ──► function_caller
-                  ▲                                     │
-                  └────── function_replies ◄────────────┘
-                                                        │
-                                                        └──► assistant_replies (终点)
+```mermaid
+flowchart LR
+    user_msg --> message_collector --> generator --> function_caller
+    function_caller -.->|function_replies| message_collector
+    function_caller --> assistant_replies["assistant_replies (终点)"]
 ```
 
 - **BranchJoiner**：多输入合一输出的"汇流节点"，是 Haystack 表达"多源进入同一端口"时必须的组件。

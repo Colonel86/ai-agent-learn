@@ -11,21 +11,18 @@
 
 先给统一视图:**这四件事不是四个孤立功能,而是工具调用路径上串起来的一条护栏中间件链**,落在工具网关(02)的执行点上。
 
-```
-模型发起 tool_call
-   │
-   ▼
-┌──────────────────────── 护栏中间件链(网关执行点)────────────────────────┐
-│ ① budget_check   token/$ 预算够不够 → 触顶即拒/降级                        │
-│ ② policy_check   工具在 allowlist? RBAC 角色有权? → 越权即拒              │
-│ ③ param_policy   参数级策略(rm -rf? amount>阈值? DROP without WHERE?)   │
-│ ④ hitl_gate      命中高危分级 → interrupt 暂停,等人审(默认拒绝)          │
-│ ⑤ exec_wrapper   重试/退避/抖动 + circuit breaker,区分可重试/不可重试      │
-│ ⑥ audit_log      谁、何时、改了什么、批没批 → 审计留痕                      │
-└──────────────────────────────────────────────────────────────────────────┘
-   │
-   ▼
-真正执行(scoped 凭证 / 沙箱)
+```mermaid
+flowchart TB
+    Start["模型发起 tool_call"] --> Chain
+    subgraph Chain["护栏中间件链(网关执行点)"]
+        direction TB
+        G1["① budget_check token/$ 预算够不够 → 触顶即拒/降级"] --> G2["② policy_check 工具在 allowlist? RBAC 角色有权? → 越权即拒"]
+        G2 --> G3["③ param_policy 参数级策略(rm -rf? amount>阈值? DROP without WHERE?)"]
+        G3 --> G4["④ hitl_gate 命中高危分级 → interrupt 暂停,等人审(默认拒绝)"]
+        G4 --> G5["⑤ exec_wrapper 重试/退避/抖动 + circuit breaker,区分可重试/不可重试"]
+        G5 --> G6["⑥ audit_log 谁、何时、改了什么、批没批 → 审计留痕"]
+    end
+    Chain --> Exec["真正执行(scoped 凭证 / 沙箱)"]
 ```
 
 > 核心心智(对齐 `../1.md` L5「自主性 vs 可控性」):**①~④ 是"不信任模型自律"的确定性闸**,放在网关而不是 system prompt 里;⑤ 是"不信任下游可用性"的容错闸;⑥ 让前五个可追溯。下面逐闸讲机制。
@@ -57,13 +54,12 @@
 
 **断路器 circuit breaker(防雪崩).** 重试解决"偶发抖动",断路器解决"持续性故障"。机制是三态机:
 
-```
-        失败率/连续失败 > 阈值
- CLOSED ──────────────────────► OPEN ──(冷却 cooldown 到)──► HALF_OPEN
-  正常放行                      快速失败(fail-fast)          放少量探测请求
-   ▲                            不再打下游、不再等超时          │
-   │                                                          ├─探测成功→ CLOSED
-   └──────────────────────────────────────────────────────────┴─探测失败→ OPEN
+```mermaid
+flowchart LR
+    CLOSED["CLOSED<br/>正常放行"] -->|"失败率/连续失败 > 阈值"| OPEN["OPEN<br/>快速失败(fail-fast)<br/>不再打下游、不再等超时"]
+    OPEN -->|"冷却 cooldown 到"| HALF_OPEN["HALF_OPEN<br/>放少量探测请求"]
+    HALF_OPEN -->|"探测成功"| CLOSED
+    HALF_OPEN -->|"探测失败"| OPEN
 ```
 
 为什么必须有:provider 真挂了时,**没有断路器 = 每个请求都傻等超时(几秒~几十秒)再重试**,会 ① 拖垮你自己的延迟预算 ② 把并发线程池占满 ③ 把 token/$ 预算在无望的重试里烧光。OPEN 态直接 fail-fast 走 fallback,把"等超时"省掉。✅ 稳定。
@@ -72,14 +68,12 @@
 
 预算"硬"在哪——靠**三件套闭环**,缺一就软:
 
-```
-① 调用前预估(gate)   count_tokens/tiktoken 估 prompt + 预留 max_tokens 输出
-        │                单次就要爆预算 → 直接拒,别打出去
-        ▼
-② 累计计量(ledger)   每次调用后从 response.usage 取真值,四类 token 分开累加
-        │                (input / output / cache_read / cache_write,见 `../1.md` token 统计)
-        ▼
-③ 触顶即拒/降级(enforce) 累计 ≥ 上限 → 拒新调用 / 降档 / 截 context / 升 HITL
+```mermaid
+flowchart TB
+    G1["① 调用前预估(gate)<br/>count_tokens/tiktoken 估 prompt + 预留 max_tokens 输出<br/>单次就要爆预算 → 直接拒,别打出去"]
+    G2["② 累计计量(ledger)<br/>每次调用后从 response.usage 取真值,四类 token 分开累加<br/>(input / output / cache_read / cache_write,见 ../1.md token 统计)"]
+    G3["③ 触顶即拒/降级(enforce)<br/>累计 ≥ 上限 → 拒新调用 / 降档 / 截 context / 升 HITL"]
+    G1 --> G2 --> G3
 ```
 
 - **为什么预估和真值都要**:预估(tiktoken)会系统性少算(漏 chat overhead、tool schema、reasoning tokens),所以**预估只用于 gate(防单次就爆)**,**真值(usage)用于 ledger(防累计漂移)**。把 tiktoken 估算当计费真值是经典坑(见 `../1.md` token 统计「坑 2」)。
@@ -143,12 +137,12 @@
 
 ### 起步路径
 
-```
-🟢 最轻(默认底线):工具 allowlist + 危险动作 HITL + 单任务 token/步数上限(进程内计数)
-        │  ← 大多数内部能写的 agent 到这就够
-🟡 中(对外/按量计费):+ 跨节点退避重试(SDK 内建够用)+ 参数级 policy + Redis 分布式预算 ledger
-        │
-🔴 重(高 blast radius/受监管/多 provider):+ circuit breaker + 多 provider fallback + 策略引擎(OPA/Cedar)+ 全程审计留痕
+```mermaid
+flowchart TB
+    T1["🟢 最轻(默认底线):工具 allowlist + 危险动作 HITL + 单任务 token/步数上限(进程内计数)<br/>← 大多数内部能写的 agent 到这就够"]
+    T2["🟡 中(对外/按量计费):+ 跨节点退避重试(SDK 内建够用)+ 参数级 policy + Redis 分布式预算 ledger"]
+    T3["🔴 重(高 blast radius/受监管/多 provider):+ circuit breaker + 多 provider fallback + 策略引擎(OPA/Cedar)+ 全程审计留痕"]
+    T1 --> T2 --> T3
 ```
 
 ### 关键数据结构

@@ -18,38 +18,17 @@
 
 ## 二、RAG 系统全景架构
 
-```
-┌────────────────────────────────────────────────────────────┐
-│                   RAG 工作流                                │
-├────────────────────────────────────────────────────────────┤
-│                                                            │
-│  用户 Query                                                 │
-│      │                                                     │
-│      ▼                                                     │
-│  ┌─────────────┐                                          │
-│  │ Embedding   │◄─── 同一个模型 ───┐                     │
-│  │ Model       │                   │                      │
-│  └─────────────┘                   │                      │
-│      │                             │                      │
-│      ▼                             │                      │
-│  Query Vector                    文档 Vectors（预先 embed）│
-│      │                             │                      │
-│      └──────────┬──────────────────┘                      │
-│                 ▼                                         │
-│         Chroma 向量数据库                                  │
-│                 │                                         │
-│                 │ 最近邻检索（Nearest Neighbors）           │
-│                 ▼                                         │
-│           Top-K 相关文档                                   │
-│                 │                                         │
-│                 ▼                                         │
-│          ┌─────────────┐                                  │
-│          │     LLM     │ ◄── Query + 检索到的文档         │
-│          └─────────────┘                                  │
-│                 │                                         │
-│                 ▼                                         │
-│             最终答案                                       │
-└────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Q[用户 Query] --> EM[Embedding Model]
+    EM --> QV[Query Vector]
+    DV["文档 Vectors（预先 embed）"]
+    EM -.->|同一个模型| DV
+    QV --> CH[Chroma 向量数据库]
+    DV --> CH
+    CH -->|"最近邻检索（Nearest Neighbors）"| TK[Top-K 相关文档]
+    TK -->|"Query + 检索到的文档"| LLM[LLM]
+    LLM --> ANS[最终答案]
 ```
 
 ---
@@ -266,45 +245,14 @@ Answer: The total revenue for the year ended June 30, 2022
 
 **两级切分流程图（含证据链）**：
 
-```
-                  PDF 文本（已过滤空页）
-                         │
-                         ▼
-         ┌───────────────────────────────────┐
-         │  第一级：Character 切分            │
-         │  RecursiveCharacterTextSplitter   │
-         │  按 \n\n→\n→". "→" " 优先级递归    │
-         │  关心：语义边界「切得好不好读」    │
-         │  约束：chunk_size=1000 字符        │
-         └───────────────────────────────────┘
-                         │
-                         ▼
-                   347 个 chunks
-                  （多数 ≤ 256 token）
-                         │
-                         ▼
-         ┌───────────────────────────────────┐
-         │  第二级：Token 切分（安全网补刀）  │
-         │  SentenceTransformersTokenText…   │
-         │  关心：模型物理上限「喂不喂得进」  │
-         │  约束：tokens_per_chunk=256        │
-         └───────────────────────────────────┘
-                         │
-            只对「超 256 token」的块补一刀
-                         │
-                         ▼
-                   349 个 chunks
-                  （+2 ← 证据：仅极少数超窗）
-                         │
-                         ▼
-         每块都 ≤ 256 token → 完整 embed，零截断
-
-
-  ┌─ 为什么不能只切一级？ ──────────────────────────┐
-  │ 只切 Character：1000 字符 ≠ 固定 token 数，      │
-  │   财报数字/术语 token 密度高 → 可能 >256 → 截断  │
-  │ 只切 Token：在句子/单词中间乱断 → 语义边界全毁   │
-  └────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    A["PDF 文本（已过滤空页）"] --> B["第一级：Character 切分<br/>RecursiveCharacterTextSplitter<br/>按 \n\n→\n→&quot;. &quot;→&quot; &quot; 优先级递归<br/>关心：语义边界「切得好不好读」<br/>约束：chunk_size=1000 字符"]
+    B --> C["347 个 chunks<br/>（多数 ≤ 256 token）"]
+    C --> D["第二级：Token 切分（安全网补刀）<br/>SentenceTransformersTokenText…<br/>关心：模型物理上限「喂不喂得进」<br/>约束：tokens_per_chunk=256"]
+    D -->|"只对「超 256 token」的块补一刀"| E["349 个 chunks<br/>（+2 ← 证据：仅极少数超窗）"]
+    E --> F["每块都 ≤ 256 token → 完整 embed，零截断"]
+    G["为什么不能只切一级？<br/>只切 Character：1000 字符 ≠ 固定 token 数，财报数字/术语 token 密度高 → 可能 &gt;256 → 截断<br/>只切 Token：在句子/单词中间乱断 → 语义边界全毁"]
 ```
 
 > 💡 **读图关键**：`347 → 349` 只多 2 块，正是「Character 已保住绝大多数语义边界，Token 只是兜底补刀」的直接证据。
@@ -319,19 +267,15 @@ for text in character_split_texts:      # ← 遍历第一级输出的 347 个 c
 
 > ⚠️ **关键**：Token 切分是对【每个 Character chunk】**单独**处理，绝不回到原始 text 重切——否则第一级保住的语义边界就全废了。两级是**嵌套**关系，不是并列。
 
-```
-原始 text
-   │ 第一级 Character 切（按语义边界 \n\n→\n→". "→" "）
-   ▼
-[chunk_1, chunk_2, ..., chunk_347]    ← 每个都已是「语义完整」的块
-   │ 第二级 Token 切：对【每个 chunk】单独 split_text，结果 += 拼接
-   ▼
-chunk_1   → [子块]            （≤256 token → 原样返回 1 个，数量不变）
-chunk_2   → [子块a, 子块b]    （>256 token → 才被拆成 2 个）
-  ...
-chunk_347 → [子块]
-   ▼
-[共 349 个最终 chunk]    347 个里仅 2 个超窗 → 各 +1 → 349
+```mermaid
+flowchart TB
+    A[原始 text] -->|"第一级 Character 切（按语义边界 \n\n→\n→&quot;. &quot;→&quot; &quot;）"| B["[chunk_1, chunk_2, ..., chunk_347] ← 每个都已是「语义完整」的块"]
+    B -->|"第二级 Token 切：对【每个 chunk】单独 split_text，结果 += 拼接"| C1["chunk_1 → [子块]（≤256 token → 原样返回 1 个，数量不变）"]
+    B --> C2["chunk_2 → [子块a, 子块b]（&gt;256 token → 才被拆成 2 个）"]
+    B --> C3["chunk_347 → [子块]"]
+    C1 --> D["[共 349 个最终 chunk] 347 个里仅 2 个超窗 → 各 +1 → 349"]
+    C2 --> D
+    C3 --> D
 ```
 
 > 💡 **一句话**：第一级**定边界**，第二级**在边界内补刀**——顺序与嵌套都不能反。Token 切分只能在 Character 块**内部**细分，永不跨边界合并或重切。

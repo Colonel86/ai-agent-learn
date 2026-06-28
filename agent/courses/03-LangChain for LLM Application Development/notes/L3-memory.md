@@ -120,18 +120,13 @@ memory = ConversationSummaryBufferMemory(llm=llm, max_token_limit=100)
 
 ## Memory 在 ConversationChain 中的工作原理
 
-```
-用户输入
-    ↓
-memory.load_memory_variables()  # 取出历史上下文
-    ↓
-拼接成完整 prompt（历史 + 当前输入）
-    ↓
-LLM 生成回复
-    ↓
-memory.save_context()           # 把本次对话存入 memory
-    ↓
-返回给用户
+```mermaid
+flowchart TB
+    A[用户输入] --> B["memory.load_memory_variables() # 取出历史上下文"]
+    B --> C["拼接成完整 prompt（历史 + 当前输入）"]
+    C --> D[LLM 生成回复]
+    D --> E["memory.save_context() # 把本次对话存入 memory"]
+    E --> F[返回给用户]
 ```
 
 `verbose=True` 可以看到完整 prompt，帮助理解 memory 注入过程。

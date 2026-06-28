@@ -168,16 +168,12 @@ print(output_dict.get('delivery_days'))  # 2
 
 ### 工作原理
 
-```
-Schema 定义
-    ↓
-format_instructions (自动生成的格式要求文本)
-    ↓ 嵌入 prompt
-LLM 按格式输出结构化文本
-    ↓
-output_parser.parse()
-    ↓
-Python dict ✓
+```mermaid
+flowchart TB
+    A[Schema 定义] --> B["format_instructions (自动生成的格式要求文本)"]
+    B -->|嵌入 prompt| C[LLM 按格式输出结构化文本]
+    C --> D["output_parser.parse()"]
+    D --> E["Python dict ✓"]
 ```
 
 ---

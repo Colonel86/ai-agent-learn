@@ -127,16 +127,12 @@ Context:
 
 标准 RAG：
 
-```text id="t0w07l"
-文档 → 切块 → embedding → 向量数据库
-                           ↑
-用户问题 → embedding → 相似度搜索
-                           ↓
-                 找到相关内容
-                           ↓
-                  拼接 Prompt
-                           ↓
-                      LLM回答
+```mermaid
+flowchart TB
+    D["文档"] --> CK["切块"] --> EM1["embedding"] --> VDB["向量数据库"]
+    UQ["用户问题"] --> EM2["embedding"] --> SS["相似度搜索"]
+    SS --> VDB
+    SS --> FR["找到相关内容"] --> PR["拼接 Prompt"] --> LLM["LLM回答"]
 ```
 
 ---

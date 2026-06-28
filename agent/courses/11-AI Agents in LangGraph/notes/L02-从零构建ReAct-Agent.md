@@ -24,11 +24,12 @@
 
 循环过程：
 
-```
-Thought  →  Action  →  (环境执行)  →  Observation
-   ↑                                         │
-   └─────────────────────────────────────────┘
-             重复直到模型决定输出 Answer
+```mermaid
+flowchart LR
+    A["Thought"] --> B["Action"]
+    B --> C["(环境执行)"]
+    C --> D["Observation"]
+    D -.->|"重复直到模型决定输出 Answer"| A
 ```
 
 具体含义：

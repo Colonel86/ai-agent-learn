@@ -244,18 +244,13 @@ system_prompt = triage_system_prompt.format(
 
 ### 🎯 完整流程
 
-```
-新邮件到来
-    ↓
-用 user_id 拼 namespace
-    ↓
-向量搜索过往相似案例（Episodic Memory）
-    ↓
-格式化成 Few-Shot 块
-    ↓
-注入到 Triage System Prompt
-    ↓
-LLM 在示例引导下做分类
+```mermaid
+flowchart TB
+    A["新邮件到来"] --> B["用 user_id 拼 namespace"]
+    B --> C["向量搜索过往相似案例（Episodic Memory）"]
+    C --> D["格式化成 Few-Shot 块"]
+    D --> E["注入到 Triage System Prompt"]
+    E --> F["LLM 在示例引导下做分类"]
 ```
 
 ---
@@ -340,16 +335,12 @@ response = email_agent.invoke(
 
 ### 10.1 Episodic Memory 的工作模式
 
-```
-人在用 Agent 时给反馈
-    ↓
-反馈 = (输入邮件, 期望分类) 的案例
-    ↓
-存进 store 的 "examples" namespace
-    ↓
-下次遇到相似邮件
-    ↓
-节点代码自动检索 → 注入 prompt → LLM 跟着做
+```mermaid
+flowchart TB
+    A["人在用 Agent 时给反馈"] --> B["反馈 = (输入邮件, 期望分类) 的案例"]
+    B --> C["存进 store 的 'examples' namespace"]
+    C --> D["下次遇到相似邮件"]
+    D --> E["节点代码自动检索 → 注入 prompt → LLM 跟着做"]
 ```
 
 ### 10.2 与 Semantic Memory 的本质区别

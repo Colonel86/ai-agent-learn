@@ -4,16 +4,15 @@
 
 **系统架构**
 
-```
-入口 → [规划] → [初始研究] → [生成草稿] → 条件判断
-                                              ↓ 继续
-                                           [反思批评]
-                                              ↓
-                                           [批评研究]
-                                              ↓
-                                           [生成草稿] → 循环...
-                                              ↓ 达到最大修订次数
-                                             END
+```mermaid
+flowchart TB
+    Start(["入口"]) --> Plan["规划"] --> Research["初始研究"] --> Draft["生成草稿"]
+    Draft --> Cond{"条件判断"}
+    Cond -->|"继续"| Reflect["反思批评"]
+    Reflect --> CriticResearch["批评研究"]
+    CriticResearch --> Draft2["生成草稿"]
+    Draft2 -.->|"循环..."| Cond
+    Cond -->|"达到最大修订次数"| END["END"]
 ```
 
 ---

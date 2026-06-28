@@ -141,22 +141,18 @@ Query 向量
 
 ### 六大改进方向
 
-```
-┌───────────────────────────────────────┐
-│  🅰 改 Query                          │
-│     ├─ Query Expansion（改写）         │
-│     ├─ Multi-Query（变体）             │
-│     └─ HyDE（假设答案）                │
-│                                       │
-│  🅱 改结果                            │
-│     └─ Cross-Encoder Re-ranking        │
-│                                       │
-│  🅲 改 Embedding                     │
-│     └─ Embedding Adapter（反馈学习）  │
-│                                       │
-│  🆕 前沿                             │
-│     └─ 研究中尚未主流的方法           │
-└───────────────────────────────────────┘
+```mermaid
+flowchart TB
+    R[六大改进方向] --> A["🅰 改 Query"]
+    R --> B["🅱 改结果"]
+    R --> C["🅲 改 Embedding"]
+    R --> D["🆕 前沿"]
+    A --> A1["Query Expansion（改写）"]
+    A --> A2["Multi-Query（变体）"]
+    A --> A3["HyDE（假设答案）"]
+    B --> B1[Cross-Encoder Re-ranking]
+    C --> C1["Embedding Adapter（反馈学习）"]
+    D --> D1[研究中尚未主流的方法]
 ```
 
 ### 🎯 下一课预告

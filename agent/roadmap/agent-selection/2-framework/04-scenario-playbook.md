@@ -116,19 +116,17 @@
 
 ## 演进路线总图(从轻到重)
 
-```
-裸 SDK / Pydantic AI            ← 简单:结构化输出、少量工具
-      │ 复杂度上升(分支、循环、反思)
-      ▼
-RAG 框架(LlamaIndex/Haystack)  ← 数据/检索密集
-      │ 需要精细状态/HITL/可恢复
-      ▼
-LangGraph(状态机)              ← 复杂可控的单/多 agent
-      │ 想要"团队分工"心智
-      ▼
-多 agent(crewAI/MAF)           ← 多角色协作(AutoGen 已转维护模式,仅 PoC)
-
-横切叠加:MCP(工具接入) · LangSmith/Phoenix/Langfuse(观测) · eval 框架(回归)
+```mermaid
+flowchart TB
+    A["裸 SDK / Pydantic AI<br/>简单:结构化输出、少量工具"]
+    A -->|"复杂度上升(分支、循环、反思)"| B["RAG 框架(LlamaIndex/Haystack)<br/>数据/检索密集"]
+    B -->|"需要精细状态/HITL/可恢复"| C["LangGraph(状态机)<br/>复杂可控的单/多 agent"]
+    C -->|"想要'团队分工'心智"| D["多 agent(crewAI/MAF)<br/>多角色协作(AutoGen 已转维护模式,仅 PoC)"]
+    X["横切叠加:MCP(工具接入) · LangSmith/Phoenix/Langfuse(观测) · eval 框架(回归)"]
+    A -.- X
+    B -.- X
+    C -.- X
+    D -.- X
 ```
 
 > **黄金法则:从能解决问题的最轻方案起步,复杂度真的到了再升级。**过早上重框架是 Agent 项目最常见的过度工程。

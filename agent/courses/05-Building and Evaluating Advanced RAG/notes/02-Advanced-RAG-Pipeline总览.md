@@ -25,8 +25,11 @@
 
 ### 1. Ingestion（数据摄入）
 
-```
-documents ── text splitter ──> chunks ── embedding model ──> embeddings ──> index（存储：如向量数据库）
+```mermaid
+flowchart LR
+    A[documents] -->|text splitter| B[chunks]
+    B -->|embedding model| C[embeddings]
+    C --> D["index（存储：如向量数据库）"]
 ```
 
 - 加载一批文档；
@@ -36,14 +39,16 @@ documents ── text splitter ──> chunks ── embedding model ──> emb
 
 ### 2. Retrieval（检索）
 
-```
-user query ── embed ──> 在 index 中搜索 Top-K 最相似的 chunk
+```mermaid
+flowchart LR
+    A[user query] -->|embed| B[在 index 中搜索 Top-K 最相似的 chunk]
 ```
 
 ### 3. Synthesis（合成）
 
-```
-(user query + 相关 chunks) ──> LLM prompt ──> 最终答案
+```mermaid
+flowchart LR
+    A["(user query + 相关 chunks)"] --> B[LLM prompt] --> C[最终答案]
 ```
 
 > 关键观察：LLM 能生成**高质量回答**的前提，是第 2 步检索回来的 chunk 对问题**真的相关**。这是后面高级检索技术要优化的核心。

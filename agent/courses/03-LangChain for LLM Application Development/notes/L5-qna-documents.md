@@ -9,16 +9,12 @@ LLM 的上下文窗口有限（几千 token），无法直接处理大型文档�
 
 ## 完整流程图
 
-```
-文档库
-  ↓ Document Loader（加载）
-  ↓ Text Splitter（分块）
-  ↓ Embedding Model（向量化）
-  ↓ Vector Store（存储）
-              ↑
-用户提问 → Embedding → 相似度搜索 → 召回相关块
-                                        ↓
-                              LLM（生成最终答案）
+```mermaid
+flowchart TB
+    A[文档库] -->|"Document Loader（加载）"| B["Text Splitter（分块）"]
+    B -->|"Embedding Model（向量化）"| C["Vector Store（存储）"]
+    D[用户提问] --> E[Embedding] --> F[相似度搜索] --> G[召回相关块] --> H["LLM（生成最终答案）"]
+    C --> F
 ```
 
 ---

@@ -48,26 +48,21 @@
 
 ## 四、🌳 判据 / 决策树
 
-```
-Q0. 这个 agent 有人实时看吗?
-├─ 否(纯后台/批处理) → 这层不用选,出结果即可(进度回传归 9-serving)
-└─ 是 → 继续
-        │
-Q1. 中间态(工具调用/检索/思考/审批)要给人看吗?
-├─ 不要,只看最终答案 → 纯文本流式(最轻起步),本层到此为止
-└─ 要 → 继续(才需要下面的候选)
-        │
-Q2. 前端栈 / 形态?
-├─ React + 要嵌入式 copilot / 要可视化 agent 状态 + LangGraph 后端 → AG-UI / CopilotKit
-├─ Next/Vercel + chat 或结构化对象生成,想快 → Vercel AI SDK UI
-├─ 只要一个打磨好的 chat 界面 → assistant-ui(可叠在 AI SDK / LangGraph 上)
-└─ 有特殊 UI / 不愿绑定 / 已有前端基建 → 自建 SSE + 前端
-        │
-Q3. 要 HITL 审批卡 + 隔天恢复吗? → 见五(单列,最易返工)
-        │
-Q4. 传输:SSE 够吗?
-├─ 纯展示型 agent → SSE(自带重连)即可
-└─ 频繁人类介入 / 双向 steering → 上 WebSocket(见 `../../interview/1.md` §6)
+```mermaid
+flowchart TB
+    Q0{"Q0. 这个 agent 有人实时看吗?"}
+    Q0 -->|"否(纯后台/批处理)"| N0["这层不用选,出结果即可(进度回传归 9-serving)"]
+    Q0 -->|"是"| Q1{"Q1. 中间态(工具调用/检索/思考/审批)要给人看吗?"}
+    Q1 -->|"不要,只看最终答案"| N1["纯文本流式(最轻起步),本层到此为止"]
+    Q1 -->|"要"| Q2{"Q2. 前端栈/形态?"}
+    Q2 -->|"React+要嵌入式 copilot/要可视化 agent 状态+LangGraph 后端"| A1["AG-UI / CopilotKit"]
+    Q2 -->|"Next/Vercel+chat 或结构化对象生成,想快"| A2["Vercel AI SDK UI"]
+    Q2 -->|"只要一个打磨好的 chat 界面"| A3["assistant-ui(可叠在 AI SDK/LangGraph 上)"]
+    Q2 -->|"有特殊 UI/不愿绑定/已有前端基建"| A4["自建 SSE+前端"]
+    Q2 --> Q3{"Q3. 要 HITL 审批卡+隔天恢复吗?(见五,单列,最易返工)"}
+    Q3 --> Q4{"Q4. 传输:SSE 够吗?"}
+    Q4 -->|"纯展示型 agent"| T1["SSE(自带重连)即可"]
+    Q4 -->|"频繁人类介入/双向 steering"| T2["上 WebSocket(见 ../../interview/1.md §6)"]
 ```
 
 > ⚠️ **每个分支都有"最轻起步"**:能纯文本流式解决就别上协议;能 SSE 就别上 WebSocket;能复用现成组件库就别自建。**复杂度真到了(中间态要可视化、要审批卡、要生成式 UI)再升级**——过早上 AG-UI/CopilotKit 全家桶是这层最常见的过度工程。
@@ -103,20 +98,13 @@ Q4. 传输:SSE 够吗?
 
 ## 七、🪜 最轻起步 & 升级路径
 
-```
-起步:纯文本 SSE 流(只 TEXT_MESSAGE_*,打字机)         ← 80% demo 够用
-  │  发现"看不见 agent 在干什么" / 要给人信任感
-  ▼
-加 工具调用卡 + STEP 进度(选 AI SDK / assistant-ui / AG-UI)  ← 过程透明
-  │  要 agent 产出可交互组件(表单/图表/协作文档)
-  ▼
-加 生成式 UI + STATE_DELTA(JSON-Patch 增量)                 ← 协作型 agent
-  │  要人审批危险动作 / 隔天恢复
-  ▼
-加 HITL 审批卡 + checkpointer 断流重连(见五)                ← 生产闸门
-  │  频繁双向 steering
-  ▼
-SSE → WebSocket                                              ← 真交互式
+```mermaid
+flowchart TB
+    A["起步:纯文本 SSE 流(只 TEXT_MESSAGE_*,打字机)<br/>80% demo 够用"]
+    A -->|"发现'看不见 agent 在干什么'/要给人信任感"| B["加 工具调用卡+STEP 进度(选 AI SDK/assistant-ui/AG-UI)<br/>过程透明"]
+    B -->|"要 agent 产出可交互组件(表单/图表/协作文档)"| C["加 生成式 UI+STATE_DELTA(JSON-Patch 增量)<br/>协作型 agent"]
+    C -->|"要人审批危险动作/隔天恢复"| D["加 HITL 审批卡+checkpointer 断流重连(见五)<br/>生产闸门"]
+    D -->|"频繁双向 steering"| E["SSE → WebSocket<br/>真交互式"]
 ```
 
 > 反过来:**没到那一步就别加**。每升一档,前端 reducer、后端事件、serving 复杂度同步上去。

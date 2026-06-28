@@ -26,9 +26,9 @@
 
 **摄取四步管线**(任一步偷工,下游全栈受拖累):
 
-```
-连接器        → 解析器               → 抽取/去重        → 增量刷新
-(数据源接入)    (版面/表格/OCR/VLM)     (清洗+内容哈希)    (文档级 upsert)
+```mermaid
+flowchart LR
+    A["连接器<br/>(数据源接入)"] --> B["解析器<br/>(版面/表格/OCR/VLM)"] --> C["抽取/去重<br/>(清洗+内容哈希)"] --> D["增量刷新<br/>(文档级 upsert)"]
 ```
 
 **🧩 选型轴(看四点)**
@@ -68,12 +68,14 @@
 | **Qdrant / Weaviate / Milvus** | 分布式服务 | 大 | 独立服务/集群 | 生产、海量、需过滤+水平扩展 |
 | **Pinecone** | 托管 SaaS | 大 | 全托管 | 不想运维、快速上生产(锁定+成本) |
 
-```
-原型/教学 → Chroma
-已有 Postgres → pgvector(少加组件)
-单机要快/可 GPU → FAISS
-生产海量+元数据过滤 → Qdrant / Weaviate / Milvus
-不想运维、接受锁定 → Pinecone
+```mermaid
+flowchart LR
+    Q{"选向量库"}
+    Q -->|"原型/教学"| A["Chroma"]
+    Q -->|"已有 Postgres"| B["pgvector(少加组件)"]
+    Q -->|"单机要快/可 GPU"| C["FAISS"]
+    Q -->|"生产海量+元数据过滤"| D["Qdrant / Weaviate / Milvus"]
+    Q -->|"不想运维、接受锁定"| E["Pinecone"]
 ```
 回溯:`courses/04`、`courses/专业名词解释/向量数据库-FAISS与Milvus.md`。
 
@@ -143,10 +145,17 @@
 
 普通 RAG 检索**孤立文本块**(靠相似度);GraphRAG 先把文档抽成**实体-关系图**,检索时沿关系链路多跳遍历,专治向量 RAG 的两个死角:**多跳推理**(答案分散在多个块需串联)和**全局归纳**("这份报告主题有哪些"答案不在任一块里)。
 
-```
-建库:文档 ─LLM抽三元组(贵)─► (实体,关系,实体) ─► 图数据库
-查询:识别实体 → 沿边多跳遍历子图 → 子图+关联原文喂 LLM
-微软 GraphRAG 额外:社区检测(Leiden)+预生成社区摘要 → Global Search 答全局归纳
+```mermaid
+flowchart LR
+    subgraph 建库
+        B1["文档"] -->|"LLM 抽三元组(贵)"| B2["(实体,关系,实体)"] --> B3["图数据库"]
+    end
+    subgraph 查询
+        C1["识别实体"] --> C2["沿边多跳遍历子图"] --> C3["子图+关联原文喂 LLM"]
+    end
+    subgraph 微软GraphRAG额外
+        D1["社区检测(Leiden)+预生成社区摘要"] --> D2["Global Search 答全局归纳"]
+    end
 ```
 
 **框架选型(按用途三选一)**:
@@ -180,15 +189,16 @@
 
 ## 九、组合决策树(整条栈)
 
-```
-Step 0 摄取/解析:纯文本→单一parser直切(最轻);PDF/要保结构+不出域→Docling;表格密集/可出域→LlamaParse;扫描件/图表/公式→VLM解析;中文PDF重→RAGFlow
-Step 1 向量库:原型→Chroma;有PG→pgvector;生产海量→Qdrant/Weaviate/Milvus
-Step 2 Embedding:默认 text-embedding-3-small;多语种→bge-m3;不出域→本地BGE
-Step 3 Chunking:默认两级切分;长/结构化文档→Auto-merging;要连贯→SentenceWindow
-Step 4 召回不准?→ 加两阶段(Bi-Encoder召回 + Cross-Encoder/bge-reranker 精排)
-Step 5 仍不准?→ 查询侧加 HyDE/Multi-Query;有术语→Hybrid;上下文不全→父文档;有反馈数据→Embedding Adapter
-Step 6 问题多是多跳/全局 且 领域关系密集?→ 评估上 GraphRAG(否则别上,见七)
-Step 7 用 RAG Triad 验收(见下)
+```mermaid
+flowchart TB
+    S0["Step 0 摄取/解析:纯文本→单一 parser 直切(最轻);PDF/要保结构+不出域→Docling;表格密集/可出域→LlamaParse;扫描件/图表/公式→VLM 解析;中文 PDF 重→RAGFlow"]
+    S0 --> S1["Step 1 向量库:原型→Chroma;有 PG→pgvector;生产海量→Qdrant/Weaviate/Milvus"]
+    S1 --> S2["Step 2 Embedding:默认 text-embedding-3-small;多语种→bge-m3;不出域→本地 BGE"]
+    S2 --> S3["Step 3 Chunking:默认两级切分;长/结构化文档→Auto-merging;要连贯→SentenceWindow"]
+    S3 --> S4["Step 4 召回不准?→ 加两阶段(Bi-Encoder 召回+Cross-Encoder/bge-reranker 精排)"]
+    S4 --> S5["Step 5 仍不准?→ 查询侧加 HyDE/Multi-Query;有术语→Hybrid;上下文不全→父文档;有反馈数据→Embedding Adapter"]
+    S5 --> S6["Step 6 问题多是多跳/全局 且 领域关系密集?→ 评估上 GraphRAG(否则别上,见七)"]
+    S6 --> S7["Step 7 用 RAG Triad 验收(见下)"]
 ```
 
 ---

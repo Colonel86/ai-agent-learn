@@ -168,23 +168,24 @@ DataCamp — Associate AI Engineer for Developers Track 更偏向数据科学工
 
 ## 🗺 主线 vs 上下文层 vs 横向扩展：一图看懂
 
-```
-Phase 3 主线（深度）         Phase 4 上下文层（RAG/Memory）     Phase 5 横向扩展（广度）
-━━━━━━━━━━━━━━━━━━━━━       ━━━━━━━━━━━━━━━━━━━━━━━━━━━     ━━━━━━━━━━━━━━━━━━━━━━━━━━
-#8  Agentic AI（概念）         🅰 RAG                          🅰 多 Agent 协作
-    ↓                            #4  Chat with Your Data          #13 crewAI 基础
-#9  LangChain Tools              #5  Advanced RAG（评估）⭐        #14 AutoGen
-    ↓                            #6  Chroma 高级检索               #15 crewAI Practical
-#10 MCP（协议层，跨框架）         #18 Agentic RAG (LlamaIndex)⭐
-    ↓                            #19 Event-Driven (LlamaIndex)   🅱 协议与扩展
-#11 LangGraph                    #26 Knowledge Graphs            #16 Agent Skills
-    （HITL/持久化）                                               #17 A2A
-                              🅱 Memory
-                                 #12 LangGraph 长期记忆 ⭐
-                                 #12a/b 候选（Oracle/Letta）
-
-                              ↓
-                           真实项目 ← 关键里程碑
+```mermaid
+flowchart TB
+    subgraph 主线["Phase 3 主线（深度）"]
+        direction TB
+        C8["#8 Agentic AI（概念）"] --> C9["#9 LangChain Tools"] --> C10["#10 MCP（协议层，跨框架）"] --> C11["#11 LangGraph（HITL/持久化）"]
+    end
+    subgraph 上下文["Phase 4 上下文层（RAG/Memory）"]
+        direction TB
+        R["🅰 RAG"] --> R4["#4 Chat with Your Data"] --> R5["#5 Advanced RAG（评估）⭐"] --> R6["#6 Chroma 高级检索"] --> R18["#18 Agentic RAG (LlamaIndex)⭐"] --> R19["#19 Event-Driven (LlamaIndex)"] --> R26["#26 Knowledge Graphs"]
+        M["🅱 Memory"] --> M12["#12 LangGraph 长期记忆 ⭐"] --> M12b["#12a/b 候选（Oracle/Letta）"]
+    end
+    subgraph 横向["Phase 5 横向扩展（广度）"]
+        direction TB
+        H["🅰 多 Agent 协作"] --> H13["#13 crewAI 基础"] --> H14["#14 AutoGen"] --> H15["#15 crewAI Practical"]
+        HB["🅱 协议与扩展"] --> H16["#16 Agent Skills"] --> H17["#17 A2A"]
+    end
+    C11 --> PROJ["真实项目 ← 关键里程碑"]
+    上下文 --> PROJ
 ```
 
 ---

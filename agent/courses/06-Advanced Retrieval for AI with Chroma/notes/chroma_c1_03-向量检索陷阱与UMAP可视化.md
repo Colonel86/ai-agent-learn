@@ -256,9 +256,10 @@ query = "What has Michael Jordan done for us lately?"
 
 ### 7.4 Distractor 的真实危害
 
-```
-相似 ≠ 相关 → Distractor 入场 → 污染 RAG 上下文 → LLM 输出次优
-→ 用户看不出哪错了 → 开发者调试地狱
+```mermaid
+flowchart LR
+    A[相似 ≠ 相关] --> B[Distractor 入场] --> C[污染 RAG 上下文] --> D[LLM 输出次优]
+    D --> E[用户看不出哪错了] --> F[开发者调试地狱]
 ```
 
 ---

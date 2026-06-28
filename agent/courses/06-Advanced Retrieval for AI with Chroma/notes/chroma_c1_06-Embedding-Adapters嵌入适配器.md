@@ -20,21 +20,13 @@
 
 ### 2.1 新架构：在检索管道中插一层
 
-```
-Query
-    ↓
-Embedding Model
-    ↓
-    query_vector（原始）
-    ↓
-┌─────────────────────┐
-│  🆕 Embedding       │  ← 可训练的线性层（小矩阵）
-│  Adapter            │
-└─────────────────────┘
-    ↓
-    query_vector（适配后）
-    ↓
-向量检索 → Top-K
+```mermaid
+flowchart TB
+    A[Query] --> B[Embedding Model]
+    B --> C["query_vector（原始）"]
+    C --> D["🆕 Embedding Adapter ← 可训练的线性层（小矩阵）"]
+    D --> E["query_vector（适配后）"]
+    E --> F[向量检索 → Top-K]
 ```
 
 ### 2.2 核心公式

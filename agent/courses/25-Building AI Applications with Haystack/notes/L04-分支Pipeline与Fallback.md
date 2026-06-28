@@ -64,10 +64,11 @@ router = ConditionalRouter(routes=routes)
 
 拓扑（带 fallback）：
 
-```
-                 ┌──── answer (终点：LLM 已回答) ────►
-retriever → prompt → llm → router
-                 └──── go_to_websearch ──► websearch → prompt_for_websearch → llm_for_websearch
+```mermaid
+flowchart LR
+    retriever --> prompt --> llm --> router
+    router -->|"answer (终点：LLM 已回答)"| answer["answer"]
+    router -->|go_to_websearch| websearch --> prompt_for_websearch --> llm_for_websearch
 ```
 
 ```python

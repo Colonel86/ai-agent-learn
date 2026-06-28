@@ -63,21 +63,12 @@
 
 ### 流水线
 
-```
-[Step 1] Extraction Prompt
-  输入：用户消息
-  输出：JSON 格式的 {category, products} 列表
-           │
-           ▼
-[Step 2] 本地查询（非 LLM）
-  输入：JSON 列表
-  动作：查字典拿到完整产品描述
-  输出：结构化产品信息字符串
-           │
-           ▼
-[Step 3] Answer Prompt
-  输入：用户消息 + Step 2 得到的产品信息
-  输出：对用户的最终回复
+```mermaid
+flowchart TB
+    S1["[Step 1] Extraction Prompt<br/>输入：用户消息<br/>输出：JSON 格式的 {category, products} 列表"]
+    S2["[Step 2] 本地查询（非 LLM）<br/>输入：JSON 列表<br/>动作：查字典拿到完整产品描述<br/>输出：结构化产品信息字符串"]
+    S3["[Step 3] Answer Prompt<br/>输入：用户消息 + Step 2 得到的产品信息<br/>输出：对用户的最终回复"]
+    S1 --> S2 --> S3
 ```
 
 ### 3.1 Step 1：提取产品和分类
@@ -187,18 +178,11 @@ final_response = get_completion_from_messages(messages)
 
 ## 五、动态上下文加载的通用模式
 
-```
-用户输入
-   │
-   ▼
-[LLM] 识别需要什么信息
-   │
-   ▼
-[程序] 去数据源拿信息
-  (Products API, Knowledge Base, Search, SQL, ...)
-   │
-   ▼
-[LLM] 基于这些信息生成回复
+```mermaid
+flowchart TB
+    U["用户输入"] --> L1["[LLM] 识别需要什么信息"]
+    L1 --> P["[程序] 去数据源拿信息<br/>(Products API, Knowledge Base, Search, SQL, ...)"]
+    P --> L2["[LLM] 基于这些信息生成回复"]
 ```
 
 这**就是 RAG（Retrieval-Augmented Generation）的雏形**，也是 **ChatGPT Plugins** 的底层思路。
@@ -256,23 +240,22 @@ final_response = get_completion_from_messages(messages)
 
 加一层"让模型自己决定下一步调什么工具"——Agent 就成型了：
 
-```
-[Agent 雏形]                     [完整 Agent]
-                                 ┌──────────────┐
-Input                            │  Tool Router │
-  │                              │   (LLM)      │
-  ▼                              └───┬──────────┘
-Extract (LLM)                        │
-  │                      ┌───────────┴──────────┐
-  ▼                      ▼           ▼          ▼
-Query (code)          Search API  Database   Calculator
-  │                      │           │          │
-  ▼                      └───────┬───┴──────────┘
-Answer (LLM)                     ▼
-                              Observe
-                                 │
-                                 ▼
-                              Answer (LLM)
+```mermaid
+flowchart TB
+    subgraph 雏形["Agent 雏形"]
+        direction TB
+        I1["Input"] --> E1["Extract (LLM)"] --> Q1["Query (code)"] --> A1["Answer (LLM)"]
+    end
+    subgraph 完整["完整 Agent"]
+        direction TB
+        TR["Tool Router (LLM)"] --> S["Search API"]
+        TR --> DB["Database"]
+        TR --> CALC["Calculator"]
+        S --> OB["Observe"]
+        DB --> OB
+        CALC --> OB
+        OB --> A2["Answer (LLM)"]
+    end
 ```
 
 **差别**：Agent 让**模型来决定路由**，Chaining 让**开发者写死路由**。生产系统里往往**混用**——简单分支写死，复杂决策交给模型。

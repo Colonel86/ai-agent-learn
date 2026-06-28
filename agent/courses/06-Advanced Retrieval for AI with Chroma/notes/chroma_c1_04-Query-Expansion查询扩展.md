@@ -188,16 +188,12 @@ plt.axis('off')
 
 ## 1. 核心原理
 
-```
-原始 Query
-    ↓ 送给 LLM
-LLM 生成 N 个相关但角度不同的问题
-    ↓
-把 [原 Query, Q1, Q2, ..., QN] 都送给检索系统
-    ↓ 并行检索 → 去重
-合并的文档集
-    ↓
-送给 LLM 完成 RAG
+```mermaid
+flowchart TB
+    A[原始 Query] -->|送给 LLM| B[LLM 生成 N 个相关但角度不同的问题]
+    B --> C["把 [原 Query, Q1, Q2, ..., QN] 都送给检索系统"]
+    C -->|并行检索 → 去重| D[合并的文档集]
+    D --> E[送给 LLM 完成 RAG]
 ```
 
 ### 🧠 为什么 work？

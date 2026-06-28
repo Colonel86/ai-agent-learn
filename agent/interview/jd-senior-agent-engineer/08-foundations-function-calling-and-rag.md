@@ -16,19 +16,15 @@
 
 一轮完整的 tool_use 协议(以 Anthropic 的 `tool_use` / `tool_result` block 为例,字段名现查官网;OpenAI 是 `tool_calls` 数组 + `role:"tool"` 消息,机制相同):
 
-```
-① 你 → 模型:  messages + tools=[{name, description, input_schema}]
-② 模型 → 你:  stop_reason="tool_use"
-              content=[ {type:"text", ...可选思考},
-                        {type:"tool_use", id:"toolu_x", name:"get_weather",
-                         input:{"city":"北京"}} ]      ← 结构化;默认是「力求符合 schema」,
-                                                          严格保证要靠 strict:true(见 §1.5)
-③ 你执行 get_weather("北京") → "降水概率 70%"
-④ 你 → 模型:  把②的 assistant content 原样回填 +
-              新 user 消息 content=[ {type:"tool_result",
-                                      tool_use_id:"toolu_x",
-                                      content:"降水概率 70%"} ]
-⑤ 模型 → 你:  基于结果生成最终答案,stop_reason="end_turn"
+```mermaid
+sequenceDiagram
+    participant You as 你
+    participant Model as 模型
+    You->>Model: ① messages + tools=[{name, description, input_schema}]
+    Model->>You: ② stop_reason="tool_use"<br/>content=[ {type:"text", ...可选思考},<br/>{type:"tool_use", id:"toolu_x", name:"get_weather", input:{"city":"北京"}} ]<br/>← 结构化；默认是「力求符合 schema」,严格保证要靠 strict:true(见 §1.5)
+    Note over You: ③ 你执行 get_weather("北京") → "降水概率 70%"
+    You->>Model: ④ 把②的 assistant content 原样回填 +<br/>新 user 消息 content=[ {type:"tool_result", tool_use_id:"toolu_x", content:"降水概率 70%"} ]
+    Model->>You: ⑤ 基于结果生成最终答案,stop_reason="end_turn"
 ```
 
 **机制要点(经得起追问的细节):**
@@ -132,10 +128,16 @@ function calling 让模型吐**离散的、可枚举的**结构化调用;CodeAct
 
 RAG = 用检索把外部知识塞进 context 再生成。生产链路是八环管线,**离线建库**(① ~ ⑤)+ **在线查询**(⑥ ~ ⑧):
 
-```
-[离线建库]  ① ingest 摄取 → ② parse 解析 → ③ chunk 切分 → ④ embed 嵌入 → ⑤ index 入向量库
-[在线查询]  用户 query → ⑥ retrieve 召回(Bi-Encoder top-k) → ⑦ rerank 精排(Cross-Encoder)
-                                                                      → ⑧ generate 带证据生成
+```mermaid
+flowchart LR
+    subgraph Offline["[离线建库]"]
+        direction LR
+        I1["① ingest 摄取"] --> I2["② parse 解析"] --> I3["③ chunk 切分"] --> I4["④ embed 嵌入"] --> I5["⑤ index 入向量库"]
+    end
+    subgraph Online["[在线查询]"]
+        direction LR
+        Q["用户 query"] --> R6["⑥ retrieve 召回(Bi-Encoder top-k)"] --> R7["⑦ rerank 精排(Cross-Encoder)"] --> R8["⑧ generate 带证据生成"]
+    end
 ```
 
 每环的机制 + 关键取舍:
@@ -162,10 +164,10 @@ RAG = 用检索把外部知识塞进 context 再生成。生产链路是八环�
 
 RAG 的幻觉有两个互不相同的源头,**定位错了就修错地方**:
 
-```
-答案错/编造
- ├─ 检索环节:相关证据根本没召回来(Context Relevance 低)→ 修检索(chunk/embedding/top-k/rerank/hybrid)
- └─ 生成环节:证据召回了但模型没忠实使用 / 用自有知识盖过(Groundedness 低)→ 修 prompt/模型/约束引用
+```mermaid
+flowchart LR
+    A["答案错/编造"] --> B["检索环节:相关证据根本没召回来(Context Relevance 低)→ 修检索(chunk/embedding/top-k/rerank/hybrid)"]
+    A --> C["生成环节:证据召回了但模型没忠实使用 / 用自有知识盖过(Groundedness 低)→ 修 prompt/模型/约束引用"]
 ```
 
 这正是下面 RAG Triad 要分别量化的两件事。
@@ -245,13 +247,13 @@ def run_agent(user_input, max_iters=8):
 
 ### 3.2 RAG:最轻起步 → 升级路径
 
-```
-最轻:  单一 parser 直切 + Chroma + text-embedding-3-small(现查) + 两级切分 + 纯向量 top-k
-        → 跑通,用 RAG Triad 看哪个指标低
-召回不准:  加两阶段 → Bi-Encoder 宽召回 + Cross-Encoder/bge-reranker 精排
-仍不准:    查询侧 HyDE/Multi-Query;有专名术语 → Hybrid(BM25+向量,RRF 融合);上下文不全 → 父文档检索
-表格读错/扫描件读空:  升解析 → Docling/LlamaParse/VLM(摄取层,见 3-retrieval §0)
-多跳/全局归纳 且 关系密集:  评估 GraphRAG(否则别上)
+```mermaid
+flowchart LR
+    S1["最轻"] --> R1["单一 parser 直切 + Chroma + text-embedding-3-small(现查) + 两级切分 + 纯向量 top-k → 跑通,用 RAG Triad 看哪个指标低"]
+    S2["召回不准"] --> R2["加两阶段 → Bi-Encoder 宽召回 + Cross-Encoder/bge-reranker 精排"]
+    S3["仍不准"] --> R3["查询侧 HyDE/Multi-Query;有专名术语 → Hybrid(BM25+向量,RRF 融合);上下文不全 → 父文档检索"]
+    S4["表格读错/扫描件读空"] --> R4["升解析 → Docling/LlamaParse/VLM(摄取层,见 3-retrieval §0)"]
+    S5["多跳/全局归纳 且 关系密集"] --> R5["评估 GraphRAG(否则别上)"]
 ```
 
 最小检索骨架(伪码,体现「召回→精排→带证据生成」三段):
@@ -286,21 +288,22 @@ def rag_answer(query, k_recall=50, k_final=8):
 | 主要风险 | 召回不准 / 解析丢信息 | 注意力稀释("lost in the middle")、贵 | 灾难遗忘、数据准备贵、易过时 |
 
 **决策树:**
-```
-要改的是「知识」还是「行为/风格」?
- ├─ 行为/风格/固定格式  → 微调(或先用 few-shot + 结构化输出,够了就别训)
- └─ 知识
-      ├─ 量小且稳定        → 直接塞 context(配 prompt caching),别搭 RAG
-      ├─ 量大/会变/要溯源  → RAG
-      └─ 量中等、需跨全文全局推理、能接受贵 → 长 context;高频复用同一前缀 → 必上 prompt caching
+```mermaid
+flowchart TB
+    Q["要改的是「知识」还是「行为/风格」?"]
+    Q -->|"行为/风格/固定格式"| FT["微调(或先用 few-shot + 结构化输出,够了就别训)"]
+    Q -->|"知识"| K["知识"]
+    K -->|"量小且稳定"| C1["直接塞 context(配 prompt caching),别搭 RAG"]
+    K -->|"量大/会变/要溯源"| C2["RAG"]
+    K -->|"量中等、需跨全文全局推理、能接受贵"| C3["长 context;高频复用同一前缀 → 必上 prompt caching"]
 ```
 > ✅ 实战结论:三者**常组合**——RAG 供知识 + 微调定格式 + prompt caching 降本。面试别答「二选一」,要答「按『改知识还是改行为』分流,再谈成本」。
 
 ### 4.2 进阶检索:加法优先级(性价比从高到低)
 
-```
-Hybrid / Reranker  →  HyDE / Multi-Query  →  父文档检索  →  Embedding Adapter  →  GraphRAG
-   先加这俩            查询与文档措辞差距大      嵌入精/上下文全要解耦    有反馈数据         最重,放最后
+```mermaid
+flowchart LR
+    A["Hybrid / Reranker<br/>先加这俩"] --> B["HyDE / Multi-Query<br/>查询与文档措辞差距大"] --> C["父文档检索<br/>嵌入精/上下文全要解耦"] --> D["Embedding Adapter<br/>有反馈数据"] --> E["GraphRAG<br/>最重,放最后"]
 ```
 
 - **Hybrid(BM25 + 向量,RRF 融合)**:有专有名词/型号/代码符号时,纯向量会漏精确匹配,关键词召回补上。⭐ 性价比高。

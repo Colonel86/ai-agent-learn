@@ -32,16 +32,15 @@
 
 ## 端到端 Pipeline 全貌（EP08 总结的最终形态）
 
-```
-用户输入
-  │
-  ├─[1] Moderation（输入侧）          ← EP04
-  ├─[2] 提取类别 & 产品名              ← EP03 + EP06
-  ├─[3] 查询产品详情（RAG）            ← EP06
-  ├─[4] 生成回答（CoT + Inner Mono）   ← EP05
-  ├─[5] Moderation（输出侧）           ← EP07
-  ├─[6] 模型自评（可选兜底）           ← EP07
-  └─[7] 累积 all_messages → 返回用户   ← EP08
+```mermaid
+flowchart TB
+    U["用户输入"] --> S1["[1] Moderation（输入侧） ← EP04"]
+    S1 --> S2["[2] 提取类别 & 产品名 ← EP03 + EP06"]
+    S2 --> S3["[3] 查询产品详情（RAG） ← EP06"]
+    S3 --> S4["[4] 生成回答（CoT + Inner Mono） ← EP05"]
+    S4 --> S5["[5] Moderation（输出侧） ← EP07"]
+    S5 --> S6["[6] 模型自评（可选兜底） ← EP07"]
+    S6 --> S7["[7] 累积 all_messages → 返回用户 ← EP08"]
 ```
 
 围绕这条主线进行**离线评估**（EP09 + EP10），完成"开发 → 验证 → 迭代"的闭环。

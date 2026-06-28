@@ -67,13 +67,14 @@
 
 ## 五、速查：选型决策树
 
-```
-要评什么？
-├── 单条 prompt 改了想看回归  → Promptfoo / Braintrust
-├── RAG 系统                  → Ragas + Langfuse trace
-├── LangGraph Agent           → LangSmith（首选）/ Langfuse
-├── 跨框架 / 想自托管         → Phoenix + OpenTelemetry
-├── Pydantic 栈轻量需求       → pydantic-evals
-├── Agent 能力 benchmark      → Inspect AI + 公开 bench
-└── 企业合规 / SLA            → Galileo / Patronus
+```mermaid
+flowchart LR
+    R["要评什么？"]
+    R -->|"单条 prompt 改了想看回归"| A["Promptfoo / Braintrust"]
+    R -->|"RAG 系统"| B["Ragas + Langfuse trace"]
+    R -->|"LangGraph Agent"| C["LangSmith（首选）/ Langfuse"]
+    R -->|"跨框架 / 想自托管"| D["Phoenix + OpenTelemetry"]
+    R -->|"Pydantic 栈轻量需求"| E["pydantic-evals"]
+    R -->|"Agent 能力 benchmark"| F["Inspect AI + 公开 bench"]
+    R -->|"企业合规 / SLA"| G["Galileo / Patronus"]
 ```

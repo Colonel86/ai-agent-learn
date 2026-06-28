@@ -4,10 +4,11 @@
 
 使用 Embedding + Vector Store 实现对私有文档的问答，突破 LLM 上下文窗口限制。
 
-```
-文档 → Embedding → 向量数据库
-                        ↑
-用户提问 → 相似度搜索 → 召回相关片段 → LLM → 答案
+```mermaid
+flowchart LR
+    A[文档] --> B[Embedding] --> C[向量数据库]
+    D[用户提问] --> E[相似度搜索] --> F[召回相关片段] --> G[LLM] --> H[答案]
+    C --> E
 ```
 
 ## 快速开始

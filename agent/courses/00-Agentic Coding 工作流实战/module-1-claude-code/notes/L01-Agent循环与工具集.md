@@ -15,12 +15,9 @@
 
 **给 LLM 加上一个轻量级 harness（外壳）+ 一小组工具 + 一个运行环境**，让模型不止能"回答"，还能在你的代码库里**找文件、改文件、跑命令、组合多步任务**。
 
-```
-Model (Opus / Sonnet)
-    ↓
-Harness（CLI 外壳，提供 tools + env + memory）
-    ↓
-你的本地代码库
+```mermaid
+flowchart TB
+    A["Model (Opus / Sonnet)"] --> B["Harness（CLI 外壳，提供 tools + env + memory）"] --> C["你的本地代码库"]
 ```
 
 ### 1.2 为什么需要 harness
@@ -55,20 +52,11 @@ Harness（CLI 外壳，提供 tools + env + memory）
 
 接到任务后，Assistant 内部**反复迭代**三步，直到任务完成：
 
-```
-        ┌─────────────────────┐
-   ┌───▶│  ① Gather context   │  收集信息（读文件、跑命令、查文档）
-   │    └──────────┬──────────┘
-   │               ▼
-   │    ┌─────────────────────┐
-   │    │ ② Formulate a plan  │  形成计划（分解步骤、决定下一步动作）
-   │    └──────────┬──────────┘
-   │               ▼
-   │    ┌─────────────────────┐
-   │    │  ③ Take an action   │  执行动作（调用工具、修改文件、提交 PR）
-   │    └──────────┬──────────┘
-   │               │
-   └───────────────┘  Iterate（不满足条件则回到 ①）
+```mermaid
+flowchart TB
+    A["① Gather context<br/>收集信息（读文件、跑命令、查文档）"] --> B["② Formulate a plan<br/>形成计划（分解步骤、决定下一步动作）"]
+    B --> C["③ Take an action<br/>执行动作（调用工具、修改文件、提交 PR）"]
+    C -.->|"Iterate（不满足条件则回到 ①）"| A
 ```
 
 - 每一轮 Act 的结果都会成为下一轮 Gather 的新 context——**带反馈的循环**，这是 "Agent loop" 这个名字的由来。
@@ -88,25 +76,17 @@ Harness（CLI 外壳，提供 tools + env + memory）
 
 ### 4.2 典型时序（以"main.go 里写了啥"为例）
 
-```
-You                Coding Assistant                Language Model
- │                       │                              │
- │ ① "main.go 里写了啥?"  │                              │
- │ ─────────────────────▶│                              │
- │                       │ ② 转发问题 + 工具说明:        │
- │                       │   "若想读文件，请回复          │
- │                       │    'ReadFile: <文件名>'"      │
- │                       │ ────────────────────────────▶│
- │                       │ ③ 模型回复: "ReadFile:main.go"│
- │                       │ ◀────────────────────────────│
- │                       │ ④ harness 真去读文件，         │
- │                       │   把内容回填给模型:           │
- │                       │   "<main.go 的内容>"          │
- │                       │ ────────────────────────────▶│
- │ ⑥ 最终答案:           │ ⑤ 模型基于内容生成最终回答    │
- │   "main.go 用于初始化  │ ◀────────────────────────────│
- │    应用程序..."        │                              │
- │ ◀─────────────────────│                              │
+```mermaid
+sequenceDiagram
+    participant You
+    participant CA as Coding Assistant
+    participant LM as Language Model
+    You->>CA: ① "main.go 里写了啥?"
+    CA->>LM: ② 转发问题 + 工具说明:"若想读文件，请回复 'ReadFile: <文件名>'"
+    LM->>CA: ③ 模型回复: "ReadFile:main.go"
+    CA->>LM: ④ harness 真去读文件，把内容回填给模型:"<main.go 的内容>"
+    LM->>CA: ⑤ 模型基于内容生成最终回答
+    CA->>You: ⑥ 最终答案:"main.go 用于初始化应用程序..."
 ```
 
 ### 4.3 三方角色边界
@@ -180,20 +160,16 @@ Claude Code 开箱自带的工具不多，但够用：
 
 <img src="assets/L01-no-indexing.png" alt="不索引代码库示意：传统做法把 Your codebase 的 File A/B/C 上传到 Outside Server 形成结构化索引；Claude Code 不这样做，代码库始终留在本地" width="720">
 
-```
-传统索引方案                                Claude Code
-─────────────                              ──────────
-Your codebase     Outside Server           Your codebase
-   ┌────┐           ┌──────────────┐         ┌────┐
-   │File│  ──上传──▶│File A: dbs   │         │File│  ◀──Agent 现场
-   │ A  │           │File B: colors│         │ A  │     用 grep/read
-   ├────┤           │File C: parse │         ├────┤     按需读取
-   │File│           └──────────────┘         │File│
-   │ B  │           （结构化 index）          │ B  │   ⚠️ 永远不离开
-   ├────┤                                    ├────┤      本地
-   │File│                                    │File│
-   │ C  │                                    │ C  │
-   └────┘                                    └────┘
+```mermaid
+flowchart LR
+    subgraph 传统索引方案
+        direction TB
+        TF["Your codebase<br/>File A / B / C"] -->|上传| TS["Outside Server<br/>File A: dbs<br/>File B: colors<br/>File C: parse<br/>（结构化 index）"]
+    end
+    subgraph ClaudeCode["Claude Code"]
+        direction TB
+        CG["Agent 现场用 grep/read 按需读取"] -->|读取| CF["Your codebase<br/>File A / B / C<br/>⚠️ 永远不离开本地"]
+    end
 ```
 
 **三句话概括**：

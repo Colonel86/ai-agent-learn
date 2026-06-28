@@ -17,12 +17,10 @@ Cross-Encoder   ：交互最早——输入端就拼接做 attention    (full-in
 
 典型管线（漏斗式，把算力花在刀刃上）：
 
-```
-全库(百万+) ──Bi-Encoder / ANN──► Top-K(粗排, 快, 够全)
-                                      │
-                          Cross-Encoder 或 ColBERT 逐对/逐候选打分
-                                      │
-                                  Top-N(精排, 准)
+```mermaid
+flowchart TB
+    A["全库(百万+)"] -->|"Bi-Encoder / ANN"| B["Top-K(粗排, 快, 够全)"]
+    B -->|"Cross-Encoder 或 ColBERT 逐对/逐候选打分"| C["Top-N(精排, 准)"]
 ```
 
 ---
@@ -31,10 +29,12 @@ Cross-Encoder   ：交互最早——输入端就拼接做 attention    (full-in
 
 query 和 doc **分别独立编码**，编码时彼此「看不见」，最后只用一个向量的点积/余弦度量相关性。
 
-```
-query ──► Encoder ──► 向量 q  ┐
-                              ├──► cos(q, d) 相似度
-doc   ──► Encoder ──► 向量 d  ┘
+```mermaid
+flowchart LR
+    Q["query"] --> EQ["Encoder"] --> VQ["向量 q"]
+    D["doc"] --> ED["Encoder"] --> VD["向量 d"]
+    VQ --> S["cos(q, d) 相似度"]
+    VD --> S
 ```
 
 - ✅ **优点**：doc 向量可**离线预计算**存进向量库，检索时只算一次 query 编码 + ANN（近似最近邻），极快，能在亿级文档上跑。
@@ -46,14 +46,12 @@ doc   ──► Encoder ──► 向量 d  ┘
 
 把 query 和 doc **拼接在一起**送进同一个 Transformer，全程自注意力让两者在每一层做交叉交互。
 
-```
-输入:  [CLS] query 文本 [SEP] doc 文本 [SEP]
-        │
-        ▼
-   Transformer（query 每个 token 都能 attend 到 doc 每个 token，反之亦然）
-        │
-        ▼
-   取 [CLS] 输出 ──► 线性层 ──► 一个标量分数(相关性)
+```mermaid
+flowchart TB
+    A["输入: [CLS] query 文本 [SEP] doc 文本 [SEP]"]
+    B["Transformer（query 每个 token 都能 attend 到 doc 每个 token，反之亦然）"]
+    A --> B
+    B --> C["取 [CLS] 输出"] --> D["线性层"] --> E["一个标量分数(相关性)"]
 ```
 
 - ✅ **优点**：精度最高。模型不是「分别理解再比较」，而是「放在一起直接判断这段 doc 是否回答了这个 query」。
@@ -66,9 +64,10 @@ doc   ──► Encoder ──► 向量 d  ┘
 
 **C**ontextualized **L**ate Interaction over **BERT**。核心改动：编码时**不池化（no pooling）**，保留每个 token 的向量。
 
-```
-query ──► BERT ──► [q1, q2, ..., qNq]   向量矩阵 Nq × dim（不是 1 个向量）
-doc   ──► BERT ──► [d1, d2, ..., dM]    向量矩阵 Md × dim
+```mermaid
+flowchart LR
+    Q["query"] --> BQ["BERT"] --> MQ["[q1, q2, ..., qNq]<br/>向量矩阵 Nq × dim（不是 1 个向量）"]
+    D["doc"] --> BD["BERT"] --> MD["[d1, d2, ..., dM]<br/>向量矩阵 Md × dim"]
 ```
 
 query 和 doc **仍然独立编码**——所以 **doc 的 token 向量可离线预计算并建索引**（这是它能做检索的关键）。

@@ -319,14 +319,14 @@ response = agent.run_sync(prompt)
 
 ### 10.2 选型决策树
 
-```
-需要跨 LLM 厂商？
- ├── 是 → 需要 Agent 框架？
- │        ├── 是 → 🅳 PydanticAI
- │        └── 否 → 🅰 Instructor
- └── 否（仅 OpenAI）→ 用新版 API？
-          ├── 是 → 🅲 responses.parse
-          └── 否 → 🅱 chat.completions.parse
+```mermaid
+flowchart TB
+    A{"需要跨 LLM 厂商？"} -->|"是"| B{"需要 Agent 框架？"}
+    A -->|"否（仅 OpenAI）"| C{"用新版 API？"}
+    B -->|"是"| D["🅳 PydanticAI"]
+    B -->|"否"| E["🅰 Instructor"]
+    C -->|"是"| F["🅲 responses.parse"]
+    C -->|"否"| G["🅱 chat.completions.parse"]
 ```
 
 ### 10.3 核心概念术语速查

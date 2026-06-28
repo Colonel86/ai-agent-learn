@@ -30,18 +30,25 @@
 
 为什么非要在 agent 和真实工具之间加一层?因为模型输出是**概率的**(../1.md L0),而鉴权、限流、危险拦截、幂等必须是**确定性的**——你不能把"请不要越权""请别超预算"写进 prompt 指望模型自觉(那是 prompt,不是边界)。网关就是把这些确定性关注点**从每个工具实现里收口到一处**:
 
-```
-模型(概率) ──tool_call JSON──►【工具网关:确定性边界】──► 真实工具(DB/API/端侧)
-  name + args                    │                          凭证在这里"服务端注入"
-   ▲                             ├─① authN  你是谁?(身份来自 token/mTLS,不来自 prompt)
-   │                             ├─② authZ  你能调"这个"工具吗?(per-tool RBAC + scope)
-   │                             ├─③ 校验   args 合 JSON-Schema 吗?(schema 级 + 去未知字段)
-   │                             ├─④ 策略闸 危险动作?→挂 HITL 闸(策略本体见 07 章)
-   │                             ├─⑤ 限流   配额 + token 预算硬限(超限即拒)
-   │                             ├─⑥ 幂等   非幂等工具防重(idempotency key)
-   │                             ├─⑦ 执行   超时/重试/熔断/降级 + 注入凭证 + 端云路由
-   └──结构化结果 / 结构化错误◄─────┴─⑧ 审计   全程一个 span 落库(脱敏后)
-      (错误当数据回喂模型,不抛异常)
+```mermaid
+flowchart LR
+    M["模型(概率)<br/>name + args<br/>tool_call JSON"]
+    subgraph GW["工具网关:确定性边界"]
+        direction TB
+        S1["① authN 你是谁?<br/>(身份来自 token/mTLS,不来自 prompt)"]
+        S2["② authZ 你能调&quot;这个&quot;工具吗?<br/>(per-tool RBAC + scope)"]
+        S3["③ 校验 args 合 JSON-Schema 吗?<br/>(schema 级 + 去未知字段)"]
+        S4["④ 策略闸 危险动作?→挂 HITL 闸<br/>(策略本体见 07 章)"]
+        S5["⑤ 限流 配额 + token 预算硬限(超限即拒)"]
+        S6["⑥ 幂等 非幂等工具防重(idempotency key)"]
+        S7["⑦ 执行 超时/重试/熔断/降级 + 注入凭证 + 端云路由"]
+        S8["⑧ 审计 全程一个 span 落库(脱敏后)"]
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8
+    end
+    T["真实工具(DB/API/端侧)<br/>凭证在这里&quot;服务端注入&quot;"]
+    M -->|"tool_call JSON"| GW
+    GW --> T
+    GW -.->|"结构化结果 / 结构化错误<br/>(错误当数据回喂模型,不抛异常)"| M
 ```
 
 几个机制要点,经得起追问:
@@ -92,14 +99,15 @@ JD 要"打通端云协同接口"。架构上的关键不是"端做什么云做�
 
 ### 3.1 升级阶梯
 
-```
-L0 原型      框架原生 tool 装饰器,直接调用 + Pydantic 校验入参。无网关。       ~0 延迟
-   │  ← 单 agent、少量只读工具到这就够
-L1 要治理     in-process 中间件链(本节伪码):authN(进程内可信)→ authZ(白名单)
-   │          → schema 校验 → 审计日志。同进程。                              ~0 额外跳
-L2 多租户     抽成独立网关服务(sidecar 或中心服务):+ RBAC + scoped 凭证注入
-   │          + 限流/token 预算 + 幂等 store + 分布式 trace。                  +1 跳 ~1-5ms
-L3 跨厂商/端云 网关说 MCP(见 03)+ 端云路由 + outbox 对账;端侧热路径上 Rust。
+```mermaid
+flowchart TB
+    L0["L0 原型<br/>框架原生 tool 装饰器,直接调用 + Pydantic 校验入参。无网关。(~0 延迟)"]
+    L1["L1 要治理<br/>in-process 中间件链(本节伪码):authN(进程内可信)→ authZ(白名单)→ schema 校验 → 审计日志。同进程。(~0 额外跳)"]
+    L2["L2 多租户<br/>抽成独立网关服务(sidecar 或中心服务):+ RBAC + scoped 凭证注入 + 限流/token 预算 + 幂等 store + 分布式 trace。(+1 跳 ~1-5ms)"]
+    L3["L3 跨厂商/端云<br/>网关说 MCP(见 03)+ 端云路由 + outbox 对账;端侧热路径上 Rust。"]
+    L0 -->|"单 agent、少量只读工具到这就够"| L1
+    L1 --> L2
+    L2 --> L3
 ```
 
 ### 3.2 工具契约数据结构(Python / Pydantic)
@@ -242,19 +250,20 @@ gateway = compose([audit, authn, authz, validate, policy_gate, limit, execute])
 
 ### 4.2 选型轴
 
-```
-要不要独立网关服务?
-├─ 单 agent + 少量只读工具? ───────────────► 不要,in-process 中间件链够(L1)
-├─ 多 agent/多租户 共享工具 + 有副作用? ────► 要,独立 Gateway(L2)
-└─ 工具要跨框架/跨厂商/端云复用? ──────────► 网关说 MCP(L3,见 03)+ 端云路由
+```mermaid
+flowchart TB
+    Q1{"要不要独立网关服务?"}
+    Q1 -- "单 agent + 少量只读工具?" --> Q1A["不要,in-process 中间件链够(L1)"]
+    Q1 -- "多 agent/多租户 共享工具 + 有副作用?" --> Q1B["要,独立 Gateway(L2)"]
+    Q1 -- "工具要跨框架/跨厂商/端云复用?" --> Q1C["网关说 MCP(L3,见 03)+ 端云路由"]
 
-凭证怎么给?
-├─ 内部可信、低敏感? ──────────────────────► 网关持 long-lived key,服务端注入
-└─ 代表终端用户/受监管/blast radius 大? ───► OAuth Token Exchange 换短期下放 token
+    Q2{"凭证怎么给?"}
+    Q2 -- "内部可信、低敏感?" --> Q2A["网关持 long-lived key,服务端注入"]
+    Q2 -- "代表终端用户/受监管/blast radius 大?" --> Q2B["OAuth Token Exchange 换短期下放 token"]
 
-端还是云?(contract.runtime="either" 时)
-├─ 强隐私(PII 不出端)/ 离线 / 延迟敏感? ──► 端(端侧执行,云只收审计回执)
-└─ 重算力 / 统一治理 / 共享状态? ──────────► 云
+    Q3{"端还是云?(contract.runtime=either 时)"}
+    Q3 -- "强隐私(PII 不出端)/ 离线 / 延迟敏感?" --> Q3A["端(端侧执行,云只收审计回执)"]
+    Q3 -- "重算力 / 统一治理 / 共享状态?" --> Q3B["云"]
 ```
 
 ---

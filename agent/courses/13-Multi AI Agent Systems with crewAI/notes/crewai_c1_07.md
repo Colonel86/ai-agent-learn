@@ -22,8 +22,9 @@
 
 ### 1.1 最朴素的协作：顺序执行（Sequential）
 
-```
-Agent A → 输出 → Agent B → 输出 → Agent C → 最终输出
+```mermaid
+flowchart LR
+    A["Agent A"] -->|输出| B["Agent B"] -->|输出| C["Agent C"] --> D["最终输出"]
 ```
 
 ✅ 适合线性流水线（写博客、客户触达）
@@ -85,22 +86,13 @@ process=Process.hierarchical
 
 ## 2. 四 Agent 职责分工
 
-```
-┌─────────────────────┐
-│  Data Analyst       │  ← 监控市场数据、识别趋势
-└─────────────────────┘
-          ↓
-┌─────────────────────┐
-│  Trading Strategy   │  ← 基于数据制定策略
-└─────────────────────┘
-          ↓
-┌─────────────────────┐
-│  Trade Advisor      │  ← 时机/价格/执行计划
-└─────────────────────┘
-          ↓
-┌─────────────────────┐
-│  Risk Advisor       │  ← 风险评估 + 缓解建议
-└─────────────────────┘
+```mermaid
+flowchart TB
+    A["Data Analyst<br/>（监控市场数据、识别趋势）"]
+    B["Trading Strategy<br/>（基于数据制定策略）"]
+    C["Trade Advisor<br/>（时机/价格/执行计划）"]
+    D["Risk Advisor<br/>（风险评估 + 缓解建议）"]
+    A --> B --> C --> D
 ```
 
 ## 3. 🔥 层级协作现场观察
@@ -148,13 +140,15 @@ process=Process.hierarchical
 
 ## 4. 课程进阶脉络回顾
 
-```
-L2  写博客 Crew（3 Agent，最简）
-  → L3  客服 Crew（引入 Cooperation/Memory）
-  → L4  销售触达 Crew（引入 Tools/自定义 Tool）
-  → L5  活动策划 Crew（引入 Pydantic/Async/Human Input）
-  → L6  金融分析 Crew（引入 Hierarchical Process）
-  → L7  简历定制 Crew（综合实战）⬇
+```mermaid
+flowchart TB
+    L2["L2 写博客 Crew（3 Agent，最简）"]
+    L3["L3 客服 Crew（引入 Cooperation/Memory）"]
+    L4["L4 销售触达 Crew（引入 Tools/自定义 Tool）"]
+    L5["L5 活动策划 Crew（引入 Pydantic/Async/Human Input）"]
+    L6["L6 金融分析 Crew（引入 Hierarchical Process）"]
+    L7["L7 简历定制 Crew（综合实战）"]
+    L2 --> L3 --> L4 --> L5 --> L6 --> L7
 ```
 
 ---
@@ -401,17 +395,15 @@ interview_preparation_task = Task(
 
 ## 5. 🎯 这个 Crew 的任务依赖图（DAG）
 
-```
-     research_task (async)    profile_task (async)
-            │                        │
-            └────────────┬───────────┘
-                         ▼
-                resume_strategy_task
-              (context=[research, profile])
-                         │
-                         ▼
-             interview_preparation_task
-     (context=[research, profile, resume_strategy])
+```mermaid
+flowchart TB
+    R["research_task (async)"]
+    P["profile_task (async)"]
+    S["resume_strategy_task<br/>(context=[research, profile])"]
+    I["interview_preparation_task<br/>(context=[research, profile, resume_strategy])"]
+    R --> S
+    P --> S
+    S --> I
 ```
 
 ✨ **精髓**：

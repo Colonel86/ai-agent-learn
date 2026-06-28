@@ -21,19 +21,15 @@
 
 完整的"检索增强生成（RAG）"端到端流程：
 
-```
-原始文档（Documents）
-    ↓
-切分（Splits）
-    ↓
-为每个 split 生成嵌入（Embeddings）
-    ↓
-存入向量库（Vector Store）
-    ↓
-==================== 查询时 ====================
-用户问题 → 生成 embedding → 与库中向量比较 → 取 Top-K 相似 chunk
-    ↓
-[Top-K chunks + 问题] → LLM → 答案
+```mermaid
+flowchart TB
+    A["原始文档（Documents）"] --> B["切分（Splits）"]
+    B --> C["为每个 split 生成嵌入（Embeddings）"]
+    C --> D["存入向量库（Vector Store）"]
+    D -->|查询时| E[用户问题]
+    E --> F["生成 embedding"] --> G[与库中向量比较] --> H[取 Top-K 相似 chunk]
+    H --> I["[Top-K chunks + 问题]"] --> J[LLM] --> K[答案]
+    D -.-> G
 ```
 
 ---

@@ -16,30 +16,16 @@
 
 ## 二、整体架构
 
-```
-                 ┌───────────┐
-       start →   │  planner  │   生成大纲
-                 └─────┬─────┘
-                       ▼
-                ┌──────────────┐
-                │ research_plan│   基于大纲生成查询 → Tavily → 收集文档
-                └──────┬───────┘
-                       ▼
-                 ┌───────────┐ ◄──────────┐
-                 │ generate  │            │
-                 └─────┬─────┘            │
-                       ▼                  │
-                should_continue            │
-                  ├── END ──► 结束         │
-                  └── reflect ──► ┌─────────────┐
-                                  │   reflect   │   生成 critique
-                                  └──────┬──────┘
-                                         ▼
-                                ┌───────────────────┐
-                                │ research_critique │   基于 critique 再查 → 追加文档
-                                └───────────────────┘
-                                         │
-                                         └────► 回到 generate
+```mermaid
+flowchart TB
+    start(["start"]) --> planner["planner<br/>生成大纲"]
+    planner --> research_plan["research_plan<br/>基于大纲生成查询 → Tavily → 收集文档"]
+    research_plan --> generate["generate"]
+    generate --> sc{"should_continue"}
+    sc -->|"END"| END(["结束"])
+    sc -->|"reflect"| reflect["reflect<br/>生成 critique"]
+    reflect --> research_critique["research_critique<br/>基于 critique 再查 → 追加文档"]
+    research_critique -->|"回到 generate"| generate
 ```
 
 **五个节点 + 一条条件边**：

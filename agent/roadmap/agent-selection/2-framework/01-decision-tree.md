@@ -22,52 +22,31 @@
 
 ## 主决策树
 
-```
-Q-1. 上游前置问:先定"动作范式"(最上游分叉,先于框架/沙箱/观测)——agent 靠什么"动手"?详见 ../0-action-paradigm.md
-│
-├─ function-calling(默认 / 最轻起步)→ 工具=结构化函数调用;无需沙箱,直接往下走
-├─ CodeAct(让 LLM 写代码当动作)→ 需代码执行沙箱(隔离/超时/资源限额);观测要抓 stdout/异常
-└─ computer-use / browser-use(操控桌面/浏览器)→ 需虚拟桌面或受控浏览器 + 强护栏(权限/确认/录屏)
-       │
-       └─ ⚠️ 动作范式决定框架/沙箱/观测形态,必须先定;定完动作范式再走下面的"厂商约束前置问"与"系统形状 Q0"
-
-前置过滤(先于 Q0,正交维度别和"系统形状"混在一层):有无强制厂商约束?
-│
-├─ 有(合规 / 已有云合同 / 团队栈已锁定某厂商)→ 直接进对应官方 SDK:
-│       ├─ 全程 OpenAI → 【OpenAI Agents SDK】
-│       ├─ 全程 Anthropic → 【Anthropic SDK + 自建循环】(或 Claude Agent SDK)
-│       └─ 全程 Google/Gemini → 【Google ADK】
-│       ⚠️ 官方 SDK ≠ 锁死模型层:如 OpenAI Agents SDK 实为 provider-agnostic,官方经
-│          LiteLLM / Chat Completions 支持 100+ 模型;真正的锁定是软锁(tracing 默认上传
-│          OpenAI、Responses API 原生特性、hosted tools / Guardrails 生态),不在模型层
-│
-└─ 无 → 按下面"系统形状"走 Q0(A–D)
-
-Q0. 这个系统的"形状"本质是什么?
-│
-├─ A. 只要把 LLM 输出变成可靠的结构化数据(抽取/分类/改写),工具很少或没有
-│      → 【裸 SDK + 类型层】  Anthropic/OpenAI SDK + Pydantic AI / Instructor
-│      → 不要上重框架。理由:没有编排需求,框架只是负担。
-│
-├─ B. 核心是"问知识库/文档",检索质量是成败关键(RAG-first)
-│      │
-│      ├─ 主要是检索+生成,流程相对固定
-│      │     → 【LlamaIndex】(数据连接器最全) 或 【Haystack】(管线工程化最强)
-│      │
-│      └─ 检索要"自主决策"(agent 决定查不查、查哪个索引、要不要 web fallback)
-│            → 【LlamaIndex(Agentic RAG)】 或 【Haystack(ConditionalRouter)】
-│            → 若同时要复杂状态控制,转 Q1 用 LangGraph + 检索工具
-│
-├─ C. 多个"角色/专家"协作完成一件事(规划者+执行者+评审者…)
-│      │
-│      ├─ 角色边界清晰、偏"团队分工"心智 → 【crewAI】(角色/任务抽象最直观)
-│      ├─ 偏"对话式协作/可编程编排"      → 【MAF】或【AG2】
-│      │      → 原版 AutoGen 已转**维护模式**(仅修 bug/安全);官方继任 **Microsoft Agent Framework(MAF)1.0**(AutoGen+Semantic Kernel 合并,2026-04 GA,Python+.NET,原生 MCP/A2A),**AG2** 为原作者社区分叉、仍活跃
-│      │      → 多 agent 新项目优先 **crewAI 或 MAF**,AutoGen/AG2 仅适合 PoC
-│      └─ 要对每个 agent 的状态与转移精细控制 → 【LangGraph(多 agent 图)】
-│
-└─ D. 单 agent,但流程复杂:有分支、循环、反思、Human-in-the-Loop、需要可恢复
-       → 转 Q1
+```mermaid
+flowchart TB
+    Qm1{"Q-1. 上游前置问:先定'动作范式'(最上游分叉,先于框架/沙箱/观测)——agent 靠什么'动手'?详见 ../0-action-paradigm.md"}
+    Qm1 -->|"function-calling(默认/最轻起步)"| FC["工具=结构化函数调用;无需沙箱,直接往下走"]
+    Qm1 -->|"CodeAct(让 LLM 写代码当动作)"| CA["需代码执行沙箱(隔离/超时/资源限额);观测要抓 stdout/异常"]
+    Qm1 -->|"computer-use/browser-use(操控桌面/浏览器)"| CU["需虚拟桌面或受控浏览器+强护栏(权限/确认/录屏)"]
+    FC --> WARN["⚠️ 动作范式决定框架/沙箱/观测形态,必须先定;定完再走'厂商约束前置问'与'系统形状 Q0'"]
+    CA --> WARN
+    CU --> WARN
+    WARN --> PF{"前置过滤(先于 Q0,正交维度别和'系统形状'混在一层):有无强制厂商约束?"}
+    PF -->|"有(合规/已有云合同/团队栈已锁定某厂商)"| V{"直接进对应官方 SDK"}
+    V -->|"全程 OpenAI"| V1["【OpenAI Agents SDK】"]
+    V -->|"全程 Anthropic"| V2["【Anthropic SDK+自建循环】(或 Claude Agent SDK)"]
+    V -->|"全程 Google/Gemini"| V3["【Google ADK】"]
+    V -.-> VNOTE["⚠️ 官方 SDK≠锁死模型层:如 OpenAI Agents SDK 实为 provider-agnostic,官方经 LiteLLM/Chat Completions 支持 100+ 模型;真正的锁定是软锁(tracing 默认上传 OpenAI、Responses API 原生特性、hosted tools/Guardrails 生态),不在模型层"]
+    PF -->|"无"| Q0{"Q0. 这个系统的'形状'本质是什么?"}
+    Q0 -->|"A. 把 LLM 输出变成可靠的结构化数据(抽取/分类/改写),工具很少或没有"| AA["【裸 SDK+类型层】 Anthropic/OpenAI SDK+Pydantic AI/Instructor<br/>不要上重框架。理由:没有编排需求,框架只是负担"]
+    Q0 -->|"B. 核心是'问知识库/文档',检索质量是成败关键(RAG-first)"| B{"检索怎么走?"}
+    B -->|"主要是检索+生成,流程相对固定"| B1["【LlamaIndex】(数据连接器最全) 或 【Haystack】(管线工程化最强)"]
+    B -->|"检索要'自主决策'(agent 决定查不查、查哪个索引、要不要 web fallback)"| B2["【LlamaIndex(Agentic RAG)】 或 【Haystack(ConditionalRouter)】<br/>若同时要复杂状态控制,转 Q1 用 LangGraph+检索工具"]
+    Q0 -->|"C. 多个'角色/专家'协作完成一件事(规划者+执行者+评审者…)"| C{"协作心智?"}
+    C -->|"角色边界清晰、偏'团队分工'心智"| C1["【crewAI】(角色/任务抽象最直观)"]
+    C -->|"偏'对话式协作/可编程编排'"| C2["【MAF】或【AG2】<br/>原版 AutoGen 已转维护模式(仅修 bug/安全);官方继任 Microsoft Agent Framework(MAF)1.0(AutoGen+Semantic Kernel 合并,2026-04 GA,Python+.NET,原生 MCP/A2A),AG2 为原作者社区分叉、仍活跃。多 agent 新项目优先 crewAI 或 MAF,AutoGen/AG2 仅适合 PoC"]
+    C -->|"要对每个 agent 的状态与转移精细控制"| C3["【LangGraph(多 agent 图)】"]
+    Q0 -->|"D. 单 agent,但流程复杂:有分支、循环、反思、Human-in-the-Loop、需要可恢复"| D["转 Q1"]
 ```
 
 ---

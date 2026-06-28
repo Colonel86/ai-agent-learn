@@ -39,12 +39,10 @@ Anthropic 这套指南是 **Claude 专属** 的，有一些重要差异：
 
 Claude 的提示有两个主要位置：
 
-```
-System Prompt（系统提示）
-  └─ 角色设定、背景规则、输出格式要求、固定上下文
-
-Human Turn（用户轮次）
-  └─ 具体任务、数据、当前问题
+```mermaid
+flowchart TB
+    SP["System Prompt（系统提示）"] --> SPC["角色设定、背景规则、输出格式要求、固定上下文"]
+    HT["Human Turn（用户轮次）"] --> HTC["具体任务、数据、当前问题"]
 ```
 
 **与 OpenAI 对比**：

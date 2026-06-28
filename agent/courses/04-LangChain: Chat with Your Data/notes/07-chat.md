@@ -22,16 +22,16 @@
 
 ## 2. 核心思想
 
-```
-                       chat_history（历史消息）
-                              ↓
-用户问题 ───────────► [合并历史 → 重写为独立问题] ───► retriever ───► docs
-                                          ↓                              ↓
-                                      stand-alone question      检索到的相关文档
-                                                          ↓
-                                           [docs + 原问题] → LLM → 答案
-                                                          ↓
-                                               把 (问题, 答案) 追加到 chat_history
+```mermaid
+flowchart TB
+    CH["chat_history（历史消息）"] --> MERGE["[合并历史 → 重写为独立问题]"]
+    Q[用户问题] --> MERGE
+    MERGE -->|stand-alone question| R[retriever]
+    R --> D["docs / 检索到的相关文档"]
+    D --> COMB["[docs + 原问题]"]
+    COMB --> LLM[LLM] --> ANS[答案]
+    ANS --> APPEND["把 (问题, 答案) 追加到 chat_history"]
+    APPEND -.-> CH
 ```
 
 **关键变化：** `ConversationalRetrievalChain` 在 `RetrievalQA` 的基础上多了一步——**用 LLM 把"对话历史 + 新问题"压缩成一个独立的查询**，再去做检索和问答。

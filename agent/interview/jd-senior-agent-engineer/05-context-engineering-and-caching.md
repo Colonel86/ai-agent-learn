@@ -109,18 +109,19 @@ Memory Tool(类型 `memory_20250818`,**client-side** 执行):模型通过 `view/
 
 这是整章最该背下来的一张图——**context 窗口从前到后,按变动频率分区**:
 
-```
-context 窗口(渲染顺序:tools → system → messages,从前到后)
-┌──────────────────────────────────────────────────────────────┐
-│ [tools 定义] [system prompt] [长知识 / few-shot]   ← 稳定前缀   │ ← Prompt Caching 命中
-│                              ↑ cache_control 断点              │   cache_read ≈ 0.1×
-├──────────────────────────────────────────────────────────────┤
-│ [对话历史 / 一大堆 tool_result … 膨胀区]            ← 中段       │ ← Context Editing
-│                                                                │   清理 stale tool_result
-├──────────────────────────────────────────────────────────────┤
-│ [本轮 user 输入 / 时间戳 / 变动部分]                ← 尾部       │ ← 永不缓存(每次都变)
-└──────────────────────────────────────────────────────────────┘
-        ↕ 跨会话长期记忆 → Memory Tool 搬到 /memories 文件,按需拉回
+```mermaid
+flowchart TB
+    subgraph CW["context 窗口(渲染顺序:tools → system → messages,从前到后)"]
+        direction TB
+        Z1["稳定前缀<br/>[tools 定义] [system prompt] [长知识 / few-shot]<br/>↑ cache_control 断点"]
+        Z2["中段<br/>[对话历史 / 一大堆 tool_result … 膨胀区]"]
+        Z3["尾部<br/>[本轮 user 输入 / 时间戳 / 变动部分]"]
+        Z1 --- Z2 --- Z3
+    end
+    Z1 -.->|"Prompt Caching 命中(cache_read ≈ 0.1×)"| PC["Prompt Caching"]
+    Z2 -.->|"清理 stale tool_result"| CE["Context Editing"]
+    Z3 -.->|"永不缓存(每次都变)"| NC["每次都变"]
+    CW -.->|"跨会话长期记忆 → 搬到 /memories 文件,按需拉回"| MT["Memory Tool"]
 ```
 
 **为什么顺序错了全 miss**:KV 位置相关(§1.2)。只要你把一个会变的东西(`datetime.now()`、user_id、未排序的 `json.dumps`)放进了前缀,从它往后的 KV 每次都不同,**断点后面的缓存永远命中不了**。
@@ -199,16 +200,17 @@ resp = client.messages.create(
 
 ### 3.5 最轻起步 → 升级路径
 
-```
-⓪ 裸跑量基线   先不优化,跑一版量真实 $/任务 与 token 构成(→ 8-cost-economics 阶梯⓪)
-   │ 有稳定大前缀 + 重复复用
-① Prompt Caching ⭐  断点放稳定前缀末尾;盯 cache_read 验证命中 ← 几乎零质量损失,最先做
-   │ 长 agent run,tool_result 撑爆窗口
-② Context Editing    自动清旧 tool_result;注意它会改前缀→触发一次 cache rewrite(见 §6)
-   │ 接近窗口上限还停不下来
-③ Compaction         摘要早期历史(有信息损失,谨慎)
-   │ 跨会话要长期记忆
-④ Memory Tool        把长期事实搬到 /memories,按需召回(省窗口;实现存储+路径校验)
+```mermaid
+flowchart TB
+    S0["⓪ 裸跑量基线<br/>先不优化,跑一版量真实 $/任务 与 token 构成(→ 8-cost-economics 阶梯⓪)"]
+    S1["① Prompt Caching ⭐<br/>断点放稳定前缀末尾;盯 cache_read 验证命中 ← 几乎零质量损失,最先做"]
+    S2["② Context Editing<br/>自动清旧 tool_result;注意它会改前缀→触发一次 cache rewrite(见 §6)"]
+    S3["③ Compaction<br/>摘要早期历史(有信息损失,谨慎)"]
+    S4["④ Memory Tool<br/>把长期事实搬到 /memories,按需召回(省窗口;实现存储+路径校验)"]
+    S0 -->|"有稳定大前缀 + 重复复用"| S1
+    S1 -->|"长 agent run,tool_result 撑爆窗口"| S2
+    S2 -->|"接近窗口上限还停不下来"| S3
+    S3 -->|"跨会话要长期记忆"| S4
 ```
 
 > 口诀:**先量化、再优化;缓存几乎零损先做,删除/摘要有损后做,外移(memory)是结构性手术最后做。**

@@ -13,15 +13,15 @@ This skill encodes battle-tested decisions for Pydantic-centric Python AI agent 
 
 ### 决策 A：Structured Output 怎么拿？
 
-```
-要不要做 Agent（多步 / 工具调用）？
-├── 否，只要单次拿 JSON
-│    ├── 仅 OpenAI    → client.responses.parse + Pydantic
-│    │                  （或 chat.completions.parse，无 beta）
-│    ├── 仅 Anthropic → tool_use + tool_choice 强制单工具 + Pydantic 校验
-│    ├── 跨 provider  → instructor 库
-│    └── 自托管模型   → vLLM / SGLang + xgrammar (guided_json=schema)
-└── 是，要做 Agent → 跳到决策 B
+```mermaid
+flowchart LR
+    R["要不要做 Agent（多步 / 工具调用）？"]
+    R -->|"否，只要单次拿 JSON"| J["只要单次拿 JSON"]
+    J -->|"仅 OpenAI"| O["client.responses.parse + Pydantic<br/>（或 chat.completions.parse，无 beta）"]
+    J -->|"仅 Anthropic"| AN["tool_use + tool_choice 强制单工具 + Pydantic 校验"]
+    J -->|"跨 provider"| CP["instructor 库"]
+    J -->|"自托管模型"| SH["vLLM / SGLang + xgrammar (guided_json=schema)"]
+    R -->|"是，要做 Agent"| B["跳到决策 B"]
 ```
 
 **禁止**：
@@ -31,28 +31,27 @@ This skill encodes battle-tested decisions for Pydantic-centric Python AI agent 
 
 ### 决策 B：Agent 框架怎么选？
 
-```
-团队主语言是 Python？
-├── 否 → 跳出本 skill 范围（Vercel AI SDK / Mastra）
-└── 是 → 锁定一家厂商吗？
-         ├── 只用 OpenAI       → OpenAI Agents SDK
-         ├── 只用 Anthropic    → Claude Agent SDK
-         ├── 跨 provider 或追求工程化 → PydanticAI（推荐默认）
-         └── 已深度投入 LangChain → LangGraph（迁移成本高才坚持）
+```mermaid
+flowchart LR
+    R["团队主语言是 Python？"]
+    R -->|"否"| X["跳出本 skill 范围（Vercel AI SDK / Mastra）"]
+    R -->|"是"| V["锁定一家厂商吗？"]
+    V -->|"只用 OpenAI"| O["OpenAI Agents SDK"]
+    V -->|"只用 Anthropic"| C["Claude Agent SDK"]
+    V -->|"跨 provider 或追求工程化"| P["PydanticAI（推荐默认）"]
+    V -->|"已深度投入 LangChain"| L["LangGraph（迁移成本高才坚持）"]
 ```
 
 **为什么默认 PydanticAI**：类型贯穿、依赖注入（DI）、pydantic-evals、Logfire（OTel 原生）、跨 provider。除非有强约束，新项目首选它。
 
 ### 决策 C：工具协议用什么？
 
-```
-工具是项目内部 Python 函数？
-└── 用框架原生 @tool 装饰器（PydanticAI / Agents SDK / Claude SDK）
-
-工具要跨进程 / 跨语言 / 复用给多个 agent？
-└── 用 MCP（Model Context Protocol）—— 2025 已成事实标准
-   - 暴露端：写 MCP Server
-   - 消费端：客户端连接 MCP Server
+```mermaid
+flowchart LR
+    Q1["工具是项目内部 Python 函数？"] --> A1["用框架原生 @tool 装饰器（PydanticAI / Agents SDK / Claude SDK）"]
+    Q2["工具要跨进程 / 跨语言 / 复用给多个 agent？"] --> A2["用 MCP（Model Context Protocol）—— 2025 已成事实标准"]
+    A2 --> S1["暴露端：写 MCP Server"]
+    A2 --> S2["消费端：客户端连接 MCP Server"]
 ```
 
 **禁止**：用 LangChain `Tool` 包装本可直接用框架原生装饰器的纯函数。

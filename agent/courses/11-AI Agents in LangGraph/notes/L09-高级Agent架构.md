@@ -22,10 +22,12 @@
 - 本质：**同一个 state 在 agent 之间传递**。
 
 ### 示意
-```
-[ Agent A ]──►[ Agent B ]──►[ Agent C ]
-     \_________________________/
-            共享 State
+```mermaid
+flowchart LR
+    A["Agent A"] --> B["Agent B"] --> C["Agent C"]
+    S["共享 State"] -.- A
+    S -.- B
+    S -.- C
 ```
 
 L07 的 Essay Writer 就是这种模式的朴素实现——所有节点读写同一个 `AgentState`。
@@ -49,14 +51,17 @@ L07 的 Essay Writer 就是这种模式的朴素实现——所有节点读写�
 > 因为 supervision 和 planning 本身需要极高的推理能力。
 
 ### 示意
-```
-           ┌─────────────┐
-           │ Supervisor  │ ←── 强 LLM，做路由
-           └──────┬──────┘
-        ┌────────┼────────┐
-        ▼        ▼        ▼
-   [Sub-Agent] [Sub-Agent] [Sub-Agent]
-   （各自独立的 graph，有自己的 state）
+```mermaid
+flowchart TB
+    S["Supervisor（强 LLM，做路由）"]
+    subgraph subs["各自独立的 graph，有自己的 state"]
+        A1["Sub-Agent"]
+        A2["Sub-Agent"]
+        A3["Sub-Agent"]
+    end
+    S --> A1
+    S --> A2
+    S --> A3
 ```
 
 ---

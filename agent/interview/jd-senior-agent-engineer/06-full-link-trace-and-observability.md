@@ -63,11 +63,9 @@ tracestate: 厂商私有 KV(可选,放各家自己的扩展)
 
 一条 trace 在生命周期里有**三种表示**(对齐 `../1.md` 里"运行时/持久化/拼进 prompt 是三件事"的同款心智):
 
-```
-运行时表示          导出表示             存储表示
-(进程内 OTel Context) → (OTLP 协议) → (列存表的行 / 对象存储的 blob)
- contextvars 里的 span   gRPC :4317        ClickHouse 一行=一个 span
-                         HTTP :4318        S3 里一个 {trace}/{span}.json
+```mermaid
+flowchart LR
+    A["运行时表示<br/>(进程内 OTel Context)<br/>contextvars 里的 span"] -->|"OTLP 协议"| B["导出表示<br/>gRPC :4317<br/>HTTP :4318"] --> C["存储表示<br/>(列存表的行 / 对象存储的 blob)<br/>ClickHouse 一行=一个 span<br/>S3 里一个 {trace}/{span}.json"]
 ```
 
 **「落库」的本质**:span 通过 **OTLP**(OpenTelemetry Protocol,默认端口 gRPC `4317` / HTTP `4318`,✅ 稳定)吐给后端,后端把它**写成可查询、可聚合、可长期留存的数据**——不是看完就丢的实时流。这一步决定了你能不能"按 prompt 版本 group by 算 P95 成本""把上周所有失败 trace 捞出来回流成 eval 样本"。**这正是本章相对 `5-observability-eval.md` 要补深的地方:它讲透了"span 怎么产生",但"span 落哪、怎么存得起、怎么查得动"较薄。**
@@ -102,41 +100,28 @@ tracestate: 厂商私有 KV(可选,放各家自己的扩展)
 
 ### 3.1 架构图:埋点 → Collector → 双扇出(看 + 分析)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Agent 进程(Run Loop / Orchestrator–Workers)                  │
-│   埋点:auto-instrument(OpenInference / OpenLLMetry)拿 80%      │
-│         + 关键自定义节点手标少量 OTel span                       │
-│   父子缝合:进程内 OTel Context;跨服务 inject(traceparent)       │
-└───────────────┬─────────────────────────────────────────────┘
-                │ OTLP(gRPC :4317 / HTTP :4318)
-                ▼
-┌─────────────────────────────────────────────────────────────┐
-│  OTel Collector  ← 旁路缓冲,别让导出阻塞主链路                   │
-│   processor: batch          攒批再发,降导出开销                  │
-│   processor: redaction/attr PII 脱敏、删敏感字段(入库前!)        │
-│   processor: tail_sampling   全 error/慢/高成本留,正常按比例采    │
-└───────┬──────────────────────────────────┬──────────────────┘
-        │ 多 exporter 扇出                   │
-        ▼                                    ▼
-┌──────────────────────┐         ┌──────────────────────────────┐
-│ 可观测后端(人看/debug)│         │ 数仓 / 列存(机器分析/回归/飞轮) │
-│ Langfuse / Phoenix    │         │ ClickHouse / BigQuery          │
-│ / LangSmith           │         │ / S3+Parquet(冷存归档)         │
-└──────────────────────┘         └──────────────────────────────┘
+```mermaid
+flowchart TB
+    A["Agent 进程(Run Loop / Orchestrator–Workers)<br/>埋点:auto-instrument(OpenInference / OpenLLMetry)拿 80%<br/>+ 关键自定义节点手标少量 OTel span<br/>父子缝合:进程内 OTel Context;跨服务 inject(traceparent)"]
+    B["OTel Collector ← 旁路缓冲,别让导出阻塞主链路<br/>processor: batch 攒批再发,降导出开销<br/>processor: redaction/attr PII 脱敏、删敏感字段(入库前!)<br/>processor: tail_sampling 全 error/慢/高成本留,正常按比例采"]
+    C["可观测后端(人看/debug)<br/>Langfuse / Phoenix / LangSmith"]
+    D["数仓 / 列存(机器分析/回归/飞轮)<br/>ClickHouse / BigQuery / S3+Parquet(冷存归档)"]
+    A -->|"OTLP(gRPC :4317 / HTTP :4318)"| B
+    B -->|"多 exporter 扇出"| C
+    B -->|"多 exporter 扇出"| D
 ```
 
 > ⚠️ Collector 不是必须的第一步——SDK 可直发后端。但**一旦上生产、要做脱敏/采样/多后端扇出/削峰**,Collector 这层旁路就值得加(它把"埋点"和"后端"彻底解耦)。
 
 ### 3.2 最轻起步 → 升级路径
 
-```
-学习/想最快看见整棵树  → Phoenix 本地 pip 起 + OpenInference 自动埋点(零账号、纯 OSS)
-已用 LangChain/LangGraph → LangSmith,设俩环境变量全自动(埋点+后端一体,最省心)
-要上生产 + 不锁定 + 数据不出域
-  → OTel(OpenLLMetry/OpenInference)埋点 + Langfuse 自托管(后端可换是保险)
-  └─ 量上来要脱敏/采样/扇出数仓 → 中间加 OTel Collector
-  └─ auto-instrument 盖不到的关键自定义段 → 再手标少量 OTel span(别一上来手搓)
+```mermaid
+flowchart LR
+    S1["学习/想最快看见整棵树"] --> R1["Phoenix 本地 pip 起 + OpenInference 自动埋点(零账号、纯 OSS)"]
+    S2["已用 LangChain/LangGraph"] --> R2["LangSmith,设俩环境变量全自动(埋点+后端一体,最省心)"]
+    S3["要上生产 + 不锁定 + 数据不出域"] --> R3["OTel(OpenLLMetry/OpenInference)埋点 + Langfuse 自托管(后端可换是保险)"]
+    R3 --> R3a["量上来要脱敏/采样/扇出数仓 → 中间加 OTel Collector"]
+    R3 --> R3b["auto-instrument 盖不到的关键自定义段 → 再手标少量 OTel span(别一上来手搓)"]
 ```
 
 ### 3.3 关键代码 1:手标一个 LLM span(把归因字段钉进属性)
@@ -287,34 +272,26 @@ service:
 
 这是面试讲"落库"最能体现深度的具体案例——**为什么不是一个 Postgres 搞定**:
 
-```
-SDK 批量上报 traces
-   │ ① 先整批写 S3/Blob(原始事件 + 多模态 + 大 payload 落对象存储)
-   ▼
-Langfuse Web 容器  ──②只把"引用"塞进 Redis 队列(削峰、非阻塞、可重试)
-   │
-   ▼
-Langfuse Worker 容器 ──③从 S3 取出、异步 ingest 进 ClickHouse
-   │
-   ├─► ClickHouse(OLAP 列存):traces / observations / scores —— 海量、写多、要大范围聚合
-   ├─► Postgres(事务型):projects / users / prompt 注册表 / dataset 配置 —— 强一致、关系型
-   ├─► Redis/Valkey:摄取队列 + API key 缓存(每次请求不打 DB)
-   └─► S3/Blob:所有原始事件 + 大导出
+```mermaid
+flowchart TB
+    A["SDK 批量上报 traces"] -->|"① 先整批写 S3/Blob(原始事件 + 多模态 + 大 payload 落对象存储)"| B["Langfuse Web 容器"]
+    B -->|"② 只把『引用』塞进 Redis 队列(削峰、非阻塞、可重试)"| C["Langfuse Worker 容器"]
+    C -->|"③ 从 S3 取出、异步 ingest 进 ClickHouse"| D["ClickHouse(OLAP 列存):traces / observations / scores —— 海量、写多、要大范围聚合"]
+    C --> E["Postgres(事务型):projects / users / prompt 注册表 / dataset 配置 —— 强一致、关系型"]
+    C --> F["Redis/Valkey:摄取队列 + API key 缓存(每次请求不打 DB)"]
+    C --> G["S3/Blob:所有原始事件 + 大导出"]
 ```
 
 **为什么这么分(机制层回答)**:trace/observation/score 是**百万行级、写多读聚合**的负载——单 Postgres 在这个体量上做全表 group by 会被拖垮,所以迁到 **ClickHouse 列存**(压缩比高、聚合快);而 projects/prompt/dataset 是**事务性强一致**的关系数据,留在 **Postgres**;**Redis 队列**让 SDK 上报**非阻塞**(先落 S3 + 队列引用,Worker 异步消费),避免上报拖慢 agent 主链路。**Langfuse v2 是纯 Postgres,v3 才拆成这套**——这正是"trace 落库要按负载分库"的活教材(版本/容器名现查官网)。
 
 ### 4.4 轴三:采样策略(LLM 场景反直觉)
 
-```
-trace 量小(<几十万/天)+ 每条都金贵
-  → 全采 100%(LLM 常态!别照搬高 QPS 微服务那套狠 head 采样)
-量大但要保错误现场
-  → tail sampling:留全 error/慢/高成本,正常流量按比例(20%)采
-绝不要 head sampling 概率性丢 error
-  → 出事那条恰好没采到 = 等于瞎(head 在 trace 起点就拍板,看不到后面会不会出错)
-PII/合规敏感
-  → 不是"少采",是"入库前脱敏 + 敏感 span 不落正文"(采样 ≠ 隐私手段)
+```mermaid
+flowchart LR
+    A["trace 量小(＜几十万/天)+ 每条都金贵"] --> A1["全采 100%(LLM 常态!别照搬高 QPS 微服务那套狠 head 采样)"]
+    B["量大但要保错误现场"] --> B1["tail sampling:留全 error/慢/高成本,正常流量按比例(20%)采"]
+    C["绝不要 head sampling 概率性丢 error"] --> C1["出事那条恰好没采到 = 等于瞎(head 在 trace 起点就拍板,看不到后面会不会出错)"]
+    D["PII/合规敏感"] --> D1["不是『少采』,是『入库前脱敏 + 敏感 span 不落正文』(采样 ≠ 隐私手段)"]
 ```
 
 **head vs tail 机制差异**(必考):head 在 root span 创建时就随机决定整棵采不采(便宜、无状态,但看不到尾部 error);tail 等**整棵 trace 攒齐**再按规则决策(能"留全 error/慢",但 Collector 要 **buffer 全部 span 直到 trace 结束**,有状态、吃内存)。✅

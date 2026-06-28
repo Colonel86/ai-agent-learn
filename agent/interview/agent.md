@@ -21,12 +21,15 @@
 - 缺点:supervisor 是瓶颈也是单点;每次流转多绕一跳。
 - 适合:任务能清晰拆成"分诊→分发"的场景(客服路由、研究任务分派)。
 
-```
-        ┌─────────────┐
-   ┌────┤ Supervisor  ├────┐
-   ↓    └──────┬──────┘    ↓
- 专家A         专家B       专家C
-   └─────回到 supervisor────┘
+```mermaid
+flowchart TB
+    S["Supervisor"]
+    S --> A["专家A"]
+    S --> B["专家B"]
+    S --> C["专家C"]
+    A -.->|"回到 supervisor"| S
+    B -.->|"回到 supervisor"| S
+    C -.->|"回到 supervisor"| S
 ```
 
 **2. Hierarchical(层级)**
@@ -37,12 +40,15 @@
 - 适合:大型系统,团队/部门式划分(比如"研究团队 supervisor" + "写作团队 supervisor",上面一个总协调)。
 - 这也是 `Command(graph=Command.PARENT)` 的用武之地——子图里的 agent 要把控制权交回父图。
 
-```
-            Top-Supervisor
-            ┌──────┴──────┐
-       Sub-Sup-1      Sub-Sup-2
-        ┌──┴──┐        ┌──┴──┐
-        A     B        C     D
+```mermaid
+flowchart TB
+    Top["Top-Supervisor"]
+    Top --> S1["Sub-Sup-1"]
+    Top --> S2["Sub-Sup-2"]
+    S1 --> A["A"]
+    S1 --> B["B"]
+    S2 --> C["C"]
+    S2 --> D["D"]
 ```
 
 **3. Network(网状 / 全连接)**
@@ -53,12 +59,16 @@
 - 缺点:难预测、难调试、容易绕圈或上下文衰减;agent 多了连接数爆炸(N×N)。
 - 适合:问题结构不规则、协作路径无法预先设计的开放场景。
 
-```
-   A ←───→ B
-   ↑ ╲   ╱ ↑
-   │   ╳   │
-   ↓ ╱   ╲ ↓
-   C ←───→ D     (任意两两可互相 handoff)
+```mermaid
+flowchart LR
+    subgraph Net["任意两两可互相 handoff"]
+        A["A"] <--> B["B"]
+        A <--> C["C"]
+        A <--> D["D"]
+        B <--> C
+        B <--> D
+        C <--> D
+    end
 ```
 
 **4. Swarm(蜂群 / 接力)**
@@ -68,9 +78,12 @@
 - 和 Network 的细微差别:Network 强调"谁能调谁"(连接拓扑),Swarm 强调"控制权像接力棒一样转移并停留"(谁是当前 active agent)。LangGraph 专门有个 `langgraph-swarm` 库实现这个模式。
 - 适合:专长明确、按需在专家间转手的对话(比如订机票 agent 处理着,涉及退款就把整个对话交给退款 agent 接管)。
 
-```
-  用户 → [Agent A 掌控] ──handoff──→ [Agent B 掌控] ──handoff──→ [Agent C 掌控]
-              ↑ 后续输入直接进当前掌控者
+```mermaid
+flowchart LR
+    U["用户"] --> A["Agent A 掌控"]
+    A -->|"handoff"| B["Agent B 掌控"]
+    B -->|"handoff"| C["Agent C 掌控"]
+    U -.->|"后续输入直接进当前掌控者"| A
 ```
 
 ## 面试怎么讲(把谱系串起来)

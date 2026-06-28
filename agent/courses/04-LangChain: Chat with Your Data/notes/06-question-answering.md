@@ -18,12 +18,10 @@
 
 ## 2. 整体流程
 
-```
-用户问题
-    ↓
-检索相关文档（splits）
-    ↓
-[System Prompt + 检索文档 + 用户问题] → 语言模型 → 答案
+```mermaid
+flowchart TB
+    A[用户问题] --> B["检索相关文档（splits）"]
+    B --> C["[System Prompt + 检索文档 + 用户问题]"] --> D[语言模型] --> E[答案]
 ```
 
 ### 2.1 默认方式：Stuff（直接塞入）
@@ -201,12 +199,10 @@ result["result"]
 
 **底层流程：**
 
-```
-检索到 N 个文档
-    ↓
-Map 阶段：分别送入 LLM，得到 N 个独立答案
-    ↓
-Reduce 阶段：把 N 个答案再交给 LLM 汇总成最终答案
+```mermaid
+flowchart TB
+    A[检索到 N 个文档] --> B["Map 阶段：分别送入 LLM，得到 N 个独立答案"]
+    B --> C["Reduce 阶段：把 N 个答案再交给 LLM 汇总成最终答案"]
 ```
 
 | 优点 | 缺点 |
@@ -230,12 +226,12 @@ result["result"]
 
 **底层流程（顺序而非并行）：**
 
-```
-Doc1 → LLM → Answer1
-Answer1 + Doc2 → LLM → Answer2（基于 Doc2 优化 Answer1）
-Answer2 + Doc3 → LLM → Answer3
-...
-最终 AnswerN
+```mermaid
+flowchart TB
+    D1[Doc1] --> L1[LLM] --> A1[Answer1]
+    A1 --> M2["Answer1 + Doc2"] --> L2[LLM] --> A2["Answer2（基于 Doc2 优化 Answer1）"]
+    A2 --> M3["Answer2 + Doc3"] --> L3[LLM] --> A3[Answer3]
+    A3 -.->|...| AN[最终 AnswerN]
 ```
 
 **Refine 的核心 prompt 结构：**

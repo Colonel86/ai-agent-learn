@@ -150,11 +150,11 @@ crewAI 解析并填充到 VenueDetails 实例
 
 三个 Task 的依赖关系：
 
-```
-venue_task (同步)
-    │
-    ├── logistics_task (async，依赖 venue)
-    └── marketing_task (async，不依赖 logistics)
+```mermaid
+flowchart TB
+    V["venue_task (同步)"]
+    V --> L["logistics_task (async，依赖 venue)"]
+    V --> M["marketing_task (async，不依赖 logistics)"]
 ```
 
 关键点：
@@ -432,17 +432,13 @@ financial_trading_crew = Crew(
 
 ### 5.4 层级模式下的运行机制
 
-```
-                 ┌─────────────────┐
-                 │  Manager Agent  │ ← manager_llm 驱动
-                 │  （自动生成）    │
-                 └────────┬────────┘
-                          │ 动态调度
-         ┌────────────────┼────────────────┐
-         ▼                ▼                ▼
- ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
- │ Data Analyst │  │ Strategy Dev │  │ Trade Advisor│  ……
- └──────────────┘  └──────────────┘  └──────────────┘
+```mermaid
+flowchart TB
+    M["Manager Agent<br/>（自动生成）<br/>← manager_llm 驱动"]
+    M -->|动态调度| DA["Data Analyst"]
+    M -->|动态调度| SD["Strategy Dev"]
+    M -->|动态调度| TA["Trade Advisor"]
+    M -->|动态调度| More["……"]
 ```
 
 - Manager 自动**决定哪个 Task 交给哪个 Agent**

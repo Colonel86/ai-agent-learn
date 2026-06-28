@@ -101,23 +101,18 @@ Embedding-Based Retrieval **仍是非常活跃的研究领域**，以下方向�
 
 ### 3.1 课程覆盖的四大主题
 
-```
-┌──────────────────────────────────────────────────────┐
-│  1️⃣ RAG 基础                                          │
-│     Chroma + Sentence Transformer + 两级切分           │
-├──────────────────────────────────────────────────────┤
-│  2️⃣ 简单向量检索的失败模式                             │
-│     UMAP 可视化 / Relevancy vs Distractor             │
-├──────────────────────────────────────────────────────┤
-│  3️⃣ 三大改进技术                                       │
-│     🅰 Query Expansion  (改 Query 文本)                │
-│     🅱 Cross-Encoder Re-rank  (重排结果)               │
-│     🅲 Embedding Adapter  (改 Query 向量)              │
-├──────────────────────────────────────────────────────┤
-│  4️⃣ 前沿研究方向                                       │
-│     Fine-tune Embedding / Fine-tune LLM /             │
-│     复杂 Adapter / 智能 Chunking / 基于 LLM 的 Re-ranker│
-└──────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    R[四大主题] --> T1["1️⃣ RAG 基础"]
+    R --> T2["2️⃣ 简单向量检索的失败模式"]
+    R --> T3["3️⃣ 三大改进技术"]
+    R --> T4["4️⃣ 前沿研究方向"]
+    T1 --> T1a["Chroma + Sentence Transformer + 两级切分"]
+    T2 --> T2a["UMAP 可视化 / Relevancy vs Distractor"]
+    T3 --> T3a["🅰 Query Expansion (改 Query 文本)"]
+    T3 --> T3b["🅱 Cross-Encoder Re-rank (重排结果)"]
+    T3 --> T3c["🅲 Embedding Adapter (改 Query 向量)"]
+    T4 --> T4a["Fine-tune Embedding / Fine-tune LLM / 复杂 Adapter / 智能 Chunking / 基于 LLM 的 Re-ranker"]
 ```
 
 ### 3.2 三大核心改进技术对比（全课精华）
@@ -135,33 +130,14 @@ Embedding-Based Retrieval **仍是非常活跃的研究领域**，以下方向�
 
 ### 3.3 整课的心智模型
 
-```
-                  用户 Query
-                      │
-                      ▼
-          ┌───────────────────────┐
-          │  🅰 Query Expansion    │ ← 这里插入 LLM
-          └───────────────────────┘
-                      │
-                      ▼
-              Embedding Model
-                      │
-                      ▼
-          ┌───────────────────────┐
-          │  🅲 Embedding Adapter  │ ← 这里插入可学习变换
-          └───────────────────────┘
-                      │
-                      ▼
-              向量检索（Top-K）
-                      │
-                      ▼
-          ┌───────────────────────┐
-          │  🅱 Cross-Encoder      │ ← 这里精排重打分
-          │     Re-ranking        │
-          └───────────────────────┘
-                      │
-                      ▼
-                  Top-N → LLM
+```mermaid
+flowchart TB
+    A[用户 Query] --> B["🅰 Query Expansion ← 这里插入 LLM"]
+    B --> C[Embedding Model]
+    C --> D["🅲 Embedding Adapter ← 这里插入可学习变换"]
+    D --> E["向量检索（Top-K）"]
+    E --> F["🅱 Cross-Encoder Re-ranking ← 这里精排重打分"]
+    F --> G[Top-N → LLM]
 ```
 
 ---

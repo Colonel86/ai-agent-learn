@@ -10,19 +10,16 @@
 
 整个项目沿时间线演进（Project evolution）：先立 **Constitution**，然后每个 **Feature phase** 都走一遍 `Specification → Implementation → Validation`；feature 之间穿插 **Replanning**，回头修订宪法与 Roadmap。
 
-```
-1. Constitution（项目级）
-   ├── Mission     — 为什么、目标用户、范围
-   ├── Tech Stack  — 技术与部署约束
-   └── Roadmap     — 阶段化的功能序列（活文档）
-
-2. Feature Loop（每个 feature 一遍）
-   plan → implement → verify
-       ↓
-   Replan（feature 之间）
-   - 修订 Constitution
-   - 更新 Roadmap
-   - 改进流程本身
+```mermaid
+flowchart TB
+    C["1. Constitution（项目级）"]
+    C --> M["Mission — 为什么、目标用户、范围"]
+    C --> T["Tech Stack — 技术与部署约束"]
+    C --> R["Roadmap — 阶段化的功能序列（活文档）"]
+    FL["2. Feature Loop（每个 feature 一遍）"]
+    FL --> P["plan"] --> I["implement"] --> V["verify"]
+    V --> RP["Replan（feature 之间）<br/>修订 Constitution<br/>更新 Roadmap<br/>改进流程本身"]
+    RP -.->|回头修订| C
 ```
 
 ---

@@ -67,21 +67,12 @@ Harrison 的观察：学术论文里的各种 agent 架构图本质上都是 **g
 
 ### 本节要构建的图
 
-```
-        ┌──────────┐
-        │   LLM    │ ← entry point
-        └────┬─────┘
-             │
-    ┌────────▼────────┐
-    │  exists_action  │  ← 条件边
-    └────┬────────┬───┘
-  True   │        │  False
-         ▼        ▼
-    ┌────────┐  ┌─────┐
-    │ action │  │ END │
-    └────┬───┘  └─────┘
-         │
-         └─── 回到 LLM （regular edge）
+```mermaid
+flowchart TB
+    LLM["LLM（entry point）"] --> EA{"exists_action（条件边）"}
+    EA -->|"True"| ACT["action"]
+    EA -->|"False"| END["END"]
+    ACT -->|"回到 LLM（regular edge）"| LLM
 ```
 
 ---

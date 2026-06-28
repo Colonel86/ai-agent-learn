@@ -72,10 +72,11 @@ git worktree add .trees/quality_feature
 
 ### 2.3 并行编排的工作流
 
-```
-.trees/ui_feature       → Claude 实例 1  → 改前端 / 加主题切换
-.trees/testing_feature  → Claude 实例 2  → 加 FastAPI 测试
-.trees/quality_feature  → Claude 实例 3  → 加 black/lint 工具
+```mermaid
+flowchart LR
+    A1[".trees/ui_feature"] --> B1["Claude 实例 1"] --> C1["改前端 / 加主题切换"]
+    A2[".trees/testing_feature"] --> B2["Claude 实例 2"] --> C2["加 FastAPI 测试"]
+    A3[".trees/quality_feature"] --> B3["Claude 实例 3"] --> C3["加 black/lint 工具"]
 ```
 
 打开三个终端，每个 worktree 跑独立 Claude。同时用 `/implement-feature ...` 跑各自任务。

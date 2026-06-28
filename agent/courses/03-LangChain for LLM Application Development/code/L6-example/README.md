@@ -4,12 +4,12 @@
 
 LLM 作为**推理引擎**，动态决定调用哪个工具、何时结束。
 
-```
-用户输入
-  → LLM 推理（Thought）
-  → 调用工具（Action）
-  → 获得观察（Observation）
-  → 继续推理 or 给出最终答案
+```mermaid
+flowchart LR
+    A[用户输入] --> B["LLM 推理（Thought）"]
+    B --> C["调用工具（Action）"]
+    C --> D["获得观察（Observation）"]
+    D --> E[继续推理 or 给出最终答案]
 ```
 
 ## 快速开始

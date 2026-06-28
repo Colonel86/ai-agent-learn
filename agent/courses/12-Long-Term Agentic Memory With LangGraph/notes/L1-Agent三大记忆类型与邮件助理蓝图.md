@@ -110,8 +110,9 @@
 
 ### 5.1 Hot Path（热路径）—— 即时更新
 
-```
-用户消息 ──► Agent ──► 调工具 + 写记忆 + 读记忆 ──► 回复
+```mermaid
+flowchart LR
+    A["用户消息"] --> B["Agent"] --> C["调工具 + 写记忆 + 读记忆"] --> D["回复"]
 ```
 
 **特点**：
@@ -123,10 +124,11 @@
 
 ### 5.2 Background（后台）—— 异步更新
 
-```
-用户消息 ──► Agent ──► 回复（不更新记忆）
-                 ↓ 后台另起一条进程
-       Helper Agent ──► 异步分析对话 → 更新记忆
+```mermaid
+flowchart LR
+    A["用户消息"] --> B["Agent"] --> C["回复（不更新记忆）"]
+    B -.->|"后台另起一条进程"| D["Helper Agent"]
+    D --> E["异步分析对话 → 更新记忆"]
 ```
 
 **特点**：
@@ -150,16 +152,10 @@
 
 ### 6.1 起点：Baseline Email Agent
 
-```
-┌──────────────────────────────────────────┐
-│  Step 1: Triage Agent（分诊）            │
-│   收到邮件 → 决定 ignore/notify/respond  │
-└────────────────┬─────────────────────────┘
-                 ↓ 若 respond
-┌──────────────────────────────────────────┐
-│  Step 2: Response Agent（回复）          │
-│   工具：📅 Calendar  ✉ Email Writer      │
-└──────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    A["Step 1: Triage Agent（分诊）<br/>收到邮件 → 决定 ignore/notify/respond"]
+    A -->|"若 respond"| B["Step 2: Response Agent（回复）<br/>工具：📅 Calendar  ✉ Email Writer"]
 ```
 
 ### 6.2 渐进加入三类记忆
@@ -172,24 +168,24 @@
 >
 > Agent 在用 Calendar、写邮件的过程中，**即时读写记忆**。
 
-```
-Response Agent
-   ├─ 📅 Calendar Tool
-   ├─ ✉ Email Writer
-   ├─ 🆕 Save Memory (Hot Path)
-   └─ 🆕 Search Memory (Hot Path)
+```mermaid
+flowchart TB
+    RA["Response Agent"] --> T1["📅 Calendar Tool"]
+    RA --> T2["✉ Email Writer"]
+    RA --> T3["🆕 Save Memory (Hot Path)"]
+    RA --> T4["🆕 Search Memory (Hot Path)"]
 ```
 
 #### ② Episodic Memory（Background）
 
 > **在 Triage Agent 的 Prompt 里**插入 few-shot 示例：
 
-```
-[Email] → [Triage Decision]
-[Email] → [Triage Decision]
-[Email] → [Triage Decision]    ← 这些是历史 episodic 案例
-...
-[新邮件] → ?                    ← 让 Agent 参考案例做判断
+```mermaid
+flowchart LR
+    E1["Email"] --> D1["Triage Decision"]
+    E2["Email"] --> D2["Triage Decision"]
+    E3["Email"] --> D3["Triage Decision（这些是历史 episodic 案例）"]
+    EN["新邮件（...）"] --> Q["?（让 Agent 参考案例做判断）"]
 ```
 
 > 这些示例**通过后台进程**从历史交互中提取并更新到 Prompt 里。
@@ -226,23 +222,13 @@ Response Agent
 
 ## 八、📝 整体架构图
 
-```
-                ┌─────────────────────────┐
-                │  Procedural Memory      │  ← 后台 Agent 演化
-                │  (System Prompts)       │
-                └──────────┬──────────────┘
-                           ↓ 注入
-   邮件 ──► ┌──────────────────────────┐
-            │ Triage Agent              │ ← Episodic 示例后台更新
-            │ (含 few-shot examples)    │
-            └──────────┬────────────────┘
-                       ↓ respond
-            ┌──────────────────────────┐
-            │ Response Agent            │
-            │  📅 + ✉ + 🆕 Memory R/W   │ ← Semantic 即时读写
-            └──────────────────────────┘
-                       ↓
-                    回复邮件
+```mermaid
+flowchart TB
+    PM["Procedural Memory<br/>(System Prompts)<br/>← 后台 Agent 演化"]
+    PM -->|"注入"| TA["Triage Agent<br/>(含 few-shot examples)<br/>← Episodic 示例后台更新"]
+    Email["邮件"] --> TA
+    TA -->|"respond"| RA["Response Agent<br/>📅 + ✉ + 🆕 Memory R/W<br/>← Semantic 即时读写"]
+    RA --> Reply["回复邮件"]
 ```
 
 ---

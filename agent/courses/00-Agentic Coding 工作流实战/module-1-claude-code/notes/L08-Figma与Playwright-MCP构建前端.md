@@ -18,14 +18,11 @@
 
 ## 二、工作流总览
 
-```
-Figma mock
-   ↓ (Figma MCP: get_image / get_code / get_design_rules)
-Claude Code (Next.js + Recharts)
-   ↓
-localhost:3000
-   ↓ (Playwright MCP: navigate + screenshot)
-Claude 看截图 → 对比 mock → 迭代
+```mermaid
+flowchart TB
+    A["Figma mock"] -->|"Figma MCP: get_image / get_code / get_design_rules"| B["Claude Code (Next.js + Recharts)"]
+    B --> C["localhost:3000"]
+    C -->|"Playwright MCP: navigate + screenshot"| D["Claude 看截图 → 对比 mock → 迭代"]
 ```
 
 ---
@@ -111,12 +108,13 @@ Claude 会：
 
 L03 用 Playwright MCP 验视觉、L08 加 Figma MCP 读设计——这就是 MCP 的核心价值：
 
-```
-Claude Code (decision)
-  ├─ Figma MCP    (read design)
-  ├─ Playwright MCP (verify visual)
-  ├─ GitHub (commit/PR)
-  └─ Web Search (research)
+```mermaid
+flowchart LR
+    CC["Claude Code (decision)"]
+    CC --> F["Figma MCP (read design)"]
+    CC --> P["Playwright MCP (verify visual)"]
+    CC --> G["GitHub (commit/PR)"]
+    CC --> W["Web Search (research)"]
 ```
 
 **任何外部系统 → 包装为 MCP server → Claude 即可使用**。Claude Code 不需要学每个工具，只需要学 MCP 协议。这就是它能跨场景扩展的根本。

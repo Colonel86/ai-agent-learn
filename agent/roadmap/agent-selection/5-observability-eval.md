@@ -26,29 +26,29 @@
 
 一次用户提问 = **一条 trace(root span)**,链路每一步是嵌套**子 span**:
 
-```
-Trace: "北京明天要带伞吗?"          ← root span(一整轮)
-├─ span: retrieve(向量检索)         input=query   output=docs   ⏱80ms
-├─ span: llm.call #1(规划/选工具)   prompt+tools → tool_call    🔢tokens/$
-├─ span: tool.weather_api           args={city,date} → result
-├─ span: llm.call #2(基于结果生成)  context+result → draft
-└─ span: guardrail.check            → pass
-   ↳ output:"建议带伞,降水概率 70%"
+```mermaid
+flowchart TB
+    T["Trace: '北京明天要带伞吗?'(root span,一整轮)"]
+    T --> S1["span: retrieve(向量检索) input=query output=docs ⏱80ms"]
+    T --> S2["span: llm.call #1(规划/选工具) prompt+tools → tool_call 🔢tokens/$"]
+    T --> S3["span: tool.weather_api args={city,date} → result"]
+    T --> S4["span: llm.call #2(基于结果生成) context+result → draft"]
+    T --> S5["span: guardrail.check → pass"]
+    S5 --> O["output:'建议带伞,降水概率 70%'"]
 ```
 
 **每个 span 至少记五样**:input / output / 耗时 / token·成本 / 状态(ok·error)。LLM span 加记 **model id、推理参数、prompt 版本**;tool span 加记 args 与返回。这棵树是 debug "RAG 答非所问 / agent 乱调工具"时**唯一能定位到具体哪一步**的东西(对应 §一的"定位是哪一步出错")。
 
 ### 二、关键分层:埋点层 ≠ 后端平台
 
-```
-你的 agent 代码
-   │  ① 埋点层(怎么把 span 吐出来)
-   ├── OpenTelemetry GenAI 语义约定   ← 标准,厂商中立
-   │     ├─ OpenInference(Arize 系,Phoenix 配套)
-   │     ├─ OpenLLMetry(Traceloop 系)
-   │     └─ 框架原生 callback(LangChain/LlamaIndex 自带 → 自动出 span)
-   │  ② 后端平台(span 落哪、怎么看)= 子决策 1
-   └── LangSmith / Langfuse / Phoenix …
+```mermaid
+flowchart TB
+    A["你的 agent 代码"]
+    A -->|"① 埋点层(怎么把 span 吐出来)"| OT["OpenTelemetry GenAI 语义约定(标准,厂商中立)"]
+    OT --> OI["OpenInference(Arize 系,Phoenix 配套)"]
+    OT --> OL["OpenLLMetry(Traceloop 系)"]
+    OT --> CB["框架原生 callback(LangChain/LlamaIndex 自带 → 自动出 span)"]
+    A -->|"② 后端平台(span 落哪、怎么看)= 子决策 1"| BE["LangSmith / Langfuse / Phoenix …"]
 ```
 
 | 埋点方式 | 原理 | 取舍 | 适合 |
@@ -68,11 +68,13 @@ Trace: "北京明天要带伞吗?"          ← root span(一整轮)
 
 ### 四、最轻起步 → 升级路径
 
-```
-学习 / 想最快看见整棵树  → Phoenix 本地 pip 起 + OpenInference 自动埋点(零账号、纯 OSS)
-已用 LangChain/LangGraph → LangSmith,设俩环境变量全自动(埋点+后端一体,最省心)
-要上生产又不想锁定       → OTel(OpenLLMetry/OpenInference)埋点 + Langfuse 自托管(后端可换是保险)
-  └─ auto-instrument 盖不到的关键自定义段 → 再手标少量 OTel span
+```mermaid
+flowchart LR
+    Q{"选埋点+后端"}
+    Q -->|"学习/想最快看见整棵树"| A["Phoenix 本地 pip 起+OpenInference 自动埋点(零账号、纯 OSS)"]
+    Q -->|"已用 LangChain/LangGraph"| B["LangSmith,设俩环境变量全自动(埋点+后端一体,最省心)"]
+    Q -->|"要上生产又不想锁定"| C["OTel(OpenLLMetry/OpenInference)埋点+Langfuse 自托管(后端可换是保险)"]
+    C -->|"auto-instrument 盖不到的关键自定义段"| D["再手标少量 OTel span"]
 ```
 
 > ⚠️ 具体包名/SDK API/价格变化快(OpenLLMetry、OpenInference、各平台 SDK),**用前现查官网**,别照搬过期快照。结论分级:分层心智 ✅ 稳定;具体工具版本 ⚠️ 快照(2026-06)。
@@ -89,12 +91,14 @@ Trace: "北京明天要带伞吗?"          ← root span(一整轮)
 | **Braintrust** | SaaS | eval-first,带版本控制 | 以 eval 为中心的团队 |
 | **Galileo / Patronus / Honeyhive** | 企业 | 合规/护栏/企业治理 | 大企业、合规要求 |
 
-```
-用 LangChain/LangGraph → LangSmith(原生最顺)
-要开源/自托管/不锁定 → Langfuse 或 Phoenix
-要开源 / 可自托管 / 数据不出域 / OTel 原生 → Phoenix
-以 eval 为核心 → Braintrust
-企业合规 → Galileo / Patronus / Honeyhive
+```mermaid
+flowchart LR
+    Q{"选可观测平台"}
+    Q -->|"用 LangChain/LangGraph"| A["LangSmith(原生最顺)"]
+    Q -->|"要开源/自托管/不锁定"| B["Langfuse 或 Phoenix"]
+    Q -->|"要开源/可自托管/数据不出域/OTel 原生"| C["Phoenix"]
+    Q -->|"以 eval 为核心"| D["Braintrust"]
+    Q -->|"企业合规"| E["Galileo / Patronus / Honeyhive"]
 ```
 
 > ⚠️ **HITL × tracing 的坑(选平台时要会处理)**:LangGraph 的 `interrupt()` 靠抛 `GraphInterrupt` + 两次 invoke 实现暂停,**naive tracing 会把一次人审切成两条断裂 trace**、把含 `interrupt()` 的节点/工具**误标 ERROR**(其实只是在等人),还会让人审耗时污染延迟、token/成本被劈成两半。治法:① 两次 invoke 带同一 `thread_id`/session,用平台的 **thread/session 分组**缝成一条逻辑 trace;② 把 `GraphInterrupt` 特判为 `paused` 而非 `ERROR`;③ 用**框架原生 tracing 集成**(它认得 checkpoint/interrupt),别手搓 OTel span——"naive" 才踩这个坑。**选平台的一个隐性加分项:看它对 LangGraph interrupt/checkpoint 的原生支持。**
@@ -169,14 +173,12 @@ Trace: "北京明天要带伞吗?"          ← root span(一整轮)
 
 **🪜 最轻起步 → 升级路径**
 
-```
-prompt 进 git + 钉具体 model id + 参数写配置文件          ← 默认,先到这,别预支平台
-  │ 非工程同事要改 prompt / 要灰度不发版
-  ├─► 上可观测平台 prompt 注册表(已用 LangSmith→LangSmith Prompt;已用 Langfuse→Langfuse Prompt)
-  │ 要把"配置×模型×参数"矩阵对 eval 集跑回归门控
-  ├─► 引 Promptfoo / Braintrust 做回归对比
-  │ 平台都不满足(强合规/强定制/数据不出域)
-  └─► 自建 registry(版本/环境/灰度/审批 API)
+```mermaid
+flowchart TB
+    A["prompt 进 git+钉具体 model id+参数写配置文件<br/>默认,先到这,别预支平台"]
+    A -->|"非工程同事要改 prompt/要灰度不发版"| B["上可观测平台 prompt 注册表(已用 LangSmith→LangSmith Prompt;已用 Langfuse→Langfuse Prompt)"]
+    B -->|"要把'配置×模型×参数'矩阵对 eval 集跑回归门控"| C["引 Promptfoo/Braintrust 做回归对比"]
+    C -->|"平台都不满足(强合规/强定制/数据不出域)"| D["自建 registry(版本/环境/灰度/审批 API)"]
 ```
 
 > ⚠️ **别一上来自建 registry**:没有"非工程改 prompt / 灰度 / 强合规"任一真实需求前,prompt 进 git 已拿到 80% 收益(diff/review/回滚)。**最该先做、成本最低的两步:钉死 model id(别用滚动 alias)+ prompt 入库**——这两步就消掉大半"线上不可复现"。具体平台/价格变化快,**现查**官网。

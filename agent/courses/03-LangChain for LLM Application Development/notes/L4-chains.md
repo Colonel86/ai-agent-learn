@@ -93,12 +93,13 @@ overall_chain = SequentialChain(
 
 **数据流**：
 
-```
-Review
-  ├→ [chain_one] → English_Review
-  │     └→ [chain_two] → summary ─────┐
-  └→ [chain_three] → language ────────┤
-                                       └→ [chain_four] → followup_message
+```mermaid
+flowchart LR
+    Review --> C1["chain_one"] --> ER[English_Review]
+    ER --> C2["chain_two"] --> S[summary]
+    Review --> C3["chain_three"] --> L[language]
+    S --> C4["chain_four"] --> FM[followup_message]
+    L --> C4
 ```
 
 ---
@@ -245,8 +246,9 @@ output_key="result"   # 多个 chain 都叫 result，后者覆盖前者
 
 LLM Workflow 本质上是：
 
-```
-文本 → 文本 → 文本 → 文本
+```mermaid
+flowchart LR
+    A[文本] --> B[文本] --> C[文本] --> D[文本]
 ```
 
 不像传统编程：

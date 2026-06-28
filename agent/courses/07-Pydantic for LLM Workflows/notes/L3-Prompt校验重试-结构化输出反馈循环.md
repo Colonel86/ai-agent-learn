@@ -249,34 +249,16 @@ def validate_llm_response(prompt, data_model, n_retry=5, model="gpt-4o"):
 
 ### 🎯 循环逻辑
 
-```
-┌──────────────┐
-│  Initial LLM │
-│  Call        │
-└──────┬───────┘
-       ↓
-   Validate
-       ↓
-    Error?
-   ┌───┴───┐
-   │       │
-  Yes     No
-   │       │
-   │       └──► ✅ Return validated_data
-   │
-   ↓
-  Out of retries?
-   ┌───┴───┐
-   │       │
-  Yes     No
-   │       │
-   ↓       ↓
- Return   Build retry prompt
- Error   with error_message
-          ↓
-        Call LLM again
-          ↓
-        (loop back to Validate)
+```mermaid
+flowchart TB
+    A["Initial LLM Call"] --> B["Validate"]
+    B --> C{"Error?"}
+    C -->|"No"| D["✅ Return validated_data"]
+    C -->|"Yes"| E{"Out of retries?"}
+    E -->|"Yes"| F["Return Error"]
+    E -->|"No"| G["Build retry prompt with error_message"]
+    G --> H["Call LLM again"]
+    H -.->|"loop back to Validate"| B
 ```
 
 ### 📊 实测运行结果（每次都不一样）
@@ -374,16 +356,13 @@ final_analysis, error = validate_llm_response(prompt, CustomerQuery)
 
 ### 10.3 错误反馈循环的核心逻辑
 
-```
-LLM response → Pydantic validate
-                  ↓
-             ❌ 失败
-                  ↓
-     把错误信息拼进新 prompt
-                  ↓
-              再调 LLM
-                  ↓
-             (最多重试 N 次)
+```mermaid
+flowchart TB
+    A["LLM response"] --> B["Pydantic validate"]
+    B --> C["❌ 失败"]
+    C --> D["把错误信息拼进新 prompt"]
+    D --> E["再调 LLM"]
+    E -.->|"最多重试 N 次"| B
 ```
 
 ---

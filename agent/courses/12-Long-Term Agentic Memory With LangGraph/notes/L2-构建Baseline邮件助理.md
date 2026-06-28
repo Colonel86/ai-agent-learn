@@ -18,27 +18,12 @@
 
 ## 二、🗺 整体架构
 
-```
-邮件输入
-    ↓
-┌──────────────────────────────────────────┐
-│  ① Triage Router（分诊）                  │
-│  LLM 分类 → ignore / notify / respond    │
-└────────┬───────────┬─────────────────────┘
-         │           │
-   ignore/notify   respond
-         │           │
-         ↓           ↓
-       END    ┌──────────────────────────┐
-              │ ② Response Agent          │
-              │  (ReAct loop)             │
-              │  Tools:                   │
-              │   📅 check_calendar       │
-              │   ✉ write_email           │
-              │   🗓 schedule_meeting     │
-              └──────────────────────────┘
-                       ↓
-                      END
+```mermaid
+flowchart TB
+    Input["邮件输入"] --> Triage["① Triage Router（分诊）<br/>LLM 分类 → ignore / notify / respond"]
+    Triage -->|"ignore/notify"| END1["END"]
+    Triage -->|"respond"| RA["② Response Agent<br/>(ReAct loop)<br/>Tools:<br/>📅 check_calendar<br/>✉ write_email<br/>🗓 schedule_meeting"]
+    RA --> END2["END"]
 ```
 
 两层结构：

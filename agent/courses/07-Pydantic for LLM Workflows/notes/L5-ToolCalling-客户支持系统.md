@@ -19,27 +19,16 @@
 
 ## 二、🗺 系统全景：三次 LLM 调用的流水线
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│  用户输入（JSON）                                              │
-│  { "name": "Joe", "email": "...", "query": "...",             │
-│    "order_id": "ABC-12345" }                                   │
-└──────────────┬────────────────────────────────────────────────┘
-               ↓ ① validate_user_input()
-     UserInput Pydantic 实例
-               ↓ ② create_customer_query()   ← LLM #1 (Gemini)
-     CustomerQuery Pydantic 实例
-               ↓ ③ decide_next_action_with_tools()  ← LLM #2 (OpenAI)
-     ┌─────────┴──────────┐
-     │                    │
-  tool_calls          可能没有 tool_calls
-     │                    │
-     ↓ ④ get_tool_outputs()
-   Python 函数执行（check_order_status / lookup_faq_answer）
-     │                    │
-     └─────────┬──────────┘
-               ↓ ⑤ generate_structured_support_ticket()  ← LLM #3 (Anthropic)
-       SupportTicket Pydantic 实例（含所有字段 + 推荐动作）
+```mermaid
+flowchart TB
+    A["用户输入（JSON）<br/>name: Joe, email: ..., query: ..., order_id: ABC-12345"]
+    A -->|"① validate_user_input()"| B["UserInput Pydantic 实例"]
+    B -->|"② create_customer_query()  ← LLM #1 (Gemini)"| C["CustomerQuery Pydantic 实例"]
+    C -->|"③ decide_next_action_with_tools()  ← LLM #2 (OpenAI)"| D{"有 tool_calls？"}
+    D -->|"tool_calls：④ get_tool_outputs()"| E["Python 函数执行<br/>（check_order_status / lookup_faq_answer）"]
+    D -->|"可能没有 tool_calls"| F["⑤ generate_structured_support_ticket()  ← LLM #3 (Anthropic)"]
+    E --> F
+    F --> G["SupportTicket Pydantic 实例（含所有字段 + 推荐动作）"]
 ```
 
 **3 次 LLM 调用横跨 3 家厂商（Gemini / OpenAI / Anthropic）**——故意演示 Pydantic 的**厂商无关**特性。
@@ -89,16 +78,12 @@ class UserInput(BaseModel):
 
 ### 4.1 Tool Calling 的工作机制
 
-```
-LLM 看到问题 + 可用工具列表
-     ↓
-LLM 判断："我需要调用工具才能回答"
-     ↓
-LLM 不直接回答，而是**返回要调用哪个工具 + 参数**
-     ↓
-你的代码：验证参数 → 执行 Python 函数 → 拿到结果
-     ↓
-（可选）把结果再给 LLM，让它基于真实数据生成最终回复
+```mermaid
+flowchart TB
+    A["LLM 看到问题 + 可用工具列表"] --> B["LLM 判断：我需要调用工具才能回答"]
+    B --> C["LLM 不直接回答，而是返回要调用哪个工具 + 参数"]
+    C --> D["你的代码：验证参数 → 执行 Python 函数 → 拿到结果"]
+    D --> E["（可选）把结果再给 LLM，让它基于真实数据生成最终回复"]
 ```
 
 ### 4.2 Pydantic 在 Tool Calling 的三重角色
@@ -411,18 +396,12 @@ print(support_ticket.model_dump_json(indent=2))
 
 ### 11.1 Pydantic 在 LLM 工作流的完整角色图
 
-```
-用户输入 ──► UserInput 模型（validate）
-                │
-                ↓
-           CustomerQuery 模型（LLM 填充 + validate）
-                │
-                ↓
-        FAQLookupArgs / CheckOrderStatusArgs
-        （Tool Schema + LLM 参数 validate + Python 函数签名）
-                │
-                ↓
-          SupportTicket（含嵌套 OrderDetails，LLM 填充 + validate）
+```mermaid
+flowchart TB
+    A["用户输入"] --> B["UserInput 模型（validate）"]
+    B --> C["CustomerQuery 模型（LLM 填充 + validate）"]
+    C --> D["FAQLookupArgs / CheckOrderStatusArgs<br/>（Tool Schema + LLM 参数 validate + Python 函数签名）"]
+    D --> E["SupportTicket（含嵌套 OrderDetails，LLM 填充 + validate）"]
 ```
 
 ### 11.2 "Validation at Every Stage"（每一步都校验）

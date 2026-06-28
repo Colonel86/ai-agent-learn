@@ -63,11 +63,11 @@ class EntitiesValidator:
 
 ## 三、拓扑：带环的 Pipeline
 
-```
-prompt_builder ──► llm ──► entities_validator
-       ▲                          │
-       │                          ├── entities (终点)
-       └──── entities_to_validate ┘
+```mermaid
+flowchart LR
+    prompt_builder --> llm --> entities_validator
+    entities_validator --> entities["entities (终点)"]
+    entities_validator -.->|entities_to_validate| prompt_builder
 ```
 
 ```python

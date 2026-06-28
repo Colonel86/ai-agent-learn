@@ -20,18 +20,14 @@ LLM 应用的输出是**自由文本**，没有单一标准答案，传统字符
 
 ## 完整评估流程
 
-```
-1. 构建待评估应用（QA Chain）
-       ↓
-2. 准备测试数据集（query + answer 对）
-   ├── 手动编写
-   └── LLM 自动生成（QAGenerateChain）
-       ↓
-3. 运行应用，收集预测结果
-       ↓
-4. 使用 LLM 评估预测（QAEvalChain）
-       ↓
-5. 查看评分结果
+```mermaid
+flowchart TB
+    A["1. 构建待评估应用（QA Chain）"] --> B["2. 准备测试数据集（query + answer 对）"]
+    B --> B1[手动编写]
+    B --> B2["LLM 自动生成（QAGenerateChain）"]
+    B --> C["3. 运行应用，收集预测结果"]
+    C --> D["4. 使用 LLM 评估预测（QAEvalChain）"]
+    D --> E[5. 查看评分结果]
 ```
 
 ---
@@ -176,31 +172,26 @@ LLM 应用的输出是**开放式文本**，正确答案有无数种表达，传
 
 ### 使用流程
 
-```
-正常运行 QA 链
-    ↓ 自动写入指定 session
-登录 LangChain Evaluation Platform
-    ↓ 选择 session（如 "deeplearningai"）
-浏览运行列表
-    ↓ 点击任一运行查看链路
-逐层展开调试细节
-    ↓ 发现好的"问答对"
-点击 "Add to Dataset" 按钮
-    ↓ 选择目标数据集（如 "deep learning"）
-评估数据集自动累积
+```mermaid
+flowchart TB
+    A[正常运行 QA 链] -->|自动写入指定 session| B[登录 LangChain Evaluation Platform]
+    B -->|"选择 session（如 &quot;deeplearningai&quot;）"| C[浏览运行列表]
+    C -->|点击任一运行查看链路| D[逐层展开调试细节]
+    D -->|"发现好的&quot;问答对&quot;"| E["点击 &quot;Add to Dataset&quot; 按钮"]
+    E -->|"选择目标数据集（如 &quot;deep learning&quot;）"| F[评估数据集自动累积]
 ```
 
 ### 评估飞轮（Evaluation Flywheel）
 
 这套机制的核心价值在于形成**持续改进闭环**：
 
-```
-应用上线 → 真实流量经过 → 平台自动记录运行
-                                    ↓
-新数据集驱动 ← 加入评估数据集 ← 人工筛选有价值的样本
-    ↓
-重新跑评估 → 发现回归/进步 → 优化 prompt / chain → 重新部署
-    ↺
+```mermaid
+flowchart LR
+    A[应用上线] --> B[真实流量经过] --> C[平台自动记录运行]
+    C --> D[人工筛选有价值的样本]
+    D --> E[加入评估数据集] --> F[新数据集驱动]
+    F --> G[重新跑评估] --> H["发现回归/进步"] --> I["优化 prompt / chain"] --> J[重新部署]
+    J -.-> A
 ```
 
 **实战建议**：

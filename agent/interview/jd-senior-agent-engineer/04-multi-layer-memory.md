@@ -59,14 +59,15 @@
 
 这是本章的主干,也是和"纯 RAG"最大的区别——RAG 没有写入和遗忘:
 
-```
-   写入 write          巩固 consolidate        召回 recall          注入 inject        遗忘 forget
- ┌──────────┐   ┌──────────────────┐   ┌─────────────┐   ┌────────────┐   ┌──────────────┐
- │从对话/轨迹 │──▶│去重·合并·冲突解决  │──▶│相似度召回    │──▶│打分排序+    │   │TTL/衰减/容量 │
- │抽取候选    │   │经历→提炼成事实     │   │ top-k       │   │预算裁剪后   │   │驱逐(LRU/分数)│
- │(LLM)      │   │(reflection)      │   │             │   │拼进 prompt │   │              │
- └──────────┘   └──────────────────┘   └─────────────┘   └────────────┘   └──────────────┘
-   hot/bg            background             读路径             读路径          background
+```mermaid
+flowchart LR
+    W["写入 write<br/>从对话/轨迹抽取候选(LLM)<br/>(hot/bg)"]
+    C["巩固 consolidate<br/>去重·合并·冲突解决<br/>经历→提炼成事实(reflection)<br/>(background)"]
+    R["召回 recall<br/>相似度召回 top-k<br/>(读路径)"]
+    I["注入 inject<br/>打分排序+预算裁剪后拼进 prompt<br/>(读路径)"]
+    F["遗忘 forget<br/>TTL/衰减/容量驱逐(LRU/分数)<br/>(background)"]
+    W --> C --> R --> I
+    F
 ```
 
 - **写入(encode)**:从对话或工具轨迹里抽取候选记忆。通常一次 LLM 抽取调用。**时机选 hot path 还是 background,是延迟 vs 反馈滞后的取舍**(见 §4)。
@@ -139,44 +140,32 @@
 
 ### 3.1 升级路径(别一步到位)
 
-```
-L0 只 message buffer ─────────────────────────────────────────────  单次多轮,不持久
-        │ 需要跨会话记住事实?
-        ▼
-L1 + InMemoryStore(semantic, hot-path)  ───────────────────────────  原型/教学,零依赖
-        │ 上生产 / 多用户?
-        ▼
-L2 换 Postgres/Redis Store + per-user namespace + background 巩固 ──  生产 semantic
-        │ 要从过去案例学 / 让指令演化?
-        ▼
-L3 + episodic(few-shot 召回) + procedural(prompt optimizer)  ─────  全三类
-        │ 想少写基建、让模型自己管?
-        ▼
-L4 评估 Anthropic Memory Tool(model-driven)替换/补充部分 pipeline ── (现查官网)
+```mermaid
+flowchart TB
+    L0["L0 只 message buffer<br/>单次多轮,不持久"]
+    L1["L1 + InMemoryStore(semantic, hot-path)<br/>原型/教学,零依赖"]
+    L2["L2 换 Postgres/Redis Store + per-user namespace + background 巩固<br/>生产 semantic"]
+    L3["L3 + episodic(few-shot 召回) + procedural(prompt optimizer)<br/>全三类"]
+    L4["L4 评估 Anthropic Memory Tool(model-driven)替换/补充部分 pipeline<br/>(现查官网)"]
+    L0 -->|"需要跨会话记住事实?"| L1
+    L1 -->|"上生产 / 多用户?"| L2
+    L2 -->|"要从过去案例学 / 让指令演化?"| L3
+    L3 -->|"想少写基建、让模型自己管?"| L4
 ```
 
 > 接口一致是关键:LangGraph `InMemoryStore(index={"embed": ...})` → 生产换 Postgres/Redis **只换实例**,namespace/读写代码不变。
 
 ### 3.2 架构(读写两条路 + 三轴 namespace)
 
-```
-                         ┌─────────────────────────────────────────┐
-   user turn ──▶ 感知 ──▶│  规划 ──▶ 执行(tools) ──▶ 验证 ──▶ 回复   │──▶ user
-                         └───────┬───────────────────────┬─────────┘
-                       读 recall │                        │ 写 write
-                ┌────────────────▼───────┐    ┌───────────▼──────────┐
-   工作记忆      │ 召回器 recall            │    │ 写入器 writer         │
-   (State dict) │  相似度 × 衰减 × 置信度   │    │  hot-path:即时        │
-   会话短期      │  打分 → 预算裁剪          │    │  background:异步巩固   │
-   (buffer)     └──────────┬──────────────┘    └──────────┬───────────┘
-                           │ 读                            │ 写/合并/遗忘
-                  ┌────────▼──────────────────────────────▼─────────┐
-                  │            长期记忆 Store(跨会话)                 │
-                  │  namespace 分轴(与 6-memory.md 对齐):           │
-                  │   semantic   (app, user_id,  'semantic')  向量+KV │
-                  │   episodic   (app, user_id,  'episodic')  向量    │
-                  │   procedural (app, agent_id, 'procedural') KV     │
-                  └──────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    U["user turn"] --> FLOW["感知 ──▶ 规划 ──▶ 执行(tools) ──▶ 验证 ──▶ 回复"] --> U2["user"]
+    WM["工作记忆 (State dict)<br/>会话短期 (buffer)"]
+    FLOW -->|"读 recall"| RC["召回器 recall<br/>相似度 × 衰减 × 置信度<br/>打分 → 预算裁剪"]
+    FLOW -->|"写 write"| WR["写入器 writer<br/>hot-path:即时<br/>background:异步巩固"]
+    WM -.-> RC
+    RC -->|读| ST["长期记忆 Store(跨会话)<br/>namespace 分轴(与 6-memory.md 对齐):<br/>semantic (app, user_id, 'semantic') 向量+KV<br/>episodic (app, user_id, 'episodic') 向量<br/>procedural (app, agent_id, 'procedural') KV"]
+    WR -->|"写/合并/遗忘"| ST
 ```
 
 > ⚠️ namespace 主轴:semantic/episodic 是 **per-user** → `(app, user_id, type)`;procedural 默认 **per-agent** → `(app, agent_id, 'procedural')`——"怎么做"是 agent 的能力、不随用户走,**仅当它编码用户专属偏好时才退化 per-user**。这条取舍轴与 `../1.md` §4、`6-memory.md` §4 一致。
@@ -333,18 +322,27 @@ def recency(ts):                                         # 指数衰减
 
 ### 4.4 选型轴汇总
 
-```
-要跨会话记住吗? ── 否 → 只 message buffer(别上 Store)
-        │是
-要改哪种行为? ── 事实/偏好 → semantic │ 给历史例子 → episodic │ 演化指令 → procedural
-        │
-何时生效? ── 立刻且容忍延迟 → hot path │ 主路径要快 → background(默认)
-        │
-存储? ── 语义召回 → 向量 │ 按 key → KV │ 有关系多跳 → 图 │ 生产 → 混合
-        │
-谁主导? ── 要强控制/合规 → framework-driven │ 要快/灵活 → Memory Tool
-        │
-多租户? ── per-user namespace 硬隔离 + TTL + 按 ns 删除
+```mermaid
+flowchart TB
+    Q1{"要跨会话记住吗?"}
+    Q1 -- 否 --> A1["只 message buffer(别上 Store)"]
+    Q1 -- 是 --> Q2{"要改哪种行为?"}
+    Q2 -- "事实/偏好" --> S["semantic"]
+    Q2 -- "给历史例子" --> E["episodic"]
+    Q2 -- "演化指令" --> Pr["procedural"]
+    Q2 --> Q3{"何时生效?"}
+    Q3 -- "立刻且容忍延迟" --> H["hot path"]
+    Q3 -- "主路径要快" --> B["background(默认)"]
+    Q3 --> Q4{"存储?"}
+    Q4 -- "语义召回" --> V["向量"]
+    Q4 -- "按 key" --> KV["KV"]
+    Q4 -- "有关系多跳" --> G["图"]
+    Q4 -- 生产 --> Mix["混合"]
+    Q4 --> Q5{"谁主导?"}
+    Q5 -- "要强控制/合规" --> FD["framework-driven"]
+    Q5 -- "要快/灵活" --> MT["Memory Tool"]
+    Q5 --> Q6{"多租户?"}
+    Q6 --> A6["per-user namespace 硬隔离 + TTL + 按 ns 删除"]
 ```
 
 ---
@@ -408,4 +406,3 @@ A:**只 embed `observation`(触发场景)**。召回时拿当前任务去匹配�
 - 编排框架(LangGraph 的 checkpointer/Store 是记忆基础设施):`../../roadmap/agent-selection/2-framework/`
 - 课程回溯:`../../courses/12-Long-Term Agentic Memory With LangGraph/notes/00-总结回顾.md`(及 L2–L5 code)
 - 邻章边界:context 窗口管理 / Context Editing / Prompt Caching 降本 → 本系列 **05**(本章只引用不展开)
-```

@@ -62,8 +62,6 @@ def subgraph_node(state: State) -> Command[Literal["parent_node"]]:
 
 一个**坑**提醒你:用 Pydantic model 当 state 时,`Command(update=State(foo='foo'))` 这种写法可能会把没显式赋值的字段覆盖成 `None`(社区有 issue 反馈过)。所以 `update` 更稳的写法是只传要改的字段的 dict,比如 `update={"foo": "foo"}`,而不是传整个 model 对象。
 
-要不要我把 `Command` 同时做"状态更新 + 路由"这个机制画成一张图,或者补进你那份面试复习文档里?
-
 
 # langgraph的compile函数的参数
 
@@ -118,6 +116,58 @@ graph = builder.compile(
 
 恢复执行用 `graph.invoke(None, config)`,LangGraph 会从暂停处精确续上。
 
+### 4. `cache`(节点级结果缓存)
+
+**类型**:`BaseCache | None`(如 `InMemoryCache`、`SqliteCache`)。
+
+**解决什么问题**:同一个节点,输入相同时默认每次都重新执行(重新调 LLM、跑工具、算检索),很浪费。`cache` 让"输入相同就跳过执行,直接返回上次结果"。两类场景受益:
+
+1. 节点内有**昂贵且确定性**的计算(embedding、外部 API、重 LLM 调用);
+2. 图被**反复 invoke**(调试迭代、批量跑相似输入、interrupt 后 resume 重放)。
+
+**怎么用**:`cache` 在 `compile()` 挂到整张图,但**生效要靠节点自己声明 `cache_policy`**——两者配套:
+
+```python
+from langgraph.cache.memory import InMemoryCache
+from langgraph.types import CachePolicy
+
+builder.add_node(
+    "expensive_node",
+    expensive_fn,
+    cache_policy=CachePolicy(ttl=120),   # 120s 内同输入直接命中
+)
+
+graph = builder.compile(cache=InMemoryCache())
+```
+
+缓存 key 由节点输入决定。**关键取舍(面试点)**:
+
+- 只适合**纯/确定性**节点。带副作用(写库、发消息)或依赖时间/随机性的节点别缓存——否则副作用丢失、或返回过期结果。
+- 和 `checkpointer` 是**两个维度**:checkpointer 存"图执行到哪、state 是什么"(持久化/恢复);cache 存"这个节点这个输入算出过什么"(省算力)。可同时用。
+- TTL 按数据新鲜度设;无 TTL 则只在缓存对象生命周期内有效(`InMemoryCache` 进程内、`SqliteCache` 跨进程)。
+
+### 5. `transformers`(v3 流式事件转换器)
+
+**类型**:`Sequence[StreamTransformer 类 / 工厂] | None`。
+
+**解决什么问题**:这是给 **`astream_events(version="v3")` / `stream_events(version="v3")`** 用的。流式事件管线默认发出一串标准事件(`on_chain_start`、`on_chat_model_stream`…),`transformers` 让你在管线上**插入自定义转换层**统一改写/过滤/增强事件,不必在每个消费端各写一遍。
+
+**机制要点(面试点)**:
+
+- 每次 run **实例化一次**,并**向下传播到 subgraph 作用域**——多层图里子图也能统一处理事件;
+- 自定义工厂构造函数**第一个参数是 `scope`**(标识当前在哪个图/子图层级);
+- 被**追加在内置 transformer 之后**执行;
+- **只影响 v3 事件流**,对普通 `invoke()` / `stream()`(stream_mode)无效。
+
+**典型场景**:统一给流事件打标签/脱敏、把内部事件名映射成对外协议(适配前端 SSE schema)、按 scope 过滤子图噪音事件。日常项目用得少,属于做**自定义可观测层 / 事件协议适配**时才碰的高级参数。
+
+## cache vs transformers 一句话对比
+
+| 参数 | 维度 | 何时用 |
+|---|---|---|
+| `cache` | 省**算力**:节点输入相同就跳过执行 | 节点确定性 + 昂贵 + 反复调用;需配 `cache_policy` |
+| `transformers` | 改**流式事件**:在 v3 事件管线插转换层 | 自定义可观测/事件协议适配,仅 `astream_events(v3)` |
+
 ## 一个最小例子
 
 ```python
@@ -140,5 +190,3 @@ graph.invoke({"value": 0}, config)
 ---
 
 **注意版本差异**:`interrupt_before/after` 是较早的静态中断方式;新版本更推荐在 node 内部用动态的 `interrupt()` 函数(配合 `Command(resume=...)` 恢复),更灵活。但 `interrupt()` 同样**依赖 compile 时传了 checkpointer**才能工作。两种方式底层都靠 checkpointer 存状态。
-
-要不要我把 `checkpointer` 和 `store` 这两套存储在 compile 里的分工,连同 compile 的参数一起补进你那份面试复习文档?

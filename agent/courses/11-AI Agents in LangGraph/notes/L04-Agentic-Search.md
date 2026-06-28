@@ -22,8 +22,9 @@ Agent 若只靠模型静态权重回答，有两大问题：
 | **需要溯源** | 很多场景必须知道信息**来自哪个源**，以降低幻觉、提升人机交互可信度 |
 
 ### 2. Agent + Search 的基本流程
-```
-Prompt → Agent → 决定调用 search 工具 → 查询返回 → Agent 综合回答
+```mermaid
+flowchart LR
+    A["Prompt"] --> B["Agent"] --> C["决定调用 search 工具"] --> D["查询返回"] --> E["Agent 综合回答"]
 ```
 
 ---
@@ -32,13 +33,13 @@ Prompt → Agent → 决定调用 search 工具 → 查询返回 → Agent 综�
 
 一个"够用的" agentic search 不是简单地把 query 交给搜索引擎，而是：
 
-```
-Query
-  ├─ 1. 理解问题，必要时拆成子问题（sub-queries）
-  ├─ 2. 为每个子问题选择最佳数据源（天气 → Weather API，新闻 → News API，etc.）
-  ├─ 3. 从源里抽取相关片段（常用做法：chunking + 向量检索 top-K）
-  ├─ 4. 给结果打分、过滤低相关度内容
-  └─ 返回：结构化、可引用、精炼的答案
+```mermaid
+flowchart TB
+    Q["Query"] --> S1["1. 理解问题，必要时拆成子问题（sub-queries）"]
+    S1 --> S2["2. 为每个子问题选择最佳数据源（天气 → Weather API，新闻 → News API，etc.）"]
+    S2 --> S3["3. 从源里抽取相关片段（常用做法：chunking + 向量检索 top-K）"]
+    S3 --> S4["4. 给结果打分、过滤低相关度内容"]
+    S4 --> R["返回：结构化、可引用、精炼的答案"]
 ```
 
 ### 关键能力

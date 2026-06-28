@@ -108,25 +108,21 @@ Rust 的**借用检查器(borrow checker)**在编译期保证:无 use-after-free
 
 **核心范式 = polyglot 混合架构,而非全 Rust。** 90% 的 agent 用 Rust 只在两处:① 作为 Python 的**原生扩展**(PyO3)加速库热点;② 作为**独立端侧/边缘二进制**跑推理。
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  云侧:Python / TS 编排层(Run Loop、多 Agent、工具网关)  │ ← 高频迭代、I/O bound
-│   ├─ FastAPI / Node 服务、LangGraph 编排、MCP client      │
-│   └─ 调 LLM(vLLM/SGLang,见 9-serving)                   │
-│                  │ PyO3 原生扩展(import 就用,无 IPC)    │
-│   ┌──────────────▼───────────────┐                        │
-│   │ Rust 库热点(.so / .pyd)      │  tokenizer / 向量检索 / │
-│   │  HF tokenizers, 向量距离计算   │  rerank 预处理          │
-│   └──────────────────────────────┘                        │
-└─────────────────────────────────────────────────────────┘
-        │ 端云协同接口(只把"需大模型"的请求上云)
-        ▼
-┌─────────────────────────────────────────────────────────┐
-│  端侧:Rust 独立二进制 / WASM                              │
-│   ├─ 小模型推理(candle / mistral.rs / llama.cpp 绑定)    │
-│   ├─ ASR→LLM→TTS 实时管线(tokio 背压)                    │
-│   └─ 本地 tool 路由初筛、隐私数据本地处理                  │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Cloud["云侧:Python / TS 编排层(Run Loop、多 Agent、工具网关) ← 高频迭代、I/O bound"]
+        direction TB
+        ORCH["FastAPI / Node 服务、LangGraph 编排、MCP client<br/>调 LLM(vLLM/SGLang,见 9-serving)"]
+        RUST["Rust 库热点(.so / .pyd)<br/>HF tokenizers, 向量距离计算<br/>tokenizer / 向量检索 / rerank 预处理"]
+        ORCH -->|"PyO3 原生扩展(import 就用,无 IPC)"| RUST
+    end
+    subgraph Edge["端侧:Rust 独立二进制 / WASM"]
+        direction TB
+        E1["小模型推理(candle / mistral.rs / llama.cpp 绑定)"]
+        E2["ASR→LLM→TTS 实时管线(tokio 背压)"]
+        E3["本地 tool 路由初筛、隐私数据本地处理"]
+    end
+    Cloud -->|"端云协同接口(只把『需大模型』的请求上云)"| Edge
 ```
 
 ### 3.2 端侧推理生态(⚠️ 2026-06 快照,现查 GitHub)
@@ -225,20 +221,15 @@ async fn pipeline() {
 
 ### 3.5 最轻起步 → 升级路径
 
-```
-阶段 0(纯 Python/TS):全栈 Python/TS,LLM 上云。
-                      —— 90% agent 永远停在这,别动 Rust。
-   │  信号:某个库函数(tokenize/向量距离/rerank 预处理)成 CPU 热点,profiler 指认
-   ▼
-阶段 1(PyO3 下沉单点热点):把那一个函数用 Rust + maturin 打成原生扩展。
-                          —— 改动最小、风险最低、收益最直接的 Rust 落地。
-   │  信号:要做端侧/离线/隐私,Python 部署形态不成立(跑不进手机/浏览器/边缘)
-   ▼
-阶段 2(端侧独立二进制):Rust 跑小模型(llama.cpp 绑定起步 → candle/mistral.rs),
-                       端云分工接口设计;WASM 进浏览器/边缘。
-   │  信号:实时语音/音视频,帧级延迟,GC 抖动不可接受
-   ▼
-阶段 3(实时管线下沉):ASR→LLM→TTS 用 tokio 编排 + 背压,热点段全 Rust。
+```mermaid
+flowchart TB
+    S0["阶段 0(纯 Python/TS):全栈 Python/TS,LLM 上云。<br/>—— 90% agent 永远停在这,别动 Rust。"]
+    S1["阶段 1(PyO3 下沉单点热点):把那一个函数用 Rust + maturin 打成原生扩展。<br/>—— 改动最小、风险最低、收益最直接的 Rust 落地。"]
+    S2["阶段 2(端侧独立二进制):Rust 跑小模型(llama.cpp 绑定起步 → candle/mistral.rs),端云分工接口设计;WASM 进浏览器/边缘。"]
+    S3["阶段 3(实时管线下沉):ASR→LLM→TTS 用 tokio 编排 + 背压,热点段全 Rust。"]
+    S0 -->|"信号:某个库函数(tokenize/向量距离/rerank 预处理)成 CPU 热点,profiler 指认"| S1
+    S1 -->|"信号:要做端侧/离线/隐私,Python 部署形态不成立(跑不进手机/浏览器/边缘)"| S2
+    S2 -->|"信号:实时语音/音视频,帧级延迟,GC 抖动不可接受"| S3
 ```
 
 ---

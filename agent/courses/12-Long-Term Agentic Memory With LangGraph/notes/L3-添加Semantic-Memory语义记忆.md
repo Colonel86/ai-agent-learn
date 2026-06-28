@@ -261,14 +261,12 @@ email_agent = email_agent.compile(store=store)    # 🔑 这一行是新加的
 
 ### 8.2 端到端流程图（不变）
 
-```
-邮件 → triage_router
-         ↓
-       respond
-         ↓
-   response_agent（带 5 个工具）
-         ↓
-   read/write memory + 调其他工具 + 写邮件
+```mermaid
+flowchart TB
+    A["邮件"] --> B["triage_router"]
+    B --> C["respond"]
+    C --> D["response_agent（带 5 个工具）"]
+    D --> E["read/write memory + 调其他工具 + 写邮件"]
 ```
 
 ---
@@ -290,18 +288,13 @@ response = email_agent.invoke({"email_input": email_input}, config=config)
 
 **Agent 行为轨迹**：
 
-```
-📧 Classification: RESPOND
-   ↓
-🤖 AI: 调用 write_email     ← 给 Alice 写回复
-   ↓
-✅ Tool: Email sent
-   ↓
-🤖 AI: 调用 manage_memory   ← 自动记下"Alice 问了 API 文档的事"
-   ↓
-✅ Tool: Memory created
-   ↓
-🤖 Final AI: "I've responded to Alice and created a memory entry."
+```mermaid
+flowchart TB
+    A["📧 Classification: RESPOND"] --> B["🤖 AI: 调用 write_email ← 给 Alice 写回复"]
+    B --> C["✅ Tool: Email sent"]
+    C --> D["🤖 AI: 调用 manage_memory ← 自动记下『Alice 问了 API 文档的事』"]
+    D --> E["✅ Tool: Memory created"]
+    E --> F["🤖 Final AI: I've responded to Alice and created a memory entry."]
 ```
 
 ### 9.2 🌟 测试 2：跟进邮件（验证记忆生效）
@@ -319,16 +312,12 @@ response = email_agent.invoke({"email_input": email_input}, config=config)
 
 **Agent 行为轨迹**：
 
-```
-📧 Classification: RESPOND
-   ↓
-🤖 AI: 调用 search_memory   ← 🌟 主动查"Alice Smith 之前问过什么"
-   ↓
-✅ Tool 返回: "Follow up needed. Alice Smith inquired about missing API endpoints."
-   ↓
-🤖 AI: 调用 write_email     ← 写回复时引用了之前的 API 文档话题
-   ↓
-🤖 Final: "Thanks for following up regarding the API endpoints documentation..."
+```mermaid
+flowchart TB
+    A["📧 Classification: RESPOND"] --> B["🤖 AI: 调用 search_memory ← 🌟 主动查『Alice Smith 之前问过什么』"]
+    B --> C["✅ Tool 返回: Follow up needed. Alice Smith inquired about missing API endpoints."]
+    C --> D["🤖 AI: 调用 write_email ← 写回复时引用了之前的 API 文档话题"]
+    D --> E["🤖 Final: Thanks for following up regarding the API endpoints documentation..."]
 ```
 
 ### 🤯 关键观察

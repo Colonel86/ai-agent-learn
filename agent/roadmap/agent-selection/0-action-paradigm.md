@@ -44,21 +44,17 @@
 
 ## 四、快速决策树
 
-```
-Q0. 目标系统 / 动作面有没有可编程 API(REST/SDK/DB/MCP server)?
-│
-├─ 有 API
-│    └─ Q1. 一个任务要不要在多工具间组合 + 写控制流(循环/条件/中间变量)?
-│          ├─ 否(几步离散、可枚举)        → ⭐ function/tool calling(默认,别上沙箱)
-│          └─ 是(工具多 / 要编排数据流)   → 评估 CodeAct(省 round-trip),代价 = 必须沙箱
-│
-└─ 无 API,只能操作 GUI(遗留系统 / 第三方网站 / 桌面软件)
-     └─ Q2. 真的没有任何替代入口吗(官方 API / RPA / 逆向接口)?
-           ├─ 有替代  → 回到 function-calling,别碰 GUI(慢/脆/危险)
-           └─ 只剩 GUI → computer-use / browser-use(虚拟桌面 + 强护栏,blast radius 大)
-
-正交叠加:决策要不要"看得见"(读截图/图表/视觉布局)?
-     └─ 需要 → 即便有 API,也可叠加 browser/computer-use 提供多模态观察面
+```mermaid
+flowchart TB
+    Q0{"Q0. 目标系统/动作面有没有可编程 API(REST/SDK/DB/MCP server)?"}
+    Q0 -->|"有 API"| Q1{"Q1. 一个任务要不要在多工具间组合+写控制流(循环/条件/中间变量)?"}
+    Q1 -->|"否(几步离散、可枚举)"| FC["⭐ function/tool calling(默认,别上沙箱)"]
+    Q1 -->|"是(工具多/要编排数据流)"| CA["评估 CodeAct(省 round-trip),代价=必须沙箱"]
+    Q0 -->|"无 API,只能操作 GUI(遗留系统/第三方网站/桌面软件)"| Q2{"Q2. 真的没有任何替代入口吗(官方 API/RPA/逆向接口)?"}
+    Q2 -->|"有替代"| FC2["回到 function-calling,别碰 GUI(慢/脆/危险)"]
+    Q2 -->|"只剩 GUI"| CU["computer-use/browser-use(虚拟桌面+强护栏,blast radius 大)"]
+    OB{"正交叠加:决策要不要'看得见'(读截图/图表/视觉布局)?"}
+    OB -->|"需要"| MM["即便有 API,也可叠加 browser/computer-use 提供多模态观察面"]
 ```
 
 ---

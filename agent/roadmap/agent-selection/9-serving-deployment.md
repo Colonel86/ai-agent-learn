@@ -75,17 +75,16 @@
 
 > **默认同步**。别一上来就 Temporal 全家桶——大多数 agent 起步用同步 / 流式足够;durable execution 的心智成本(可重放、幂等、signal)只在"真的长 + 真的要恢复"时才回本。
 
-```
-Q1 一次交互多久出结果?
-├─ 秒级、结果一次性          → 同步请求-响应(默认,先不加任何基建)
-├─ 几秒~几十秒、要边生成边看  → 同步 + SSE 流式(仍在同一服务里)
-└─ 分钟~小时 / 能关页面 ↓
-Q2 崩溃/重启/隔天回来要接得上吗?(可恢复性)
-├─ 不要(失败整体重跑可接受)  → 任务队列(Celery/SQS/Redis)+ 轮询 / webhook
-└─ 要 / 或要 HITL 中途暂停    → durable execution(Temporal / LangGraph Platform)
-                              + 持久 checkpointer(复用 6-memory.md:InMemory → Postgres)
-Q3 流量突发、且任务无状态短?  → 叠 serverless(Lambda / Cloud Run);长任务别硬塞 serverless
-Q4 任务长、用户不盯着?        → 完成通知用 webhook / push,别让前端干等
+```mermaid
+flowchart TB
+    Q1{"Q1 一次交互多久出结果?"}
+    Q1 -->|"秒级、结果一次性"| A["同步请求-响应(默认,先不加任何基建)"]
+    Q1 -->|"几秒~几十秒、要边生成边看"| B["同步+SSE 流式(仍在同一服务里)"]
+    Q1 -->|"分钟~小时/能关页面"| Q2{"Q2 崩溃/重启/隔天回来要接得上吗?(可恢复性)"}
+    Q2 -->|"不要(失败整体重跑可接受)"| C["任务队列(Celery/SQS/Redis)+轮询/webhook"]
+    Q2 -->|"要/或要 HITL 中途暂停"| D["durable execution(Temporal/LangGraph Platform)+持久 checkpointer(复用 6-memory.md:InMemory → Postgres)"]
+    Q3{"Q3 流量突发、且任务无状态短?"} -->|"是"| E["叠 serverless(Lambda/Cloud Run);长任务别硬塞 serverless"]
+    Q4{"Q4 任务长、用户不盯着?"} -->|"是"| F["完成通知用 webhook/push,别让前端干等"]
 ```
 
 **升级触发器(顶到天花板才升,不提前)**:体感太慢→加 SSE;单请求会超时 / 要并发多个→上队列;要可恢复 / HITL 暂停 / 隔天接得上→上 durable + 持久 checkpointer;流量突发且无状态→serverless;跑太久没人盯→webhook/push。

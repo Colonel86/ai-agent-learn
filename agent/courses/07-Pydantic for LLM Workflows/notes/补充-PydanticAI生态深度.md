@@ -223,19 +223,19 @@ result = await agent.run("我的订单在哪")
 
 ## 四、整体架构层次
 
-```
-┌───────────────────────────────────────────────────────────┐
-│  应用代码                                                  │
-│   ├─ Agent（基础类）         → 单 LLM + tools + output    │
-│   ├─ pydantic-graph          → 状态机编排                  │
-│   ├─ pydantic-evals          → 离线/CI 评测                │
-│   └─ logfire.instrument_*    → OTel 观测                   │
-├───────────────────────────────────────────────────────────┤
-│  Provider 适配层                                           │
-│   openai / anthropic / google-gla / mistral / groq / ...   │
-├───────────────────────────────────────────────────────────┤
-│  Pydantic v2 (类型 / 校验 / schema 生成)                   │
-└───────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph App["应用代码"]
+        A1["Agent（基础类）→ 单 LLM + tools + output"]
+        A2["pydantic-graph → 状态机编排"]
+        A3["pydantic-evals → 离线/CI 评测"]
+        A4["logfire.instrument_* → OTel 观测"]
+    end
+    subgraph Provider["Provider 适配层"]
+        P1["openai / anthropic / google-gla / mistral / groq / ..."]
+    end
+    Core["Pydantic v2 (类型 / 校验 / schema 生成)"]
+    App --> Provider --> Core
 ```
 
 ---
@@ -269,14 +269,14 @@ result = await agent.run("我的订单在哪")
 
 1. **官网 docs**：[ai.pydantic.dev](https://ai.pydantic.dev) ——文档质量是 Python 圈第一档
 2. **学习顺序**：
-   ```
-   基本 Agent
-     → 依赖注入 (deps_type + RunContext)
-     → tools 装饰器
-     → output_type 结构化输出
-     → Logfire 接入
-     → pydantic-evals 写测试集
-     → pydantic-graph（仅在需要状态机时）
+   ```mermaid
+   flowchart TB
+       A["基本 Agent"] --> B["依赖注入 (deps_type + RunContext)"]
+       B --> C["tools 装饰器"]
+       C --> D["output_type 结构化输出"]
+       D --> E["Logfire 接入"]
+       E --> F["pydantic-evals 写测试集"]
+       F --> G["pydantic-graph（仅在需要状态机时）"]
    ```
 3. **配套读**：FastAPI 文档里"Dependencies"章节——PydanticAI 的 DI 思路完全继承 FastAPI
 

@@ -20,17 +20,9 @@
 
 ### 2.1 两阶段检索架构
 
-```
-┌──────────────────────────────────────────────┐
-│  Stage 1: 向量检索（快，但粗）               │
-│  Embedding-based Retrieval → Top-K 文档      │
-└────────────────┬─────────────────────────────┘
-                 ↓
-┌──────────────────────────────────────────────┐
-│  Stage 2: Re-ranking（慢，但精）            │
-│  Cross-Encoder 对 (Query, Doc) 打分         │
-│  → 按分数重排 → 选 Top-N                    │
-└──────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    A["Stage 1: 向量检索（快，但粗）<br/>Embedding-based Retrieval → Top-K 文档"] --> B["Stage 2: Re-ranking（慢，但精）<br/>Cross-Encoder 对 (Query, Doc) 打分<br/>→ 按分数重排 → 选 Top-N"]
 ```
 
 ### 2.2 为什么要两阶段？
@@ -48,11 +40,12 @@
 
 ### 3.1 Bi-Encoder（之前用的 Sentence Transformer）
 
-```
-Query  ──► [Encoder] ──► query_vector
-Doc    ──► [Encoder] ──► doc_vector
-                          ↓
-            cosine_similarity(query_vec, doc_vec)
+```mermaid
+flowchart LR
+    Q[Query] --> E1["[Encoder]"] --> QV[query_vector]
+    D[Doc] --> E2["[Encoder]"] --> DV[doc_vector]
+    QV --> COS["cosine_similarity(query_vec, doc_vec)"]
+    DV --> COS
 ```
 
 **特点**：
@@ -63,8 +56,9 @@ Doc    ──► [Encoder] ──► doc_vector
 
 ### 3.2 Cross-Encoder（本课的新工具）
 
-```
-[Query, Doc]  ──► [BERT Cross-Encoder] ──► 单个分数（相关度）
+```mermaid
+flowchart LR
+    A["[Query, Doc]"] --> B["[BERT Cross-Encoder]"] --> C["单个分数（相关度）"]
 ```
 
 **特点**：
@@ -248,14 +242,9 @@ for o in np.argsort(scores)[::-1]:
 
 ### 6.2 两阶段检索的经典设计模式
 
-```
-Retrieve (Recall-oriented, fast)
-    │
-    ▼
-Re-rank (Precision-oriented, slow)
-    │
-    ▼
-LLM Generation
+```mermaid
+flowchart TB
+    A["Retrieve (Recall-oriented, fast)"] --> B["Re-rank (Precision-oriented, slow)"] --> C[LLM Generation]
 ```
 
 这是**生产级 RAG 系统的标准架构**。
