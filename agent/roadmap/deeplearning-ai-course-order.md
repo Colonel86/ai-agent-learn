@@ -1,7 +1,7 @@
 # DeepLearning.AI 课程学习顺序（AI Agent 方向）
 
 > 目标：AI Agent 开发工程师 → AI Agent 开发架构师
-> 更新日期：2026-05-15
+> 更新日期：2026-07-02（对照官网全量目录增量更新，见 `deeplearning-ai-全量课程目录-2026-07.md`）
 > **学习理念：T 型学习——主线深挖 LangChain/LangGraph + MCP，其他框架做横向对比**
 
 ---
@@ -100,7 +100,7 @@
 | --- | ------------------------------------------------------------ | ------------------------------- | --- |
 | 13  | Multi AI Agent Systems with crewAI                           | 多 Agent 协作**心智模型**（管理者思维、6 要素）⭐ | #11 |
 | 14  | AI Agentic Design Patterns with AutoGen                      | Agent **设计模式**总览 ⭐              | #12 |
-| 15  | Practical Multi AI Agents and Advanced Use Cases with crewAI | 生产级 crewAI（只在真用 crewAI 时再看）     | #20 |
+| 15  | Design, Develop, and Deploy Multi-Agent Systems with CrewAI  | 生产级 crewAI（只在真用 crewAI 时再看）。2025-11 新课，取代旧课 Practical Multi AI Agents（2024-10） | —   |
 
 
 ### 🅱 协议与扩展能力
@@ -130,8 +130,9 @@
 
 | 序号  | 课程                                              | 方向                                                   |
 | --- | ----------------------------------------------- | ---------------------------------------------------- |
-| 27  | Serverless LLM Apps with Amazon Bedrock         | 云端部署                                                 |
 | 28  | Building Coding Agents with Tool Execution（E2B） | 沙箱化代码执行——理解 Coding Agent 底层如何安全运行 LLM 生成的代码 ⭐ 2026 新 |
+
+> ~~#27 Serverless LLM Apps with Amazon Bedrock~~ 已于 2026-07 确认从官网目录下架，移除。
 
 
 ---
@@ -156,7 +157,7 @@
 
 1. 如果做**企业级 Agent**：先学 🅱 协议与扩展（#16 #17）
 2. 如果想拓宽**架构思路**：先学 🅰 多 Agent（#13 #14）
-3. #15（crewAI Practical）是**业务驱动型**课程——有真实场景再学
+3. #15（crewAI 生产化新课）是**业务驱动型**课程——有真实场景再学
 
 ---
 
@@ -181,7 +182,7 @@ flowchart TB
     end
     subgraph 横向["Phase 5 横向扩展（广度）"]
         direction TB
-        H["🅰 多 Agent 协作"] --> H13["#13 crewAI 基础"] --> H14["#14 AutoGen"] --> H15["#15 crewAI Practical"]
+        H["🅰 多 Agent 协作"] --> H13["#13 crewAI 基础"] --> H14["#14 AutoGen"] --> H15["#15 crewAI 生产化"]
         HB["🅱 协议与扩展"] --> H16["#16 Agent Skills"] --> H17["#17 A2A"]
     end
     C11 --> PROJ["真实项目 ← 关键里程碑"]
@@ -193,11 +194,31 @@ flowchart TB
 ## 📦 候选扩展课程（待评估，不在主线）
 
 > 从 DeepLearning.AI 完整目录中筛出、**实质属于 AI Agent 开发**的课程。暂存于此，后续按需排入对应 Phase。
+> 2026-07-02 对照官网全量目录（124 门）增量更新，完整分类见 `deeplearning-ai-全量课程目录-2026-07.md`。
 
 ### Agent 工程能力
 
 - **DSPy: Build and Optimize Agentic Apps**（Databricks）— Agent 提示/流程自动优化
 - **NeMo Agent Toolkit: Making Agents Reliable**（Nvidia）— Agent 可观测/评测/部署，生产化
 - **Building toward Computer Use with Anthropic**（Anthropic）— 构建操作电脑的 Agent
+
+### 生产化与治理（对口面试复习包）🆕 2026-07
+
+- **Semantic Caching for AI Agents**（2025-11）— 语义缓存降低 Agent 成本/延迟，对口面试包 `05-context-engineering-and-caching`
+- **Governing AI Agents**（2025-10）— Agent 数据治理与安全，对口面试包 `07-safety-guardrails`
+- **Building and Evaluating Data Agents**（2025-09）— 多 Agent 规划 + 评测一体，补强 eval 主线（可与 #21 连学）
+- **Build Interactive Agents with Generative UI**（2026-05）— Agent 生成式 UI，对口选型矩阵 `10-agent-ux`
+- **Knowledge Graphs for AI Agent API Discovery**（2025-09）— 图谱驱动的工具发现/编排，对口面试包 `02-tool-gateway`
+
+### 场景型选修（有业务需要再学）🆕 2026-07
+
+- **Voice for AI Agents and Applications**（2026-06）/ **Building Live Voice Agents with Google's ADK**（2025-09）/ **Building AI Voice Agents for Production**（2025-05）— 语音 Agent 三部曲
+- **Building AI Browser Agents**（2025-04）— 浏览器操作 Agent
+- **AI Agents for Image and Video Generation**（2026-05）— 图像/视频生成 Agent
+- **Document AI: From OCR to Agentic Doc Extraction**（2026-01）— 文档抽取 Agent
+- **Agentic Knowledge Graph Construction**（2025-08）— 多 Agent 构建知识图谱
+- **Building Your Own Database Agent**（2024-06）— 自然语言查数据库
+- **Build AI Apps with MCP Server: Working with Box Files**（2025-09）— MCP 实战（Box）
+- **Building Code Agents with Hugging Face smolagents**（2025-04）— CodeAct 范式，可与 #28 对照
 
 > Memory 方向的候选课已合入 Phase 4 🅱（#12a #12b）。
