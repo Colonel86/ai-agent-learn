@@ -1,0 +1,984 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.268 --> 00:00:04.604
+Let's build our first identity pipeline.
+
+2
+00:00:04.604 --> 00:00:08.641
+In this lesson, you will be building
+a very simple self-reflecting agent
+
+3
+00:00:08.641 --> 00:00:11.778
+by building a Hastag pipeline
+that is able to loop
+
+4
+00:00:11.778 --> 00:00:15.582
+this looping mechanism will allow you
+to implement the self reflection.
+
+5
+00:00:15.582 --> 00:00:18.885
+As a very simple example,
+you will have an LM generate
+
+6
+00:00:18.885 --> 00:00:22.822
+named entities from unstructured texts
+and iteratively improve
+
+7
+00:00:22.822 --> 00:00:24.724
+on its response with self-reflection.
+
+8
+00:00:24.724 --> 00:00:26.126
+Let's dive into the code.
+
+9
+00:00:26.126 --> 00:00:30.296
+Self-reflection is a mechanism
+for self-assessment and correction,
+
+10
+00:00:30.296 --> 00:00:32.232
+and it allows us to refine outputs
+
+11
+00:00:32.232 --> 00:00:35.702
+by providing more reliable
+and accurate information.
+
+12
+00:00:35.702 --> 00:00:36.603
+With self-reflection,
+
+13
+00:00:36.603 --> 00:00:40.907
+we allow the NLM to provide
+feedback to itself for future trials.
+
+14
+00:00:40.907 --> 00:00:43.109
+We can have the model provide the self
+
+15
+00:00:43.109 --> 00:00:46.980
+with a success status,
+or allow an external source to do so,
+
+16
+00:00:46.980 --> 00:00:50.450
+but then we have it self
+formulate specific feedback.
+
+17
+00:00:50.450 --> 00:00:53.119
+We can go even further
+and get the NLM to reflect on
+
+18
+00:00:53.119 --> 00:00:56.689
+what actions
+it can take to improve on the response,
+
+19
+00:00:56.689 --> 00:01:00.160
+and even provided with some criteria
+to look out for.
+
+20
+00:01:00.160 --> 00:01:03.563
+It can then verbally states
+what went wrong and how to improve.
+
+21
+00:01:03.563 --> 00:01:06.499
+It's in the next iterations.
+
+22
+00:01:06.499 --> 00:01:06.866
+In this
+
+23
+00:01:06.866 --> 00:01:10.970
+lab, we're going to be building
+a very simple self-reflecting agent
+
+24
+00:01:10.970 --> 00:01:15.508
+where you'll ask and then allow them to
+generate entities from unstructured text.
+
+25
+00:01:15.508 --> 00:01:19.312
+At each iteration,
+the NLM will either state that it is done
+
+26
+00:01:19.312 --> 00:01:23.383
+so it's reflected on the output,
+and it is happy with the results,
+
+27
+00:01:23.383 --> 00:01:25.085
+or it will reflect and critique
+
+28
+00:01:25.085 --> 00:01:28.855
+on what should be improved
+about the extracted entities.
+
+29
+00:01:28.855 --> 00:01:33.359
+We're going to be building this thanks to
+the availability of custom components.
+
+30
+00:01:33.359 --> 00:01:37.297
+And we're going to create a component
+that we call the entities validator
+
+31
+00:01:37.297 --> 00:01:42.297
+that will simply evaluate whether the
+generator decided that it was done or not.
+
+32
+00:01:42.602 --> 00:01:45.705
+And until the generator decides
+that it's done,
+
+33
+00:01:45.705 --> 00:01:48.641
+it will continue looping.
+
+34
+00:01:48.641 --> 00:01:50.543
+Another way these types of looping
+
+35
+00:01:50.543 --> 00:01:53.980
+pipelines can be super
+useful is to validate outputs.
+
+36
+00:01:53.980 --> 00:01:57.217
+For example,
+we extract data in Json format,
+
+37
+00:01:57.217 --> 00:02:00.220
+but we want it to adhere
+to a certain schema.
+
+38
+00:02:00.220 --> 00:02:03.223
+In some cases,
+we could implement output validators
+
+39
+00:02:03.356 --> 00:02:06.926
+that return both the invalid replies
+and the error messages
+
+40
+00:02:06.926 --> 00:02:10.730
+we got from a validator
+such as pedantic, where we can validate
+
+41
+00:02:10.730 --> 00:02:14.134
+whether an output adheres to our Json
+schema.
+
+42
+00:02:14.134 --> 00:02:18.371
+Let's see how we can create the
+entities generator in code.
+
+43
+00:02:18.371 --> 00:02:20.840
+Let's
+start with the usual warning suppression,
+
+44
+00:02:20.840 --> 00:02:24.777
+and make sure we load
+all of our environment variables.
+
+45
+00:02:24.777 --> 00:02:26.746
+Next let's import all of the dependencies
+
+46
+00:02:26.746 --> 00:02:29.215
+for everything
+we'll be using in this lesson.
+
+47
+00:02:29.215 --> 00:02:33.753
+As a first step, we'll start by creating
+a very simple custom haystack components
+
+48
+00:02:33.753 --> 00:02:36.956
+that we're going to be calling
+the entities validator.
+
+49
+00:02:36.956 --> 00:02:38.658
+Let's see what this component does.
+
+50
+00:02:38.658 --> 00:02:41.661
+Let's start by creating our class.
+
+51
+00:02:41.761 --> 00:02:44.230
+We call it the entities validator.
+
+52
+00:02:44.230 --> 00:02:48.701
+And let's have it have a run method
+that is expecting replies.
+
+53
+00:02:48.701 --> 00:02:53.306
+These replies are going to be coming
+from an alarm.
+
+54
+00:02:53.306 --> 00:02:56.309
+What we want to do here is very,
+very simple.
+
+55
+00:02:56.409 --> 00:03:00.813
+We're going to have this component output
+one of two outputs.
+
+56
+00:03:00.813 --> 00:03:05.813
+If the replies contains the word done,
+we're going to be outputting entities.
+
+57
+00:03:07.020 --> 00:03:08.154
+If however it does
+
+58
+00:03:08.154 --> 00:03:11.958
+not include dumb
+we're going to be doing two things.
+
+59
+00:03:11.958 --> 00:03:16.796
+This means the NLM has decided
+that it's not done creating entities yet.
+
+60
+00:03:16.796 --> 00:03:19.766
+So we'll have this print out
+
+61
+00:03:19.766 --> 00:03:22.702
+the entities that the NLM
+is still reflecting on and read.
+
+62
+00:03:22.702 --> 00:03:26.539
+This will allow us to see the
+and visualize the loops easily,
+
+63
+00:03:26.539 --> 00:03:31.477
+but it will also output the entities
+in and output called entities to validate.
+
+64
+00:03:31.477 --> 00:03:34.981
+The last thing we have to do
+is make sure that we're providing these
+
+65
+00:03:34.981 --> 00:03:38.885
+as output types
+with a decorator to the run method.
+
+66
+00:03:38.885 --> 00:03:40.086
+In this case, you'll notice
+
+67
+00:03:40.086 --> 00:03:44.123
+that this has two outputs
+entities to validate and entities.
+
+68
+00:03:44.123 --> 00:03:45.892
+Both of them a string.
+
+69
+00:03:45.892 --> 00:03:49.562
+Let's see how we might use a component
+like this.
+
+70
+00:03:49.562 --> 00:03:50.763
+For example.
+
+71
+00:03:50.763 --> 00:03:54.968
+Let's create an entities
+validator and again
+
+72
+00:03:54.968 --> 00:03:59.172
+let's replicate a reply that we might get
+from another level.
+
+73
+00:03:59.172 --> 00:04:02.775
+For example,
+let's run this entity validator
+
+74
+00:04:02.775 --> 00:04:07.614
+with a response from that column
+that has the entity name Tawana.
+
+75
+00:04:07.614 --> 00:04:11.251
+As you can see, there is no such thing
+as done in this response.
+
+76
+00:04:11.251 --> 00:04:14.887
+So hopefully we'll be printing out
+these entities
+
+77
+00:04:14.887 --> 00:04:19.192
+in red and returning
+them as entities to validate.
+
+78
+00:04:19.192 --> 00:04:20.426
+Great.
+
+79
+00:04:20.426 --> 00:04:24.364
+What if we had a response
+that included the word done.
+
+80
+00:04:24.364 --> 00:04:25.865
+Let's give that a go.
+
+81
+00:04:25.865 --> 00:04:29.102
+In this case,
+the entities validator is outputting
+
+82
+00:04:29.102 --> 00:04:32.538
+the entities in entities.
+
+83
+00:04:32.538 --> 00:04:36.309
+Now let's start to create a special type
+of prompt template.
+
+84
+00:04:36.309 --> 00:04:39.279
+In this prompt template
+we're going to have an if block.
+
+85
+00:04:39.279 --> 00:04:40.680
+You'll see why.
+
+86
+00:04:40.680 --> 00:04:41.214
+Let's start
+
+87
+00:04:41.214 --> 00:04:45.985
+by creating the first instruction
+we want to give to the language model.
+
+88
+00:04:45.985 --> 00:04:50.657
+This template includes the instruction
+extract entities from the following text.
+
+89
+00:04:50.657 --> 00:04:55.395
+And as you can see, our prompt builder is
+going to be expected an input called text
+
+90
+00:04:55.395 --> 00:04:57.597
+while also providing it
+with some information
+
+91
+00:04:57.597 --> 00:05:01.567
+of what kind of entities
+we want to extract from this text.
+
+92
+00:05:01.567 --> 00:05:04.437
+The entities should be presented
+in key value pairs.
+
+93
+00:05:04.437 --> 00:05:09.275
+We're telling it to extract person,
+location and date while also telling it
+
+94
+00:05:09.275 --> 00:05:12.278
+if there are no possibilities
+for a particular category.
+
+95
+00:05:12.345 --> 00:05:15.648
+Return an empty list and so on.
+
+96
+00:05:15.648 --> 00:05:20.648
+Now this is great, but it will only allow
+the end to produce a response once.
+
+97
+00:05:20.820 --> 00:05:24.957
+And it's not giving us a chance
+to iterate on this response.
+
+98
+00:05:24.957 --> 00:05:27.493
+So we're going to be using the if else
+
+99
+00:05:27.493 --> 00:05:30.563
+block functionality
+that comes with Jinja templating.
+
+100
+00:05:30.563 --> 00:05:32.699
+So let's start.
+
+101
+00:05:32.699 --> 00:05:33.900
+Let's make this be
+
+102
+00:05:33.900 --> 00:05:38.338
+in the else block of our
+if else statement.
+
+103
+00:05:38.338 --> 00:05:40.973
+And you'll see what we add in the
+if statement.
+
+104
+00:05:40.973 --> 00:05:44.143
+Now in the
+if statement, we want to give instructions
+
+105
+00:05:44.143 --> 00:05:48.047
+to the large language model
+if it has entities to validate.
+
+106
+00:05:48.047 --> 00:05:51.584
+So we're going to be providing it
+with some examples
+
+107
+00:05:51.584 --> 00:05:54.754
+of what it should look out
+for to improve on its response.
+
+108
+00:05:54.754 --> 00:05:57.890
+in this case
+our prompt builder is going to be checking
+
+109
+00:05:57.890 --> 00:06:01.160
+if it has entities to validate as inputs.
+
+110
+00:06:01.160 --> 00:06:03.629
+And then we're going to be adding
+some more information
+
+111
+00:06:03.629 --> 00:06:06.666
+that it can use to improve on its answer.
+
+112
+00:06:06.666 --> 00:06:07.667
+We again iterate.
+
+113
+00:06:07.667 --> 00:06:08.668
+Here was a text.
+
+114
+00:06:08.668 --> 00:06:11.471
+You were provided and provided the text.
+
+115
+00:06:11.471 --> 00:06:14.907
+And here are the entities
+you previously extracted.
+
+116
+00:06:14.907 --> 00:06:17.844
+And then we give it some bullet points
+on what it can reflect on
+
+117
+00:06:17.844 --> 00:06:19.746
+and what it can improve.
+
+118
+00:06:19.746 --> 00:06:23.583
+This is where we also tell the length
+that it can say I'm done
+
+119
+00:06:23.583 --> 00:06:24.817
+if it thinks it's done.
+
+120
+00:06:24.817 --> 00:06:27.820
+This is a very,
+very simple way of implementing
+
+121
+00:06:27.820 --> 00:06:30.823
+self reflection
+in these types of pipelines.
+
+122
+00:06:30.823 --> 00:06:33.126
+Let's see how this one works.
+
+123
+00:06:33.126 --> 00:06:37.330
+Now that we have our prompt template
+that is able to accept entities
+
+124
+00:06:37.330 --> 00:06:42.001
+to validate if they exist, we can start
+creating our self-reflecting agents.
+
+125
+00:06:42.001 --> 00:06:44.771
+Let's start
+by creating our prompt builder.
+
+126
+00:06:44.771 --> 00:06:48.641
+This prompt builder is going to be
+using the templates we just created.
+
+127
+00:06:48.641 --> 00:06:51.177
+Next we want to have our generator.
+
+128
+00:06:51.177 --> 00:06:55.314
+In this case again I'll be using
+the OpenAI generator with a default model.
+
+129
+00:06:55.314 --> 00:06:57.850
+So it's going to be GPT three.
+
+130
+00:06:57.850 --> 00:07:02.221
+And finally we want to be able
+to use our entities validator somehow.
+
+131
+00:07:02.221 --> 00:07:05.525
+Another important thing to note here
+is that because this pipeline
+
+132
+00:07:05.525 --> 00:07:07.059
+is going to be looping,
+
+133
+00:07:07.059 --> 00:07:12.059
+we'll also able to provide the maximum
+loops while allowing our pipeline to have.
+
+134
+00:07:12.064 --> 00:07:15.168
+This allows you to make sure
+that you're not doing more requests
+
+135
+00:07:15.168 --> 00:07:18.704
+than you want to to a model provider
+like OpenAI.
+
+136
+00:07:18.704 --> 00:07:22.775
+In this case, we're telling it
+it can do a maximum of ten loops.
+
+137
+00:07:22.775 --> 00:07:25.812
+If the line isn't able to create an asset,
+
+138
+00:07:25.812 --> 00:07:29.215
+satisfied with within ten loops,
+our pipeline will fail.
+
+139
+00:07:29.215 --> 00:07:32.785
+But it also means that we're not incurring
+more cost than we want to.
+
+140
+00:07:32.785 --> 00:07:35.855
+Next thing we'll do
+is we'll simply add all these components
+
+141
+00:07:35.855 --> 00:07:39.025
+to our pipeline,
+but let's see how we connect them.
+
+142
+00:07:39.025 --> 00:07:43.629
+So we simply start
+by connecting our prompts to our alarm.
+
+143
+00:07:43.629 --> 00:07:45.298
+This time we're being a bit specific.
+
+144
+00:07:45.298 --> 00:07:50.069
+You don't need to provide prompt
+in each case, but if you want you can.
+
+145
+00:07:50.069 --> 00:07:53.639
+And then we're going to be providing
+the replies from this large language
+
+146
+00:07:53.639 --> 00:07:56.042
+model to our entities. Validator.
+
+147
+00:07:56.042 --> 00:08:00.413
+Now the entities validator has a response
+from the large language model
+
+148
+00:08:00.413 --> 00:08:01.714
+that it can evaluate
+
+149
+00:08:01.714 --> 00:08:05.084
+and see whether the large language
+model thinks it's done or not.
+
+150
+00:08:05.084 --> 00:08:07.987
+However,
+if it does have entities to validate,
+
+151
+00:08:07.987 --> 00:08:11.691
+we want these
+to be looping back into our prompt.
+
+152
+00:08:11.691 --> 00:08:16.691
+Notice how here, if there are entities
+to validate as outputs from our entities
+
+153
+00:08:16.696 --> 00:08:21.601
+validator, they're going to be added
+to prompt builder entities to validate.
+
+154
+00:08:21.601 --> 00:08:23.035
+Remember how the first
+
+155
+00:08:23.035 --> 00:08:27.173
+if statement in our prompt had
+if there are entities to validate.
+
+156
+00:08:27.173 --> 00:08:29.141
+This is where that loop happens.
+
+157
+00:08:29.141 --> 00:08:31.210
+Now this is our first looping pipeline.
+
+158
+00:08:31.210 --> 00:08:35.214
+So again let's use the show utility
+to see what's happening here.
+
+159
+00:08:35.214 --> 00:08:38.751
+Let's say Self-reflecting agent Dot, show.
+
+160
+00:08:38.751 --> 00:08:41.320
+And as you can see, we're noticing a loop.
+
+161
+00:08:41.320 --> 00:08:45.791
+In this case, our prompt builder
+is providing a full prompt to our large
+
+162
+00:08:45.791 --> 00:08:50.530
+language model, which is then forwarding
+its replies to the entities validator.
+
+163
+00:08:51.030 --> 00:08:55.101
+And the entities validator
+is either responding with entities,
+
+164
+00:08:55.101 --> 00:08:58.471
+or it's looping back
+with entities to validate.
+
+165
+00:08:58.471 --> 00:09:03.009
+And this loop continues
+until either we've hit ten loops all.
+
+166
+00:09:03.009 --> 00:09:06.078
+The response has the word done in it.
+
+167
+00:09:06.078 --> 00:09:08.714
+Now that we have our pipeline,
+this provides some text
+
+168
+00:09:08.714 --> 00:09:13.352
+to our prompt builder and see if
+then can generate the named entities.
+
+169
+00:09:13.352 --> 00:09:15.488
+Here I've provided a dummy text.
+
+170
+00:09:15.488 --> 00:09:19.559
+It's about Istanbul,
+the population of Istanbul, and so on.
+
+171
+00:09:19.559 --> 00:09:23.763
+Let's run our Self-reflecting agent
+by providing the prompt builder
+
+172
+00:09:23.763 --> 00:09:25.131
+with this text.
+
+173
+00:09:25.131 --> 00:09:28.134
+We know that our entities
+validator will print out
+
+174
+00:09:28.134 --> 00:09:31.537
+any entities
+that are still to be validated and read.
+
+175
+00:09:31.537 --> 00:09:35.207
+As an extra step,
+we can also print out the final response.
+
+176
+00:09:35.207 --> 00:09:37.743
+Once the looping is done in green.
+
+177
+00:09:37.743 --> 00:09:40.846
+So notice here
+that every time you see red,
+
+178
+00:09:40.846 --> 00:09:43.482
+it's still reflecting on those entities.
+
+179
+00:09:43.482 --> 00:09:46.319
+The final result will be printed out
+in green.
+
+180
+00:09:46.319 --> 00:09:47.553
+All right.
+
+181
+00:09:47.553 --> 00:09:52.224
+As you can see here, the first time
+the NLM created the entities
+
+182
+00:09:52.224 --> 00:09:55.394
+it had location
+but it didn't have personal data.
+
+183
+00:09:55.428 --> 00:09:58.497
+Even though we asked for person
+and date to be included,
+
+184
+00:09:58.497 --> 00:10:03.469
+even if there are no entities to extract,
+we asked for there to be an empty list.
+
+185
+00:10:03.469 --> 00:10:07.139
+However, in the second iteration,
+when it was done,
+
+186
+00:10:07.139 --> 00:10:11.611
+it did in fact create person and data
+as entities.
+
+187
+00:10:11.611 --> 00:10:13.679
+Let's try another example.
+
+188
+00:10:13.679 --> 00:10:17.183
+In this case
+I provided another dummy bit of text,
+
+189
+00:10:17.183 --> 00:10:20.820
+but this time it's a transcript
+from a meeting.
+
+190
+00:10:20.820 --> 00:10:22.955
+The meeting includes a few people.
+
+191
+00:10:22.955 --> 00:10:25.958
+There's a date associated with the meeting
+and so on.
+
+192
+00:10:26.092 --> 00:10:31.092
+Again, let's run this pipeline with
+this text as input to our prompt builder.
+
+193
+00:10:31.564 --> 00:10:36.564
+And when we're happy with the responses,
+let's print it out in green.
+
+194
+00:10:36.569 --> 00:10:41.040
+Again, we notice that the first time
+the NLM created entities,
+
+195
+00:10:41.040 --> 00:10:44.310
+it had person dates,
+but it also had technology.
+
+196
+00:10:44.343 --> 00:10:48.648
+Technology was not one of the entities
+we asked for it to extract.
+
+197
+00:10:48.648 --> 00:10:53.648
+However, in the second go we noticed that
+it extracted person, location and date.
+
+198
+00:10:54.353 --> 00:10:55.955
+This is great.
+
+199
+00:10:55.955 --> 00:11:00.092
+In this lab, you learned how to implement
+pipelines that are able to loop,
+
+200
+00:11:00.092 --> 00:11:03.295
+and in this case, you built a pipeline
+that loops for self-reflection.
+
+201
+00:11:03.329 --> 00:11:07.199
+This was a very simple example
+of how you can implement self reflection.
+
+202
+00:11:07.199 --> 00:11:09.869
+But you can try this
+with different types of input,
+
+203
+00:11:09.869 --> 00:11:13.172
+but also ask for it to produce
+different types of outputs.
+
+204
+00:11:13.239 --> 00:11:16.475
+You don't have to confine yourself
+to named entities.
+
+205
+00:11:16.475 --> 00:11:18.911
+In the next lab,
+we're going to be creating
+
+206
+00:11:18.911 --> 00:11:21.714
+a chat agent
+that is able to use function calling.
+
+207
+00:11:21.714 --> 00:11:25.651
+And we're going to also make one
+of these functions a Hastag pipeline.
+
+208
+00:11:25.651 --> 00:11:26.652
+I'll see you there.
+

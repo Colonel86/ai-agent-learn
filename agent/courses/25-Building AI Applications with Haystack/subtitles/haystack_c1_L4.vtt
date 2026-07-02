@@ -1,0 +1,1188 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.966 --> 00:00:03.700
+We mentioned pipelines can branch.
+
+2
+00:00:03.700 --> 00:00:05.166
+So let's actually build one.
+
+3
+00:00:05.166 --> 00:00:09.366
+Full backs are a great example
+where branching would be super useful.
+
+4
+00:00:09.366 --> 00:00:12.133
+In this lesson
+you'll create a branching pipeline
+
+5
+00:00:12.133 --> 00:00:15.216
+that implements a fallback to web search.
+
+6
+00:00:15.216 --> 00:00:17.633
+If our right pipeline
+based on our database
+
+7
+00:00:17.633 --> 00:00:21.883
+is not able to answer a user query,
+you will make it fallback to web search.
+
+8
+00:00:21.883 --> 00:00:24.666
+So let's get coding.
+Let's build our first pipeline.
+
+9
+00:00:24.666 --> 00:00:29.400
+This able to branch and full
+backs are a perfect use case for this.
+
+10
+00:00:29.400 --> 00:00:30.100
+So this lesson
+
+11
+00:00:30.100 --> 00:00:34.000
+we're going to be using a component
+called the conditional router in haystack.
+
+12
+00:00:34.000 --> 00:00:38.533
+This is a special component that accepts
+roots and conditions and branches out
+
+13
+00:00:38.533 --> 00:00:42.416
+your pipeline and activates
+a specific branch if a condition is met.
+
+14
+00:00:42.416 --> 00:00:45.483
+If condition one is met,
+we might ask for a retriever.
+
+15
+00:00:45.483 --> 00:00:46.750
+If condition two is met,
+
+16
+00:00:46.750 --> 00:00:50.850
+we might have a whole different section
+of the pipeline that does web search.
+
+17
+00:00:50.850 --> 00:00:54.200
+Similarly, if condition three is met,
+we might just want a generator
+
+18
+00:00:54.200 --> 00:00:56.033
+to generate the response.
+
+19
+00:00:56.033 --> 00:00:58.850
+Root is can also be used
+for many different use cases.
+
+20
+00:00:58.850 --> 00:01:02.516
+You don't have to have specific stack
+components here.
+
+21
+00:01:02.516 --> 00:01:06.800
+You can also have your router
+go to complete different database,
+
+22
+00:01:06.800 --> 00:01:10.950
+go to complete different API,
+activate web search, and so on.
+
+23
+00:01:10.950 --> 00:01:15.150
+what we're going to be building
+is a fallback to web search pipeline.
+
+24
+00:01:15.150 --> 00:01:18.716
+So we're going to evaluate
+whether the answer is possible with a rank
+
+25
+00:01:18.716 --> 00:01:19.883
+pipeline.
+
+26
+00:01:19.883 --> 00:01:23.866
+And then based on the results
+of that pipeline, we're going to ask
+
+27
+00:01:23.866 --> 00:01:28.316
+the conditional router to either
+route to web search or give the answer.
+
+28
+00:01:28.316 --> 00:01:31.333
+The conditional route is going to check
+if there's no answer
+
+29
+00:01:31.333 --> 00:01:34.516
+within the Rock pipeline's response,
+and then do web search.
+
+30
+00:01:34.516 --> 00:01:35.933
+In this case.
+
+31
+00:01:35.933 --> 00:01:39.533
+But if there is an answer, we're going
+to end the pipeline for web search.
+
+32
+00:01:39.550 --> 00:01:42.616
+We're also going to be building
+a sort of Rag pipeline.
+
+33
+00:01:42.616 --> 00:01:44.983
+But in this case,
+the documents that we're going to be
+
+34
+00:01:44.983 --> 00:01:47.916
+receiving are going to be based on web
+search.
+
+35
+00:01:47.916 --> 00:01:52.633
+We'll have web search, and then we'll have
+our usual prompt builder and generator.
+
+36
+00:01:52.633 --> 00:01:56.016
+We also get to name our branches
+because we can name the outputs
+
+37
+00:01:56.016 --> 00:01:57.666
+of the conditional router.
+
+38
+00:01:57.666 --> 00:02:01.233
+We'll give one branch the name answer
+and the other branch the name.
+
+39
+00:02:01.233 --> 00:02:02.333
+Go to Web Search.
+
+40
+00:02:02.333 --> 00:02:04.533
+Let's see all of this in code.
+
+41
+00:02:04.533 --> 00:02:08.116
+Let's start with the usual warning
+suppression, and make sure that we're
+
+42
+00:02:08.116 --> 00:02:12.066
+loading all of our environment variables
+that we might need for this lab.
+
+43
+00:02:12.066 --> 00:02:16.533
+Next, we'll simply start
+by importing all of the dependencies.
+
+44
+00:02:16.533 --> 00:02:19.100
+You'll notice a new component here,
+which is going to be
+
+45
+00:02:19.100 --> 00:02:21.116
+the conditional router
+that we'll be using.
+
+46
+00:02:21.116 --> 00:02:24.033
+Next,
+you'll start by writing some documents
+
+47
+00:02:24.033 --> 00:02:27.383
+into an in-memory document
+store for our AGG pipeline.
+
+48
+00:02:27.383 --> 00:02:30.050
+Here, I've provided some dummy documents.
+
+49
+00:02:30.050 --> 00:02:31.700
+We have four of them.
+
+50
+00:02:31.700 --> 00:02:34.766
+And each of them
+talk about a specific stack
+
+51
+00:02:34.766 --> 00:02:37.983
+components
+and how they are supposed to be used.
+
+52
+00:02:37.983 --> 00:02:42.616
+Next, since we are going to be
+implementing a very simple react pipeline,
+
+53
+00:02:42.616 --> 00:02:43.450
+I can simply
+
+54
+00:02:43.450 --> 00:02:47.333
+go ahead and write all of these documents
+to an in-memory document store.
+
+55
+00:02:47.333 --> 00:02:50.050
+And you don't even have to create
+a pipeline for this.
+
+56
+00:02:50.050 --> 00:02:54.666
+document stores in haystack also have
+a utility function called Write documents,
+
+57
+00:02:54.666 --> 00:02:57.766
+where we simply write document objects
+to a document store.
+
+58
+00:02:57.766 --> 00:02:59.650
+And we don't have to split these.
+
+59
+00:02:59.650 --> 00:03:01.300
+We don't have to clean these documents.
+
+60
+00:03:01.300 --> 00:03:02.433
+They're already pretty short.
+
+61
+00:03:02.433 --> 00:03:04.733
+So you can just go ahead and use that.
+
+62
+00:03:04.733 --> 00:03:06.483
+Now that you have some documents
+
+63
+00:03:06.483 --> 00:03:10.583
+in the in-memory document store,
+you can start by creating a rack pipeline.
+
+64
+00:03:10.583 --> 00:03:14.283
+We're going to be slowly
+building up this pipeline start including
+
+65
+00:03:14.283 --> 00:03:18.233
+branches and start including the web
+search along with that as well.
+
+66
+00:03:18.233 --> 00:03:20.566
+Let's start with our Rag prompt templates.
+
+67
+00:03:20.566 --> 00:03:24.600
+Here we have a simple Rag prompt template,
+but different to what you've seen
+
+68
+00:03:24.600 --> 00:03:25.383
+before.
+
+69
+00:03:25.383 --> 00:03:28.200
+We also include an instruction
+that says if the answer
+
+70
+00:03:28.200 --> 00:03:32.266
+is not contained within the documents,
+reply with no answer.
+
+71
+00:03:32.266 --> 00:03:36.666
+This is a very simple way of doing this
+type of pipeline, it works pretty well
+
+72
+00:03:36.666 --> 00:03:39.666
+with the model we're going to be using,
+which is GPT three.
+
+73
+00:03:39.683 --> 00:03:44.316
+You can also modify this prompt
+to output something different if you like.
+
+74
+00:03:44.316 --> 00:03:47.433
+Next, let's start
+building out our pipeline.
+
+75
+00:03:47.433 --> 00:03:50.833
+As usual,
+we start by initializing our pipeline,
+
+76
+00:03:50.833 --> 00:03:54.983
+and next will simply be adding all of
+the components that we're going to need.
+
+77
+00:03:54.983 --> 00:03:58.966
+notice that because we haven't
+created embeddings for our documents,
+
+78
+00:03:58.966 --> 00:04:01.466
+well now we're going to be using a keyword
+based retrieval.
+
+79
+00:04:01.466 --> 00:04:05.550
+So previously you have seen in-memory
+embedding retrieval.
+
+80
+00:04:05.550 --> 00:04:09.633
+This time we're going to be using
+the in-memory Bm25 retriever.
+
+81
+00:04:09.633 --> 00:04:14.016
+We also have our prompt builder using
+the prompt template we created above,
+
+82
+00:04:14.016 --> 00:04:18.600
+and also the OpenAI generator
+with the default model which is GPT three.
+
+83
+00:04:18.600 --> 00:04:21.600
+Next, let's connect
+these components to each other.
+
+84
+00:04:21.600 --> 00:04:25.233
+The retriever is forwarding documents
+to prompt, build a documents,
+
+85
+00:04:25.233 --> 00:04:29.866
+and then prompt builder is simply
+forwarding the full prompt to our alarm.
+
+86
+00:04:29.866 --> 00:04:32.100
+This is still a very simple read pipeline.
+
+87
+00:04:32.100 --> 00:04:33.416
+Let's have a look at what we have
+
+88
+00:04:33.416 --> 00:04:37.583
+so far, and slowly
+we'll start building up on this pipeline.
+
+89
+00:04:37.583 --> 00:04:41.716
+We have a retriever, a prompt builder
+and a large language model.
+
+90
+00:04:41.716 --> 00:04:46.716
+But let's see how this pipeline reacts
+when we ask certain questions.
+
+91
+00:04:47.200 --> 00:04:48.916
+first, let's ask a question that
+
+92
+00:04:48.916 --> 00:04:52.083
+that we know
+our pipeline should be able to answer.
+
+93
+00:04:52.083 --> 00:04:53.000
+You may remember that
+
+94
+00:04:53.000 --> 00:04:57.683
+we had four documents and each of them
+talk about certain haystack components.
+
+95
+00:04:57.683 --> 00:05:01.983
+We already know that we have a document
+in there that talks about retrievers.
+
+96
+00:05:01.983 --> 00:05:04.916
+Let's ask the query,
+what is a retriever for?
+
+97
+00:05:04.916 --> 00:05:08.100
+Remember that we have to provide
+the query both to the prompt builder
+
+98
+00:05:08.100 --> 00:05:09.066
+and the retriever.
+
+99
+00:05:09.066 --> 00:05:13.516
+The retriever is going to use the query
+to look up the most relevant documents.
+
+100
+00:05:13.516 --> 00:05:18.516
+The reply is retrievers are for retrieving
+relevant documents to a user query.
+
+101
+00:05:18.516 --> 00:05:22.333
+But now let's see what happens
+if we ask the question what Mr..
+
+102
+00:05:22.333 --> 00:05:26.266
+All components are, then we already know
+that we don't have any documents
+
+103
+00:05:26.266 --> 00:05:31.100
+that talks about Mistral or the components
+that we have in haystack for mistrial.
+
+104
+00:05:31.100 --> 00:05:34.216
+So if all goes well,
+because our prompt contains
+
+105
+00:05:34.216 --> 00:05:38.216
+the statement reply with no answer,
+we should be getting the reply.
+
+106
+00:05:38.216 --> 00:05:40.483
+No answer. Great.
+
+107
+00:05:40.483 --> 00:05:44.416
+Now why using GPT three here
+and in my experience,
+
+108
+00:05:44.416 --> 00:05:49.416
+we are pretty lucky in that we can always
+get this no answer output, but sometimes
+
+109
+00:05:49.683 --> 00:05:54.400
+We might have no answer with a capital
+M capital and an A and so on.
+
+110
+00:05:54.400 --> 00:05:56.783
+So will also account for this.
+
+111
+00:05:56.783 --> 00:05:59.333
+Let's start
+creating our conditional roots,
+
+112
+00:05:59.333 --> 00:06:03.233
+and you'll start building up
+on the right pipeline you already built.
+
+113
+00:06:03.233 --> 00:06:05.783
+Well,
+going to be using the conditional router.
+
+114
+00:06:05.783 --> 00:06:09.166
+And this component
+accepts a list of routes.
+
+115
+00:06:09.166 --> 00:06:11.716
+You'll start by creating two routes.
+
+116
+00:06:11.716 --> 00:06:15.866
+Notice that these routes have conditions
+
+117
+00:06:15.866 --> 00:06:19.750
+outputs output names and output types.
+
+118
+00:06:19.750 --> 00:06:21.116
+our first condition states.
+
+119
+00:06:21.116 --> 00:06:24.366
+If no answer is in replies, then
+
+120
+00:06:24.366 --> 00:06:27.400
+go to web Search and output query.
+
+121
+00:06:27.400 --> 00:06:32.333
+The second condition states
+if there is not no answer and replies,
+
+122
+00:06:32.333 --> 00:06:36.216
+simply output
+the reply itself to the output name.
+
+123
+00:06:36.216 --> 00:06:37.416
+Answer.
+
+124
+00:06:37.416 --> 00:06:42.416
+Now we also add a function
+that comes by default with Jinja here,
+
+125
+00:06:42.883 --> 00:06:47.416
+while making sure that we're evaluating
+the reply, but only in lowercase.
+
+126
+00:06:47.416 --> 00:06:50.500
+This is to account
+for whether the replies contain something
+
+127
+00:06:50.500 --> 00:06:54.533
+that goes like no answer with a capital
+N, and so on.
+
+128
+00:06:54.533 --> 00:06:59.300
+We can also do the
+same for the next condition.
+
+129
+00:06:59.300 --> 00:07:03.550
+Now we can start using these routes
+in a conditional router.
+
+130
+00:07:03.550 --> 00:07:06.116
+you'll start by initializing your router.
+
+131
+00:07:06.116 --> 00:07:08.533
+And now you can start running your router.
+
+132
+00:07:08.533 --> 00:07:10.050
+Here we have an example.
+
+133
+00:07:10.050 --> 00:07:13.983
+And we're simulating a reply
+for a large language model here
+
+134
+00:07:13.983 --> 00:07:16.300
+for the query who is Jeff?
+
+135
+00:07:16.300 --> 00:07:20.333
+Let's imagine,
+an alarm responded with Jeff is my friend.
+
+136
+00:07:20.366 --> 00:07:23.400
+Let's
+see what the conditional router does then.
+
+137
+00:07:23.400 --> 00:07:26.116
+As you can see,
+because we didn't have no answer
+
+138
+00:07:26.116 --> 00:07:29.933
+in this reply,
+the conditional router outputs an answer.
+
+139
+00:07:29.933 --> 00:07:31.433
+Jeff is my friend.
+
+140
+00:07:31.433 --> 00:07:35.233
+That's
+because we asked an output to answer,
+
+141
+00:07:35.233 --> 00:07:38.233
+and that the answer contains the reply.
+
+142
+00:07:38.233 --> 00:07:43.233
+Now let's see what happens if we have
+no answer in the simulated alarm reply.
+
+143
+00:07:44.166 --> 00:07:48.583
+In this case, we're also testing
+whether it'll work with a capital N
+
+144
+00:07:48.583 --> 00:07:49.783
+for the same question.
+
+145
+00:07:49.783 --> 00:07:51.083
+Who is Jeff?
+
+146
+00:07:51.083 --> 00:07:53.083
+Let's say we've simulated the answer.
+
+147
+00:07:53.083 --> 00:07:54.700
+No answer.
+
+148
+00:07:54.700 --> 00:07:57.966
+And what output
+in the query to go to web search.
+
+149
+00:07:57.966 --> 00:07:58.700
+This is great.
+
+150
+00:07:58.700 --> 00:08:03.500
+So this means we can continue building up
+on the pipeline you created above.
+
+151
+00:08:03.500 --> 00:08:08.500
+You'll start by adding the component
+router with these routes to your pipeline.
+
+152
+00:08:08.816 --> 00:08:13.283
+And then we'll connect the replies
+we get from the alum to the router.
+
+153
+00:08:13.283 --> 00:08:14.633
+Replies.
+
+154
+00:08:14.633 --> 00:08:19.250
+Let's start
+by looking at what this looks like now.
+
+155
+00:08:19.250 --> 00:08:21.083
+Now, on top of the same pipeline
+
+156
+00:08:21.083 --> 00:08:25.183
+you built before, you also have a router
+at the end outputting.
+
+157
+00:08:25.183 --> 00:08:27.533
+Go to web search or answer.
+
+158
+00:08:27.533 --> 00:08:28.550
+Let's see what happens
+
+159
+00:08:28.550 --> 00:08:32.900
+if we run the same query as before,
+where we know there should be no answer?
+
+160
+00:08:32.900 --> 00:08:35.766
+what Mr.. Components does haystack have?
+
+161
+00:08:35.766 --> 00:08:39.500
+As you can see,
+the result comes from router at the bottom
+
+162
+00:08:39.500 --> 00:08:42.250
+and is outputting the question what Mr.
+
+163
+00:08:42.250 --> 00:08:46.650
+components does haystack
+have to go to web search.
+
+164
+00:08:46.650 --> 00:08:50.383
+Now we can start building a web search
+branch.
+
+165
+00:08:50.383 --> 00:08:54.966
+For web search, we're going to be using
+a component called supportive Web search.
+
+166
+00:08:54.966 --> 00:08:58.800
+This component
+accepts some queries, searches the web,
+
+167
+00:08:58.800 --> 00:09:02.933
+and returns the results
+for that query as haystack documents.
+
+168
+00:09:02.933 --> 00:09:06.883
+So we are able to build
+basically the same type of react pipeline.
+
+169
+00:09:06.883 --> 00:09:09.750
+Only this time
+the documents are coming from the web.
+
+170
+00:09:09.750 --> 00:09:14.750
+So you'll start by creating your prompt
+for this web search rag.
+
+171
+00:09:14.966 --> 00:09:18.266
+This prompt is very similar
+to all of the rest you've seen so far,
+
+172
+00:09:18.266 --> 00:09:21.416
+but the only difference here is
+that we're asking the NLM
+
+173
+00:09:21.416 --> 00:09:24.983
+Your answer should indicate that
+your answer was generated from web search.
+
+174
+00:09:24.983 --> 00:09:27.900
+This prompt is expecting the query
+and the documents.
+
+175
+00:09:27.900 --> 00:09:31.850
+These documents
+now have to come from web search results.
+
+176
+00:09:31.850 --> 00:09:35.733
+Now that we have our web search prompt
+for the rest of the pipeline,
+
+177
+00:09:35.733 --> 00:09:37.983
+that's going to be doing web search
+based drag,
+
+178
+00:09:37.983 --> 00:09:42.216
+we can start building out a whole pipeline
+with conditional roots.
+
+179
+00:09:42.216 --> 00:09:45.633
+The first few components are the same
+that you've seen so far.
+
+180
+00:09:45.633 --> 00:09:48.866
+Let's call
+this pipeline rag or web search.
+
+181
+00:09:48.866 --> 00:09:53.216
+And then let's add all the components
+you've seen so far.
+
+182
+00:09:53.216 --> 00:09:57.683
+So this will be the same
+as the Rag pipeline that you saw earlier.
+
+183
+00:09:57.716 --> 00:09:59.950
+However now we're building up on that.
+
+184
+00:09:59.950 --> 00:10:03.416
+We're also going to add
+the component web search
+
+185
+00:10:03.416 --> 00:10:05.666
+which is part of web search.
+
+186
+00:10:05.666 --> 00:10:08.366
+Next we're going to be adding
+our prompts builder
+
+187
+00:10:08.366 --> 00:10:11.833
+for web search
+which is using the template above.
+
+188
+00:10:11.833 --> 00:10:14.083
+Finally, we're asking for a large language
+
+189
+00:10:14.083 --> 00:10:17.433
+model
+to generate a human readable response.
+
+190
+00:10:17.433 --> 00:10:20.116
+Now let's connect all of these components.
+
+191
+00:10:20.116 --> 00:10:21.400
+The first three of what?
+
+192
+00:10:21.400 --> 00:10:23.050
+Where you see from above.
+
+193
+00:10:23.050 --> 00:10:26.816
+We are asking the retriever
+to add documents to a prompt builder.
+
+194
+00:10:26.816 --> 00:10:30.566
+Then we're asking a large language model
+to generate a response.
+
+195
+00:10:30.566 --> 00:10:34.333
+But we're also then forwarding
+that response to our router.
+
+196
+00:10:34.333 --> 00:10:37.266
+From here on out,
+we need to ask the browser
+
+197
+00:10:37.266 --> 00:10:40.850
+go to web Search results to go to web
+search.
+
+198
+00:10:40.850 --> 00:10:41.983
+query that the go to web
+
+199
+00:10:41.983 --> 00:10:45.950
+search is outputting
+is now going to the query for web search.
+
+200
+00:10:45.950 --> 00:10:50.950
+And we're also adding the same query
+to the prompt for web search.
+
+201
+00:10:51.383 --> 00:10:52.216
+Finally, the
+
+202
+00:10:52.216 --> 00:10:56.383
+resulting documents from website
+are being added to this prompt as well.
+
+203
+00:10:56.383 --> 00:11:01.016
+And we're asking a large language model
+to generate a response.
+
+204
+00:11:01.016 --> 00:11:04.816
+Before we run this,
+you can also show it as usual.
+
+205
+00:11:04.816 --> 00:11:06.716
+Let's see what's going on here.
+
+206
+00:11:06.716 --> 00:11:11.000
+You'll notice that the beginning
+is the same react pipeline you saw before.
+
+207
+00:11:11.000 --> 00:11:12.466
+But now we have some more things.
+
+208
+00:11:12.466 --> 00:11:14.116
+After the router.
+
+209
+00:11:14.116 --> 00:11:17.233
+The router is routing to web search.
+
+210
+00:11:17.233 --> 00:11:20.233
+From the go to web search branch,
+
+211
+00:11:20.233 --> 00:11:24.650
+you're asking the prompt builder
+to forward a prompt to a large language model .
+
+212
+00:11:24.650 --> 00:11:28.450
+And the documents here are based on web search replies.
+
+213
+00:11:28.450 --> 00:11:33.450
+The router is also outputting answer
+if it doesn't have to go to web search.
+
+214
+00:11:33.683 --> 00:11:37.166
+One thing you can experiment
+with modifying here is notice
+
+215
+00:11:37.166 --> 00:11:40.266
+how web search is outputting links
+as well.
+
+216
+00:11:40.266 --> 00:11:41.666
+Links are the links
+
+217
+00:11:41.666 --> 00:11:46.183
+from which the resulting documents
+were generated from based on web search.
+
+218
+00:11:46.183 --> 00:11:49.683
+You could, if you like,
+use this output in your prompt
+
+219
+00:11:49.683 --> 00:11:53.366
+and modify your prompts for the web
+search results to also reference
+
+220
+00:11:53.366 --> 00:11:56.783
+the URLs that the results are coming from.
+
+221
+00:11:56.783 --> 00:11:59.933
+Let's run this full pipeline
+with a full back to web search
+
+222
+00:11:59.933 --> 00:12:03.166
+with the same queries we tried earlier.
+
+223
+00:12:03.166 --> 00:12:06.133
+You can start by running the same query
+you ran before.
+
+224
+00:12:06.133 --> 00:12:07.483
+What is the retriever for?
+
+225
+00:12:07.483 --> 00:12:10.650
+And we know our pipeline
+should be able to answer this.
+
+226
+00:12:10.650 --> 00:12:13.750
+so we should be getting the answer
+from the output router.
+
+227
+00:12:13.750 --> 00:12:15.633
+Answer.
+
+228
+00:12:15.633 --> 00:12:17.383
+As you can see, router answer
+
+229
+00:12:17.383 --> 00:12:20.466
+outputs retrievers are for retrieving
+relevant documents.
+
+230
+00:12:20.466 --> 00:12:22.650
+Great. Now let's see what happens.
+
+231
+00:12:22.650 --> 00:12:27.300
+If you ask a question that shouldn't
+be answerable with our pipeline.
+
+232
+00:12:27.300 --> 00:12:29.683
+Again,
+you can try the same query as before.
+
+233
+00:12:29.683 --> 00:12:33.216
+What Mistral components does haystack have
+
+234
+00:12:33.216 --> 00:12:34.400
+this time around?
+
+235
+00:12:34.400 --> 00:12:37.700
+You should be getting the reply
+from web search.
+
+236
+00:12:37.700 --> 00:12:38.233
+Great.
+
+237
+00:12:38.233 --> 00:12:41.250
+As you can see,
+web search has links outputs but
+
+238
+00:12:41.250 --> 00:12:44.433
+the reply will not reference these.
+
+239
+00:12:44.433 --> 00:12:47.433
+We get the result from NLM for web search
+
+240
+00:12:47.433 --> 00:12:50.916
+and the reply says based on the documents
+retrieved from the web.
+
+241
+00:12:50.916 --> 00:12:51.900
+Mr.. Components.
+
+242
+00:12:51.900 --> 00:12:54.983
+The haystack has includes etc..
+
+243
+00:12:54.983 --> 00:12:58.033
+You can try this with different questions
+that should
+
+244
+00:12:58.033 --> 00:13:01.100
+and shouldn't
+be answerable with our pipeline.
+
+245
+00:13:01.100 --> 00:13:02.400
+What is the capital of France?
+
+246
+00:13:02.400 --> 00:13:05.200
+We should get this reply from web search.
+
+247
+00:13:05.200 --> 00:13:07.500
+What cohere components does haystack have?
+
+248
+00:13:07.500 --> 00:13:10.450
+This should also come from web search.
+But what are generators for?
+
+249
+00:13:10.450 --> 00:13:14.383
+Should be answerable with our pipeline.
+
+250
+00:13:14.383 --> 00:13:17.816
+In the next lab,
+you'll be creating two things.
+
+251
+00:13:17.816 --> 00:13:21.500
+You'll also be creating your own component
+that has two outputs.
+
+252
+00:13:21.500 --> 00:13:24.400
+So this component can also help you
+branch out.
+
+253
+00:13:24.400 --> 00:13:29.300
+But we're going to be using this component
+to implement Self-reflecting agents.
+
+254
+00:13:29.300 --> 00:13:30.066
+See you there.
+

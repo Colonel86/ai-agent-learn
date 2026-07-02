@@ -85,7 +85,7 @@
 - **隐藏成本**:工具调用等前沿能力在 `haystack_experimental`,稳定性需关注。
 - **成熟度**:✅ 生产友好,有 REST 部署。
 - **架构师笔记**:与 LangChain 比,**更工整、更工程化**;同一套 DAG 抽象覆盖"线性RAG→分支→循环→工具Agent"。状态留在你自己代码里(Pipeline 无状态),比 LangGraph 更"轻"但少了内建 state/HITL。
-- 课程:曾整理过 `25-Building AI Applications with Haystack` 笔记,2026-07 已从 courses/ 移除(概念与 LangGraph/LlamaIndex 课程重叠,选型结论已沉淀在本文件);需要时可从 git 历史找回。
+- 课程:`25-Building AI Applications with Haystack`(见 `00-总结回顾.md`)。
 
 ## 7. crewAI ✅⚠️
 

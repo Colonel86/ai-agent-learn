@@ -1,0 +1,1256 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.002 --> 00:00:05.605
+This last lesson is an intro to haystacks
+core abstractions.
+
+2
+00:00:05.605 --> 00:00:06.006
+You'll learn
+
+3
+00:00:06.006 --> 00:00:09.809
+what components are, how they work, and
+how they can be combined into pipelines.
+
+4
+00:00:09.809 --> 00:00:12.879
+So many are use cases
+as well as what documents
+
+5
+00:00:12.879 --> 00:00:16.016
+stores are and how they can be accessed
+by a pipeline.
+
+6
+00:00:16.016 --> 00:00:19.719
+We'll start by creating a simple
+indexing pipeline followed by a token
+
+7
+00:00:19.719 --> 00:00:22.322
+search pipeline. Let's dive in.
+
+8
+00:00:22.322 --> 00:00:25.191
+AI applications are often
+made up of multiple steps
+
+9
+00:00:25.191 --> 00:00:27.427
+that work together to achieve a goal.
+
+10
+00:00:27.427 --> 00:00:28.762
+For example, retrieval.
+
+11
+00:00:28.762 --> 00:00:30.397
+Augmented generation.
+
+12
+00:00:30.397 --> 00:00:32.198
+This is usually made up of two steps.
+
+13
+00:00:32.198 --> 00:00:35.535
+The retrieval step that is,
+looking at a database
+
+14
+00:00:35.535 --> 00:00:39.005
+and extracting the most relevant documents
+from that database.
+
+15
+00:00:39.005 --> 00:00:41.541
+And then the generation step
+that's using the context
+
+16
+00:00:41.541 --> 00:00:44.644
+from these documents
+to generate a response.
+
+17
+00:00:44.644 --> 00:00:46.913
+But you may have to
+sometimes switch things up.
+
+18
+00:00:46.913 --> 00:00:51.913
+For example, you may have to add a ranking
+step between retrieval and generation.
+
+19
+00:00:52.619 --> 00:00:54.521
+In a full AI application,
+
+20
+00:00:54.521 --> 00:00:59.225
+there are smaller tasks that are combined
+into a larger use case in haystack.
+
+21
+00:00:59.259 --> 00:01:02.729
+All of these small tasks are achieved
+by components.
+
+22
+00:01:02.729 --> 00:01:07.167
+A component is then combined
+with other components to form a pipeline.
+
+23
+00:01:07.167 --> 00:01:09.102
+These pipelines are the entities
+
+24
+00:01:09.102 --> 00:01:13.206
+that are achieving an application
+that we want to build.
+
+25
+00:01:13.206 --> 00:01:16.576
+A pipeline
+also has access to some databases.
+
+26
+00:01:16.609 --> 00:01:18.778
+In haystack we call these document stores.
+
+27
+00:01:18.778 --> 00:01:19.579
+And the pipeline
+
+28
+00:01:19.579 --> 00:01:23.683
+has access to these document stores
+through some of the components.
+
+29
+00:01:23.683 --> 00:01:27.954
+For example, you may store data
+and we V8 quadrant or MongoDB
+
+30
+00:01:27.954 --> 00:01:32.058
+and have your pipeline access
+these documents through some components.
+
+31
+00:01:32.058 --> 00:01:34.594
+Pipelines are composed
+by connecting these components
+
+32
+00:01:34.594 --> 00:01:37.597
+in a way that achieve an AI application.
+
+33
+00:01:37.630 --> 00:01:40.233
+But a component
+can expect any number of inputs,
+
+34
+00:01:40.233 --> 00:01:43.536
+and it can also produce
+any number of outputs.
+
+35
+00:01:43.536 --> 00:01:46.973
+For example, the sentence Transformers
+document embedded.
+
+36
+00:01:46.973 --> 00:01:51.444
+This component expects a list of documents
+and returns the same list of documents
+
+37
+00:01:51.444 --> 00:01:52.779
+enriched with embeddings.
+
+38
+00:01:52.779 --> 00:01:55.215
+It also returns some metadata.
+
+39
+00:01:55.215 --> 00:01:58.451
+This component uses sentence transformers
+embedding models
+
+40
+00:01:58.451 --> 00:02:00.753
+to create these embeddings.
+
+41
+00:02:00.753 --> 00:02:01.754
+For example, let's
+
+42
+00:02:01.754 --> 00:02:05.024
+start with a sentence
+is Taylor Swift Queen of the world?
+
+43
+00:02:05.024 --> 00:02:08.027
+We may have a component,
+let's say an embedding
+
+44
+00:02:08.194 --> 00:02:11.030
+that produces an embedding for this query.
+
+45
+00:02:11.030 --> 00:02:14.834
+We may have another component
+that's expecting an embedding or a vector.
+
+46
+00:02:14.834 --> 00:02:17.170
+And it's then producing a document.
+
+47
+00:02:17.170 --> 00:02:18.905
+Let's call this a retriever.
+
+48
+00:02:18.905 --> 00:02:23.309
+If we then combine these two components
+we've achieved a pretty accurate document
+
+49
+00:02:23.309 --> 00:02:25.111
+search pipeline. For example.
+
+50
+00:02:25.111 --> 00:02:27.280
+Haystack has many ready made components.
+
+51
+00:02:27.280 --> 00:02:28.848
+For example, generators
+
+52
+00:02:28.848 --> 00:02:32.752
+that access different model
+providers, embeddings that does the same.
+
+53
+00:02:32.752 --> 00:02:36.723
+We have different retrievers that are able
+to retrieve from many databases.
+
+54
+00:02:36.723 --> 00:02:38.925
+We have converters, but the list goes on.
+
+55
+00:02:38.925 --> 00:02:42.395
+you may have rankers,
+routers, preprocessors and so on.
+
+56
+00:02:42.395 --> 00:02:45.632
+We build pipelines to create applications
+like question
+
+57
+00:02:45.632 --> 00:02:50.069
+answering, document search chats, question
+generation, output validation.
+
+58
+00:02:50.069 --> 00:02:52.705
+And the list can go on and on.
+
+59
+00:02:52.705 --> 00:02:54.741
+We build these pipelines with haystack.
+
+60
+00:02:54.741 --> 00:02:57.410
+But haystack
+pipelines can also branch out.
+
+61
+00:02:57.410 --> 00:03:02.410
+That means we can have locations
+that have a decision making component.
+
+62
+00:03:02.749 --> 00:03:05.018
+Pipelines can get quite complex.
+
+63
+00:03:05.018 --> 00:03:09.589
+Haystack pipelines can also loop
+so it loops until a certain case is met
+
+64
+00:03:09.589 --> 00:03:10.924
+and so on.
+
+65
+00:03:10.924 --> 00:03:14.460
+But the most important thing
+is, if haystack doesn't have a component
+
+66
+00:03:14.460 --> 00:03:18.531
+that you need to build your application,
+you can go ahead and build your own
+
+67
+00:03:18.531 --> 00:03:22.068
+and put those into the pipeline
+where they make sense.
+
+68
+00:03:22.068 --> 00:03:23.903
+All right. Let's see all this in code.
+
+69
+00:03:23.903 --> 00:03:28.903
+And let's start using haystack
+components, pipelines and document stores.
+
+70
+00:03:29.042 --> 00:03:31.411
+You'll first start by adding this line
+
+71
+00:03:31.411 --> 00:03:34.414
+to suppress any warnings
+that we don't need.
+
+72
+00:03:34.514 --> 00:03:37.884
+Next, we're going to use a helper function
+
+73
+00:03:37.884 --> 00:03:41.688
+that will allow us to import
+all of the environment variables
+
+74
+00:03:41.688 --> 00:03:46.688
+that we're going to need for this lab,
+such as OpenAI API keys, and so on.
+
+75
+00:03:46.993 --> 00:03:47.694
+Now let's
+
+76
+00:03:47.694 --> 00:03:51.698
+start creating our first component
+and using it.
+
+77
+00:03:51.698 --> 00:03:56.236
+The first component that you'll use
+is the OpenAI document and beta.
+
+78
+00:03:56.236 --> 00:04:01.236
+This component uses OpenAI embedding
+models to create embeddings for documents.
+
+79
+00:04:01.507 --> 00:04:04.477
+First,
+you'll import the document embeddings
+
+80
+00:04:04.477 --> 00:04:07.413
+and then you'll initialize
+a document in beta.
+
+81
+00:04:07.413 --> 00:04:10.817
+In this case,
+you'll be using text embedding three
+
+82
+00:04:10.817 --> 00:04:12.986
+small as your embedding model.
+
+83
+00:04:12.986 --> 00:04:16.055
+You can also inspect what kind of inputs
+
+84
+00:04:16.055 --> 00:04:19.525
+and outputs this component is expecting.
+
+85
+00:04:19.525 --> 00:04:21.661
+For example, we can see that
+
+86
+00:04:21.661 --> 00:04:25.031
+this component
+is expecting a list of documents as input.
+
+87
+00:04:25.031 --> 00:04:29.269
+And it's going to be producing documents
+and matter as output.
+
+88
+00:04:29.269 --> 00:04:32.138
+We already know that
+this is an embedding component.
+
+89
+00:04:32.138 --> 00:04:37.138
+So the documents that it's going to be
+producing will also have embeddings.
+
+90
+00:04:37.410 --> 00:04:41.381
+Now let's see how
+we would run this component.
+
+91
+00:04:41.381 --> 00:04:44.284
+For this we've created some dummy
+documents.
+
+92
+00:04:44.284 --> 00:04:46.286
+have a list of two documents.
+
+93
+00:04:46.286 --> 00:04:49.789
+And each of these documents
+are mentioning things about haystack
+
+94
+00:04:49.789 --> 00:04:54.227
+and how you can build AI applications
+with haystack.
+
+95
+00:04:54.227 --> 00:04:58.564
+Because we know the embedded component
+is expecting documents as input.
+
+96
+00:04:58.564 --> 00:05:01.567
+We can run it with these documents.
+
+97
+00:05:01.567 --> 00:05:04.771
+When we run this component,
+you'll notice that it's produced
+
+98
+00:05:04.804 --> 00:05:07.006
+a list of documents as outputs.
+
+99
+00:05:07.006 --> 00:05:09.575
+And the meta information
+is also telling us
+
+100
+00:05:09.575 --> 00:05:13.079
+what kind of model
+was used to create these documents.
+
+101
+00:05:13.079 --> 00:05:18.017
+And the vectors of size 1536.
+
+102
+00:05:18.017 --> 00:05:21.254
+Now that you know how
+to use a component on its own,
+
+103
+00:05:21.254 --> 00:05:24.257
+let's
+see how we would use it in a pipeline.
+
+104
+00:05:24.257 --> 00:05:27.560
+First, we're going to start
+with initializing a document store.
+
+105
+00:05:27.627 --> 00:05:31.164
+And then we're going to build a pipeline
+that writes documents
+
+106
+00:05:31.164 --> 00:05:34.400
+alongside the embeddings
+into a document store.
+
+107
+00:05:34.400 --> 00:05:37.904
+For now we're going to be using
+the in-memory document store.
+
+108
+00:05:37.904 --> 00:05:40.773
+This is the simplest document store
+you can use in haystack,
+
+109
+00:05:40.773 --> 00:05:43.209
+and it has no requirements to use it.
+
+110
+00:05:43.209 --> 00:05:46.546
+But if you like,
+you can switch this to any documents store
+
+111
+00:05:46.546 --> 00:05:51.546
+such as quadrant V, V8, pinecone,
+Croma, and the list goes on.
+
+112
+00:05:51.984 --> 00:05:54.287
+Now we have an in-memory document store.
+
+113
+00:05:54.287 --> 00:05:58.958
+Let's write our first txt file
+into this document store.
+
+114
+00:05:58.958 --> 00:06:02.061
+We're going to start
+by importing all of the component s
+
+115
+00:06:02.061 --> 00:06:06.933
+you're going to be using
+for the first indexing pipeline.
+
+116
+00:06:06.933 --> 00:06:10.069
+You're going to be using the open
+AI document embedded again.
+
+117
+00:06:10.069 --> 00:06:15.069
+But you're also going to be using
+some preprocessors and converters as well.
+
+118
+00:06:15.775 --> 00:06:17.777
+For this demo, we're going to be using
+
+119
+00:06:17.777 --> 00:06:21.214
+all of the default variables
+for these components.
+
+120
+00:06:21.214 --> 00:06:24.550
+But you can also switch this up.
+
+121
+00:06:24.550 --> 00:06:27.053
+We'll start with a converter
+because we're going to have a.
+
+122
+00:06:27.053 --> 00:06:28.888
+TXT file about Da Vinci
+
+123
+00:06:28.888 --> 00:06:32.392
+that we're going to be writing
+into our in-memory document store.
+
+124
+00:06:32.392 --> 00:06:35.962
+Next we're going to be using the document
+splitter
+
+125
+00:06:35.962 --> 00:06:39.332
+The document splitter is a component
+that chunks up your document.
+
+126
+00:06:39.332 --> 00:06:42.201
+By default. It splits by 200 words.
+
+127
+00:06:42.201 --> 00:06:44.737
+And we're going to be using this default
+setup.
+
+128
+00:06:44.737 --> 00:06:46.906
+However, if you like you can change this.
+
+129
+00:06:46.906 --> 00:06:50.643
+for example you can say split by
+
+130
+00:06:50.643 --> 00:06:55.643
+and decide to split by passage instead.
+
+131
+00:06:57.016 --> 00:06:58.551
+This will split your document
+
+132
+00:06:58.551 --> 00:07:03.523
+by 200 paragraphs, for example,
+but let's use the default values.
+
+133
+00:07:03.523 --> 00:07:05.758
+Next you're going to be using them better.
+
+134
+00:07:05.758 --> 00:07:09.529
+In this case we're going to be using
+the OpenAI document in beta.
+
+135
+00:07:09.529 --> 00:07:13.633
+The final component you're going to be
+using is a document writer.
+
+136
+00:07:13.633 --> 00:07:15.368
+You already have a document store.
+
+137
+00:07:15.368 --> 00:07:18.404
+So here you'll be telling the document
+writer that it should be
+
+138
+00:07:18.404 --> 00:07:21.841
+writing
+into your in-memory document store.
+
+139
+00:07:21.841 --> 00:07:25.278
+Now that you have all of your components,
+the next thing you have to do
+
+140
+00:07:25.278 --> 00:07:29.782
+is create a pipeline
+and add these components to that pipeline.
+
+141
+00:07:29.782 --> 00:07:32.718
+You do this by initializing your pipeline,
+
+142
+00:07:32.718 --> 00:07:35.721
+and next you'll be adding each component.
+
+143
+00:07:35.788 --> 00:07:38.891
+The important thing here to note
+is for every component,
+
+144
+00:07:38.891 --> 00:07:40.359
+you'll be providing a name,
+
+145
+00:07:40.359 --> 00:07:42.628
+you can name your component
+anything you want,
+
+146
+00:07:42.628 --> 00:07:45.231
+but then you have to make sure
+that you're using this name.
+
+147
+00:07:45.231 --> 00:07:47.767
+Next.
+
+148
+00:07:47.767 --> 00:07:50.970
+Now that you've added the components,
+your pipeline,
+
+149
+00:07:50.970 --> 00:07:53.606
+the pipeline has access to the components,
+but it doesn't
+
+150
+00:07:53.606 --> 00:07:57.944
+actually know how these components
+interact with each other yet.
+
+151
+00:07:57.944 --> 00:08:02.048
+So this haystack uses
+component connections.
+
+152
+00:08:02.048 --> 00:08:06.619
+For example you'll start by connecting
+the converter to the splitter.
+
+153
+00:08:06.619 --> 00:08:10.189
+This is basically telling the pipeline
+that the output of converter
+
+154
+00:08:10.189 --> 00:08:13.025
+should be handed over to the splitter.
+
+155
+00:08:13.025 --> 00:08:16.295
+Let's connect
+all of our other components as well.
+
+156
+00:08:16.295 --> 00:08:19.165
+And when you run this,
+you'll also get to see
+
+157
+00:08:19.165 --> 00:08:22.835
+what kind of connections
+you've created in your pipeline.
+
+158
+00:08:22.835 --> 00:08:26.105
+Once you've connected
+all of your components in the pipeline,
+
+159
+00:08:26.105 --> 00:08:30.309
+you'll also be able to observe
+what components your pipeline has access
+
+160
+00:08:30.309 --> 00:08:34.380
+to and exactly what the connections
+between these components are.
+
+161
+00:08:34.380 --> 00:08:39.380
+So we're basically seeing that converters
+documents output specifically
+
+162
+00:08:39.485 --> 00:08:43.589
+is being inputted
+into splitter documents input.
+
+163
+00:08:43.589 --> 00:08:44.557
+You'll remember from
+
+164
+00:08:44.557 --> 00:08:48.794
+before that the embedding
+was expecting documents as input.
+
+165
+00:08:48.794 --> 00:08:52.398
+So it's being given documents
+by the splitter.
+
+166
+00:08:52.398 --> 00:08:54.433
+But it's also producing documents.
+
+167
+00:08:54.433 --> 00:08:56.769
+Only this time it has embeddings.
+
+168
+00:08:56.769 --> 00:09:01.440
+So the documents output of the embedding
+is now being given to the writer.
+
+169
+00:09:01.440 --> 00:09:02.742
+Documents input.
+
+170
+00:09:02.742 --> 00:09:03.843
+Another utility
+
+171
+00:09:03.843 --> 00:09:08.748
+that haystack provides is a way
+to visualize these pipelines as well.
+
+172
+00:09:08.748 --> 00:09:12.785
+You simply have to call
+that show on your pipeline.
+
+173
+00:09:12.785 --> 00:09:15.354
+And you'll get a graph of exactly
+
+174
+00:09:15.354 --> 00:09:19.492
+what your pipeline looks like,
+including all of the connections.
+
+175
+00:09:19.492 --> 00:09:23.629
+In this case, we know that
+our pipeline starts with a converter.
+
+176
+00:09:23.629 --> 00:09:27.767
+And the thing
+the input that it's expecting are sources.
+
+177
+00:09:27.767 --> 00:09:30.436
+Now that you have your pipeline
+and you know that
+
+178
+00:09:30.436 --> 00:09:32.572
+the connections are accurate.
+
+179
+00:09:32.572 --> 00:09:34.340
+You can try to run it.
+
+180
+00:09:34.340 --> 00:09:35.308
+You already saw that
+
+181
+00:09:35.308 --> 00:09:39.545
+the first component in that pipeline
+was the converter component,
+
+182
+00:09:39.745 --> 00:09:43.683
+and that it expects a list of sources
+for this lab.
+
+183
+00:09:43.716 --> 00:09:44.817
+We have a.
+
+184
+00:09:44.817 --> 00:09:49.817
+TXT file about DaVinci which will be using
+to index into in-memory documents store.
+
+185
+00:09:52.391 --> 00:09:56.295
+So we call run on our indexing pipeline.
+
+186
+00:09:56.295 --> 00:10:01.295
+And we tell the run method that
+the converter is expecting inputs sources.
+
+187
+00:10:01.701 --> 00:10:06.701
+And we're also providing
+at the location of our txt file.
+
+188
+00:10:06.772 --> 00:10:10.576
+We run this pipeline and you'll see that
+it's calculating the embeddings
+
+189
+00:10:10.576 --> 00:10:14.547
+with the default embedding model we have
+with the OpenAI document embeddings.
+
+190
+00:10:14.814 --> 00:10:16.916
+And it's also letting us know that it's
+
+191
+00:10:16.916 --> 00:10:21.187
+written 47 documents
+into our in-memory document store.
+
+192
+00:10:21.187 --> 00:10:21.854
+To check.
+
+193
+00:10:21.854 --> 00:10:25.992
+You can also inspect
+your document store as is now.
+
+194
+00:10:25.992 --> 00:10:29.895
+For example, we can filter
+our document store with no filter
+
+195
+00:10:29.895 --> 00:10:34.895
+and simply inspect the contents
+of the document at index five.
+
+196
+00:10:35.635 --> 00:10:37.370
+And here we have it.
+
+197
+00:10:37.370 --> 00:10:40.706
+Now that you've created
+your in-memory document store
+
+198
+00:10:40.706 --> 00:10:44.710
+with documents about DaVinci
+as well as the embeddings,
+
+199
+00:10:44.710 --> 00:10:48.214
+you can create your first document
+search pipeline.
+
+200
+00:10:48.214 --> 00:10:52.251
+So this will first import all of the
+components we're going to be using.
+
+201
+00:10:52.251 --> 00:10:56.389
+And then we start creating the components
+that we want to use.
+
+202
+00:10:56.389 --> 00:11:00.059
+The important thing here is that
+because we use the OpenAI
+
+203
+00:11:00.059 --> 00:11:03.062
+document embedding
+with the default embedding model,
+
+204
+00:11:03.162 --> 00:11:07.733
+we know we're going to have to use
+the same model to embed the incoming query
+
+205
+00:11:07.733 --> 00:11:10.469
+from the user for this use case.
+
+206
+00:11:10.469 --> 00:11:13.706
+Then we're going to be using the OpenAI
+text in beta.
+
+207
+00:11:13.706 --> 00:11:16.108
+And we're calling this aquarium better.
+
+208
+00:11:16.108 --> 00:11:18.110
+Next we need a retriever.
+
+209
+00:11:18.110 --> 00:11:20.012
+We use the in-memory document store.
+
+210
+00:11:20.012 --> 00:11:24.350
+So for this case we're going to be using
+the in-memory embedding retriever
+
+211
+00:11:24.350 --> 00:11:27.520
+telling it to retrieve documents
+from our documents, store.
+
+212
+00:11:27.520 --> 00:11:30.856
+Next, we initialize our pipeline.
+
+213
+00:11:30.856 --> 00:11:33.359
+We call this pipeline document search,
+
+214
+00:11:33.359 --> 00:11:37.530
+and we simply add the components
+we have to that pipeline.
+
+215
+00:11:37.530 --> 00:11:41.734
+Finally, as we did before, we're going
+to be connecting our components.
+
+216
+00:11:41.734 --> 00:11:45.738
+I'll start with a connection
+that's actually going to be incorrect
+
+217
+00:11:45.738 --> 00:11:49.041
+or it's not very clear
+exactly what the connections are.
+
+218
+00:11:49.041 --> 00:11:53.713
+So if you run this,
+you'll notice that you get an error.
+
+219
+00:11:53.713 --> 00:11:56.682
+These
+types of errors are actually quite useful.
+
+220
+00:11:56.682 --> 00:12:00.519
+This is telling us that there's a pipeline
+connection error because it doesn't know
+
+221
+00:12:00.519 --> 00:12:03.989
+exactly how the query embeddings
+should be connected to the retriever,
+
+222
+00:12:03.989 --> 00:12:07.893
+because there are multiple ways
+that these two components could connect.
+
+223
+00:12:07.893 --> 00:12:12.765
+It also gives us some recommendations
+of what these connections could look like,
+
+224
+00:12:12.765 --> 00:12:16.936
+and lets us know what the outputs
+and inputs of both components
+
+225
+00:12:16.936 --> 00:12:21.841
+are To resolve this,
+we simply have to let the pipeline know
+
+226
+00:12:21.841 --> 00:12:26.841
+that specifically the embedding output
+from the query and better
+
+227
+00:12:26.979 --> 00:12:31.979
+should be given to the query
+embedding input of the retriever.
+
+228
+00:12:33.319 --> 00:12:34.120
+And there we are.
+
+229
+00:12:34.120 --> 00:12:37.223
+We now have a document search pipeline.
+
+230
+00:12:37.223 --> 00:12:40.192
+Again, you can use the show utility
+
+231
+00:12:40.192 --> 00:12:44.563
+to make sure that you've created
+the pipeline that you expect to see.
+
+232
+00:12:44.563 --> 00:12:45.097
+So you can
+
+233
+00:12:45.097 --> 00:12:49.101
+see that the first component
+query embedding is expecting text.
+
+234
+00:12:49.101 --> 00:12:53.539
+This is going to be the question,
+for example, that the user is asking.
+
+235
+00:12:53.539 --> 00:12:58.043
+This component is then going to output
+embeddings to the retriever,
+
+236
+00:12:58.043 --> 00:13:01.914
+which is then going to return
+the most relevant documents.
+
+237
+00:13:01.914 --> 00:13:04.350
+Let's run our document search pipeline.
+
+238
+00:13:04.350 --> 00:13:09.350
+Let's start with the question
+how old was da Vinci when he died?
+
+239
+00:13:09.989 --> 00:13:12.925
+we then run our pipeline
+
+240
+00:13:12.925 --> 00:13:16.729
+and assign the results to results.
+
+241
+00:13:16.729 --> 00:13:20.099
+We can then also have a full loop
+so that we can see exactly
+
+242
+00:13:20.099 --> 00:13:23.135
+how many documents were retrieved,
+and also
+
+243
+00:13:23.135 --> 00:13:26.138
+print out the contents of these documents.
+
+244
+00:13:26.272 --> 00:13:30.142
+As you can see,
+there are quite a lot of documents here.
+
+245
+00:13:30.142 --> 00:13:35.142
+And because we ran our pipeline
+with default variables,
+
+246
+00:13:35.281 --> 00:13:38.784
+we have ten
+of the most relevant documents.
+
+247
+00:13:38.784 --> 00:13:42.054
+Another thing you can do
+is now run this pipeline,
+
+248
+00:13:42.054 --> 00:13:46.258
+but modify the inputs
+to various components at runtime.
+
+249
+00:13:46.258 --> 00:13:50.329
+For example,
+instead of asking for ten of the most
+
+250
+00:13:50.329 --> 00:13:53.666
+relevant documents,
+we can switch this to three.
+
+251
+00:13:53.666 --> 00:13:58.666
+The only thing we need to do is modify
+the top k input of the retriever.
+
+252
+00:13:59.138 --> 00:14:00.306
+As you can see when.
+
+253
+00:14:00.306 --> 00:14:05.306
+Now adding inputs to the retriever
+component and calling top k three.
+
+254
+00:14:05.945 --> 00:14:10.049
+And now instead of ten, we have three
+of the most relevant documents.
+
+255
+00:14:10.049 --> 00:14:10.649
+All right.
+
+256
+00:14:10.649 --> 00:14:15.254
+In this lab you learned about components,
+how you can run components individually,
+
+257
+00:14:15.254 --> 00:14:19.358
+but also how you can combine components
+into full pipelines.
+
+258
+00:14:19.358 --> 00:14:22.962
+You've built pipeline
+that indexes documents into your in-memory
+
+259
+00:14:22.962 --> 00:14:26.665
+document store
+as well as a document search pipeline.
+
+260
+00:14:26.665 --> 00:14:30.669
+You can try playing around
+with how you split your documents.
+
+261
+00:14:30.669 --> 00:14:35.341
+Instead of having 200 words, for example,
+you can split by different lengths
+
+262
+00:14:35.474 --> 00:14:39.144
+and you can also try modifying
+the question you're asking your document
+
+263
+00:14:39.144 --> 00:14:43.482
+search pipeline,
+as well as the top K for the retriever.
+
+264
+00:14:43.482 --> 00:14:44.283
+In the next lab.
+
+265
+00:14:44.283 --> 00:14:46.218
+You're going to be using this knowledge
+to build
+
+266
+00:14:46.218 --> 00:14:49.221
+your first retrieval
+augmented generation pipeline.
+
+267
+00:14:49.321 --> 00:14:53.325
+And also you're going to be customizing
+the behavior of these pipelines.
+
+268
+00:14:53.325 --> 00:14:54.560
+All right. See you there.
+

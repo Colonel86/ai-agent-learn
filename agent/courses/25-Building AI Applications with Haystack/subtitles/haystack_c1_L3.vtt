@@ -1,0 +1,1235 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.735 --> 00:00:05.171
+In this lesson, you'll
+create your first haystack components.
+
+2
+00:00:05.171 --> 00:00:08.808
+Custom components are a huge part
+of the haystack experience.
+
+3
+00:00:08.808 --> 00:00:12.979
+We have lots of components, but there's
+no way we have everything you need.
+
+4
+00:00:12.979 --> 00:00:17.083
+Let's dive in and build a component
+that can fetch the top Hacker News posts.
+
+5
+00:00:17.083 --> 00:00:19.285
+All right, let's go.
+
+6
+00:00:19.285 --> 00:00:23.723
+In this lab, we're going to be building
+our first custom haystack component.
+
+7
+00:00:23.757 --> 00:00:26.626
+And we're going to be creating
+a new summarizer.
+
+8
+00:00:26.626 --> 00:00:29.929
+Specifically, we're going to create
+a hack, a new summarizer.
+
+9
+00:00:29.929 --> 00:00:33.666
+So far, you've used readymade components
+with haystack, but this time
+
+10
+00:00:33.666 --> 00:00:34.834
+you're going to create your own.
+
+11
+00:00:34.834 --> 00:00:37.904
+Let's remind ourselves
+what components are some readymade
+
+12
+00:00:37.904 --> 00:00:42.442
+components in haystack are embeds,
+retrievers, generators, and so on.
+
+13
+00:00:42.442 --> 00:00:44.844
+Each of them expect
+a certain number of inputs,
+
+14
+00:00:44.844 --> 00:00:47.814
+and they can also produce
+a certain number of outputs.
+
+15
+00:00:47.814 --> 00:00:48.481
+But for something
+
+16
+00:00:48.481 --> 00:00:52.719
+to be a component in haystack,
+we only really have a few requirements.
+
+17
+00:00:52.719 --> 00:00:56.623
+For example, we need to have the component
+decorator for a class.
+
+18
+00:00:56.623 --> 00:01:00.293
+That class needs a run method
+and it has to return a dictionary.
+
+19
+00:01:00.293 --> 00:01:03.763
+Finally, we also have to provide
+component output types.
+
+20
+00:01:03.763 --> 00:01:05.331
+We'll see why in a bit.
+
+21
+00:01:05.331 --> 00:01:08.234
+For example here
+we have a translator component.
+
+22
+00:01:08.234 --> 00:01:10.770
+And this is a very valid component
+of the haystack.
+
+23
+00:01:10.770 --> 00:01:14.707
+We've decorated it with components
+and we've provided the output types
+
+24
+00:01:14.707 --> 00:01:16.376
+that this component is producing.
+
+25
+00:01:16.376 --> 00:01:19.913
+In this case we're telling haystack world
+that this is going to be
+
+26
+00:01:19.913 --> 00:01:22.949
+producing documents of type list document.
+
+27
+00:01:22.949 --> 00:01:24.918
+Next we have a run method.
+
+28
+00:01:24.918 --> 00:01:27.921
+So we're also saying that this component
+expects three
+
+29
+00:01:27.921 --> 00:01:30.990
+inputs from lang to lang and documents.
+
+30
+00:01:30.990 --> 00:01:33.593
+And some of them even have default values.
+
+31
+00:01:33.593 --> 00:01:35.929
+Finally we're returning a dictionary.
+
+32
+00:01:35.929 --> 00:01:40.366
+So in this case we're telling the haystack
+world that this is returning documents.
+
+33
+00:01:40.366 --> 00:01:42.902
+And if we've done our job correctly,
+we should be returning
+
+34
+00:01:42.902 --> 00:01:44.037
+translated documents.
+
+35
+00:01:44.037 --> 00:01:44.838
+In this case.
+
+36
+00:01:44.838 --> 00:01:48.007
+In this lab
+you'll build two separate pipelines.
+
+37
+00:01:48.007 --> 00:01:50.376
+You'll start with a very, very simple one.
+
+38
+00:01:50.376 --> 00:01:52.846
+This pipeline is going to be
+a dialog builder.
+
+39
+00:01:52.846 --> 00:01:55.915
+And you'll be using your very own greeter
+components.
+
+40
+00:01:55.915 --> 00:01:58.918
+That's going to start
+with a greeting for the dialog.
+
+41
+00:01:58.952 --> 00:01:59.953
+Next you'll build a.
+
+42
+00:01:59.953 --> 00:02:02.088
+How can you summarize a pipeline?
+
+43
+00:02:02.088 --> 00:02:04.357
+For this pipeline,
+you'll create your very own.
+
+44
+00:02:04.357 --> 00:02:06.559
+How can use such a component?
+
+45
+00:02:06.559 --> 00:02:09.462
+By the end of the lab,
+you'll have a pipeline that's able
+
+46
+00:02:09.462 --> 00:02:14.462
+to provide summaries of the top
+K trending posts on Hacker News.
+
+47
+00:02:15.368 --> 00:02:18.638
+Again let's start with the usual
+warning suppression.
+
+48
+00:02:18.638 --> 00:02:23.243
+And also let's load
+our environment variables.
+
+49
+00:02:23.243 --> 00:02:25.044
+Next let's import
+
+50
+00:02:25.044 --> 00:02:29.149
+all of the dependencies
+that we're going to be using in this lab.
+
+51
+00:02:29.149 --> 00:02:32.018
+And once we're done with that
+we can start coding.
+
+52
+00:02:32.018 --> 00:02:35.622
+Let's start by building
+our very own custom components.
+
+53
+00:02:35.622 --> 00:02:38.992
+Custom components are pretty useful,
+not only because sometimes
+
+54
+00:02:38.992 --> 00:02:42.629
+you might notice that haystack
+doesn't provide exactly what you need,
+
+55
+00:02:42.629 --> 00:02:47.629
+but you may also want to have your own
+component that accesses a specific API.
+
+56
+00:02:47.734 --> 00:02:50.537
+In this case, let's start with a toy
+
+57
+00:02:50.537 --> 00:02:54.407
+example
+where we need to have a greeter component.
+
+58
+00:02:54.407 --> 00:02:57.310
+Let's start
+by creating a class called greeter
+
+59
+00:02:57.310 --> 00:03:00.313
+and providing it the component decorator.
+
+60
+00:03:00.346 --> 00:03:02.615
+Next, we need a run method.
+
+61
+00:03:02.615 --> 00:03:05.451
+In this case,
+I've decided that my components
+
+62
+00:03:05.451 --> 00:03:08.721
+should be expecting username,
+and it should return
+
+63
+00:03:08.721 --> 00:03:11.925
+a greeting that says hello username.
+
+64
+00:03:11.925 --> 00:03:16.925
+The only thing we have left to add
+here is the output type's decorator.
+
+65
+00:03:17.030 --> 00:03:20.567
+We have to tell the haystack pipelines
+and the haystack world
+
+66
+00:03:20.567 --> 00:03:25.205
+that this is outputting something
+called greeting, and it's of type string.
+
+67
+00:03:25.205 --> 00:03:28.041
+This is used later on with pipeline
+validation.
+
+68
+00:03:28.041 --> 00:03:32.278
+Well, basically telling the Hastag
+pipeline that this greeter component
+
+69
+00:03:32.278 --> 00:03:36.950
+can only connect to something
+that is expecting string as input.
+
+70
+00:03:36.950 --> 00:03:40.520
+Now let's
+see how we might use this component.
+
+71
+00:03:40.520 --> 00:03:43.122
+Let's start by initializing our greeter.
+
+72
+00:03:43.122 --> 00:03:46.359
+And for this case,
+I've decided to build a pipeline
+
+73
+00:03:46.359 --> 00:03:48.761
+that's basically a dialog builder.
+
+74
+00:03:48.761 --> 00:03:53.366
+So let's start and create
+our prompt template.
+
+75
+00:03:53.366 --> 00:03:54.100
+In this case,
+
+76
+00:03:54.100 --> 00:03:57.904
+I've created the prompt template
+that starts with the following statement.
+
+77
+00:03:57.904 --> 00:03:59.939
+You'll be given the beginning of a dialog.
+
+78
+00:03:59.939 --> 00:04:04.077
+Create a short play script
+using this as a start of the play
+
+79
+00:04:04.077 --> 00:04:06.112
+start of dialog dialog.
+
+80
+00:04:06.112 --> 00:04:11.112
+So I know that my prompt builder is going
+to be expecting something called dialog.
+
+81
+00:04:11.251 --> 00:04:14.254
+Let's add
+this template to a prompt builder.
+
+82
+00:04:14.287 --> 00:04:18.524
+And then finally, again,
+I'll be using the OpenAI generator
+
+83
+00:04:18.524 --> 00:04:21.527
+with the default model,
+which is GPT three.
+
+84
+00:04:21.594 --> 00:04:24.530
+Now we can start
+creating the dialog builder.
+
+85
+00:04:24.530 --> 00:04:26.733
+First you'll initialize your pipeline.
+
+86
+00:04:26.733 --> 00:04:31.204
+And again, as usual,
+you'll start adding your components.
+
+87
+00:04:31.204 --> 00:04:35.608
+Now, the one thing that's going
+to be slightly different in this pipeline
+
+88
+00:04:35.608 --> 00:04:40.608
+to the previous ones is how you connect
+your greeter to the prompt builder.
+
+89
+00:04:40.980 --> 00:04:44.717
+Your greeter is outputting something
+called greeting, which is a string,
+
+90
+00:04:44.717 --> 00:04:47.587
+and your prompt builder is expecting
+something called dialog.
+
+91
+00:04:47.587 --> 00:04:51.658
+So we can start with a greeting
+for the dialog.
+
+92
+00:04:51.658 --> 00:04:55.895
+Next, let's simply connect
+the prompt to the large language model.
+
+93
+00:04:55.895 --> 00:04:57.964
+And there we have it.
+
+94
+00:04:57.964 --> 00:05:00.800
+Again, let's show our pipeline
+just to make sure
+
+95
+00:05:00.800 --> 00:05:04.604
+that we've got the correct pipeline
+that we expect.
+
+96
+00:05:04.604 --> 00:05:04.971
+Great.
+
+97
+00:05:04.971 --> 00:05:07.840
+Now we see that
+the greeter is the first component
+
+98
+00:05:07.840 --> 00:05:10.610
+and we are expecting username.
+
+99
+00:05:10.610 --> 00:05:13.212
+So if all goes well,
+we should be able to run this
+
+100
+00:05:13.212 --> 00:05:16.516
+pipeline with a username like Tijuana.
+
+101
+00:05:16.549 --> 00:05:20.820
+And hopefully we get a dialog
+that starts starts with hello Tijuana.
+
+102
+00:05:20.820 --> 00:05:25.191
+Let's run our dialog builder and assign
+the outputs to dialog.
+
+103
+00:05:25.191 --> 00:05:29.696
+And let's also print out
+the dialog itself.
+
+104
+00:05:29.696 --> 00:05:30.463
+And there we are.
+
+105
+00:05:30.463 --> 00:05:33.666
+We have a short play with two characters,
+Mary and Tijuana.
+
+106
+00:05:33.666 --> 00:05:36.669
+And Mary starts with the statement
+hello, Tijuana.
+
+107
+00:05:36.703 --> 00:05:40.740
+You can try changing the username here,
+and hopefully you'll get some dialogs
+
+108
+00:05:40.740 --> 00:05:44.043
+that start with your name
+or someone else's name as well.
+
+109
+00:05:44.043 --> 00:05:46.979
+Now that you've seen
+how to create your very own haystack
+
+110
+00:05:46.979 --> 00:05:50.383
+component and also how to add that
+to full pipelines.
+
+111
+00:05:50.383 --> 00:05:53.586
+Let's start building
+a more complex component that maybe
+
+112
+00:05:53.586 --> 00:05:56.589
+is a bit more similar
+to what you'll see in the real world.
+
+113
+00:05:56.622 --> 00:05:59.425
+For this use case,
+we're going to be building a component for
+
+114
+00:05:59.425 --> 00:06:00.827
+how can you summarize.
+
+115
+00:06:00.827 --> 00:06:04.330
+So we're going to be building a component
+called the Hacker News feature.
+
+116
+00:06:04.330 --> 00:06:09.330
+We're able to access current
+trending Hacker News posts with an API as.
+
+117
+00:06:09.635 --> 00:06:13.473
+So if you like, you can also change
+
+118
+00:06:13.473 --> 00:06:16.676
+from asking for the trending posts
+to the newest posts.
+
+119
+00:06:16.709 --> 00:06:20.747
+There are various things on Hacker News
+such as new posts, Ask Hacker News,
+
+120
+00:06:20.747 --> 00:06:22.048
+and so on.
+
+121
+00:06:22.048 --> 00:06:25.818
+This is asking for the top trending posts,
+but if you like, for example,
+
+122
+00:06:25.818 --> 00:06:28.521
+you can change this to news stories
+instead.
+
+123
+00:06:28.521 --> 00:06:30.656
+News stories change a lot more frequently.
+
+124
+00:06:30.656 --> 00:06:32.959
+Top stories less
+
+125
+00:06:32.959 --> 00:06:35.328
+I'll be using top stories.
+
+126
+00:06:35.328 --> 00:06:39.132
+This request gets various top stories,
+and for example,
+
+127
+00:06:39.132 --> 00:06:42.468
+we can look at the current top story
+right now.
+
+128
+00:06:42.468 --> 00:06:46.239
+The important thing to note is
+you'll be seeing different contents
+
+129
+00:06:46.239 --> 00:06:49.342
+than what I'm seeing, because
+you'll be running this on a different day.
+
+130
+00:06:49.342 --> 00:06:49.809
+All right.
+
+131
+00:06:49.809 --> 00:06:53.312
+You'll notice that this story has a URL.
+
+132
+00:06:53.312 --> 00:06:56.482
+Mostly Hacker News has URLs for stories,
+
+133
+00:06:56.482 --> 00:07:00.319
+but in some cases, you'll notice
+that this is actually text.
+
+134
+00:07:00.319 --> 00:07:02.822
+And that's text instead of a URL.
+
+135
+00:07:02.822 --> 00:07:05.425
+You should pay attention to
+what kind of news
+
+136
+00:07:05.425 --> 00:07:09.796
+stories are currently trending
+when you run this, which may require you
+
+137
+00:07:09.796 --> 00:07:13.800
+to make some edits
+or change your component if you wish.
+
+138
+00:07:13.800 --> 00:07:16.669
+All right,
+so let's start with a bare minimum.
+
+139
+00:07:16.669 --> 00:07:20.840
+How can you set a component
+that's basically returns nothing?
+
+140
+00:07:20.840 --> 00:07:25.011
+In this case we've created a
+how can you set a class.
+
+141
+00:07:25.011 --> 00:07:29.816
+And it's expecting
+top k integer as inputs.
+
+142
+00:07:29.816 --> 00:07:34.187
+And now it's returning an empty list
+
+143
+00:07:34.187 --> 00:07:36.956
+and it's returning
+something called articles.
+
+144
+00:07:36.956 --> 00:07:39.158
+This is a very valid hastag component.
+
+145
+00:07:39.158 --> 00:07:41.828
+But as you can see
+it's not returning anything yet.
+
+146
+00:07:41.828 --> 00:07:44.430
+So let's start filling this in.
+
+147
+00:07:44.430 --> 00:07:48.334
+We're going to start
+by populating the articles list.
+
+148
+00:07:48.334 --> 00:07:52.438
+And we're going to use the same exact
+request that you saw before.
+
+149
+00:07:52.438 --> 00:07:54.307
+We now have a Hacker News searcher,
+
+150
+00:07:54.307 --> 00:07:58.911
+but we're doing something a bit different
+because most articles have URLs.
+
+151
+00:07:58.911 --> 00:08:03.911
+We're going to add, a HTML conversion
+pipeline, which is something that you saw
+
+152
+00:08:04.016 --> 00:08:08.254
+in the second lab in the in
+it's of this class.
+
+153
+00:08:08.254 --> 00:08:11.524
+Next, let's start building the run method.
+
+154
+00:08:11.524 --> 00:08:14.227
+Again, let's start
+with an empty list of articles.
+
+155
+00:08:14.227 --> 00:08:18.731
+But now we're going to have to populate
+this empty list of articles.
+
+156
+00:08:18.731 --> 00:08:22.869
+Let's get the trending list from our API.
+
+157
+00:08:22.869 --> 00:08:25.137
+And then this asks the top k articles
+
+158
+00:08:25.137 --> 00:08:28.341
+to be added to our articles list.
+
+159
+00:08:28.341 --> 00:08:31.511
+For this
+I'm going to be adding a for loop.
+
+160
+00:08:31.511 --> 00:08:34.747
+And then let's look at what the for loop
+has in it.
+
+161
+00:08:34.747 --> 00:08:37.984
+For top k posts
+we loop through the trending list.
+
+162
+00:08:37.984 --> 00:08:42.984
+And if there is a URL
+we actually ask our HTML pipeline to run.
+
+163
+00:08:43.356 --> 00:08:47.393
+And we add the contents
+to our articles list.
+
+164
+00:08:47.393 --> 00:08:50.129
+I've also added an extra statement here.
+
+165
+00:08:50.129 --> 00:08:53.533
+As I mentioned,
+some Hacker News posts do not have URLs.
+
+166
+00:08:53.533 --> 00:08:55.167
+Instead they have text.
+
+167
+00:08:55.167 --> 00:08:58.804
+In this case, we are simply adding
+the contents of that text
+
+168
+00:08:58.804 --> 00:09:02.542
+into our articles list.
+
+169
+00:09:02.542 --> 00:09:06.546
+Finally, we can return our articles.
+
+170
+00:09:06.546 --> 00:09:07.146
+All right.
+
+171
+00:09:07.146 --> 00:09:10.349
+Now we have our. How can you set a.
+
+172
+00:09:10.349 --> 00:09:13.686
+Now let's try running this Hacker
+News feature on its own.
+
+173
+00:09:13.686 --> 00:09:16.088
+For this, I've decided to ask for
+
+174
+00:09:16.088 --> 00:09:19.592
+the top three trending Hacker News posts.
+
+175
+00:09:19.592 --> 00:09:21.160
+I'm assigning them to results.
+
+176
+00:09:21.160 --> 00:09:26.160
+And since we know that the results
+are in articles, let's print this out.
+
+177
+00:09:27.099 --> 00:09:31.437
+As you can see, there are three documents
+and each of them have URLs,
+
+178
+00:09:31.437 --> 00:09:35.675
+and each of them
+also have the contents of those URLs.
+
+179
+00:09:35.675 --> 00:09:39.912
+Well, now able to use this component
+in a full haystack pipeline
+
+180
+00:09:39.912 --> 00:09:44.183
+to ask for summaries of the top
+trending Hacker News posts.
+
+181
+00:09:44.183 --> 00:09:48.054
+Now that we have our hacker newsletter
+and we're able to get the trending
+
+182
+00:09:48.054 --> 00:09:51.591
+posts, let's start
+creating our Summarizer pipeline.
+
+183
+00:09:51.591 --> 00:09:55.194
+I'll start by
+creating my prompt templates.
+
+184
+00:09:55.194 --> 00:09:55.595
+In this
+
+185
+00:09:55.595 --> 00:09:59.498
+prompt template,
+I've indicated that we will be provided
+
+186
+00:09:59.498 --> 00:10:02.802
+a few of the top posts in Hacker
+News for each post.
+
+187
+00:10:02.802 --> 00:10:06.439
+Please provide a brief summary
+if possible.
+
+188
+00:10:06.439 --> 00:10:09.408
+And then finally,
+we are looping through articles
+
+189
+00:10:09.408 --> 00:10:12.511
+and adding the contents of those articles
+specifically
+
+190
+00:10:12.511 --> 00:10:15.781
+into our prompt.
+
+191
+00:10:15.781 --> 00:10:17.817
+now that we have this prompt template,
+
+192
+00:10:17.817 --> 00:10:21.020
+we can create our prompt builder.
+
+193
+00:10:21.020 --> 00:10:25.625
+We also want our fetcher.
+
+194
+00:10:25.625 --> 00:10:27.994
+And again we want to Netherland.
+
+195
+00:10:27.994 --> 00:10:28.327
+Again.
+
+196
+00:10:28.327 --> 00:10:33.327
+I'll be using GPT three,
+but feel free to change this if you like.
+
+197
+00:10:34.233 --> 00:10:36.369
+Let's create our pipeline.
+
+198
+00:10:36.369 --> 00:10:39.238
+I've called it
+the Summarizer pipeline, and again
+
+199
+00:10:39.238 --> 00:10:43.876
+I'm adding all of the components
+that I need to my pipeline.
+
+200
+00:10:43.876 --> 00:10:47.513
+Finally, let's start
+connecting the components.
+
+201
+00:10:47.513 --> 00:10:51.017
+We know that our fetcher
+that we created outputs articles.
+
+202
+00:10:51.017 --> 00:10:54.387
+And I want that to go into prompt
+articles.
+
+203
+00:10:54.387 --> 00:10:57.223
+The last connection is the same as usual.
+
+204
+00:10:57.223 --> 00:11:01.494
+We're connecting the prompt
+to our large language model.
+
+205
+00:11:01.494 --> 00:11:03.529
+And there we have it.
+
+206
+00:11:03.529 --> 00:11:07.099
+We can also show our pipeline again,
+just to be sure,
+
+207
+00:11:07.099 --> 00:11:10.936
+we've created the pipeline
+that we expect to see.
+
+208
+00:11:10.936 --> 00:11:13.372
+So this pipeline starts with our fetcher.
+
+209
+00:11:13.372 --> 00:11:17.009
+And the first thing we're expecting
+is an integer
+
+210
+00:11:17.009 --> 00:11:19.111
+that many articles will be fetched.
+
+211
+00:11:19.111 --> 00:11:23.049
+And then we'll be hopefully
+creating summaries for them.
+
+212
+00:11:23.049 --> 00:11:26.252
+Let's run this pipeline
+and ask for the summaries
+
+213
+00:11:26.252 --> 00:11:30.589
+of the top three Hacker News post
+right now.
+
+214
+00:11:30.589 --> 00:11:33.192
+you'll be seeing something
+totally different to what I'm seeing.
+
+215
+00:11:33.192 --> 00:11:33.659
+Probably.
+
+216
+00:11:33.659 --> 00:11:36.762
+And this is expected
+you'll be seeing summaries of the top
+
+217
+00:11:36.762 --> 00:11:41.033
+three posts on the day
+that you run this lab yourself.
+
+218
+00:11:41.033 --> 00:11:42.768
+Before we end this lab, let's start
+
+219
+00:11:42.768 --> 00:11:45.805
+customizing this prompt to do something
+a bit different as well.
+
+220
+00:11:45.805 --> 00:11:49.742
+You may remember the Link Content Fetcher,
+which we also use in our custom
+
+221
+00:11:49.742 --> 00:11:52.745
+component, adds URLs to the metadata.
+
+222
+00:11:52.745 --> 00:11:57.083
+So why not not only ask for summaries,
+but also asks for the URL
+
+223
+00:11:57.083 --> 00:11:59.685
+that the post is coming from.
+
+224
+00:11:59.685 --> 00:12:00.553
+So let's start by
+
+225
+00:12:00.553 --> 00:12:03.723
+creating our custom prompt again.
+
+226
+00:12:03.723 --> 00:12:07.059
+The only thing we'll be changing here
+is simply adding
+
+227
+00:12:07.059 --> 00:12:11.130
+the URLs of the articles into the prompt,
+as well.
+
+228
+00:12:11.130 --> 00:12:13.265
+For each post, provide a brief summary
+
+229
+00:12:13.265 --> 00:12:17.436
+followed by the URL of the full post,
+we're adding
+
+230
+00:12:17.436 --> 00:12:21.907
+URL article meta URL into our prompt.
+
+231
+00:12:21.907 --> 00:12:25.010
+Now we simply create the same exact
+pipeline as you saw
+
+232
+00:12:25.010 --> 00:12:28.114
+before, using the same exact components.
+
+233
+00:12:28.114 --> 00:12:31.016
+The only thing that's different
+is the prompt build in this case
+
+234
+00:12:31.016 --> 00:12:33.018
+is using our new prompt template.
+
+235
+00:12:33.018 --> 00:12:36.455
+Now that we have our custom prompt,
+let's ask for the summaries.
+
+236
+00:12:36.455 --> 00:12:41.026
+In this case,
+the top two articles on Hacker News.
+
+237
+00:12:41.026 --> 00:12:44.463
+Once you run this pipeline, if all goes
+well you should be seeing
+
+238
+00:12:44.463 --> 00:12:49.034
+as many summaries as you requested in top
+k followed by the URL.
+
+239
+00:12:49.034 --> 00:12:52.404
+If this doesn't go exactly how you expect,
+you can start looking into
+
+240
+00:12:52.404 --> 00:12:55.841
+whether you should edit
+your prompt to be a bit more precise.
+
+241
+00:12:55.841 --> 00:12:59.745
+And even in some cases,
+you may want to implement self reflection
+
+242
+00:12:59.745 --> 00:13:03.015
+where we're asking the NLM
+to improve on its results.
+
+243
+00:13:03.015 --> 00:13:06.819
+You'll be seeing an example of
+this in the following labs.
+
+244
+00:13:06.819 --> 00:13:07.653
+In this lab,
+
+245
+00:13:07.653 --> 00:13:10.790
+you not only
+saw how to create your very own custom
+
+246
+00:13:10.790 --> 00:13:14.560
+haystack component,
+but also how to use that in a pipeline.
+
+247
+00:13:14.560 --> 00:13:18.330
+This is not only useful
+if you want to access a different API
+
+248
+00:13:18.330 --> 00:13:20.065
+like we did here with how can use.
+
+249
+00:13:20.065 --> 00:13:24.069
+But maybe if you want to access
+a model provider that haystack doesn't yet
+
+250
+00:13:24.069 --> 00:13:27.173
+provide access to,
+or maybe simply implements
+
+251
+00:13:27.173 --> 00:13:30.309
+your very own behavior in a component.
+
+252
+00:13:30.309 --> 00:13:33.412
+This is really nice
+because we also get community members
+
+253
+00:13:33.412 --> 00:13:36.715
+adding their own custom
+components to haystack integrations,
+
+254
+00:13:36.715 --> 00:13:38.050
+so you can scroll through those
+
+255
+00:13:38.050 --> 00:13:41.353
+and see if someone else
+has already created one for you.
+
+256
+00:13:41.353 --> 00:13:45.057
+You can also add your own custom
+components to Haystack Integrations
+
+257
+00:13:45.057 --> 00:13:46.125
+if you like.
+
+258
+00:13:46.125 --> 00:13:49.862
+I'll include a link to Haystack
+Integrations in the notebook
+
+259
+00:13:49.862 --> 00:13:52.064
+for you to scroll through the integrations
+
+260
+00:13:52.064 --> 00:13:55.835
+that the haystack community
+or Deep Set have created.
+
+261
+00:13:55.835 --> 00:13:58.370
+In the next lab,
+we're going to be looking at
+
+262
+00:13:58.370 --> 00:14:01.874
+your first haystack
+pipeline that implements branching,
+
+263
+00:14:01.874 --> 00:14:05.244
+and we're going to be using branching
+to implement a fallback mechanism.
+
+264
+00:14:05.377 --> 00:14:06.212
+I'll see you there.
+
