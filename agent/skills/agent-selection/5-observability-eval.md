@@ -101,6 +101,12 @@ flowchart LR
     Q -->|"企业合规"| E["Galileo / Patronus / Honeyhive"]
 ```
 
+> **🔑 硬判据:埋点标准兼容性(比功能对比更优先)**。埋点是侵入代码的一次性投资,平台是可换的消费端——所以选平台先问三个问题,再比功能:
+> ① **平台能否直接接收标准 OTel/OpenInference span**(而非只认自家 SDK)?能→"埋一次、后端任意换",换平台 agent 代码一行不改(见子决策 0);
+> ② **平台的深度功能(eval 回写、prompt 注册表、session/thread 分组、interrupt 特判)是否要求走它的私有 SDK/callback**?要→这就是观测层的"软锁",可以接受但要写进 ADR(同 `2-framework/02-scorecard.md` 软锁维度);
+> ③ **反向迁出**:今天用平台原生 callback 埋的点,明天能否导出成 OTel 落到别家?不能→迁移=重埋。
+> ⚠️ 2026-06 快照:Phoenix/Langfuse 均 OTel 原生接收;LangSmith 支持 OTel ingest,但 LangGraph interrupt/checkpoint 特判、eval 联动等深度功能仍以原生 callback 最顺——选它=接受这层软锁,换取生态省心。**默认策略:埋点走 OTel(OpenInference/OpenLLMetry),只在"已定终身用 LangChain 系"时才用原生 callback。**
+
 > ⚠️ **HITL × tracing 的坑(选平台时要会处理)**:LangGraph 的 `interrupt()` 靠抛 `GraphInterrupt` + 两次 invoke 实现暂停,**naive tracing 会把一次人审切成两条断裂 trace**、把含 `interrupt()` 的节点/工具**误标 ERROR**(其实只是在等人),还会让人审耗时污染延迟、token/成本被劈成两半。治法:① 两次 invoke 带同一 `thread_id`/session,用平台的 **thread/session 分组**缝成一条逻辑 trace;② 把 `GraphInterrupt` 特判为 `paused` 而非 `ERROR`;③ 用**框架原生 tracing 集成**(它认得 checkpoint/interrupt),别手搓 OTel span——"naive" 才踩这个坑。**选平台的一个隐性加分项:看它对 LangGraph interrupt/checkpoint 的原生支持。**
 
 ## 三、子决策 2:Eval 框架/库
@@ -190,6 +196,7 @@ flowchart TB
 ## 五、组合决策树
 
 ```
+埋点(先定):默认 OTel(OpenInference/OpenLLMetry)=后端可换;已定终身 LangChain 系才用原生 callback
 可观测:用 LangChain 系→LangSmith;要 OSS→Langfuse/Phoenix;企业合规→Galileo 类
 Eval 库:RAG→Ragas;想进 CI→DeepEval;PydanticAI→pydantic-evals;agent 轨迹→Inspect/trajectory eval
 Eval 节奏:每 commit 跑 rule-based;发布前跑 model-graded
