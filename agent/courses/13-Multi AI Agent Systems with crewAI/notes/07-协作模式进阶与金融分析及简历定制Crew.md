@@ -503,3 +503,32 @@ display(Markdown("./interview_materials.md"))      # 面试准备材料
 ### 课程结束语
 
 > **这不是终点，而是起点。** 你已经具备了构建生产级多 Agent 系统的所有基础能力——接下来就去构建对你真正有价值的东西。
+
+---
+
+## 面试速答总结
+
+**一句话**：多 Agent 协作有三种形态——**Sequential(顺序,前输出喂后输入,但初始上下文逐级淡化)/ Async(无依赖任务并行提速)/ Hierarchical(Manager 动态委派+审核,单一权威点不丢目标)**,切换只需改一行;而真正工程化复杂 Crew 的核心是**把它画成一张任务依赖图(DAG)**——用 `context=[...]` 显式声明 Task 依赖(自动阻塞等待前置完成),配合 `async_execution` 就能表达"前两步并行、第三步等齐再开工"这类混合调度。
+
+### 面试回答骨架（问"多 agent 怎么协作 / 复杂任务编排怎么设计"）
+
+> 1. **协作三形态**：**Sequential**(线性流水线,简单但上下文会逐级淡化)、**Async**(`async_execution=True` 让互不依赖的任务并行)、**Hierarchical**(Manager 统筹:动态委派、携带前序成果、审核并要求改进)。关键洞察:**切换只改一行** `process=Process.sequential/hierarchical`,且无论哪种模式,Agent 间的"提问+委派"能力始终在。
+> 2. **Hierarchical 四大优势**:单一权威点(Manager 始终记得最初目标,解决 Sequential 上下文淡化)、自动委派(不用手排 Task 顺序)、自动审核(Worker 产出后可要求改进)、可定制 Manager(`manager_llm` 指定它用哪个 LLM)。现场表现就是一个自动登场的 Crew Manager 反复委派直到所有任务满足。
+> 3. **核心新 API——Task Context(最值得讲)**：`context=[research_task, profile_task]` 显式声明本任务依赖哪些前置任务——会**拿到它们的输出作上下文**,且**阻塞等待前置全部完成**才启动。这把"隐式靠列表顺序"升级成"显式声明依赖"。
+> 4. **落地成 DAG**:L7 简历 Crew 就是一张依赖图——research + profile **并行**(都 async)→ resume_strategy 等这两个都完成(`context=[research, profile]`)→ interview_prep 再依赖前三个。这就是 `async_execution` + `context` 组合出的"并行 + 依赖"混合调度。
+
+### 关键判断（加分点）
+
+- **`context=[...]` 比 Sequential 更强也更清晰**:Sequential 是隐式的线性依赖,`context` 是显式的 DAG 依赖——能表达"多个前置汇聚到一个后继"这种非线性结构,是复杂 Crew 的必备。
+- **Hierarchical 解决的正是 Sequential 的软肋**:线性传递中初始上下文会淡化,而 Manager 作为单一权威点全程持有目标——但代价是多一层调度、更慢更贵,别无脑上。
+- **构建多 Agent 系统 = 画 DAG + 设计 Agent 分工 + 配齐工具箱**:这是贯穿全课的心智模型,把编排问题还原成"任务依赖图"最实用。
+- **MDXSearchTool 体现"读 vs 检索"分工**:同一份简历,`FileReadTool` 做全文读取、`MDXSearchTool` 做 RAG 语义定位——按用途给不同工具,呼应"精选工具"原则。
+
+### 为什么这是高分答法
+
+- 把三种协作模式讲清**各自软肋与适用**(Sequential 上下文淡化 / Async 提速 / Hierarchical 单一权威但更贵),而非只列名字;
+- 突出 `context=[...]` 这个把"隐式顺序"升级为"显式 DAG"的关键 API,并用 L7 的并行→汇聚→串联落成真实依赖图。
+
+**一句话收尾**：多 Agent 协作的选择是"简单线性(Sequential)、并行提速(Async)、动态编排(Hierarchical)"之间按任务结构取舍;而工程化复杂系统的统一方法,是**把它建模成一张任务 DAG**——用 `context` 显式声明依赖、用 `async_execution` 榨取并行,让编排从"靠列表顺序碰运气"变成"照依赖图精确调度"。
+
+> 关联：`06-Tasks设计哲学与金融分析Crew层级协作.md`(Sequential vs Hierarchical 机制)、`../../11-AI Agents in LangGraph/notes/L03-LangGraph组件.md`(图/条件边编排:另一种 DAG 表达)、`../../11-AI Agents in LangGraph/notes/L09-高级Agent架构.md`(Supervisor / Plan-Execute 对应 Hierarchical)。

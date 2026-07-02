@@ -530,3 +530,32 @@ llm = ChatCohere()
 ### 🎯 下一课预告
 
 下一课正式深入 **Agents / Tasks / Crews** 的三大构建块，并构建**你的第一个真正的多智能体系统**。
+
+---
+
+## 面试速答总结
+
+**一句话**：AI Agent 应用的本质是从"穷举分支的确定性代码"转向"Fuzzy 输入/变换/输出"——你不再 `drown the map`(枚举所有边界情况),而是 `show the options`(告诉 Agent 有哪些选项);**Agent = LLM + 自主思考 + 工具**,多 Agent 再叠加**专精分工 + 多模型混合 + 可组合**;crewAI 用三个原语 **Agent(role/goal/backstory) / Task(description/expected_output/agent) / Crew(agents/tasks + 执行顺序)** 把这套抽象落地,核心心法是 **Role-playing 显著提升 LLM 表现**。
+
+### 面试回答骨架（问"为什么要用 agent / 多 agent 比单 agent 好在哪 / crewAI 怎么组织"）
+
+> 1. **先讲范式转变**：传统自动化是 `输入A → 确定逻辑 → 输出B`,边缘情况一多就退化成**永远穷举不完的 if/elif 巨兽**;Agentic 自动化的关键洞察是"**不用穷举地图,只需告诉 Agent 有哪些选项**"——因为**现实世界本身是 Fuzzy 的**(输入不知是 markdown/表格/数学题、变换由 LLM 定、输出形态动态变化),这正是 ChatGPT 契合人类体验的根因。
+> 2. **定义 Agent**：LLM 只会预测下一个 token,靠"prompt + 人工反馈"迭代——但**你成了瓶颈**,得一直守在屏幕前。Agent 诞生于让 LLM **在自己的思考里自问自答、迭代到满意**;再加**工具**(与外部世界交互:调 API/取数据/发布)。合起来 **LLM + 自主思考 + 工具 = 完整 Agent**。
+> 3. **单 Agent → 多 Agent 的三个理由(要会背)**：**专精**(每个 Agent 只做一件事做到极致,Researcher 查证、Writer 写稿)、**多模型混合**(Researcher 用 Llama、Writer 用 GPT-4、还能接自己微调的)、**可组合**(Agent 团队里还能嵌 Agent 团队,但慎防过度嵌套)。
+> 4. **crewAI 三原语落地**：`Agent`(role/goal/**backstory**——让 LLM 入戏)、`Task`(description/expected_output/agent)、`Crew`(agents/tasks,**列表顺序=Sequential 执行顺序**);`kickoff(inputs={...})` 启动,占位符 `{topic}` 动态注入。
+
+### 关键判断（加分点）
+
+- **Role-playing 不是玄学**：给 role/goal/backstory 让 LLM"入戏",实测显著提升输出质量——这是 crewAI 把"角色"设成一等原语的原因,也是提示工程在多 agent 里的体现。
+- **Fuzzy 是特性不是 bug**：同样输入每次结果可能不同,面试要能说清这既是威力(处理开放世界)也是挑战(需 guardrails/eval 兜住不确定性),自然引出后续课的护栏与记忆。
+- **传统代码和 Agent 各有所长**:确定性、可复现、强类型场景仍该用传统代码;Fuzzy、开放、需推理的场景才上 Agent——不要用 agent 锤一切。
+- **概念可迁移**:role/task/crew、专精分工、协作模式(Sequential/Hierarchical/Async)是**所有多 agent 框架**的通用抽象,crewAI 只是载体——面试可横向对到 LangGraph/AutoGen。
+
+### 为什么这是高分答法
+
+- 不停在"agent 很强",而是讲清**Fuzzy 范式转变 + Agent 三要素 + 多 Agent 三理由 + crewAI 三原语**的分层结构,可复述;
+- 点出"Role-playing 有效""Fuzzy 是双刃""别用 agent 锤一切"这些体现**取舍判断**的观点。
+
+**一句话收尾**：多 Agent 系统的价值不在"更多模型",而在**把一个 Fuzzy 大任务拆成各自专精、可用不同模型、可组合协作的角色**;crewAI 用 Agent/Task/Crew 三原语加 Role-playing 把这套抽象做得极简——但要记住 agent 只适合 Fuzzy 开放场景,确定性任务仍归传统代码。
+
+> 关联：`01-课程介绍.md`(课程总览)、`../../11-AI Agents in LangGraph/notes/L03-LangGraph组件.md`(另一种多 agent 编排范式:图 vs 角色)、`../../../skills/agent-selection/`(多 agent 框架选型)。

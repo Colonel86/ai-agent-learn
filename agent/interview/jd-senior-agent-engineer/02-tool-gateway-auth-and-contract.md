@@ -22,7 +22,7 @@
 
 模型**只知道契约告诉它的东西**。function calling 的机制是:你把每个工具的 `name`、`description`、参数 `JSON-Schema` 拼进请求,模型被训练成在该用工具时吐出一段结构化 `tool_call`(工具名 + 符合 schema 的 args),executor 执行后把结果回喂。所以:
 
-- **description 写不好 = prompt 写不好**:模型靠它判断"这个查询该不该用这个工具"。两个语义重叠的工具(如 `token-price` vs `token-kline`)描述含糊,模型就会选错(✅,详见 ../1.md L1、../../roadmap/agent-selection/4-tools.md)。
+- **description 写不好 = prompt 写不好**:模型靠它判断"这个查询该不该用这个工具"。两个语义重叠的工具(如 `token-price` vs `token-kline`)描述含糊,模型就会选错(✅,详见 ../1.md L1、../../skills/agent-selection/4-tools.md)。
 - **参数 JSON-Schema 既是给模型的约束,也是给网关的校验源**:同一份 schema,模型侧用约束解码/strict 模式保证"吐出来的 args 合法",网关侧用它做服务端二次校验(模型可能在没开 strict 的 provider 上漂)。
 - **契约里还有一组"模型看不到"的治理字段**:`scopes`(调它需要什么权限)、`side_effect`(无副作用/幂等/非幂等)、`danger_level`(要不要 HITL)、`runtime`(端/云)、`version`、`owner`。这组字段是网关工作的依据——**把"给模型看的"和"给网关看的"放进同一份契约、但分开消费**,是这层最重要的设计。
 
@@ -60,7 +60,7 @@ flowchart LR
 
 ### 1.4 鉴权:每工具粒度 + 短期下放凭证
 
-- **每工具粒度授权**:RBAC 的主体是**调用方身份**(哪个 agent / 哪个 run / 代表哪个终端用户),客体是**单个工具**。每个工具在契约里声明所需 `scopes`,网关在 authZ 阶段做交集判断。这天然实现了 ../../roadmap/agent-selection/7-safety-guardrails.md 的「工具白名单 + 最小权限」——一个 agent 只拿到它该有的工具子集。
+- **每工具粒度授权**:RBAC 的主体是**调用方身份**(哪个 agent / 哪个 run / 代表哪个终端用户),客体是**单个工具**。每个工具在契约里声明所需 `scopes`,网关在 authZ 阶段做交集判断。这天然实现了 ../../skills/agent-selection/7-safety-guardrails.md 的「工具白名单 + 最小权限」——一个 agent 只拿到它该有的工具子集。
 - **scoped / 短期凭证**:别给工具全权 long-lived key。用 OAuth 2.0 **Token Exchange(RFC 8693)** 把用户授权的 token 换成一个**降权 + 限定 audience + 几分钟过期**的下放 token 再注入;资源定向可配 **Resource Indicators(RFC 8707)**(✅ RFC 稳定;具体到 MCP 的 HTTP 鉴权走 OAuth 2.1 方向,⚠️ 演进中,现查官网,细节见 03 章)。
 - **下放(delegation)的意义**:即使某次调用的下放 token 泄露,它也只够调这一个工具、这一个资源、活几分钟——把"凭证泄露"的损失从"全盘"压到"一次一工具"。
 
@@ -304,7 +304,7 @@ flowchart TB
 
 **Q6. 100+ 工具时,网关怎么帮模型选对工具?**
 - 这是**工具路由**问题,正交于鉴权治理。全塞进 prompt 会 token 浪费 + 注意力稀释 + 准确率下降(经验 ~10-20 工具上限,../1.md L1)。
-- 三阶段:embedding 粗筛 → cross-encoder rerank → LLM 最终选;或 Anthropic Tool Search / `defer_loading` 按需加载(⚠️ 2026-06 快照:省 ~85% token、Opus 工具选择准确率 49%→74%,现查官网)。详见 ../../roadmap/agent-selection/4-tools.md。
+- 三阶段:embedding 粗筛 → cross-encoder rerank → LLM 最终选;或 Anthropic Tool Search / `defer_loading` 按需加载(⚠️ 2026-06 快照:省 ~85% token、Opus 工具选择准确率 49%→74%,现查官网)。详见 ../../skills/agent-selection/4-tools.md。
 - **网关的角色**:在 authZ 阶段先按 caller 的 scope 砍掉"这个 agent 无权调的工具"——既是安全,也天然把路由候选集收窄。
 
 **Q7. 怎么在网关上挂 token 预算硬限和危险动作拦截?**
@@ -339,8 +339,8 @@ flowchart TB
 
 ## 7. 回链已有资产 / 课程
 
-- **选型矩阵 · 工具层**:[`../../roadmap/agent-selection/4-tools.md`](../../roadmap/agent-selection/4-tools.md) —— 100+ 工具的**路由/检索**(Q6 交叉引用):Tool2Vec 粗筛 → cross-encoder rerank → LLM 选择;Anthropic Tool Search/`defer_loading`。本章的网关只在 authZ 阶段做"按 scope 收窄候选",真正的选对靠那篇。
-- **选型矩阵 · 护栏**:[`../../roadmap/agent-selection/7-safety-guardrails.md`](../../roadmap/agent-selection/7-safety-guardrails.md) —— ③「工具权限边界」(白名单 + 最小权限凭证 + 危险操作 HITL + 副作用幂等)。**本章网关 = 这层护栏的执行点**:护栏说"该挡什么",网关说"在哪一步、用什么机制挡"。
+- **选型矩阵 · 工具层**:[`../../skills/agent-selection/4-tools.md`](../../skills/agent-selection/4-tools.md) —— 100+ 工具的**路由/检索**(Q6 交叉引用):Tool2Vec 粗筛 → cross-encoder rerank → LLM 选择;Anthropic Tool Search/`defer_loading`。本章的网关只在 authZ 阶段做"按 scope 收窄候选",真正的选对靠那篇。
+- **选型矩阵 · 护栏**:[`../../skills/agent-selection/7-safety-guardrails.md`](../../skills/agent-selection/7-safety-guardrails.md) —— ③「工具权限边界」(白名单 + 最小权限凭证 + 危险操作 HITL + 副作用幂等)。**本章网关 = 这层护栏的执行点**:护栏说"该挡什么",网关说"在哪一步、用什么机制挡"。
 - **心智模型(权威)**:[`../1.md`](../1.md) —— L0 概率底座、L1 底层契约(工具 description=prompt、错误当数据、副作用幂等)、L5 部署/安全(工具权限边界、限流降级)、**HITL 横切**(危险动作审批=`interrupt + Command(resume)`)、**确定性优先横切**(硬限/鉴权必须确定性)、《前后端 stream》§7(错误脱敏 / JSON Patch 注入面 RFC 6902)。
 - **同系列**:**03 章**(MCP server/client 作为**工具接入标准** + MCP Gateway 协议细节)、**07 章**(越权拦截 / HITL 闸口的**安全策略本体** + token 预算/人审策略)。本章与它们的分界:**网关是"执行点",03 给"接入协议",07 给"策略内容"**。
 

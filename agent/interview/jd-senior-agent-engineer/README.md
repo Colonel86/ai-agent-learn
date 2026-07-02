@@ -36,7 +36,7 @@ flowchart TB
     ROOT["面试复习总包(本目录,10 章 = 可背诵的『机制+取舍+QA』)"]
     A["../1.md 五层心智<br/>(L0~L5 + 横切带)<br/>—— 权威源,本包是它在『面试问答』维度的展开"]
     B["../3.md context 数据结构<br/>(按访问模式分层选结构)<br/>—— 本包 04/05/08 的数据结构落点"]
-    C["../../roadmap/agent-selection/*<br/>(分层架构选型决策包,架构师资产)<br/>—— 本包每章对照的『已有资产』,面试差异化亮点(见 §6)"]
+    C["../../skills/agent-selection/*<br/>(分层架构选型决策包,架构师资产)<br/>—— 本包每章对照的『已有资产』,面试差异化亮点(见 §6)"]
     ROOT -->|"每章 §7 回链"| A
     ROOT -->|"每章 §7 回链"| B
     ROOT -->|"每章 §7 回链"| C
@@ -52,21 +52,21 @@ flowchart TB
 
 | # | JD 条目 | 主章 | 交叉章 | 已有选型矩阵资产 | 一句话自检点(讲得清吗) |
 |---|---|---|---|---|---|
-| 职责 1 | Run Loop(感知→规划→执行→验证) | **01** | 08(执行环) | `../../roadmap/agent-selection/0-action-paradigm.md` | 四相为何「验证」最易漏又是命门?final answer 要不要验? |
-| 职责 1 | 多 Agent 编排(Orchestrator–Workers) | **01** | — | `../../roadmap/agent-selection/2-framework/01-decision-tree.md`、`.../04-scenario-playbook.md` | 何时单 agent 够、何时才上多 agent?15x 成本比的是谁? |
-| 职责 2 | 带鉴权的工具调用网关 + 工具契约 | **02** | 07(策略)、08(契约即 prompt) | `../../roadmap/agent-selection/4-tools.md`、`.../7-safety-guardrails.md` | 框架能调工具了为何还要网关?凭证为何绝不进 prompt? |
-| 职责 2 | MCP Gateway | **03** | 02(鉴权本体) | `../../roadmap/agent-selection/2-framework/06-protocols.md` | MCP 解决 N×M 还是「能不能跑通」?三原语控制方差异? |
-| 职责 2 | 打通端云协同接口 | **02 / 03** | 10(端侧) | `../../roadmap/agent-selection/9-serving-deployment.md` | 同一份契约两侧执行、outbox + 幂等对账怎么保一致? |
-| 职责 3 | 多层 Memory + Memory Tool | **04** | 05(省窗口角度) | `../../roadmap/agent-selection/6-memory.md` | 短期/长期 vs semantic/episodic/procedural 两条正交轴? |
-| 职责 3 | 全链路 trace 落库 | **06** | 09(回流 eval) | `../../roadmap/agent-selection/5-observability-eval.md` | trace≠log,一次提问=一棵 span 树;落库为何要分库? |
-| 职责 3 | Context Editing / Prompt Caching 降本 | **05** | 04(Memory Tool)、06(token 记账) | `../../roadmap/agent-selection/8-cost-economics.md`、`.../1-model.md` | 缓存命中四要素?Editing≠Compaction?缓存×级联张力? |
-| 职责 4 | 失败重试 & fallback / 断路器 | **07** | 02(网关执行点) | `../../roadmap/agent-selection/7-safety-guardrails.md` | 哪些错该重试?跨模型 fallback 为何不是 try/except? |
-| 职责 4 | token 预算硬限 | **07** | 05(降本)、06(计量) | `../../roadmap/agent-selection/8-cost-economics.md` | 预估 gate + 真值 ledger + reserve/settle 防超卖? |
-| 职责 4 | 越权工具拦截 + 人审闸口(HITL) | **07** | 02(挂闸点)、06(trace 断裂) | `../../roadmap/agent-selection/7-safety-guardrails.md` | 注入越权为何不能靠 system prompt 挡?HITL 为何 fail-closed? |
-| 要求 | Python/TS + function calling / RAG / 多 Agent | **08** | 01(多 agent)、02 | `../../roadmap/agent-selection/3-retrieval.md`、`.../4-tools.md` | 模型到底执行没执行你的函数?RAG 幻觉是检索锅还是生成锅? |
-| 加分 | MCP server / client 开发 | **03** | — | `../../roadmap/agent-selection/2-framework/06-protocols.md` | 握手 + 能力协商讲得透吗?四类 MCP 攻击面? |
-| 加分 | 评测驱动开发(Promptfoo / DeepEval) | **09** | 06(数据飞轮上游) | `../../roadmap/agent-selection/5-observability-eval.md` | trajectory 层为何是 agent 特有?LLM-as-Judge 四要点? |
-| 加分 | Rust(端侧 / 实时链路) | **10** | 02(网关)、05(TTFT) | `../../roadmap/agent-selection/9-serving-deployment.md`、`.../3-retrieval.md` | 为何是 Rust(无 GC 尾延迟/部署形态),放链路哪一段? |
+| 职责 1 | Run Loop(感知→规划→执行→验证) | **01** | 08(执行环) | `../../skills/agent-selection/0-action-paradigm.md` | 四相为何「验证」最易漏又是命门?final answer 要不要验? |
+| 职责 1 | 多 Agent 编排(Orchestrator–Workers) | **01** | — | `../../skills/agent-selection/2-framework/01-decision-tree.md`、`.../04-scenario-playbook.md` | 何时单 agent 够、何时才上多 agent?15x 成本比的是谁? |
+| 职责 2 | 带鉴权的工具调用网关 + 工具契约 | **02** | 07(策略)、08(契约即 prompt) | `../../skills/agent-selection/4-tools.md`、`.../7-safety-guardrails.md` | 框架能调工具了为何还要网关?凭证为何绝不进 prompt? |
+| 职责 2 | MCP Gateway | **03** | 02(鉴权本体) | `../../skills/agent-selection/2-framework/06-protocols.md` | MCP 解决 N×M 还是「能不能跑通」?三原语控制方差异? |
+| 职责 2 | 打通端云协同接口 | **02 / 03** | 10(端侧) | `../../skills/agent-selection/9-serving-deployment.md` | 同一份契约两侧执行、outbox + 幂等对账怎么保一致? |
+| 职责 3 | 多层 Memory + Memory Tool | **04** | 05(省窗口角度) | `../../skills/agent-selection/6-memory.md` | 短期/长期 vs semantic/episodic/procedural 两条正交轴? |
+| 职责 3 | 全链路 trace 落库 | **06** | 09(回流 eval) | `../../skills/agent-selection/5-observability-eval.md` | trace≠log,一次提问=一棵 span 树;落库为何要分库? |
+| 职责 3 | Context Editing / Prompt Caching 降本 | **05** | 04(Memory Tool)、06(token 记账) | `../../skills/agent-selection/8-cost-economics.md`、`.../1-model.md` | 缓存命中四要素?Editing≠Compaction?缓存×级联张力? |
+| 职责 4 | 失败重试 & fallback / 断路器 | **07** | 02(网关执行点) | `../../skills/agent-selection/7-safety-guardrails.md` | 哪些错该重试?跨模型 fallback 为何不是 try/except? |
+| 职责 4 | token 预算硬限 | **07** | 05(降本)、06(计量) | `../../skills/agent-selection/8-cost-economics.md` | 预估 gate + 真值 ledger + reserve/settle 防超卖? |
+| 职责 4 | 越权工具拦截 + 人审闸口(HITL) | **07** | 02(挂闸点)、06(trace 断裂) | `../../skills/agent-selection/7-safety-guardrails.md` | 注入越权为何不能靠 system prompt 挡?HITL 为何 fail-closed? |
+| 要求 | Python/TS + function calling / RAG / 多 Agent | **08** | 01(多 agent)、02 | `../../skills/agent-selection/3-retrieval.md`、`.../4-tools.md` | 模型到底执行没执行你的函数?RAG 幻觉是检索锅还是生成锅? |
+| 加分 | MCP server / client 开发 | **03** | — | `../../skills/agent-selection/2-framework/06-protocols.md` | 握手 + 能力协商讲得透吗?四类 MCP 攻击面? |
+| 加分 | 评测驱动开发(Promptfoo / DeepEval) | **09** | 06(数据飞轮上游) | `../../skills/agent-selection/5-observability-eval.md` | trajectory 层为何是 agent 特有?LLM-as-Judge 四要点? |
+| 加分 | Rust(端侧 / 实时链路) | **10** | 02(网关)、05(TTFT) | `../../skills/agent-selection/9-serving-deployment.md`、`.../3-retrieval.md` | 为何是 Rust(无 GC 尾延迟/部署形态),放链路哪一段? |
 
 > 自检统计法:把上表 15 行过一遍,标 ✅/⚠️/❓。**全 ✅ 才算「这个 JD 准备好了」**;⚠️/❓ 的行直接跳对应章 §5「面试高频问答」。
 
@@ -164,7 +164,7 @@ Day 3 · 可观测 + 加分项(把"飞轮"和"差异化"补上)
 |---|---|---|---|
 | **[../1.md](../1.md)** | 五层心智模型(L0 概率底座 / L1 契约 / L2 核心机制 / L3 context / L4 多 agent / L5 部署安全 + 横切带:协议、度量观测、HITL、确定性优先、成本) | **权威源**:本包每章「为什么」回链于此,不重写 | 01(L2 状态机/L4 多 agent)、02(L1 契约/HITL)、04(记忆三类)、07(L5 安全/确定性优先)、09(横切带 B 度量) |
 | **[../3.md](../3.md)** | context 用什么数据结构(按访问模式分层:顺序选 list、随机 key 选 map、滑窗选 deque、语义检索选向量库、关系选图;运行时/持久化/拼 prompt 是三件事) | **数据结构落点**:本包讲记忆/context/trace 的存储结构时对照它 | 04(working/buffer/Store 选型)、05(context 分区布局)、06(trace 三种表示)、08(chunk metadata) |
-| **[../../roadmap/agent-selection/](../../roadmap/agent-selection/README.md)** | 分层架构选型决策包(0~10:动作范式/模型/框架/检索/工具/观测·eval/记忆/护栏/成本/serving/UX),含决策树 + Spec-Kit prompt 块 | **决策包**:本包每章 §7 + 本 README §3 自检表「已有资产」列回链于此,作面试差异化 | 全部 10 章各自对照(见 §3 表「已有选型矩阵资产」列) |
+| **[../../skills/agent-selection/](../../skills/agent-selection/README.md)** | 分层架构选型决策包(0~10:动作范式/模型/框架/检索/工具/观测·eval/记忆/护栏/成本/serving/UX),含决策树 + Spec-Kit prompt 块 | **决策包**:本包每章 §7 + 本 README §3 自检表「已有资产」列回链于此,作面试差异化 | 全部 10 章各自对照(见 §3 表「已有选型矩阵资产」列) |
 
 > 心智坐标速记:**../1.md 答「为什么」,../3.md 答「用什么结构存」,agent-selection 答「选哪个方案」,本包答「面试怎么讲清楚 + 取舍」**。四者交叉引用、各司其职,这本身就是仓库「资产复用」原则(资产类型→形式→机制)的一个实例。
 

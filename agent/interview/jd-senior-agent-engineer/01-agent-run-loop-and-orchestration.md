@@ -361,9 +361,9 @@ flowchart TB
   - «L2 核心机制·规划/状态机»(ReAct/Plan-and-Execute/Reflexion/LATS 范式表、无界循环→有界图的演进)——本章是它在"Run Loop 实现"维度的展开。
   - «L4 多 Agent 协作»(拓扑表、通信模式、context 传递问题、15x 成本)——本章 §4 拓扑对比与之对齐。
   - «HITL 恢复 / interrupt»(节点从头重跑、副作用位置)——本章 §6 副作用坑回链于此。
-- **动作范式(上游前置)**:`../../roadmap/agent-selection/0-action-paradigm.md` —— Run Loop 的"执行相"用哪档动作原语(function-calling / CodeAct / computer-use)由它先定,会反向约束 loop 形态与沙箱。
-- **框架决策树**:`../../roadmap/agent-selection/2-framework/01-decision-tree.md` —— Q0「系统形状」C 项(多角色协作)与 Q1(状态控制)对应本章单 agent vs 多 agent 的落地选型;多 agent 框架(crewAI / MAF / LangGraph 多 agent 图)在此选。
-- **场景速查**:`../../roadmap/agent-selection/2-framework/04-scenario-playbook.md` —— 场景 4(多角色协作)、场景 2(诊断/运维循环 + HITL)、场景 8(SWE 长时 loop)是本章 loop/编排的具体落地映射。
+- **动作范式(上游前置)**:`../../skills/agent-selection/0-action-paradigm.md` —— Run Loop 的"执行相"用哪档动作原语(function-calling / CodeAct / computer-use)由它先定,会反向约束 loop 形态与沙箱。
+- **框架决策树**:`../../skills/agent-selection/2-framework/01-decision-tree.md` —— Q0「系统形状」C 项(多角色协作)与 Q1(状态控制)对应本章单 agent vs 多 agent 的落地选型;多 agent 框架(crewAI / MAF / LangGraph 多 agent 图)在此选。
+- **场景速查**:`../../skills/agent-selection/2-framework/04-scenario-playbook.md` —— 场景 4(多角色协作)、场景 2(诊断/运维循环 + HITL)、场景 8(SWE 长时 loop)是本章 loop/编排的具体落地映射。
 - **跨章交叉引用(本 JD 系列)**:工具调用网关/契约/MCP → 02、08;全链路 trace 落库 → 06;失败重试/fallback/token 预算/越权拦截/人审闸口 → 07;评测驱动(Promptfoo/DeepEval)→ 见 06 与加分项章节。
 
 > 最后核对:2026-06。⚠️ 易变项(LangGraph `recursion_limit` 默认值、`tool_use`/`tool_calls` 字段名、Anthropic 15x 精确倍数、各多 agent 框架维护状态)请就近现查官网/原文,本章给的是**机制与选型方法**,不固化快照。

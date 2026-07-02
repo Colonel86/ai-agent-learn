@@ -507,3 +507,32 @@ Markdown(result)
 ### 🎯 下一课预告
 
 > 到这里已经具备**构建生产级 Agent 系统**的能力。下一课继续深入，解锁更多可能。
+
+---
+
+## 面试速答总结
+
+**一句话**：Task 设计的核心心法是"**把 Agent 当刚入职的初级工程师**"——必须讲清两件事:**这件事是什么(`description`)+ 我期望的结果长什么样(`expected_output`)**,crewAI 强制这两个必填就是逼你想清楚;而多 Agent 的协作有两种 Process——**Sequential(按列表顺序、前输出喂后输入)** 和 **Hierarchical(一个 Manager Agent 用 `manager_llm` 动态调度、审核 Worker,要求所有 Worker `allow_delegation=True`)**,切换只需改一行 `process=`。
+
+### 面试回答骨架（问"怎么写好 agent 的 task / sequential 和 hierarchical 怎么选"）
+
+> 1. **Task 设计哲学**：两个心智模型——"像**管理者**"(目标→流程→雇谁→怎么写角色) + "像带**新人**"(必须把"做什么"和"期望产出什么"讲到位)。核心论断:**无论哪个框架,你越用心解释任务是什么、期望什么,结果越好**;crewAI 把 `description`/`expected_output` 设为必填正是这个道理。
+> 2. **Task 能力图谱**:必填三件套(`description`/`expected_output`/`agent`) + 进阶超参(`context` 引入别的 task 输出、`tools` Task 级工具、`callback` 完成回调、`human_input` 人工介入、`async_execution` 并行、`output_json` 结构化、`output_file` 落盘)。大多数选项别的框架也有,本质都是帮 Agent 高效完成任务。
+> 3. **两种 Process 对比(高频)**:**Sequential**——一个接一个、前一个输出作后一个输入,适合线性流水线(写博客/客服),无需 manager_llm;**Hierarchical**——crewAI **自动生成一个 Manager Agent**,由它决定哪个 Task 派给哪个 Agent、可反复追问澄清、可审核要求改进,适合复杂动态协作(金融/研究),需配 `manager_llm` 且所有 Worker `allow_delegation=True`。
+> 4. **落地一行切换**:`process=Process.hierarchical` + `manager_llm=ChatOpenAI(...)`,Manager 的 LLM 可独立配温度/模型(通常给它更强的模型,因为调度和规划最吃推理)。
+
+### 关键判断（加分点）
+
+- **`expected_output` 常被低估**:很多人只写 description 就跑,结果飘忽。明确期望产出等于给 Agent 一个"验收标准",是稳定性的关键来源——这是"新人入职视角"的精髓。
+- **Hierarchical 的价值是"单一权威点 + 自动编排"**:Manager 始终记得最初目标(不像 Sequential 那样上下文逐级淡化),且不用你手动排 Task 顺序、还能自动审核——用推理换掉人工编排。
+- **代价对称**:Hierarchical 更灵活但更贵更慢(多一层 Manager 的反复调度),且结果更难预测;线性确定的流程用 Sequential 反而更稳更省。别默认上层级。
+- **Pydantic 是 AI↔传统代码的桥**:`output_json` 把 Fuzzy 文本解析成强类型实例,让 Agent 不经 API 直接集成进现有代码。
+
+### 为什么这是高分答法
+
+- 把 Task 设计上升成"管理者 + 带新人"两个可复述的心智模型,而非罗列属性;
+- Sequential vs Hierarchical 给出**机制差异 + 适用场景 + 代价对称**三面,体现取舍判断而非"层级更高级"的误区。
+
+**一句话收尾**：写好 Task 的本质是像给新人交代工作一样把"做什么"和"要什么结果"讲清楚;而协作模式的选择是线性确定性(Sequential)与动态编排(Hierarchical,Manager 换掉人工排程但更贵更不可预测)之间的取舍——一行 `process=` 切换的背后,是"要不要为灵活性付推理成本"的架构决定。
+
+> 关联：`04-Agent六大要素与客户触达Crew.md`(管理者思维起源)、`05-优秀Tools三大特性与活动策划Crew.md`(Task 进阶属性)、`07-协作模式进阶与金融分析及简历定制Crew.md`(协作模式全景 + Task Context)、`../../11-AI Agents in LangGraph/notes/L09-高级Agent架构.md`(Supervisor 模式 = Hierarchical 的另一种表达)。

@@ -2,7 +2,7 @@
 
 > 一次提问 = 一棵 span 树;trace 不只"看",还要**持久化进存储/数仓做分析、回归、数据飞轮**。对应 JD **职责 3(全链路 trace 落库)**;埋点标准与 OTel 经验同时回应 **加分项(MCP/A2A 跨服务链路)**。
 >
-> **边界**:eval 方法论(怎么判好坏、4 层评估、LLM-as-Judge)归 09;本章只聚焦三件事——**trace 怎么产生 → 怎么落库 → 怎么治理**。平台选型结论复用 `../../roadmap/agent-selection/5-observability-eval.md`「子决策 0/1」,本章补它较薄的**「落库/存储/采样/隐私」**那一块。
+> **边界**:eval 方法论(怎么判好坏、4 层评估、LLM-as-Judge)归 09;本章只聚焦三件事——**trace 怎么产生 → 怎么落库 → 怎么治理**。平台选型结论复用 `../../skills/agent-selection/5-observability-eval.md`「子决策 0/1」,本章补它较薄的**「落库/存储/采样/隐私」**那一块。
 >
 > 结论分级:✅ 稳定经验 / ⚠️ 2026-06 快照(易变)/ ❓ 待验证。易变的版本号/价格/字段名一律标「(现查官网)」。
 
@@ -366,7 +366,7 @@ A:
 
 ## 7. 回链已有资产 / 课程
 
-- **选型矩阵(本章主依据,务必对齐)**:`../../roadmap/agent-selection/5-observability-eval.md`
+- **选型矩阵(本章主依据,务必对齐)**:`../../skills/agent-selection/5-observability-eval.md`
   - 「子决策 0」span 树数据模型 + 埋点层 vs 后端层 + 三个 agent 特有坑 + 最轻起步路径 —— 本章 §1/§4.1 直接复用,不重写。
   - 「子决策 1」可观测平台对比 + **HITL × `interrupt()` 的坑与三连治法** —— 本章 §5 Q3、§6 对齐。
   - 「子决策 3」配置即代码(prompt/model id/参数版本化) —— 本章 §3.3「归因字段钉进属性」、§5 Q8 是它在 trace 落库侧的落点。
@@ -375,6 +375,6 @@ A:
   - `../1.md` —— Long-Term Memory(semantic/episodic/procedural)+ HITL `interrupt()`/`Command(resume=)` 暂停-恢复机制,与本章 §5 Q3 的 trace 断裂治法同源。
   - `../3.md` —— context 分层数据结构(运行时 list/dict、持久化 Redis/Postgres、拼进 prompt 是三件事),与本章 §1.4「trace 三种表示」同款分层心智。
 - **同 JD 其它章**:工具调用网关/MCP Gateway 章(跨服务 traceparent 传播的产生方)、安全护栏章(失败重试/token 预算/人审闸口 → 都要落进 span 状态)、Eval 驱动开发(09,trace→eval 样本的下游)。
-- **总览**:`../../roadmap/agent-selection/README.md`;ADR 沉淀:`../../skills/adr-writer`(埋点标准/后端存储的软锁取舍写进 ADR)。
+- **总览**:`../../skills/agent-selection/README.md`;ADR 沉淀:`../../skills/adr-writer`(埋点标准/后端存储的软锁取舍写进 ADR)。
 
 > 最后核对:2026-06。结论分级:分层心智(trace=span 树、埋点/后端两层、三种表示)✅ 稳定;W3C traceparent / OTLP 端口 ✅ 稳定;Langfuse v3 四件套架构 ✅ 事实但⚠️版本现查;OTel GenAI 字段名 ⚠️ experimental 易变,**用前现查官网**。

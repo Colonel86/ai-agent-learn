@@ -90,4 +90,4 @@ DeepLearning.ai 有一门**专门讲 MCP 的短课程**，本课程结束后想�
 
 **一句话收尾**：MCP 把工具接入从"每家各写一遍"变成"server 写一次、client 用一次"，是 agentic 生态的**集成层标准**；用它的同时要管好第三方 server 的权限与可信边界。
 
-> 关联：`L3-现代工具调用语法.md`（底层 tool calling 机制）、`L4-代码执行工具.md`（外部能力的安全边界）、`../../../../roadmap/agent-selection/`（工具/集成选型）。
+> 关联：`L3-现代工具调用语法.md`（底层 tool calling 机制）、`L4-代码执行工具.md`（外部能力的安全边界）、`../../../../skills/agent-selection/`（工具/集成选型）。

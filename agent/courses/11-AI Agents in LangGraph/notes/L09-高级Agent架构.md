@@ -184,3 +184,32 @@ Harrison 的收官观点：
 - [x] 了解 Multi-agent / Supervisor / Flow Engineering / Plan-Execute / LATS 等前沿模式
 
 > **下一步**：动手把这些概念用到你自己的业务场景——或继续学 Multi AI Agent Systems with crewAI / AutoGen 等多 agent 框架。
+
+---
+
+## 十一、面试速答总结
+
+**一句话**：基础的单 agent 之上有五种进阶架构——**Multi-Agent（多角色共享 state）、Supervisor（强 LLM 中心调度各自独立的子 agent）、Flow Engineering（有向流水线 + 关键节点小循环）、Plan-and-Execute（先规划后执行、可重规划）、LATS（对动作空间做反思+回溯的树搜索）**；它们的选择本质是在**可控性 vs 自由度**之间取舍，而 LangGraph 的差异化正是 **Controllability**——能表达任意循环/非循环控制流，尤其 LATS 这种依赖回溯的模式靠 persistence 天然支持。
+
+### 面试回答骨架（问"agent 架构有哪些 / 多 agent 怎么选 / 什么时候上 supervisor"）
+
+> 1. **Multi-Agent vs Supervisor 的关键区别（最常考）**：Multi-Agent 是**多角色读写同一份共享 state**、靠固定/条件边传递、无中心（L07 Essay Writer 就是）;Supervisor 是**子 agent 各有独立内部 state**（独立的图），由一个**中心 supervisor 决定调谁、传什么**。选 supervisor 的前提是**给它配一个足够强的 LLM**——调度和规划本身极吃推理能力。
+> 2. **Flow Engineering（来自 AlphaCodium）**：核心是"别把 agent 自由度设太高让它乱走"，而是**精心设计信息如何在节点间流动**——前半有向线性流、后半在关键节点（初版代码、公开测试）嵌小循环。适合代码生成这类高要求任务。
+> 3. **Plan-and-Execute**：把**思考和行动明确分开**——planner 先列全部步骤 → 逐步派给 sub-agent → 每步后决定继续或 replan。对长任务比"边走边想"稳得多（Essay Writer 的 planner→research 就是雏形）。
+> 4. **LATS（Language Agent Tree Search）**：对可能动作的状态空间做**类 MCTS 的树搜索**——生成 action → 反思评估 → 展开子节点 → 可跳回祖先 → 反向传播更新经验。**强依赖 persistence**（要能回到历史状态），正是 L05/L06 的能力，也是图式框架的优势场景。
+
+### 关键判断（加分点）
+
+- **共享 state vs 独立 state 是多 agent 的分水岭**：一句话答清 Multi-Agent（共享）和 Supervisor（独立+中心调度）的差别，比罗列框架名更值钱。
+- **架构越自由越难控**：Flow Engineering 的洞察反直觉但关键——限制信息流、降低自由度，反而更可靠;这正对应 Harrison 的收官论点"**高可控性是做出真正能跑的 agent 的关键**"。
+- **persistence 是高级架构的通用底座**：LATS 的回溯、Plan-and-Execute 的重规划、时间旅行式调试，全建立在"可存可恢复任意历史 state"上——呼应 L05/L06，说明为什么选 LangGraph（图 + 持久化天然表达这些）。
+- **选型要看任务形状**：团队协作类 → Multi-Agent；复杂分派 + 有强 LLM → Supervisor；高要求确定性任务（代码）→ Flow Engineering；长多步任务 → Plan-and-Execute;需大量探索方案 → LATS。
+
+### 为什么这是高分答法
+
+- 不背五个名词，而是给每个架构一句"**核心特征 + 典型用途 + 依赖的基础能力**"，并点出 Multi-Agent/Supervisor 的 state 差异这个高频考点；
+- 用"可控性 vs 自由度"一条主线把五种架构串起来，落到 LangGraph 的差异化定位，体现架构师视角。
+
+**一句话收尾**：进阶 agent 架构的选择，本质是在**自由度和可控性之间找平衡**——共享还是独立 state、有无中心调度、要不要回溯搜索，都取决于任务形状;而 LangGraph 的核心竞争力就是把这些控制流（含循环与回溯）显式化、可持久化，让"可控"成为做出真正能上线的 agent 的前提。
+
+> 关联：`L07-项目实战-Essay-Writer.md`（Multi-Agent / Plan-Execute 雏形）、`L05-持久化与流式输出.md` + `L06-Human-in-the-Loop.md`（LATS 回溯的底座）、`../../../skills/agent-selection/`（多 agent 框架选型）。

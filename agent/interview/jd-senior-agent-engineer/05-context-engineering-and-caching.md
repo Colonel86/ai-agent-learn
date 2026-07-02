@@ -3,7 +3,7 @@
 > **一句话定位**:把 context 窗口当成「稀缺、有质量曲线、按 token 收钱」的资源来经营——用 **Prompt Caching** 省重复前缀、用 **Context Editing** 砍膨胀历史、用 **Memory Tool** 把长期记忆搬出窗口,三者作用在窗口的不同部位协同降本提质。
 > **对应 JD**:职责 3「接入 Context Editing、Memory Tool、Prompt Caching 降本」。
 > **最后核对:2026-06**。⚠️ Anthropic 的具体折扣/TTL/最小可缓存 token/beta 字段名变化快,本章给**机制与布局原则**,精确数字标「现查官网」(查 `skills/claude-api` 或 platform.claude.com)。
-> **边界**:记忆的**分层存储**归本系列 04(本章只谈「省窗口 / 省钱」角度的 Memory Tool);统一成本指标「每任务 $」引用 `../../roadmap/agent-selection/8-cost-economics.md`。
+> **边界**:记忆的**分层存储**归本系列 04(本章只谈「省窗口 / 省钱」角度的 Memory Tool);统一成本指标「每任务 $」引用 `../../skills/agent-selection/8-cost-economics.md`。
 
 ---
 
@@ -18,7 +18,7 @@
 | **成本** | 厂商按 input token **线性**计价;但 self-attention 计算是 **O(n²)**。你每多塞一段历史,每次请求都要为它重新付 prefill 的钱 | token 预算被历史吃光;`$/任务` 随对话变长**单调上升** |
 | **质量(context rot)** | context 越长,模型对单个 token 的有效注意力被稀释;**lost-in-the-middle**:模型对 prompt **开头和结尾**召回好、**中间**召回差(U 形曲线,出处 Liu et al. 2023《Lost in the Middle》✅) | 关键信息埋在中段会被「看不见」;长 agent run 越往后越容易丢早期约束 |
 
-> 架构师结论 ✅:**context 工程的第一性原理是「高信号密度」**——把窗口里每个 token 都用在刀刃上。RAG 收窄(→ `../../roadmap/agent-selection/3-retrieval.md`)、Context Editing 清理、Memory Tool 外移,本质都在对抗这两条曲线。
+> 架构师结论 ✅:**context 工程的第一性原理是「高信号密度」**——把窗口里每个 token 都用在刀刃上。RAG 收窄(→ `../../skills/agent-selection/3-retrieval.md`)、Context Editing 清理、Memory Tool 外移,本质都在对抗这两条曲线。
 
 ### 1.2 Prompt Caching:把 KV-cache 跨请求持久化
 
@@ -72,7 +72,7 @@ Memory Tool(类型 `memory_20250818`,**client-side** 执行):模型通过 `view/
 ### 1.5 与 KV-cache / 模型档位级联的关系
 
 - **Prompt Caching 就是 KV-cache 的跨请求持久化版**(§1.2)。理解了 KV-cache 的位置相关性,就理解了所有缓存失效规则。
-- **与级联/降档(→ `../../roadmap/agent-selection/1-model.md` «模型路由/级联/网关»)有张力** ⚠️:级联想「简单请求用便宜模型」省钱,但**缓存是模型相关的,切模型 = 缓存全 miss**。两个降本杠杆会打架。治法(✅ Anthropic agent-design 实践):
+- **与级联/降档(→ `../../skills/agent-selection/1-model.md` «模型路由/级联/网关»)有张力** ⚠️:级联想「简单请求用便宜模型」省钱,但**缓存是模型相关的,切模型 = 缓存全 miss**。两个降本杠杆会打架。治法(✅ Anthropic agent-design 实践):
   - **主循环固定一个模型**保住缓存;子任务要用便宜模型时,**spawn 一个子 agent** 单独跑(它有自己独立的缓存前缀),不在主对话里切模型。
   - 同理 **mid-session 别改 tools / system**(它们排在最前,一改全 miss)——要加运行时指令,用下面 §3.4 的 mid-conversation system message。
 
@@ -244,7 +244,7 @@ cache write 比正常 input **贵**,不是无脑上就赚。⚠️ 按快照倍�
 
 - **缓存 × 级联**:切便宜模型省了单价、却丢了缓存(§1.5)。量化:`级联省的单价差` vs `丢缓存多付的 prefill`,简单请求占比不高时,**保模型保缓存可能更划算**。
 - **Context Editing × 缓存**:清理动作**修改了中段前缀**,会让那一段及之后的缓存失效、触发一次 rewrite。所以**清理频率要克制**——清得太勤,省下的窗口被反复 rewrite 的溢价吃掉。✅ 取舍:让清理在较高阈值才触发,一次清一大批,均摊 rewrite 成本。
-- 统一裁决标准只有一个:**`$/任务`**(→ `../../roadmap/agent-selection/8-cost-economics.md`)。任何 context 优化,先量化对 `$/任务` 和质量 eval 的影响,再决定。
+- 统一裁决标准只有一个:**`$/任务`**(→ `../../skills/agent-selection/8-cost-economics.md`)。任何 context 优化,先量化对 `$/任务` 和质量 eval 的影响,再决定。
 
 ---
 
@@ -268,7 +268,7 @@ cache write 比正常 input **贵**,不是无脑上就赚。⚠️ 按快照倍�
 
 **Q5. 长 context 为什么质量会下降?lost-in-the-middle 是什么?怎么缓解?**
 - context rot:越长,单 token 有效注意力越被稀释。**lost-in-the-middle**(Liu 2023):召回呈 U 形,开头结尾好、中间差。
-- 缓解:RAG 收窄到高信号 token(→ `../../roadmap/agent-selection/3-retrieval.md`)、把关键约束放**开头或结尾**而非中段、Context Editing 砍中段噪声、Memory Tool 外移长期事实。一句话:**别拿 1M 窗口硬塞,信号密度比绝对长度重要**。
+- 缓解:RAG 收窄到高信号 token(→ `../../skills/agent-selection/3-retrieval.md`)、把关键约束放**开头或结尾**而非中段、Context Editing 砍中段噪声、Memory Tool 外移长期事实。一句话:**别拿 1M 窗口硬塞,信号密度比绝对长度重要**。
 
 **Q6. Caching / Context Editing / Memory Tool 三者怎么组合降本?举个长 agent 的例子。**
 - 三者作用在窗口**不同部位**(§3.1 图):前缀用 Caching、中段膨胀用 Editing、跨会话长期记忆用 Memory 外移。
@@ -304,12 +304,12 @@ cache write 比正常 input **贵**,不是无脑上就赚。⚠️ 按快照倍�
 
 ## 7. 回链已有资产 / 课程
 
-- **成本统一标尺**:`../../roadmap/agent-selection/8-cost-economics.md` —— 「`$/任务`」公式、**四类 token 分开记**(`input/output/cache_read/cache_write`)、压降阶梯(① 三级缓存最先做,几乎零损)、缓存与级联的成本账。本章所有降本动作都用它的 `$/任务` 裁决。
-- **模型层 / 级联张力**:`../../roadmap/agent-selection/1-model.md` —— «模型路由/级联/网关»;缓存模型相关 → 切模型全 miss,与降档/级联的张力治法(子 agent 保缓存)。
-- **检索收窄 token**:`../../roadmap/agent-selection/3-retrieval.md` —— 对抗 lost-in-the-middle 的主手段(把上下文收窄到高信号 token,别硬塞 1M)。
-- **可观测 / eval**:`../../roadmap/agent-selection/5-observability-eval.md` —— 缓存命中率、四类 token、context 优化前后的质量回归门控。
+- **成本统一标尺**:`../../skills/agent-selection/8-cost-economics.md` —— 「`$/任务`」公式、**四类 token 分开记**(`input/output/cache_read/cache_write`)、压降阶梯(① 三级缓存最先做,几乎零损)、缓存与级联的成本账。本章所有降本动作都用它的 `$/任务` 裁决。
+- **模型层 / 级联张力**:`../../skills/agent-selection/1-model.md` —— «模型路由/级联/网关»;缓存模型相关 → 切模型全 miss,与降档/级联的张力治法(子 agent 保缓存)。
+- **检索收窄 token**:`../../skills/agent-selection/3-retrieval.md` —— 对抗 lost-in-the-middle 的主手段(把上下文收窄到高信号 token,别硬塞 1M)。
+- **可观测 / eval**:`../../skills/agent-selection/5-observability-eval.md` —— 缓存命中率、四类 token、context 优化前后的质量回归门控。
 - **心智模型**:`../1.md` —— «成本/单位经济学横切线»(L3 控 token+缓存)、「先量化再优化」、「确定性优先 / 有界状态机」(给 agent 步数上限防膨胀失控)。
 - **本系列相邻章**:**04 · 多层 Memory + 全链路 trace**(记忆的分层存储/检索归 04,本章只谈 Memory Tool 的省窗口角度);职责 3 的另一半「全链路 trace 落库」与本章「工具结果另存 trace、context 里可清」呼应。
 - **精确数字/字段权威源**:`skills/claude-api`(`prompt-caching` / `context-editing` / 内存工具 / `count_tokens`)或 platform.claude.com —— 所有标「现查官网」的 TTL、折扣倍率、最小可缓存 token、beta header 与策略类型名,以当下查到的为准,**不固化本快照**。
 
-> 最后核对:2026-06。沉淀:在某 feature 定下 context 优化方案(断点布局 / 清理阈值 / TTL)后,用 `agent/skills/adr-writer` 写 ADR 记录取舍。
+> 最后核对:2026-06。沉淀:在某 feature 定下 context 优化方案(断点布局 / 清理阈值 / TTL)后,用 `agent/skills/sdd/adr-writer` 写 ADR 记录取舍。

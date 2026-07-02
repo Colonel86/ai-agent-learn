@@ -286,14 +286,29 @@ print(result['messages'][-1].content)
 
 ---
 
-## 十一、本节要点速记
+## 十一、面试速答总结
 
-- LangGraph = **描述 cyclic control flow** 的框架，把 L02 中的手工循环替换为可视化的状态图。
-- 三大积木：**Nodes / Edges / Conditional Edges**。
-- **Agent State** 通过 TypedDict + `operator.add` 定义合并语义（追加 vs 覆盖）。
-- **`model.bind_tools(tools)`** 让 LLM 知道有哪些工具可用。
-- 图上每个节点返回 `{'messages': [...]}`，LangGraph 自动合并到状态。
-- 对 LLM 幻觉工具名的容错：返回 "bad tool name, retry"，**让 agent 下一轮自愈**。
-- 一次 `invoke` 就能完成：单步 / 并行 / 顺序依赖 等多种复杂模式。
+**一句话**：LangGraph 把 L02 手写 ReAct 里"最占篇幅、最易出错"的**循环控制**标准化为**状态图**——用 **Nodes/Edges/Conditional Edges** 描述控制流、用 **Agent State（TypedDict + `operator.add`）** 承载贯穿全图且可持久化的状态，天然支持 ReAct 需要的**循环图**，从而换来 agent 最关键的**可控性**。
 
-> 下一节：深入了解 **Agentic Search（Tavily）**——为什么普通搜索不够，Agent 专用搜索到底有什么不同。
+### 面试回答骨架（问"LangGraph 解决什么问题 / 和 LangChain 什么关系 / 核心概念"）
+
+> 1. **定位一句话**：LangChain 负责封装 Prompt/Tools/LLM 等**组件**；LangGraph 是其扩展，专门负责**描述和编排控制流**——尤其是 agent 需要的**循环图（cyclic graph）**。L02 里我手写的 `while + 正则`那一大坨，就是它要替换的。
+> 2. **三大积木（要会背）**：**Nodes**=一个函数/agent，执行动作；**Edges**=固定的下一步；**Conditional Edges**=根据当前 state 动态决定走向。ReAct 图就是 `LLM →(条件边 exists_action) action / END`，`action` 再回到 `LLM` 形成环。
+> 3. **最重要的概念——Agent State**：贯穿全图、每个节点每条边都可读写、local 于 graph、可存入持久化层随时恢复。用 `TypedDict` 定义，字段的**合并语义**是关键：**未标注 → 覆盖**；**`Annotated[..., operator.add]` → 追加**。`messages`/`intermediate_steps` 这类要累积的必须用 `operator.add`。
+> 4. **两个落地开关**：`model.bind_tools(tools)` 告诉模型有哪些工具可调（对应 function calling）；`graph.compile()` 把图变成标准 **Runnable**，统一 `invoke` 接口。每个节点只需 `return {'messages':[...]}`，靠 `operator.add` 自动合并回全局 state。
+
+### 关键判断（加分点）
+
+- **"论文里的 agent 本质都是图"**：Harrison 的这个观察直接催生 LangGraph——把架构图当一等公民来编排，比藏在命令式循环里更**可控、可视、可持久化**。
+- **错误自愈是 agent 架构的红利**：LLM 幻觉出不存在的工具名时，不抛异常，而是回填 `"bad tool name, retry"` 让**下一轮推理自己纠正**——这是把"控制流交给图 + 决策交给模型"的直接好处。
+- **并行 vs 顺序要分清**：一次 `take_action` 能处理模型发出的**多个 tool_calls**（parallel function calling，如 SF+LA 天气）；但"先查冠军再查该州 GDP"是**顺序依赖**，靠图的**回环**多轮完成，且更吃模型能力（示例切到 gpt-4o）。
+- **provider 无关**：`ChatOpenAI` 换成任何 LangChain 支持的 LLM，其余代码一行不改——组件抽象带来的可移植性。
+
+### 为什么这是高分答法
+
+- 不背"LangGraph 是个 agent 框架"的空话，而是从 **L02 痛点 → 三大积木 → State 合并语义 → 两个落地开关**给出可复述的结构；
+- 点出"agent 即图""错误可下一轮自愈""并行/顺序区别"这些能体现**架构取舍**的判断。
+
+**一句话收尾**：LangGraph 的本质是把 agent 的**循环控制流**从命令式代码提升为**可控、可视、可持久化的状态图**——三大积木描述走向、Agent State 承载记忆、条件边交出决策权给模型，这正是从"能跑的 ReAct"走向"可控的 agent 系统"的关键一步。
+
+> 关联：`L02-从零构建ReAct-Agent.md`（手写循环的痛点来源）、`L05-持久化与流式输出.md`（State 落到持久化层）、`L06-Human-in-the-Loop.md`（可控性的进一步兑现）。

@@ -399,10 +399,10 @@ A:**只 embed `observation`(触发场景)**。召回时拿当前任务去匹配�
 
 ## 7. 回链已有资产 / 课程
 
-- 选型矩阵(记什么/存哪/何时更新,决策树 + Spec-Kit prompt 块):`../../roadmap/agent-selection/6-memory.md`
+- 选型矩阵(记什么/存哪/何时更新,决策树 + Spec-Kit prompt 块):`../../skills/agent-selection/6-memory.md`
 - 记忆类型心智模型(semantic/episodic/procedural × LangGraph BaseStore × namespace 取舍):`../1.md`(§2–§6)
 - context 数据结构分层(顺序选 list / 随机 key 选 map / 滑窗选 deque / 语义检索选向量库 / 关系选图):`../3.md`
-- 检索基础设施(semantic 记忆的向量召回 = RAG 检索,共用此层):`../../roadmap/agent-selection/3-retrieval.md`
-- 编排框架(LangGraph 的 checkpointer/Store 是记忆基础设施):`../../roadmap/agent-selection/2-framework/`
+- 检索基础设施(semantic 记忆的向量召回 = RAG 检索,共用此层):`../../skills/agent-selection/3-retrieval.md`
+- 编排框架(LangGraph 的 checkpointer/Store 是记忆基础设施):`../../skills/agent-selection/2-framework/`
 - 课程回溯:`../../courses/12-Long-Term Agentic Memory With LangGraph/notes/00-总结回顾.md`(及 L2–L5 code)
 - 邻章边界:context 窗口管理 / Context Editing / Prompt Caching 降本 → 本系列 **05**(本章只引用不展开)

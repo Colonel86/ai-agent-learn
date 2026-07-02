@@ -13,8 +13,8 @@ description: "AI Agent 学习会话助手。每次学习新主题时使用此 Sk
 
 先弄清楚用户想学什么，以及他们当前的知识水平。可以参考学习路线图来判断他们处于哪个阶段：
 
-- 读取 `/Users/ming/Documents/ai-agent-learn/roadmap/AI-Agent-学习路线图-完整版.md` 了解整体规划
-- 读取 `/Users/ming/Documents/ai-agent-learn/AI-Agent-学习追踪表.xlsx` 了解当前进度
+- 读取 `/Users/ming/Documents/ai-agent-learn/agent/roadmap/AI-Agent-学习路线图-完整版.md` 了解整体规划
+- 读取 `/Users/ming/Documents/ai-agent-learn/agent/AI-Agent-学习追踪表.xlsx` 了解当前进度
 
 根据主题和阶段，调整内容的深度和广度。
 

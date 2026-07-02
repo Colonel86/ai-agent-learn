@@ -472,3 +472,28 @@ Markdown(result)
 | 输入变量 | `{topic}` | `{customer}` `{person}` `{inquiry}` |
 
 📌 **Part A 是最小可用骨架，Part B 引入了 Tools / Memory / Cooperation，逐步把 Agent 系统推向生产级。**
+
+---
+
+## 面试速答总结
+
+**一句话**：从零搭一个多 agent 系统就四步——**Agent(role/goal/backstory) → Task(description/expected_output/agent) → Crew(agents+tasks，列表顺序=执行顺序) → kickoff(inputs 插值)**；升级到生产级靠六大能力：Role Playing / Focus / **Tools（Agent 级与 Task 级两级绑定，Task 级覆盖）** / **Cooperation（`allow_delegation` 控制委派方向）** / Guardrails / **Memory（`memory=True` 一键开启）**。核心心法：`expected_output` 是 **Forcing Function**——强迫你在任务开始前就精确定义"成功长什么样"。
+
+### 面试回答骨架（问"手把手搭一个多 agent 系统 / crewAI 里工具、记忆、委派怎么用"）
+
+> 1. **最小骨架四步**（Part A）：① 定义 Agent——role/goal/backstory 三件套让 LLM"入戏"（实测显著提升表现），`allow_delegation` 决定能否转委派；② 定义 Task——description（做什么）+ **expected_output（成功长什么样）** + agent（谁做）；③ 组装 Crew——**tasks 列表顺序就是 Sequential 执行顺序，前一个任务的输出自动进下一个任务的输入**；④ `kickoff(inputs={...})`——占位符 `{topic}` 一次传入、多处插值（agent 和 task 里共享）。
+> 2. **强调 expected_output 的设计价值**：它不是可选注释，是 **Forcing Function**——迫使你先定义终态（"含大纲/受众分析/SEO 关键词的规划文档"），这就是验收标准前置的思想。
+> 3. **升级到生产级的三个机制**（Part B 客服 Crew）：**委派方向设计**——客服 `allow_delegation=False`（不许甩锅）、QA 默认 `True`（可以打回去返工），一来一回就形成"生成→审核→修订"闭环；**工具两级绑定**——Agent 级对所有任务生效、Task 级只在该任务生效**且覆盖 Agent 级**，用它做工具权限的细粒度控制；**记忆**——Crew 层 `memory=True`，跨任务共享上下文。
+> 4. **护栏从哪来**：不是单独的组件，而是 role/goal/backstory + 明确的 expected_output + 工具权限三者叠出来的行为边界——agent 始终在预期范围内行动。
+
+### 关键判断（加分点）
+
+- **"QA 可反向委派"就是 Reflection/evaluator-optimizer 模式的 crewAI 写法**：生成者(Support)↔评估者(QA)循环——面试时能把框架特性对到设计模式谱系，比背 API 高一档。
+- **expected_output ≈ rubric 前置**：与 SDD 里"验收标准在 spec 阶段写清、可判定"完全同源——好的多 agent 系统从"定义成功"开始，不是从写 prompt 开始。
+- **Task 级工具覆盖 = 最小权限原则**：通用工具挂 Agent、敏感/专用工具只挂对应 Task，让"谁在什么任务里能用什么"显式可控——这是工具安全边界的落点。
+- **1 Agent 可担多个 Task、粒度宁细勿粗**：拆分依据是"聚焦"（每个 agent 只做好一件事），不是 1:1 的形式对称。
+- **真实落地案例**：crewAI 官方文档本身由一个 Crew 维护——回答"多 agent 有没有生产价值"时可用的具体例证。
+
+**一句话收尾**：crewAI 把多 agent 系统降维成"四步组装"，但生产级差距在细节——expected_output 定义成功、委派方向设计出审核闭环、两级工具绑定控制权限、memory 串起上下文；护栏不是加出来的，是 role+预期+权限三者约束出来的。
+
+> 关联：`02-AI-Agents概览与第一个Crew实战.md`（三原语与 Fuzzy 范式）、`04-Agent六大要素与客户触达Crew.md`（六大要素系统展开）、`../../../skills/agent-selection/11-design-patterns.md`（evaluator-optimizer/Reflection 模式）、`../../../skills/agent-selection/spec-kit-workflow.md`（§四 rubric 方法论——expected_output 的同源思想）。

@@ -238,3 +238,32 @@ flowchart TB
 > **Lesson 2**：动手构建 **Baseline Email Agent**——
 >
 > 不带记忆的版本，让你先看清楚"裸 Agent"的样子。后续 3 课才会逐步把三类记忆塞进去。
+
+---
+
+## 九、面试速答总结
+
+**一句话**：Agent 的长期记忆按认知科学分**三类**——**Semantic（事实，落地为向量库条目）/ Episodic（历史案例，落地为 prompt 里的 few-shot）/ Procedural（规则，落地为 System Prompt 本身且可被后台 Agent 自动优化）**；每类记忆还要选**更新时机**——**Hot Path（即时读写、立刻生效但增延迟）vs Background（异步 helper agent 更新、主 agent 简洁但不即时）**；设计任何 agent 时用三个自问（要不要学更好的指令 / 从过去案例学 / 记住人地物的事实）来决定用哪几类。
+
+### 面试回答骨架（问"agent 的记忆怎么设计 / 长期记忆有哪几种 / 偏好怎么持久化"）
+
+> 1. **先给分类框架（要会背）**：借人类记忆做类比——**Semantic=课本知识/别人生日**（用户偏好、人物画像、公司事实）；**Episodic=去迪士尼那次经历**（历史邮件+当时的 triage 决定，即 few-shot 案例）；**Procedural=怎么骑车/自定的处理原则**（System Prompt、工具使用规则、流程规范）。
+> 2. **落地形态对齐**：Semantic → **向量数据库条目**（读时检索）；Episodic → **prompt 里的 few-shot 示例**（给模型看过往真实案例）；Procedural → **System Prompt 本身**，且能被一个独立 agent 根据反馈**自动迭代优化**。
+> 3. **更新模式二选一**：**Hot Path**——主 agent 在回复过程中即时读写记忆，简单、立即生效，但让 agent 一心二用、增加响应延迟；**Background**——回复后另起 helper agent 异步分析对话更新记忆，主 agent 专注、响应快，但记忆非即时生效。
+> 4. **选型规则**：刚说出口、必须马上可用的关键事实 → Hot Path；大量历史汇总/模式提取、System Prompt 长期演进 → Background。
+
+### 关键判断（加分点）
+
+- **"三个自问"是可迁移的设计模板**：面对任何新 agent 都问——要不要**学更好的指令**(Procedural)、要不要**从过去案例学**(Episodic)、要不要**记住人/地/物的事实**(Semantic)。这比背名词更能体现架构能力。
+- **记忆类型 × 更新模式是两个正交维度**：常见误区是把它们混为一谈。同一类记忆既可 Hot Path 也可 Background——例如 Semantic 偏好在本课走 Hot Path，但历史汇总类 Semantic 更适合 Background。
+- **Procedural 记忆最反直觉也最有价值**：把 System Prompt 当成"可演化的程序记忆"，让后台 agent 依据用户反馈自动改写 triage 规则——这是"agent 自我改进"的朴素形态，是加分亮点。
+- **没有银弹**：用哪类记忆 + 哪种更新模式完全取决于场景（延迟容忍度、即时性要求、反馈闭环有无），面试忌讲"全都要上"。
+
+### 为什么这是高分答法
+
+- 不背"agent 要有记忆"，而是给**三类记忆 × 两种更新模式**的正交框架，并对齐到具体落地形态（向量库/few-shot/System Prompt）；
+- 用"三个自问"把设计方法论化，能从邮件助理迁移到任意 agent，体现架构师视角。
+
+**一句话收尾**：Agent 长期记忆的本质是把"该记什么"（Semantic 事实 / Episodic 案例 / Procedural 规则）和"何时更新"（Hot Path 即时 / Background 异步）拆成两个正交决策——按场景的即时性和延迟容忍度组合，而不是无脑全上，这正是设计有记忆 agent 的取舍核心。
+
+> 关联：`../../11-AI Agents in LangGraph/notes/L05-持久化与流式输出.md`（记忆落到持久化底座）、`../../../skills/agent-selection/`（记忆选型矩阵）。

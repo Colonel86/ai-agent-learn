@@ -2,7 +2,7 @@
 
 > 把 eval 当回归门控、像 TDD 一样**先定义"好"的可度量标准、再迭代 prompt/agent**——没有 eval 集就没有"改好了"的客观判据,所有优化都是凭感觉。对应 JD **加分项(评测驱动开发 Promptfoo / DeepEval)**;同时是 **职责 1(Run Loop 的"验证"环)** 与 **职责 4(安全护栏)** 上线前的回归底座。
 >
-> **边界**:trace 怎么产生 / 怎么落库 / 平台选型归 **06**;本章只聚焦两件事——**评测方法论(怎么系统化判好坏)** + **工具链与驱动开发流程(Promptfoo / DeepEval 怎么落到 CI)**。方法论结论复用 `../../roadmap/agent-selection/5-observability-eval.md`「§三/§四」,本章把那两节较薄的**工具用法**展开到可背诵。
+> **边界**:trace 怎么产生 / 怎么落库 / 平台选型归 **06**;本章只聚焦两件事——**评测方法论(怎么系统化判好坏)** + **工具链与驱动开发流程(Promptfoo / DeepEval 怎么落到 CI)**。方法论结论复用 `../../skills/agent-selection/5-observability-eval.md`「§三/§四」,本章把那两节较薄的**工具用法**展开到可背诵。
 >
 > **最后核对:2026-06**。结论分级 ✅ 稳定经验 / ⚠️ 2026-06 快照(易变)/ ❓ 待验证。易变的 API 字段名 / 价格 / 版本号一律标「(现查官网)」,宁可标注也不写死。
 
@@ -382,7 +382,7 @@ A:
 
 ## 7. 回链已有资产 / 课程
 
-- **选型矩阵(本章主依据,务必对齐)**:`../../roadmap/agent-selection/5-observability-eval.md`
+- **选型矩阵(本章主依据,务必对齐)**:`../../skills/agent-selection/5-observability-eval.md`
   - 「§三 Eval 框架/库」对比表(Ragas/DeepEval/pydantic-evals/Promptfoo/Inspect AI/OpenAI Evals/TruLens)——本章 §4.1 直接复用并展开工具用法。
   - 「§四 Eval 方法论」两种类型×两种节奏、4 层评估、LLM-as-Judge 要点——本章 §1.2/§1.3/§1.4 是它的可背诵展开。
   - 「子决策 3 配置即代码」prompt/model id/参数版本化——本章 §3.4 的 `config_snapshot`、§5 Q6 的飞轮归因是它在 eval 侧的落点。
@@ -394,6 +394,6 @@ A:
 - **面试心智模型**:
   - `../1.md` —— 横切带 B「度量·观测(评测+tracing)」+ 横切关注点 7「数据飞轮」+ 8「确定性优先」,与本章 §1.1/§1.2/§5 Q6 同源;Reflexion 把失败信号存进 episodic 也呼应"失败 case 回流"。
 - **课程回溯**:`../../courses/21-Evaluating AI Agents/notes/`、`../../courses/24-Automated Testing for LLMOps/notes/{L03-规则评估, L04-模型评分评估, L05-综合测试与幻觉检测}.md`、`../../courses/eval/agent-eval-landscape.md`。
-- **总览**:`../../roadmap/agent-selection/README.md`;ADR 沉淀:`../../skills/adr-writer`(选 Promptfoo vs DeepEval、judge 模型、门槛阈值的取舍写进 ADR)。
+- **总览**:`../../skills/agent-selection/README.md`;ADR 沉淀:`../../skills/adr-writer`(选 Promptfoo vs DeepEval、judge 模型、门槛阈值的取舍写进 ADR)。
 
 > 最后核对:2026-06。结论分级:方法论(两类×两节奏、4 层评估含 trajectory、LLM-as-Judge 四要点、数据飞轮)✅ 稳定;Promptfoo 2026-03 被 OpenAI 收购仍开源 ⚠️ 2026-06 快照(收购+整合现状均现查官网,勿当板上钉钉);DeepEval/Promptfoo 具体 API 字段名/指标类名/CLI 子命令 ⚠️ 易变,**用前现查官网**;模型型号/单价 ⚠️ 现查。

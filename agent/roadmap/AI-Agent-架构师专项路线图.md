@@ -99,7 +99,7 @@
 | **容量规划 / 限流降级** | QPS 上限？Token 预算？多 provider 多活？ | Token bucket 算法 + provider failover；项目 6 / 7 中加并发上限 |
 | **数据飞轮闭环** | 用户反馈如何回流到 eval / prompt / fine-tune？ | 👍👎 → dataset 增量 → 周级回归 → 月级 prompt/模型迭代；这条是 Eval + Observability 横切线的合流 |
 | **可观测性对接现有栈** | LLM Trace 如何接入 Prometheus + Grafana + 现有 PagerDuty？ | OTel Collector 桥接；指标语义映射到 RED / USE 模型 |
-| **分层架构选型(决策资产)** | 模型 / 编排框架 / 检索 / 工具 / 可观测·Eval / 记忆,每层据数据·业务怎么选? | 总览 [`agent/roadmap/agent-selection/README.md`](agent-selection/README.md);交互式用 `stack-selector` skill;上面"向量数据库选型"一行即检索栈层的一部分,详见 [`3-retrieval.md`](agent-selection/3-retrieval.md) |
+| **分层架构选型(决策资产)** | 模型 / 编排框架 / 检索 / 工具 / 可观测·Eval / 记忆,每层据数据·业务怎么选? | 总览 [`agent/skills/agent-selection/README.md`](agent-selection/README.md);交互式用 `stack-selector` skill;上面"向量数据库选型"一行即检索栈层的一部分,详见 [`3-retrieval.md`](agent-selection/3-retrieval.md) |
 
 ---
 

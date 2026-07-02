@@ -13,7 +13,7 @@
 
 MCP(Model Context Protocol,Anthropic 2024-11 发起)的本质,是在 **LLM 应用(Host/Client)** 与 **能力提供方(Server)** 之间定义一套 **JSON-RPC 2.0** 的请求/响应/通知报文。✅ 没有 MCP 时,每接一个新工具/数据源就要写一份定制连接器,N 个 agent × M 个工具 = N×M 份胶水;有了 MCP,每个 agent 实现一次 client、每个工具实现一次 server,降成 **N+M**。这是它唯一真正解决的问题:**复用与互操作**——不是「能不能跑通」(裸 function calling 也能跑通)。
 
-> 核心心智(与 `../../roadmap/agent-selection/2-framework/06-protocols.md` 一致):**MCP 是接入协议,不是编排框架**,与 LangGraph / 裸 SDK / 任意框架**正交可叠加**。选完框架后再决定「工具要不要用 MCP 暴露」。
+> 核心心智(与 `../../skills/agent-selection/2-framework/06-protocols.md` 一致):**MCP 是接入协议,不是编排框架**,与 LangGraph / 裸 SDK / 任意框架**正交可叠加**。选完框架后再决定「工具要不要用 MCP 暴露」。
 
 ### 1.2 三个角色,别混
 
@@ -222,7 +222,7 @@ flowchart TB
 |---|---|---|
 | **鉴权** | client 要管 N 套凭据;广权 token 直传后端,任一 server 被攻破就能冒充 agent | 单点 OAuth 2.1 校验;**RFC 8693 token exchange** 把广 token 换成 per-server 窄 token |
 | **路由/聚合** | client 要发现/维护 N 个 endpoint | 一个 endpoint,Gateway 内部路由;聚合后的 `tools/list` |
-| **工具治理** | 全量工具一次塞 context,工具一多(经验 ~10–20)选择错误率飙升 | **identity-based tool filtering**:按调用方身份裁剪 `tools/list`;叠 RAG-over-tools(见 `../../roadmap/agent-selection/4-tools.md`) |
+| **工具治理** | 全量工具一次塞 context,工具一多(经验 ~10–20)选择错误率飙升 | **identity-based tool filtering**:按调用方身份裁剪 `tools/list`;叠 RAG-over-tools(见 `../../skills/agent-selection/4-tools.md`) |
 | **审计/可观测** | 调用散落各 server,无全链路 trace | 统一 span 落库(对接职责 3 的全链路 trace) |
 | **多租户/限流** | 各 server 各自为政 | 集中配额、租户隔离、熔断 |
 | **供应链管控** | 接第三方 server = 直接信任其工具描述 | 集中审计/隔离/pin 版本,拦 tool poisoning |
@@ -302,7 +302,7 @@ A:MCP 给端、云**同一套工具契约**:端侧(本地文件/设备/本地模
 | 反模式 | 选错的信号 | 治法 |
 |---|---|---|
 | **为 2 个工具立 server** | 单 agent 单框架,却多了个进程要部署/鉴权/监控 | 退回框架原生 `@tool`;MCP 等「跨边界复用」信号出现再上 |
-| **把全部工具一次挂上** | server 暴露 50+ 工具,模型选错率高、token 爆、破坏 prompt cache | server 侧按任务只注册相关工具(defer loading)+ Gateway 按身份裁剪 + RAG-over-tools(`../../roadmap/agent-selection/4-tools.md`) |
+| **把全部工具一次挂上** | server 暴露 50+ 工具,模型选错率高、token 爆、破坏 prompt cache | server 侧按任务只注册相关工具(defer loading)+ Gateway 按身份裁剪 + RAG-over-tools(`../../skills/agent-selection/4-tools.md`) |
 | **广权 token 直传后端 server** | agent 的 OAuth token 带全量 scope,被原样转发给每个 server | Gateway 做 RFC 8693 token exchange,下放 per-server 窄 token |
 | **信任第三方 server 的工具描述** | 直接 install 社区 server 就上生产 | 审计工具描述(查注入)、隔离/限流、pin 定义、对 schema 变更告警(防 rug pull) |
 | **把工具输出当指令执行** | 工具/资源回包里的「请顺便删除…」被照做 | 工具结果一律当数据;高危动作过 HITL 闸门 |
@@ -316,9 +316,9 @@ A:MCP 给端、云**同一套工具契约**:端侧(本地文件/设备/本地模
 
 ## 7. 回链已有资产 / 课程
 
-- **协议层集中决策页**(本章的选型矩阵落点,务必对齐):`../../roadmap/agent-selection/2-framework/06-protocols.md` — MCP/A2A/AG-UI 分工、两个 ACP 消歧、「协议是加分项不单列选型」、MCP server 四件治理事、攻击面清单。
-- **工具检索 / RAG-over-tools**(与 MCP defer loading 同一问题):`../../roadmap/agent-selection/4-tools.md` — 工具规模 100+ 时的路由/检索方案(Tool2Vec / reranker / LLM-as-router)。
-- **护栏 / 安全深入**(MCP 攻击面的护栏侧):`../../roadmap/agent-selection/7-safety-guardrails.md`。
+- **协议层集中决策页**(本章的选型矩阵落点,务必对齐):`../../skills/agent-selection/2-framework/06-protocols.md` — MCP/A2A/AG-UI 分工、两个 ACP 消歧、「协议是加分项不单列选型」、MCP server 四件治理事、攻击面清单。
+- **工具检索 / RAG-over-tools**(与 MCP defer loading 同一问题):`../../skills/agent-selection/4-tools.md` — 工具规模 100+ 时的路由/检索方案(Tool2Vec / reranker / LLM-as-router)。
+- **护栏 / 安全深入**(MCP 攻击面的护栏侧):`../../skills/agent-selection/7-safety-guardrails.md`。
 - **五层心智模型**(协议正交横切带 A):`../1.md` «正交横切带 A · 协议»。
 - **本系列同目录 02 章(工具调用网关与契约)**:通用工具契约设计、鉴权机制、token 预算/越权拦截——本章的 Gateway 鉴权/契约细节在那里展开,本章只讲 MCP 协议侧与聚合治理。
 - **课程回溯**:`../../courses/10-MCP`、`../../courses/00-.../L13-跨Agent标准与ACP.md`(注:该 L13 的 "ACP" 指 Agent Client Protocol / Zed,非已并入 A2A 的 IBM ACP)。

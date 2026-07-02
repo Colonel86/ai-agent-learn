@@ -304,3 +304,32 @@ app.launch()
 - 配合 checkpointer + GUI，可以把 agent 变成**可交互、可审查、可回溯**的生产工具。
 
 > 下一节：课程收官 —— 资源推荐与未来方向。
+
+---
+
+## 十二、面试速答总结
+
+**一句话**：Essay Writer 是一个把前六课全部串起来的**多节点循环 agent**——`planner → research_plan → generate →(should_continue)→ reflect → research_critique → 回到 generate`，用**多字段 state** 承载 task/plan/draft/critique/content/计数器，用**多个 system prompt 让同一模型扮演不同角色**，用 **Pydantic + `with_structured_output`** 保证查询列表可解析，用**计数器 + 条件边**兜底循环终止。它就是 Andrew "iterative workflow" 的落地，四大设计模式（Planning/Tool Use/Reflection/Multi-Agent）齐活。
+
+### 面试回答骨架（问"怎么设计一个复杂/多步 agent""reflection 循环怎么落地"）
+
+> 1. **核心心法**：复杂 agent 不是"更长的 prompt"，而是**把大任务拆成多个各司其职的节点，用 state 串起来**。写作拆成"规划→调研→写→批评→再调研→再写"六个角色。
+> 2. **多角色 = 多 system prompt 同一模型**：planner/writer/critic/researcher 各一套 system prompt 调同一个 LLM——这是 multi-agent communication 的**最低成本实现**，无需真起多个模型。
+> 3. **状态设计要分工清晰**：`task/plan/draft/critique/content/revision_number/max_revisions`，每个字段有**明确的所有者节点**（plan 由 planner 写、draft 由 generate 写）；`content`（调研文档）要**累积**不是覆盖。
+> 4. **两个工程化关键**：① 生成搜索查询用 **Pydantic `Queries(BaseModel)` + `with_structured_output`**，比正则解析自由文本可靠得多；② 循环终止靠**状态里的计数器**（`revision_number > max_revisions` → END），由**条件边** `should_continue` 判定，避免无限反思。
+
+### 关键判断（加分点）
+
+- **reflection 必须有终止阀**：反思-重写循环若不设 `max_revisions`，agent 会一直"精益求精"烧钱。把终止条件放进 state 计数器 + 条件边，是 reflection pattern 的标配纪律。
+- **结构化输出是 agent 工程化的分水岭**：节点间要靠稳定契约传数据，`with_structured_output` 把"LLM 自由文本"变成"可校验的类型"，比 prompt 里求它"输出 JSON"再正则抠靠谱。
+- **这一节是"融会贯通"的证据题**：state/条件边(L03)、Tavily(L04)、persistence+thread(L05)、interrupt/update_state/时间旅行(L06) 全都用上；GUI（`interrupt_after` + 查快照 + 改 plan + 续跑 + 回到过去）本质是把 L05/L06 的 API 可视化。
+- **它就是 Plan-and-Execute 的雏形**：`planner → research → generate` 把"思考"和"行动"分开，正好引出 L09 的高级架构。
+
+### 为什么这是高分答法
+
+- 不描述"我做了个写作 agent"，而是抽出**可迁移的设计法则**：任务分解、多 prompt 角色、字段所有权、结构化契约、计数器终止；
+- 每条都能对应回前面课程的具体能力，展示体系化而非零散记忆。
+
+**一句话收尾**：一个靠谱的复杂 agent = **清晰的节点分工 + 有所有者的多字段 state + 结构化的节点间契约 + 带终止阀的循环**；Essay Writer 把这四点连同 persistence/HITL 一次演全，正是"从单步 ReAct 到可交付多阶段 agent"的完整样板。
+
+> 关联：`L03-LangGraph组件.md`（节点/条件边/state 基础）、`L06-Human-in-the-Loop.md`（GUI 用的 API）、`L09-高级Agent架构.md`（Plan-and-Execute / Multi-Agent 的正式版）。

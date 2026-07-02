@@ -120,7 +120,7 @@ function calling 让模型吐**离散的、可枚举的**结构化调用;CodeAct
 | 沙箱 | 一般不需要 | **必须**(执行任意代码) |
 | 工具爆炸 | 上 RAG-over-tools 收窄 | `import` 即组合,弱化路由 |
 
-> 一句话取舍:**默认 function calling(离散、可审计、不用沙箱)**;只有「工具多 + 要在动作里跑控制流 + round-trip 成本痛」时才升 CodeAct,并同步立沙箱。详见 `0-action-paradigm`。回链 → [`../../roadmap/agent-selection/0-action-paradigm.md`](../../roadmap/agent-selection/0-action-paradigm.md)。
+> 一句话取舍:**默认 function calling(离散、可审计、不用沙箱)**;只有「工具多 + 要在动作里跑控制流 + round-trip 成本痛」时才升 CodeAct,并同步立沙箱。详见 `0-action-paradigm`。回链 → [`../../skills/agent-selection/0-action-paradigm.md`](../../skills/agent-selection/0-action-paradigm.md)。
 
 ---
 
@@ -312,7 +312,7 @@ flowchart LR
 
 ### 4.3 工具规模选型
 
-工具 ≤ ~20:全量塞进 tools 即可。100+:必须收窄——RAG-over-tools(Tool2Vec 粗筛 + cross-encoder 精排)或厂商的 Tool Search(`defer_loading` 按需加载)。⚠️ 据 `4-tools` 引述,Anthropic Tool Search/defer_loading 省约 85% token,并把 Opus 工具选择准确率从 49% 提到 74%(⚠️ 2026 快照,现查官网)。详见 [`../../roadmap/agent-selection/4-tools.md`](../../roadmap/agent-selection/4-tools.md)。
+工具 ≤ ~20:全量塞进 tools 即可。100+:必须收窄——RAG-over-tools(Tool2Vec 粗筛 + cross-encoder 精排)或厂商的 Tool Search(`defer_loading` 按需加载)。⚠️ 据 `4-tools` 引述,Anthropic Tool Search/defer_loading 省约 85% token,并把 Opus 工具选择准确率从 49% 提到 74%(⚠️ 2026 快照,现查官网)。详见 [`../../skills/agent-selection/4-tools.md`](../../skills/agent-selection/4-tools.md)。
 
 ---
 
@@ -373,10 +373,10 @@ A:function calling 吐离散结构化调用,可校验、可审计、不用沙箱
 
 ## 7. 回链已有资产 / 课程
 
-- **动作范式选型(function vs CodeAct vs GUI)**:[`../../roadmap/agent-selection/0-action-paradigm.md`](../../roadmap/agent-selection/0-action-paradigm.md) —— 本章 §1.6 是它在「基本功」视角的展开。
-- **工具检索 / 100+ 工具路由**:[`../../roadmap/agent-selection/4-tools.md`](../../roadmap/agent-selection/4-tools.md) —— §1.4 / §4.3 的 RAG-over-tools、Tool Search 出处。
-- **检索栈全链路选型(摄取/向量库/embedding/chunking/retriever/进阶/GraphRAG/RAG Triad)**:[`../../roadmap/agent-selection/3-retrieval.md`](../../roadmap/agent-selection/3-retrieval.md) —— §1.7 / §3.2 / §4.2 的母篇,RAG Triad 详表在其 §十。
-- **可观测 / Eval(RAG Triad 的落地与埋点)**:[`../../roadmap/agent-selection/5-observability-eval.md`](../../roadmap/agent-selection/5-observability-eval.md) —— 评估深化归 06/09 章。
+- **动作范式选型(function vs CodeAct vs GUI)**:[`../../skills/agent-selection/0-action-paradigm.md`](../../skills/agent-selection/0-action-paradigm.md) —— 本章 §1.6 是它在「基本功」视角的展开。
+- **工具检索 / 100+ 工具路由**:[`../../skills/agent-selection/4-tools.md`](../../skills/agent-selection/4-tools.md) —— §1.4 / §4.3 的 RAG-over-tools、Tool Search 出处。
+- **检索栈全链路选型(摄取/向量库/embedding/chunking/retriever/进阶/GraphRAG/RAG Triad)**:[`../../skills/agent-selection/3-retrieval.md`](../../skills/agent-selection/3-retrieval.md) —— §1.7 / §3.2 / §4.2 的母篇,RAG Triad 详表在其 §十。
+- **可观测 / Eval(RAG Triad 的落地与埋点)**:[`../../skills/agent-selection/5-observability-eval.md`](../../skills/agent-selection/5-observability-eval.md) —— 评估深化归 06/09 章。
 - **心智模型 · L1 底层契约 / Action 范式谱**:[`../1.md`](../1.md)。
 - **context 分层与数据结构**:[`../3.md`](../3.md) —— §3 的 chunk metadata、租户隔离过滤对照。
 - 课程回溯:`courses/04`(向量库/embedding)、`courses/05`(chunking/RAG Triad)、`courses/06`(reranker/Similarity≠Relevance)、`courses/18`、`courses/RAG/RAG.md`。

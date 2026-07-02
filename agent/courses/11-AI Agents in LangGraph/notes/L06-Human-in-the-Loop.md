@@ -314,3 +314,31 @@ class Agent:
 - 所有这些能力共享一个底座：**Persistence / Checkpointer**。
 
 > 下一节：课程**终章项目** —— 构建一个更复杂的多 LLM 调用、多阶段状态的 agent。
+
+---
+
+## 十二、面试速答总结
+
+**一句话**：Human-in-the-Loop 的所有花样都建立在 **Persistence（checkpointer）** 这一个底座上——用 `interrupt_before` 在关键节点前**暂停**，用 `stream(None, thread)` **续跑**，用 `update_state`（必要时带 `as_node`）**改状态/伪造观察**，用 `get_state_history` + 历史快照 config **时间旅行与分支**；而"能改写历史消息"又依赖一个**自定义 reducer**（同 id 替换、新 id 追加）。
+
+### 面试回答骨架（问"agent 怎么加人工审批 / 怎么纠错 / 怎么回溯调试"）
+
+> 1. **底座先亮明**：四种模式共享一个基础——**checkpointer 持久化**。没有"每步存 state + 可恢复任意快照"，人工干预无从谈起（这也是 L05 → L06 的连贯逻辑）。
+> 2. **模式1 人工批准**：`compile(interrupt_before=["action"])` 让流程在**工具执行前停下**；`get_state(thread).next` 看下一步；`stream(None, thread)`（`input=None` = 续跑而非新输入）放行。套个 `while state.next: input('proceed?')` 就是可审批 agent。
+> 3. **模式2 改当前状态 / 模式4 伪造结果**：`update_state(thread, values)` 会产生**新 checkpoint**。改 tool_call 参数（如把误解的 LA 改成 Louisiana，**保留原 id** 让 reducer 替换）；或用 `update_state(..., as_node="action")` **注入一条 ToolMessage 冒充工具输出**，让 agent 跳过真实调用、next 自然推进回 LLM。
+> 4. **模式3 时间旅行 + 分支**：`get_state_history` 拿历史快照，用某个快照的 `config` 当起点 `stream(None, past.config)` 就能**回到过去重跑**；在历史点改值再 `update_state` 就得到**新分支**，原历史仍在。
+
+### 关键判断（加分点）
+
+- **为什么要自定义 reducer**：默认 `operator.add` 只追加，无法"改写已存在的消息"。HITL 要**替换** LLM 已决定的 tool_call，所以换成「同 id 替换 / 新 id 追加」的 reducer——**id 是替换与追加的开关**。
+- **`as_node` 是最容易答漏的点**：不指定 as_node，state 改了但 `next` 仍是 "action"，会再去真跑工具；指定 `as_node="action"` 等于告诉图"这是 action 的输出"，next 才推进——用于 mock 工具、离线调试、绕过昂贵/危险调用。
+- **HITL 的工程价值**：高风险动作（下单、发邮件、删数据）前插审批；LLM 误解参数时人工纠正;时间旅行让 agent 缺陷**可复现、可分支对比**——这三点直接对应生产安全与可调试性。
+
+### 为什么这是高分答法
+
+- 把四种看似零散的模式收敛到**一个底座（persistence）+ 三个 API（interrupt_before / stream(None) / update_state）**，结构清晰可复述；
+- 答出 reducer 的 id 语义和 `as_node` 这两个"魔鬼细节"，证明是真写过而非背概念。
+
+**一句话收尾**：Human-in-the-Loop 不是给 agent 加个确认框，而是靠持久化把 agent 的**每一步 state 变成可暂停、可修改、可回溯、可伪造**的对象——审批、纠错、时间旅行本质是同一套 checkpoint 能力的不同用法，这正是"可控 agent"落到生产的关键。
+
+> 关联：`L05-持久化与流式输出.md`（checkpointer 底座）、`L07-项目实战-Essay-Writer.md`（GUI 里把这些 API 可视化）、`L09-高级Agent架构.md`（LATS 回溯同源）。

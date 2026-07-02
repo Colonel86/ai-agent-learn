@@ -373,12 +373,12 @@ def gateway_invoke(tool_call, ctx):
 
 ## 7. 回链已有资产 / 课程
 
-- **护栏选型主页(横切层)**:[`../../roadmap/agent-selection/7-safety-guardrails.md`](../../roadmap/agent-selection/7-safety-guardrails.md) — 五段护栏链(输入/输出/工具权限/沙箱/红队)、强度按风险轴分级、运行时拦截 vs 发布前红队的边界、候选工具表(NeMo/Llama Guard/Lakera 等,现查归属)。本章是其中「③ 工具权限边界 + 容错/预算」那一段的工程深挖。
-- **成本 / 单位经济学**:[`../../roadmap/agent-selection/8-cost-economics.md`](../../roadmap/agent-selection/8-cost-economics.md) — token 预算硬限挂钩「$/任务上限」、熔断(token/步数上限)防重试雪崩烧账单、fallback vs cascade 的成本方向、四类 token 分开计量。
+- **护栏选型主页(横切层)**:[`../../skills/agent-selection/7-safety-guardrails.md`](../../skills/agent-selection/7-safety-guardrails.md) — 五段护栏链(输入/输出/工具权限/沙箱/红队)、强度按风险轴分级、运行时拦截 vs 发布前红队的边界、候选工具表(NeMo/Llama Guard/Lakera 等,现查归属)。本章是其中「③ 工具权限边界 + 容错/预算」那一段的工程深挖。
+- **成本 / 单位经济学**:[`../../skills/agent-selection/8-cost-economics.md`](../../skills/agent-selection/8-cost-economics.md) — token 预算硬限挂钩「$/任务上限」、熔断(token/步数上限)防重试雪崩烧账单、fallback vs cascade 的成本方向、四类 token 分开计量。
 - **心智模型(权威)**:[`../1.md`](../1.md) — «L5 部署/安全运行时»(自主性 vs 可控性、prompt 注入、工具权限、沙箱)、«HITL 横切»(interrupt + Command(resume)、节点从头重跑/副作用顺序/超时设计)、«确定性优先»(能规则解决就别上概率件)、«成本横切»(熔断 + 步数上限)、token 统计(usage 四字段、预估 vs 真值)。
 - **本系列同目录**(同 `jd-senior-agent-engineer/` 下,文件名以实际建档为准):
   - **02 工具调用网关 / MCP Gateway** — 护栏中间件链的**执行点**与工具契约本体(本章只讲"在其上挂什么策略")。
   - **06 全链路 trace** — HITL `interrupt` 打断 naive tracing(两条断裂 trace、误标 ERROR)的坑与缝合治法。
-- **延伸**:[`../../roadmap/agent-selection/0-action-paradigm.md`](../../roadmap/agent-selection/0-action-paradigm.md)(CodeAct/computer-use → 何时必须沙箱)、[`../../roadmap/agent-selection/5-observability-eval.md`](../../roadmap/agent-selection/5-observability-eval.md)(运行时护栏 vs 离线 eval 的「拦截≠判好坏」分界)。
+- **延伸**:[`../../skills/agent-selection/0-action-paradigm.md`](../../skills/agent-selection/0-action-paradigm.md)(CodeAct/computer-use → 何时必须沙箱)、[`../../skills/agent-selection/5-observability-eval.md`](../../skills/agent-selection/5-observability-eval.md)(运行时护栏 vs 离线 eval 的「拦截≠判好坏」分界)。
 
 > 最后核对:2026-06。状态码集合、SDK `max_retries` 默认值、provider fallback 通道、缓存/价格折扣均**易变,定型前现查官网**;本章固化的是闸的机制与落点,不固化产品/数字快照。

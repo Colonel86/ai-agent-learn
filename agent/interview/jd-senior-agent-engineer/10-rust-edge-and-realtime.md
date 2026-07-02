@@ -334,8 +334,8 @@ A:**不要,这几乎总是反模式。** agent 90% 时间在等 LLM 网络 I/O,�
 
 ## 7. 回链已有资产 / 课程
 
-- **Serving / 部署形态选型(云侧推理放哪、流式/异步)**:[`../../roadmap/agent-selection/9-serving-deployment.md`](../../roadmap/agent-selection/9-serving-deployment.md) —— 本章的"端云分工"里**云侧那一半**(vLLM/SGLang、SSE 流式、durable execution)归它;Rust 只补"端侧 + 实时热点"这一小段。
-- **检索栈选型(向量库/rerank,Rust 写的 Qdrant/LanceDB/tantivy 出处)**:[`../../roadmap/agent-selection/3-retrieval.md`](../../roadmap/agent-selection/3-retrieval.md) —— §1.4 "Rust 库热点"里向量检索的母篇。
+- **Serving / 部署形态选型(云侧推理放哪、流式/异步)**:[`../../skills/agent-selection/9-serving-deployment.md`](../../skills/agent-selection/9-serving-deployment.md) —— 本章的"端云分工"里**云侧那一半**(vLLM/SGLang、SSE 流式、durable execution)归它;Rust 只补"端侧 + 实时热点"这一小段。
+- **检索栈选型(向量库/rerank,Rust 写的 Qdrant/LanceDB/tantivy 出处)**:[`../../skills/agent-selection/3-retrieval.md`](../../skills/agent-selection/3-retrieval.md) —— §1.4 "Rust 库热点"里向量检索的母篇。
 - **工具网关 / MCP Gateway(高并发代理那一段可下沉 Rust)**:[`./02-tool-gateway-auth-and-contract.md`](./02-tool-gateway-auth-and-contract.md)、[`./03-mcp-gateway-and-protocol.md`](./03-mcp-gateway-and-protocol.md) —— 本章 §1.2 网关定位、JD 职责 2 端云协同接口的对接处。
 - **Context Editing / Prompt Caching 降本(TTFT 优化的主战场)**:[`./05-context-engineering-and-caching.md`](./05-context-engineering-and-caching.md) —— §1.5 TTFT 优化"靠 prompt caching"的落地在这里;**找延迟/成本应先看这章和 9-serving,而非 Rust**。
 - **基本功:function calling / RAG(tokenizer 即 RAG/调用链的高频热点)**:[`./08-foundations-function-calling-and-rag.md`](./08-foundations-function-calling-and-rag.md)。
