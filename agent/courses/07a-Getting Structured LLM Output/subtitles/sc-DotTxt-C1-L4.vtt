@@ -1,0 +1,1278 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.983 --> 00:00:03.750
+This lesson is all about how structured
+generation
+
+2
+00:00:03.750 --> 00:00:06.000
+with outlines works under the hood.
+
+3
+00:00:06.000 --> 00:00:09.500
+You'll learn how structured
+generation works using an LLMs logits.
+
+4
+00:00:09.566 --> 00:00:13.433
+Then you'll dive into the code
+and see exactly how structured generation
+
+5
+00:00:13.433 --> 00:00:16.250
+chooses
+the next token. Let's have some fun.
+
+6
+00:00:16.250 --> 00:00:19.583
+Logit-based structure generation
+is a much more efficient and flexible
+
+7
+00:00:19.583 --> 00:00:21.450
+method for structuring your outputs.
+
+8
+00:00:21.450 --> 00:00:23.550
+It's also known as constrained decoding.
+
+9
+00:00:23.550 --> 00:00:25.700
+Or it can be just called logit
+based methods.
+
+10
+00:00:25.700 --> 00:00:27.266
+And recall, that what we're doing here,
+
+11
+00:00:27.266 --> 00:00:29.616
+we talked about this
+briefly in the first lesson.
+
+12
+00:00:29.616 --> 00:00:33.783
+What we're doing is actually intercepting
+the logits in the model and changing them
+
+13
+00:00:33.783 --> 00:00:36.533
+to affect the probabilities
+that come out of the model.
+
+14
+00:00:36.533 --> 00:00:40.216
+Let's quickly refresh on many the benefits
+of working with structured generation.
+
+15
+00:00:40.366 --> 00:00:42.500
+It modifies the LLM outputs directly.
+
+16
+00:00:42.500 --> 00:00:45.283
+This means that you always get
+the structure you defined.
+
+17
+00:00:45.283 --> 00:00:49.066
+Recall that with proprietary models
+using their JSON mode and re-prompting
+
+18
+00:00:49.066 --> 00:00:51.650
+techniques
+can sometimes fail and result
+
+19
+00:00:51.650 --> 00:00:53.483
+you not getting back to the structure
+you wanted.
+
+20
+00:00:53.483 --> 00:00:56.566
+Another huge benefit,
+is that the time cost during inference
+
+21
+00:00:56.566 --> 00:00:59.600
+and working with structure
+generation is basically zero.
+
+22
+00:00:59.850 --> 00:01:02.783
+It is very, very lightweight
+and you will not notice
+
+23
+00:01:02.783 --> 00:01:04.283
+that you're using it during inference.
+
+24
+00:01:04.283 --> 00:01:06.950
+You also get a much wider
+range of structure.
+
+25
+00:01:06.950 --> 00:01:09.083
+We'll talk about
+this more in the next lesson,
+
+26
+00:01:09.083 --> 00:01:11.533
+but you're not limited to strictly
+working with JSON.
+
+27
+00:01:11.533 --> 00:01:13.116
+Now, there is one slight catch
+
+28
+00:01:13.116 --> 00:01:15.333
+when working with structure generation
+to keep in mind,
+
+29
+00:01:15.333 --> 00:01:19.083
+because we're working with the logits,
+you need to have access to the logits.
+
+30
+00:01:19.233 --> 00:01:21.416
+This means you're either
+using an open weight model
+
+31
+00:01:21.416 --> 00:01:24.416
+or you are in yourself
+a proprietary model provider.
+
+32
+00:01:24.933 --> 00:01:27.366
+Let's refresh on how LLMs generate text.
+
+33
+00:01:27.366 --> 00:01:29.183
+You provide the LLM with a prompt.
+
+34
+00:01:29.183 --> 00:01:30.933
+It's broken down into a of tokens.
+
+35
+00:01:30.933 --> 00:01:33.800
+The tokens are fed in all at once
+into the LLM.
+
+36
+00:01:33.800 --> 00:01:37.483
+The LLM then produces a bunch of weights
+representing the relative
+
+37
+00:01:37.483 --> 00:01:39.950
+probabilities of each possible next token.
+
+38
+00:01:39.950 --> 00:01:42.400
+A token is sampled
+and then appended to the prompt,
+
+39
+00:01:42.400 --> 00:01:46.366
+and this process is repeated until
+we eventually reach the end of statement
+
+40
+00:01:46.366 --> 00:01:48.316
+token terminating generation.
+
+41
+00:01:48.316 --> 00:01:51.216
+Additionally,
+you can set up a fixed token limit.
+
+42
+00:01:51.216 --> 00:01:54.950
+Let's step through a real task
+and see how an LLM would generate tokens.
+
+43
+00:01:55.166 --> 00:01:57.533
+In this case,
+we're using a visual language model
+
+44
+00:01:57.533 --> 00:02:00.366
+and we're providing an image
+along with the text prompt.
+
+45
+00:02:00.366 --> 00:02:02.000
+Our prompt is asking the model to produce
+
+46
+00:02:02.000 --> 00:02:05.483
+either hot dog or not hot dog,
+using only those labels.
+
+47
+00:02:05.750 --> 00:02:10.483
+Here is a feasible distribution of what
+the initial token logits might look like
+
+48
+00:02:10.483 --> 00:02:15.483
+for this prompt. We have H, ham, hamburger,
+hot, hot dog, and not.
+
+49
+00:02:15.833 --> 00:02:18.500
+These all make sense
+because it is an image of a hamburger.
+
+50
+00:02:18.500 --> 00:02:22.133
+Even though we asked the model to respond
+only with hot dog or not hot dog,
+
+51
+00:02:22.433 --> 00:02:24.050
+it's quite possible
+that the model is thinking
+
+52
+00:02:24.050 --> 00:02:26.650
+that this is the hamburger
+and so it wants the reply hamburger.
+
+53
+00:02:26.650 --> 00:02:30.366
+After the logits are generated,
+the token chosen is actually chosen
+
+54
+00:02:30.366 --> 00:02:32.466
+by a sampler, not to logits themselves.
+
+55
+00:02:32.466 --> 00:02:35.250
+There are many different sampling
+strategies that can have different impacts
+
+56
+00:02:35.250 --> 00:02:37.566
+on the quality of generation.
+Here are two.
+
+57
+00:02:37.566 --> 00:02:39.300
+The first one is a greedy sampler,
+
+58
+00:02:39.300 --> 00:02:42.283
+which simply always chooses
+the highest probability token.
+
+59
+00:02:42.283 --> 00:02:44.650
+In this case, it's choosing hamburger.
+
+60
+00:02:44.650 --> 00:02:47.050
+In the other case,
+we have a multinomial sampler
+
+61
+00:02:47.050 --> 00:02:48.183
+which is going to choose from
+
+62
+00:02:48.183 --> 00:02:51.183
+the logits proportion it is a
+how strong the logits are.
+
+63
+00:02:51.250 --> 00:02:53.300
+In this case, we might have chosen ham,
+
+64
+00:02:53.300 --> 00:02:55.633
+but of course we didn't get the structure
+we wanted from that case.
+
+65
+00:02:55.633 --> 00:02:58.116
+We wanted only hot dog or not hot dog.
+
+66
+00:02:58.116 --> 00:03:00.466
+And we were going to choose
+probably hamburger.
+
+67
+00:03:00.466 --> 00:03:00.883
+So let's talk
+
+68
+00:03:00.883 --> 00:03:04.216
+about how structure generation
+works by modifying these logits directly.
+
+69
+00:03:04.316 --> 00:03:06.333
+Here's the logits
+we saw in the last slide.
+
+70
+00:03:06.333 --> 00:03:09.350
+But we only want to use the labels
+hot dog or not hot dog.
+
+71
+00:03:09.350 --> 00:03:11.950
+So we're going to remove
+ham and hamburger from these.
+
+72
+00:03:11.950 --> 00:03:15.916
+Notice that H is still valid
+because it's starting of the word hot dog.
+
+73
+00:03:16.183 --> 00:03:16.850
+That's okay.
+
+74
+00:03:16.850 --> 00:03:20.383
+So we're left with
+H, hot, hot dog, and not. Now,
+
+75
+00:03:20.383 --> 00:03:22.516
+we still use the same samples
+we used before.
+
+76
+00:03:22.516 --> 00:03:25.900
+We only change the logits themselves,
+not the sampling process.
+
+77
+00:03:26.083 --> 00:03:29.233
+So, again a greedy sampler might choose
+not in this case.
+
+78
+00:03:29.233 --> 00:03:31.900
+And the multinomial sampler
+it might choose H.
+
+79
+00:03:31.900 --> 00:03:33.966
+Now let's
+go see how this works in practice.
+
+80
+00:03:35.066 --> 00:03:36.800
+So, let's begin by pasting
+
+81
+00:03:36.800 --> 00:03:40.216
+some code in here that's going to ignore
+some warnings that you might see here.
+
+82
+00:03:40.383 --> 00:03:44.133
+Next, we're going to load
+a small local model into memory.
+
+83
+00:03:44.300 --> 00:03:49.216
+In order to do so, all you have to do
+is import outlines and then use outlines,
+
+84
+00:03:49.216 --> 00:03:53.666
+dot models, dot transformers and pick
+any language model from HuggingFace.
+
+85
+00:03:53.816 --> 00:03:55.350
+In this case, we're going to use HuggingFace's
+
+86
+00:03:55.350 --> 00:03:59.433
+SmolLM2
+135 million parameter model.
+
+87
+00:03:59.616 --> 00:04:01.766
+This is an extremely small model.
+
+88
+00:04:01.766 --> 00:04:02.883
+We chose this mostly
+
+89
+00:04:02.883 --> 00:04:06.633
+so it can fit on these notebooks,
+but you can use any language model
+
+90
+00:04:06.800 --> 00:04:09.416
+as long as you have access
+to the final output layer.
+
+91
+00:04:09.416 --> 00:04:12.016
+As per usual
+we begin by defining the structure
+
+92
+00:04:12.016 --> 00:04:13.750
+we want our model to generate.
+
+93
+00:04:13.750 --> 00:04:18.066
+In this case, we define a person
+with fields, name, and age.
+
+94
+00:04:18.216 --> 00:04:21.583
+Name may be any string, and age
+may be any integer.
+
+95
+00:04:21.750 --> 00:04:25.133
+Next, you're going to construct
+a token generation function.
+
+96
+00:04:25.300 --> 00:04:27.600
+A generator in outlines is a function
+
+97
+00:04:27.600 --> 00:04:31.600
+that accepts any string prompt and returns
+an object of the specified structure.
+
+98
+00:04:31.766 --> 00:04:35.333
+You can see here
+we're using outlines dot generate dot Json.
+
+99
+00:04:35.716 --> 00:04:38.216
+We provide
+the model that we loaded into memory.
+
+100
+00:04:38.216 --> 00:04:40.300
+The object that we wish to receive.
+
+101
+00:04:40.300 --> 00:04:42.766
+And then we're going
+to set the sampler to greedy.
+
+102
+00:04:42.766 --> 00:04:45.366
+So we take the most likely token
+at every step.
+
+103
+00:04:45.366 --> 00:04:48.016
+We're doing this mostly
+so that every person in the course
+
+104
+00:04:48.016 --> 00:04:50.033
+has access to the exact same results.
+
+105
+00:04:50.033 --> 00:04:52.383
+Lastly, we're going to call track logits.
+
+106
+00:04:52.383 --> 00:04:56.066
+Track logits is a utility function
+that allows us to observe
+
+107
+00:04:56.066 --> 00:04:59.066
+the token probabilities
+at every step in the sequence.
+
+108
+00:04:59.266 --> 00:05:01.766
+All right. Let's generate a random person.
+
+109
+00:05:01.766 --> 00:05:04.283
+First, we need to cover
+what's called prompt templating.
+
+110
+00:05:04.283 --> 00:05:07.133
+So language models use specialized tokens
+
+111
+00:05:07.133 --> 00:05:10.633
+to indicate the beginning of a system
+prompt or the beginning of a user prompt.
+
+112
+00:05:10.966 --> 00:05:13.966
+And the language model's response.
+
+113
+00:05:14.033 --> 00:05:18.233
+Most SDKs handle the addition of these
+tokens for you, but outlines does not.
+
+114
+00:05:18.566 --> 00:05:22.133
+This is because managing your prompts
+at a low level gives you more control
+
+115
+00:05:22.133 --> 00:05:23.816
+over the generation process.
+
+116
+00:05:23.816 --> 00:05:26.816
+So we've included this handy
+utility function called template
+
+117
+00:05:27.083 --> 00:05:28.166
+that accepts your model.
+
+118
+00:05:28.166 --> 00:05:31.166
+It accepts a prompt
+and an optional system prompt.
+
+119
+00:05:31.333 --> 00:05:33.583
+When you apply chat templating,
+you'll see this.
+
+120
+00:05:33.583 --> 00:05:36.916
+This is the text
+that usually goes to a language model.
+
+121
+00:05:37.166 --> 00:05:37.966
+It's often hidden.
+
+122
+00:05:37.966 --> 00:05:41.066
+We don't usually see the templated text
+like this,
+
+123
+00:05:41.066 --> 00:05:44.066
+but it's useful to know that this is
+what's happening on the back end.
+
+124
+00:05:44.083 --> 00:05:46.833
+So here is how you actually generate
+a random person.
+
+125
+00:05:46.833 --> 00:05:48.300
+We're going to take this prompt
+
+126
+00:05:48.300 --> 00:05:51.200
+and pass it to the generator
+that we just constructed.
+
+127
+00:05:51.200 --> 00:05:53.300
+And then we're going to take a look
+at the person.
+
+128
+00:05:53.300 --> 00:05:56.183
+And it's worth noting here
+that generator dot logits
+
+129
+00:05:56.183 --> 00:05:59.183
+dot clear removes
+any previously tracked logits.
+
+130
+00:05:59.183 --> 00:06:00.266
+If you're going to call this function
+
+131
+00:06:00.266 --> 00:06:04.016
+multiple times, make sure you clear
+the logits tracker each time.
+
+132
+00:06:04.166 --> 00:06:06.800
+As we can see here, we've got a person
+named John.
+
+133
+00:06:06.800 --> 00:06:09.200
+John is a 30 year old person.
+
+134
+00:06:09.200 --> 00:06:12.866
+But how did we get the text
+that allows us to have
+
+135
+00:06:12.983 --> 00:06:17.433
+a person named John at age
+30 that we can parse perfectly every time
+
+136
+00:06:17.950 --> 00:06:20.950
+First,
+let's take a look at the underlying JSON.
+
+137
+00:06:20.950 --> 00:06:23.083
+Because person is a pydantic class.
+
+138
+00:06:23.083 --> 00:06:27.983
+We can convert person into its underlying
+JSON using pydantic model dump JSON.
+
+139
+00:06:28.300 --> 00:06:31.133
+If you set indent equal to two,
+you can kind of pretty print it.
+
+140
+00:06:31.133 --> 00:06:32.700
+So it's nicer to look at.
+
+141
+00:06:32.700 --> 00:06:37.700
+We know that the first part of this JSON
+string has to be exactly this: curly brace
+
+142
+00:06:38.300 --> 00:06:42.883
+quote, name, quote, colon,
+beginning quote. Name has to be there
+
+143
+00:06:42.883 --> 00:06:45.950
+because it's the very first field
+in the person class
+
+144
+00:06:45.950 --> 00:06:49.233
+that we specified the thing to
+the right of that can be any string.
+
+145
+00:06:49.233 --> 00:06:50.883
+So it has to be enclosed in quotes.
+
+146
+00:06:50.883 --> 00:06:53.433
+And then we have to have an age
+field again
+
+147
+00:06:53.433 --> 00:06:56.433
+because it's in our person class
+followed by an integer.
+
+148
+00:06:56.500 --> 00:07:00.700
+So, let's take a look at the probability
+of each token being generated.
+
+149
+00:07:00.866 --> 00:07:01.633
+This code here
+
+150
+00:07:01.633 --> 00:07:05.683
+will show the probabilities of each token
+at the very first position.
+
+151
+00:07:05.716 --> 00:07:08.133
+This is the first token
+the model wants to generate.
+
+152
+00:07:08.133 --> 00:07:11.866
+What you're seeing here is orange bars
+representing the probability
+
+153
+00:07:11.866 --> 00:07:16.533
+of selecting a token on the
+y axis after outlines applies constraints.
+
+154
+00:07:16.666 --> 00:07:20.450
+The blue bars here, indicate the probability
+of the token being selected
+
+155
+00:07:20.666 --> 00:07:22.766
+as if no constraints were applied.
+
+156
+00:07:22.766 --> 00:07:26.250
+As you can see here,
+the curly brace and curly brace quote,
+
+157
+00:07:26.483 --> 00:07:30.500
+both of which are orange bars, have very
+high probabilities under constraints
+
+158
+00:07:30.500 --> 00:07:35.183
+90.8% probability for just the curly brace
+and then curly brace
+
+159
+00:07:35.183 --> 00:07:40.183
+quote has a 9.2% probability. Unconstrained,
+the model wants to respond with here,
+
+160
+00:07:41.083 --> 00:07:42.366
+I, and meet,
+
+161
+00:07:42.366 --> 00:07:46.716
+neither of which are permissible under
+the format that we specified in our Json.
+
+162
+00:07:46.883 --> 00:07:50.633
+Structure generation in this case
+is turning off the model's
+
+163
+00:07:50.633 --> 00:07:53.633
+natural propensity
+to respond in natural language.
+
+164
+00:07:53.633 --> 00:07:56.616
+Here, I, and meet. You try this.
+
+165
+00:07:56.616 --> 00:08:01.116
+So try changing the K argument
+to show a different number of tokens.
+
+166
+00:08:01.350 --> 00:08:03.066
+So if I set k equal to ten
+
+167
+00:08:03.066 --> 00:08:06.716
+I can see the ten most probable tokens
+that the model is considering.
+
+168
+00:08:07.000 --> 00:08:08.316
+Again curly brace.
+
+169
+00:08:08.316 --> 00:08:11.016
+Both of those are very high
+probability under constraints.
+
+170
+00:08:11.016 --> 00:08:12.583
+But the remaining tokens
+
+171
+00:08:12.583 --> 00:08:15.600
+have a very high probability
+without constraints being applied.
+
+172
+00:08:15.716 --> 00:08:18.716
+All of which are natural language
+responses.
+
+173
+00:08:18.983 --> 00:08:22.016
+We know that the first field
+name has to be name,
+
+174
+00:08:22.183 --> 00:08:24.650
+and that the value of that name
+can be any string.
+
+175
+00:08:24.650 --> 00:08:28.516
+So when the model reaches the first field,
+it has to choose tokens
+
+176
+00:08:28.516 --> 00:08:30.583
+that combine to the string name.
+
+177
+00:08:30.583 --> 00:08:34.383
+Let's look again at the tokens
+available at position four.
+
+178
+00:08:34.550 --> 00:08:38.816
+When we run this,
+we'll see that the name token is by far
+
+179
+00:08:38.816 --> 00:08:43.166
+the most likely under constraints
+at 99.7% probability.
+
+180
+00:08:43.233 --> 00:08:44.216
+Without constraints,
+
+181
+00:08:44.216 --> 00:08:48.133
+the model may choose a user, name
+with a capital N, person or user,
+
+182
+00:08:48.300 --> 00:08:51.000
+but outlines has turned off
+all of these tokens
+
+183
+00:08:51.000 --> 00:08:54.000
+because they're not consistent
+with the format that we expect.
+
+184
+00:08:54.100 --> 00:08:56.483
+You'll note here that this is not 100%.
+
+185
+00:08:56.483 --> 00:08:59.483
+There's a 0.3% probability somewhere else.
+
+186
+00:08:59.566 --> 00:09:04.566
+And that's because it's allocated
+to the remaining tokens N, N, A, and NAM,
+
+187
+00:09:05.500 --> 00:09:08.650
+all of which can be combined
+to make the phrase name.
+
+188
+00:09:08.833 --> 00:09:12.366
+So let's take a look at the sequence
+that we've generated so far.
+
+189
+00:09:12.516 --> 00:09:15.766
+We can do this with generator dot logits
+process dot sequence.
+
+190
+00:09:15.916 --> 00:09:19.400
+And we can see that
+we have curly brace, quote, name.
+
+191
+00:09:19.733 --> 00:09:22.850
+After this has been sampled,
+we know that the part following
+
+192
+00:09:22.850 --> 00:09:26.816
+has to be quote colon quote
+because that's valid JSON syntax.
+
+193
+00:09:26.966 --> 00:09:30.733
+When we take a look
+at the available tokens at this point
+
+194
+00:09:30.900 --> 00:09:34.950
+we see that we have a very high
+probability of anything that would combine
+
+195
+00:09:34.950 --> 00:09:39.950
+to quote unquote, such as quote, colon,
+just a quote unquote, colon quote, etc...
+
+196
+00:09:40.166 --> 00:09:41.133
+You'll notice here
+
+197
+00:09:41.133 --> 00:09:44.850
+that the constrained and unconstrained
+probabilities are actually very close.
+
+198
+00:09:45.000 --> 00:09:49.050
+And the reason is that by the time
+the language model gets to this point,
+
+199
+00:09:49.350 --> 00:09:53.800
+it knows that the thing following
+should probably be quote colon,
+
+200
+00:09:54.000 --> 00:09:58.116
+because most of the time your language
+model has seen a lot of JSON.
+
+201
+00:09:58.850 --> 00:10:01.833
+At this point,
+we have the string like this.
+
+202
+00:10:01.833 --> 00:10:04.983
+We now have an open quote,
+which means that it's time for the model
+
+203
+00:10:04.983 --> 00:10:06.683
+to start generating our name.
+
+204
+00:10:06.683 --> 00:10:10.550
+So, hopefully the thing that gets picked
+next looks something like a name.
+
+205
+00:10:10.700 --> 00:10:13.316
+When we take a look
+at the tokens at this position.
+
+206
+00:10:13.316 --> 00:10:17.833
+We see that the model has a very high
+probability of picking John 7%-ish probability
+
+207
+00:10:18.000 --> 00:10:22.116
+E, A, L, and M.
+John has a high enough probability.
+
+208
+00:10:22.383 --> 00:10:23.850
+And we're using greedy sampling.
+
+209
+00:10:23.850 --> 00:10:25.433
+So we'll just take John.
+
+210
+00:10:25.433 --> 00:10:29.400
+You'll note here that the orange
+and blue bars are essentially the same.
+
+211
+00:10:29.566 --> 00:10:33.366
+That's because within a string field
+such as the name field,
+
+212
+00:10:33.450 --> 00:10:37.800
+the constrained and unconstrained
+logits are roughly in agreement.
+
+213
+00:10:38.366 --> 00:10:41.933
+We can also take a look
+at how the model chooses to end
+
+214
+00:10:41.933 --> 00:10:45.266
+the name field by looking at the tokens
+in position seven here.
+
+215
+00:10:45.416 --> 00:10:46.950
+And as we can see,
+
+216
+00:10:46.950 --> 00:10:50.750
+the model has a very high percent
+probability of choosing quote comma.
+
+217
+00:10:51.083 --> 00:10:55.250
+This would stop the name field
+and move on to the next field.
+
+218
+00:10:55.433 --> 00:10:58.433
+There's a 26% probability of choosing Do,
+
+219
+00:10:58.433 --> 00:11:02.533
+which would probably end up
+constructing the name D.O.E,
+
+220
+00:11:02.683 --> 00:11:04.616
+or John Doe.
+
+221
+00:11:04.616 --> 00:11:07.616
+Let's also quickly
+take a look at the age tokens.
+
+222
+00:11:07.950 --> 00:11:09.633
+So you can see this here.
+
+223
+00:11:09.633 --> 00:11:13.250
+In this case we're going to look
+at the positions 9 and 12.
+
+224
+00:11:13.416 --> 00:11:14.550
+When we print this out.
+
+225
+00:11:14.550 --> 00:11:19.466
+We can see that age will be printed
+with 100% probability under constraints.
+
+226
+00:11:19.466 --> 00:11:21.966
+Because that's the field name
+that we requested.
+
+227
+00:11:21.966 --> 00:11:25.983
+And then we can see that the first token
+under age to be generated
+
+228
+00:11:26.100 --> 00:11:27.516
+is going to be a 3.
+
+229
+00:11:27.516 --> 00:11:31.266
+We know that the one
+if you add a 13 up here or change
+
+230
+00:11:31.266 --> 00:11:35.983
+12 to a 13, you can see that
+the next token will be a zero.
+
+231
+00:11:36.816 --> 00:11:39.600
+After the name and age has been generated,
+we know that
+
+232
+00:11:39.600 --> 00:11:43.483
+the remaining tokens
+have to be curly brace as well as the end
+
+233
+00:11:43.483 --> 00:11:46.533
+of sequence token that indicates
+that the model is done generating.
+
+234
+00:11:46.550 --> 00:11:47.733
+So let's take a look.
+
+235
+00:11:47.733 --> 00:11:50.733
+Here are the last two token probabilities.
+
+236
+00:11:50.733 --> 00:11:54.450
+The first one here is a closing
+curly brace with a 94%
+
+237
+00:11:54.450 --> 00:11:56.350
+probability under constraints.
+
+238
+00:11:56.350 --> 00:11:57.600
+And then the other constraint
+
+239
+00:11:57.600 --> 00:12:01.600
+option is a closing curly brace
+that includes a space before it.
+
+240
+00:12:01.766 --> 00:12:04.183
+Both of which are valid JSON syntax.
+
+241
+00:12:04.183 --> 00:12:07.183
+The unconstrained tokens
+that are not allowed are comma,
+
+242
+00:12:07.350 --> 00:12:11.400
+curly brace, comma, and then curly brace
+comma preceded by a space.
+
+243
+00:12:11.566 --> 00:12:14.633
+Then on the right hand side
+you'll see no real tokens.
+
+244
+00:12:14.633 --> 00:12:16.466
+But this is because most of these
+
+245
+00:12:16.466 --> 00:12:20.400
+are unprintable whitespace,
+including the end of sentence token,
+
+246
+00:12:20.400 --> 00:12:23.516
+which is here at the top
+with 100% probability.
+
+247
+00:12:24.383 --> 00:12:26.650
+So, I want you to experiment with this.
+
+248
+00:12:26.650 --> 00:12:31.100
+Try changing the allowed job types
+inside of this employed person.
+
+249
+00:12:31.100 --> 00:12:31.733
+Class.
+
+250
+00:12:31.733 --> 00:12:35.966
+Here we have class employed person
+that also has a name and age.
+
+251
+00:12:36.300 --> 00:12:40.216
+But we've added a job field
+which is a literal and literal inside of
+
+252
+00:12:40.216 --> 00:12:44.750
+pydantic means that the model has a choose
+doctor, basketball player, or welder.
+
+253
+00:12:45.016 --> 00:12:47.233
+It can't pick anything
+other than those three.
+
+254
+00:12:47.233 --> 00:12:50.666
+Try changing the job titles
+that you have in here,
+
+255
+00:12:50.683 --> 00:12:53.683
+such as adding dog catcher,
+something like that.
+
+256
+00:12:53.833 --> 00:12:55.633
+Then you'll run this code here.
+
+257
+00:12:55.633 --> 00:12:58.800
+Once you've modified the job
+inside of employed person.
+
+258
+00:12:59.183 --> 00:13:01.400
+Take a look at the logits
+that are available
+
+259
+00:13:01.400 --> 00:13:02.483
+at this location.
+
+260
+00:13:02.483 --> 00:13:06.600
+You can do this
+by printing it out at positions 20 and 21.
+
+261
+00:13:06.866 --> 00:13:09.800
+Make sure that you don't modify
+the name or age fields.
+
+262
+00:13:09.800 --> 00:13:12.333
+Otherwise these positions
+won't be accurate.
+
+263
+00:13:12.333 --> 00:13:16.233
+Here, we can see that
+software is shut down by our constraints.
+
+264
+00:13:16.433 --> 00:13:18.833
+And the next most likely token is doctor.
+
+265
+00:13:18.833 --> 00:13:20.583
+So, try playing around with that
+
+266
+00:13:20.583 --> 00:13:23.616
+and see what happens
+when you change the allowed job types.
+
+267
+00:13:23.766 --> 00:13:26.566
+In this lesson,
+you dove into the internals of the model
+
+268
+00:13:26.566 --> 00:13:29.566
+and saw how structured
+generation really works under the hood.
+
+269
+00:13:29.633 --> 00:13:32.933
+In the next lesson, you'll extend this
+to generate other forms of structured
+
+270
+00:13:32.933 --> 00:13:37.400
+output, including phone numbers,
+email addresses, and tic tac toe boards.
+

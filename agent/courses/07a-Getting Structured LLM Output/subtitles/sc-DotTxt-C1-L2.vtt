@@ -1,0 +1,1111 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.900 --> 00:00:04.104
+In this lesson, you'll
+build a simple social media management
+
+2
+00:00:04.104 --> 00:00:07.107
+agent using OpenAI's
+Structured Output API.
+
+3
+00:00:07.374 --> 00:00:10.810
+You'll also learn the basics of specifying
+your desired output structure
+
+4
+00:00:10.810 --> 00:00:12.145
+using Pydantic.
+
+5
+00:00:12.145 --> 00:00:14.781
+All right. Let's delve in.
+
+6
+00:00:14.781 --> 00:00:15.715
+Structured output
+
+7
+00:00:15.715 --> 00:00:19.652
+often uses what is called a JSON schema
+to enforce output structure.
+
+8
+00:00:19.719 --> 00:00:23.857
+JSON schemas or standards
+that describe the shape of a JSON message.
+
+9
+00:00:23.990 --> 00:00:25.492
+So these schemas provide
+
+10
+00:00:25.492 --> 00:00:28.495
+the type information
+that is required for structured output.
+
+11
+00:00:28.561 --> 00:00:29.596
+As an example,
+
+12
+00:00:29.596 --> 00:00:33.433
+here's a JSON message with Dolly Parton's
+name, age, and email address.
+
+13
+00:00:33.633 --> 00:00:37.637
+So we can see here we have keys
+on the left such as name, age and email
+
+14
+00:00:37.804 --> 00:00:40.707
+followed by their values
+on the right, Dolly Parton,
+
+15
+00:00:40.707 --> 00:00:43.710
+aged 79, and dolly@test.com.
+
+16
+00:00:44.244 --> 00:00:45.245
+Let's take a look
+
+17
+00:00:45.245 --> 00:00:49.416
+at an example of a Json schema
+that describes a person like Dolly Parton.
+
+18
+00:00:49.616 --> 00:00:53.253
+Here we can see this is also Json
+and includes all of our keys
+
+19
+00:00:53.253 --> 00:00:56.790
+such as name is an email
+as well as the types of those keys.
+
+20
+00:00:56.890 --> 00:01:00.660
+Such as title equals
+name and type equals string.
+
+21
+00:01:01.127 --> 00:01:02.896
+Let's talk a little bit about pydantic.
+
+22
+00:01:02.896 --> 00:01:07.000
+Maintaining JSON schemas
+by hand is difficult and prone to error.
+
+23
+00:01:07.067 --> 00:01:09.202
+As you saw, they're pretty complicated
+
+24
+00:01:09.202 --> 00:01:12.839
+and for anything that's non-trivial
+they can be an enormous pain to work with.
+
+25
+00:01:12.939 --> 00:01:17.939
+So, AI engineers often use pydantic
+to describe model output structure.
+
+26
+00:01:18.178 --> 00:01:21.481
+Pydantic is an open source
+data validation library
+
+27
+00:01:21.581 --> 00:01:25.452
+where you can flexibly define data
+structures for use in your application.
+
+28
+00:01:25.552 --> 00:01:26.853
+It's also feature-rich.
+
+29
+00:01:26.853 --> 00:01:30.290
+You should go check out all the things
+that it supports in the documentation.
+
+30
+00:01:30.623 --> 00:01:33.626
+We won't be able to cover
+all of the tools that it has available.
+
+31
+00:01:33.626 --> 00:01:37.464
+Using pydantic makes language
+model outputs programmable.
+
+32
+00:01:37.697 --> 00:01:39.732
+As we'll see in just a second.
+
+33
+00:01:39.732 --> 00:01:44.337
+So here is how you would write
+a user class inside of pydantic.
+
+34
+00:01:44.370 --> 00:01:49.370
+Inheriting from base model is all
+you need to make a user a pydantic class.
+
+35
+00:01:49.509 --> 00:01:53.446
+Next, you're going to use type annotations
+to define the structure that your model
+
+36
+00:01:53.446 --> 00:01:54.147
+should generate.
+
+37
+00:01:54.147 --> 00:01:57.283
+For example,
+name can be any string like Dolly Parton.
+
+38
+00:01:57.450 --> 00:02:02.450
+Age can be any integer like 79, and email
+can be either nothing or a string.
+
+39
+00:02:02.622 --> 00:02:04.124
+Note, however, that OpenAI
+
+40
+00:02:04.124 --> 00:02:07.794
+does not allow you
+to enforce the formatting of email or i.e.
+
+41
+00:02:07.861 --> 00:02:09.829
+always in the form of test,
+
+42
+00:02:09.829 --> 00:02:13.199
+at test.com . Outlines and Instructor,
+and a few other tools do.
+
+43
+00:02:13.199 --> 00:02:17.303
+So let's build a social media customer
+support agent.
+
+44
+00:02:17.470 --> 00:02:18.738
+We have a lot of users
+
+45
+00:02:18.738 --> 00:02:22.575
+who like to tweet at us
+saying at Tech Corp your app is amazing.
+
+46
+00:02:22.575 --> 00:02:24.244
+The new design is perfect.
+
+47
+00:02:24.244 --> 00:02:28.081
+And then we're going to put this inside
+of our customer support agent, and
+
+48
+00:02:28.081 --> 00:02:32.152
+then we're going to output some structured
+data telling us what product it's about,
+
+49
+00:02:32.285 --> 00:02:35.388
+what the sentiment is from the user,
+whether or not we should respond,
+
+50
+00:02:35.588 --> 00:02:38.725
+and a support ticket
+if anything happens to be broken.
+
+51
+00:02:38.925 --> 00:02:41.327
+All right. So, let's go to the code.
+
+52
+00:02:41.327 --> 00:02:43.563
+We're going to start
+with a little bit of housekeeping here.
+
+53
+00:02:43.563 --> 00:02:47.901
+So these two lines just filter out
+some warnings that we may not want to see
+
+54
+00:02:47.901 --> 00:02:48.735
+while we're learning.
+
+55
+00:02:48.735 --> 00:02:53.239
+And here's how you load the OpenAI API key
+that we're going to use.
+
+56
+00:02:53.373 --> 00:02:56.543
+These three lines
+go and set up your OpenAI
+
+57
+00:02:56.543 --> 00:02:59.546
+API key that DeepLearning.AI
+has configured.
+
+58
+00:02:59.612 --> 00:03:04.612
+Here's how you initialize
+the OpenAI client using the OpenAI key.
+
+59
+00:03:04.784 --> 00:03:07.921
+So let's see an example
+of how we define structure with pydantic.
+
+60
+00:03:08.254 --> 00:03:12.625
+We'll start by pasting in this user class
+that we added from the slides.
+
+61
+00:03:12.725 --> 00:03:16.296
+So let's generate a user object
+using OpenAI.
+
+62
+00:03:16.396 --> 00:03:19.499
+Here, we're going to use the client
+that we defined.
+
+63
+00:03:19.499 --> 00:03:23.603
+And then we're going to call dot Beta dot
+chat dot completions dot parse.
+
+64
+00:03:23.670 --> 00:03:25.071
+We're going to select our model, here
+
+65
+00:03:25.071 --> 00:03:26.839
+we're going to use GPT-4o-mini.
+
+66
+00:03:26.839 --> 00:03:29.509
+Then we're going to provide
+some messages. Here,
+
+67
+00:03:29.509 --> 00:03:33.379
+the first message is the system prompt
+which says you're a helpful assistant.
+
+68
+00:03:33.680 --> 00:03:36.983
+And then we're going to pass the user
+prompt that you might type into ChatGPT.
+
+69
+00:03:37.283 --> 00:03:39.419
+And then we're just going to say
+make up a user.
+
+70
+00:03:39.419 --> 00:03:43.189
+Then in response format
+we specify the user class we just made.
+
+71
+00:03:43.256 --> 00:03:45.191
+When we run this, it'll take a second.
+
+72
+00:03:45.191 --> 00:03:48.194
+And then OpenAI will provide us an user.
+
+73
+00:03:48.428 --> 00:03:52.432
+Let's look at this user
+by taking it out of our completion object.
+
+74
+00:03:52.832 --> 00:03:57.503
+Normally, OpenAI returns a list of choices
+when you request multiple values.
+
+75
+00:03:57.503 --> 00:04:00.039
+But here, we've only requested
+one completion.
+
+76
+00:04:00.039 --> 00:04:01.474
+Then, we're going to extract the message.
+
+77
+00:04:01.474 --> 00:04:04.711
+And then the parse object inside of dot parsed.
+
+78
+00:04:04.777 --> 00:04:05.411
+Let me run this.
+
+79
+00:04:05.411 --> 00:04:08.648
+We see
+we got a user named John Doe, age 30,
+
+80
+00:04:08.815 --> 00:04:11.818
+with an email John Doe at example.com.
+
+81
+00:04:12.252 --> 00:04:15.255
+Let's build
+our social media management agent.
+
+82
+00:04:15.321 --> 00:04:19.459
+Anytime you're working with structured
+output, you typically define the structure
+
+83
+00:04:19.459 --> 00:04:22.862
+that you want to see before you start
+working with the rest of your code.
+
+84
+00:04:23.029 --> 00:04:26.733
+In this case, we've added a mention
+which is a pydantic class
+
+85
+00:04:26.899 --> 00:04:28.868
+that has product and sentiment.
+
+86
+00:04:28.868 --> 00:04:31.504
+And you'll see here
+that these are literals, which means that
+
+87
+00:04:31.504 --> 00:04:35.074
+the language model has to choose
+between app, website or not applicable.
+
+88
+00:04:35.275 --> 00:04:38.278
+Same thing with sentiment
+has to be positive, negative or neutral.
+
+89
+00:04:38.378 --> 00:04:39.479
+Next, the model can
+
+90
+00:04:39.479 --> 00:04:43.249
+choose to respond to the user
+so it is allowed to choose true or false.
+
+91
+00:04:43.316 --> 00:04:45.418
+whether or not
+the company needs to respond.
+
+92
+00:04:45.418 --> 00:04:48.521
+And then it has a response
+which is an optional string.
+
+93
+00:04:48.554 --> 00:04:51.224
+So that can be either a string or nothing.
+
+94
+00:04:51.224 --> 00:04:54.527
+This is the response
+that we would provide to the user.
+
+95
+00:04:54.594 --> 00:04:58.264
+Lastly, if the model determines
+that a support ticket needs to be open,
+
+96
+00:04:58.264 --> 00:05:00.566
+the model can write a description
+for the developers.
+
+97
+00:05:00.566 --> 00:05:03.936
+And this may also be either
+nothing or string.
+
+98
+00:05:04.137 --> 00:05:06.906
+Now, let's give ourselves
+some example data.
+
+99
+00:05:06.906 --> 00:05:11.010
+I'm going to call this the mentions list
+and it includes a few examples.
+
+100
+00:05:11.010 --> 00:05:14.247
+So we have a positive review of our app.
+
+101
+00:05:14.280 --> 00:05:15.682
+They like the design.
+
+102
+00:05:15.682 --> 00:05:19.018
+Next, there's a user
+letting us know that the website is down
+
+103
+00:05:19.018 --> 00:05:20.219
+and that we need to fix it.
+
+104
+00:05:20.219 --> 00:05:24.324
+And then lastly we have "Hey at Tech Corp
+you're so evil", which we probably don't
+
+105
+00:05:24.324 --> 00:05:25.825
+want to respond to though.
+
+106
+00:05:25.825 --> 00:05:29.395
+We might wish to generally address
+concerns about our evilness.
+
+107
+00:05:29.629 --> 00:05:33.533
+So here's how you add an analyze
+mentioned function.
+
+108
+00:05:33.900 --> 00:05:38.104
+This is how we take the user messages
+that they sent to us,
+
+109
+00:05:38.471 --> 00:05:42.008
+and then we construct this mention object
+that we just designed.
+
+110
+00:05:42.308 --> 00:05:45.244
+So here we're going to define a function
+called analyze mention.
+
+111
+00:05:45.244 --> 00:05:48.114
+We're going to provide the post
+that the user sent to us.
+
+112
+00:05:48.114 --> 00:05:50.983
+And then an optional keyword argument
+for the personality,
+
+113
+00:05:50.983 --> 00:05:52.819
+which we'll talk about in just a second.
+
+114
+00:05:52.819 --> 00:05:54.354
+By default, this is friendly.
+
+115
+00:05:54.354 --> 00:05:57.323
+As before we're going to use dot
+beta, dot chat, dot completions,
+
+116
+00:05:57.323 --> 00:06:00.827
+dot parse. Select our model
+and provide a few messages.
+
+117
+00:06:00.960 --> 00:06:01.561
+In this case,
+
+118
+00:06:01.561 --> 00:06:05.465
+we've provided the system prompt
+which says what we expect from the model.
+
+119
+00:06:05.598 --> 00:06:07.467
+We want the model to provide the product
+
+120
+00:06:07.467 --> 00:06:09.469
+mention, the mentioned sentiment,
+
+121
+00:06:09.469 --> 00:06:11.738
+whether or not to respond.
+
+122
+00:06:11.738 --> 00:06:12.839
+We let the model know
+
+123
+00:06:12.839 --> 00:06:16.142
+that it should not respond
+to inform inflammatory messages or bait,
+
+124
+00:06:16.309 --> 00:06:19.612
+and we ask it for a customized message
+to send to the user.
+
+125
+00:06:19.912 --> 00:06:23.082
+Lastly, we ask the model
+to provide an optional support ticket
+
+126
+00:06:23.282 --> 00:06:26.185
+description
+to upload to our ticket management system.
+
+127
+00:06:26.185 --> 00:06:29.455
+Then, finally we let the model know
+what its personality is.
+
+128
+00:06:29.622 --> 00:06:32.525
+And then inside of the user prompt
+we just add the mention.
+
+129
+00:06:32.525 --> 00:06:35.161
+Lastly, we request a mention object.
+
+130
+00:06:35.161 --> 00:06:38.164
+Then we're just going to return
+the parsed object at the end.
+
+131
+00:06:38.731 --> 00:06:41.567
+So let's go ahead and use this
+analyze mention function.
+
+132
+00:06:41.567 --> 00:06:44.003
+We're going to use the first mention
+which if you remember
+
+133
+00:06:44.003 --> 00:06:45.972
+was the positive review about our app.
+
+134
+00:06:45.972 --> 00:06:46.839
+We're going to pass that
+
+135
+00:06:46.839 --> 00:06:50.743
+to the are analyze mention function
+and put it in processed mention.
+
+136
+00:06:50.843 --> 00:06:52.578
+When we run this we'll see.
+
+137
+00:06:52.578 --> 00:06:54.480
+Hey Techcorp, your app so amazing.
+
+138
+00:06:54.480 --> 00:06:57.617
+And then we see the models
+provided us with product app.
+
+139
+00:06:57.617 --> 00:07:00.653
+So it's identifying that it's about
+the app as well as positive sentiment.
+
+140
+00:07:00.720 --> 00:07:03.523
+The model has flagged
+that there needs to be a response.
+
+141
+00:07:03.523 --> 00:07:07.059
+And then it includes a response that
+we can choose to send back to the user.
+
+142
+00:07:07.360 --> 00:07:09.729
+We're thrilled to hear that
+you love the new design.
+
+143
+00:07:09.729 --> 00:07:11.664
+And then lastly, there's no support ticket
+
+144
+00:07:11.664 --> 00:07:15.435
+because there's no obvious issues
+to address with our software.
+
+145
+00:07:15.601 --> 00:07:16.669
+If you would like to adjust
+
+146
+00:07:16.669 --> 00:07:20.573
+the personality of this model,
+you can simply change the personality.
+
+147
+00:07:20.907 --> 00:07:23.242
+I've changed the personality here
+to be rude.
+
+148
+00:07:23.242 --> 00:07:25.645
+In which case the model says
+thanks for the praise.
+
+149
+00:07:25.645 --> 00:07:28.414
+We're glad you love the new design,
+but don't get too comfy.
+
+150
+00:07:28.414 --> 00:07:29.816
+We're constantly improving,
+
+151
+00:07:29.816 --> 00:07:33.519
+which could be rude or try playing around
+with the different personalities.
+
+152
+00:07:33.619 --> 00:07:35.321
+And for those who are curious,
+
+153
+00:07:35.321 --> 00:07:39.325
+the underlying content that was generated
+by the model is just Json.
+
+154
+00:07:39.559 --> 00:07:43.729
+So when we print these out
+using pedantic model dump JSON method,
+
+155
+00:07:44.063 --> 00:07:47.200
+we can see what was generated
+by the language model before
+
+156
+00:07:47.200 --> 00:07:50.169
+it was passed into the pydantic object
+that we have.
+
+157
+00:07:50.169 --> 00:07:52.538
+In this case, we can see the raw text.
+
+158
+00:07:52.538 --> 00:07:55.041
+Here's an example of something
+you can play with on your own.
+
+159
+00:07:55.041 --> 00:07:56.042
+In this example,
+
+160
+00:07:56.042 --> 00:08:00.246
+you're going to create a user post
+which has just a message inside of it.
+
+161
+00:08:00.446 --> 00:08:04.317
+And then you're going to ask a language
+model to act as if it was a person,
+
+162
+00:08:04.617 --> 00:08:07.620
+and then provide tweets to techcorp.
+
+163
+00:08:07.653 --> 00:08:09.956
+We describe roughly what's going on there.
+
+164
+00:08:09.956 --> 00:08:11.324
+And then we can see the output.
+
+165
+00:08:11.324 --> 00:08:14.293
+Hey, just wanted to shout out to TechCorp
+for their amazing app.
+
+166
+00:08:14.293 --> 00:08:18.431
+Now, we can provide that output
+from the user
+
+167
+00:08:18.698 --> 00:08:21.701
+and put it back into our analyze
+mentioned function.
+
+168
+00:08:21.734 --> 00:08:24.804
+When we see this, we're going to get app
+positive sentiment.
+
+169
+00:08:24.904 --> 00:08:26.506
+Thanks so much for your kind words.
+
+170
+00:08:26.506 --> 00:08:27.073
+And of course
+
+171
+00:08:27.073 --> 00:08:30.710
+the language model just seems to like
+saying thanks so much for your kind words.
+
+172
+00:08:31.344 --> 00:08:35.882
+So try adjusting this user post class.
+In this example,
+
+173
+00:08:36.115 --> 00:08:40.486
+I've added a user post with extras class
+which is also a pydantic class
+
+174
+00:08:40.486 --> 00:08:42.255
+that includes a couple of extra fields
+
+175
+00:08:42.255 --> 00:08:46.225
+such as user mood which has to be between
+awful, bad, and evil.
+
+176
+00:08:46.292 --> 00:08:50.663
+Product also has to be app website
+not applicable as in the mentioned class.
+
+177
+00:08:50.997 --> 00:08:54.867
+And then we can also include
+a internal monologue which includes
+
+178
+00:08:54.867 --> 00:08:55.935
+a list of strings.
+
+179
+00:08:55.935 --> 00:08:59.338
+Now when we run this,
+we'll get user post with extras.
+
+180
+00:08:59.372 --> 00:09:00.673
+User mood is awful.
+
+181
+00:09:00.673 --> 00:09:01.874
+Sentiment is negative.
+
+182
+00:09:01.874 --> 00:09:04.343
+Can't believe how buggy the app is, etc.
+
+183
+00:09:04.343 --> 00:09:07.079
+And then the user just says it's
+very frustrated
+
+184
+00:09:07.079 --> 00:09:08.614
+with the latest version of your app.
+
+185
+00:09:08.614 --> 00:09:12.818
+And then of course we can pass this back
+into our social media analyzer
+
+186
+00:09:13.119 --> 00:09:17.823
+and see what it says. And as we can see
+here, the social media analysis
+
+187
+00:09:17.823 --> 00:09:20.826
+bot detects that it's about the app,
+that the sentiment is negative.
+
+188
+00:09:20.960 --> 00:09:24.096
+Provides an example response
+that hopefully placate the user.
+
+189
+00:09:24.263 --> 00:09:27.133
+And then adds a support ticket
+where we note that
+
+190
+00:09:27.133 --> 00:09:30.303
+the user has reported constant crashes
+with the latest version of the app.
+
+191
+00:09:30.636 --> 00:09:34.273
+So the purpose of structured output
+is to turn language model responses
+
+192
+00:09:34.273 --> 00:09:35.741
+into programable data.
+
+193
+00:09:35.741 --> 00:09:40.741
+So here's an example of a way that we can
+program with our language model output.
+
+194
+00:09:41.047 --> 00:09:45.184
+Here, we're going to construct a list to
+contain all of the rows that we generate.
+
+195
+00:09:45.284 --> 00:09:48.988
+We're going to iterate across dimensions
+that our users have provided.
+
+196
+00:09:48.988 --> 00:09:52.224
+We're going to analyze those mentioned
+by creating these mentioned objects.
+
+197
+00:09:52.291 --> 00:09:55.695
+If there's a response that is needed,
+we can print out that we're responding
+
+198
+00:09:55.728 --> 00:09:58.364
+to that user message
+using the standard attributes
+
+199
+00:09:58.364 --> 00:10:01.867
+from any Python class,
+such as processed mention dot sentiment.
+
+200
+00:10:02.034 --> 00:10:05.004
+If there's a support ticket,
+we can print that out as well.
+
+201
+00:10:05.004 --> 00:10:08.007
+Let's take a look
+at how we program with our mentions. Here,
+
+202
+00:10:08.040 --> 00:10:11.043
+we're going to iterate through each
+of the mentions that we have available.
+
+203
+00:10:11.177 --> 00:10:14.046
+We're going to call the LLM
+to get a mention object
+
+204
+00:10:14.046 --> 00:10:16.015
+that we can program with, right here.
+
+205
+00:10:16.015 --> 00:10:19.352
+Then we're going to print out some
+information about that process mentioned
+
+206
+00:10:19.352 --> 00:10:20.453
+that's in the helper file.
+
+207
+00:10:20.453 --> 00:10:24.457
+If you want to take a look. We're going to
+convert our process data to a dictionary
+
+208
+00:10:24.457 --> 00:10:28.227
+using pydantic tools in this case
+the model dump method.
+
+209
+00:10:28.361 --> 00:10:32.031
+Next, we're going to store this
+original message in a data frame row.
+
+210
+00:10:32.064 --> 00:10:35.968
+So we'll basically just be adding it
+to this processed dict object.
+
+211
+00:10:36.102 --> 00:10:39.138
+Then we're going to add that dictionary
+to our list of rows.
+
+212
+00:10:39.472 --> 00:10:42.975
+And then print out a blank row
+so that we can read everything
+
+213
+00:10:42.975 --> 00:10:43.976
+that gets printed out.
+
+214
+00:10:43.976 --> 00:10:46.846
+So let's run
+this and see what the result looks like.
+
+215
+00:10:46.846 --> 00:10:51.217
+As we go through, we can see the model
+responding to positive.=
+
+216
+00:10:51.217 --> 00:10:53.619
+app feedback.
+The negative website feedback.
+
+217
+00:10:53.619 --> 00:10:55.521
+It will describe its responses
+
+218
+00:10:55.521 --> 00:10:59.258
+and add support tickets if relevant
+such as right here.
+
+219
+00:10:59.291 --> 00:11:01.560
+The user has reported our website is down.
+
+220
+00:11:01.560 --> 00:11:04.530
+And then of course
+the user who has specified hey, at Tech
+
+221
+00:11:04.530 --> 00:11:07.700
+Corp, you're so evil,
+we've chosen not to respond to it.
+
+222
+00:11:08.567 --> 00:11:11.871
+And then lastly, the advantage
+of working with structured output
+
+223
+00:11:11.871 --> 00:11:14.240
+is that you know,
+that it follows an exact format,
+
+224
+00:11:14.240 --> 00:11:15.541
+which means that you can put it
+
+225
+00:11:15.541 --> 00:11:19.478
+into various other data formats
+such as a data frame.
+
+226
+00:11:19.512 --> 00:11:20.079
+So in here
+
+227
+00:11:20.079 --> 00:11:24.250
+we're going to import pandas and construct
+a data frame using the dictionaries.
+
+228
+00:11:24.250 --> 00:11:26.619
+Here, we can see that
+it's extremely simple.
+
+229
+00:11:26.619 --> 00:11:28.821
+We have the product, the website
+
+230
+00:11:28.821 --> 00:11:32.058
+the sentiment, whether it needs
+a response, the original mention,
+
+231
+00:11:32.191 --> 00:11:35.828
+and whatever other features
+we might wish to add in the future.
+
+232
+00:11:36.095 --> 00:11:40.266
+In this example, you've learned
+how to define a model's output structure
+
+233
+00:11:40.266 --> 00:11:44.036
+using pydantic
+how to use OpenAI's structured output
+
+234
+00:11:44.036 --> 00:11:48.174
+API and basic program
+with language model outputs.
+
+235
+00:11:48.240 --> 00:11:52.044
+Next, you're going to use Instructor
+to get structured output
+
+236
+00:11:52.044 --> 00:11:54.180
+from various other inference providers.
+

@@ -1,0 +1,53 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.501 --> 00:00:03.970
+Congratulations on completing this course.
+
+2
+00:00:03.970 --> 00:00:05.572
+In this course, you learned about
+
+3
+00:00:05.572 --> 00:00:09.275
+writing reliable software
+using structured outputs for LLMs,
+
+4
+00:00:09.542 --> 00:00:13.113
+used OpenAI's structured outputs
+to build a social media agent.
+
+5
+00:00:13.413 --> 00:00:15.782
+You learned how to use re-prompting
+methods to structure
+
+6
+00:00:15.782 --> 00:00:17.784
+output from any inference provider.
+
+7
+00:00:17.784 --> 00:00:21.421
+You opened up an LLM and saw the inner
+workings of how outlines perform
+
+8
+00:00:21.421 --> 00:00:22.622
+structure generation.
+
+9
+00:00:22.622 --> 00:00:24.090
+You saw that structured generation
+
+10
+00:00:24.090 --> 00:00:26.659
+can do so much more than just produce
+JSON.
+
+11
+00:00:26.659 --> 00:00:28.161
+We're looking forward
+to seeing what you build.
+

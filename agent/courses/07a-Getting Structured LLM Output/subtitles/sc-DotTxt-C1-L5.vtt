@@ -1,0 +1,1790 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.734 --> 00:00:01.668
+In this lesson,
+
+2
+00:00:01.668 --> 00:00:05.205
+you'll learn how Outlines is able
+to be so efficient in this generation
+
+3
+00:00:05.438 --> 00:00:09.409
+and see how structure generation
+allows for structure far beyond JSON.
+
+4
+00:00:10.143 --> 00:00:12.946
+You'll understand
+how regular expressions can be transformed
+
+5
+00:00:12.946 --> 00:00:15.949
+into finite state machines
+for efficient computation.
+
+6
+00:00:16.249 --> 00:00:20.020
+Finally, it looks for various examples
+of structure beyond JSON.
+
+7
+00:00:20.420 --> 00:00:21.988
+Let's have some fun.
+
+8
+00:00:21.988 --> 00:00:25.392
+In the last lesson we talked about
+how outlines is able to modify
+
+9
+00:00:25.392 --> 00:00:28.895
+the logits to guarantee the output
+of the generation from the model.
+
+10
+00:00:29.295 --> 00:00:30.196
+In this lesson,
+
+11
+00:00:30.196 --> 00:00:31.865
+we're going to dive a bit deeper
+and understand
+
+12
+00:00:31.865 --> 00:00:34.834
+exactly how Outlines is able
+to keep track of the structure.
+
+13
+00:00:34.868 --> 00:00:37.170
+Outlines uses regular expressions
+under the hood.
+
+14
+00:00:37.170 --> 00:00:40.473
+To model the structure
+we want to use. This allows us to define
+
+15
+00:00:40.473 --> 00:00:44.444
+a much wider range of structure
+than just JSON alone.
+
+16
+00:00:44.644 --> 00:00:46.012
+There's also an interesting relationship
+
+17
+00:00:46.012 --> 00:00:48.782
+between regular expressions
+and finite state machines.
+
+18
+00:00:48.782 --> 00:00:52.385
+We actually use this to take advantage
+of a way to easily
+
+19
+00:00:52.385 --> 00:00:54.354
+and efficiently process the structure
+
+20
+00:00:54.354 --> 00:00:55.522
+as we go through the model.
+
+21
+00:00:55.522 --> 00:00:57.123
+First, let's talk a little bit
+
+22
+00:00:57.123 --> 00:00:59.092
+about what regular expressions are
+and how they work.
+
+23
+00:00:59.092 --> 00:01:01.661
+You probably are familiar with them,
+but just in case you're not.
+
+24
+00:01:01.661 --> 00:01:02.896
+Let's do a quick refresher.
+
+25
+00:01:02.896 --> 00:01:05.965
+This here is a very simple
+regular expression that describes
+
+26
+00:01:05.965 --> 00:01:08.568
+the example
+we talked about in the very first lesson.
+
+27
+00:01:08.568 --> 00:01:11.571
+This is a series of A, B
+and C's that have to be in order.
+
+28
+00:01:11.871 --> 00:01:14.741
+Now, there can be any number of A's
+including zero,
+
+29
+00:01:14.741 --> 00:01:16.810
+any number of B's, any number of C's
+
+30
+00:01:16.810 --> 00:01:18.178
+and then the end of the string.
+
+31
+00:01:18.178 --> 00:01:20.814
+So, valid strings
+here would be the empty string
+
+32
+00:01:20.814 --> 00:01:22.282
+which doesn't violate our constraints.
+
+33
+00:01:22.282 --> 00:01:23.983
+Has no letters, but that's fine.
+
+34
+00:01:23.983 --> 00:01:27.687
+ABC of course is an order AA, B, CCC.
+
+35
+00:01:27.720 --> 00:01:29.923
+That's also fine. Repetition is allowed.
+
+36
+00:01:29.923 --> 00:01:31.825
+And of course C by itself is also allowed
+
+37
+00:01:31.825 --> 00:01:35.395
+because none of the characters
+before it are in violation of our regex.
+
+38
+00:01:35.562 --> 00:01:39.833
+Invalid strings would be BA, AAABBBCCB.
+
+39
+00:01:39.833 --> 00:01:41.468
+It doesn't matter
+how many times we're in order.
+
+40
+00:01:41.468 --> 00:01:44.838
+If we're not in order once,
+it won't be valid and CBA is
+
+41
+00:01:44.838 --> 00:01:46.539
+of course, obviously not a valid string.
+
+42
+00:01:46.539 --> 00:01:48.141
+So let's talk about this relationship
+
+43
+00:01:48.141 --> 00:01:50.610
+between regular expressions
+and finite state machines.
+
+44
+00:01:50.610 --> 00:01:52.445
+We can actually take this
+regular expression
+
+45
+00:01:52.445 --> 00:01:55.482
+that we just described and transform it
+into this finite state machine
+
+46
+00:01:55.482 --> 00:01:56.649
+you see here on the right.
+
+47
+00:01:56.649 --> 00:01:59.619
+Now, you may think this is just adding
+complexity to our problem,
+
+48
+00:01:59.619 --> 00:02:01.521
+but this finite state machine actually
+
+49
+00:02:01.521 --> 00:02:05.692
+makes it very easy for programs
+to keep track of the regular expression.
+
+50
+00:02:05.758 --> 00:02:09.462
+Let's walk through a pattern matching
+example using this finite state machine.
+
+51
+00:02:09.562 --> 00:02:13.366
+So, given our finite state machine that
+represents the regex we described earlier,
+
+52
+00:02:13.466 --> 00:02:17.871
+we have this string AABC
+and we like to see if it matches.
+
+53
+00:02:17.871 --> 00:02:21.274
+So we start in it
+start position and we observe in A.
+
+54
+00:02:21.407 --> 00:02:24.410
+You can see observing this
+A leads us to the A state.
+
+55
+00:02:24.511 --> 00:02:27.247
+Now that we're in the A state,
+we observe another A.
+
+56
+00:02:27.247 --> 00:02:29.482
+See how we loop back into the A state
+
+57
+00:02:29.482 --> 00:02:31.417
+again? We remain in the A state.
+
+58
+00:02:31.417 --> 00:02:33.052
+Next, we observe a B.
+
+59
+00:02:33.052 --> 00:02:36.089
+This moves us from the
+A state to the B state.
+
+60
+00:02:36.156 --> 00:02:40.693
+Now we observe a C and we get to talk
+about what it means to match a string.
+
+61
+00:02:40.894 --> 00:02:44.831
+When we match a string, that means
+we successfully end in the goal state
+
+62
+00:02:44.931 --> 00:02:48.701
+marked by two circles in this diagram,
+and we have no more string to process.
+
+63
+00:02:48.701 --> 00:02:51.604
+So here we are
+successfully matching this string.
+
+64
+00:02:51.604 --> 00:02:54.440
+Now, let's step through an example
+where we fail to match.
+
+65
+00:02:54.440 --> 00:02:57.243
+This string is invalid
+according to our regular expression.
+
+66
+00:02:57.243 --> 00:03:00.246
+Let's see how a finite state
+machine can be used to prove that.
+
+67
+00:03:00.346 --> 00:03:05.185
+So again we start in our start state and
+we observe in A moving us to the A state.
+
+68
+00:03:05.251 --> 00:03:08.221
+Next, we observe a C
+which moves us to the C state.
+
+69
+00:03:08.221 --> 00:03:09.522
+So far so good.
+
+70
+00:03:09.522 --> 00:03:12.492
+But we also haven't violated
+any of the rules of our regex.
+
+71
+00:03:12.492 --> 00:03:17.492
+Now we have an A, but as you can see,
+none of the paths leading out of C have an
+
+72
+00:03:17.997 --> 00:03:22.068
+A, and we are not in our end state,
+so we have failed to match.
+
+73
+00:03:22.535 --> 00:03:25.405
+So you may be asking
+how is this finite state
+
+74
+00:03:25.405 --> 00:03:30.343
+machine used to match regular expressions
+useful for generating structure?
+
+75
+00:03:30.476 --> 00:03:35.448
+Well, we can just invert our process
+when we are using the FSM with Outlines,
+
+76
+00:03:35.481 --> 00:03:37.116
+this is how it works behind the scenes.
+
+77
+00:03:37.116 --> 00:03:37.650
+We are keeping
+
+78
+00:03:37.650 --> 00:03:41.321
+track of what state we're in
+and looking at what paths from that state.
+
+79
+00:03:41.654 --> 00:03:45.391
+So here we are in the start state, and
+of course, all possible paths are allowed.
+
+80
+00:03:45.625 --> 00:03:47.126
+Here's our logits on the right.
+
+81
+00:03:47.126 --> 00:03:50.697
+And we can see the structure doesn't
+require any changes to those logits,
+
+82
+00:03:50.697 --> 00:03:53.166
+since all of the tokens
+we have are admissible.
+
+83
+00:03:53.166 --> 00:03:55.969
+But we admit a B
+and we move to the B state.
+
+84
+00:03:55.969 --> 00:03:58.838
+Now here you can see
+we don't have all the paths.
+
+85
+00:03:58.838 --> 00:04:02.542
+So, even though the model produces
+logit weights for all the options,
+
+86
+00:04:02.742 --> 00:04:06.746
+we know that only paths
+B C, and A are allowed.
+
+87
+00:04:06.813 --> 00:04:09.749
+And we continue this on
+as we move through our generation.
+
+88
+00:04:09.749 --> 00:04:10.850
+So in this way,
+
+89
+00:04:10.850 --> 00:04:14.887
+we've been able to invert the process
+of matching into one of generating.
+
+90
+00:04:14.988 --> 00:04:18.424
+Regex is a remarkable,
+powerful way to represent structure.
+
+91
+00:04:18.491 --> 00:04:21.160
+There is much, much more to it
+than just JSON.
+
+92
+00:04:21.160 --> 00:04:22.462
+Simple structure is often
+
+93
+00:04:22.462 --> 00:04:26.065
+enough for most tasks
+that we have, for example, class labels.
+
+94
+00:04:26.232 --> 00:04:29.969
+If you're building a quick 0 or 1 shot
+classifier, you may want to limit
+
+95
+00:04:29.969 --> 00:04:31.671
+the output of your model to the class
+labels
+
+96
+00:04:31.671 --> 00:04:34.240
+you have. No need for JSON on top of that.
+
+97
+00:04:34.240 --> 00:04:36.242
+Email addresses are another example.
+
+98
+00:04:36.242 --> 00:04:38.978
+If you are parsing our email addresses
+from documents,
+
+99
+00:04:38.978 --> 00:04:42.215
+it would be nice if the LLM could
+consistently output email addresses.
+
+100
+00:04:42.315 --> 00:04:45.385
+Likewise, phone numbers
+can be a very useful regular expression
+
+101
+00:04:45.385 --> 00:04:48.421
+to make sure that the output of the LLM
+matches the phone number.
+
+102
+00:04:48.721 --> 00:04:52.025
+This is also important because people can
+write phone numbers in different ways.
+
+103
+00:04:52.025 --> 00:04:54.260
+So you may want to have
+a consistent format
+
+104
+00:04:54.260 --> 00:04:56.262
+that is applied
+when phone numbers are parsed.
+
+105
+00:04:56.262 --> 00:04:58.598
+You can also output any common document
+types.
+
+106
+00:04:58.598 --> 00:05:01.567
+We've talked a lot about JSON,
+but of course it's worth pointing out
+
+107
+00:05:01.567 --> 00:05:05.605
+we can still produce JSON,
+but we can also write CSV files or Yaml.
+
+108
+00:05:05.672 --> 00:05:08.241
+They can also be used to represent
+context-free grammars.
+
+109
+00:05:08.241 --> 00:05:11.277
+Now, for the formal language enthusiasts
+watching this course,
+
+110
+00:05:11.277 --> 00:05:12.779
+you may see a surprise here.
+
+111
+00:05:12.779 --> 00:05:15.048
+Ordinarily,
+we think of context-free grammars
+
+112
+00:05:15.048 --> 00:05:17.884
+as explicitly more powerful
+than regular expressions.
+
+113
+00:05:17.884 --> 00:05:18.518
+However,
+
+114
+00:05:18.518 --> 00:05:22.455
+we can represent any arbitrary context-free
+grammar as a regular expression
+
+115
+00:05:22.588 --> 00:05:25.291
+so long as we limit
+the depth of recursion we allow.
+
+116
+00:05:25.291 --> 00:05:28.561
+Now, once we have context-free grammars,
+we can have syntactically
+
+117
+00:05:28.561 --> 00:05:31.597
+correct programing languages as output,
+which is a very impressive thing.
+
+118
+00:05:31.664 --> 00:05:34.834
+Also, you can basically model
+any document type you can imagine.
+
+119
+00:05:35.134 --> 00:05:36.769
+There's all sorts of structure
+
+120
+00:05:36.769 --> 00:05:39.772
+out there in the world and with context
+free grammars available to you,
+
+121
+00:05:39.806 --> 00:05:42.375
+there's really no limit
+to what you can represent.
+
+122
+00:05:42.375 --> 00:05:44.444
+Now, let's go see some examples.
+
+123
+00:05:44.444 --> 00:05:46.512
+We're going to start by adding
+these two lines of code
+
+124
+00:05:46.512 --> 00:05:49.015
+we've been adding. So that we don't see
+any unnecessary warnings.
+
+125
+00:05:49.015 --> 00:05:51.384
+Next, we're going to add these libraries
+we'll be using.
+
+126
+00:05:51.384 --> 00:05:54.220
+We have a utility template
+that helps us write prompts easily.
+
+127
+00:05:54.220 --> 00:05:55.388
+We'll also be using Outlines
+
+128
+00:05:55.388 --> 00:05:56.422
+And we're going to be using
+
+129
+00:05:56.422 --> 00:05:59.592
+the greedy sample from Outlines
+in some cases to make sure we always know
+
+130
+00:05:59.592 --> 00:06:01.494
+exactly what output
+we'll be getting from the model.
+
+131
+00:06:01.494 --> 00:06:04.263
+Next, we'll load our LLM.
+We're going to be using HuggingFace's
+
+132
+00:06:04.263 --> 00:06:06.199
+SmolLM2
+
+133
+00:06:06.199 --> 00:06:09.469
+The 135 million Instruct version.
+
+134
+00:06:09.669 --> 00:06:13.072
+This runs very well even on very resource
+constrained hardware.
+
+135
+00:06:13.139 --> 00:06:15.842
+So all these examples
+will be actually running on a CPU
+
+136
+00:06:15.842 --> 00:06:17.243
+with about eight gigabytes of RAM.
+
+137
+00:06:17.243 --> 00:06:19.212
+A very impressive accomplishment.
+
+138
+00:06:19.212 --> 00:06:21.714
+The first structure we're going to look at
+is a choice.
+
+139
+00:06:21.714 --> 00:06:22.749
+Making a choice is use
+
+140
+00:06:22.749 --> 00:06:26.219
+when we want to label something
+with a finite number of possible labels.
+
+141
+00:06:26.419 --> 00:06:29.555
+So in this case, we have a simple request
+where we want to classify
+
+142
+00:06:29.555 --> 00:06:31.958
+restaurant reviews
+either positive or negative.
+
+143
+00:06:31.958 --> 00:06:33.826
+This is a very common pattern for any time
+
+144
+00:06:33.826 --> 00:06:37.363
+we're doing, an one shot
+or zero-shot classifier with an LLM.
+
+145
+00:06:37.630 --> 00:06:40.032
+So we just simply want a class label
+to be omitted.
+
+146
+00:06:40.032 --> 00:06:41.868
+There's actually two ways
+we can solve that.
+
+147
+00:06:41.868 --> 00:06:43.603
+Since we just talked
+about regular expressions, it's
+
+148
+00:06:43.603 --> 00:06:46.539
+worth pointing out that this can be solved
+with a regular expression.
+
+149
+00:06:46.539 --> 00:06:49.909
+Here's an example of a regular expression
+that represents this.
+
+150
+00:06:49.942 --> 00:06:53.479
+So there's only two possible
+strings allowed positive or negative.
+
+151
+00:06:53.780 --> 00:06:56.549
+Now that's not too bad,
+but it's kind of tedious to have to write
+
+152
+00:06:56.549 --> 00:06:58.518
+regular expressions
+for a more complex model.
+
+153
+00:06:58.518 --> 00:07:02.188
+So we're going to actually
+be using something else called choice.
+
+154
+00:07:02.488 --> 00:07:05.892
+Here is the code using Outline's choice
+to create a generator
+
+155
+00:07:05.892 --> 00:07:08.094
+that will only choose between positive
+and negative.
+
+156
+00:07:08.094 --> 00:07:08.628
+In this code,
+
+157
+00:07:08.628 --> 00:07:10.830
+you can see
+rather than passing the full regex,
+
+158
+00:07:10.830 --> 00:07:12.799
+we just have to pass
+in a list of the values
+
+159
+00:07:12.799 --> 00:07:16.102
+we want to be emitted from the model,
+in this case positive and negative.
+
+160
+00:07:16.235 --> 00:07:18.070
+You can add
+as many of these as you'd like,
+
+161
+00:07:18.070 --> 00:07:20.606
+and this is certainly easier
+than writing a regular expression.
+
+162
+00:07:20.606 --> 00:07:23.509
+It also allows us to get labels
+from another source
+
+163
+00:07:23.509 --> 00:07:26.012
+and pumped them directly into the model,
+which can be very useful.
+
+164
+00:07:26.012 --> 00:07:30.116
+Finally, we will run our new model
+we have and see what we get.
+
+165
+00:07:30.116 --> 00:07:32.618
+And the result is
+that the review was positive.
+
+166
+00:07:32.618 --> 00:07:33.653
+Of course, the reviewer said
+
+167
+00:07:33.653 --> 00:07:36.823
+that the pizza was delicious
+and we get the result we were looking for.
+
+168
+00:07:37.590 --> 00:07:39.525
+And this next example,
+we'll be looking at a phone number
+
+169
+00:07:39.525 --> 00:07:41.461
+regular expression, for this task,
+
+170
+00:07:41.461 --> 00:07:44.464
+we want to extract a phone number from,
+a prompt.
+
+171
+00:07:44.697 --> 00:07:48.100
+Now, if you look at this case,
+we actually want to extract the phone
+
+172
+00:07:48.100 --> 00:07:52.338
+number in a different format than it's
+provided in our format requirements.
+
+173
+00:07:52.338 --> 00:07:55.575
+We would like to have parentheses
+around the area code, a space.
+
+174
+00:07:55.741 --> 00:07:59.278
+The first three local numbers and then
+separated by a dash the last four.
+
+175
+00:07:59.445 --> 00:08:01.848
+Here's an example of the number provided
+which doesn't match to this.
+
+176
+00:08:01.848 --> 00:08:04.484
+This is a very, very useful application.
+
+177
+00:08:04.484 --> 00:08:07.220
+A very simple structure
+for problems for data extraction.
+
+178
+00:08:07.220 --> 00:08:09.322
+Here's a regular expression
+you'll be using for this.
+
+179
+00:08:09.322 --> 00:08:10.890
+As you can see, it encodes
+
+180
+00:08:10.890 --> 00:08:12.992
+all the properties of the phone number
+we just described.
+
+181
+00:08:12.992 --> 00:08:16.562
+Now, all we have to do is take our regex
+and use
+
+182
+00:08:16.562 --> 00:08:19.765
+outline dot generate dot regex
+to create a phone number generator.
+
+183
+00:08:19.799 --> 00:08:23.236
+This will extract phone numbers for us
+in exactly the format we were hoping for.
+
+184
+00:08:23.369 --> 00:08:26.839
+When we run this, we can see that it
+pretty successfully pulled the number out
+
+185
+00:08:26.839 --> 00:08:29.041
+we needed
+and it applied the format we wanted.
+
+186
+00:08:29.041 --> 00:08:31.978
+Compare for a moment different formats
+we have in the prompt.
+
+187
+00:08:31.978 --> 00:08:34.680
+There was a dash between the area code
+and no parentheses,
+
+188
+00:08:34.680 --> 00:08:38.184
+and our generator was successfully able
+to pull out the correct format.
+
+189
+00:08:38.718 --> 00:08:41.487
+Next, we'll do the same thing
+with email addresses.
+
+190
+00:08:41.487 --> 00:08:43.756
+In this case, we will definitely want
+a regular expression for this
+
+191
+00:08:43.756 --> 00:08:45.825
+because email addresses
+can be very complicated.
+
+192
+00:08:45.825 --> 00:08:48.694
+Now if you know something about how email
+addresses can be validated,
+
+193
+00:08:48.694 --> 00:08:51.230
+this is actually not the fully perfect
+email address.
+
+194
+00:08:51.230 --> 00:08:52.665
+But it works for our case.
+
+195
+00:08:52.665 --> 00:08:54.867
+For this example,
+we're just going to ask our model
+
+196
+00:08:54.867 --> 00:08:58.104
+to generate us a random email address
+for someone at Amazon.
+
+197
+00:08:58.104 --> 00:09:01.407
+Once again, we just define a simple regex
+generator using outlines.
+
+198
+00:09:01.574 --> 00:09:04.010
+And generate the email address.
+
+199
+00:09:04.010 --> 00:09:06.345
+Next, we're going to do something
+a bit more sophisticated.
+
+200
+00:09:06.345 --> 00:09:09.649
+We'll be using a regular expression
+to generate an HTML image tag
+
+201
+00:09:09.749 --> 00:09:11.484
+based on a file name we provide to it.
+
+202
+00:09:11.484 --> 00:09:13.119
+Since we're working
+with a more complicated
+
+203
+00:09:13.119 --> 00:09:14.153
+regular expression,
+
+204
+00:09:14.153 --> 00:09:16.989
+I want to introduce a technique
+for working with structured generation
+
+205
+00:09:16.989 --> 00:09:18.124
+that can be very helpful.
+
+206
+00:09:18.124 --> 00:09:22.161
+Here we have an example of the structure
+we're hoping to get out of the model.
+
+207
+00:09:22.361 --> 00:09:26.632
+This is a very, very useful technique
+for making sure that the structure
+
+208
+00:09:26.632 --> 00:09:28.267
+you're defining is correct.
+
+209
+00:09:28.267 --> 00:09:30.303
+And since this is a non-trivial case,
+we really want
+
+210
+00:09:30.303 --> 00:09:33.005
+to make sure our regex works.
+Let's take a look at the regex
+
+211
+00:09:33.005 --> 00:09:35.541
+we're going to be using.
+Here is our image tag regex.
+
+212
+00:09:35.541 --> 00:09:36.642
+This looks good to me,
+
+213
+00:09:36.642 --> 00:09:40.046
+but I would like to be able to verify
+that this actually matches our example
+
+214
+00:09:40.279 --> 00:09:42.248
+before we run our model.
+
+215
+00:09:42.248 --> 00:09:46.185
+We're going to import
+Python's regular Expression library, re.
+
+216
+00:09:46.519 --> 00:09:48.621
+And we're going to search
+for our image tag.
+
+217
+00:09:48.621 --> 00:09:53.025
+In the example we have. As you can see, it
+successfully found a match.
+
+218
+00:09:53.292 --> 00:09:55.461
+This is really strong evidence
+that we have to find
+
+219
+00:09:55.461 --> 00:09:57.663
+the correct
+regular expression for our task,
+
+220
+00:09:57.663 --> 00:10:01.500
+and saves us a lot of time finding errors
+when we actually running our LLM.
+
+221
+00:10:01.601 --> 00:10:04.003
+Since we can trust
+that our structure looks good, it's
+
+222
+00:10:04.003 --> 00:10:05.438
+now time to build our generator.
+
+223
+00:10:05.438 --> 00:10:07.974
+Now we're using our generator
+to create the image tag.
+
+224
+00:10:07.974 --> 00:10:11.744
+We've given it a prompt saying generate
+a basic HTML image tag for the file
+
+225
+00:10:11.777 --> 00:10:13.646
+big underscore fish dot png.
+
+226
+00:10:13.646 --> 00:10:15.314
+Make sure to include an alt tag.
+
+227
+00:10:15.314 --> 00:10:18.317
+Let's inspect the results of this
+to see if we like what we got.
+
+228
+00:10:18.517 --> 00:10:22.822
+Okay, so this is an image tag
+and the source says big fish dot png.
+
+229
+00:10:23.189 --> 00:10:25.157
+And the all tag says data about fish.
+
+230
+00:10:25.157 --> 00:10:27.760
+This may be useful
+if we were creating a blog post,
+
+231
+00:10:27.760 --> 00:10:29.762
+and we wanted to make sure
+that our images were findable.
+
+232
+00:10:29.762 --> 00:10:31.530
+We don't have to just trust this
+by looking at it.
+
+233
+00:10:31.530 --> 00:10:33.766
+We can actually render
+the HTML on the page.
+
+234
+00:10:33.766 --> 00:10:36.769
+And as we see our image tag works,
+rendering the picture of our big fish.
+
+235
+00:10:37.637 --> 00:10:39.205
+Structure is everywhere.
+
+236
+00:10:39.205 --> 00:10:42.308
+We often think of structure
+as strictly as JSON or
+
+237
+00:10:42.508 --> 00:10:45.511
+simple regular expressions
+and things like markdown.
+
+238
+00:10:45.511 --> 00:10:48.514
+But in this example, we're
+going to generate a Tic-Tac-Toe board.
+
+239
+00:10:48.648 --> 00:10:51.183
+Here's our regex for the Tic-Tac-Toe board.
+
+240
+00:10:51.183 --> 00:10:55.421
+It is a bit involved, but this defines the
+structure of an ASCII Tic-Tac-Toe board.
+
+241
+00:10:55.421 --> 00:10:57.390
+Let's go ahead and generate an example.
+
+242
+00:10:57.390 --> 00:10:59.325
+Well, once again, create our generator.
+
+243
+00:10:59.325 --> 00:11:01.227
+And we will generate our Tic-Tac-Toe board.
+
+244
+00:11:01.227 --> 00:11:03.396
+Notice that in the prompt,
+I've showed the model
+
+245
+00:11:03.396 --> 00:11:06.098
+an example of what I think does
+Tic-Tac-Toe board should look like,
+
+246
+00:11:06.098 --> 00:11:08.434
+even though we're guaranteed
+to get the structure we want,
+
+247
+00:11:08.434 --> 00:11:11.804
+it's always helpful to provide examples
+in your prompt of the output
+
+248
+00:11:11.804 --> 00:11:12.805
+you are hoping to get.
+
+249
+00:11:12.805 --> 00:11:16.409
+Finally, we can print out our Tic-Tac-Toe
+board and as you see,
+
+250
+00:11:16.409 --> 00:11:19.512
+we have a Tic-Tac-Toe
+game in progress generated by our LLM.
+
+251
+00:11:20.780 --> 00:11:22.715
+We've talked at length about JSON,
+
+252
+00:11:22.715 --> 00:11:24.583
+but if you're a data scientist
+or work in machine
+
+253
+00:11:24.583 --> 00:11:28.254
+learning, you're probably more familiar
+with CSV as a file format of choice.
+
+254
+00:11:28.521 --> 00:11:31.490
+In this example,
+we're going to generate a CSV
+
+255
+00:11:31.490 --> 00:11:34.960
+content straight from the model
+and pump it into a pandas dataframe.
+
+256
+00:11:35.227 --> 00:11:37.329
+Here is the regex that we're going
+to be using to generate this.
+
+257
+00:11:37.329 --> 00:11:41.133
+You can see we have three columns code
+amount and cost, which represent
+
+258
+00:11:41.133 --> 00:11:42.768
+an item code for an inventory item.
+
+259
+00:11:42.768 --> 00:11:45.771
+The number of that item we have
+and the cost of the item per unit.
+
+260
+00:11:45.838 --> 00:11:50.009
+And then we've specified some properties
+of this CSV file that we want to have.
+
+261
+00:11:50.009 --> 00:11:54.246
+So for example, we can see here
+that the code has to be a three character
+
+262
+00:11:54.346 --> 00:11:55.047
+item code.
+
+263
+00:11:55.047 --> 00:11:57.883
+Then we have up to two digits
+for the amount.
+
+264
+00:11:57.883 --> 00:12:01.787
+And we represent cost using more digits
+and a decimal place to make sure
+
+265
+00:12:01.787 --> 00:12:03.889
+we always have a proper dollar value.
+
+266
+00:12:03.889 --> 00:12:05.991
+Here is our simple CSV generator.
+
+267
+00:12:05.991 --> 00:12:08.794
+And then we can use this
+to create our CSV out.
+
+268
+00:12:08.794 --> 00:12:10.963
+Notice
+we just briefly described our CSV file
+
+269
+00:12:10.963 --> 00:12:13.466
+here, and we'll see how well the model
+can do with just that in the prompt.
+
+270
+00:12:13.466 --> 00:12:16.469
+Rather than print out
+this string representation of this result.
+
+271
+00:12:16.502 --> 00:12:20.306
+We can actually pipe this directly
+into Pandas using Python string IO.
+
+272
+00:12:20.372 --> 00:12:23.342
+And as you can see,
+it's successfully created a CSV file
+
+273
+00:12:23.342 --> 00:12:26.645
+that we can directly send
+from the LLM to Pandas.
+
+274
+00:12:26.712 --> 00:12:28.080
+This is incredibly useful
+
+275
+00:12:28.080 --> 00:12:29.815
+if you're doing any kind of data
+processing
+
+276
+00:12:29.815 --> 00:12:32.384
+that's going to be part
+of a data science workflow.
+
+277
+00:12:32.384 --> 00:12:34.653
+In this next part,
+we're going to talk about implementing
+
+278
+00:12:34.653 --> 00:12:38.624
+structure for GSM8K,
+which is a common LLM evaluation benchmark
+
+279
+00:12:38.624 --> 00:12:42.328
+that uses grade school questions
+to see if LLMs can answer them correctly.
+
+280
+00:12:42.561 --> 00:12:45.197
+We're also going to talk about ways
+we can make regex easier.
+
+281
+00:12:45.197 --> 00:12:48.100
+Here's an example of a common GSM8K
+type question.
+
+282
+00:12:48.100 --> 00:12:50.703
+Tom has three cucumbers.
+Joe gives him two more.
+
+283
+00:12:50.703 --> 00:12:52.037
+How many does Tom have?
+
+284
+00:12:52.037 --> 00:12:53.906
+This is what's provided to the model
+in the prompt.
+
+285
+00:12:53.906 --> 00:12:55.708
+It then follows up
+with the reasoning step.
+
+286
+00:12:55.708 --> 00:12:57.643
+Here's
+the model thinking about the problem.
+
+287
+00:12:57.643 --> 00:13:00.479
+Tom started with three cucumbers,
+then received two more.
+
+288
+00:13:00.479 --> 00:13:02.014
+This means he has five cucumbers.
+
+289
+00:13:02.014 --> 00:13:04.049
+Finally, the model is required to answer.
+
+290
+00:13:04.049 --> 00:13:06.118
+So the answer is five.
+
+291
+00:13:06.118 --> 00:13:07.853
+Notice
+that even though this is plain text,
+
+292
+00:13:07.853 --> 00:13:10.122
+there is still a very clear structure
+here.
+
+293
+00:13:10.122 --> 00:13:11.757
+We're going to prompt the model
+with the question
+
+294
+00:13:11.757 --> 00:13:13.392
+and hope that it follows
+through with the correct
+
+295
+00:13:13.392 --> 00:13:15.561
+reasoning and most importantly,
+the correct answer,
+
+296
+00:13:15.561 --> 00:13:18.397
+all following this format
+that we can enforce in the model.
+
+297
+00:13:18.397 --> 00:13:22.201
+Of course, writing a regular expression
+for this problem would be very tricky.
+
+298
+00:13:22.368 --> 00:13:25.371
+Thankfully, in Outlines
+we have a domain-specific language
+
+299
+00:13:25.371 --> 00:13:29.508
+that allows us to very easily represent
+regular expressions in a language
+
+300
+00:13:29.508 --> 00:13:30.810
+that's easy to understand.
+
+301
+00:13:30.810 --> 00:13:34.280
+You can see we're using it by importing
+sentence and digit from Outlines types
+
+302
+00:13:34.280 --> 00:13:36.482
+and the DSLs to regex function.
+
+303
+00:13:36.482 --> 00:13:38.517
+Reasoning here starts
+with the phrase reasoning,
+
+304
+00:13:38.517 --> 00:13:40.252
+just like it does in this example.
+
+305
+00:13:40.252 --> 00:13:43.155
+And then we're going to add a sentence
+that repeats 1 to 2 times.
+
+306
+00:13:43.155 --> 00:13:45.257
+That means we're
+The statement has to start with reasoning,
+
+307
+00:13:45.257 --> 00:13:47.793
+and we're allowing the reasoning
+to go on for 1 or 2 sentences
+
+308
+00:13:47.793 --> 00:13:48.994
+which have already been predefined.
+
+309
+00:13:48.994 --> 00:13:51.130
+So no regular expression
+required from you.
+
+310
+00:13:51.130 --> 00:13:53.065
+Then the answer needs to lead with:
+
+311
+00:13:53.065 --> 00:13:55.434
+So the answer is colon space.
+
+312
+00:13:55.434 --> 00:13:58.437
+And then we need to have a digit
+that's between 1 and 4 digits long.
+
+313
+00:13:58.771 --> 00:14:00.573
+See, we use the digit here
+
+314
+00:14:00.573 --> 00:14:03.475
+and just repeat it 1 to 4 times.
+Very straightforward.
+
+315
+00:14:03.475 --> 00:14:06.478
+Finally, we're going to put this
+all two regex to see what it looks like.
+
+316
+00:14:06.512 --> 00:14:08.981
+I'm certainly glad
+I did not have to write that by hand.
+
+317
+00:14:08.981 --> 00:14:12.585
+Next, we'll build our regex generator
+by passing in this new regex we made
+
+318
+00:14:12.718 --> 00:14:13.786
+just as we have before.
+
+319
+00:14:14.753 --> 00:14:17.656
+Now we're ready
+to test out how smart our model really is.
+
+320
+00:14:17.656 --> 00:14:19.225
+We're going to give it this question right
+here.
+
+321
+00:14:19.225 --> 00:14:21.760
+Sally has five apples, then receives
+two more.
+
+322
+00:14:21.760 --> 00:14:23.028
+How many does Sally have?
+
+323
+00:14:23.028 --> 00:14:24.697
+Now we can look at the prompt
+we're going to use
+
+324
+00:14:24.697 --> 00:14:26.465
+to send this question to the model.
+
+325
+00:14:26.465 --> 00:14:29.034
+In the prompt
+we explain the structure of the problem.
+
+326
+00:14:29.034 --> 00:14:32.104
+And we talk about how this is going
+to work and provide an example.
+
+327
+00:14:32.271 --> 00:14:36.342
+And then we just put our question into
+template keeping format with this prompt.
+
+328
+00:14:36.342 --> 00:14:39.645
+So we would expect the next
+natural step would be to output reasoning.
+
+329
+00:14:39.645 --> 00:14:40.746
+And then a solution.
+
+330
+00:14:40.746 --> 00:14:43.249
+And finally, we can see how the model does.
+
+331
+00:14:43.249 --> 00:14:47.052
+As we can see the model correctly reasons
+that Sally had five apples.
+
+332
+00:14:47.052 --> 00:14:50.489
+They received two more, which means
+she has five plus two equals seven apples.
+
+333
+00:14:50.489 --> 00:14:52.224
+So the answer is seven.
+
+334
+00:14:52.224 --> 00:14:54.627
+All in a structure
+we can easily understand and parse.
+
+335
+00:14:54.627 --> 00:14:56.095
+Of course we could have done this in JSON,
+
+336
+00:14:56.095 --> 00:14:59.331
+but it's always worth trying with sort
+of more natural forms of structure
+
+337
+00:14:59.365 --> 00:15:00.833
+we find every day.
+
+338
+00:15:00.833 --> 00:15:03.569
+Finally, we're going to leave you
+with a very fun project.
+
+339
+00:15:03.569 --> 00:15:07.640
+You're going to build your very own
+hot dog versus not a hot dog classifier.
+
+340
+00:15:07.740 --> 00:15:10.743
+We're going to start with some basic
+boilerplate code to get us started.
+
+341
+00:15:11.076 --> 00:15:14.313
+This loads in a vision model,
+which is a multimodal model
+
+342
+00:15:14.313 --> 00:15:17.216
+that allows us to actually use images
+with our prompt.
+
+343
+00:15:17.216 --> 00:15:19.184
+Because your task is to add the structure.
+
+344
+00:15:19.184 --> 00:15:23.322
+We're going to include, very simple
+use of outlines, dot text method.
+
+345
+00:15:23.455 --> 00:15:27.126
+This simply returns and unstructured
+result from the model, allowing you
+
+346
+00:15:27.159 --> 00:15:29.728
+to complete the rest of the work. Next,
+we'll look at our prompts,
+
+347
+00:15:29.728 --> 00:15:31.597
+which will help us understand
+the task at hand.
+
+348
+00:15:31.597 --> 00:15:34.266
+We're going to be instructing our model
+that is going to be given
+
+349
+00:15:34.266 --> 00:15:37.269
+an image of either
+a hot dog or not a hot dog.
+
+350
+00:15:37.369 --> 00:15:42.369
+And they must correctly label responding
+only with hot dog or not a hot dog.
+
+351
+00:15:42.675 --> 00:15:45.744
+Notice that those are both lowercase
+and the only options we want from
+
+352
+00:15:45.744 --> 00:15:48.714
+the model are hot dog or not a hot dog.
+
+353
+00:15:48.981 --> 00:15:50.115
+To help you get started,
+
+354
+00:15:50.115 --> 00:15:51.583
+we're also including some code
+
+355
+00:15:51.583 --> 00:15:53.419
+that will iterate
+through the images in a file
+
+356
+00:15:53.419 --> 00:15:55.688
+and run our model on them
+to see how well it does.
+
+357
+00:15:55.688 --> 00:15:57.990
+Let's
+go see how well this does unstructured.
+
+358
+00:15:58.958 --> 00:16:00.526
+Let's
+take a look at how well the model did.
+
+359
+00:16:00.526 --> 00:16:03.529
+As you can see, it correctly
+labeled the first image as hot dog,
+
+360
+00:16:03.595 --> 00:16:06.598
+but didn't exactly
+follow our labeling criteria.
+
+361
+00:16:06.699 --> 00:16:10.002
+We wanted it to produce
+hot dog lowercase with no period.
+
+362
+00:16:10.169 --> 00:16:12.471
+Now, this might seem
+like a bit of a nitpick,
+
+363
+00:16:12.471 --> 00:16:16.442
+but if you're building a production
+classification system
+
+364
+00:16:16.442 --> 00:16:20.145
+for hot dog or not hot dog, you absolutely
+want those labels to be consistent.
+
+365
+00:16:20.279 --> 00:16:23.248
+We can quickly scroll
+through the other results and see that
+
+366
+00:16:23.248 --> 00:16:27.119
+we have similar problems across the board
+correctly labeled not a hot dog didn't
+
+367
+00:16:27.119 --> 00:16:30.356
+adhere to our guidelines,
+but when we get to this last image here,
+
+368
+00:16:30.389 --> 00:16:32.324
+we can see
+the model really went off the rails.
+
+369
+00:16:32.324 --> 00:16:35.327
+It just describes this
+as this airplane is flying in the sky.
+
+370
+00:16:35.327 --> 00:16:37.229
+Well, a correct description of the image.
+
+371
+00:16:37.229 --> 00:16:38.464
+This isn't what we wanted.
+
+372
+00:16:38.464 --> 00:16:42.234
+Your task is to take what we learned in
+this lesson and apply it to this problem
+
+373
+00:16:42.234 --> 00:16:45.237
+to see if you can get consistent labels
+for all of these outputs.
+
+374
+00:16:45.270 --> 00:16:46.205
+In this lesson,
+
+375
+00:16:46.205 --> 00:16:50.009
+we learned about how outlines
+is really powered by regular expressions.
+
+376
+00:16:50.142 --> 00:16:52.911
+We use this to create a range of different
+interesting structures
+
+377
+00:16:52.911 --> 00:16:55.581
+and we end with a really fun exercise
+for you to try at home.
+

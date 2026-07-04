@@ -1,0 +1,1088 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.767 --> 00:00:03.837
+In this lesson, you'll
+learn how to use the open source library
+
+2
+00:00:03.837 --> 00:00:06.940
+Instructor to generate structured
+output from model providers
+
+3
+00:00:06.940 --> 00:00:09.943
+that don't support
+formal structured output.
+
+4
+00:00:10.076 --> 00:00:12.145
+All right, let's dive into the code.
+
+5
+00:00:12.145 --> 00:00:13.813
+Let's talk about Instructor.
+
+6
+00:00:13.813 --> 00:00:18.651
+Instructor is an open source re-prompting
+based structured output library.
+
+7
+00:00:18.718 --> 00:00:22.222
+If model output doesn't match the format
+we requested, we try again.
+
+8
+00:00:22.288 --> 00:00:25.025
+Here, we can see
+our prompt goes into our language model.
+
+9
+00:00:25.025 --> 00:00:26.760
+We get some form of output.
+
+10
+00:00:26.760 --> 00:00:29.562
+Then we check whether or not it's
+valid syntax.
+
+11
+00:00:29.562 --> 00:00:31.698
+If it is, we return it to the user.
+
+12
+00:00:31.698 --> 00:00:36.236
+If not, we provide the output
+and the error back to the language model
+
+13
+00:00:36.236 --> 00:00:39.706
+and try to get output again
+until we get valid output.
+
+14
+00:00:40.106 --> 00:00:42.575
+Let's talk about some pros
+and cons of Instructor.
+
+15
+00:00:42.575 --> 00:00:44.310
+Instructor it's simple to use.
+
+16
+00:00:44.310 --> 00:00:46.446
+It has a wide range of provider support
+
+17
+00:00:46.446 --> 00:00:50.884
+like Anthropic, OpenAI,
+Together.AI, Fireworks.AI etc.
+
+18
+00:00:50.950 --> 00:00:54.821
+It has consistent APIs across providers
+so you can avoid vendor lock in
+
+19
+00:00:55.088 --> 00:00:57.924
+and it supports everything
+that pydantic does.
+
+20
+00:00:57.924 --> 00:00:58.925
+On the downside,
+
+21
+00:00:58.925 --> 00:01:03.329
+Instructor can't fully enforce structure
+so parsing failures will occur.
+
+22
+00:01:03.430 --> 00:01:07.500
+Retry is can unexpectedly increase costs
+in both money and time.
+
+23
+00:01:07.567 --> 00:01:11.337
+Every time there's a parsing failure,
+you have to resend the entire prompt
+
+24
+00:01:11.337 --> 00:01:12.338
+back to the model.
+
+25
+00:01:12.338 --> 00:01:17.277
+Instructor is not easily transparent
+in re-prompting and/or retrys used.
+
+26
+00:01:17.477 --> 00:01:19.612
+You have to kind of
+hack into the internals
+
+27
+00:01:19.612 --> 00:01:21.915
+a little bit to try and understand
+what's going on.
+
+28
+00:01:21.915 --> 00:01:26.052
+And Instructor only works with instruction
+tuned models with function calling
+
+29
+00:01:26.052 --> 00:01:27.654
+or tool use or JSON mode.
+
+30
+00:01:27.654 --> 00:01:31.424
+Other approaches like Outlines,
+can use any model, whether or not
+
+31
+00:01:31.424 --> 00:01:33.026
+they're instruction tuned.
+
+32
+00:01:33.026 --> 00:01:37.597
+So in this lab we're going to demonstrate
+some simple use of Instructor
+
+33
+00:01:37.664 --> 00:01:41.501
+to get structured output from Together.AI
+which doesn't support
+
+34
+00:01:41.501 --> 00:01:43.136
+formal structured generation.
+
+35
+00:01:43.136 --> 00:01:45.705
+Then we're going to highlight
+some limitations of Instructor.
+
+36
+00:01:45.705 --> 00:01:48.708
+So you can kind of make some analysis
+as to whether it makes sense
+
+37
+00:01:48.708 --> 00:01:49.776
+in your application.
+
+38
+00:01:49.776 --> 00:01:51.711
+So let's go to the code.
+
+39
+00:01:51.711 --> 00:01:55.081
+Let's start by getting our Together
+API key.
+
+40
+00:01:55.215 --> 00:01:57.650
+As long as you're on the DeepLearning.AI
+platform,
+
+41
+00:01:57.650 --> 00:01:59.352
+this key will be available to you.
+
+42
+00:01:59.352 --> 00:02:03.323
+If you're working on your own platform,
+you'll need to use your own API key,
+
+43
+00:02:03.523 --> 00:02:06.493
+Here's how you connect to the Together
+AI server.
+
+44
+00:02:06.493 --> 00:02:09.496
+We're going to import Instructor
+and then OpenAI.
+
+45
+00:02:09.529 --> 00:02:14.529
+You'll note that we're importing OpenAI
+rather than some other Together AI API.
+
+46
+00:02:14.934 --> 00:02:17.704
+And the reason for this
+is that most inference providers
+
+47
+00:02:17.704 --> 00:02:22.275
+use the OpenAI
+standard for language model inference.
+
+48
+00:02:22.509 --> 00:02:26.913
+And what that means is
+you can use the OpenAI SDK by
+
+49
+00:02:26.913 --> 00:02:30.783
+just changing the base URL to pointing to
+whatever your language model provider is.
+
+50
+00:02:30.950 --> 00:02:33.953
+So when you run this,
+you'll pull in your Together client.
+
+51
+00:02:34.020 --> 00:02:38.057
+To generate unstructured text
+from Together you can use the standard
+
+52
+00:02:38.057 --> 00:02:41.861
+OpenAI tools chat dot completions
+dot create.
+
+53
+00:02:42.061 --> 00:02:45.665
+Then you provide any model that Together.AI
+serves.
+
+54
+00:02:45.732 --> 00:02:49.836
+In this case we're going to use Llama 3.1
+the 8 billion parameter model.
+
+55
+00:02:50.036 --> 00:02:52.172
+And the instruction tuned model.
+
+56
+00:02:52.172 --> 00:02:55.842
+If you see instruct in a model name, note
+that it has nothing to do
+
+57
+00:02:55.842 --> 00:02:56.776
+with Instructor.
+
+58
+00:02:56.776 --> 00:03:00.480
+Instruct inside of a model name just means
+that the model has been instruction
+
+59
+00:03:00.480 --> 00:03:05.051
+tuned to have chatbot-like functionality
+like Claude or ChatGPT.
+
+60
+00:03:05.385 --> 00:03:08.888
+Next, we're going to provide a user prompt
+and we're just going to say "sup"
+
+61
+00:03:09.189 --> 00:03:12.425
+then, when we run this
+we'll see that the language model says,
+
+62
+00:03:12.425 --> 00:03:15.395
+"sup back at you,
+how's your day going so far?"
+
+63
+00:03:15.495 --> 00:03:17.497
+I would say pretty good robot.
+
+64
+00:03:17.497 --> 00:03:22.497
+To use Together, all you have to do is
+wrap whatever your client is in.
+
+65
+00:03:22.702 --> 00:03:25.371
+One of Instructors dot from methods.
+
+66
+00:03:25.371 --> 00:03:28.074
+So, for example, here
+we're using Instructor
+
+67
+00:03:28.074 --> 00:03:31.878
+dot from OpenAI, and then we're passing it
+our Together client.
+
+68
+00:03:31.945 --> 00:03:34.347
+This will create a new client
+called Instructor
+
+69
+00:03:34.347 --> 00:03:38.418
+Client which will use Instructors tools
+to get structured output.
+
+70
+00:03:38.985 --> 00:03:42.088
+To try out Instructor,
+let's define a really simple structure.
+
+71
+00:03:42.155 --> 00:03:46.159
+In this case we're going to define
+greeting here which just has a field hello
+
+72
+00:03:46.326 --> 00:03:47.360
+which is a string.
+
+73
+00:03:47.360 --> 00:03:52.360
+To use this, we simply call Instructor
+client dot chat dot completions dot
+
+74
+00:03:52.365 --> 00:03:53.066
+create.
+
+75
+00:03:53.066 --> 00:03:57.203
+As before, we're going to pass
+the same model name in the same messages.
+
+76
+00:03:57.203 --> 00:03:59.806
+So nothing's changed
+from the unstructured version.
+
+77
+00:03:59.806 --> 00:04:03.476
+The only thing that we're adding
+is response model equals greeting.
+
+78
+00:04:03.576 --> 00:04:05.979
+That's
+the class that we expect to receive.
+
+79
+00:04:05.979 --> 00:04:09.949
+If you're using OpenAI structured output,
+you'll note that they use response
+
+80
+00:04:09.949 --> 00:04:13.753
+format as the keyword argument
+rather than Instructor's response model.
+
+81
+00:04:13.987 --> 00:04:15.655
+So make sure you pay attention to that.
+
+82
+00:04:15.655 --> 00:04:16.556
+When we run this,
+
+83
+00:04:16.556 --> 00:04:20.326
+we'll see that we get greeting
+with sup inside of the hello field.
+
+84
+00:04:20.727 --> 00:04:24.197
+Let's write a simple calendar
+event extractor to test Instructor out.
+
+85
+00:04:24.297 --> 00:04:28.301
+So here what we want to do is provide
+a rough description of event to the model.
+
+86
+00:04:28.301 --> 00:04:31.971
+And then get back some kind of structured
+output containing the name of the event,
+
+87
+00:04:32.272 --> 00:04:35.375
+the date that the event is occurring,
+a list of participants
+
+88
+00:04:35.675 --> 00:04:37.410
+where the event is occurring,
+
+89
+00:04:37.410 --> 00:04:41.014
+as well as some additional address
+information like state code and zip code.
+
+90
+00:04:41.180 --> 00:04:43.283
+You'll note here
+that name can be any string.
+
+91
+00:04:43.283 --> 00:04:47.253
+Inside of calendar event,
+we have a date field with a date type
+
+92
+00:04:47.253 --> 00:04:50.023
+which comes from The Python
+standard library.
+
+93
+00:04:50.023 --> 00:04:54.460
+OpenAI doesn't support the use
+of specialized types like this. OpenAI
+
+94
+00:04:54.460 --> 00:04:57.497
+would require that you have a string
+here.
+
+95
+00:04:57.563 --> 00:05:00.600
+Instructor
+is much more general than OpenAI, and
+
+96
+00:05:00.600 --> 00:05:05.600
+so you can use far more of pydantic
+typing support than OpenAI supports.
+
+97
+00:05:05.838 --> 00:05:10.838
+So if you ended up using OpenAI structured
+output tooling, you will get an error
+
+98
+00:05:10.877 --> 00:05:13.379
+if you try to use date,
+at least for the moment.
+
+99
+00:05:13.379 --> 00:05:17.417
+Next, we have a list of participants
+and this is a list of person.
+
+100
+00:05:17.750 --> 00:05:21.120
+And we have class person here
+with only a name field.
+
+101
+00:05:21.187 --> 00:05:23.189
+You'll note here
+that there's only a name field.
+
+102
+00:05:23.189 --> 00:05:25.658
+So why don't we just make this
+a list of strings?
+
+103
+00:05:25.658 --> 00:05:26.726
+Well, the reason for that
+
+104
+00:05:26.726 --> 00:05:29.862
+is that if you have a person class,
+you can easily extend it
+
+105
+00:05:29.862 --> 00:05:34.367
+later with additional information
+like email address as needed.
+
+106
+00:05:34.567 --> 00:05:37.470
+Just following kind of good software
+engineering practices.
+
+107
+00:05:37.470 --> 00:05:41.741
+Then we have address number, street name,
+city name, nothing complicated there.
+
+108
+00:05:41.908 --> 00:05:45.545
+And then the remaining two have a few
+interesting points we need to address.
+
+109
+00:05:45.645 --> 00:05:47.980
+You'll note here
+that these are equals field.
+
+110
+00:05:47.980 --> 00:05:50.183
+This is a tool inside of pydantic.
+
+111
+00:05:50.183 --> 00:05:54.120
+You can specify a regular expression
+that defines the values
+
+112
+00:05:54.120 --> 00:05:56.155
+that state code may take.
+
+113
+00:05:56.155 --> 00:05:59.892
+In this case, we're
+requiring that state code be only exactly
+
+114
+00:05:59.892 --> 00:06:04.630
+two capital letters,
+such as OR for Oregon, NY for New York.
+
+115
+00:06:04.864 --> 00:06:06.566
+These are all U.S. state codes.
+
+116
+00:06:06.566 --> 00:06:08.267
+This regular expression here
+
+117
+00:06:08.267 --> 00:06:11.571
+requires that anything inside of zip
+code must have five digits.
+
+118
+00:06:11.938 --> 00:06:14.941
+You'll learn a little bit
+more about regular expressions
+
+119
+00:06:15.174 --> 00:06:16.676
+at the end of the course.
+
+120
+00:06:16.676 --> 00:06:18.778
+Then let's write an example
+
+121
+00:06:18.778 --> 00:06:20.012
+event description.
+
+122
+00:06:20.012 --> 00:06:23.082
+So Alice and Bob are going to a science
+fair on Friday.
+
+123
+00:06:23.416 --> 00:06:27.220
+Science fair is hosted at the gymnasium
+of the Hazel Dale Elementary School,
+
+124
+00:06:27.353 --> 00:06:29.522
+which is my elementary school growing up.
+
+125
+00:06:29.522 --> 00:06:32.291
+Next, let's write a function
+called generate.
+
+126
+00:06:32.291 --> 00:06:37.263
+And generate is going to accept the format
+that we want to return the user prompt
+
+127
+00:06:37.330 --> 00:06:40.333
+and then the system prompt
+if you'd like to change it.
+
+128
+00:06:40.400 --> 00:06:44.003
+It'll also provide a default model
+with eight billion parameter model.
+
+129
+00:06:44.237 --> 00:06:48.775
+But you can change this to use the 70
+billion parameter model if you like.
+
+130
+00:06:48.941 --> 00:06:52.111
+We can also set max three tries to three,
+but we'll talk about that
+
+131
+00:06:52.111 --> 00:06:52.979
+in just a second.
+
+132
+00:06:52.979 --> 00:06:54.247
+All this function does is it
+
+133
+00:06:54.247 --> 00:06:58.151
+makes it a little more convenient
+to call the Instructor client.
+
+134
+00:06:58.718 --> 00:07:00.753
+Now, let's actually generate
+a calendar event.
+
+135
+00:07:00.753 --> 00:07:02.355
+So here we specify system prompt.
+
+136
+00:07:02.355 --> 00:07:03.756
+We say make a calendar event
+
+137
+00:07:03.756 --> 00:07:07.660
+respond in JSON with the event name, date,
+list of participants, and the address.
+
+138
+00:07:07.727 --> 00:07:10.129
+Note here
+that I've kind of roughly communicated
+
+139
+00:07:10.129 --> 00:07:13.065
+the structure
+that the model is expected to return.
+
+140
+00:07:13.065 --> 00:07:16.803
+You don't have to tell it exactly what
+it's supposed to return the exact like
+
+141
+00:07:16.936 --> 00:07:19.972
+provide an example of JSON,
+but it can help
+
+142
+00:07:19.972 --> 00:07:22.608
+usually. Anytime
+you're requesting structured output,
+
+143
+00:07:22.608 --> 00:07:26.479
+make sure you kind of communicate
+what the model is expected to return.
+
+144
+00:07:26.612 --> 00:07:28.047
+It's generally best practice.
+
+145
+00:07:28.047 --> 00:07:29.482
+Then we'll provide a user prompt,
+
+146
+00:07:29.482 --> 00:07:33.052
+which is just event description
+plus whatever event description you wrote.
+
+147
+00:07:33.352 --> 00:07:36.722
+And then we're going to call our generate
+function here to get an event.
+
+148
+00:07:36.889 --> 00:07:39.492
+Now, let's take a look at the event
+that we got back.
+
+149
+00:07:39.492 --> 00:07:42.495
+We can see here
+we got calendar event, name science fair.
+
+150
+00:07:42.595 --> 00:07:46.666
+We got dates, participants
+with the list of people, the address
+
+151
+00:07:46.666 --> 00:07:51.003
+number, the street name, the city
+name, the state code, and the zip code.
+
+152
+00:07:51.170 --> 00:07:54.507
+You'll notice here the zip code is 97005.
+
+153
+00:07:54.507 --> 00:07:57.410
+Even though we didn't actually specify it
+inside of the prompt.
+
+154
+00:07:57.410 --> 00:08:01.681
+This is an example of how you can elicit
+additional information from your model
+
+155
+00:08:01.681 --> 00:08:02.915
+by providing structure.
+
+156
+00:08:02.915 --> 00:08:07.286
+The model was actually able to guess
+the zip code within a rough distance.
+
+157
+00:08:07.286 --> 00:08:10.289
+The correct zip code here is 97005.
+
+158
+00:08:10.490 --> 00:08:13.559
+If you change the model
+to use the 70 billion parameter model,
+
+159
+00:08:13.759 --> 00:08:17.864
+this should probably get the exact right
+zip code of 97007,
+
+160
+00:08:17.864 --> 00:08:19.799
+even though it's not provided
+in the prompt.
+
+161
+00:08:19.799 --> 00:08:23.536
+Why don't you play around with this
+a little bit by going to change the event
+
+162
+00:08:23.536 --> 00:08:26.572
+description, see
+what else you can get the model print out.
+
+163
+00:08:27.273 --> 00:08:30.309
+Let's talk about retries.
+Instructor can use more tokens
+
+164
+00:08:30.309 --> 00:08:32.078
+than other forms of structured output.
+
+165
+00:08:32.078 --> 00:08:34.981
+So when an output fails to validate,
+Instructor will provide feedback
+
+166
+00:08:34.981 --> 00:08:38.551
+to the model or request new output
+until the response parses correctly.
+
+167
+00:08:38.885 --> 00:08:42.588
+Instructor doesn't make it super easy
+to track the number of retries
+
+168
+00:08:42.588 --> 00:08:46.058
+and the number of tokens
+used across retries, so, I've provided
+
+169
+00:08:46.058 --> 00:08:50.029
+some utility functions here
+to track retries and token usage.
+
+170
+00:08:50.396 --> 00:08:53.599
+Let's extract the same calendar event
+to see how many attempts it took.
+
+171
+00:08:53.866 --> 00:08:55.868
+And we're going to clear the tracker here.
+
+172
+00:08:55.868 --> 00:09:00.540
+So then we make sure we're not tracking
+retries across multiple completions.
+
+173
+00:09:01.173 --> 00:09:04.143
+We run this we see that
+we get the exact same calendar event.
+
+174
+00:09:04.143 --> 00:09:07.179
+But let's check the number of tokens
+and retry as used. Here,
+
+175
+00:09:07.179 --> 00:09:12.179
+we see that there was only one retry used
+671 input tokens and 85 output tokens.
+
+176
+00:09:13.386 --> 00:09:16.222
+Great. Instructor was able to get the model
+to produce
+
+177
+00:09:16.222 --> 00:09:19.225
+the output correctly
+without any retry as required.
+
+178
+00:09:19.592 --> 00:09:22.962
+In cases where the schema is complicated
+or the prompting is insufficient,
+
+179
+00:09:23.262 --> 00:09:25.565
+the model output will require
+multiple retries
+
+180
+00:09:25.565 --> 00:09:28.200
+and possibly
+never generate the correct output.
+
+181
+00:09:28.200 --> 00:09:31.203
+To see this, let's define
+a complicated class.
+
+182
+00:09:31.270 --> 00:09:34.373
+It's not actually that complicated,
+but it will be annoying for the model
+
+183
+00:09:34.373 --> 00:09:35.341
+to try to generate.
+
+184
+00:09:35.341 --> 00:09:38.678
+We're going to add just an A field,
+which has to be cat,
+
+185
+00:09:38.678 --> 00:09:42.348
+dog or hat, an integer
+and a boolean with A, B and C.
+
+186
+00:09:42.448 --> 00:09:46.452
+Next, we're going to try and break
+Instructor to demonstrate retries.
+
+187
+00:09:46.586 --> 00:09:48.554
+So this might not reflect common usage.
+
+188
+00:09:48.554 --> 00:09:51.357
+But you should note that parsing failures
+will happen by chance
+
+189
+00:09:51.357 --> 00:09:55.061
+if you're performing hundreds
+or thousands of language model calls. Here,
+
+190
+00:09:55.161 --> 00:09:58.164
+we've requested the complicated class.
+
+191
+00:09:58.431 --> 00:10:01.767
+We have a user prompt here
+that says, please write me a short
+
+192
+00:10:01.767 --> 00:10:05.137
+essay on Dolly Parton, and then the system
+prompt don't give me what I want.
+
+193
+00:10:05.438 --> 00:10:08.107
+Note in here, we're actually
+shooting ourselves in the foot.
+
+194
+00:10:08.107 --> 00:10:10.876
+We haven't communicated the structure
+of complicated to the model,
+
+195
+00:10:10.876 --> 00:10:13.879
+and we're intentionally
+asking it to sabotage us.
+
+196
+00:10:14.080 --> 00:10:17.183
+We're limiting Instructor
+to three maximum tries here.
+
+197
+00:10:18.050 --> 00:10:20.753
+And here we see that it failed to parse.
+
+198
+00:10:20.753 --> 00:10:22.788
+We give our model an opportunity
+to produce
+
+199
+00:10:22.788 --> 00:10:26.192
+a correct output three times,
+and it failed all three times.
+
+200
+00:10:26.559 --> 00:10:29.695
+And this was pretty costly for us
+because we had to triple our token
+
+201
+00:10:29.695 --> 00:10:32.698
+usage, didn't get the correct output,
+and still had to wait.
+
+202
+00:10:32.865 --> 00:10:36.802
+Here, we see that we have 383 input
+tokens used three times,
+
+203
+00:10:37.103 --> 00:10:41.741
+and three output tokens that presumably
+contain short essays about Dolly Parton.
+
+204
+00:10:41.841 --> 00:10:46.112
+We use a total of 2600 tokens,
+and it required three retries.
+
+205
+00:10:46.278 --> 00:10:49.315
+You can imagine this gets very costly
+for much larger prompts
+
+206
+00:10:49.315 --> 00:10:52.318
+in the order of thousands
+or tens of thousands of tokens.
+
+207
+00:10:52.585 --> 00:10:55.087
+So why don't you take a shot
+at fixing this?
+
+208
+00:10:55.087 --> 00:10:56.288
+Look at this code here.
+
+209
+00:10:56.288 --> 00:10:58.057
+We're doing the exact same thing.
+
+210
+00:10:58.057 --> 00:11:01.594
+All you need to do is modify
+the user prompt in the system prompt
+
+211
+00:11:01.927 --> 00:11:03.863
+so that we get the correct output.
+
+212
+00:11:03.863 --> 00:11:04.664
+Take a shot at that
+
+213
+00:11:04.664 --> 00:11:07.900
+now. So, hopefully you got a chance
+to play around with this a little bit.
+
+214
+00:11:08.434 --> 00:11:11.771
+I was able to fix this by saying,
+give me A, B and C,
+
+215
+00:11:12.071 --> 00:11:14.240
+I didn't communicate
+too much about the structure.
+
+216
+00:11:14.240 --> 00:11:16.208
+And then I said, just give me what I want.
+
+217
+00:11:16.208 --> 00:11:17.543
+Nothing complicated.
+
+218
+00:11:17.543 --> 00:11:20.212
+And when we run this,
+we see we get A equals cat,
+
+219
+00:11:20.212 --> 00:11:23.215
+B equals one, C equals true.
+
+220
+00:11:23.315 --> 00:11:26.285
+Lastly, we can see that
+we did this pretty efficiently.
+
+221
+00:11:26.285 --> 00:11:28.921
+We required only one retry.
+
+222
+00:11:28.921 --> 00:11:31.090
+In this lesson,
+you learned how to use Instructor
+
+223
+00:11:31.090 --> 00:11:33.526
+to get structured output
+from any model provider
+
+224
+00:11:33.526 --> 00:11:35.761
+and some possible
+limitations of Instructor
+
+225
+00:11:35.761 --> 00:11:38.364
+that you should consider
+when you're building your software.
+
+226
+00:11:38.364 --> 00:11:40.866
+In the next lesson,
+you'll go under the hood of outlines
+
+227
+00:11:40.866 --> 00:11:44.036
+to see how structured generation
+is able to quickly generate
+
+228
+00:11:44.036 --> 00:11:46.939
+reliable, structured
+output with no retry as required.
+
