@@ -1,0 +1,605 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.068 --> 00:00:03.770
+So far you have been using
+
+2
+00:00:03.770 --> 00:00:07.907
+function calling to well call functions,
+but function calling
+
+3
+00:00:07.907 --> 00:00:12.245
+can also be used to extract structured data
+from a natural language input.
+
+4
+00:00:12.645 --> 00:00:15.648
+Let's dive into structured extraction.
+
+5
+00:00:15.815 --> 00:00:18.818
+In the previous lessons,
+we used function calling
+
+6
+00:00:18.818 --> 00:00:23.818
+as a way of interfacing with tools
+both internal and external.
+
+7
+00:00:24.391 --> 00:00:27.660
+In this lesson, we'll actually extend
+the ability of function
+
+8
+00:00:27.660 --> 00:00:31.231
+calling even more to do something
+called structured extraction.
+
+9
+00:00:31.598 --> 00:00:34.567
+Structured extraction
+is when we need to extract
+
+10
+00:00:34.567 --> 00:00:37.570
+details
+and insights from unstructured texts.
+
+11
+00:00:37.737 --> 00:00:41.141
+For example, if we have texts like
+"Mary had a little lamb
+
+12
+00:00:41.141 --> 00:00:45.011
+whose fleece was white as snow"
+and we wanted to attract the person
+
+13
+00:00:45.011 --> 00:00:48.815
+mentioned in the text as well
+as the object that's owned by the person,
+
+14
+00:00:48.815 --> 00:00:52.952
+we can use function calling
+as a means of extracting that information.
+
+15
+00:00:53.019 --> 00:00:56.056
+The way you would do
+it is we would simply provide a function
+
+16
+00:00:56.389 --> 00:01:00.660
+with the person name
+and the owned object as the arguments
+
+17
+00:01:00.660 --> 00:01:03.830
+that the LLM needs to extract
+from the unstructured text.
+
+18
+00:01:03.863 --> 00:01:08.001
+Remember, this is very similar
+to the behavior that the function
+
+19
+00:01:08.001 --> 00:01:12.672
+calling LLM used to fill in the arguments
+from the user query
+
+20
+00:01:12.872 --> 00:01:16.810
+when interfacing with both Python
+as well as open
+
+21
+00:01:16.810 --> 00:01:21.581
+API tools in previous examples.
+We will simply use that same behavior
+
+22
+00:01:21.915 --> 00:01:26.419
+but here we will
+just annotate the kinds of information
+
+23
+00:01:26.419 --> 00:01:29.422
+we want to be extracted
+and allow the other LLM
+
+24
+00:01:29.422 --> 00:01:32.425
+to extract that information
+from the unstructured text.
+
+25
+00:01:32.725 --> 00:01:35.161
+In this example, the LLM will extract
+
+26
+00:01:35.161 --> 00:01:39.165
+Mary as the person's name and lamb
+as the owned object.
+
+27
+00:01:39.332 --> 00:01:42.469
+Let's take a look at making
+this more concrete through an example.
+
+28
+00:01:42.769 --> 00:01:45.772
+Let's look at a simple example
+of abstract extraction.
+
+29
+00:01:45.972 --> 00:01:49.409
+You have a very small passage here
+with various
+
+30
+00:01:49.409 --> 00:01:52.412
+names and addresses
+associated with each name.
+
+31
+00:01:52.445 --> 00:01:56.282
+Suppose you want to extract the names
+and map it to the addresses
+
+32
+00:01:56.282 --> 00:01:58.251
+that the names are associated with.
+
+33
+00:01:58.251 --> 00:02:00.286
+You can use function calling to do this.
+
+34
+00:02:00.286 --> 00:02:04.257
+You will simply provide a Raven prompt
+with the Function annotation,
+
+35
+00:02:04.457 --> 00:02:08.495
+indicating that you want Raven
+to extract the names as lists of string
+
+36
+00:02:08.761 --> 00:02:12.665
+and the addresses of the names
+as another list of string.
+
+37
+00:02:12.899 --> 00:02:15.735
+You mentioned to Raven
+that you wanted to give the names
+
+38
+00:02:15.735 --> 00:02:20.073
+and the associated addresses,
+and you'll provide the text from earlier.
+
+39
+00:02:21.908 --> 00:02:24.911
+You can now call Raven.
+
+40
+00:02:25.044 --> 00:02:25.845
+Great.
+
+41
+00:02:25.845 --> 00:02:28.681
+You've called Raven with the prompt
+you had earlier,
+
+42
+00:02:28.681 --> 00:02:32.552
+and you've just printed it in this tool
+that you've defined here.
+
+43
+00:02:33.019 --> 00:02:34.888
+And the print matches what we expect.
+
+44
+00:02:34.888 --> 00:02:38.491
+We have the names as well
+as the associated addresses of the name.
+
+45
+00:02:39.559 --> 00:02:42.562
+For more complex
+ways of doing structured extraction,
+
+46
+00:02:42.695 --> 00:02:46.733
+there is another method
+you can use to pull out information.
+
+47
+00:02:47.000 --> 00:02:50.303
+You can use data classes
+to communicate to Raven
+
+48
+00:02:50.403 --> 00:02:54.107
+about the different ways
+you want to associate the information
+
+49
+00:02:54.107 --> 00:02:55.742
+you want Raven to abstract.
+
+50
+00:02:55.742 --> 00:02:58.511
+Data class is a Python class decorator.
+
+51
+00:02:58.511 --> 00:03:02.081
+It signals the variables or fields
+that will follow
+
+52
+00:03:02.415 --> 00:03:05.084
+and define it with type annotations.
+
+53
+00:03:05.084 --> 00:03:08.855
+The LLM, which has been trained on
+Python, will understand this.
+
+54
+00:03:09.255 --> 00:03:12.659
+And this creates a new and convenient way
+to define parameters.
+
+55
+00:03:13.226 --> 00:03:18.226
+See in this example you have unstructured
+text yet again. Here,
+
+56
+00:03:18.565 --> 00:03:20.400
+even though you have names and addresses,
+
+57
+00:03:20.400 --> 00:03:24.938
+certain names are associated
+with multiple addresses, such as John Tech
+
+58
+00:03:25.205 --> 00:03:30.205
+being associated with 555 Silicon Street, 777
+Data Drive, and 123 Digital Domain.
+
+59
+00:03:31.311 --> 00:03:34.647
+The previous approach will not work
+well because we have
+
+60
+00:03:34.647 --> 00:03:37.784
+an unbalanced mapping of names
+to addresses.
+
+61
+00:03:37.817 --> 00:03:39.752
+In such more complex cases,
+
+62
+00:03:39.752 --> 00:03:42.722
+you can use the data class method.
+
+63
+00:03:43.156 --> 00:03:46.993
+You will simply define
+a data class called record, with a name
+
+64
+00:03:46.993 --> 00:03:51.664
+as one of the attributes, and a list
+of strings as the address attributes.
+
+65
+00:03:52.398 --> 00:03:56.502
+Keep in mind the name of the data class
+isn't too important, but it is
+
+66
+00:03:56.502 --> 00:04:00.773
+how Raven will understand your intentions
+so it's better to keep meaningful names.
+
+67
+00:04:00.907 --> 00:04:05.907
+You will define a function annotation
+that dates in a list of the data class
+
+68
+00:04:05.945 --> 00:04:10.683
+as the argument, and you will provide
+the unbalanced text from the first cell.
+
+69
+00:04:12.285 --> 00:04:14.153
+You'll run this.
+
+70
+00:04:14.153 --> 00:04:16.656
+And the output will have Raven issue
+
+71
+00:04:16.656 --> 00:04:19.726
+a function call, with the argument values
+
+72
+00:04:19.759 --> 00:04:23.229
+being instantiations of the record
+data class.
+
+73
+00:04:23.363 --> 00:04:27.300
+You'll notice that some of the names
+are mapped to multiple addresses,
+
+74
+00:04:27.300 --> 00:04:30.937
+such as John Tech being mapped
+to the three addresses we listed earlier.
+
+75
+00:04:31.004 --> 00:04:35.942
+This is exactly what we wanted, and shows
+a better way of extracting more complex
+
+76
+00:04:35.942 --> 00:04:39.512
+insights out of your unstructured texts
+using function calling.
+
+77
+00:04:39.779 --> 00:04:42.782
+Another really powerful
+implementation of function
+
+78
+00:04:42.782 --> 00:04:45.752
+calling is in generating valid jsons.
+
+79
+00:04:45.952 --> 00:04:50.023
+Sometimes it's
+very hard to get small LLMs
+
+80
+00:04:50.056 --> 00:04:54.527
+such as 7 or 13
+LLMs to generate valid jsons.
+
+81
+00:04:54.927 --> 00:04:56.562
+Function calling can help here.
+
+82
+00:04:56.562 --> 00:04:59.565
+Suppose you want to generate a json
+that looks like this,
+
+83
+00:04:59.899 --> 00:05:03.036
+with the first level of the json
+having the city name.
+
+84
+00:05:03.536 --> 00:05:07.340
+The second level of the json
+having information regarding the country,
+
+85
+00:05:07.740 --> 00:05:11.678
+and the third level of the json having
+information regarding the continent.
+
+86
+00:05:11.711 --> 00:05:16.349
+You can now define tools
+with the same level of hierarchy.
+
+87
+00:05:16.716 --> 00:05:20.853
+Here you've defined the first tool
+which contains the city info,
+
+88
+00:05:20.853 --> 00:05:25.525
+which is simply a city name
+with the function annotation
+
+89
+00:05:25.525 --> 00:05:29.862
+indicating a location dictionary
+is required as one of the arguments.
+
+90
+00:05:30.063 --> 00:05:34.200
+You will define another function
+called construct location dict.
+
+91
+00:05:34.701 --> 00:05:38.805
+The dates in the country information
+and a continent dictionary
+
+92
+00:05:38.805 --> 00:05:40.406
+as one of the arguments.
+
+93
+00:05:40.406 --> 00:05:44.310
+You will define a third tool
+that provides the continent dictionary.
+
+94
+00:05:44.610 --> 00:05:47.880
+The dates and two arguments,
+each as a simple name
+
+95
+00:05:48.181 --> 00:05:50.750
+and the other name. For your LLM
+
+96
+00:05:50.750 --> 00:05:52.919
+to successfully call this function,
+
+97
+00:05:52.919 --> 00:05:56.656
+it will need to first, construct
+a dictionary for location,
+
+98
+00:05:56.656 --> 00:06:01.227
+which it will do by issuing a nested call
+to the location dictionary,
+
+99
+00:06:01.327 --> 00:06:06.327
+which in turn, will require
+a continent dictionary, which it will head
+
+100
+00:06:06.432 --> 00:06:10.737
+by issuing a nested call
+to the continent dictionary function.
+
+101
+00:06:10.870 --> 00:06:13.873
+This will allow you to convert
+the nested calls
+
+102
+00:06:14.407 --> 00:06:18.711
+into the same hierarchy
+that you want in your json.
+
+103
+00:06:19.479 --> 00:06:24.250
+It is at this point where it's beneficial
+to talk about what the locals does.
+
+104
+00:06:24.751 --> 00:06:29.751
+It simply returns the current variables
+defined in the current scope back
+
+105
+00:06:29.822 --> 00:06:33.860
+as a dictionary with the variable name
+and a variable values provided.
+
+106
+00:06:34.060 --> 00:06:35.828
+Because of the way it's used here,
+
+107
+00:06:35.828 --> 00:06:39.899
+it will simply return the argument values
+back as a dictionary.
+
+108
+00:06:40.433 --> 00:06:41.200
+Let's take a look.
+
+109
+00:06:43.970 --> 00:06:45.872
+It just returns back the two arguments.
+
+110
+00:06:45.872 --> 00:06:49.175
+We passed it as a dictionary,
+with the argument name
+
+111
+00:06:49.175 --> 00:06:52.779
+and the argument value
+as being the key value pairs.
+
+112
+00:06:53.813 --> 00:06:57.183
+It is at this point
+where we can talk about how to use this
+
+113
+00:06:57.183 --> 00:07:00.953
+approach
+to convert nested calls into valid jsons.
+
+114
+00:07:01.287 --> 00:07:02.688
+Let's give it a try.
+
+115
+00:07:02.688 --> 00:07:06.893
+You will simply provide
+the three tools you have created earlier
+
+116
+00:07:06.893 --> 00:07:10.430
+in your Raven prompt,
+and have a placeholder for your question.
+
+117
+00:07:11.130 --> 00:07:15.134
+Here you will define your question,
+saying you want the city info for London,
+
+118
+00:07:15.568 --> 00:07:20.072
+which is in the United Kingdom,
+which is in Europe or Afro-Eur-Asia.
+
+119
+00:07:20.339 --> 00:07:24.076
+This contains the necessary information
+for your json.
+
+120
+00:07:24.710 --> 00:07:28.448
+However,
+by passing in the tools from earlier,
+
+121
+00:07:28.748 --> 00:07:33.748
+you can now force your LLM to generate
+the nested hierarchy that you need.
+
+122
+00:07:34.754 --> 00:07:39.754
+You will issue a call to Raven
+and you will print the json. Great!
+
+123
+00:07:40.426 --> 00:07:43.963
+We've gotten back a json in the exact
+format that we want.
+
+124
+00:07:44.430 --> 00:07:46.499
+We can now generate the valid json.
+
+125
+00:07:47.667 --> 00:07:48.367
+Great.
+
+126
+00:07:48.367 --> 00:07:51.938
+We now have a valid json
+out of our LLMs more predictably.
+

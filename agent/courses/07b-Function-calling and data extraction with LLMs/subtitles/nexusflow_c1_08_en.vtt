@@ -1,0 +1,41 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.500 --> 00:00:02.900
+Congratulations on completing the course.
+
+2
+00:00:02.900 --> 00:00:05.900
+Here are some skills
+you picked up during the course
+
+3
+00:00:06.066 --> 00:00:10.233
+You created prompts that can allow
+an LLM to perform function-calling.
+
+4
+00:00:10.700 --> 00:00:15.600
+You used an LLM with multiple function
+calls, even nested function calls.
+
+5
+00:00:15.966 --> 00:00:19.433
+You invoked web services
+using function-calling,
+
+6
+00:00:19.766 --> 00:00:22.933
+and you used an LLM to extract
+structured data.
+
+7
+00:00:23.633 --> 00:00:25.233
+Thank you for taking this course.
+
+8
+00:00:25.233 --> 00:00:29.333
+I hope you will find many uses
+for function calling in your applications.
+

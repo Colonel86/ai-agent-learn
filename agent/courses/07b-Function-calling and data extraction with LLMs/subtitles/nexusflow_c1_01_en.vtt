@@ -1,0 +1,382 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.033 --> 00:00:01.433
+Welcome to this short course.
+
+2
+00:00:01.433 --> 00:00:05.600
+Built in partnership with Nexusflow
+and taught by Jiantao Jiao,
+
+3
+00:00:05.900 --> 00:00:09.333
+who is the co-founder and CEO of Nexusflow,
+as well as assistant
+
+4
+00:00:09.333 --> 00:00:12.400
+professor of ESS stats at UC Berkeley.
+
+5
+00:00:12.666 --> 00:00:16.333
+And Venkat Srinivasan,
+who is a founding engineer at Nexusflow.
+
+6
+00:00:16.333 --> 00:00:19.000
+Large language models
+are trained on text,
+
+7
+00:00:19.000 --> 00:00:23.200
+which is a form of unstructured data,
+but our computing infrastructure
+
+8
+00:00:23.466 --> 00:00:27.600
+is largely built on structured data
+with virtually defined interfaces
+
+9
+00:00:27.833 --> 00:00:31.366
+like APIs
+that expect data in a certain format.
+
+10
+00:00:32.100 --> 00:00:35.100
+Function-calling bridges this gap.
+
+11
+00:00:35.166 --> 00:00:38.166
+Here's how LLMs and function-calling works.
+
+12
+00:00:38.433 --> 00:00:43.200
+In the prompt sent to a function-calling
+capable LLM,
+
+13
+00:00:43.200 --> 00:00:48.100
+will include descriptions of functions
+that are available to the LLM to use.
+
+14
+00:00:48.600 --> 00:00:53.333
+These descriptions include texts
+describing what a function might do
+
+15
+00:00:53.666 --> 00:00:56.666
+so the LLM knows
+when they should use that function,
+
+16
+00:00:56.900 --> 00:01:00.933
+as well as additionally information
+needed to call that function,
+
+17
+00:01:01.200 --> 00:01:04.666
+such as that function's name
+and a description of its arguments.
+
+18
+00:01:05.333 --> 00:01:10.266
+When the LLM has a query that it determines
+is best served by calling a function,
+
+19
+00:01:10.566 --> 00:01:14.366
+the LLM will then generate
+the needed parameters from the query
+
+20
+00:01:14.666 --> 00:01:17.666
+and return a string
+that could be used to call that function.
+
+21
+00:01:18.233 --> 00:01:21.466
+Notice that the LLM doesn't
+call the function directly,
+
+22
+00:01:21.466 --> 00:01:25.400
+it just returns a string
+that could be used to call that function.
+
+23
+00:01:25.500 --> 00:01:28.433
+These functions are often referred
+to as tools,
+
+24
+00:01:28.433 --> 00:01:31.966
+and can be used to extend
+the capabilities of a chatbot,
+
+25
+00:01:32.000 --> 00:01:36.033
+or to build agents, for example,
+such as a research agent
+
+26
+00:01:36.066 --> 00:01:40.566
+whose tools might include web search
+or Wikipedia lookups.
+
+27
+00:01:40.733 --> 00:01:44.933
+But function-calling has proven useful
+in many applications
+
+28
+00:01:44.933 --> 00:01:46.800
+that goes even beyond chat.
+
+29
+00:01:46.800 --> 00:01:51.800
+For example, DeepLearning.AI
+uses simple AI agents that we build
+
+30
+00:01:52.100 --> 00:01:56.966
+internally to analyze learner feedback
+to keep on improving our courses.
+
+31
+00:01:57.366 --> 00:02:00.366
+Of course,
+our core team does read your feedback,
+
+32
+00:02:00.366 --> 00:02:05.366
+and we appreciate you taking the time
+to provide it. And to gather statistics,
+
+33
+00:02:06.200 --> 00:02:08.966
+we provide an LLM with a prompt
+that includes
+
+34
+00:02:08.966 --> 00:02:12.966
+a description of a function called "record
+learner feedback".
+
+35
+00:02:13.266 --> 00:02:18.200
+They can record the sentiment and rating
+as well as report any technical problems
+
+36
+00:02:18.200 --> 00:02:22.666
+described. The LLM that we used for
+this is actually a special purpose
+
+37
+00:02:22.666 --> 00:02:26.133
+LLM called NexusRavenV2-13B
+
+38
+00:02:26.700 --> 00:02:29.700
+fine-tuned for function-
+calling by Nexusflow.
+
+39
+00:02:29.700 --> 00:02:32.100
+Andrew, I'm glad to hear that.
+
+40
+00:02:32.100 --> 00:02:34.666
+NexusRavenV2-13B
+
+41
+00:02:34.666 --> 00:02:37.966
+is an open-source model
+you can download from HuggingFace.
+
+42
+00:02:38.466 --> 00:02:41.600
+You can also use a hosted version
+available on our sites.
+
+43
+00:02:42.366 --> 00:02:45.366
+It is a model
+you'll be using in this course.
+
+44
+00:02:45.566 --> 00:02:47.733
+Many applications do not require
+
+45
+00:02:47.733 --> 00:02:50.766
+a full capability
+of a general-purpose foundation model.
+
+46
+00:02:51.500 --> 00:02:55.166
+Next, NexusRavenV2-13B
+has only a certain billion parameters,
+
+47
+00:02:55.533 --> 00:02:59.166
+but can output Chat GPT-4 in some function
+calling benchmarks.
+
+48
+00:03:00.066 --> 00:03:03.066
+This NexusRavenV2-13B
+and other fine-tuning
+
+49
+00:03:03.066 --> 00:03:06.400
+smaller models,
+are small enough to be locally hosted.
+
+50
+00:03:06.966 --> 00:03:11.000
+This eliminates the latency
+and cost barriers that might prevent you
+
+51
+00:03:11.200 --> 00:03:14.300
+from adding a natural language interface
+to your applications.
+
+52
+00:03:15.166 --> 00:03:19.200
+There are many instances where you may
+want to convert natural language inputs,
+
+53
+00:03:19.400 --> 00:03:22.400
+into structured outputs,
+like a function call.
+
+54
+00:03:22.966 --> 00:03:26.433
+Your business may have a library
+of functions that perform dashboard
+
+55
+00:03:26.433 --> 00:03:30.366
+operations, and you would like to add
+a natural language interface.
+
+56
+00:03:31.200 --> 00:03:35.000
+Or you might have applications
+that need to process transcripts,
+
+57
+00:03:35.333 --> 00:03:38.766
+notes, or proceedings
+and store them in a database.
+
+58
+00:03:39.800 --> 00:03:42.566
+Every business has its own unique
+applications.
+
+59
+00:03:42.566 --> 00:03:45.566
+In this course, Venkat will be showing you
+
+60
+00:03:45.666 --> 00:03:48.966
+how you can add a function-calling capability
+to your applications.
+
+61
+00:03:49.566 --> 00:03:52.000
+We'll start by taking a deeper dive into
+
+62
+00:03:52.000 --> 00:03:55.000
+what function-calling is
+and how you can use it.
+
+63
+00:03:55.133 --> 00:03:59.266
+You will form prompts with function
+definitions, as Andrew described,
+
+64
+00:03:59.500 --> 00:04:03.200
+and then you'll use the LLM response
+to call those functions.
+
+65
+00:04:03.200 --> 00:04:06.400
+Once you have mastered that,
+we'll kick things up a notch,
+
+66
+00:04:06.400 --> 00:04:10.400
+by defining and calling
+multiple functions, you will call nested
+
+67
+00:04:10.400 --> 00:04:15.066
+functions, where arguments to one function
+are themselves functions.
+
+68
+00:04:15.900 --> 00:04:20.900
+Many services on the web have APIs defined
+using an open API description.
+
+69
+00:04:21.266 --> 00:04:25.066
+You'll also learn to convert
+these specifications into functions
+
+70
+00:04:25.066 --> 00:04:29.700
+callable by your LLM. You will finish
+the course with a practical application
+
+71
+00:04:30.000 --> 00:04:32.733
+which takes a customer's service,
+transcripts
+
+72
+00:04:32.733 --> 00:04:37.400
+and builds SQL calls to store
+selected data to a database.
+
+73
+00:04:38.066 --> 00:04:40.566
+Many people have worked to create this
+course.
+
+74
+00:04:40.566 --> 00:04:45.533
+I'd like to thank from Nexusflow,
+Jian Zhang and Banghua Zhu. From DeepLearning.AI
+
+75
+00:04:45.666 --> 00:04:50.500
+Geoff Ladwig and Esmaeil Gargari,
+have also contributed to this course.
+
+76
+00:04:50.733 --> 00:04:54.166
+Lots of exciting things
+with function-calling in this course.
+
+77
+00:04:54.500 --> 00:04:59.333
+Let's go on to the next video
+to get started, and I hope this course
+
+78
+00:04:59.666 --> 00:05:03.866
+will help you make your applications
+highly functional.
+

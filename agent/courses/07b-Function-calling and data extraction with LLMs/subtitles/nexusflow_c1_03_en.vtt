@@ -1,0 +1,934 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.168 --> 00:00:03.603
+In the last lesson, you
+
+2
+00:00:03.603 --> 00:00:06.606
+used an LLM
+to invoke a single function.
+
+3
+00:00:06.639 --> 00:00:10.176
+In this lesson, we're going to cover
+all of the variations of this.
+
+4
+00:00:10.477 --> 00:00:13.113
+All right. Let's go.
+
+5
+00:00:13.113 --> 00:00:15.949
+There are a lot of different permutations
+and combinations
+
+6
+00:00:15.949 --> 00:00:19.419
+of functions and calls
+that an LLM is capable of issuing.
+
+7
+00:00:19.919 --> 00:00:23.456
+These include single calls,
+parallel calls,
+
+8
+00:00:23.723 --> 00:00:27.127
+no calls, multiple functions,
+and nested functions.
+
+9
+00:00:27.327 --> 00:00:29.662
+Let's start with parallel calls.
+
+10
+00:00:29.662 --> 00:00:32.532
+Before we get started,
+let's do some housekeeping.
+
+11
+00:00:32.532 --> 00:00:36.169
+In the last lesson, you created a function
+and then created
+
+12
+00:00:36.169 --> 00:00:39.239
+a prompt with the description
+of the function embedded within
+
+13
+00:00:39.239 --> 00:00:42.475
+the prompt. You can actually be
+a bit more efficient about it.
+
+14
+00:00:42.475 --> 00:00:47.313
+By using the definition itself
+to create the prompt automatically.
+
+15
+00:00:48.014 --> 00:00:51.785
+To show this, you define
+a generic function called "afunction".
+
+16
+00:00:52.752 --> 00:00:55.321
+You can actually use the name and dot
+
+17
+00:00:55.321 --> 00:00:58.892
+attributes like this
+to pull out the relevant information,
+
+18
+00:00:59.626 --> 00:01:04.364
+and you can use the Python inspect module
+to get the signature
+
+19
+00:01:04.697 --> 00:01:07.700
+or the arguments of the function
+like this.
+
+20
+00:01:08.468 --> 00:01:11.971
+You can put all of that together
+in a utility that you can use
+
+21
+00:01:11.971 --> 00:01:15.141
+to create prompts
+for a given list of functions,
+
+22
+00:01:15.642 --> 00:01:18.812
+such as this utility called "build
+Raven prompt".
+
+23
+00:01:19.079 --> 00:01:22.415
+Here, you are accepting a function
+list and a user query
+
+24
+00:01:22.849 --> 00:01:25.552
+for every function in your function list.
+
+25
+00:01:25.552 --> 00:01:29.322
+You're using the trait we discussed
+earlier to pull out the signature
+
+26
+00:01:29.722 --> 00:01:33.226
+or the arguments of the function,
+as well as its dot string,
+
+27
+00:01:33.426 --> 00:01:36.429
+and you're using that
+to create the function annotation
+
+28
+00:01:36.696 --> 00:01:39.232
+for each of the functions
+in the function list.
+
+29
+00:01:39.232 --> 00:01:41.768
+And then adding the user query at the end.
+
+30
+00:01:43.269 --> 00:01:46.272
+Let's try it on our example.
+
+31
+00:01:47.640 --> 00:01:48.108
+Great.
+
+32
+00:01:48.108 --> 00:01:49.709
+That prompt looks fine.
+
+33
+00:01:49.709 --> 00:01:50.210
+Okay.
+
+34
+00:01:50.210 --> 00:01:54.614
+Now, in this example, you will use
+the function from the first lesson.
+
+35
+00:01:54.747 --> 00:01:59.486
+We've defined this in the utils
+API file to keep our notebooks small.
+
+36
+00:01:59.853 --> 00:02:04.524
+If you wish to view this file, please
+click on view. Under view,
+
+37
+00:02:04.591 --> 00:02:09.129
+please click on File Browser
+to open the list of files available.
+
+38
+00:02:10.130 --> 00:02:13.633
+Please click on utils.py
+to open the utilities file
+
+39
+00:02:13.633 --> 00:02:16.636
+that contains all the functions
+we'll be describing.
+
+40
+00:02:17.837 --> 00:02:22.108
+This function now has more parameters
+to make it more complex.
+
+41
+00:02:22.242 --> 00:02:26.813
+Previously we had the face
+color, eye color, and the nose color.
+
+42
+00:02:26.846 --> 00:02:29.849
+However,
+we've now extended it to include more
+
+43
+00:02:29.849 --> 00:02:33.486
+parameterizations of the clown's face,
+such as the eyes size,
+
+44
+00:02:33.820 --> 00:02:38.158
+mouth size, mouth color, eye offset,
+and the mouth theta.
+
+45
+00:02:38.458 --> 00:02:42.362
+These controlled various attributes,
+such as the width and the height
+
+46
+00:02:42.362 --> 00:02:46.533
+of the clowns mouth,
+as well as the starting and ending angles.
+
+47
+00:02:47.400 --> 00:02:51.771
+They also control the offsets of the eyes
+as well as the size of the eyes.
+
+48
+00:02:52.238 --> 00:02:53.907
+Now back to parallel calls.
+
+49
+00:02:55.008 --> 00:02:56.543
+Parallel calls are when the
+
+50
+00:02:56.543 --> 00:03:01.347
+LLM has to issue in the same
+turn, multiple function call strings
+
+51
+00:03:01.514 --> 00:03:04.584
+to either the same function
+or to a set of functions.
+
+52
+00:03:05.118 --> 00:03:07.320
+Let's take a look at one example.
+
+53
+00:03:07.320 --> 00:03:10.323
+You will use a user query that,
+while similar,
+
+54
+00:03:10.523 --> 00:03:13.960
+is more complex than the user query
+we used in the first lesson.
+
+55
+00:03:14.394 --> 00:03:17.397
+In this user
+query, you're asking for two clowns,
+
+56
+00:03:17.797 --> 00:03:20.800
+one with a red face
+and one with a blue face,
+
+57
+00:03:21.501 --> 00:03:24.871
+one with a blue nose
+and the other with a green nose.
+
+58
+00:03:25.405 --> 00:03:28.308
+And the first clown
+should have a sad smile.
+
+59
+00:03:28.308 --> 00:03:31.311
+And the second clown
+should have a happy smile.
+
+60
+00:03:31.644 --> 00:03:33.780
+You will soon see why we specify
+
+61
+00:03:33.780 --> 00:03:37.684
+the numerical representations
+instead of just saying happy or sad.
+
+62
+00:03:37.984 --> 00:03:40.620
+But for now, let's just keep it as it is.
+
+63
+00:03:40.620 --> 00:03:44.824
+You saw that the new clown face
+function is far more complex than earlier.
+
+64
+00:03:45.191 --> 00:03:48.795
+You can now build the Raven prompt
+by passing
+
+65
+00:03:48.795 --> 00:03:51.965
+in the clown face
+function and your user query.
+
+66
+00:03:59.939 --> 00:04:01.941
+This looks as we would expect.
+
+67
+00:04:01.941 --> 00:04:04.944
+Here is the function delineator.
+
+68
+00:04:05.144 --> 00:04:07.680
+Here is the function itself.
+
+69
+00:04:07.680 --> 00:04:11.184
+And here is the description
+of the arguments of the function.
+
+70
+00:04:12.385 --> 00:04:15.388
+And finally a description of what
+the function does.
+
+71
+00:04:15.955 --> 00:04:18.958
+Let's call Raven.
+
+72
+00:04:19.859 --> 00:04:20.560
+Great.
+
+73
+00:04:20.560 --> 00:04:23.563
+You can see that
+there are two function calls here.
+
+74
+00:04:23.896 --> 00:04:25.865
+Here's one. And here's the other.
+
+75
+00:04:25.865 --> 00:04:28.568
+The first calls for a clown
+with a red face.
+
+76
+00:04:28.568 --> 00:04:31.571
+The second one for a clown
+with the blue face.
+
+77
+00:04:32.105 --> 00:04:34.707
+The first one calls for a clown
+with a blue nose.
+
+78
+00:04:34.707 --> 00:04:37.577
+The second one with a green nose.
+
+79
+00:04:37.577 --> 00:04:39.479
+The first one for a sad smile.
+
+80
+00:04:39.479 --> 00:04:42.015
+And the second one for a happy smile.
+
+81
+00:04:42.015 --> 00:04:46.986
+And we see that the clown matches the
+descriptions we asked in the user query.
+
+82
+00:04:47.487 --> 00:04:48.721
+Try it yourself.
+
+83
+00:04:48.721 --> 00:04:52.692
+Try requesting three or more faces
+with different features.
+
+84
+00:04:53.493 --> 00:04:55.428
+That was parallel functions.
+
+85
+00:04:55.428 --> 00:04:57.997
+Now let's talk about multiple functions.
+
+86
+00:04:57.997 --> 00:05:01.167
+You can provide the LLM
+with multiple functions
+
+87
+00:05:01.167 --> 00:05:04.837
+such as f1, f2, f3, f4 all the way to fN,
+
+88
+00:05:05.238 --> 00:05:07.974
+and the LLM should be able to pick
+
+89
+00:05:07.974 --> 00:05:10.977
+the right function or functions
+
+90
+00:05:11.010 --> 00:05:11.911
+out of the list.
+
+91
+00:05:11.911 --> 00:05:16.349
+Indeed, you can also present a
+no relevant query function,
+
+92
+00:05:16.616 --> 00:05:20.687
+which the LLM can use
+if it decides that none of the functions
+
+93
+00:05:20.687 --> 00:05:23.690
+you have provided is relevant to the user
+query.
+
+94
+00:05:23.990 --> 00:05:25.591
+Let's take a look.
+
+95
+00:05:25.591 --> 00:05:28.027
+In this example, there is a new function
+
+96
+00:05:28.027 --> 00:05:31.230
+called the draw
+tie function, which draws a tie.
+
+97
+00:05:32.465 --> 00:05:35.468
+This is also in the utils.py file
+
+98
+00:05:35.468 --> 00:05:39.872
+to keep your notebook from getting too
+cluttered, here's what it looks like.
+
+99
+00:05:40.740 --> 00:05:45.678
+You will specify a user query
+that asks Raven to just draw a tie.
+
+100
+00:05:45.812 --> 00:05:49.615
+However, you will provide
+both the functions
+
+101
+00:05:49.615 --> 00:05:53.119
+to Raven, both the draw clown face
+and the draw tie function.
+
+102
+00:05:59.892 --> 00:06:00.960
+Here's the prompt.
+
+103
+00:06:00.960 --> 00:06:04.297
+You can see that both
+the functions are present.
+
+104
+00:06:04.530 --> 00:06:08.468
+Draw clown face and draw tie
+and we have the user query.
+
+105
+00:06:09.001 --> 00:06:11.971
+Let's send it to the LLM.
+
+106
+00:06:12.372 --> 00:06:14.006
+Great. What do you notice?
+
+107
+00:06:14.006 --> 00:06:18.544
+It's Raven as only use the draw
+tie function and it is ignored.
+
+108
+00:06:18.544 --> 00:06:21.547
+The draw clown face function
+as you would expect.
+
+109
+00:06:21.714 --> 00:06:23.883
+Let's now execute the call.
+
+110
+00:06:23.883 --> 00:06:25.118
+Great! A tie!
+
+111
+00:06:25.118 --> 00:06:27.053
+We're ready for a formal dinner.
+
+112
+00:06:27.053 --> 00:06:30.456
+It's also important to note
+that it's possible to combine
+
+113
+00:06:30.490 --> 00:06:34.727
+multiple functions and parallel function
+calling at the same time.
+
+114
+00:06:35.428 --> 00:06:39.799
+In this example, you will ask Raven
+to draw a clown and a tie.
+
+115
+00:06:40.533 --> 00:06:45.438
+As before, you provide Raven with the draw
+tie and draw a clown face
+
+116
+00:06:45.438 --> 00:06:46.005
+function.
+
+117
+00:06:49.075 --> 00:06:52.078
+Let's take a look at Raven's call.
+
+118
+00:06:52.779 --> 00:06:55.381
+Since Raven was not given
+any concrete requirements
+
+119
+00:06:55.381 --> 00:06:58.851
+when it comes to the clown face,
+it is made best guess assumptions
+
+120
+00:06:58.851 --> 00:07:02.321
+about what arguments would work
+best based on the default values
+
+121
+00:07:02.321 --> 00:07:05.057
+for the functions
+provided in the dot string,
+
+122
+00:07:05.057 --> 00:07:07.994
+such as for the face color
+and for the eye color.
+
+123
+00:07:07.994 --> 00:07:10.997
+Let's call it.
+
+124
+00:07:11.798 --> 00:07:14.333
+Great! A clown with the tie.
+
+125
+00:07:14.333 --> 00:07:18.171
+It is at this point that it's worth
+talking about the significance of the dot
+
+126
+00:07:18.171 --> 00:07:21.841
+string of the functions
+that you have provided, especially
+
+127
+00:07:22.041 --> 00:07:26.579
+as the complexity of the function grows
+and you provide multiple tools to Raven,
+
+128
+00:07:26.879 --> 00:07:30.049
+the significance of the dot string becomes
+more important.
+
+129
+00:07:30.483 --> 00:07:32.251
+Let's show a failure case.
+
+130
+00:07:32.251 --> 00:07:35.855
+Let's ask Raven
+to draw a sad clown with a green head.
+
+131
+00:07:37.723 --> 00:07:37.990
+When you
+
+132
+00:07:37.990 --> 00:07:41.027
+take a look at the call
+that doesn't look quite right.
+
+133
+00:07:41.127 --> 00:07:44.130
+It gets the face color right,
+but the clown is happy.
+
+134
+00:07:44.464 --> 00:07:47.700
+It's possible that the reason for this
+is because the dots
+
+135
+00:07:47.700 --> 00:07:50.703
+strings for the functions
+are not sufficiently detailed.
+
+136
+00:07:50.937 --> 00:07:53.539
+Therefore,
+we would need to iterate a bit to make it
+
+137
+00:07:53.539 --> 00:07:56.542
+clear
+what the arguments of the function does.
+
+138
+00:07:57.376 --> 00:08:01.681
+You can take the prompt from earlier
+and replace a description for the argument
+
+139
+00:08:01.681 --> 00:08:05.885
+that has the most impact
+on the perceived emotions of the clown.
+
+140
+00:08:08.221 --> 00:08:11.023
+You previously
+had it state that the starting
+
+141
+00:08:11.023 --> 00:08:15.027
+and ending angles of the mouth
+art is what this controls.
+
+142
+00:08:15.061 --> 00:08:18.130
+However,
+because this is very vague and doesn't
+
+143
+00:08:18.130 --> 00:08:21.133
+clearly link
+back to the essence of the user query,
+
+144
+00:08:21.200 --> 00:08:24.670
+Raven was unable to understand
+what this actually means.
+
+145
+00:08:24.704 --> 00:08:25.838
+What you will do
+
+146
+00:08:25.838 --> 00:08:30.510
+is simply replace this with a more clear
+description of what this argument does.
+
+147
+00:08:42.154 --> 00:08:45.157
+Such as, by adding this line.
+
+148
+00:08:47.560 --> 00:08:50.563
+You will now query Raven
+with this new prompt.
+
+149
+00:08:50.663 --> 00:08:54.066
+What you now notice
+is that there is a new argument present.
+
+150
+00:08:54.500 --> 00:08:55.535
+This looks great.
+
+151
+00:08:55.535 --> 00:08:58.170
+Now we have a sad clown as requested.
+
+152
+00:08:58.170 --> 00:09:01.607
+In this example,
+we observed the impact of good dot
+
+153
+00:09:01.641 --> 00:09:06.641
+strings, as it can help Raven understand
+how best to address the user query.
+
+154
+00:09:06.679 --> 00:09:08.848
+When you notice that prompts are failing,
+
+155
+00:09:08.848 --> 00:09:12.952
+you can sometimes address this
+by editing the dot string to add pointers
+
+156
+00:09:12.952 --> 00:09:15.988
+to make these values
+more understandable to the model.
+
+157
+00:09:16.522 --> 00:09:20.293
+On the other hand,
+you can also add in a few short
+
+158
+00:09:20.293 --> 00:09:23.296
+examples to convey this as well.
+
+159
+00:09:23.496 --> 00:09:28.301
+We have now touched on multiple functions,
+so let's talk about nested functions.
+
+160
+00:09:28.734 --> 00:09:33.005
+An outcome of multiple functions
+is that you can now define
+
+161
+00:09:33.439 --> 00:09:37.643
+independent functions
+where the input to one of the functions,
+
+162
+00:09:37.710 --> 00:09:42.710
+such as say f2, depends
+on the output of a function such as f1.
+
+163
+00:09:43.616 --> 00:09:47.553
+The LLM can utilize function f1 first,
+
+164
+00:09:48.187 --> 00:09:52.124
+call it with the arguments
+that it extracts from the user prompt,
+
+165
+00:09:52.792 --> 00:09:56.095
+keep the output
+and feed that back into f2.
+
+166
+00:09:56.195 --> 00:10:00.866
+This capability can sometimes
+avoid multiple calls to an LLM.
+
+167
+00:10:01.367 --> 00:10:06.138
+Some agentic solutions
+create intermediate results with one call
+
+168
+00:10:06.539 --> 00:10:10.876
+and then final results
+with the second call. With nested calls,
+
+169
+00:10:11.177 --> 00:10:13.813
+this can be done in one step.
+
+170
+00:10:13.813 --> 00:10:16.816
+Let's take a look at making
+this more concrete.
+
+171
+00:10:16.849 --> 00:10:19.318
+In this example, the cloud function
+
+172
+00:10:19.318 --> 00:10:22.321
+has been split into many, many parts.
+
+173
+00:10:22.321 --> 00:10:26.459
+You now have multiple functions
+that draws various parts of the cloud,
+
+174
+00:10:26.759 --> 00:10:29.996
+such as the head, eyes,
+nose, and the mouth.
+
+175
+00:10:30.229 --> 00:10:33.566
+And you have a function to combine
+all of them together.
+
+176
+00:10:33.866 --> 00:10:37.169
+You will find these functions
+in the utils.py file.
+
+177
+00:10:38.437 --> 00:10:39.538
+You have simply asked
+
+178
+00:10:39.538 --> 00:10:42.775
+Raven to generate the clown
+with a red face,
+
+179
+00:10:43.275 --> 00:10:47.113
+blue eyes,
+green nose, and a black open mouth.
+
+180
+00:10:47.480 --> 00:10:50.616
+This is a prompt that was addressable
+with the old function.
+
+181
+00:10:51.017 --> 00:10:55.621
+But let's take a look at how Raven handles
+the multiple functions.
+
+182
+00:10:56.122 --> 00:11:00.993
+We will simply provide the draw
+head, draw eyes, draw nose, draw mouth,
+
+183
+00:11:00.993 --> 00:11:04.864
+and the combination function to Raven
+along with the user
+
+184
+00:11:04.864 --> 00:11:07.867
+query.
+
+185
+00:11:11.270 --> 00:11:14.373
+You'll notice that the response is
+first called
+
+186
+00:11:14.373 --> 00:11:17.843
+the draw clown face parts
+such as for draw head,
+
+187
+00:11:18.411 --> 00:11:21.947
+draw eyes, draw nose, draw mouth,
+
+188
+00:11:22.348 --> 00:11:26.185
+and so on with the necessary arguments.
+
+189
+00:11:26.252 --> 00:11:30.022
+It is then combined the output
+of all of these calls
+
+190
+00:11:30.022 --> 00:11:34.293
+by passing that into the combination
+function that we've defined.
+
+191
+00:11:35.795 --> 00:11:38.264
+Let's run it.
+
+192
+00:11:38.264 --> 00:11:38.798
+Great.
+
+193
+00:11:38.798 --> 00:11:40.533
+There's our clown.
+
+194
+00:11:40.533 --> 00:11:42.935
+Try some variations on the prompt
+yourself.
+
+195
+00:11:42.935 --> 00:11:46.172
+Maybe try to add parallel nested clouds.
+
+196
+00:11:47.006 --> 00:11:50.009
+This concludes
+our lesson on function called variations.
+
+197
+00:11:50.342 --> 00:11:53.646
+In the next lesson
+you will use external functions,
+
+198
+00:11:53.979 --> 00:11:58.979
+such as functions that rely on open
+API specifications and API endpoints
+
+199
+00:12:00.119 --> 00:12:04.857
+that will enable you to add web service
+to your function calling LLM.
+

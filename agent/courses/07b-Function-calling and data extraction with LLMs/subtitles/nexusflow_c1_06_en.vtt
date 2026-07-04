@@ -1,0 +1,767 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.168 --> 00:00:04.404
+In this
+lesson, you're going to try your hand
+
+2
+00:00:04.404 --> 00:00:07.407
+at a few typical
+applications of function calling.
+
+3
+00:00:07.574 --> 00:00:10.410
+Let's start applying function calling.
+
+4
+00:00:10.410 --> 00:00:13.747
+Traditional LLMs are trained
+on static datasets
+
+5
+00:00:13.747 --> 00:00:17.951
+and lack the ability
+to access or process information
+
+6
+00:00:18.418 --> 00:00:21.421
+that has emerged
+after their last training update.
+
+7
+00:00:22.055 --> 00:00:26.659
+This leads to outdated or irrelevant
+responses, especially in rapidly
+
+8
+00:00:26.659 --> 00:00:30.630
+evolving fields like technology, medicine,
+or current events.
+
+9
+00:00:31.231 --> 00:00:36.069
+Function calling allows LLMs
+to retrieve current data from the web
+
+10
+00:00:36.336 --> 00:00:39.339
+or from your company
+internal databases in real time.
+
+11
+00:00:39.873 --> 00:00:43.543
+For example, a function can be call
+to fetch the latest news,
+
+12
+00:00:43.777 --> 00:00:46.780
+stock market updates or weather forecasts,
+
+13
+00:00:46.980 --> 00:00:49.983
+ensuring that the information provided
+is up to date.
+
+14
+00:00:50.383 --> 00:00:53.920
+This capability is crucial
+for applications where timeliness
+
+15
+00:00:54.254 --> 00:00:57.057
+and accuracy of information are essential.
+
+16
+00:00:57.057 --> 00:00:59.492
+Let's dive into a few examples.
+
+17
+00:00:59.492 --> 00:01:01.694
+Suppose you are interested in the events
+that took place
+
+18
+00:01:01.694 --> 00:01:03.897
+after you finish training your LLM.
+
+19
+00:01:03.897 --> 00:01:06.900
+How would you adapt your LLM
+into this new information?
+
+20
+00:01:07.000 --> 00:01:10.336
+For example, let's
+ask about a recent product announcement.
+
+21
+00:01:10.804 --> 00:01:13.173
+We will first the load_dotenv file.
+
+22
+00:01:16.242 --> 00:01:16.676
+Great.
+
+23
+00:01:16.676 --> 00:01:20.880
+Now you will ask about this R1
+device, which was announced
+
+24
+00:01:20.880 --> 00:01:24.918
+well after the conclusion
+of the training of the LLM.
+
+25
+00:01:24.984 --> 00:01:28.521
+So just post the question
+asking about this R1 thing
+
+26
+00:01:28.521 --> 00:01:31.524
+to the LLM and submit your query.
+
+27
+00:01:33.093 --> 00:01:36.029
+You'll notice that the LLM rejects it,
+
+28
+00:01:36.029 --> 00:01:39.032
+saying it doesn't have the information
+necessary.
+
+29
+00:01:39.099 --> 00:01:41.634
+Let's try a web search instead.
+
+30
+00:01:41.634 --> 00:01:45.605
+Define a utility called do web search,
+which accepts a user query
+
+31
+00:01:45.872 --> 00:01:47.073
+and the number of results
+
+32
+00:01:47.073 --> 00:01:51.277
+to circumscribe your search to
+and within the tool, you will query
+
+33
+00:01:51.277 --> 00:01:55.215
+the search endpoint for a web search API,
+
+34
+00:01:55.748 --> 00:01:58.318
+which would contain a payload
+
+35
+00:01:58.318 --> 00:02:02.655
+that wraps around your API key
+as well as the user query.
+
+36
+00:02:02.922 --> 00:02:06.993
+Submit a Post request and collate
+all of the content
+
+37
+00:02:06.993 --> 00:02:11.764
+from the responses into a single
+string and return that string.
+
+38
+00:02:12.832 --> 00:02:14.134
+Similar to earlier,
+
+39
+00:02:14.134 --> 00:02:17.770
+you will define a function calling prompt
+that Raven will use.
+
+40
+00:02:18.271 --> 00:02:23.176
+Define the function annotation for the web
+search utility that you defined earlier,
+
+41
+00:02:23.643 --> 00:02:28.014
+which specifies the function signature
+as well as a function dot string.
+
+42
+00:02:28.348 --> 00:02:32.785
+You also provide a one shot example
+for an example of user query and function
+
+43
+00:02:32.785 --> 00:02:37.290
+call that you want Raven to use
+as a reference when understanding the tool
+
+44
+00:02:37.290 --> 00:02:38.291
+that you build.
+
+45
+00:02:38.291 --> 00:02:42.462
+You will then provide the user query that
+you've been using since the first sale,
+
+46
+00:02:43.029 --> 00:02:46.032
+and you will get back a Raven function
+call.
+
+47
+00:02:47.000 --> 00:02:48.334
+Which you can execute to get
+
+48
+00:02:48.334 --> 00:02:51.571
+a list of information
+that your tool returns.
+
+49
+00:02:51.938 --> 00:02:56.242
+You will then provide that information
+returned by a tool back to the LLM,
+
+50
+00:02:56.943 --> 00:03:00.747
+along with the user query
+you've been using since the first cell.
+
+51
+00:03:02.282 --> 00:03:04.450
+Provide this prompt back LLM
+
+52
+00:03:04.450 --> 00:03:07.453
+to get back a grounded response.
+
+53
+00:03:11.357 --> 00:03:13.159
+Taking a look at the response,
+
+54
+00:03:13.159 --> 00:03:16.362
+notice that it's far richer and contains
+far more details,
+
+55
+00:03:16.796 --> 00:03:19.799
+such as the product dimensions,
+
+56
+00:03:19.933 --> 00:03:22.936
+as well as the capabilities
+of the product.
+
+57
+00:03:23.102 --> 00:03:25.705
+This is information that the LLM you had no idea
+
+58
+00:03:25.705 --> 00:03:29.342
+about since the product was released
+well past its training date.
+
+59
+00:03:29.809 --> 00:03:33.813
+However, because we provided access
+to the internet via the search tool,
+
+60
+00:03:34.280 --> 00:03:37.784
+the LLM was able
+to find this information and then digest
+
+61
+00:03:37.784 --> 00:03:41.054
+the results and provide you
+with a very concrete answer.
+
+62
+00:03:41.254 --> 00:03:44.257
+Please try this yourself with your own
+queries.
+
+63
+00:03:44.257 --> 00:03:48.428
+Next, let's take a look at chatting
+with your SQL database.
+
+64
+00:03:50.597 --> 00:03:54.901
+Oftentimes, for a lot of companies,
+there are insights that are lot behind
+
+65
+00:03:54.901 --> 00:03:59.339
+company internal databases
+and knowledge based. Because these are data
+
+66
+00:03:59.639 --> 00:04:02.642
+that public portals
+will not have access to,
+
+67
+00:04:02.775 --> 00:04:06.679
+a lot of the public open-source language
+models will not be able
+
+68
+00:04:06.679 --> 00:04:09.682
+to give you
+any meaningful answers for questions
+
+69
+00:04:09.882 --> 00:04:13.119
+that depend on data
+that's locked behind these sources.
+
+70
+00:04:13.653 --> 00:04:16.856
+A good way of resolving
+this is to provide access
+
+71
+00:04:17.223 --> 00:04:21.494
+to your database, to your LLM
+using function calling.
+
+72
+00:04:22.095 --> 00:04:24.030
+Let's take a look at making
+this more concrete.
+
+73
+00:04:24.030 --> 00:04:29.030
+First, create a random database
+in the utils.py file found
+
+74
+00:04:29.102 --> 00:04:30.536
+within the same folder,
+
+75
+00:04:30.536 --> 00:04:33.873
+you will find a utility
+called "create random database".
+
+76
+00:04:34.274 --> 00:04:38.578
+This utility will create a database
+or toy_database.DB,
+
+77
+00:04:38.911 --> 00:04:43.383
+which will be populated with random toy
+names and random toy prices.
+
+78
+00:04:43.916 --> 00:04:46.919
+The database will create
+a table called toys,
+
+79
+00:04:47.086 --> 00:04:51.658
+which contains the name of the toy
+as well as the price of the toy.
+
+80
+00:04:52.058 --> 00:04:56.195
+You will define
+another utility called "execute SQL"
+
+81
+00:04:56.195 --> 00:04:59.198
+within the same utils.py file.
+
+82
+00:04:59.265 --> 00:05:03.870
+This will simply take in some SQL tool
+and execute it against your
+
+83
+00:05:03.870 --> 00:05:08.841
+toy_database.DB, which is the database
+you defined in your previous utility.
+
+84
+00:05:09.075 --> 00:05:12.879
+You will import the create random
+database utility and run it.
+
+85
+00:05:15.715 --> 00:05:17.650
+You will then pose a question such
+
+86
+00:05:17.650 --> 00:05:21.821
+as "what is the most expensive item
+that your company currently sells?"
+
+87
+00:05:22.455 --> 00:05:24.657
+Answering this question depends on data
+
+88
+00:05:24.657 --> 00:05:28.328
+that's not behind the database
+that you created earlier.
+
+89
+00:05:28.394 --> 00:05:31.397
+So let's try running it
+and gathering some information.
+
+90
+00:05:32.231 --> 00:05:35.034
+Since the LLM doesn't
+really understand the schema
+
+91
+00:05:35.034 --> 00:05:36.602
+that you've defined earlier,
+
+92
+00:05:36.602 --> 00:05:40.073
+let's make it concrete
+and provide the schema to the LLM.
+
+93
+00:05:40.506 --> 00:05:43.443
+This schema once again
+just tells the LLM
+
+94
+00:05:43.443 --> 00:05:46.446
+that you created a database called toys,
+
+95
+00:05:46.612 --> 00:05:50.750
+which contains the name of the toy
+and the price of the toy.
+
+96
+00:05:51.217 --> 00:05:54.220
+You provide this schema
+in your Raven prompt
+
+97
+00:05:54.454 --> 00:05:57.457
+along with your function annotation.
+
+98
+00:05:58.124 --> 00:06:02.862
+You also provide the user question
+or the user query that you had earlier.
+
+99
+00:06:03.062 --> 00:06:07.233
+Again, to the model, you will
+then run the model to get the output.
+
+100
+00:06:09.535 --> 00:06:09.969
+Great.
+
+101
+00:06:09.969 --> 00:06:13.906
+You see that the model has returned
+the SQL call that selects
+
+102
+00:06:14.407 --> 00:06:19.407
+the name and the price from the database
+table called toys,
+
+103
+00:06:20.646 --> 00:06:25.184
+and it orders it by the price
+by descending and limited to one
+
+104
+00:06:25.518 --> 00:06:30.123
+which gets the most expensive item
+that's currently defined in your table,
+
+105
+00:06:30.456 --> 00:06:33.393
+which is the query that we want answered.
+
+106
+00:06:33.393 --> 00:06:37.096
+You provide the results
+you draw back earlier from your database
+
+107
+00:06:37.130 --> 00:06:40.366
+back to your LLM along with the question
+
+108
+00:06:40.366 --> 00:06:43.369
+that you had earlier.
+
+109
+00:06:44.070 --> 00:06:47.607
+And you get back a response
+that says that the most expensive item
+
+110
+00:06:47.607 --> 00:06:50.643
+your company currently sells
+is the Wonder Robot,
+
+111
+00:06:50.910 --> 00:06:53.913
+which costs nearly $20,
+
+112
+00:06:53.913 --> 00:06:57.950
+which is directly an answer
+to the question that you posed earlier.
+
+113
+00:06:58.351 --> 00:07:02.922
+But you'll notice that you had to allow
+the LLM full access to your database.
+
+114
+00:07:03.389 --> 00:07:07.527
+You allowed the LLM
+to generate the raw SQL code directly.
+
+115
+00:07:08.127 --> 00:07:10.196
+But what if you didn't want to do that?
+
+116
+00:07:10.196 --> 00:07:14.367
+What if, due to security purposes,
+you didn't want the LLM to generate
+
+117
+00:07:14.467 --> 00:07:18.137
+raw SQL code
+that you can execute against a database?
+
+118
+00:07:18.771 --> 00:07:22.809
+There is the more gated version
+that you can use for more added security.
+
+119
+00:07:23.342 --> 00:07:28.342
+Instead of asking the LLM to generate
+native SQL, which could be problematic,
+
+120
+00:07:28.981 --> 00:07:32.185
+we can guard the access to our database
+more carefully.
+
+121
+00:07:32.785 --> 00:07:35.788
+Let's define a few functions
+to make this a reality.
+
+122
+00:07:36.422 --> 00:07:39.425
+We can allow for safer interactions
+with databases.
+
+123
+00:07:39.759 --> 00:07:44.697
+You will define a function to wrap around
+the operations that you had in mind.
+
+124
+00:07:45.631 --> 00:07:46.199
+First,
+
+125
+00:07:46.199 --> 00:07:49.802
+let's define a function
+to connect to your database.
+
+126
+00:07:50.136 --> 00:07:53.439
+You define a function to list all toys
+in your database
+
+127
+00:07:53.439 --> 00:07:56.709
+and implement the SQL behind the scenes.
+
+128
+00:07:57.009 --> 00:08:01.247
+Similarly,
+to find toys by prefix and define toys
+
+129
+00:08:01.247 --> 00:08:04.283
+in a price range. To get random toys.
+
+130
+00:08:05.051 --> 00:08:08.054
+To get the most expensive toy.
+
+131
+00:08:08.120 --> 00:08:10.523
+To get the cheapest toy.
+
+132
+00:08:10.523 --> 00:08:13.459
+And finally,
+you will provide all of the functions
+
+133
+00:08:13.459 --> 00:08:17.163
+you defined earlier to Raven
+using the function
+
+134
+00:08:17.163 --> 00:08:20.166
+annotation format.
+
+135
+00:08:20.933 --> 00:08:22.168
+Since Raven doesn't
+
+136
+00:08:22.168 --> 00:08:26.038
+have direct access to your database,
+you need not provide
+
+137
+00:08:26.038 --> 00:08:29.675
+Raven with the database schema
+that you've designed earlier.
+
+138
+00:08:30.076 --> 00:08:34.113
+Rather, Raven would just use the templates
+that you've provided to it
+
+139
+00:08:34.547 --> 00:08:37.550
+to answer the user query.
+
+140
+00:08:38.384 --> 00:08:41.387
+Let's run this and see the output.
+
+141
+00:08:42.655 --> 00:08:43.322
+Great!
+
+142
+00:08:43.322 --> 00:08:45.925
+Raven was able to interface
+with your database
+
+143
+00:08:45.925 --> 00:08:49.962
+and pull out the information
+necessary to answer the user query.
+
+144
+00:08:51.430 --> 00:08:53.232
+And you can provide the results back
+
+145
+00:08:53.232 --> 00:08:57.003
+to Raven to get your original answer
+to your original query.
+
+146
+00:08:57.503 --> 00:09:00.907
+Which is a wonder robot
+which costs nearly $20.
+
+147
+00:09:02.108 --> 00:09:03.476
+Great.
+
+148
+00:09:03.476 --> 00:09:08.476
+Try to create a query to use one of the other
+functions, we've defined several.
+
+149
+00:09:09.315 --> 00:09:13.419
+Please try queries that can leverage
+some of these other functions
+
+150
+00:09:13.419 --> 00:09:15.421
+that we've defined earlier.
+
+151
+00:09:15.421 --> 00:09:18.891
+Now, you've seen how you can use
+Raven and other function calling
+
+152
+00:09:18.891 --> 00:09:23.891
+LLMs and grounded with access
+to the internet via web search
+
+153
+00:09:24.564 --> 00:09:27.567
+or to your database via native SQL,
+
+154
+00:09:27.667 --> 00:09:30.670
+or via the safer templated approach
+
+155
+00:09:30.736 --> 00:09:35.341
+to get concrete answers
+to your user queries, which might depend
+
+156
+00:09:35.341 --> 00:09:39.278
+on company internal data
+or the most up to date happenings.
+
+157
+00:09:39.812 --> 00:09:42.715
+In the next lesson,
+we will start taking a look
+
+158
+00:09:42.715 --> 00:09:46.319
+at further pushing
+the capabilities of function calling LLMs.
+
+159
+00:09:46.686 --> 00:09:49.055
+By taking a look at structured
+extraction.
+
+160
+00:09:49.055 --> 00:09:52.091
+We've learned a lot through
+the entire progression of this course.
+
+161
+00:09:52.391 --> 00:09:53.526
+In our next lesson,
+
+162
+00:09:53.526 --> 00:09:57.496
+we'll put everything we've learned
+together to create a course project.
+
+163
+00:09:58.064 --> 00:09:58.764
+See you there!
+

@@ -1,0 +1,457 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.168 --> 00:00:05.238
+The last
+lessons have invoked local functions,
+
+2
+00:00:05.572 --> 00:00:08.908
+but there is a worldwide web of services
+that you may want to use.
+
+3
+00:00:09.209 --> 00:00:12.012
+This lesson will describe
+how you can use them.
+
+4
+00:00:12.012 --> 00:00:14.948
+All right. Let's use the web.
+
+5
+00:00:14.948 --> 00:00:17.951
+Many RESTful services are available
+online.
+
+6
+00:00:17.951 --> 00:00:18.785
+Their interfaces
+
+7
+00:00:18.785 --> 00:00:22.822
+often described using API standards
+such as the open API specification.
+
+8
+00:00:23.356 --> 00:00:24.424
+It's very helpful to be able
+
+9
+00:00:24.424 --> 00:00:27.694
+to integrate our function
+calling LLMs with such services.
+
+10
+00:00:27.694 --> 00:00:30.697
+So let's take a look
+at how you can use them.
+
+11
+00:00:30.864 --> 00:00:33.800
+In this simple example,
+what you've done is you've written
+
+12
+00:00:33.800 --> 00:00:38.004
+Python code to interface with the joke
+API using RESTful methods.
+
+13
+00:00:38.104 --> 00:00:42.675
+You would simply submit a Get request
+to the endpoint of the joke API,
+
+14
+00:00:43.143 --> 00:00:46.413
+and you'll get back a response json
+that contains many keys,
+
+15
+00:00:46.513 --> 00:00:50.150
+but the most relevant keys are the setup
+and the delivery of the joke.
+
+16
+00:00:50.517 --> 00:00:51.484
+Let's run this to see.
+
+17
+00:00:52.886 --> 00:00:53.820
+Okay, great.
+
+18
+00:00:53.820 --> 00:00:57.290
+You're able to interface with this
+external resource using simple Python.
+
+19
+00:00:57.357 --> 00:01:00.894
+However, it is not possible
+to call this directly within an LLM.
+
+20
+00:01:01.294 --> 00:01:05.999
+Instead, what you need to do, is to write
+a tool to wrap around this endpoint.
+
+21
+00:01:06.366 --> 00:01:07.801
+Let's give it a try.
+
+22
+00:01:07.801 --> 00:01:12.172
+You simply write a Python function
+with a single argument for the category.
+
+23
+00:01:12.238 --> 00:01:17.077
+You'll provide a dot string,
+and the main thing is you'll make the URL
+
+24
+00:01:17.077 --> 00:01:20.880
+more dynamic, whereas the category
+that you'll pass to in
+
+25
+00:01:20.880 --> 00:01:24.317
+the URL
+will be the argument in your Python tool.
+
+26
+00:01:24.517 --> 00:01:29.222
+And then after that, you'll write code to
+submit a get request to your dynamic URL,
+
+27
+00:01:29.422 --> 00:01:33.126
+and then you'll print out the setup
+and delivery of the response json.
+
+28
+00:01:34.260 --> 00:01:37.230
+At this point,
+you're ready to try it with your LLM.
+
+29
+00:01:37.630 --> 00:01:40.633
+Here's a user query
+and here's the Raven prompt.
+
+30
+00:01:41.468 --> 00:01:45.205
+You will provide the function definition
+and the user query from earlier.
+
+31
+00:01:46.673 --> 00:01:49.442
+Now let's call the LLM.
+
+32
+00:01:49.442 --> 00:01:53.413
+Great! "What says
+oh oh oh? That's Santa's working backwards."
+
+33
+00:01:53.613 --> 00:01:54.180
+Awesome.
+
+34
+00:01:54.180 --> 00:01:57.217
+We got a joke
+that's in theme for December.
+
+35
+00:01:58.084 --> 00:02:00.186
+Try running it again yourself.
+
+36
+00:02:00.186 --> 00:02:04.324
+We have not been able to use Raven
+to generate the joke using the jokes API.
+
+37
+00:02:04.657 --> 00:02:08.862
+The core idea,
+however, is that you're adding an adapter
+
+38
+00:02:08.862 --> 00:02:13.066
+around your external APIs
+that converts the Python arguments
+
+39
+00:02:13.066 --> 00:02:18.066
+that you generate using the LLM
+into the external API argument format.
+
+40
+00:02:18.538 --> 00:02:22.242
+A lot of external assets
+use different kinds of API specifications.
+
+41
+00:02:22.542 --> 00:02:24.010
+Open API being one of them.
+
+42
+00:02:24.010 --> 00:02:27.013
+Writing tools
+allows you to unify them together.
+
+43
+00:02:27.180 --> 00:02:28.715
+So just a practice,
+
+44
+00:02:28.715 --> 00:02:32.352
+let's write a tool that uses the open API
+API specification.
+
+45
+00:02:32.719 --> 00:02:36.122
+For this example, you'll be using the open
+meteo weather API.
+
+46
+00:02:36.422 --> 00:02:40.226
+You will first download the open
+API specification in a Yaml format.
+
+47
+00:02:41.161 --> 00:02:41.694
+Let's take a
+
+48
+00:02:41.694 --> 00:02:44.697
+look at what you just downloaded.
+
+49
+00:02:44.764 --> 00:02:47.167
+What you downloaded was a Yaml file
+
+50
+00:02:47.167 --> 00:02:50.403
+that describes the Open meteo APIs.
+
+51
+00:02:50.703 --> 00:02:55.141
+It provides you a list of descriptions
+of how the API will behave,
+
+52
+00:02:55.642 --> 00:02:59.112
+including high level
+descriptions of the API itself.
+
+53
+00:03:00.079 --> 00:03:03.449
+Most importantly,
+it provides a list of paths
+
+54
+00:03:03.750 --> 00:03:07.820
+that you can send requests
+to, to get different kinds of responses.
+
+55
+00:03:08.221 --> 00:03:11.491
+For example, sending a get request
+
+56
+00:03:11.824 --> 00:03:16.196
+to this URL
+with the /v1/forecast path
+
+57
+00:03:16.329 --> 00:03:19.399
+will provide you
+the seven day weather
+
+58
+00:03:19.399 --> 00:03:22.402
+forecasts for certain coordinates.
+
+59
+00:03:22.802 --> 00:03:25.271
+There are also parameters that you can add
+
+60
+00:03:25.271 --> 00:03:28.308
+to your Get request
+that you send to this path.
+
+61
+00:03:29.008 --> 00:03:32.011
+These parameters are described here
+
+62
+00:03:32.011 --> 00:03:37.011
+and have certain types, such as arrays
+and the elements within the arrays,
+
+63
+00:03:37.050 --> 00:03:41.654
+having to type strings
+with different enumerations allowed.
+
+64
+00:03:42.388 --> 00:03:44.924
+This allows you to change the way
+
+65
+00:03:44.924 --> 00:03:49.462
+the API will provide your responses
+for the seven-day forecast,
+
+66
+00:03:49.929 --> 00:03:53.333
+by changing the parameter that you specify
+
+67
+00:03:53.333 --> 00:03:56.336
+in the Get request
+you send to the endpoint.
+
+68
+00:03:56.703 --> 00:03:58.204
+Since this is a Yaml format,
+
+69
+00:03:58.204 --> 00:04:01.407
+you will need to convert the Yaml
+into a json to use our tool.
+
+70
+00:04:01.741 --> 00:04:03.142
+You will first load the Yaml.
+
+71
+00:04:04.677 --> 00:04:05.278
+You then need to
+
+72
+00:04:05.278 --> 00:04:09.082
+convert by hand some of the data types,
+such as integers and floats,
+
+73
+00:04:09.582 --> 00:04:12.619
+and then you will save
+the content back into a json.
+
+74
+00:04:13.586 --> 00:04:18.458
+You can then use the open API Python
+generator utility to convert the json
+
+75
+00:04:18.458 --> 00:04:21.861
+that you just saved out
+to disk into Python code that's capable
+
+76
+00:04:21.861 --> 00:04:24.864
+of querying the endpoint.
+
+77
+00:04:26.566 --> 00:04:27.900
+From here, you'll import
+
+78
+00:04:27.900 --> 00:04:30.903
+the Python code that you just wrote out
+in the previous step.
+
+79
+00:04:31.537 --> 00:04:34.741
+You can then provide a user query
+that depends on the API,
+
+80
+00:04:34.741 --> 00:04:37.844
+such as asking for the current weather
+and the wind speed
+
+81
+00:04:38.411 --> 00:04:41.347
+in New York.
+
+82
+00:04:41.347 --> 00:04:45.718
+Then you can use the inspect approach
+that we discussed in the previous lesson,
+
+83
+00:04:45.852 --> 00:04:48.855
+to construct the Raven prompt.
+
+84
+00:04:50.623 --> 00:04:53.626
+Notice that in the prompt
+we have the function definition,
+
+85
+00:04:53.893 --> 00:04:57.764
+which was automatically constructed
+from the output of the generator step
+
+86
+00:04:58.164 --> 00:05:01.167
+and the dot string,
+which you wrote in the previous cell,
+
+87
+00:05:01.567 --> 00:05:05.271
+as well as the user query which
+you provided in the cell before that.
+
+88
+00:05:05.371 --> 00:05:06.906
+You can now send this to Raven.
+
+89
+00:05:08.474 --> 00:05:10.310
+You can now run this call.
+
+90
+00:05:10.310 --> 00:05:13.813
+Running the call
+will give you the output json from the API
+
+91
+00:05:13.846 --> 00:05:15.448
+that will provide you the temperature in
+
+92
+00:05:15.448 --> 00:05:20.153
+New York, which currently is 13.1°C,
+
+93
+00:05:20.153 --> 00:05:24.390
+and New York has a wind speed of 23.7km/h.
+
+94
+00:05:24.691 --> 00:05:25.525
+Try it yourself.
+
+95
+00:05:25.525 --> 00:05:27.393
+Try the city you're in currently.
+
+96
+00:05:27.393 --> 00:05:31.331
+In the next lesson, you'll be using Raven
+to do structured extraction, such
+
+97
+00:05:31.331 --> 00:05:36.331
+as extracting insights as well as detailed
+structured data from unstructured texts.
+
+98
+00:05:37.770 --> 00:05:38.438
+See you there.
+
