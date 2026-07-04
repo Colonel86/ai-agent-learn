@@ -1,0 +1,1329 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:04.170
+This lesson will dive deeper into how core
+memory is designed and implemented.
+
+2
+00:00:04.471 --> 00:00:05.872
+We'll also go through an example
+
+3
+00:00:05.872 --> 00:00:09.509
+of how you can customize core memory
+with custom memory blocks and tools.
+
+4
+00:00:09.876 --> 00:00:11.511
+Let's get to it.
+
+5
+00:00:11.511 --> 00:00:13.980
+Core memory is defined by memory blocks,
+
+6
+00:00:13.980 --> 00:00:17.484
+which are basically subsections of memory
+and memory tools.
+
+7
+00:00:17.951 --> 00:00:22.088
+The core memory within the context window
+is actually divided into multiple blocks,
+
+8
+00:00:22.088 --> 00:00:25.158
+where each block corresponds
+to some kind of character limit,
+
+9
+00:00:25.325 --> 00:00:28.995
+which defines how much of the context
+window can be used up by that block.
+
+10
+00:00:29.229 --> 00:00:30.630
+The block also has a label
+
+11
+00:00:30.630 --> 00:00:34.134
+such as human or persona,
+which can be used to reference the block.
+
+12
+00:00:34.734 --> 00:00:36.903
+And finally,
+of course, the block has a value,
+
+13
+00:00:36.903 --> 00:00:39.973
+so this is the actual data
+that's placed into the context window.
+
+14
+00:00:39.973 --> 00:00:42.575
+So for example "My name is Sarah."
+
+15
+00:00:42.575 --> 00:00:46.112
+In addition to these blocks,
+core memory also has tools
+
+16
+00:00:46.112 --> 00:00:47.714
+associated with that memory.
+
+17
+00:00:47.714 --> 00:00:52.252
+So for example you might have core memory
+replace where specifies the block label
+
+18
+00:00:52.252 --> 00:00:55.488
+in this case human,
+as well as the old content Sarah,
+
+19
+00:00:55.488 --> 00:00:57.590
+which is getting replaced
+by the new content,
+
+20
+00:00:57.590 --> 00:01:00.960
+Bob. Block data is compiled
+in the context window
+
+21
+00:01:00.960 --> 00:01:04.097
+at inference time
+to make up the core memory context.
+
+22
+00:01:04.798 --> 00:01:08.435
+So for example, for the human block,
+you might have the tag
+
+23
+00:01:08.435 --> 00:01:10.236
+that shows the section human.
+
+24
+00:01:10.236 --> 00:01:13.506
+And then this tag will also include
+the number of characters
+
+25
+00:01:13.540 --> 00:01:17.243
+out of the total budget that's being used
+so far, in addition to the value.
+
+26
+00:01:17.677 --> 00:01:20.780
+Memory blocks are synced to a database
+and have unique IDs,
+
+27
+00:01:20.780 --> 00:01:23.783
+so they can actually be shared
+across multiple agents
+
+28
+00:01:23.917 --> 00:01:27.754
+by syncing the block value
+to multiple agents context window.
+
+29
+00:01:28.855 --> 00:01:31.658
+So to start, let's first once again
+initialize
+
+30
+00:01:31.658 --> 00:01:34.661
+our Letta client and connect it
+to our locally running server.
+
+31
+00:01:35.595 --> 00:01:38.465
+We're also going to once again
+paste in this custom
+
+32
+00:01:38.465 --> 00:01:41.434
+helper function
+for printing out Letta messages.
+
+33
+00:01:41.434 --> 00:01:44.504
+So we actually modified it this time
+because this lesson
+
+34
+00:01:44.504 --> 00:01:48.575
+we're actually going to use streaming
+responses since we'll have more complex
+
+35
+00:01:48.575 --> 00:01:51.578
+agent interactions
+which will be many steps long.
+
+36
+00:01:51.678 --> 00:01:53.313
+So we basically want the new step
+
+37
+00:01:53.313 --> 00:01:56.316
+stream back to us as opposed
+to waiting for them to all complete.
+
+38
+00:01:57.083 --> 00:02:00.420
+So in the streaming scenario,
+the user should his six actually also
+
+39
+00:02:00.420 --> 00:02:04.891
+get returned as a special message type
+that has a message type usage statistics.
+
+40
+00:02:05.358 --> 00:02:08.361
+So we'll also print these out
+and then also have a big line
+
+41
+00:02:08.361 --> 00:02:11.464
+between different steps so that we can
+kind of read them more easily.
+
+42
+00:02:12.799 --> 00:02:14.567
+So, like we went over last time,
+
+43
+00:02:14.567 --> 00:02:17.537
+core memory consists
+of multiple different memory blocks,
+
+44
+00:02:17.770 --> 00:02:20.940
+and each block represents
+a section of the LLMs context window
+
+45
+00:02:20.940 --> 00:02:24.177
+that's reserved to storing memories
+related to that block.
+
+46
+00:02:25.545 --> 00:02:28.581
+We can create an agent
+that has a human and persona block,
+
+47
+00:02:29.082 --> 00:02:32.852
+and then also list out
+the blocks that are created by this agent.
+
+48
+00:02:32.852 --> 00:02:36.422
+So we can do this by calling the client's
+block list function
+
+49
+00:02:36.623 --> 00:02:39.626
+and specifying the agent ID.
+
+50
+00:02:39.926 --> 00:02:42.662
+So we can see that
+this returns list of block objects
+
+51
+00:02:42.662 --> 00:02:46.799
+that have the value of the human block,
+and then also the value of the persona
+
+52
+00:02:46.799 --> 00:02:48.301
+block. And we can also see things
+
+53
+00:02:48.301 --> 00:02:50.970
+like the character limit
+that's assigned to this block.
+
+54
+00:02:50.970 --> 00:02:54.274
+The agent is not allowed
+to make this memory block
+
+55
+00:02:54.274 --> 00:02:56.543
+longer than this number of characters.
+
+56
+00:02:56.543 --> 00:02:59.279
+So we can make sure that the context
+window doesn't overflow
+
+57
+00:02:59.279 --> 00:03:02.916
+or become overly focused on
+just the in-context memory blocks.
+
+58
+00:03:03.249 --> 00:03:05.084
+And then,
+like we mentioned in the last lesson,
+
+59
+00:03:05.084 --> 00:03:08.521
+there's also these unique IDs
+which we can use to access the blocks
+
+60
+00:03:08.521 --> 00:03:09.589
+directly from the client.
+
+61
+00:03:11.124 --> 00:03:14.127
+So let's go for an example of directly
+accessing the blocks.
+
+62
+00:03:14.294 --> 00:03:17.530
+We can store
+this block ID by copy-pasting
+
+63
+00:03:17.530 --> 00:03:20.533
+one of these block ID strings.
+
+64
+00:03:21.868 --> 00:03:22.535
+And now that we have
+
+65
+00:03:22.535 --> 00:03:25.872
+this block ID saved,
+we can actually also query the client,
+
+66
+00:03:26.739 --> 00:03:28.942
+with this block ID to get back
+this block as well.
+
+67
+00:03:28.942 --> 00:03:32.378
+So if you want to modify this block
+or get this block, you can do that
+
+68
+00:03:32.378 --> 00:03:35.381
+by passing the block ID.
+
+69
+00:03:35.648 --> 00:03:37.850
+You can also access block by specifying
+
+70
+00:03:37.850 --> 00:03:40.954
+a combination of the agent ID
+and then also the block label.
+
+71
+00:03:40.954 --> 00:03:43.590
+So the block label will always be unique
+
+72
+00:03:43.590 --> 00:03:44.757
+for specific agents.
+
+73
+00:03:44.757 --> 00:03:47.961
+So you can't have multiple block labels
+that have the label human.
+
+74
+00:03:49.662 --> 00:03:52.198
+Blocks are represented
+inside of the context window,
+
+75
+00:03:52.198 --> 00:03:55.702
+and a special section of the context
+window dedicated to core memory.
+
+76
+00:03:56.002 --> 00:03:59.005
+So we can actually also see,
+for a specific agent,
+
+77
+00:03:59.205 --> 00:04:01.941
+what the template is for
+how the blocks are shown.
+
+78
+00:04:01.941 --> 00:04:05.945
+So this is actually the prompt template
+for how the blocks are represented.
+
+79
+00:04:05.945 --> 00:04:09.182
+We can see that it has a tag
+that has the block label.
+
+80
+00:04:09.449 --> 00:04:12.385
+And then it also communicates,
+through this,
+
+81
+00:04:12.385 --> 00:04:15.722
+how much of the total length
+is being used of the limit.
+
+82
+00:04:15.722 --> 00:04:19.158
+And then of course, inside of the tag,
+it also contains the block value.
+
+83
+00:04:19.392 --> 00:04:21.995
+So you can actually customize this
+if you want to change
+
+84
+00:04:21.995 --> 00:04:24.731
+the way that the blocks are rendered
+instead of the context window.
+
+85
+00:04:25.965 --> 00:04:28.334
+So like we went over in the last lesson,
+
+86
+00:04:28.334 --> 00:04:32.105
+Letta agents have access to tools
+like core memory replace and core
+
+87
+00:04:32.105 --> 00:04:35.642
+memory append
+to actually edit their in-context memory.
+
+88
+00:04:36.009 --> 00:04:38.411
+And the way that this implementation
+actually works
+
+89
+00:04:38.411 --> 00:04:42.248
+is that we're able to define tools
+that we attach to the agent,
+
+90
+00:04:42.382 --> 00:04:46.519
+that are able to modify the agents
+internal state or blocks.
+
+91
+00:04:47.220 --> 00:04:50.823
+Before we get into how to customize
+in context memory management,
+
+92
+00:04:51.024 --> 00:04:54.927
+we're first going to quickly go over,
+how you can define stateful tools,
+
+93
+00:04:54.927 --> 00:04:56.195
+inside of Letta, are tools
+
+94
+00:04:56.195 --> 00:04:59.432
+that are able to modify
+the actual agent state through the tool.
+
+95
+00:05:00.466 --> 00:05:03.903
+So, a really simple example of this is
+this tool here,
+
+96
+00:05:03.903 --> 00:05:05.838
+which is getting the agent ID.
+
+97
+00:05:05.838 --> 00:05:09.642
+So we pass in a special argument
+into the tool definition.
+
+98
+00:05:09.842 --> 00:05:12.612
+So the field that has the type
+agent state.
+
+99
+00:05:12.612 --> 00:05:15.615
+And we'll put this in quotes
+just so that we don't get import errors.
+
+100
+00:05:16.282 --> 00:05:20.286
+All this tool does is get the idea
+of the agent by accessing the agent state,
+
+101
+00:05:21.087 --> 00:05:24.324
+So we can create this tool
+by calling upsert_from_function.
+
+102
+00:05:24.324 --> 00:05:26.326
+You can also do create from function.
+
+103
+00:05:26.326 --> 00:05:28.494
+There's a couple different ways
+to create tools with Letta
+
+104
+00:05:28.494 --> 00:05:30.930
+but this is perhaps the simplest.
+
+105
+00:05:30.930 --> 00:05:31.898
+You'll just need to make sure
+
+106
+00:05:31.898 --> 00:05:35.601
+that your docstring contains
+all the fields, except you don't need to
+
+107
+00:05:35.668 --> 00:05:39.572
+specify any documentation for agent state,
+since the Letta system will know
+
+108
+00:05:39.706 --> 00:05:42.909
+to inject the agent state of the agent
+when this tool is called.
+
+109
+00:05:43.643 --> 00:05:46.112
+So we'll create this get id tool.
+
+110
+00:05:47.246 --> 00:05:48.247
+So now that we've created
+
+111
+00:05:48.247 --> 00:05:51.250
+this tool, we can create an agent
+that's actually using the tool.
+
+112
+00:05:51.317 --> 00:05:52.952
+So for this agent,
+we'll make it really simple.
+
+113
+00:05:52.952 --> 00:05:54.854
+It'll have no in-context memory.
+
+114
+00:05:54.854 --> 00:05:58.224
+And we'll basically attach an extra tool,
+this get ID tool,
+
+115
+00:05:58.224 --> 00:06:01.227
+by passing in the ID into tool IDs.
+
+116
+00:06:02.362 --> 00:06:03.730
+And then we can basically message this
+
+117
+00:06:03.730 --> 00:06:06.733
+agent to ask you what is your agent ID.
+
+118
+00:06:06.766 --> 00:06:07.533
+One thing to note
+
+119
+00:06:07.533 --> 00:06:11.170
+is that we're actually now calling
+create stream instead of just create here.
+
+120
+00:06:11.371 --> 00:06:15.908
+This basically is telling Letta we want
+to get back the responses as a stream,
+
+121
+00:06:16.109 --> 00:06:18.244
+as opposed
+to just the entirety of the response,
+
+122
+00:06:18.244 --> 00:06:21.247
+which is what we were doing
+in the last lesson.
+
+123
+00:06:21.280 --> 00:06:24.217
+So we can see that
+we're now getting back the responses.
+
+124
+00:06:25.518 --> 00:06:28.154
+So first, the agent reasons, that,
+you know,
+
+125
+00:06:28.154 --> 00:06:32.058
+the user wants to know the agent ID,
+and so it calls this get agent ID tool.
+
+126
+00:06:32.425 --> 00:06:35.428
+It gets back this response,
+which is its own agent ID,
+
+127
+00:06:35.461 --> 00:06:39.866
+and then it sends back a message to
+the user telling us what its agent ID was.
+
+128
+00:06:40.199 --> 00:06:43.102
+And you can see at the end,
+that we also print out this usage
+
+129
+00:06:43.102 --> 00:06:46.739
+statistics message, because we are getting
+a streaming response that gives us
+
+130
+00:06:46.739 --> 00:06:50.309
+the usage information like the token usage
+and also the step count.
+
+131
+00:06:51.577 --> 00:06:54.680
+So now we've gone over
+our given an example of how to access
+
+132
+00:06:54.680 --> 00:06:56.015
+agent state through tools.
+
+133
+00:06:56.015 --> 00:07:00.052
+And so now we can try defining
+a more customized form of in-context
+
+134
+00:07:00.052 --> 00:07:03.189
+memory management by customizing
+the memory management format.
+
+135
+00:07:03.189 --> 00:07:04.157
+And also tools.
+
+136
+00:07:05.291 --> 00:07:05.691
+In this
+
+137
+00:07:05.691 --> 00:07:08.795
+last section we're going to create
+a custom task queue memory.
+
+138
+00:07:08.795 --> 00:07:10.229
+So this is going to look a little
+
+139
+00:07:10.229 --> 00:07:14.066
+bit different than the memory that we had
+before where we had a human and persona
+
+140
+00:07:14.066 --> 00:07:18.471
+that were edited by the default core
+memory replace and core memory append tools.
+
+141
+00:07:18.871 --> 00:07:22.375
+So we're going to create
+custom memory management tools,
+
+142
+00:07:22.375 --> 00:07:26.412
+and then also kind of customize the format
+of the actual in-context memory.
+
+143
+00:07:27.580 --> 00:07:31.751
+So the first memory management tool
+we're going to define is task queue push.
+
+144
+00:07:31.984 --> 00:07:35.588
+So, instead of having human and persona
+sections we're instead going to have
+
+145
+00:07:35.888 --> 00:07:37.924
+the in-context memory be a list.
+
+146
+00:07:37.924 --> 00:07:41.461
+So this is going to take
+in the special agent state, argument,
+
+147
+00:07:41.461 --> 00:07:44.263
+and then also a task description string.
+
+148
+00:07:44.263 --> 00:07:47.066
+And in order to make sure
+this tool gets created properly,
+
+149
+00:07:47.066 --> 00:07:49.335
+we have to provide a properly formatted
+docstring.
+
+150
+00:07:49.335 --> 00:07:51.137
+So this will have the description.
+
+151
+00:07:51.137 --> 00:07:51.971
+Push to a task
+
+152
+00:07:51.971 --> 00:07:55.208
+queue sort into our memory and then we also
+have to define the arguments.
+
+153
+00:07:55.208 --> 00:07:58.778
+So like I mentioned before, we don't need
+to actually define agent state.
+
+154
+00:07:58.778 --> 00:08:00.746
+The system will we'll know to pass
+
+155
+00:08:00.746 --> 00:08:03.716
+that in. The LLM
+doesn't need to know about agent State.
+
+156
+00:08:03.783 --> 00:08:07.620
+And so we just tell the LLM
+in this docstring about task description,
+
+157
+00:08:07.620 --> 00:08:10.790
+which is a description of the next task
+to accomplish.
+
+158
+00:08:11.691 --> 00:08:15.027
+And then, the return is just null,
+because we won't return back a
+
+159
+00:08:15.027 --> 00:08:16.429
+response for this function.
+
+160
+00:08:17.663 --> 00:08:18.264
+And so
+
+161
+00:08:18.264 --> 00:08:21.334
+what actually
+happens for the execution of task queue push
+
+162
+00:08:21.634 --> 00:08:25.171
+is that we're going to actually add
+a new task into the core memory.
+
+163
+00:08:25.438 --> 00:08:27.406
+We're going to represent as a list.
+
+164
+00:08:27.406 --> 00:08:29.609
+And the way we could do this
+is that we can actually connect
+
+165
+00:08:29.609 --> 00:08:32.612
+to the Letta client
+from inside of this tool.
+
+166
+00:08:32.712 --> 00:08:35.114
+And so what we can do is
+we can do all the same things
+
+167
+00:08:35.114 --> 00:08:38.117
+that we would do with the client
+from inside of this tool.
+
+168
+00:08:38.150 --> 00:08:40.253
+So it's a little confusing.
+
+169
+00:08:40.253 --> 00:08:43.589
+The agent can also itself
+access the client through tools.
+
+170
+00:08:44.457 --> 00:08:47.927
+So by creating this client
+we can then retrieve
+
+171
+00:08:47.994 --> 00:08:51.564
+the current in-context memory block
+that has the block label tasks.
+
+172
+00:08:51.564 --> 00:08:54.200
+So what we'll create the agent
+that has this later.
+
+173
+00:08:54.200 --> 00:08:56.869
+And we can basically load in the tasks.
+
+174
+00:08:56.869 --> 00:09:01.207
+Because this block that has the label
+tasks will also be like a
+
+175
+00:09:01.207 --> 00:09:03.209
+JSON string list.
+
+176
+00:09:03.209 --> 00:09:06.212
+And then append the new task into tasks.
+
+177
+00:09:06.379 --> 00:09:09.382
+And then save back
+this new list of tasks.
+
+178
+00:09:09.682 --> 00:09:13.786
+By now calling blocks modify.
+And we have access to the agent state
+
+179
+00:09:13.786 --> 00:09:16.389
+so we can of course,
+access the ID like we did before
+
+180
+00:09:16.389 --> 00:09:20.026
+and the other tool to basically modify,
+this agent in-context
+
+181
+00:09:20.026 --> 00:09:20.426
+memory.
+
+182
+00:09:21.427 --> 00:09:23.763
+So that will be the first one.
+
+183
+00:09:23.763 --> 00:09:26.732
+So, the other function
+we're going to define is task queue pop.
+
+184
+00:09:26.732 --> 00:09:29.435
+So this also has access
+to the agent state.
+
+185
+00:09:29.435 --> 00:09:31.871
+All it does is pop out
+the next task from the task queue.
+
+186
+00:09:31.871 --> 00:09:33.940
+So basically removing that from the queue.
+
+187
+00:09:33.940 --> 00:09:37.076
+And then what it's going to return is
+the remaining tasks inside of the queue.
+
+188
+00:09:37.643 --> 00:09:41.314
+So very similarly we're again
+going to instantiate an instance of the
+
+189
+00:09:41.314 --> 00:09:46.314
+Letta client in this tool, get the task,
+task block from the in-context memory.
+
+190
+00:09:47.086 --> 00:09:50.356
+And then we're going to load in the task
+by loading the JSON string.
+
+191
+00:09:50.556 --> 00:09:52.892
+If there's nothing, inside of the task
+
+192
+00:09:52.892 --> 00:09:54.427
+then we just return none.
+
+193
+00:09:54.427 --> 00:09:57.430
+And then otherwise we take
+the first task into the queue.
+
+194
+00:09:57.563 --> 00:10:01.367
+And so this kind of grabs that first task,
+and then we also then update
+
+195
+00:10:01.500 --> 00:10:02.435
+the remaining tasks.
+
+196
+00:10:02.435 --> 00:10:05.805
+So now we just remove the first task
+from this queue,
+
+197
+00:10:06.138 --> 00:10:08.975
+and get the JSON string from it,
+
+198
+00:10:08.975 --> 00:10:13.975
+and then write that as the new value
+for the in-context memory block for tasks.
+
+199
+00:10:14.480 --> 00:10:17.483
+And then finally we'll again
+return these remaining tasks.
+
+200
+00:10:18.651 --> 00:10:19.819
+So now that we've defined
+
+201
+00:10:19.819 --> 00:10:23.489
+both of these functions, we can upsert
+both of these as tools into Letta.
+
+202
+00:10:24.223 --> 00:10:27.627
+So we'll create the task queue pop tool
+and then also the task queue push tool.
+
+203
+00:10:28.227 --> 00:10:31.130
+Tools that can be called inside of
+Letta agents.
+
+204
+00:10:31.130 --> 00:10:34.066
+So now that we've created these tools,
+we can actually create an agent,
+
+205
+00:10:34.066 --> 00:10:35.668
+that has these tools attached.
+
+206
+00:10:35.668 --> 00:10:38.104
+So we're going to create something
+called a task agent,
+
+207
+00:10:38.104 --> 00:10:41.507
+which only has access to the task
+queue pop and task
+
+208
+00:10:41.507 --> 00:10:43.743
+queue push memory management tools.
+
+209
+00:10:43.743 --> 00:10:47.313
+So we're also going to actually override
+the default system prompt.
+
+210
+00:10:47.313 --> 00:10:50.516
+Since we did change the way
+that memory is managed, we have a custom
+
+211
+00:10:50.516 --> 00:10:53.519
+system prompt that kind of describes
+how that's done to the agent.
+
+212
+00:10:53.519 --> 00:10:55.788
+So you can read this if you're interested.
+
+213
+00:10:55.788 --> 00:10:58.724
+And then for the memory blocks,
+instead of having human and persona
+
+214
+00:10:58.724 --> 00:11:01.727
+sections we're instead
+just going to have a tasks block.
+
+215
+00:11:01.727 --> 00:11:02.728
+And we're going to initialize
+
+216
+00:11:02.728 --> 00:11:06.098
+that with a value which is just a JSON
+dumps of an empty list.
+
+217
+00:11:06.565 --> 00:11:07.500
+And so this is a list
+
+218
+00:11:07.500 --> 00:11:10.770
+that we're going to add to
+or remove things from with our tools.
+
+219
+00:11:11.303 --> 00:11:14.640
+And then we define the LLM model
+and the embedding model.
+
+220
+00:11:15.107 --> 00:11:17.009
+Attach these tool IDs.
+
+221
+00:11:17.009 --> 00:11:20.112
+And then we're actually also going
+to disable the default tools.
+
+222
+00:11:20.112 --> 00:11:23.182
+So by passing in false for include base
+tools.
+
+223
+00:11:23.582 --> 00:11:25.584
+We're actually not going to add
+all the default tools
+
+224
+00:11:25.584 --> 00:11:29.021
+like the core memory or archival memory
+and conversation search tools.
+
+225
+00:11:29.388 --> 00:11:32.291
+We're
+only going to have the task queue-related tools,
+
+226
+00:11:32.291 --> 00:11:34.560
+but we will also add
+the send message tool.
+
+227
+00:11:34.560 --> 00:11:36.495
+So we do want this included.
+
+228
+00:11:36.495 --> 00:11:40.666
+Just because otherwise the agent won't be able
+to return back assistant messages.
+
+229
+00:11:42.368 --> 00:11:45.571
+So now we've created the agent and
+we can actually see, what tools it has.
+
+230
+00:11:45.571 --> 00:11:48.808
+this agent only has access
+to these three tools.
+
+231
+00:11:49.842 --> 00:11:52.411
+And then we can also see
+what's inside of its memory.
+
+232
+00:11:52.411 --> 00:11:55.781
+So basically reading
+the value of its current, task block
+
+233
+00:11:56.615 --> 00:11:59.285
+and we can see it's just an empty list.
+
+234
+00:11:59.285 --> 00:12:01.454
+So now we can actually message the agent,
+
+235
+00:12:01.454 --> 00:12:04.957
+to start adding
+some tasks into its task memory.
+
+236
+00:12:04.957 --> 00:12:08.427
+So we can create a streaming message,
+to this task agent
+
+237
+00:12:08.728 --> 00:12:10.629
+and tell it in two separate tasks,
+
+238
+00:12:10.629 --> 00:12:12.331
+the first start calling me Charles,
+
+239
+00:12:12.331 --> 00:12:16.001
+and then tell me a haiku about my name
+and add these as two different tasks.
+
+240
+00:12:16.969 --> 00:12:20.106
+So we can see that we start
+getting the responses stream back.
+
+241
+00:12:20.106 --> 00:12:23.809
+And so, it reasons
+that the user wants to create two tasks.
+
+242
+00:12:24.176 --> 00:12:25.010
+It calls task
+
+243
+00:12:25.010 --> 00:12:28.114
+queue push on the first task,
+which is start calling me Charles.
+
+244
+00:12:29.081 --> 00:12:30.916
+Then it calls task queue push
+
+245
+00:12:30.916 --> 00:12:33.919
+on the second task,
+tell me a haiku about my name.
+
+246
+00:12:34.687 --> 00:12:38.591
+And then it realizes that now it has tasks
+that it needs to accomplish.
+
+247
+00:12:38.591 --> 00:12:41.927
+So, it's actually told in its instructions
+that it should be clearing its task
+
+248
+00:12:41.927 --> 00:12:45.297
+queue if there are tasks in there.
+So then it starts to go back
+
+249
+00:12:45.297 --> 00:12:49.335
+and pop items from its task queue.
+So, it pops the first task.
+
+250
+00:12:49.335 --> 00:12:52.271
+And so now we just have one remaining
+task in the queue,
+
+251
+00:12:52.271 --> 00:12:56.075
+and then it pops it again
+until the remaining tasks is empty.
+
+252
+00:12:56.175 --> 00:12:59.979
+And so once it's finally cleared
+all its tasks, it, returns back a message.
+
+253
+00:12:59.979 --> 00:13:00.646
+Which is "got it.
+
+254
+00:13:00.646 --> 00:13:02.181
+Charles. From now on, I'll call you that."
+
+255
+00:13:02.181 --> 00:13:03.783
+And then here's a haiku about your name.
+
+256
+00:13:03.783 --> 00:13:05.918
+And so it returns back Haiku.
+
+257
+00:13:05.918 --> 00:13:07.787
+"Charles. Strong and wise.
+
+258
+00:13:07.787 --> 00:13:09.421
+Gentle winds whisper your name.
+
+259
+00:13:09.421 --> 00:13:11.624
+Stars light up the night."
+
+260
+00:13:11.624 --> 00:13:14.527
+So there's quite a lot done
+in this sequence of events.
+
+261
+00:13:14.527 --> 00:13:18.798
+we can actually see we had a step count
+of five, and a lot of tokens used up,
+
+262
+00:13:19.298 --> 00:13:22.902
+which is why it's often useful to have
+streaming for these more complex tasks,
+
+263
+00:13:22.902 --> 00:13:25.638
+because we can actually see
+the progress of the agent over time.
+
+264
+00:13:26.739 --> 00:13:29.008
+So the LLM is a little probabilistic.
+
+265
+00:13:29.008 --> 00:13:32.511
+So you might have seen your agent
+not actually complete all of its tasks,
+
+266
+00:13:32.511 --> 00:13:36.348
+in which case you can once again
+message it to complete your tasks.
+
+267
+00:13:37.216 --> 00:13:40.319
+So you might need to do that
+if your task queue still has items in it.
+
+268
+00:13:40.386 --> 00:13:41.921
+In our case, there was nothing left.
+
+269
+00:13:41.921 --> 00:13:45.624
+The agent did actually get everything done
+so you can see it return back
+
+270
+00:13:45.624 --> 00:13:48.627
+all tasks are complete
+so didn't actually run anything.
+
+271
+00:13:49.195 --> 00:13:52.665
+And finally, we can also retrieve
+the tasks to see if it's empty.
+
+272
+00:13:52.665 --> 00:13:55.234
+And the agent
+has run through all of its tasks.
+
+273
+00:13:55.234 --> 00:13:58.737
+So we've now implemented a custom
+form of in-context memory
+
+274
+00:13:58.737 --> 00:14:03.737
+by customizing the memory blocks and also,
+writing pretty advanced stateful tools
+
+275
+00:14:04.643 --> 00:14:05.878
+that can actually modify
+
+276
+00:14:05.878 --> 00:14:10.115
+the memory of the agent and also access
+a Letta client from inside of the tool.
+
+277
+00:14:10.416 --> 00:14:13.919
+This is actually a really powerful
+framework for building stateful agents.
+
+278
+00:14:14.286 --> 00:14:17.423
+So you can create very advanced examples
+that really control
+
+279
+00:14:17.423 --> 00:14:21.160
+the way that in-context memory
+is managed and modified over time.
+
+280
+00:14:21.427 --> 00:14:25.030
+Hopefully this simple tasks example
+gives you inspiration for how you could
+
+281
+00:14:25.364 --> 00:14:28.601
+create advanced ways of managing memory
+for your own applications.
+

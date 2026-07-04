@@ -1,0 +1,1202 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:03.470
+Self-editing memory refers to the idea
+of allowing an LLM
+
+2
+00:00:03.470 --> 00:00:07.574
+to update its own long-term memory
+or persistent memory over time.
+
+3
+00:00:08.041 --> 00:00:11.344
+Self-editing memory
+is an essential aspect of building agents
+
+4
+00:00:11.344 --> 00:00:13.446
+that can learn and improve over time.
+
+5
+00:00:13.446 --> 00:00:14.748
+In this lesson,
+
+6
+00:00:14.748 --> 00:00:18.485
+you'll learn how to build an agent
+with self-editing memory from scratch.
+
+7
+00:00:18.918 --> 00:00:19.786
+Let's get coding.
+
+8
+00:00:20.453 --> 00:00:23.456
+There might be some confusion
+about Letta and MemGPT.
+
+9
+00:00:23.590 --> 00:00:25.859
+You'll be seeing both terms
+in this course.
+
+10
+00:00:25.859 --> 00:00:29.462
+Letta is an open source agents framework
+that allows you to easily
+
+11
+00:00:29.462 --> 00:00:32.465
+build
+and deploy persistent agents as services.
+
+12
+00:00:32.532 --> 00:00:36.403
+So with APIs. MemGPT is a research paper
+
+13
+00:00:36.403 --> 00:00:39.406
+that introduced the concept
+of self-editing memory for LLMs.
+
+14
+00:00:39.939 --> 00:00:44.310
+MemGPT also refers to a type
+of agent design described in the paper
+
+15
+00:00:44.310 --> 00:00:48.081
+that was inspired by operating systems,
+which has two tiers of memory.
+
+16
+00:00:48.314 --> 00:00:50.750
+Among other specific design choices.
+
+17
+00:00:50.750 --> 00:00:53.787
+You can build
+MemGPT agents using the Letta framework.
+
+18
+00:00:54.254 --> 00:00:56.790
+So what makes a chatbot different
+from an agent?
+
+19
+00:00:56.790 --> 00:00:59.926
+While most chatbots use
+LLMs to generate chat responses,
+
+20
+00:01:00.393 --> 00:01:05.265
+under the hood, you're using an LLM to
+generate a new response in a conversation.
+
+21
+00:01:05.698 --> 00:01:07.767
+So in this case, the user says "hello".
+
+22
+00:01:07.767 --> 00:01:10.370
+We append that to the conversation
+and we ask the LLM
+
+23
+00:01:10.370 --> 00:01:12.705
+to generate the next message
+in that conversation.
+
+24
+00:01:12.705 --> 00:01:15.708
+It generates a response
+where the robot says, "hey there".
+
+25
+00:01:15.742 --> 00:01:18.611
+So what makes an agent different
+from a chatbot?
+
+26
+00:01:18.611 --> 00:01:22.849
+Well, agents act autonomously
+by taking multi-step actions in an agentic loop.
+
+27
+00:01:23.550 --> 00:01:28.088
+So for one user message, an agent
+might actually run the LLM multiple times.
+
+28
+00:01:28.588 --> 00:01:31.558
+In this case, it might actually think
+to itself for a little bit,
+
+29
+00:01:31.624 --> 00:01:32.792
+"Hey, I just got a message.
+
+30
+00:01:32.792 --> 00:01:34.194
+Do I know anything about who sent it?"
+
+31
+00:01:35.428 --> 00:01:37.797
+Then the
+agent might run a memory search tool,
+
+32
+00:01:37.797 --> 00:01:40.500
+and after that,
+the agent might finally decide to send
+
+33
+00:01:40.500 --> 00:01:43.503
+a response saying, "Hey, Sarah, it's
+good to see you again.
+
+34
+00:01:43.636 --> 00:01:45.505
+I hope you're having a great birthday."
+
+35
+00:01:45.505 --> 00:01:47.540
+When the agent ran the memory search tool,
+
+36
+00:01:47.540 --> 00:01:50.777
+it was able to find additional information
+about who the user was,
+
+37
+00:01:51.010 --> 00:01:54.013
+and it even found out
+that the user's birthday is today.
+
+38
+00:01:54.380 --> 00:01:56.883
+So in this example,
+we actually witnessed one
+
+39
+00:01:56.883 --> 00:01:59.886
+user message trigger
+three different LLM calls.
+
+40
+00:02:00.053 --> 00:02:02.589
+This is what we call the agentic loop.
+
+41
+00:02:02.589 --> 00:02:04.891
+To implement multi-step
+reasoning with an LLM
+
+42
+00:02:04.891 --> 00:02:08.461
+there needs to be a reasoning loop
+that has updates to state.
+
+43
+00:02:09.262 --> 00:02:12.432
+So we have agent state
+that gets put into a context window.
+
+44
+00:02:12.899 --> 00:02:15.902
+That context window
+is the input to LLM inference.
+
+45
+00:02:16.136 --> 00:02:19.405
+And the result of LLM inference
+is used to update the agent state.
+
+46
+00:02:19.839 --> 00:02:23.076
+We call a single reasoning step
+in this loop the agent step.
+
+47
+00:02:23.810 --> 00:02:26.146
+So how do we add memory to agents?
+
+48
+00:02:26.146 --> 00:02:28.681
+Long term memory
+is a part of the agent state,
+
+49
+00:02:28.681 --> 00:02:31.417
+which gets compiled into the context
+window.
+
+50
+00:02:31.417 --> 00:02:34.420
+We'll call this process
+context compilation.
+
+51
+00:02:34.787 --> 00:02:37.891
+Let's imagine a case where the agent
+doesn't actually have any long-term
+
+52
+00:02:37.891 --> 00:02:38.758
+memories.
+
+53
+00:02:38.758 --> 00:02:41.728
+In this case, the context window
+could be something very simple.
+
+54
+00:02:41.761 --> 00:02:43.930
+Just you are a helpful assistant.
+
+55
+00:02:43.930 --> 00:02:47.200
+Well, one of the agent actually
+does have some memory, for example,
+
+56
+00:02:47.367 --> 00:02:51.538
+that the user's name is Sarah
+and that their birthday is 1/1/2001.
+
+57
+00:02:51.971 --> 00:02:54.574
+Context compilation refers to the idea
+
+58
+00:02:54.574 --> 00:02:58.111
+that we need to put this agent state
+into the context window somehow.
+
+59
+00:02:58.778 --> 00:03:01.581
+One way to do it, like in
+this example, is to convert
+
+60
+00:03:01.581 --> 00:03:04.584
+the dictionary data
+into some sort of sentence.
+
+61
+00:03:04.651 --> 00:03:07.387
+So now we understand
+how we might add memory to agents.
+
+62
+00:03:07.387 --> 00:03:09.689
+But how do we make this memory editable.
+
+63
+00:03:09.689 --> 00:03:12.525
+Well we can make the agent memory
+self-editing through the use
+
+64
+00:03:12.525 --> 00:03:14.260
+of special memory tools.
+
+65
+00:03:14.260 --> 00:03:16.629
+For example,
+let's say the human says hello.
+
+66
+00:03:16.629 --> 00:03:20.266
+The agent, based off of the memory,
+thinks that the human's name is Sarah.
+
+67
+00:03:20.300 --> 00:03:22.569
+Sarah replies. "Hi, Sarah."
+
+68
+00:03:22.569 --> 00:03:25.572
+The human then says,
+"My name is actually Charles, not Sarah."
+
+69
+00:03:25.805 --> 00:03:26.539
+In this case,
+
+70
+00:03:26.539 --> 00:03:30.109
+the agent might think for a little bit,
+oh no, my memory must be faulty.
+
+71
+00:03:30.510 --> 00:03:31.878
+Time to correct it.
+
+72
+00:03:31.878 --> 00:03:34.314
+Then it calls a special function
+
+73
+00:03:34.314 --> 00:03:38.184
+that specifically updates the agent state,
+referring to the name of the human.
+
+74
+00:03:38.785 --> 00:03:41.788
+Then, because the agent can run
+multiple times, it'll reply.
+
+75
+00:03:41.921 --> 00:03:43.223
+"Sorry, Charles."
+
+76
+00:03:43.223 --> 00:03:44.290
+Let's actually put these lessons
+
+77
+00:03:44.290 --> 00:03:47.660
+into practice and build an agent
+with self-editing memory from scratch.
+
+78
+00:03:48.361 --> 00:03:50.396
+We'll walk you through
+how to use OpenAI's tool
+
+79
+00:03:50.396 --> 00:03:53.399
+calling to implement
+some basic memory management features.
+
+80
+00:03:53.800 --> 00:03:55.935
+Let's start by setting up OpenAI.
+
+81
+00:03:55.935 --> 00:03:57.837
+Next, we need to decide on a model.
+
+82
+00:03:57.837 --> 00:03:59.572
+Let's use GPT-4-o-mini.
+
+83
+00:03:59.572 --> 00:04:03.109
+It's a good balance of speed,
+cost, and human reasoning ability.
+
+84
+00:04:03.943 --> 00:04:06.713
+The next thing we need to define
+is the system prompt.
+
+85
+00:04:06.713 --> 00:04:09.983
+Let's keep it really simple for now
+and just use "you're chatbot".
+
+86
+00:04:10.350 --> 00:04:13.353
+The next step is to actually make
+an LLM request to OpenAI.
+
+87
+00:04:13.620 --> 00:04:16.956
+The format of our message request
+is to put the system prompt up front
+
+88
+00:04:17.423 --> 00:04:19.559
+and then the chat history next.
+
+89
+00:04:19.559 --> 00:04:21.961
+In this case, we have an empty chat.
+
+90
+00:04:21.961 --> 00:04:24.998
+So the only messages from the user asking
+"What is my name?"
+
+91
+00:04:25.131 --> 00:04:26.799
+What do we expect should happen?
+
+92
+00:04:26.799 --> 00:04:29.836
+Well,
+there's no context about what my name is.
+
+93
+00:04:30.169 --> 00:04:33.906
+So as expected, the agent says, "I'm sorry,
+I don't know your name.
+
+94
+00:04:34.140 --> 00:04:35.675
+How can I assist you today?"
+
+95
+00:04:35.675 --> 00:04:39.045
+So next we'll go over how to actually
+add memory to the context window.
+
+96
+00:04:39.812 --> 00:04:41.180
+The most basic form of memory
+
+97
+00:04:41.180 --> 00:04:44.384
+we could probably have in
+Python is a Python dictionary.
+
+98
+00:04:44.984 --> 00:04:49.088
+Let's set up an agent memory dictionary
+which has one field, human.
+
+99
+00:04:49.589 --> 00:04:52.558
+This is going to keep all the memories
+related to the human.
+
+100
+00:04:52.558 --> 00:04:56.129
+In this case, the only memory we have
+is that the human's name is Bob.
+
+101
+00:04:56.562 --> 00:04:59.165
+Note that we'll actually have
+to update our system prompt.
+
+102
+00:04:59.165 --> 00:05:02.502
+Our system prompt is no longer
+just your chatbot, but it also includes
+
+103
+00:05:02.502 --> 00:05:03.670
+additional information
+
+104
+00:05:03.670 --> 00:05:06.806
+that specifically tells the LLM
+that it does have some sort of memory.
+
+105
+00:05:07.440 --> 00:05:10.743
+We tell the LLM that it has a section
+of its context called memory,
+
+106
+00:05:11.077 --> 00:05:14.080
+and that it contains information
+relevant to your conversation.
+
+107
+00:05:14.080 --> 00:05:17.784
+So we're explicitly instructing the LLM
+to use its memory to personalize
+
+108
+00:05:17.784 --> 00:05:19.085
+the conversation.
+
+109
+00:05:19.085 --> 00:05:21.721
+Next, let's actually send this request
+to OpenAI.
+
+110
+00:05:21.721 --> 00:05:25.758
+You'll notice the main difference here is
+that we're now using a new system prompt,
+
+111
+00:05:26.259 --> 00:05:30.530
+but we're also manually injecting
+the memory into the system prompt.
+
+112
+00:05:31.264 --> 00:05:34.233
+Like before, the chat
+history only has one message.
+
+113
+00:05:34.233 --> 00:05:35.902
+"What is my name?"
+
+114
+00:05:35.902 --> 00:05:37.236
+So what do we expect will happen here?
+
+115
+00:05:38.237 --> 00:05:40.673
+Well, in this
+case, we are actually providing information
+
+116
+00:05:40.673 --> 00:05:42.442
+about the human's name.
+
+117
+00:05:42.442 --> 00:05:44.644
+So we would expect
+that the chatbot returns
+
+118
+00:05:44.644 --> 00:05:47.647
+something along
+the lines of "your name is Bob."
+
+119
+00:05:47.847 --> 00:05:48.247
+Great.
+
+120
+00:05:48.247 --> 00:05:51.017
+So everything is working as expected.
+
+121
+00:05:51.017 --> 00:05:54.320
+In this section, we're going to go over
+how to actually make this memory object
+
+122
+00:05:54.520 --> 00:05:58.958
+re-readable by the agent. Because
+we're representing our memory in Python,
+
+123
+00:05:59.125 --> 00:06:01.361
+remember it's just a Python dictionary.
+
+124
+00:06:01.361 --> 00:06:05.064
+The way we would define a memory editing
+tool is to simply write a Python function.
+
+125
+00:06:05.098 --> 00:06:08.101
+Let's create
+a simple function called core memory save.
+
+126
+00:06:08.434 --> 00:06:10.703
+Core memory save takes two arguments.
+
+127
+00:06:10.703 --> 00:06:15.703
+The section and the memory. Core memory
+save will index into the section
+
+128
+00:06:16.142 --> 00:06:19.145
+and append the memory to that section.
+
+129
+00:06:19.312 --> 00:06:20.780
+Let's see how this works in practice.
+
+130
+00:06:23.282 --> 00:06:24.484
+So the current memory
+
+131
+00:06:24.484 --> 00:06:27.720
+is empty. It has two fields,
+but both are just empty strings.
+
+132
+00:06:28.287 --> 00:06:31.290
+Now let's try running this memory
+editing tool ourselves.
+
+133
+00:06:31.290 --> 00:06:34.894
+All right, so we ran the core memory save
+with some additional information
+
+134
+00:06:34.894 --> 00:06:37.530
+about the human
+that the human's name is Charles.
+
+135
+00:06:37.530 --> 00:06:40.533
+So this should have updated the memory.
+
+136
+00:06:40.533 --> 00:06:40.900
+Great.
+
+137
+00:06:40.900 --> 00:06:43.903
+So now we know our memory
+editing tool is working as we thought.
+
+138
+00:06:44.203 --> 00:06:47.974
+The next step is to find a way
+to actually describe to the LLM
+
+139
+00:06:48.241 --> 00:06:51.277
+how it should use this tool.
+With OpenAI's API
+
+140
+00:06:51.477 --> 00:06:53.679
+they require you to do two things:
+
+141
+00:06:53.679 --> 00:06:56.315
+You have to provide a description
+of the function.
+
+142
+00:06:56.315 --> 00:06:59.218
+In this case, our description
+is to save important information
+
+143
+00:06:59.218 --> 00:07:02.221
+about you, the agent, or the human
+you're chatting with.
+
+144
+00:07:02.288 --> 00:07:05.324
+The next thing we need to do is provide
+some sort of Json schema.
+
+145
+00:07:05.992 --> 00:07:08.795
+This is basically describing
+in a programmatic way
+
+146
+00:07:08.795 --> 00:07:12.365
+what the arguments to the function are,
+and what the types of the arguments are.
+
+147
+00:07:12.832 --> 00:07:17.303
+Additionally, we specify
+that both of the arguments are required.
+
+148
+00:07:17.904 --> 00:07:20.907
+Now that we have our tool
+editing, description and schema,
+
+149
+00:07:21.374 --> 00:07:24.377
+we can pass that metadata into OpenAI.
+
+150
+00:07:24.477 --> 00:07:25.278
+So OpenAI
+
+151
+00:07:25.278 --> 00:07:29.248
+will use this information to inform the LLM
+that it has access to these tools.
+
+152
+00:07:29.582 --> 00:07:31.884
+So let's take a quick
+look at this call again.
+
+153
+00:07:31.884 --> 00:07:34.020
+We're passing in the system prompt.
+
+154
+00:07:34.020 --> 00:07:36.222
+Then we're also passing in the memory.
+
+155
+00:07:36.222 --> 00:07:38.491
+And then finally we're passing in the chat
+history.
+
+156
+00:07:38.491 --> 00:07:41.761
+Again the chat history here
+is a single message saying "My name is Bob."
+
+157
+00:07:42.361 --> 00:07:44.430
+So let's think about what
+we would expect to happen.
+
+158
+00:07:45.398 --> 00:07:48.034
+Well, the user is saying my name is Bob,
+
+159
+00:07:48.034 --> 00:07:51.037
+but the memory is initialized
+in an empty state.
+
+160
+00:07:51.604 --> 00:07:55.141
+So we would hope that the agent here
+will decide to use the core memory
+
+161
+00:07:55.141 --> 00:07:59.278
+save function to save the information
+about the user's name being Bob.
+
+162
+00:07:59.679 --> 00:08:01.180
+Let's see what happens.
+
+163
+00:08:01.180 --> 00:08:03.282
+You can see that
+the finished reason is tool calls.
+
+164
+00:08:03.282 --> 00:08:06.319
+This means that the agent
+or the LLM is trying to call a tool.
+
+165
+00:08:06.886 --> 00:08:10.990
+We can see that the tool that the agent
+is trying to call is core memory save.
+
+166
+00:08:11.424 --> 00:08:16.424
+And we can see that the arguments
+of the function are section, human, memory.
+
+167
+00:08:16.729 --> 00:08:18.564
+The human's name is Bob.
+
+168
+00:08:18.564 --> 00:08:20.800
+Amazing. This is exactly what we wanted.
+
+169
+00:08:20.800 --> 00:08:23.970
+The LLM is trying to save this information
+that the human's name
+
+170
+00:08:23.970 --> 00:08:26.939
+is Bob,
+after seeing it in the chat history.
+
+171
+00:08:27.039 --> 00:08:28.508
+All right, so that's pretty great.
+
+172
+00:08:28.508 --> 00:08:31.410
+But OpenAI isn't actually going
+to execute the tool for you.
+
+173
+00:08:31.410 --> 00:08:33.679
+That's something
+then you're going to have to do yourself.
+
+174
+00:08:33.679 --> 00:08:37.316
+The first step to executing the tool
+is going to be to load the arguments.
+
+175
+00:08:37.750 --> 00:08:41.621
+OpenAI's response passes the arguments
+as a stringified Json.
+
+176
+00:08:42.121 --> 00:08:44.924
+That means that we can use the Json
+that loads function
+
+177
+00:08:44.924 --> 00:08:47.760
+to load the arguments
+back into a dictionary.
+
+178
+00:08:47.760 --> 00:08:49.462
+Now that we have the arguments
+in the dictionary,
+
+179
+00:08:49.462 --> 00:08:51.931
+we just need to pass them
+to the actual function.
+
+180
+00:08:51.931 --> 00:08:54.267
+We can use this
+star-star syntax to do that.
+
+181
+00:08:55.334 --> 00:08:55.868
+Now that we have the
+
+182
+00:08:55.868 --> 00:08:58.871
+arguments in the dictionary,
+all we need to do is run the function.
+
+183
+00:08:59.939 --> 00:09:02.942
+After running the function,
+we can check our memory.
+
+184
+00:09:03.809 --> 00:09:06.012
+And as expected, it got updated.
+
+185
+00:09:06.012 --> 00:09:07.480
+Let's run the agent again
+
+186
+00:09:07.480 --> 00:09:10.483
+and see how it responds differently
+now that the memory has been updated.
+
+187
+00:09:11.117 --> 00:09:13.419
+In this request we're including the system prompt,
+
+188
+00:09:13.419 --> 00:09:16.789
+the updated memory object and a question
+"what is my name?"
+
+189
+00:09:17.490 --> 00:09:19.625
+As expected, the agent returns the reply
+
+190
+00:09:19.625 --> 00:09:21.093
+"Your name is Bob."
+
+191
+00:09:21.093 --> 00:09:21.761
+Congrats!
+
+192
+00:09:21.761 --> 00:09:24.764
+You've now implemented a memory
+editing function.
+
+193
+00:09:24.997 --> 00:09:28.401
+In our current implementation,
+the agent can only take one step at a time
+
+194
+00:09:28.768 --> 00:09:31.771
+and can either edit the memory
+or respond to the user.
+
+195
+00:09:32.038 --> 00:09:35.041
+However, if we want our agent
+to support multi-step reasoning,
+
+196
+00:09:35.041 --> 00:09:37.343
+so can combine multiple actions together,
+
+197
+00:09:37.343 --> 00:09:38.711
+we can implement an agentic loop
+
+198
+00:09:38.711 --> 00:09:42.748
+by calling chat completions in a while
+loop, and allowing the agent to decide
+
+199
+00:09:43.049 --> 00:09:46.052
+whether it wants to continue its reasoning
+steps or break out of the loop.
+
+200
+00:09:46.552 --> 00:09:50.623
+For simplicity, we'll just assume
+that if the agent response is not a tool,
+
+201
+00:09:50.656 --> 00:09:54.393
+we'll break out of the loop, and if it is
+a tool, we'll stay inside the loop.
+
+202
+00:09:54.961 --> 00:09:57.330
+Let's start by resetting the agent memory.
+
+203
+00:09:57.330 --> 00:10:00.299
+Next, we'll write a slightly revision
+to the system prompt.
+
+204
+00:10:00.466 --> 00:10:02.969
+The system prompt
+has additional information on how
+
+205
+00:10:02.969 --> 00:10:05.071
+the agent should use the tools.
+
+206
+00:10:05.071 --> 00:10:08.274
+We're letting the agent know
+that it either needs to call a tool
+
+207
+00:10:08.574 --> 00:10:10.776
+or write a response to the user.
+
+208
+00:10:10.776 --> 00:10:13.946
+We're also telling the agent not to take
+the same actions multiple times.
+
+209
+00:10:14.580 --> 00:10:17.283
+And lastly, we're also telling the agent
+that when it learns
+
+210
+00:10:17.283 --> 00:10:20.553
+new information, it should always call
+the Core Memory Save tool.
+
+211
+00:10:21.087 --> 00:10:23.022
+These are just additional instructions
+that help
+
+212
+00:10:23.022 --> 00:10:26.058
+the agent understand how to use the tools
+that we're providing it.
+
+213
+00:10:26.626 --> 00:10:30.363
+Our basic agent step function
+will just take one argument user message.
+
+214
+00:10:30.997 --> 00:10:34.000
+Next, we need to prepare
+the inputs to the LLM call.
+
+215
+00:10:34.533 --> 00:10:37.069
+In our case, we have the system prompt.
+
+216
+00:10:37.069 --> 00:10:40.706
+We have the memory,
+and we also include the new user message.
+
+217
+00:10:41.173 --> 00:10:43.643
+Next, let's actually start building a loop.
+
+218
+00:10:43.643 --> 00:10:47.179
+So the loop begins with calling OpenAI's
+chat completion's API.
+
+219
+00:10:47.546 --> 00:10:50.850
+Remember,
+we need to pass information to the API
+
+220
+00:10:51.050 --> 00:10:53.319
+about how we should use this tool.
+
+221
+00:10:53.319 --> 00:10:55.321
+Once we get a response back from the API,
+
+222
+00:10:55.321 --> 00:10:58.257
+we append this message to the messages
+list.
+
+223
+00:10:58.257 --> 00:10:59.792
+Now this is the important part.
+
+224
+00:10:59.792 --> 00:11:03.295
+If the agent isn't calling a tool,
+then we want to break out of the loop
+
+225
+00:11:03.596 --> 00:11:04.897
+by returning.
+
+226
+00:11:04.897 --> 00:11:07.066
+On the other hand,
+if the agent is calling the tool,
+
+227
+00:11:07.066 --> 00:11:10.069
+we're going to execute that tool
+and continue the loop.
+
+228
+00:11:10.069 --> 00:11:13.139
+The first thing we do is print the tool
+just so that we can see it.
+
+229
+00:11:13.706 --> 00:11:17.176
+Next, we need to load the arguments
+into a Python dictionary.
+
+230
+00:11:17.543 --> 00:11:19.679
+Once we've loaded the arguments
+as a Python dictionary,
+
+231
+00:11:19.679 --> 00:11:22.648
+we can actually execute the core
+memory save function.
+
+232
+00:11:22.648 --> 00:11:25.351
+And lastly,
+once we've executed the tool call,
+
+233
+00:11:25.351 --> 00:11:28.721
+we also need to inject the tool
+call response into the message history.
+
+234
+00:11:29.288 --> 00:11:32.291
+This is the standard style
+that OpenAI expects you to follow.
+
+235
+00:11:32.725 --> 00:11:35.728
+Now let's actually try running
+this agentic loop with a simple message.
+
+236
+00:11:35.728 --> 00:11:37.830
+"My name is Bob." Great.
+
+237
+00:11:37.830 --> 00:11:42.234
+So we can see that the agent did
+two things: It first called the tool.
+
+238
+00:11:42.334 --> 00:11:46.472
+You can see that it updated the section of
+memory called human with the new memory,
+
+239
+00:11:46.572 --> 00:11:49.575
+The user's name is Bob,
+just as we expected.
+
+240
+00:11:49.775 --> 00:11:52.178
+Then the agent has a follow-up message.
+
+241
+00:11:52.178 --> 00:11:53.045
+Amazing.
+
+242
+00:11:53.045 --> 00:11:56.849
+We can see that the agent is able to both
+edit its memory and generate a response
+
+243
+00:11:56.849 --> 00:12:00.519
+to the user that uses
+the updated memory, all in a single step.
+
+244
+00:12:00.986 --> 00:12:04.290
+Although in this example
+we only support two actions, a single tool
+
+245
+00:12:04.290 --> 00:12:05.925
+and responding to the user.
+
+246
+00:12:05.925 --> 00:12:07.626
+This same structure can be used
+to implement
+
+247
+00:12:07.626 --> 00:12:10.763
+much more complex reasoning loops
+that combine many different tools.
+
+248
+00:12:11.230 --> 00:12:12.531
+In MemGPT,
+
+249
+00:12:12.531 --> 00:12:15.735
+all actions,
+even in a response to a user as a tool.
+
+250
+00:12:16.168 --> 00:12:19.905
+And some tools such as sending a message,
+are designed to break the reasoning loop,
+
+251
+00:12:20.139 --> 00:12:21.607
+whereas other tools such
+
+252
+00:12:21.607 --> 00:12:25.411
+as searching archival memory and editing
+memory are designed not to break the loop.
+
+253
+00:12:26.245 --> 00:12:27.613
+Congratulations!
+
+254
+00:12:27.613 --> 00:12:28.981
+You've now implemented an agent
+
+255
+00:12:28.981 --> 00:12:32.151
+with self-editing, memory,
+and multi-step reasoning from scratch.
+
+256
+00:12:32.618 --> 00:12:36.188
+In the next section will go deeper
+into how MemGPT agents actually work.
+

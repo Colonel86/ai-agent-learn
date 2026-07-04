@@ -69,14 +69,14 @@
 | --- | --- | --- | --- | --- |
 | 12 | Long-Term Agentic Memory With LangGraph | 语义/情景/程序记忆、邮件助手实战 ⭐ **主线核心** | #17 | ✅ 已学 |
 | 12a | Agent Memory: Building Memory-Aware Agents(Oracle) | Agent 记忆机制(与 #12 横向对比)——记忆工程五模式、Toolbox、上下文压实 | — | ✅ 已学 |
-| 12b | LLMs as Operating Systems: Agent Memory(Letta / MemGPT) | Agent 自主管理记忆(OS 视角,候选) | — | ⏸️ 可选(与 #12 重叠) |
+| 12b | LLMs as Operating Systems: Agent Memory(Letta / MemGPT) | Agent 自主管理记忆(OS 视角)——heartbeat、core/recall/archival、共享记忆块 | — | ✅ 已学 |
 
 ### 💡 本阶段学习建议
 
 - **#5 Advanced RAG** 是 RAG 阶段的"地基"——先学会评估,后面再玩花样才不会盲调。
 - **RAG 主线框架选 LlamaIndex**(#18 → #19):相比通用编排框架,LlamaIndex 在文档处理、索引结构、Agentic 检索上的抽象更深,作为 RAG 主线性价比最高。
 - **#6 Chroma 高级检索** 与 **#18 Agentic RAG** 是分叉点:偏检索深度选 #6,偏 Agent 调度选 #18。两者都做,能完整覆盖 RAG 的"内部优化"与"外部编排"两层。
-- **#12 LangGraph Memory** 必学;**#12a 已学**(记忆工程方法论比预期通用,与 #12 互补而非重叠);**#12b 是候选**,看 Memory 是不是业务重点再决定是否加入。
+- **#12 LangGraph Memory** 必学;**#12a/12b 均已学**——两者构成同一问题的两种架构答案:12a 工程确定性路线(代码控制记忆操作),12b agent 自治路线(LLM 自管上下文),对比复盘见 12b notes L7。
 - **决定上图谱 RAG(#26)前**,先看 #5 评估出来的 baseline RAG 还有多少优化空间——图谱 RAG 维护成本高,不是默认选项。
 
 ---
@@ -162,7 +162,7 @@ flowchart TB
     subgraph 上下文["Phase 4 上下文层(RAG/Memory)"]
         direction TB
         R["🅰 RAG"] --> R4["#4 Chat with Your Data"] --> R5["#5 Advanced RAG(评估)⭐"] --> R6["#6 Chroma 高级检索"] --> R18["#18 Agentic RAG (LlamaIndex)⭐"] --> R19["#19 Event-Driven (LlamaIndex)"] --> R26["#26 Knowledge Graphs"]
-        M["🅱 Memory"] --> M12["#12 LangGraph 长期记忆 ⭐"] --> M12b["#12a 已学(Oracle) / #12b 候选(Letta)"]
+        M["🅱 Memory"] --> M12["#12 LangGraph 长期记忆 ⭐"] --> M12b["#12a/b 已学(Oracle/Letta)"]
     end
     subgraph 横向["Phase 5 横向扩展(广度)"]
         direction TB
@@ -218,7 +218,7 @@ flowchart TB
 
 ---
 
-## ✅ 已学笔记速查(22 门,对应 `agent/courses/`)
+## ✅ 已学笔记速查(23 门,对应 `agent/courses/`)
 
 | 课程 | 笔记路径 |
 | --- | --- |
@@ -237,6 +237,7 @@ flowchart TB
 | AI Agents in LangGraph | `../courses/11-AI Agents in LangGraph/` |
 | Long-Term Agentic Memory With LangGraph | `../courses/12-Long-Term Agentic Memory With LangGraph/` |
 | Agent Memory: Building Memory-Aware Agents(Oracle) | `../courses/12a-Agent Memory Building Memory-Aware Agents/` |
+| LLMs as Operating Systems: Agent Memory(Letta / MemGPT) | `../courses/12b-LLMs as Operating Systems Agent Memory/` |
 | Multi AI Agent Systems with crewAI | `../courses/13-Multi AI Agent Systems with crewAI/` |
 | Agent Skills with Anthropic | `../courses/16-Agent Skills with Anthropic/` |
 | Building Agentic RAG with LlamaIndex | `../courses/18-Building Agentic RAG with LlamaIndex/` |

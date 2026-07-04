@@ -1,0 +1,479 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.003 --> 00:00:02.773
+Welcome to LLMs as Operating Systems:
+
+2
+00:00:02.773 --> 00:00:03.807
+Agent Memory.
+
+3
+00:00:03.807 --> 00:00:05.909
+Built in partnership with Letta.
+
+4
+00:00:05.909 --> 00:00:09.279
+In this course,
+you'll explore and build memory for AI agents.
+
+5
+00:00:09.613 --> 00:00:14.584
+You will also explored the idea that an LLM agent
+can manage its own context window,
+
+6
+00:00:14.885 --> 00:00:18.522
+essentially acting as the operating system
+in an AI application.
+
+7
+00:00:18.655 --> 00:00:19.356
+Your instructors
+
+8
+00:00:19.356 --> 00:00:23.059
+for this course are two authors of
+of the influential paper
+
+9
+00:00:23.126 --> 00:00:27.130
+MemGPT: Towards LLMs as Operating Systems
+and are experts on this topic.
+
+10
+00:00:27.364 --> 00:00:29.833
+Welcome, Charles Packer and Sarah Wooders.
+
+11
+00:00:29.833 --> 00:00:30.734
+Thanks for having us.
+
+12
+00:00:30.734 --> 00:00:31.601
+Thank you.
+
+13
+00:00:31.601 --> 00:00:36.339
+If you've taken some taken some of our previous courses
+on prompting LLMs via an API,
+
+14
+00:00:36.540 --> 00:00:40.744
+you might be familiar with the idea
+that although LLMs can do amazing things,
+
+15
+00:00:41.044 --> 00:00:42.879
+they don't have persistent memory
+
+16
+00:00:42.879 --> 00:00:45.882
+and that you need to manage its memory
+explicitly.
+
+17
+00:00:46.149 --> 00:00:50.320
+Indeed, the common example is
+if you make one API call to say "Hello,
+
+18
+00:00:50.320 --> 00:00:53.990
+my name is Sarah" and then make a separate
+API call to ask "What is my name",
+
+19
+00:00:54.291 --> 00:00:55.592
+it won't remember.
+
+20
+00:00:55.592 --> 00:00:57.461
+If you want it to remember,
+you have to pass
+
+21
+00:00:57.461 --> 00:01:00.497
+in the conversation's history again
+with each additional API call.
+
+22
+00:01:00.997 --> 00:01:05.535
+By including information, the prompts
+also referred to as the input context,
+
+23
+00:01:05.802 --> 00:01:06.803
+you can give the model
+
+24
+00:01:06.803 --> 00:01:10.240
+additional information
+to actually use to generate is output.
+
+25
+00:01:10.707 --> 00:01:11.608
+Exactly.
+
+26
+00:01:11.608 --> 00:01:15.479
+And what is in the context window
+really determines the behavior of the LLM
+
+27
+00:01:15.479 --> 00:01:16.847
+and your application.
+
+28
+00:01:16.847 --> 00:01:18.715
+For example, a chatbot application
+
+29
+00:01:18.715 --> 00:01:22.152
+has conversational memory that stores
+earlier exchanges in the conversation.
+
+30
+00:01:22.652 --> 00:01:25.655
+You may also want to track personal facts
+or names over time.
+
+31
+00:01:25.789 --> 00:01:27.891
+Or keep track of tasks.
+
+32
+00:01:27.891 --> 00:01:31.061
+You may want to share information
+between LLMs in different agents.
+
+33
+00:01:31.895 --> 00:01:32.362
+In RAG
+
+34
+00:01:32.362 --> 00:01:36.099
+applications, you retrieve relevant
+information from an external datasource
+
+35
+00:01:36.099 --> 00:01:38.502
+and introduce it
+into the context of the LLM.
+
+36
+00:01:38.502 --> 00:01:41.671
+So an LLMs can make use of any information
+
+37
+00:01:41.671 --> 00:01:45.008
+that is included in its input context
+to generate its response.
+
+38
+00:01:45.408 --> 00:01:49.145
+But the space available in the input
+context window is limited,
+
+39
+00:01:49.446 --> 00:01:54.417
+and using longer input contexts also cost
+more and results in slower processing.
+
+40
+00:01:54.718 --> 00:01:57.721
+So managing this in-context information
+
+41
+00:01:57.921 --> 00:02:01.091
+what to include in this input
+context is really important.
+
+42
+00:02:01.558 --> 00:02:04.194
+The MemGPT paper describes
+a novel approach
+
+43
+00:02:04.194 --> 00:02:07.197
+to this - to let the LLM manage it.
+
+44
+00:02:07.197 --> 00:02:11.368
+If you're familiar with the concept
+of virtual memory from computer systems,
+
+45
+00:02:11.601 --> 00:02:16.406
+there's a nice analogy
+that MemGPT uses to explain this idea.
+
+46
+00:02:17.007 --> 00:02:19.843
+But if you aren't familiar
+with that concept of virtual memory,
+
+47
+00:02:19.843 --> 00:02:20.610
+don't worry about it.
+
+48
+00:02:20.610 --> 00:02:23.613
+This course will still make sense
+and still be useful to you.
+
+49
+00:02:23.847 --> 00:02:25.982
+But Charles,
+why don't you explain that analogy.
+
+50
+00:02:25.982 --> 00:02:26.650
+Sure.
+
+51
+00:02:26.650 --> 00:02:30.487
+So we like to think of the context window,
+like the virtual memory on a computer.
+
+52
+00:02:30.687 --> 00:02:33.256
+Your computer thinks it has a really large
+memory,
+
+53
+00:02:33.256 --> 00:02:35.992
+much bigger than the physical memory
+it actually has.
+
+54
+00:02:35.992 --> 00:02:36.927
+Specifically,
+
+55
+00:02:36.927 --> 00:02:39.329
+it has a very large virtual memory.
+
+56
+00:02:39.329 --> 00:02:39.930
+When it tries
+
+57
+00:02:39.930 --> 00:02:43.466
+to reference a virtual location
+that is not present in physical memory,
+
+58
+00:02:43.700 --> 00:02:47.637
+the operating system will first make room
+for it by moving a block of information
+
+59
+00:02:47.737 --> 00:02:51.908
+that is in physical memory out to disk,
+preserving any changes in that block,
+
+60
+00:02:52.208 --> 00:02:55.579
+and then fetching the new block
+of information with a reference address
+
+61
+00:02:55.745 --> 00:02:58.315
+from disk back into physical memory.
+
+62
+00:02:58.315 --> 00:03:00.951
+Similarly,
+you can think of the context window
+
+63
+00:03:00.951 --> 00:03:05.355
+of an LLM as analogous
+to the physical memory. In our system,
+
+64
+00:03:05.355 --> 00:03:08.858
+an LLM agent
+includes the role of the operating system
+
+65
+00:03:08.892 --> 00:03:10.827
+and makes decisions about what information
+
+66
+00:03:10.827 --> 00:03:12.696
+should be included in the context window.
+
+67
+00:03:12.696 --> 00:03:16.066
+AI agents can use an LLM
+for planning, use tools,
+
+68
+00:03:16.066 --> 00:03:20.003
+and make decisions such as deciding
+to stop or continue a task.
+
+69
+00:03:20.570 --> 00:03:24.708
+A similar approach
+also lets an AI agent manage as a memory.
+
+70
+00:03:25.141 --> 00:03:26.810
+To support memory management,
+
+71
+00:03:26.810 --> 00:03:30.146
+the agent is given a section of
+the context window for long term memory,
+
+72
+00:03:30.480 --> 00:03:32.349
+which the agent can write to.
+
+73
+00:03:32.349 --> 00:03:36.486
+The agent is given tools to access
+external storage, such as databases,
+
+74
+00:03:36.686 --> 00:03:39.422
+to create a larger memory store
+
+75
+00:03:39.422 --> 00:03:43.860
+combining tools to write to both its
+in context and external memory,
+
+76
+00:03:44.160 --> 00:03:45.562
+as well as tools to search
+
+77
+00:03:45.562 --> 00:03:48.898
+external memory and place those results
+into the LLM context,
+
+78
+00:03:49.395 --> 00:03:52.732
+So in this course, you'll
+get to put these ideas into practice.
+
+79
+00:03:52.765 --> 00:03:53.700
+In these lessons,
+
+80
+00:03:53.700 --> 00:03:57.670
+you will build an LLM agent
+that can edit its own memory from scratch.
+
+81
+00:03:58.037 --> 00:04:01.074
+This will ground you
+in the basic ideas of LLM memory management.
+
+82
+00:04:01.641 --> 00:04:05.712
+Next, you'll go beyond the basics
+and learn the key concepts from the MemGPT paper.
+
+83
+00:04:05.979 --> 00:04:09.716
+Then we'll introduce Letta an open source
+agent framework in which agents
+
+84
+00:04:09.716 --> 00:04:12.752
+have the tools and information
+to manage the context window.
+
+85
+00:04:13.152 --> 00:04:17.557
+You can use Letta not only to build MemGPT
+agents as described in the original paper,
+
+86
+00:04:17.690 --> 00:04:21.728
+but also go beyond the research paper
+and build agents with more advanced types
+
+87
+00:04:21.728 --> 00:04:22.362
+of memory.
+
+88
+00:04:22.362 --> 00:04:23.396
+In multiple lessons,
+
+89
+00:04:23.396 --> 00:04:26.766
+you'll create agents and explore
+the details of how memory is built.
+
+90
+00:04:27.166 --> 00:04:30.470
+You'll put this into practice
+by building a custom task memory.
+
+91
+00:04:31.004 --> 00:04:32.939
+You will use this knowledge
+in applications,
+
+92
+00:04:32.939 --> 00:04:35.308
+including your own research agent
+and an H.R.
+
+93
+00:04:35.308 --> 00:04:38.211
+multi-agent application,
+where agents share a memory.
+
+94
+00:04:38.411 --> 00:04:41.881
+We want to acknowledge some of the people
+who helped create this course.
+
+95
+00:04:42.315 --> 00:04:46.286
+Professor Joseph Gonzalez,
+who is a UC Berkeley
+
+96
+00:04:46.286 --> 00:04:50.423
+faculty member
+and a Letta advisor. The Letta team.
+
+97
+00:04:50.590 --> 00:04:53.259
+And from DeepLearning.AI
+Geoff Ladwig.
+
+98
+00:04:53.559 --> 00:04:55.762
+The ideas here are really exciting.
+
+99
+00:04:55.762 --> 00:04:59.399
+Letting an AI agent manage
+its own memory is a novel
+
+100
+00:04:59.399 --> 00:05:02.735
+and powerful technique,
+and it provides a powerful infrastructure
+
+101
+00:05:03.002 --> 00:05:05.772
+on top of which to build
+many applications.
+
+102
+00:05:05.772 --> 00:05:08.708
+Let's go on to the next video
+to start learning about this.
+

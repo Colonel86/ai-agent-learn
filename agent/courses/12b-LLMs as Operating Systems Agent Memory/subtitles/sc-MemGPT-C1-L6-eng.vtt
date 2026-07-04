@@ -1,0 +1,1321 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:01.101
+In the Letta framework,
+
+2
+00:00:01.101 --> 00:00:03.870
+agents are designed to be deployed
+as services.
+
+3
+00:00:03.870 --> 00:00:07.807
+In this lesson, we'll go over how
+we can implement multi-agent collaboration
+
+4
+00:00:07.807 --> 00:00:12.412
+using tools for cross-agent communication
+as well as sharing memory blocks.
+
+5
+00:00:12.812 --> 00:00:14.447
+Let's have some fun!
+
+6
+00:00:14.447 --> 00:00:17.450
+In the Letta framework,
+agents are designed to run as a service
+
+7
+00:00:17.484 --> 00:00:20.787
+so that a real application
+can communicate with them via Rest APIs.
+
+8
+00:00:21.287 --> 00:00:24.290
+So if you have something like a mobile app
+that's using a chatbot,
+
+9
+00:00:24.357 --> 00:00:27.160
+that mobile app will send
+Rest API requests
+
+10
+00:00:27.160 --> 00:00:30.096
+to some kind of Letta server
+that's backed up by a database,
+
+11
+00:00:30.096 --> 00:00:33.800
+and then that server will return back a
+response that the mobile app can then use.
+
+12
+00:00:34.334 --> 00:00:37.537
+So how can we have multi-agent
+collaboration when we have agents
+
+13
+00:00:37.537 --> 00:00:38.872
+running separate services?
+
+14
+00:00:38.872 --> 00:00:41.274
+And we want them to coordinate
+and communicate.
+
+15
+00:00:41.274 --> 00:00:45.111
+So one solution is to have the agents
+themselves send each other messages.
+
+16
+00:00:45.178 --> 00:00:45.912
+So for example
+
+17
+00:00:45.912 --> 00:00:48.982
+you could send a Post request
+from an agent on one server to another.
+
+18
+00:00:49.416 --> 00:00:51.885
+Another option is to have shared
+memory blocks.
+
+19
+00:00:51.885 --> 00:00:54.888
+So you can have blocks that are
+in a shared persistent data store,
+
+20
+00:00:55.155 --> 00:00:59.059
+and then have agents have synced to memory
+blocks across different services.
+
+21
+00:00:59.759 --> 00:01:03.329
+In this lab, we're going to go over
+how to implement multi-agent collaboration
+
+22
+00:01:03.329 --> 00:01:04.397
+using Letta.
+
+23
+00:01:04.397 --> 00:01:07.367
+We're going to do this
+by essentially implementing a multi-agent
+
+24
+00:01:07.367 --> 00:01:12.038
+recruiting workflow for evaluating leads
+and drafting personalized outreach emails.
+
+25
+00:01:12.405 --> 00:01:13.606
+So we're going to have two different
+
+26
+00:01:13.606 --> 00:01:16.976
+agents and evaluator agent
+that evaluates lead candidates.
+
+27
+00:01:17.343 --> 00:01:20.947
+And then also an outreach agent,
+which draws personalized outreach emails.
+
+28
+00:01:21.281 --> 00:01:23.183
+These two agents are going to be able
+to communicate
+
+29
+00:01:23.183 --> 00:01:26.186
+and coordinate
+with each other to work together.
+
+30
+00:01:26.252 --> 00:01:28.288
+These agents will also have shared memory.
+
+31
+00:01:28.288 --> 00:01:31.925
+We can essentially implement this
+by creating a shared memory block
+
+32
+00:01:32.058 --> 00:01:34.394
+that is attached to both agents.
+
+33
+00:01:34.394 --> 00:01:36.930
+And this shared memory
+block will basically store memories
+
+34
+00:01:36.930 --> 00:01:40.700
+about the company that the agents
+are working together to recruit for.
+
+35
+00:01:42.735 --> 00:01:43.937
+So as always, I'm going to
+
+36
+00:01:43.937 --> 00:01:46.906
+create my Letta client
+to connect to the running Letta service,
+
+37
+00:01:47.974 --> 00:01:50.410
+and then I'm also going to paste
+in a helper function
+
+38
+00:01:50.410 --> 00:01:52.011
+for printing the message.
+
+39
+00:01:52.011 --> 00:01:54.681
+So we've used this already
+in other lessons.
+
+40
+00:01:54.681 --> 00:01:58.051
+But I'm also going to add in a print
+for the type system message.
+
+41
+00:01:58.318 --> 00:02:01.855
+And then also since we're streaming,
+also make sure to print user statistics
+
+42
+00:02:01.855 --> 00:02:04.858
+when that's returned
+back in the streaming messages.
+
+43
+00:02:05.725 --> 00:02:08.461
+So before we create our agents
+we're going to first create
+
+44
+00:02:08.461 --> 00:02:09.963
+their shared memory block.
+
+45
+00:02:09.963 --> 00:02:13.833
+So this is basically a block that
+we can create directly through the client
+
+46
+00:02:14.100 --> 00:02:17.837
+that will be attached to both agents
+so that the agents can have shared memory.
+
+47
+00:02:18.972 --> 00:02:22.308
+So this block is basically going to have
+a value which is the company description.
+
+48
+00:02:22.308 --> 00:02:23.710
+So the company is called
+
+49
+00:02:23.710 --> 00:02:27.947
+Agent OS and is deploying AI tools to make
+it easier to create and deploy LLM agents.
+
+50
+00:02:28.348 --> 00:02:31.050
+And then we can use the client
+to create this block.
+
+51
+00:02:31.050 --> 00:02:33.920
+So we'll pass in as the value
+the company description
+
+52
+00:02:33.920 --> 00:02:36.589
+and then also have the block,
+have the label company,
+
+53
+00:02:36.589 --> 00:02:38.858
+and then also
+a limit of 10,000 characters.
+
+54
+00:02:40.693 --> 00:02:41.861
+So I can print out this
+
+55
+00:02:41.861 --> 00:02:45.465
+return block object to see that it also
+now has this unique ID.
+
+56
+00:02:45.798 --> 00:02:49.969
+So we can now reference this block
+either to modify or to retrieve it
+
+57
+00:02:49.969 --> 00:02:52.939
+later on using this unique
+block ID with the client.
+
+58
+00:02:54.107 --> 00:02:56.009
+So now let's create our two agents.
+
+59
+00:02:56.009 --> 00:03:00.613
+So in this setting we're going to create
+both an outreach agent for drafting emails
+
+60
+00:03:00.813 --> 00:03:04.450
+and then also an evaluation agent
+for evaluating different candidates.
+
+61
+00:03:05.251 --> 00:03:07.587
+The first station,
+which is going to be the outreach
+
+62
+00:03:07.587 --> 00:03:10.757
+agent, is going to have access
+to a draft candidate email tool.
+
+63
+00:03:10.757 --> 00:03:15.528
+So this is basically a tool to write out
+an email draft in the contact field
+
+64
+00:03:15.762 --> 00:03:18.765
+so that we can later
+review it or decide to send it.
+
+65
+00:03:19.265 --> 00:03:22.769
+So we'll create this tool
+with the same upsert from function tool
+
+66
+00:03:22.769 --> 00:03:24.571
+that we've used with the client before it.
+
+67
+00:03:24.571 --> 00:03:27.774
+And so this will basically instantiate
+a Letta tool on the server.
+
+68
+00:03:29.042 --> 00:03:30.977
+And now we can create our outreach agent.
+
+69
+00:03:30.977 --> 00:03:33.546
+So we're going to give it
+basically a persona that kind of gives it
+
+70
+00:03:33.546 --> 00:03:35.548
+some descriptions
+about how it should be acting.
+
+71
+00:03:35.548 --> 00:03:39.352
+So we say in the persona
+you're responsible for drafting emails
+
+72
+00:03:39.352 --> 00:03:42.956
+on behalf of a company with the draft
+candidate email tool. Candidates to
+
+73
+00:03:42.956 --> 00:03:44.457
+email will be messaged to you.
+
+74
+00:03:44.457 --> 00:03:46.459
+So we'll kind of go over this
+a bit more later.
+
+75
+00:03:46.459 --> 00:03:49.996
+But strong candidates will be sent to this
+agent from the other agent,
+
+76
+00:03:50.296 --> 00:03:53.299
+so that this outreach agent
+can draft an email for that candidate.
+
+77
+00:03:53.933 --> 00:03:57.136
+So, we are now
+also creating the agent from the client.
+
+78
+00:03:57.136 --> 00:03:59.505
+So we'll pass in the name Outreach Agent.
+
+79
+00:03:59.505 --> 00:04:01.007
+We're also pass in one memory
+
+80
+00:04:01.007 --> 00:04:04.410
+block for the persona
+that has the label persona and the value.
+
+81
+00:04:04.844 --> 00:04:08.781
+And then we're actually also attaching
+the block that we created before.
+
+82
+00:04:08.982 --> 00:04:12.719
+So we don't actually pass in the block
+here because the block has already
+
+83
+00:04:12.719 --> 00:04:13.620
+been created.
+
+84
+00:04:13.620 --> 00:04:18.224
+We instead pass in the block
+ID to tell Letta that this block ID
+
+85
+00:04:18.291 --> 00:04:21.561
+that we previously made should be attached
+to this agent, and the data
+
+86
+00:04:21.561 --> 00:04:24.731
+inside of this block should be contained
+within this agent's context window.
+
+87
+00:04:25.398 --> 00:04:28.134
+And then of course, we also set the LLM
+model in the embedding model.
+
+88
+00:04:28.134 --> 00:04:30.436
+And then also pass in this tool name.
+
+89
+00:04:30.436 --> 00:04:33.773
+You can also do this
+by passing in the tool ID in the tool IDs.
+
+90
+00:04:35.074 --> 00:04:37.377
+So next we're
+going to create the evaluation agent.
+
+91
+00:04:37.377 --> 00:04:39.279
+So this agent will have a tool
+
+92
+00:04:39.279 --> 00:04:41.481
+which is a reject tool
+so it can reject the candidate.
+
+93
+00:04:41.481 --> 00:04:43.349
+So decide not to email a candidate.
+
+94
+00:04:43.349 --> 00:04:46.719
+And we're going to create this reject tool
+first, so we can attach it to the agent.
+
+95
+00:04:47.120 --> 00:04:50.356
+And for this agent
+we're going to construct a persona for it.
+
+96
+00:04:50.356 --> 00:04:54.127
+So the eval persona that tells it
+we are looking for this set of skills.
+
+97
+00:04:54.127 --> 00:04:57.263
+So things like front-end, software
+engineering experience with our LLMs.
+
+98
+00:04:57.597 --> 00:05:00.233
+So ideal
+candidate should have these skills.
+
+99
+00:05:00.233 --> 00:05:02.468
+And these weaker candidates
+that don't match
+
+100
+00:05:02.468 --> 00:05:04.971
+the skill sets
+should go through the reject tool
+
+101
+00:05:04.971 --> 00:05:08.775
+and strong candidate should be sent
+to the agent with the ID of the outreach
+
+102
+00:05:08.775 --> 00:05:10.143
+agent that we just created.
+
+103
+00:05:10.143 --> 00:05:13.646
+So by passing in the outreach
+agents ID into the persona,
+
+104
+00:05:13.646 --> 00:05:17.684
+we're telling this agent which other agent
+should you message in order to
+
+105
+00:05:17.684 --> 00:05:21.421
+communicate that this candidate is strong
+and we want to draft an email for them.
+
+106
+00:05:22.755 --> 00:05:25.058
+So now
+we can actually create the eval agent.
+
+107
+00:05:25.058 --> 00:05:28.094
+So similarly to the other agent,
+we're just going to provide
+
+108
+00:05:28.094 --> 00:05:31.431
+one memory block for the persona with that
+Eval persona we just made
+
+109
+00:05:31.898 --> 00:05:35.168
+defining the model and the LLM model
+and the embedding model.
+
+110
+00:05:35.535 --> 00:05:37.136
+We're attaching the reject tool.
+
+111
+00:05:37.136 --> 00:05:40.540
+So this time we're just passing it in with
+ID you can again also do this with name.
+
+112
+00:05:40.907 --> 00:05:43.876
+And then we're passing in by name
+the send message to agent
+
+113
+00:05:43.876 --> 00:05:45.478
+and wait for reply tool.
+
+114
+00:05:45.478 --> 00:05:48.481
+So this tool is actually
+a Letta built-in tool.
+
+115
+00:05:48.648 --> 00:05:52.919
+It allows the agents to message
+other agents running on the same server
+
+116
+00:05:53.086 --> 00:05:56.089
+by specifying a message to send,
+and then also the id.
+
+117
+00:05:56.089 --> 00:05:59.692
+So this evaluation will know
+the ID of the other outreach agent
+
+118
+00:05:59.692 --> 00:06:02.328
+because we pass it
+the ID into the persona.
+
+119
+00:06:02.328 --> 00:06:05.098
+You can also actually define tools
+like this yourself.
+
+120
+00:06:05.098 --> 00:06:09.469
+So in previous labs we've defined tools
+that connect to the client and interact
+
+121
+00:06:09.469 --> 00:06:10.069
+with the client.
+
+122
+00:06:10.069 --> 00:06:10.803
+So you can of course
+
+123
+00:06:10.803 --> 00:06:15.208
+create your own custom
+cross messaging tool by using the client.
+
+124
+00:06:15.208 --> 00:06:18.378
+But Letta also provide some,
+which is what we're using here.
+
+125
+00:06:19.278 --> 00:06:22.115
+And then we're actually also going to set
+include based tools to false.
+
+126
+00:06:22.115 --> 00:06:26.052
+So like we mentioned
+previously Letta agents will by default
+
+127
+00:06:26.052 --> 00:06:29.822
+have a bunch of tools related
+to sending messages memory management etc.
+
+128
+00:06:29.989 --> 00:06:32.291
+but for simplification
+we're just going to set this to false.
+
+129
+00:06:32.291 --> 00:06:35.094
+So this agent is more limited in scope.
+
+130
+00:06:35.094 --> 00:06:37.997
+And then like the other agent,
+we're also going to attach the company
+
+131
+00:06:37.997 --> 00:06:41.033
+block IDs so that this information
+is in its context window.
+
+132
+00:06:42.769 --> 00:06:45.705
+And then finally we're actually going
+to specify something called tool rules.
+
+133
+00:06:45.705 --> 00:06:48.775
+So this is kind of a way to constrain
+the agent's behavior.
+
+134
+00:06:49.041 --> 00:06:52.412
+In this case we're asking the agent
+to basically exit the loop.
+
+135
+00:06:52.412 --> 00:06:54.180
+So to terminate execution
+
+136
+00:06:54.180 --> 00:06:57.316
+after it calls the send message to agent
+and wait for reply tool.
+
+137
+00:06:57.717 --> 00:07:00.686
+So this basically ensures
+that we don't get the agent looping.
+
+138
+00:07:00.686 --> 00:07:03.856
+Once the agent does
+send that message to the other agent, it stops.
+
+139
+00:07:05.358 --> 00:07:08.361
+So you can see that because we set
+include based tools to false,
+
+140
+00:07:08.528 --> 00:07:11.731
+this agent actually only has two tools
+the reject tool and the send message
+
+141
+00:07:11.731 --> 00:07:14.734
+to agent and wait for reply tool.
+
+142
+00:07:14.734 --> 00:07:17.937
+So now we can actually send
+some resume data to the agents.
+
+143
+00:07:17.937 --> 00:07:21.874
+So we're going to read this resume
+from the local file system for candidate
+
+144
+00:07:21.874 --> 00:07:22.942
+name Tony Stark.
+
+145
+00:07:24.043 --> 00:07:24.544
+Then we're
+
+146
+00:07:24.544 --> 00:07:27.647
+going to send this resume data
+to the eval agent directly.
+
+147
+00:07:27.647 --> 00:07:30.616
+So we're going to send this message
+to evaluation with this ID
+
+148
+00:07:31.017 --> 00:07:32.652
+and provide the content.
+
+149
+00:07:32.652 --> 00:07:35.855
+Just please evaluate this resume
+with the resume data that we just read.
+
+150
+00:07:36.889 --> 00:07:39.225
+And so we can see that the agent reasons
+
+151
+00:07:39.225 --> 00:07:42.261
+it's evaluating Tony Stark's profile
+seem strong.
+
+152
+00:07:42.261 --> 00:07:46.699
+And so then the agent decides to send the
+agent wait for reply to this other agent.
+
+153
+00:07:46.699 --> 00:07:49.702
+So provides information
+about the candidate name
+
+154
+00:07:49.702 --> 00:07:51.938
+and any other information
+that might be relevant
+
+155
+00:07:51.938 --> 00:07:53.973
+and it decides
+to send this to the other agent
+
+156
+00:07:53.973 --> 00:07:58.973
+with this agent ID of the outreach agent.
+So it knows this other agent ID,
+
+157
+00:07:59.145 --> 00:08:00.680
+because we provide it in the persona,
+
+158
+00:08:00.680 --> 00:08:03.616
+so it's able to reach out
+to this other agent,
+
+159
+00:08:03.616 --> 00:08:06.953
+and we can see that this agent
+actually returns back a response.
+
+160
+00:08:07.320 --> 00:08:10.823
+So it's able to call the send message tool
+and return back this response, which is
+
+161
+00:08:10.823 --> 00:08:11.958
+this drafted email.
+
+162
+00:08:12.959 --> 00:08:15.328
+And so
+we get back this tool return response.
+
+163
+00:08:15.328 --> 00:08:18.798
+And then finally
+we print out the total usage statistics.
+
+164
+00:08:19.699 --> 00:08:23.536
+So this is step count one
+since the evaluation only made one step.
+
+165
+00:08:23.703 --> 00:08:25.271
+But there is of course another step
+
+166
+00:08:25.271 --> 00:08:28.274
+that was made by the other agent
+that was doing outreach.
+
+167
+00:08:29.575 --> 00:08:32.078
+We can of course
+also see the list of messages
+
+168
+00:08:32.078 --> 00:08:35.081
+or the events that happened
+from the outreach agent side.
+
+169
+00:08:35.314 --> 00:08:37.416
+So to do this,
+we can list out the messages
+
+170
+00:08:37.416 --> 00:08:40.419
+for the outreach agent
+ID we're going to skip the first message
+
+171
+00:08:40.419 --> 00:08:44.290
+since this message is basically just a
+system prompt sent to the LLM provider.
+
+172
+00:08:44.390 --> 00:08:47.393
+So the other messages are kind of
+what's actually in this history.
+
+173
+00:08:48.928 --> 00:08:51.664
+And so you can see that
+there's a couple of messages here.
+
+174
+00:08:51.664 --> 00:08:54.066
+These are basically what we call
+the initial message sequence.
+
+175
+00:08:54.066 --> 00:08:56.702
+To kind of give some in-context
+examples to the agent.
+
+176
+00:08:56.702 --> 00:08:58.704
+You can of course changes if you like.
+
+177
+00:08:58.704 --> 00:09:01.173
+And so we see here
+that there's a system message.
+
+178
+00:09:01.173 --> 00:09:04.510
+So this is basically a message
+that this agent received
+
+179
+00:09:04.510 --> 00:09:08.314
+from the other agent that has this
+incoming message from this agent ID,
+
+180
+00:09:09.782 --> 00:09:13.085
+and also provides a hint that this agent
+should make sure to call send message
+
+181
+00:09:13.085 --> 00:09:15.388
+at the end, reply back to this agent,
+
+182
+00:09:15.388 --> 00:09:18.925
+and then we see this content about Tony
+Stark that was sent by the other agent.
+
+183
+00:09:19.458 --> 00:09:23.829
+And so after it gets this alert, the agent
+decides to call draft candidate email.
+
+184
+00:09:23.829 --> 00:09:28.801
+So it drafts this email and then
+it returns back this drafted email.
+
+185
+00:09:29.068 --> 00:09:33.472
+And then also sends this message as a send
+message tool back to the other agent.
+
+186
+00:09:33.472 --> 00:09:34.907
+So you can see that here.
+
+187
+00:09:34.907 --> 00:09:36.842
+It's writing the send message.
+
+188
+00:09:36.842 --> 00:09:39.845
+And so this was what was actually shared
+to the other agent.
+
+189
+00:09:41.647 --> 00:09:45.585
+So these agents also have a shared memory
+block which we created at the beginning.
+
+190
+00:09:45.718 --> 00:09:48.654
+So what this means is that if
+either agent edits this block
+
+191
+00:09:48.654 --> 00:09:51.657
+then those changes will be reflected
+on both agents.
+
+192
+00:09:51.691 --> 00:09:55.161
+So for example we can send a message
+to the outreach agent basically
+
+193
+00:09:55.161 --> 00:09:58.364
+telling it, you know, the company
+has actually rebranded the Letta
+
+194
+00:09:59.265 --> 00:10:00.833
+from Agent OS.
+
+195
+00:10:00.833 --> 00:10:04.637
+And so the agent basically calls
+the core memory replace memory editing
+
+196
+00:10:04.670 --> 00:10:09.375
+tool to replace Agent OS with Letta
+and confirms that and sends a message.
+
+197
+00:10:10.409 --> 00:10:13.012
+And so, unsurprisingly,
+now if we retrieve the memory
+
+198
+00:10:13.012 --> 00:10:17.283
+block of the eval agent, it now says Letta
+instead of Agent OS.
+
+199
+00:10:18.117 --> 00:10:20.353
+But if we also retrieve the memory block
+
+200
+00:10:20.353 --> 00:10:23.356
+of the outreach agent.
+
+201
+00:10:24.690 --> 00:10:28.094
+Then we can see that this also says now,
+even though the outreach agent did
+
+202
+00:10:28.094 --> 00:10:31.664
+not edit its memory, its memory now
+says that the company is called Letta.
+
+203
+00:10:31.931 --> 00:10:35.668
+And this is again because each of
+these blocks is actually the same ID.
+
+204
+00:10:35.835 --> 00:10:38.838
+So they both
+have you can see here like matching IDs.
+
+205
+00:10:39.405 --> 00:10:42.241
+And so both of these agents,
+their context windows or in context
+
+206
+00:10:42.241 --> 00:10:45.244
+memory is synchronized
+to the same memory block.
+
+207
+00:10:46.045 --> 00:10:49.849
+So we just went over how you can create
+multi-agent coordination through tools.
+
+208
+00:10:50.116 --> 00:10:52.752
+But often simpler way to do
+this is to actually use
+
+209
+00:10:52.752 --> 00:10:55.755
+the multi-agent group abstraction
+inside of Letta.
+
+210
+00:10:56.255 --> 00:10:58.824
+So before we get the setup,
+we're actually going to once again
+
+211
+00:10:58.824 --> 00:11:01.827
+load in a print message multi-agent tool.
+
+212
+00:11:01.861 --> 00:11:04.296
+So this is very similar
+to what we had before.
+
+213
+00:11:04.296 --> 00:11:07.533
+But we're actually going to also print out
+the message dot name field.
+
+214
+00:11:07.767 --> 00:11:09.335
+So in a multi-agent setting there's
+
+215
+00:11:09.335 --> 00:11:11.837
+obviously multiple agents
+that are talking.
+
+216
+00:11:11.837 --> 00:11:15.408
+So we use the name field to distinguish
+between multiple agents which will
+
+217
+00:11:15.408 --> 00:11:16.375
+have different names.
+
+218
+00:11:17.610 --> 00:11:19.612
+So we're now going to recreate our agents.
+
+219
+00:11:19.612 --> 00:11:22.248
+So this is exactly the same agents
+as before.
+
+220
+00:11:22.248 --> 00:11:24.950
+Except this time
+we don't need to provide any tooling
+
+221
+00:11:24.950 --> 00:11:26.952
+to allow the agents
+to chat with each other.
+
+222
+00:11:26.952 --> 00:11:31.123
+So you might recall before that we had
+a special send message to other agent tool
+
+223
+00:11:31.323 --> 00:11:34.293
+that allowed the eval
+agent to communicate with outreach agent.
+
+224
+00:11:34.293 --> 00:11:36.295
+But we're not going to use tools
+this time.
+
+225
+00:11:36.295 --> 00:11:39.298
+We're just going to create
+both these agents separately.
+
+226
+00:11:39.331 --> 00:11:43.169
+And now we can place both of these agents
+into a multi-agent group.
+
+227
+00:11:43.436 --> 00:11:46.138
+So this is a very simple multi-agent
+example.
+
+228
+00:11:46.138 --> 00:11:50.643
+We're basically just doing round robin
+between each of these agents in order.
+
+229
+00:11:51.077 --> 00:11:53.746
+But this basically
+will group the agents together.
+
+230
+00:11:53.746 --> 00:11:56.649
+And so they'll have a single group chat.
+
+231
+00:11:56.649 --> 00:11:59.018
+So a single message history
+that's all shared.
+
+232
+00:11:59.018 --> 00:12:02.988
+So both agents can see the other agents
+messages as well as user messages
+
+233
+00:12:02.988 --> 00:12:04.423
+in a single thread,
+
+234
+00:12:04.423 --> 00:12:07.893
+as opposed to in the other example,
+each agent has its own thread.
+
+235
+00:12:08.127 --> 00:12:10.963
+But they communicate to each other
+via tools.
+
+236
+00:12:11.130 --> 00:12:12.965
+So let's now try reading another resume.
+
+237
+00:12:12.965 --> 00:12:15.968
+So basically a resume
+for a SpongeBob SquarePants.
+
+238
+00:12:16.168 --> 00:12:19.205
+And so now we can actually
+message the group with this content.
+
+239
+00:12:19.472 --> 00:12:22.975
+So the group messaging a group
+is very similar to messaging an agent.
+
+240
+00:12:22.975 --> 00:12:25.010
+It's almost exactly the same API,
+
+241
+00:12:25.010 --> 00:12:27.980
+except the only difference is instead
+of specifying an agent ID,
+
+242
+00:12:27.980 --> 00:12:29.815
+we're just specifying a group ID.
+
+243
+00:12:29.815 --> 00:12:32.151
+So we're basically
+just grabbing this round-robin group
+
+244
+00:12:32.151 --> 00:12:34.153
+and then passing in its ID.
+
+245
+00:12:34.153 --> 00:12:36.522
+And we're going to send this message
+which is a user message.
+
+246
+00:12:36.522 --> 00:12:38.057
+And then just the content of the resume.
+
+247
+00:12:38.057 --> 00:12:40.826
+So very similar to before,
+except we're just messaging a group.
+
+248
+00:12:42.128 --> 00:12:44.930
+So we're now printing
+out the response stream from the group.
+
+249
+00:12:44.930 --> 00:12:47.767
+And you can see here
+that we're printing the name of the agent.
+
+250
+00:12:47.767 --> 00:12:50.870
+So basically who said this
+or who had this reasoning message.
+
+251
+00:12:51.170 --> 00:12:55.341
+So we can see that the eval decides
+to reject SpongeBob SquarePants.
+
+252
+00:12:55.508 --> 00:12:58.310
+And again this is all kind of
+in the same group chat.
+
+253
+00:12:58.310 --> 00:13:01.313
+So both agents can see messages in here.
+
+254
+00:13:01.413 --> 00:13:04.083
+And so this evaluation completes.
+
+255
+00:13:04.083 --> 00:13:06.051
+And then this outreach agent
+actually decides
+
+256
+00:13:06.051 --> 00:13:09.021
+to draft a rejection email
+to SpongeBob SquarePants.
+
+257
+00:13:09.288 --> 00:13:12.691
+So again, because this agent
+is able to see the entire message
+
+258
+00:13:12.691 --> 00:13:16.829
+history of the other agent,
+it decides to use this draft email tool.
+
+259
+00:13:17.663 --> 00:13:20.366
+And then it sends out this message
+and then does reasoning.
+
+260
+00:13:20.366 --> 00:13:23.702
+And then finally the outreach agent
+also sends a final message,
+
+261
+00:13:23.702 --> 00:13:26.705
+which is just telling us that it draft
+a rejection email.
+
+262
+00:13:26.806 --> 00:13:30.643
+And at the very end, we get the usage
+statistics of what all the agents did.
+
+263
+00:13:31.343 --> 00:13:34.780
+You can maybe prompt this to get
+the outreach agent to not send an email
+
+264
+00:13:34.780 --> 00:13:38.851
+at the end, but in this case, the agent
+decided to use this tool anyways.
+
+265
+00:13:39.819 --> 00:13:42.321
+This is
+just another way to do multi-agent.
+
+266
+00:13:42.321 --> 00:13:45.391
+Depending on your use case,
+you may want the agents to share
+
+267
+00:13:45.391 --> 00:13:48.394
+a group chat, or you may want them
+to have separate threads
+
+268
+00:13:48.394 --> 00:13:51.363
+and only communicate when necessary.
+
+269
+00:13:51.363 --> 00:13:52.431
+So congratulations!
+
+270
+00:13:52.431 --> 00:13:56.168
+You've now created a multi-agent
+collaborative setting and Letta
+
+271
+00:13:56.368 --> 00:13:57.336
+in two different ways,
+
+272
+00:13:57.336 --> 00:14:01.173
+both with having a group chat
+and then also through multi-agent tools.
+
+273
+00:14:01.407 --> 00:14:03.776
+You've also created agents
+with shared memory
+
+274
+00:14:03.776 --> 00:14:06.779
+so that they can share memories
+about the same concepts,
+
+275
+00:14:06.846 --> 00:14:10.449
+whether it's an organization or a user,
+or other things that you might want to add
+
+276
+00:14:10.449 --> 00:14:11.150
+to your agents.
+

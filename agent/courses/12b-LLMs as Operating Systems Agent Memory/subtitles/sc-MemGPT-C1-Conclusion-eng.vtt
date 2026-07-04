@@ -1,0 +1,37 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:01.368
+Congratulations.
+
+2
+00:00:01.368 --> 00:00:05.672
+In this course, you've learned
+exactly how an LLM, a simple text generator
+
+3
+00:00:05.839 --> 00:00:10.143
+can be used to create complex agentic
+memory systems through an LLM OS.
+
+4
+00:00:10.410 --> 00:00:13.480
+You now have the tools,
+just like your agents, to build
+
+5
+00:00:13.480 --> 00:00:16.483
+LLM applications
+that can leverage virtual context
+
+6
+00:00:16.483 --> 00:00:19.986
+extended memory far beyond the finite
+context window of LLMs.
+
+7
+00:00:20.420 --> 00:00:22.822
+We're looking forward
+to seeing what you build on your own.
+
