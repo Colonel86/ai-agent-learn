@@ -1,0 +1,1626 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:02.936
+In this lesson, you will have everything you need
+
+2
+00:00:03.069 --> 00:00:06.840
+to assemble a fully stateful Memory Aware Agent.
+
+3
+00:00:07.040 --> 00:00:09.242
+You will implement a startup routine
+
+4
+00:00:09.542 --> 00:00:12.712
+that loads prior context from long-term memory,
+
+5
+00:00:12.712 --> 00:00:14.814
+build a recursive reason loop
+
+6
+00:00:14.814 --> 00:00:17.117
+and intermediate memory checkpoints
+
+7
+00:00:17.117 --> 00:00:20.320
+and creates an agent that persists across sessions
+
+8
+00:00:20.320 --> 00:00:22.322
+and improve over time.
+
+9
+00:00:22.756 --> 00:00:25.258
+Let's have some fun. In this lesson
+
+10
+00:00:25.258 --> 00:00:27.560
+we're going to touch on memory-aware agents.
+
+11
+00:00:27.861 --> 00:00:30.563
+We're going to cover, specifically, what the agent loop is.
+
+12
+00:00:31.064 --> 00:00:33.299
+We'll look at memory operations that are
+
+13
+00:00:33.299 --> 00:00:35.568
+in and outside of the agent loop.
+
+14
+00:00:35.969 --> 00:00:38.271
+We'll also get an overview of agent harness
+
+15
+00:00:38.605 --> 00:00:42.409
+And generally, we're going to implement a memory-aware agent.
+
+16
+00:00:43.476 --> 00:00:47.080
+The Agent Loop is this cyclical iterative environment
+
+17
+00:00:47.080 --> 00:00:50.483
+in which an LLM executes for a specific amount of time.
+
+18
+00:00:50.850 --> 00:00:53.553
+it will start with assembling the context,
+
+19
+00:00:53.553 --> 00:00:56.056
+which we've been talking about throughout this course.
+
+20
+00:00:56.556 --> 00:00:59.659
+Then we will pass the context that we've assembled
+
+21
+00:00:59.859 --> 00:01:03.630
+into an LLM to enable the LLM to reason
+
+22
+00:01:03.630 --> 00:01:06.533
+and decide on the information it's received.
+
+23
+00:01:07.434 --> 00:01:09.235
+the LLM would then take an action.
+
+24
+00:01:09.536 --> 00:01:11.838
+The action could be to respond, to call tools,
+
+25
+00:01:12.038 --> 00:01:14.541
+or to ask the user for further input.
+
+26
+00:01:15.041 --> 00:01:17.844
+But generally, this is what we refer to as the agent loop.
+
+27
+00:01:18.078 --> 00:01:20.880
+where we assemble context,
+
+28
+00:01:20.880 --> 00:01:23.583
+invoke the LLM and act on the response from the LLM.
+
+29
+00:01:23.583 --> 00:01:25.885
+It's cyclical and iterative,
+
+30
+00:01:25.885 --> 00:01:27.720
+which means this loop can be
+
+31
+00:01:27.720 --> 00:01:29.889
+executed for a specific amount of time.
+
+32
+00:01:30.356 --> 00:01:34.160
+termination of a loop is usually determined by a stop condition.
+
+33
+00:01:34.561 --> 00:01:36.963
+This could be a final answer from the LLM
+
+34
+00:01:37.263 --> 00:01:38.932
+when the goal is completed or
+
+35
+00:01:38.932 --> 00:01:40.867
+when we have an error or timeout
+
+36
+00:01:41.167 --> 00:01:42.869
+on the loop execution.
+
+37
+00:01:43.303 --> 00:01:46.506
+The Agent Loop starts when the user provides context
+
+38
+00:01:46.806 --> 00:01:48.808
+or input into the Agent Loop
+
+39
+00:01:49.109 --> 00:01:52.912
+and begins the assembly of context process.
+
+40
+00:01:53.313 --> 00:01:56.216
+Now what you see on the screen is a full Agent Loop
+
+41
+00:01:56.616 --> 00:02:00.520
+with a START CONDITION, the Agent Loop itself, and a STOP CONDITION.
+
+42
+00:02:00.787 --> 00:02:04.591
+To put it more definitively, the agent loop is a cyclical environment
+
+43
+00:02:04.791 --> 00:02:07.494
+that executes for a specific amount of time
+
+44
+00:02:07.594 --> 00:02:09.963
+where an LLM is involved and a response
+
+45
+00:02:09.963 --> 00:02:12.298
+is observed and an action can be taken.
+
+46
+00:02:12.732 --> 00:02:15.535
+It assembles, it invokes, and it acts
+
+47
+00:02:15.735 --> 00:02:17.737
+until a stop condition is met.
+
+48
+00:02:18.238 --> 00:02:21.541
+In pseudo code, the agent loop will look as shown on screen,
+
+49
+00:02:22.242 --> 00:02:24.544
+where we have a MAX_STEPS specified,
+
+50
+00:02:24.744 --> 00:02:26.946
+and we have an LLM that receives context,
+
+51
+00:02:27.213 --> 00:02:29.215
+and we have an action that can be taken
+
+52
+00:02:29.415 --> 00:02:31.518
+and then a final result that is extracted.
+
+53
+00:02:32.218 --> 00:02:35.021
+Now we can go into memory operations
+
+54
+00:02:35.121 --> 00:02:37.223
+in and out of the agent loop.
+
+55
+00:02:37.724 --> 00:02:40.026
+Now that you understand what an agent loop is.
+
+56
+00:02:40.226 --> 00:02:43.029
+Let's start with memory operations out of the agent loop.
+
+57
+00:02:43.429 --> 00:02:44.998
+In previous lesson, we had an
+
+58
+00:02:44.998 --> 00:02:46.833
+overview of different forms of agent memory.
+
+59
+00:02:46.833 --> 00:02:49.636
+And we also had corresponding memory stores
+
+60
+00:02:50.036 --> 00:02:52.338
+which are tables held in a database.
+
+61
+00:02:52.839 --> 00:02:56.342
+These tables had operations held within a memory manager
+
+62
+00:02:56.543 --> 00:03:00.446
+that exposed read and write operations that we can call upon.
+
+63
+00:03:00.480 --> 00:03:05.285
+These operations are shown and utilized within the Agent Loop,
+
+64
+00:03:05.385 --> 00:03:08.288
+specifically outside of the Agent Loop.
+
+65
+00:03:08.488 --> 00:03:11.291
+We introduce a term harness because memory operations
+
+66
+00:03:11.391 --> 00:03:13.326
+and operations in and out of the
+
+67
+00:03:13.326 --> 00:03:15.295
+Agent Loop makes up the agent harness,
+
+68
+00:03:15.395 --> 00:03:18.498
+which are programmatic scaffolding
+
+69
+00:03:18.598 --> 00:03:21.701
+that enables the reliable execution of an AI agent.
+
+70
+00:03:22.135 --> 00:03:23.970
+At a start condition, when we
+
+71
+00:03:23.970 --> 00:03:26.139
+are about to enter the Agent Loop,
+
+72
+00:03:26.339 --> 00:03:30.243
+we typically would have memory operations that read from memory.
+
+73
+00:03:30.643 --> 00:03:33.947
+This is because we're assembling context for our LLMs.
+
+74
+00:03:34.347 --> 00:03:38.218
+But we can also have memory operations that live and are executed
+
+75
+00:03:38.218 --> 00:03:40.420
+within the agent loop itself.
+
+76
+00:03:40.954 --> 00:03:43.723
+And this is because our agents can call on tools
+
+77
+00:03:44.023 --> 00:03:47.126
+and we also have tools that are executed programmatically
+
+78
+00:03:47.126 --> 00:03:49.395
+outside of the agent's control.
+
+79
+00:03:49.896 --> 00:03:53.700
+Examples of these tools that can be executed by the agent
+
+80
+00:03:53.700 --> 00:03:56.369
+within the Agent Loop are to search the internet,
+
+81
+00:03:56.369 --> 00:03:59.973
+expand on a summary, or even summarize conversation.
+
+82
+00:04:00.640 --> 00:04:04.043
+But summarize_conversation is an operation that can be executed
+
+83
+00:04:04.043 --> 00:04:06.846
+within the Agent Loop programmatically
+
+84
+00:04:06.846 --> 00:04:09.415
+without the agent having control over it.
+
+85
+00:04:09.549 --> 00:04:12.418
+especially when we set a condition
+
+86
+00:04:12.418 --> 00:04:14.821
+such as when the context window exceeds
+
+87
+00:04:14.821 --> 00:04:16.422
+80% of its capacity.
+
+88
+00:04:16.990 --> 00:04:20.893
+On the screen, you can see different operations that exist outside
+
+89
+00:04:20.893 --> 00:04:23.496
+of the Agent Loop and inside of the Agent Loop.
+
+90
+00:04:23.796 --> 00:04:27.500
+And as covered before, this makes up part of your harness
+
+91
+00:04:27.800 --> 00:04:31.170
+that makes a reliable memory-aware AI agent.
+
+92
+00:04:32.038 --> 00:04:33.773
+In this lesson, we're going to
+
+93
+00:04:33.773 --> 00:04:35.742
+put together everything we've been building up
+
+94
+00:04:35.842 --> 00:04:38.244
+and build a Memory Aware Agent.
+
+95
+00:04:38.945 --> 00:04:41.848
+We will start off by setting up our database.
+
+96
+00:04:42.415 --> 00:04:45.918
+And then initializing a connection to the database
+
+97
+00:04:45.918 --> 00:04:48.655
+represented by the database_connection variable.
+
+98
+00:04:48.655 --> 00:04:52.392
+When you run the cell, you'll see a successful database setup
+
+99
+00:04:52.392 --> 00:04:56.963
+as you've seen before. Next, we'll set up our OpenAI client
+
+100
+00:04:57.163 --> 00:05:00.266
+and our embedding model as we've done before.
+
+101
+00:05:00.466 --> 00:05:02.669
+Now, we'll set up our memory store,
+
+102
+00:05:02.769 --> 00:05:04.971
+StoreManager, and MemoryManager.
+
+103
+00:05:05.171 --> 00:05:07.407
+We'll start by specifying the names for
+
+104
+00:05:07.407 --> 00:05:09.976
+all the memory tables as we've done before.
+
+105
+00:05:10.376 --> 00:05:14.180
+Next, we'll create the conversational table and the tool log table
+
+106
+00:05:14.180 --> 00:05:16.282
+just as we've done in previous lessons.
+
+107
+00:05:17.183 --> 00:05:19.085
+Following on, we'll initialize
+
+108
+00:05:19.085 --> 00:05:21.387
+our StoreManager by creating an instance
+
+109
+00:05:21.387 --> 00:05:24.190
+of the StoreManager within this lesson.
+
+110
+00:05:24.490 --> 00:05:27.293
+We would then also create data objects
+
+111
+00:05:27.293 --> 00:05:29.696
+representing our memory tables
+
+112
+00:05:29.696 --> 00:05:31.264
+from our databases.
+
+113
+00:05:31.864 --> 00:05:35.668
+Finally, we will initialize our MemoryManager.
+
+114
+00:05:36.469 --> 00:05:39.706
+Additionally, we will load up our toolbox
+
+115
+00:05:39.939 --> 00:05:43.743
+and register some of the common tools we're going to use,
+
+116
+00:05:43.943 --> 00:05:45.878
+such as the arXiv search and the
+
+117
+00:05:45.878 --> 00:05:48.047
+tool that allows us to search for papers
+
+118
+00:05:48.147 --> 00:05:50.149
+and save it into the database.
+
+119
+00:05:50.783 --> 00:05:53.586
+When you execute the cell, you should see
+
+120
+00:05:53.786 --> 00:05:56.589
+numbers of summary tools and common tools registered.
+
+121
+00:05:56.989 --> 00:05:59.592
+These are tools that are available for your AI agent
+
+122
+00:05:59.692 --> 00:06:02.795
+that is memory aware, and this will be agent triggered tools.
+
+123
+00:06:03.096 --> 00:06:05.898
+In this part, we're going to load up
+
+124
+00:06:05.898 --> 00:06:09.202
+all our context engineering techniques we explored in the last lesson.
+
+125
+00:06:09.602 --> 00:06:12.605
+We've moved them into the helper file.
+
+126
+00:06:13.306 --> 00:06:16.876
+Now that we have all the tools and the context
+
+127
+00:06:16.876 --> 00:06:20.980
+engineering techniques loaded in this development environment for this lesson,
+
+128
+00:06:21.180 --> 00:06:24.984
+we are going to start specifying our agent system prompt.
+
+129
+00:06:25.551 --> 00:06:28.454
+This is the system prompt or system instruction
+
+130
+00:06:28.755 --> 00:06:31.758
+that'll be passed into the LLM using the system role,
+
+131
+00:06:32.258 --> 00:06:33.860
+which has a higher weight
+
+132
+00:06:33.960 --> 00:06:36.362
+when the LLM looks at instruction provided
+
+133
+00:06:36.763 --> 00:06:38.731
+within the system instruction.
+
+134
+00:06:38.998 --> 00:06:43.302
+As you can see, this becomes even more memory aware
+
+135
+00:06:43.302 --> 00:06:46.839
+as we tell the LLM the type of memory it has,
+
+136
+00:06:46.839 --> 00:06:49.008
+how the context window is partitioned,
+
+137
+00:06:49.008 --> 00:06:54.008
+and mention the different types of memory that we've created access to.
+
+138
+00:06:54.514 --> 00:06:57.617
+This makes the LLM memory aware.
+
+139
+00:06:58.518 --> 00:07:01.020
+Next, we have the function execute_tool,
+
+140
+00:07:01.020 --> 00:07:04.290
+which allows us to call resources
+
+141
+00:07:04.290 --> 00:07:08.995
+in the form of Python functions that exist within our development environment,
+
+142
+00:07:08.995 --> 00:07:12.298
+which will allow us to call tools and execute functions
+
+143
+00:07:12.298 --> 00:07:17.003
+by passing in the arguments provided by the LLM during tool call.
+
+144
+00:07:17.570 --> 00:07:20.339
+And lastly, we have call_openai_chat,
+
+145
+00:07:21.340 --> 00:07:25.344
+which just sends the context to an OpenAI model.
+
+146
+00:07:26.345 --> 00:07:29.348
+Now, we can actually go into the agent loop.
+
+147
+00:07:29.649 --> 00:07:31.851
+In the main agent loop,
+
+148
+00:07:31.851 --> 00:07:35.855
+we're going to start by actually defining a function called call_agent
+
+149
+00:07:35.855 --> 00:07:38.157
+that will take in the user query,
+
+150
+00:07:38.157 --> 00:07:42.862
+which will be the start condition for actually triggering the agent loop.
+
+151
+00:07:42.862 --> 00:07:45.164
+We'll specify a thread_id,
+
+152
+00:07:45.164 --> 00:07:47.667
+as we want this to be session scoped,
+
+153
+00:07:47.667 --> 00:07:51.637
+but also the max_iterations we want the agent loop to iterate for.
+
+154
+00:07:51.971 --> 00:07:55.775
+In this slide, we've identified memory operations that occur
+
+155
+00:07:55.775 --> 00:07:59.178
+outside of the agent loop and inside of the agent loop.
+
+156
+00:07:59.679 --> 00:08:01.747
+We will start with memory operations
+
+157
+00:08:01.747 --> 00:08:04.183
+that occur outside of the agent loop.
+
+158
+00:08:04.650 --> 00:08:07.253
+And here, we can see memory operation
+
+159
+00:08:07.253 --> 00:08:09.856
+that operates outside of the agent loop
+
+160
+00:08:09.856 --> 00:08:13.426
+in where they're used to build the initial context.
+
+161
+00:08:13.426 --> 00:08:17.129
+The steps we'll take are to build the conversational memory,
+
+162
+00:08:17.563 --> 00:08:19.599
+the knowledge base, the workflow,
+
+163
+00:08:20.099 --> 00:08:22.068
+entity, and summary memory.
+
+164
+00:08:22.768 --> 00:08:26.372
+The next step is to have a deterministic
+
+165
+00:08:26.372 --> 00:08:28.774
+memory operation executed.
+
+166
+00:08:29.175 --> 00:08:32.378
+and that is to check if the context usage
+
+167
+00:08:32.378 --> 00:08:35.047
+is exceeded or is equal to 80%.
+
+168
+00:08:35.481 --> 00:08:38.951
+the usage of the context window is greater than 80%,
+
+169
+00:08:38.951 --> 00:08:42.255
+we will trigger a summarization programmatically.
+
+170
+00:08:43.956 --> 00:08:47.260
+Finally, we will have our entire context assigned
+
+171
+00:08:47.260 --> 00:08:49.262
+to a variable context.
+
+172
+00:08:50.263 --> 00:08:52.465
+The next step is to retrieve tools
+
+173
+00:08:52.465 --> 00:08:55.268
+that are relevant for the query.
+
+174
+00:08:55.468 --> 00:08:58.971
+Again, this read operation is a memory operation
+
+175
+00:08:58.971 --> 00:09:01.474
+that is outside of the agent loop.
+
+176
+00:09:01.607 --> 00:09:03.509
+This reduces the number of tools that
+
+177
+00:09:03.509 --> 00:09:05.411
+we need to provide to the agent,
+
+178
+00:09:05.411 --> 00:09:09.115
+as we will only require tools that are specific
+
+179
+00:09:09.115 --> 00:09:12.818
+to the specific query being passed into the agent loop.
+
+180
+00:09:13.085 --> 00:09:15.888
+Next, we'll write the conversational memory,
+
+181
+00:09:15.888 --> 00:09:18.658
+the query, the role, and the thread_id.
+
+182
+00:09:19.358 --> 00:09:22.061
+Now, before we get into the agent loop,
+
+183
+00:09:22.061 --> 00:09:25.064
+the last step we do is create our message
+
+184
+00:09:25.064 --> 00:09:29.268
+or the context we'll pass into the LLM within the agent loop.
+
+185
+00:09:29.669 --> 00:09:32.872
+And this context is going to contain the AGENT_SYSTEM_PROMPT,
+
+186
+00:09:32.872 --> 00:09:35.675
+which makes the LLM even more memory-aware.
+
+187
+00:09:36.142 --> 00:09:40.146
+and the role and the context that we have to start with.
+
+188
+00:09:41.447 --> 00:09:44.150
+In the agent loop, we use a call
+
+189
+00:09:44.216 --> 00:09:47.420
+to the call_openai_chat function we explored earlier.
+
+190
+00:09:47.720 --> 00:09:50.222
+We'll pass in the messages and the tools
+
+191
+00:09:50.222 --> 00:09:52.625
+that are available for the agents to call upon.
+
+192
+00:09:53.225 --> 00:09:56.529
+We will assign the response generated by the LLM
+
+193
+00:09:56.529 --> 00:09:58.130
+to a variable called response.
+
+194
+00:09:58.497 --> 00:10:03.002
+by analyzing and looking into the message within the response,
+
+195
+00:10:03.002 --> 00:10:07.006
+we can decide if we're going to make a tool call operation
+
+196
+00:10:07.006 --> 00:10:10.276
+or we're just going to move to a final response.
+
+197
+00:10:10.710 --> 00:10:12.912
+Remember, in the agent loop,
+
+198
+00:10:12.912 --> 00:10:15.514
+the agent can either decide to act
+
+199
+00:10:15.514 --> 00:10:17.516
+or respond to the user,
+
+200
+00:10:17.516 --> 00:10:19.518
+meeting a stop condition.
+
+201
+00:10:19.719 --> 00:10:22.221
+If the agent decides to make a tool call,
+
+202
+00:10:22.221 --> 00:10:24.924
+we will append this into the messages.
+
+203
+00:10:25.424 --> 00:10:28.427
+Within the agent loop, we're able to execute tools
+
+204
+00:10:29.228 --> 00:10:31.330
+and pass in the argument and the name
+
+205
+00:10:31.430 --> 00:10:36.335
+that the agent has specified for execution. Finally,
+
+206
+00:10:36.369 --> 00:10:38.738
+now within the agent loop, one of
+
+207
+00:10:38.738 --> 00:10:41.073
+the memory operation we're going to conduct
+
+208
+00:10:41.340 --> 00:10:44.377
+is to move some of the tool logs outside
+
+209
+00:10:44.377 --> 00:10:48.180
+of the agent loop and into the database.
+
+210
+00:10:48.881 --> 00:10:50.483
+This is context offloading.
+
+211
+00:10:50.783 --> 00:10:52.985
+Once the tool result is received,
+
+212
+00:10:52.985 --> 00:10:55.688
+the iteration of the agent loop will be incremented,
+
+213
+00:10:55.688 --> 00:10:58.991
+and then we'll provide the LLM with the tool result.
+
+214
+00:10:58.991 --> 00:11:01.193
+If the LLM decides to break,
+
+215
+00:11:02.028 --> 00:11:04.830
+and actually go into a final answer,
+
+216
+00:11:05.531 --> 00:11:09.635
+we would display this and assign it to the final_answer variable.
+
+217
+00:11:10.036 --> 00:11:11.437
+There is also a situation where
+
+218
+00:11:11.437 --> 00:11:13.039
+we step out of the agent loop,
+
+219
+00:11:13.239 --> 00:11:15.274
+and that is when the max iteration
+
+220
+00:11:15.274 --> 00:11:17.343
+has been reached without a final answer.
+
+221
+00:11:17.343 --> 00:11:21.947
+and then we will give the final answer a pre-templated response
+
+222
+00:11:22.248 --> 00:11:24.050
+in which we specify that the
+
+223
+00:11:24.050 --> 00:11:26.152
+agent was unable to complete the request.
+
+224
+00:11:27.153 --> 00:11:30.356
+Outside of the agent loop, we still have some memory operation.
+
+225
+00:11:30.856 --> 00:11:33.859
+such as write_workflow and write_entity
+
+226
+00:11:34.360 --> 00:11:36.762
+and write_conversational_memory.
+
+227
+00:11:37.163 --> 00:11:40.866
+These are to capture some of the artifacts from the agent's execution,
+
+228
+00:11:41.267 --> 00:11:44.036
+such as the number of steps that were
+
+229
+00:11:44.036 --> 00:11:47.139
+taken to execute a query or achieve an objective,
+
+230
+00:11:47.440 --> 00:11:49.942
+and we can store that as workflow memory
+
+231
+00:11:50.242 --> 00:11:53.446
+and also the outcome of this specific step.
+
+232
+00:11:54.013 --> 00:11:57.783
+We'll also write any entity that have been detected
+
+233
+00:11:57.783 --> 00:11:59.985
+with the final_answer.
+
+234
+00:12:00.986 --> 00:12:03.989
+And finally, we'll write_conversational_memory
+
+235
+00:12:04.223 --> 00:12:07.727
+the final answer and the role of the assistant.
+
+236
+00:12:09.228 --> 00:12:11.430
+This is an overview of the agent loop
+
+237
+00:12:11.430 --> 00:12:14.433
+and the operations that happens in and out of the agent loop.
+
+238
+00:12:14.934 --> 00:12:18.437
+Specifically, we have a memory-aware agent that we can call on
+
+239
+00:12:18.437 --> 00:12:21.040
+and it can execute and perform operation
+
+240
+00:12:21.040 --> 00:12:23.242
+with memory and continuity.
+
+241
+00:12:23.909 --> 00:12:25.911
+Let's see this in action.
+
+242
+00:12:25.911 --> 00:12:28.214
+To see our agent loop in action,
+
+243
+00:12:28.214 --> 00:12:30.516
+we're just going to call the function call_agent
+
+244
+00:12:30.516 --> 00:12:31.884
+and pass in a query, can
+
+245
+00:12:31.884 --> 00:12:33.486
+you get me the paper on MemGPT
+
+246
+00:12:33.486 --> 00:12:37.857
+with a unique thread ID. We're going to go for the output.
+
+247
+00:12:37.857 --> 00:12:39.859
+As you can see, it's building the context
+
+248
+00:12:39.859 --> 00:12:42.561
+and we can see the context window utilization.
+
+249
+00:12:43.562 --> 00:12:45.965
+The LLM is aware of the question being asked,
+
+250
+00:12:45.965 --> 00:12:48.567
+which is can you get me the paper MemGPT.
+
+251
+00:12:48.834 --> 00:12:51.337
+And what we can see is different allocation
+
+252
+00:12:51.637 --> 00:12:54.640
+of the context window to specific memory types.
+
+253
+00:12:55.040 --> 00:12:57.643
+Conversation Memory, Knowledge Base Memory,
+
+254
+00:12:58.043 --> 00:13:01.947
+Workflow Memory. Entity Memory and so on.
+
+255
+00:13:02.648 --> 00:13:04.650
+For Conversation Memory,
+
+256
+00:13:04.650 --> 00:13:07.453
+we can identify its conversation memory by this identifier
+
+257
+00:13:07.453 --> 00:13:09.955
+using a markdown subheading.
+
+258
+00:13:10.456 --> 00:13:12.658
+We're using markdown headings
+
+259
+00:13:12.658 --> 00:13:14.460
+to enable the LLM to understand
+
+260
+00:13:14.460 --> 00:13:18.364
+a hierarchical structure of information within a CONTEXT WINDOW.
+
+261
+00:13:19.064 --> 00:13:21.967
+LLMs are able to understand this because this information
+
+262
+00:13:22.234 --> 00:13:25.271
+or similar structured information are part of the training data.
+
+263
+00:13:25.471 --> 00:13:28.674
+So they have a latent ability to understand structure
+
+264
+00:13:29.175 --> 00:13:32.478
+and hierarchical information in markdown files.
+
+265
+00:13:33.145 --> 00:13:36.949
+So within conversational memory, we specify how
+
+266
+00:13:37.049 --> 00:13:39.652
+the agent should use this memory
+
+267
+00:13:39.752 --> 00:13:42.354
+and when it should be leveraging it.
+
+268
+00:13:42.454 --> 00:13:45.357
+This is making our LLM memory aware.
+
+269
+00:13:45.925 --> 00:13:49.228
+We do this for every memory included in the context window,
+
+270
+00:13:49.728 --> 00:13:52.932
+from knowledge base to entity memory and so on.
+
+271
+00:13:53.532 --> 00:13:56.135
+For this specific run, because it's the first iteration
+
+272
+00:13:56.235 --> 00:13:59.238
+of the agent loop, there are no retrieved messages.
+
+273
+00:13:59.505 --> 00:14:01.707
+But because we've ingested some papers
+
+274
+00:14:01.707 --> 00:14:05.010
+into our research agent earlier on,
+
+275
+00:14:05.010 --> 00:14:08.314
+it will have knowledge of research papers.
+
+276
+00:14:08.314 --> 00:14:11.817
+And this can be seen in its Knowledge Base Memory.
+
+277
+00:14:11.817 --> 00:14:15.020
+The papers that are retrieved are ones
+
+278
+00:14:15.020 --> 00:14:17.623
+that are semantically similar to the query passed in.
+
+279
+00:14:17.957 --> 00:14:20.459
+In the first iteration of the AGENT LOOP,
+
+280
+00:14:20.459 --> 00:14:24.763
+because the agent doesn't have any of the papers required
+
+281
+00:14:24.763 --> 00:14:27.566
+to answer the question within its memory,
+
+282
+00:14:27.566 --> 00:14:30.569
+it's using the tool arxiv_search_candidates.
+
+283
+00:14:31.337 --> 00:14:35.841
+and is passing in a specific query, MemGPT, arXiv papers,
+
+284
+00:14:36.141 --> 00:14:39.144
+and it's gotten a few response back.
+
+285
+00:14:39.645 --> 00:14:42.147
+In the second iteration of the agent loop,
+
+286
+00:14:42.348 --> 00:14:45.618
+the response from the tool call is returned to the agent.
+
+287
+00:14:45.618 --> 00:14:49.421
+or to the LLM, and then it provides the final ANSWER
+
+288
+00:14:49.622 --> 00:14:51.924
+where it can then exit the AGENT LOOP.
+
+289
+00:14:52.424 --> 00:14:55.527
+So in the second iteration, we see our ANSWER.
+
+290
+00:14:56.228 --> 00:14:59.098
+It provides us with the MemGPT paper
+
+291
+00:14:59.598 --> 00:15:02.201
+and an overview of information allocated to it.
+
+292
+00:15:02.601 --> 00:15:06.105
+And also specifies the next actions it recommends to take.
+
+293
+00:15:06.572 --> 00:15:10.376
+To showcase the continuity of our agent,
+
+294
+00:15:10.376 --> 00:15:13.045
+we will continue the conversation
+
+295
+00:15:13.045 --> 00:15:15.347
+by calling the call_agent function again
+
+296
+00:15:15.347 --> 00:15:18.050
+and ask it, can you save the content of the paper?
+
+297
+00:15:18.584 --> 00:15:20.886
+This is to showcase the Conversational Memory
+
+298
+00:15:20.986 --> 00:15:23.188
+because the agent can carry on the conversation
+
+299
+00:15:23.289 --> 00:15:25.958
+and has an awareness of the paper we're referring to,
+
+300
+00:15:26.058 --> 00:15:28.360
+which should be MemGPT. As we can
+
+301
+00:15:28.360 --> 00:15:30.663
+see, the CONTEXT WINDOW is being built.
+
+302
+00:15:31.096 --> 00:15:33.899
+And in Conversation Memory, we can see the previous answer
+
+303
+00:15:33.899 --> 00:15:37.603
+or previous interaction that we had.
+
+304
+00:15:37.603 --> 00:15:39.405
+The first question we provided
+
+305
+00:15:39.405 --> 00:15:41.206
+alongside the response.
+
+306
+00:15:41.707 --> 00:15:44.810
+We've asked the agent to save the paper,
+
+307
+00:15:45.010 --> 00:15:48.314
+and we expect it to conduct tool calls to do this.
+
+308
+00:15:48.881 --> 00:15:53.185
+But first, we can see that the Workflow Memory is being filled
+
+309
+00:15:53.285 --> 00:15:55.788
+with some information from the previous step.
+
+310
+00:15:56.088 --> 00:15:58.657
+which you can see with the query was
+
+311
+00:15:58.657 --> 00:16:00.259
+can you get me the paper MemGPT
+
+312
+00:16:00.559 --> 00:16:04.063
+and the steps taken has been recorded with the outcomes.
+
+313
+00:16:05.064 --> 00:16:07.866
+In this step, the agent has access to tools
+
+314
+00:16:08.067 --> 00:16:10.169
+and is going to use the tool
+
+315
+00:16:10.169 --> 00:16:12.271
+fetch and save paper to knowledge base
+
+316
+00:16:12.271 --> 00:16:13.872
+that we specified earlier.
+
+317
+00:16:14.206 --> 00:16:17.009
+is able to get the right paper
+
+318
+00:16:17.009 --> 00:16:20.412
+from the previous conversation because it has conversational memory.
+
+319
+00:16:20.913 --> 00:16:24.316
+and in the second iteration of this, it provides an answer
+
+320
+00:16:24.316 --> 00:16:26.986
+where it says it saved the paper for us.
+
+321
+00:16:27.619 --> 00:16:30.422
+To showcase further continuity,
+
+322
+00:16:30.422 --> 00:16:32.324
+we will ask the agent to pull
+
+323
+00:16:32.324 --> 00:16:34.226
+out some main takeaways from the paper.
+
+324
+00:16:35.127 --> 00:16:37.796
+Again, we don't have to specify the paper we're referring to
+
+325
+00:16:37.796 --> 00:16:40.799
+because all information is within the conversational memory.
+
+326
+00:16:41.100 --> 00:16:43.602
+Now let's see the response from the agent
+
+327
+00:16:43.602 --> 00:16:45.371
+in terms of getting a response
+
+328
+00:16:45.371 --> 00:16:47.406
+to the main takeaways from the paper.
+
+329
+00:16:47.773 --> 00:16:49.208
+One thing to note is the
+
+330
+00:16:49.208 --> 00:16:50.876
+response of the agent is being conducted
+
+331
+00:16:50.876 --> 00:16:52.778
+with one iteration of the AGENT LOOP, which means
+
+332
+00:16:52.778 --> 00:16:54.880
+we don't have to go look for the paper again,
+
+333
+00:16:54.880 --> 00:16:57.783
+and we could just look into the conversational history
+
+334
+00:16:57.783 --> 00:17:01.687
+and other memory segmentation of the CONTEXT WINDOW
+
+335
+00:17:01.687 --> 00:17:03.589
+to actually provide an answer.
+
+336
+00:17:04.523 --> 00:17:07.526
+And the answer is provided in a structured format.
+
+337
+00:17:08.394 --> 00:17:10.496
+Here you can see we have a memory-aware agent
+
+338
+00:17:10.696 --> 00:17:12.698
+that is able to perform different tasks
+
+339
+00:17:12.998 --> 00:17:15.200
+and is aware of conversational memory
+
+340
+00:17:15.401 --> 00:17:18.003
+and can utilize other memory partitions
+
+341
+00:17:18.003 --> 00:17:20.806
+such as the workflow memory to store previous steps.
+
+342
+00:17:21.240 --> 00:17:23.442
+To see summary memory in action,
+
+343
+00:17:23.442 --> 00:17:25.577
+we're going to ask the agent
+
+344
+00:17:25.577 --> 00:17:28.047
+to summarize the conversation using its tool.
+
+345
+00:17:28.747 --> 00:17:32.451
+The ability to summarize conversation is both a deterministic
+
+346
+00:17:32.451 --> 00:17:35.254
+and an agent-triggered memory operation.
+
+347
+00:17:35.754 --> 00:17:38.757
+So, that means that the agent at its discretion
+
+348
+00:17:38.757 --> 00:17:41.360
+could summarize the conversation if the context window
+
+349
+00:17:41.760 --> 00:17:43.462
+is getting to a capacity
+
+350
+00:17:43.462 --> 00:17:45.564
+it feels it needs for it to summarize.
+
+351
+00:17:45.831 --> 00:17:48.667
+by calling the summarization context tool,
+
+352
+00:17:48.667 --> 00:17:51.036
+which will see an entry into our summary memory.
+
+353
+00:17:51.336 --> 00:17:53.539
+But first, we will see the tool being used,
+
+354
+00:17:53.639 --> 00:17:55.941
+then in another iteration of the call_agent,
+
+355
+00:17:55.941 --> 00:17:58.143
+we'll be able to see that the
+
+356
+00:17:58.143 --> 00:18:00.345
+summary memory has a placeholder in it.
+
+357
+00:18:00.779 --> 00:18:03.582
+and the Conversation Memory has been reduced.
+
+358
+00:18:04.850 --> 00:18:06.952
+Looking at the tool calls, we can see
+
+359
+00:18:06.952 --> 00:18:08.954
+that the agent has summarized the memory
+
+360
+00:18:08.954 --> 00:18:11.290
+by utilizing the summarize_and_store tool.
+
+361
+00:18:11.824 --> 00:18:15.727
+As we can see, it's marked seven messages as summarized
+
+362
+00:18:15.961 --> 00:18:20.699
+and also created a Summary ID in our summary memory store.
+
+363
+00:18:21.533 --> 00:18:24.069
+In the next iteration, we should be able
+
+364
+00:18:24.069 --> 00:18:26.638
+to see that a conversational history is less
+
+365
+00:18:26.839 --> 00:18:29.341
+and we have an entry in our summary memory
+
+366
+00:18:29.541 --> 00:18:32.311
+where right now there are no available summaries.
+
+367
+00:18:32.644 --> 00:18:34.746
+Let's observe this.
+
+368
+00:18:34.746 --> 00:18:38.250
+We're going to ask the agent what our first question was,
+
+369
+00:18:38.250 --> 00:18:40.752
+which should not exist in the conversational memory
+
+370
+00:18:40.752 --> 00:18:42.754
+as we have summarized the conversation.
+
+371
+00:18:43.155 --> 00:18:45.257
+As we can see, the retrieve messages
+
+372
+00:18:45.257 --> 00:18:47.960
+of the Conversation Memory only contains
+
+373
+00:18:47.960 --> 00:18:51.964
+a response from the assistant that says it stored a summary.
+
+374
+00:18:51.964 --> 00:18:54.967
+But the previous interactions did not exist.
+
+375
+00:18:55.801 --> 00:18:59.605
+In the summary memory segment of the context window,
+
+376
+00:18:59.605 --> 00:19:03.609
+we can see that there is a placeholder for a summary ID
+
+377
+00:19:03.642 --> 00:19:05.811
+and a description of what the
+
+378
+00:19:05.811 --> 00:19:08.313
+summary contains, which was a MemGPT paper
+
+379
+00:19:08.347 --> 00:19:12.651
+that was stored in SEMANTIC_MEMORY and a key insight summarized.
+
+380
+00:19:12.985 --> 00:19:16.522
+Another thing to point out is Entity Memory here in action.
+
+381
+00:19:17.222 --> 00:19:19.391
+In Entity Memory, we're trying to capture
+
+382
+00:19:19.892 --> 00:19:23.595
+entity information such as people, places and organization,
+
+383
+00:19:23.896 --> 00:19:25.898
+and you can see from our interaction,
+
+384
+00:19:25.998 --> 00:19:29.201
+we have captured those in several different instances,
+
+385
+00:19:29.501 --> 00:19:31.303
+such as the author of the paper.
+
+386
+00:19:31.637 --> 00:19:34.640
+and other information. But remember,
+
+387
+00:19:34.740 --> 00:19:38.143
+we asked the agent what our first question was.
+
+388
+00:19:38.243 --> 00:19:40.846
+But in order to answer what our first question was,
+
+389
+00:19:40.946 --> 00:19:43.148
+it would have to unpack a summary.
+
+390
+00:19:43.182 --> 00:19:45.284
+And we can see it does this
+
+391
+00:19:45.284 --> 00:19:47.686
+as within the iteration of the AGENT LOOP,
+
+392
+00:19:47.986 --> 00:19:50.322
+it expands a summary of the ID
+
+393
+00:19:50.322 --> 00:19:52.691
+that it has in its summary memory.
+
+394
+00:19:53.192 --> 00:19:58.163
+And now it has information as to the actual summary
+
+395
+00:19:58.664 --> 00:20:02.167
+or the uncompressed form of the summary that was generated.
+
+396
+00:20:02.601 --> 00:20:05.137
+And finally, it can answer the question
+
+397
+00:20:05.137 --> 00:20:07.206
+that our first question was,
+
+398
+00:20:07.506 --> 00:20:09.608
+can you get me the paper MemGPT
+
+399
+00:20:10.108 --> 00:20:11.810
+and the time it was sent.
+
+400
+00:20:12.611 --> 00:20:14.713
+You've seen summary memory in action,
+
+401
+00:20:15.514 --> 00:20:18.016
+context offloading and context retrieval,
+
+402
+00:20:18.417 --> 00:20:21.420
+all implemented with memory engineering techniques
+
+403
+00:20:21.520 --> 00:20:25.424
+within an agent loop and having a memory-aware agent.
+
+404
+00:20:26.191 --> 00:20:29.094
+You've come to an end of lesson 5.
+
+405
+00:20:29.294 --> 00:20:32.297
+In this lesson, we've built a memory-aware agent.
+
+406
+00:20:32.397 --> 00:20:34.366
+Well done.

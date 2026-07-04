@@ -1,0 +1,106 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:03.269
+In this course, you've learned how to engineer memory systems
+
+2
+00:00:03.269 --> 00:00:07.941
+that transform stateless LLMs into persistent Memory-Aware Agents.
+
+3
+00:00:08.241 --> 00:00:11.544
+You started by understanding why agents fail without memory,
+
+4
+00:00:11.544 --> 00:00:14.848
+then built a Memory Manager with persistent stores
+
+5
+00:00:14.848 --> 00:00:16.850
+for different memory types.
+
+6
+00:00:17.217 --> 00:00:20.020
+You scaled tool use with semantic tool memory,
+
+7
+00:00:20.420 --> 00:00:23.023
+built extractions and consolidation pipelines
+
+8
+00:00:23.223 --> 00:00:26.126
+that turn raw conversations into durable knowledge,
+
+9
+00:00:26.626 --> 00:00:29.029
+and wired up self-updating agent loops
+
+10
+00:00:29.229 --> 00:00:33.033
+that let your agents refine what it knows autonomously.
+
+11
+00:00:33.867 --> 00:00:36.669
+Finally, you brought it all together
+
+12
+00:00:36.770 --> 00:00:39.372
+into a fully stateful Memory Aware Agent,
+
+13
+00:00:39.672 --> 00:00:42.675
+one that loads prior context at startup,
+
+14
+00:00:42.876 --> 00:00:46.880
+checkpoints its reasoning and persists across sessions.
+
+15
+00:00:47.547 --> 00:00:49.549
+The patterns you've learned here,
+
+16
+00:00:49.549 --> 00:00:51.651
+memory modeling, semantic retrieval,
+
+17
+00:00:51.651 --> 00:00:55.055
+extraction, consolidation, and write back,
+
+18
+00:00:55.055 --> 00:00:57.457
+are the building blocks for production agents
+
+19
+00:00:57.457 --> 00:00:59.359
+that actually improve over time.
+
+20
+00:00:59.893 --> 00:01:02.996
+What you've built in this course is a foundation
+
+21
+00:01:03.396 --> 00:01:05.498
+for Memory Engineering.
+
+22
+00:01:05.999 --> 00:01:08.902
+Take these patterns, adapt them to your own use case
+
+23
+00:01:09.002 --> 00:01:11.504
+and build agents that don't just respond,
+
+24
+00:01:11.704 --> 00:01:13.973
+they remember and get better.
+
+25
+00:01:14.274 --> 00:01:16.176
+I am looking forward to seeing
+
+26
+00:01:16.276 --> 00:01:18.178
+what you will build on your own.

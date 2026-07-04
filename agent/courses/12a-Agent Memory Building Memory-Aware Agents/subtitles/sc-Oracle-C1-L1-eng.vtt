@@ -1,0 +1,1466 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.200 --> 00:00:02.402
+In this lesson, we'll start by
+
+2
+00:00:02.402 --> 00:00:04.971
+defining what an AI agent actually is.
+
+3
+00:00:05.572 --> 00:00:08.975
+Then look at what happens when you interact with a stateless agent
+
+4
+00:00:09.075 --> 00:00:11.678
+versus one augmented with memory.
+
+5
+00:00:12.379 --> 00:00:15.982
+You will see why conversational history alone isn't enough
+
+6
+00:00:16.182 --> 00:00:19.052
+and what agent memory really means.
+
+7
+00:00:19.052 --> 00:00:23.056
+We'll wrap up by introducing the agent stack and a memory core,
+
+8
+00:00:23.256 --> 00:00:27.060
+the architectural foundation that the rest of this course builds on.
+
+9
+00:00:27.560 --> 00:00:29.529
+Let's dive in.
+
+10
+00:00:29.562 --> 00:00:32.032
+In this lesson, we're going to cover why AI agents need memory.
+
+11
+00:00:32.232 --> 00:00:34.234
+More specifically, we're going to get an
+
+12
+00:00:34.234 --> 00:00:36.236
+overview of what an AI agent is,
+
+13
+00:00:36.536 --> 00:00:39.839
+what we mean by stateless agent and memory augmented agent,
+
+14
+00:00:39.873 --> 00:00:43.043
+and we're also going to get an overview of conversational history
+
+15
+00:00:43.243 --> 00:00:45.545
+and going beyond conversational history.
+
+16
+00:00:45.645 --> 00:00:48.648
+We'll finalize this lesson by looking at two key concepts,
+
+17
+00:00:48.748 --> 00:00:50.850
+which are Agent Memory and what
+
+18
+00:00:50.850 --> 00:00:53.253
+we mean by the Agent Memory Core.
+
+19
+00:00:53.853 --> 00:00:55.855
+What is an AI Agent?
+
+20
+00:00:55.855 --> 00:00:57.957
+An AI agent is a computational entity
+
+21
+00:00:57.957 --> 00:01:00.060
+that can perceive its environment through inputs,
+
+22
+00:01:00.360 --> 00:01:02.062
+take action through tool use,
+
+23
+00:01:02.362 --> 00:01:05.965
+and also has reasoning capabilities enabled by an LLM.
+
+24
+00:01:06.166 --> 00:01:10.670
+And more importantly, an AI agent has some form of augmented memory,
+
+25
+00:01:10.970 --> 00:01:14.474
+typically to allow it to store, retrieve, and apply knowledge
+
+26
+00:01:14.574 --> 00:01:16.576
+across sessions and interactions.
+
+27
+00:01:16.709 --> 00:01:19.079
+This is what we define as an AI agent.
+
+28
+00:01:19.779 --> 00:01:22.982
+Generally, AI agents should be able to operate independently,
+
+29
+00:01:23.283 --> 00:01:26.986
+act on behalf of the human with almost little to no feedback.
+
+30
+00:01:27.387 --> 00:01:29.989
+Ideally, they are goal and objective bound.
+
+31
+00:01:30.457 --> 00:01:33.259
+Now that we have an understanding of what an AI agent is,
+
+32
+00:01:33.259 --> 00:01:35.962
+it's time for us to get a very clear understanding
+
+33
+00:01:35.962 --> 00:01:38.264
+of the importance of memory for AI agents.
+
+34
+00:01:38.264 --> 00:01:40.266
+We'll do this by looking at how
+
+35
+00:01:40.266 --> 00:01:42.669
+an AI agent would operate without memory.
+
+36
+00:01:42.969 --> 00:01:46.473
+Typically you would have an AI agent embedded within an application.
+
+37
+00:01:46.773 --> 00:01:50.777
+And in this application, a user would interact with the agent.
+
+38
+00:01:51.778 --> 00:01:55.181
+Typically, we can imagine a user asking for recommendations
+
+39
+00:01:55.181 --> 00:01:57.183
+for restaurants around the area.
+
+40
+00:01:57.584 --> 00:01:59.385
+We would refer to this as turn 1.
+
+41
+00:01:59.586 --> 00:02:01.888
+This message would then be sent to the agent.
+
+42
+00:02:02.088 --> 00:02:04.190
+And the agent would generate a response,
+
+43
+00:02:04.190 --> 00:02:06.593
+ideally detecting the intent of the user,
+
+44
+00:02:06.593 --> 00:02:09.295
+reasoning about the message the user sent,
+
+45
+00:02:09.295 --> 00:02:12.866
+and using a bunch of tools to actually achieve the objective,
+
+46
+00:02:12.866 --> 00:02:14.968
+such as searching for location
+
+47
+00:02:14.968 --> 00:02:17.370
+and getting restaurants around a location,
+
+48
+00:02:17.804 --> 00:02:20.607
+before finally providing an output to the user.
+
+49
+00:02:21.107 --> 00:02:24.010
+We can refer to this as interaction turns.
+
+50
+00:02:24.711 --> 00:02:27.614
+Following subsequent turns, we would have the user
+
+51
+00:02:27.614 --> 00:02:31.317
+interact again with the same agent to continue the conversation.
+
+52
+00:02:31.317 --> 00:02:33.620
+We can refer to this as turn 3.
+
+53
+00:02:34.020 --> 00:02:36.789
+When the user gets the recommendations from the agent,
+
+54
+00:02:36.789 --> 00:02:38.892
+the user could possibly ask
+
+55
+00:02:39.092 --> 00:02:41.895
+to book the first recommendation on the list.
+
+56
+00:02:42.362 --> 00:02:44.097
+But an agent without memory
+
+57
+00:02:44.097 --> 00:02:46.599
+would actually respond as shown on the screen,
+
+58
+00:02:46.599 --> 00:02:48.968
+which would be it has no recollection
+
+59
+00:02:48.968 --> 00:02:51.871
+of the conversation the user is referring to.
+
+60
+00:02:52.338 --> 00:02:54.841
+and would ask the user to please specify.
+
+61
+00:02:55.141 --> 00:02:57.143
+We could refer to this as turn 4.
+
+62
+00:02:57.544 --> 00:03:00.413
+In this event, we can see that due to lack of memory,
+
+63
+00:03:00.513 --> 00:03:02.649
+the agent is unable to complete
+
+64
+00:03:02.649 --> 00:03:05.118
+the task that the user has specified.
+
+65
+00:03:05.718 --> 00:03:08.521
+We can refer to this as a multi-turn interaction.
+
+66
+00:03:08.821 --> 00:03:11.024
+But obviously, this is without memory.
+
+67
+00:03:11.624 --> 00:03:13.693
+Now we've seen what an AI agent
+
+68
+00:03:13.693 --> 00:03:16.796
+with just Perception, Action, and Reasoning characteristics
+
+69
+00:03:16.796 --> 00:03:19.299
+would operate like in a real-life scenario.
+
+70
+00:03:19.699 --> 00:03:21.901
+Essentially, we would refer to this
+
+71
+00:03:21.901 --> 00:03:24.270
+type of AI agent as a stateless agent.
+
+72
+00:03:24.871 --> 00:03:27.574
+Let's talk more about what a stateless agent is.
+
+73
+00:03:28.174 --> 00:03:30.677
+A stateless agent is one that can actually
+
+74
+00:03:30.677 --> 00:03:33.179
+still perceive its environment through input
+
+75
+00:03:33.179 --> 00:03:35.481
+and reason over this input and produce outputs
+
+76
+00:03:35.481 --> 00:03:37.684
+back to the user, essentially
+
+77
+00:03:37.684 --> 00:03:39.886
+powered by an LLM.
+
+78
+00:03:40.253 --> 00:03:42.455
+And this feedback is very crucial.
+
+79
+00:03:43.156 --> 00:03:46.259
+But one thing is, with no memory, as we've seen,
+
+80
+00:03:46.359 --> 00:03:49.062
+the AI agent doesn't retain or recall information
+
+81
+00:03:49.162 --> 00:03:51.064
+beyond a single turn.
+
+82
+00:03:51.497 --> 00:03:54.000
+There are significant disadvantages to this.
+
+83
+00:03:54.500 --> 00:03:56.469
+For example, the agent will not
+
+84
+00:03:56.469 --> 00:03:58.805
+be able to complete a long-horizon task.
+
+85
+00:03:58.905 --> 00:04:02.008
+Now, these are tasks where the agent is expected to run
+
+86
+00:04:02.008 --> 00:04:04.711
+for several minutes to hours or even days.
+
+87
+00:04:05.011 --> 00:04:09.382
+But without having information of previous interaction or steps taken,
+
+88
+00:04:09.382 --> 00:04:11.985
+it would be very difficult to complete the task.
+
+89
+00:04:12.585 --> 00:04:16.389
+The agent will also have no context awareness across sessions,
+
+90
+00:04:16.589 --> 00:04:19.592
+meaning if a user was to interact with an agent
+
+91
+00:04:19.792 --> 00:04:22.395
+and then leave and come back or start a new session,
+
+92
+00:04:22.595 --> 00:04:25.398
+the information as to the user would be lost
+
+93
+00:04:25.598 --> 00:04:27.600
+and not transferred across sessions.
+
+94
+00:04:28.001 --> 00:04:31.404
+More importantly, the agent would lack adaptation capabilities,
+
+95
+00:04:32.105 --> 00:04:34.707
+which means any new information provided to the agent
+
+96
+00:04:34.874 --> 00:04:37.377
+during an interaction would not be updated
+
+97
+00:04:37.777 --> 00:04:39.979
+or used in subsequent interactions.
+
+98
+00:04:40.747 --> 00:04:44.450
+Stateless agent can actually have high operational cost
+
+99
+00:04:44.450 --> 00:04:47.854
+because to keep or at least augment continuity,
+
+100
+00:04:47.854 --> 00:04:50.523
+you would have to stuff a lot of information
+
+101
+00:04:50.523 --> 00:04:52.925
+into the context window at every single turn.
+
+102
+00:04:53.426 --> 00:04:56.929
+There are more disadvantages, but these are the significant ones.
+
+103
+00:04:57.630 --> 00:05:00.333
+Now, we've had an overview of stateless agent,
+
+104
+00:05:00.433 --> 00:05:02.335
+which is an agent without memory.
+
+105
+00:05:02.935 --> 00:05:04.771
+But we can move on and see what
+
+106
+00:05:04.771 --> 00:05:06.639
+an AI agent with memory would look like.
+
+107
+00:05:07.073 --> 00:05:10.910
+We're going to use a similar scenario as to the previous one.
+
+108
+00:05:11.077 --> 00:05:12.912
+But let's start from turn 3.
+
+109
+00:05:13.579 --> 00:05:16.349
+Turn 1 and 2 in a Memory-Augmented Agent
+
+110
+00:05:16.582 --> 00:05:18.418
+would have been stored in an
+
+111
+00:05:18.418 --> 00:05:20.586
+external memory source such as a database.
+
+112
+00:05:20.820 --> 00:05:24.324
+So when we start with the user interacting with the application
+
+113
+00:05:24.624 --> 00:05:26.726
+and also the agent indirectly,
+
+114
+00:05:27.026 --> 00:05:29.028
+we would have turn one and two
+
+115
+00:05:29.028 --> 00:05:31.130
+within the memory of the agent.
+
+116
+00:05:31.531 --> 00:05:36.336
+What this means is, when the user asks for some recommendations
+
+117
+00:05:36.336 --> 00:05:38.237
+and also asks them to book the
+
+118
+00:05:38.237 --> 00:05:40.139
+recommendation on the first on the list.
+
+119
+00:05:40.206 --> 00:05:43.009
+The agent will respond appropriately,
+
+120
+00:05:43.309 --> 00:05:47.480
+which is identify the restaurant on the first on the list
+
+121
+00:05:47.780 --> 00:05:50.083
+and actually provide a reasonable output,
+
+122
+00:05:50.383 --> 00:05:52.285
+which would be asking the user
+
+123
+00:05:52.385 --> 00:05:55.688
+what date and time would the booking like to be made for.
+
+124
+00:05:55.855 --> 00:05:58.758
+We can refer to both turn 1 and 2
+
+125
+00:05:58.758 --> 00:06:01.561
+and turn 3 and 4 as interaction history.
+
+126
+00:06:01.961 --> 00:06:04.163
+And all of this will be stored in a database
+
+127
+00:06:04.163 --> 00:06:06.165
+for all subsequent turns.
+
+128
+00:06:06.466 --> 00:06:10.670
+Essentially, we have a memory-augmented agent.
+
+129
+00:06:10.937 --> 00:06:15.937
+Let's take a further deep dive into Memory-Augmented Agents and their advantages.
+
+130
+00:06:16.642 --> 00:06:19.445
+Just like stateless agents, they can Perceive Inputs
+
+131
+00:06:19.946 --> 00:06:23.449
+and also Reason Over Inputs and Produce Outputs.
+
+132
+00:06:24.083 --> 00:06:27.787
+All of this will be powered by the LLM reasoning capabilities,
+
+133
+00:06:28.187 --> 00:06:30.189
+but a more important thing here is
+
+134
+00:06:30.289 --> 00:06:33.993
+we have a database where information is stored and retrieved from.
+
+135
+00:06:34.560 --> 00:06:37.363
+There are many benefits to this, such as the agent's
+
+136
+00:06:37.363 --> 00:06:40.366
+being able to complete long-horizon tasks,
+
+137
+00:06:40.366 --> 00:06:43.870
+has subsequent context awareness and can actually adapt.
+
+138
+00:06:44.370 --> 00:06:46.773
+Let's go over the advantages in more detail.
+
+139
+00:06:47.373 --> 00:06:51.144
+One of the key advantages is the ability for memory-augmented agents
+
+140
+00:06:51.144 --> 00:06:52.845
+to actually complete long-horizon tasks,
+
+141
+00:06:53.045 --> 00:06:56.149
+mainly because they can reference previous interaction and context
+
+142
+00:06:56.149 --> 00:06:57.850
+held in previous sessions.
+
+143
+00:06:58.217 --> 00:07:01.721
+Now this leads to a Sustained Context Awareness,
+
+144
+00:07:01.721 --> 00:07:03.756
+which feels to the user that there
+
+145
+00:07:03.756 --> 00:07:06.125
+is a continuous interaction had with the agent.
+
+146
+00:07:06.125 --> 00:07:10.029
+Now, what we have ideally is an improved sense of efficiency
+
+147
+00:07:10.029 --> 00:07:12.131
+and also reduce operational cost.
+
+148
+00:07:12.131 --> 00:07:14.200
+This is because we reduce the amount of
+
+149
+00:07:14.200 --> 00:07:16.502
+information we have to pass into the context window
+
+150
+00:07:16.502 --> 00:07:18.604
+and only pass in one that are
+
+151
+00:07:18.604 --> 00:07:21.007
+relevant to the interaction that have been stored
+
+152
+00:07:21.007 --> 00:07:23.209
+in an external memory store.
+
+153
+00:07:23.743 --> 00:07:28.247
+Finally, we'll have greater reliability in multi-step workflow.
+
+154
+00:07:28.748 --> 00:07:30.650
+This is mainly due to the fact that
+
+155
+00:07:30.650 --> 00:07:32.518
+we can reference previous steps that were taken
+
+156
+00:07:33.219 --> 00:07:35.221
+and also reference previous context,
+
+157
+00:07:35.521 --> 00:07:38.524
+which makes all the subsequent steps more reliable
+
+158
+00:07:38.624 --> 00:07:40.726
+in terms of successful outcomes.
+
+159
+00:07:41.194 --> 00:07:43.396
+We're going to be exploring more of
+
+160
+00:07:43.396 --> 00:07:45.598
+all of these advantages in future lessons.
+
+161
+00:07:46.399 --> 00:07:49.202
+Memory augmented agents come in all shape and sizes.
+
+162
+00:07:49.502 --> 00:07:53.005
+What we've seen might be a naive form of memory augmented agent.
+
+163
+00:07:53.206 --> 00:07:55.308
+And here's what we mean. Going from
+
+164
+00:07:55.308 --> 00:07:57.710
+a stateless agent to one that can remember
+
+165
+00:07:57.977 --> 00:08:01.681
+means storing interaction history within an external store.
+
+166
+00:08:02.014 --> 00:08:04.217
+The key benefits of this we've touched on,
+
+167
+00:08:04.217 --> 00:08:07.820
+but the most important one is the continuation of interaction.
+
+168
+00:08:07.820 --> 00:08:11.524
+Essentially, we're bringing continuity to an agent
+
+169
+00:08:11.524 --> 00:08:15.228
+through the storing of conversational history or interactions.
+
+170
+00:08:15.261 --> 00:08:18.764
+And these interactions are typically between the user or users
+
+171
+00:08:19.131 --> 00:08:21.033
+or the agents or assistants.
+
+172
+00:08:21.534 --> 00:08:24.437
+Interaction history, when it's stored in an external store,
+
+173
+00:08:24.437 --> 00:08:26.739
+can be referred to as Conversational Memory.
+
+174
+00:08:26.739 --> 00:08:29.642
+We're going to be looking more into different forms of memory,
+
+175
+00:08:29.842 --> 00:08:33.045
+but conversational memory is one of the simplest forms to understand
+
+176
+00:08:33.346 --> 00:08:36.249
+one that interaction history lends itself to.
+
+177
+00:08:36.749 --> 00:08:39.552
+An interaction is typically back and forth information
+
+178
+00:08:39.652 --> 00:08:41.854
+between a user and an agent.
+
+179
+00:08:42.288 --> 00:08:46.025
+In conversational memory, we have very specific attributes.
+
+180
+00:08:46.425 --> 00:08:49.095
+We have a timestamp, which is when the interaction was taken.
+
+181
+00:08:49.495 --> 00:08:51.931
+We have the user and the assistant message,
+
+182
+00:08:52.131 --> 00:08:55.668
+and this will be stored in a database, in external memory.
+
+183
+00:08:56.402 --> 00:08:58.871
+Ideally, conversational memory will be time-ordered,
+
+184
+00:08:59.272 --> 00:09:03.175
+which means that when we return any conversational memory data,
+
+185
+00:09:03.576 --> 00:09:05.578
+we are retrieving it ordered by time,
+
+186
+00:09:05.845 --> 00:09:09.549
+so we can see the sequence of actions and interactions taken.
+
+187
+00:09:10.049 --> 00:09:11.918
+Let's see how this would look like
+
+188
+00:09:11.918 --> 00:09:13.819
+in the context window of an LLM.
+
+189
+00:09:14.120 --> 00:09:16.822
+So an LLM would have a context window
+
+190
+00:09:16.856 --> 00:09:18.925
+that can take a certain amount of tokens.
+
+191
+00:09:19.625 --> 00:09:21.327
+In the context window, we would
+
+192
+00:09:21.327 --> 00:09:23.329
+place in the system prompt and instructions.
+
+193
+00:09:23.829 --> 00:09:27.333
+Now, interaction history will be retrieved as conversational memory.
+
+194
+00:09:27.533 --> 00:09:32.238
+where we'll put all the multi-turn past interaction from the external store.
+
+195
+00:09:33.039 --> 00:09:35.841
+And then we'll place in the final user prompt.
+
+196
+00:09:36.142 --> 00:09:39.245
+This is a depiction of what the context window
+
+197
+00:09:39.245 --> 00:09:42.548
+of an LLM with conversational memory would look like.
+
+198
+00:09:43.349 --> 00:09:45.351
+But we actually need to go beyond this.
+
+199
+00:09:45.651 --> 00:09:47.320
+And there are several reasons as to
+
+200
+00:09:47.320 --> 00:09:49.221
+why we need to move beyond conversational memory
+
+201
+00:09:49.255 --> 00:09:51.223
+or just using interaction history
+
+202
+00:09:51.257 --> 00:09:53.826
+to create memory augmented agents.
+
+203
+00:09:54.327 --> 00:09:56.329
+The first one is very simple.
+
+204
+00:09:56.329 --> 00:09:58.631
+Conversation windows are actually finite,
+
+205
+00:09:59.031 --> 00:10:00.933
+but the user relationships are not.
+
+206
+00:10:01.334 --> 00:10:03.636
+What we mean is that we can actually capture
+
+207
+00:10:03.636 --> 00:10:06.939
+more relationships between users and the assistant
+
+208
+00:10:07.340 --> 00:10:09.041
+by looking at conversations
+
+209
+00:10:09.041 --> 00:10:11.644
+or other data associated with conversations.
+
+210
+00:10:11.944 --> 00:10:14.347
+For example, information as to entities
+
+211
+00:10:14.347 --> 00:10:16.148
+that are mentioned during an interaction.
+
+212
+00:10:16.482 --> 00:10:20.987
+entities such as place, people, and relationships to people.
+
+213
+00:10:21.487 --> 00:10:25.391
+Not all valuable information are actually stored in a single conversation.
+
+214
+00:10:25.992 --> 00:10:28.294
+We're going to have to move beyond conversational memory
+
+215
+00:10:28.694 --> 00:10:31.297
+to actually extract useful information
+
+216
+00:10:31.998 --> 00:10:35.001
+that we can use in cross-session interaction.
+
+217
+00:10:35.501 --> 00:10:39.505
+Agents need structured, queryable knowledge, not just chat logs.
+
+218
+00:10:39.839 --> 00:10:41.941
+Data stored in conversation memory
+
+219
+00:10:41.941 --> 00:10:43.943
+is just interaction history.
+
+220
+00:10:44.343 --> 00:10:46.445
+But agents can operate within workflow
+
+221
+00:10:46.445 --> 00:10:48.147
+where the steps taken in the workflow
+
+222
+00:10:48.147 --> 00:10:51.350
+is actually useful information and also the outcomes.
+
+223
+00:10:51.651 --> 00:10:55.154
+Now, this is not conversation history or interaction history.
+
+224
+00:10:55.454 --> 00:10:58.157
+Therefore, we need to expand and go beyond conversational memory,
+
+225
+00:10:58.457 --> 00:11:00.459
+which we will see in future lessons.
+
+226
+00:11:01.460 --> 00:11:03.829
+Now that we've seen conversational memory,
+
+227
+00:11:04.130 --> 00:11:07.433
+it's time to explore the distinct forms of agent memory
+
+228
+00:11:07.433 --> 00:11:09.135
+you will be coming across.
+
+229
+00:11:09.535 --> 00:11:12.438
+The easy way to view agent memory
+
+230
+00:11:12.438 --> 00:11:14.640
+or in two distinct form, which are short-term and long-term.
+
+231
+00:11:15.107 --> 00:11:17.209
+Let's look into short-term memory.
+
+232
+00:11:17.309 --> 00:11:19.712
+Two common forms of short-term memory
+
+233
+00:11:19.712 --> 00:11:21.414
+are Semantic Cache and Working Memory.
+
+234
+00:11:21.714 --> 00:11:25.117
+Semantic Cache is essentially using a caching mechanisms
+
+235
+00:11:25.117 --> 00:11:27.119
+that leverage vector search
+
+236
+00:11:27.119 --> 00:11:31.123
+and previously received response from an inference provider
+
+237
+00:11:31.424 --> 00:11:34.026
+to essentially use as response
+
+238
+00:11:34.026 --> 00:11:36.929
+for similar queries in subsequent interaction.
+
+239
+00:11:37.196 --> 00:11:39.699
+While Working Memory can be seen as
+
+240
+00:11:39.699 --> 00:11:43.402
+the LLM Context Window and any Session Based memory.
+
+241
+00:11:43.703 --> 00:11:46.005
+This is essentially seen as a scratch pad
+
+242
+00:11:46.105 --> 00:11:48.107
+where the LLM can operate within
+
+243
+00:11:48.207 --> 00:11:51.711
+but is lost after an interaction or session.
+
+244
+00:11:52.144 --> 00:11:55.047
+These are all the different types of short-term memory.
+
+245
+00:11:55.347 --> 00:11:58.250
+For long-term memory, we have three main forms,
+
+246
+00:11:58.350 --> 00:12:01.654
+such as Procedural, Semantic, and Episodic.
+
+247
+00:12:02.054 --> 00:12:04.857
+Let's look at examples of these types of memory.
+
+248
+00:12:05.658 --> 00:12:08.627
+For Procedural memory, a common memory type
+
+249
+00:12:08.861 --> 00:12:12.231
+we're going to be using in agents is Workflow memory.
+
+250
+00:12:12.531 --> 00:12:15.034
+This is where we store the steps and interaction
+
+251
+00:12:15.034 --> 00:12:18.437
+that an agent has taken to achieve its subsequent objective.
+
+252
+00:12:18.738 --> 00:12:23.442
+And these steps could include the calling of tools and other processes.
+
+253
+00:12:23.542 --> 00:12:26.946
+It's ideal to record the steps in a form of external memory,
+
+254
+00:12:26.946 --> 00:12:30.449
+which can be referenced and pulled in in subsequent interaction
+
+255
+00:12:30.549 --> 00:12:33.853
+as a form of experience for the agent to refer to.
+
+256
+00:12:34.153 --> 00:12:36.255
+We call this Workflow memory.
+
+257
+00:12:36.555 --> 00:12:40.159
+A good example of Semantic memory is simply the Knowledge Base,
+
+258
+00:12:40.459 --> 00:12:43.329
+which is any external knowledge that the agent needs to know
+
+259
+00:12:43.329 --> 00:12:46.732
+to complete a task. This could be domain-specific knowledge
+
+260
+00:12:47.032 --> 00:12:49.835
+in regards to the domain that the agent operates within.
+
+261
+00:12:50.336 --> 00:12:53.038
+Then conversation memory that we explored previously
+
+262
+00:12:53.239 --> 00:12:55.341
+is known as a type of Episodic memory.
+
+263
+00:12:55.708 --> 00:12:59.211
+typically because we have the timestamp attribute
+
+264
+00:12:59.211 --> 00:13:01.480
+on the information captured
+
+265
+00:13:01.480 --> 00:13:05.684
+and we could reference this specific data using time.
+
+266
+00:13:06.252 --> 00:13:10.256
+Now we have a good understanding of different types of agent memory.
+
+267
+00:13:10.756 --> 00:13:14.059
+It's time to understand what specifically is agent memory.
+
+268
+00:13:15.094 --> 00:13:19.098
+Agent memory can be defined as the composition of system component
+
+269
+00:13:19.665 --> 00:13:22.067
+with some architectural components as well,
+
+270
+00:13:22.368 --> 00:13:25.538
+in order to enable an agent to adapt and learn.
+
+271
+00:13:25.938 --> 00:13:29.742
+The system components that you'll find in Agent Memory are typically
+
+272
+00:13:29.842 --> 00:13:32.745
+Embedding Models, a database,
+
+273
+00:13:32.845 --> 00:13:35.047
+and a large language model.
+
+274
+00:13:35.247 --> 00:13:38.150
+Ideally, the combination of these system components,
+
+275
+00:13:38.751 --> 00:13:41.453
+along with some control mechanisms and software harness,
+
+276
+00:13:41.453 --> 00:13:43.455
+which is code, will enable an agent
+
+277
+00:13:44.056 --> 00:13:47.560
+to store, retrieve, and recall information
+
+278
+00:13:47.960 --> 00:13:50.729
+that allows it to adapt to interaction and learn.
+
+279
+00:13:51.463 --> 00:13:53.699
+To understand agent memory,
+
+280
+00:13:53.799 --> 00:13:57.469
+we can use your previous knowledge on retrieval augmented generation, or RAG.
+
+281
+00:13:58.003 --> 00:14:00.639
+We're going to see how RAG works very quickly
+
+282
+00:14:00.739 --> 00:14:03.742
+and then bring that in and connect it to agent memory.
+
+283
+00:14:04.310 --> 00:14:06.612
+Let's go over a typical RAG pipeline.
+
+284
+00:14:06.979 --> 00:14:09.081
+First you would have a data source
+
+285
+00:14:09.081 --> 00:14:11.684
+which you will pass through a Data Processing pipeline,
+
+286
+00:14:11.684 --> 00:14:15.487
+which will include the breaking down of the data object
+
+287
+00:14:15.487 --> 00:14:17.389
+into subsequent chunks.
+
+288
+00:14:18.123 --> 00:14:20.926
+These chunks are then passed into an embedding model,
+
+289
+00:14:21.026 --> 00:14:24.730
+where a numerical representation of the data object is created.
+
+290
+00:14:25.130 --> 00:14:28.634
+This numerical representation captures the semantics and context
+
+291
+00:14:28.734 --> 00:14:31.937
+of the data object that was passed into the embedding model.
+
+292
+00:14:32.304 --> 00:14:35.507
+Alongside with the Embedding Model and other metadata,
+
+293
+00:14:35.507 --> 00:14:38.010
+we can pass in all different data
+
+294
+00:14:38.010 --> 00:14:40.512
+types into a single database for storage.
+
+295
+00:14:41.113 --> 00:14:44.817
+Now, we would have a user which will interact with an application
+
+296
+00:14:45.117 --> 00:14:47.419
+by passing in a User Query,
+
+297
+00:14:47.519 --> 00:14:49.788
+which would then be vectorized by passing
+
+298
+00:14:49.788 --> 00:14:52.391
+in the User Query into the Embedding Model.
+
+299
+00:14:52.524 --> 00:14:56.362
+and generating a numerical representation of the User Query.
+
+300
+00:14:56.929 --> 00:14:58.697
+Typically, the Embedding Model used to
+
+301
+00:14:58.697 --> 00:15:00.799
+generate the embedding for the User Query
+
+302
+00:15:00.799 --> 00:15:03.335
+would be the same we use during the ingestion pipeline.
+
+303
+00:15:03.903 --> 00:15:07.706
+Once we retrieve the semantically similar rows to the user query,
+
+304
+00:15:07.907 --> 00:15:10.409
+we would pass these rows into a Reranking Model.
+
+305
+00:15:11.110 --> 00:15:13.612
+The results of the reranked rows are then concatenated
+
+306
+00:15:13.612 --> 00:15:16.115
+with the user query and passed into the LLM
+
+307
+00:15:16.715 --> 00:15:20.119
+to ground the response of the LLM in domain-specific data.
+
+308
+00:15:20.352 --> 00:15:22.655
+Now, this is a typical RAG pipeline.
+
+309
+00:15:23.555 --> 00:15:25.257
+In order to make a connection
+
+310
+00:15:25.257 --> 00:15:27.259
+to how RAG relates to agent memory,
+
+311
+00:15:27.860 --> 00:15:29.461
+we will be taking the following steps.
+
+312
+00:15:30.062 --> 00:15:31.830
+We would have the typical ingestion process
+
+313
+00:15:32.164 --> 00:15:34.133
+in the earlier portion of a RAG pipeline.
+
+314
+00:15:34.833 --> 00:15:37.536
+And we would also bring in our knowledge of an AI agent
+
+315
+00:15:37.836 --> 00:15:40.539
+and the main characteristics which are the Perception,
+
+316
+00:15:40.839 --> 00:15:43.842
+Memory, Action, and Reasoning capabilities
+
+317
+00:15:44.143 --> 00:15:46.111
+that we covered previously. To make
+
+318
+00:15:46.111 --> 00:15:48.414
+the connection of RAG to agent memory,
+
+319
+00:15:48.814 --> 00:15:52.718
+what you would have is the abstractions or the memory types
+
+320
+00:15:52.718 --> 00:15:55.688
+that we covered in previous slides
+
+321
+00:15:55.688 --> 00:15:58.691
+as computational form within the database.
+
+322
+00:15:59.191 --> 00:16:02.394
+Ideally, this would be tables within a database.
+
+323
+00:16:02.895 --> 00:16:04.997
+So you'd have your semantic memory,
+
+324
+00:16:05.197 --> 00:16:07.800
+your procedural memory, or episodic memory,
+
+325
+00:16:07.800 --> 00:16:10.102
+which can be conversational memory,
+
+326
+00:16:10.102 --> 00:16:12.204
+as tables represented in a database.
+
+327
+00:16:12.738 --> 00:16:14.940
+A memory manager could then be used
+
+328
+00:16:14.940 --> 00:16:17.242
+to abstract away the methods
+
+329
+00:16:17.242 --> 00:16:20.646
+and program used to read, write, update
+
+330
+00:16:20.646 --> 00:16:23.549
+and delete data from these tables.
+
+331
+00:16:23.916 --> 00:16:27.219
+And our agent would have access to all of these capabilities
+
+332
+00:16:27.219 --> 00:16:30.422
+by connecting a Memory Manager through tools
+
+333
+00:16:30.422 --> 00:16:33.125
+and providing these as capabilities
+
+334
+00:16:33.125 --> 00:16:35.227
+to the agent via memory.
+
+335
+00:16:35.794 --> 00:16:39.398
+And this is how we bring in our previous knowledge of RAG
+
+336
+00:16:39.698 --> 00:16:42.701
+and also the characteristics of an agent
+
+337
+00:16:43.002 --> 00:16:47.106
+and different forms of memory into agent memory.
+
+338
+00:16:47.506 --> 00:16:51.310
+Now, we're going to cover the term Agent Memory Core.
+
+339
+00:16:51.610 --> 00:16:54.880
+In an agentic system, there are three main components
+
+340
+00:16:55.080 --> 00:16:58.684
+where memory is located or could be said to be located.
+
+341
+00:16:58.717 --> 00:17:00.819
+This would be your large language model,
+
+342
+00:17:00.819 --> 00:17:04.323
+which has parametric memory of all the data it's been trained with.
+
+343
+00:17:04.523 --> 00:17:06.525
+and also your Embedding Model,
+
+344
+00:17:06.525 --> 00:17:08.927
+which has memory by which it could draw semantic
+
+345
+00:17:08.927 --> 00:17:12.131
+and context information from when generating an embedding.
+
+346
+00:17:12.731 --> 00:17:14.733
+But also you have your database.
+
+347
+00:17:15.034 --> 00:17:17.336
+This is where you're going to see the most traffic
+
+348
+00:17:17.436 --> 00:17:19.438
+of data within your agentic system.
+
+349
+00:17:19.838 --> 00:17:23.942
+This is where data is stored, retrieved, and optimized as well.
+
+350
+00:17:24.243 --> 00:17:27.646
+These are all the main system components associated with agent memory.
+
+351
+00:17:28.147 --> 00:17:31.450
+But an agent memory core would be your database.
+
+352
+00:17:31.750 --> 00:17:35.054
+This is where the most information and data
+
+353
+00:17:35.454 --> 00:17:37.556
+would be stored and retrieved from
+
+354
+00:17:37.756 --> 00:17:39.958
+in the entirety of your agentic system.
+
+355
+00:17:40.225 --> 00:17:43.128
+Most of the data traffic we see in AI agents
+
+356
+00:17:43.128 --> 00:17:45.431
+flow through an external memory
+
+357
+00:17:45.431 --> 00:17:47.833
+which is backed by a database.
+
+358
+00:17:48.233 --> 00:17:51.737
+An Agent Memory Core can be defined as this primary infrastructure
+
+359
+00:17:51.737 --> 00:17:55.441
+that will see the most data traffic within your agentic system.
+
+360
+00:17:55.741 --> 00:17:59.044
+It should be able to handle the storage of information,
+
+361
+00:17:59.044 --> 00:18:01.747
+the retrieval and the optimization of information
+
+362
+00:18:01.747 --> 00:18:03.449
+within the store itself.
+
+363
+00:18:03.749 --> 00:18:05.584
+This is why we refer to
+
+364
+00:18:05.584 --> 00:18:07.719
+the database as the Agent Memory Core.
+
+365
+00:18:08.220 --> 00:18:10.222
+This is an important concept to
+
+366
+00:18:10.222 --> 00:18:12.524
+take along with you through this course.

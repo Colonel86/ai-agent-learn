@@ -1,0 +1,1330 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:03.536
+In this lesson, you'll tackle a real scaling challenge.
+
+2
+00:00:03.937 --> 00:00:07.941
+What happens when your agent has access to hundreds of tools?
+
+3
+00:00:08.141 --> 00:00:11.444
+Instead of stuffing every tool definition into the prompt,
+
+4
+00:00:11.444 --> 00:00:14.114
+You'll treat tools as procedural memory,
+
+5
+00:00:14.581 --> 00:00:16.850
+storing them in a memory backed store
+
+6
+00:00:17.283 --> 00:00:19.152
+and retrieving only the relevant ones
+
+7
+00:00:19.219 --> 00:00:21.554
+at inference time using semantic search.
+
+8
+00:00:21.755 --> 00:00:23.857
+All right, let's go.
+
+9
+00:00:23.857 --> 00:00:26.960
+What we're going to cover on this lesson is
+
+10
+00:00:26.960 --> 00:00:31.765
+how large language models are able to become tool-aware for task completion,
+
+11
+00:00:31.765 --> 00:00:34.267
+how they are able to perceive the tools
+
+12
+00:00:34.267 --> 00:00:36.569
+that they have at their disposal.
+
+13
+00:00:37.270 --> 00:00:39.873
+We'll also talk about the Toolbox pattern,
+
+14
+00:00:39.873 --> 00:00:43.576
+which is a pattern that allows large language models to become aware
+
+15
+00:00:43.576 --> 00:00:45.879
+of all the tools that they have
+
+16
+00:00:45.879 --> 00:00:49.582
+and how the tools are treated as retrievable sources
+
+17
+00:00:49.582 --> 00:00:52.185
+rather than putting all of them into the context.
+
+18
+00:00:52.385 --> 00:00:55.588
+And how we can use embeddings and semantic search
+
+19
+00:00:55.588 --> 00:00:58.591
+to allow these large language models to select
+
+20
+00:00:58.591 --> 00:01:01.594
+their most optimal tools at any time.
+
+21
+00:01:02.128 --> 00:01:05.031
+Tool calling is a technique or a pattern
+
+22
+00:01:05.131 --> 00:01:08.835
+where the large language model doesn't directly execute the code.
+
+23
+00:01:09.436 --> 00:01:12.439
+But rather, it will output a structured request
+
+24
+00:01:12.739 --> 00:01:16.609
+so that the environment will actually execute the code
+
+25
+00:01:17.010 --> 00:01:20.013
+and then return it so the large language model has
+
+26
+00:01:20.113 --> 00:01:23.516
+this information available to return the information to the user.
+
+27
+00:01:23.950 --> 00:01:26.453
+In a typical scenario, what you will have
+
+28
+00:01:26.453 --> 00:01:29.155
+is a lot of tool definitions with a name,
+
+29
+00:01:29.155 --> 00:01:31.758
+a description, and some parameters
+
+30
+00:01:31.758 --> 00:01:34.461
+on how this tool has to be called.
+
+31
+00:01:34.461 --> 00:01:38.431
+And then we'll also have a user query, like for instance,
+
+32
+00:01:38.498 --> 00:01:41.101
+What is the weather like in London tomorrow?
+
+33
+00:01:41.401 --> 00:01:43.970
+The large language model will be able to
+
+34
+00:01:43.970 --> 00:01:46.473
+output this structured request which will execute
+
+35
+00:01:46.473 --> 00:01:48.374
+within the environment.
+
+36
+00:01:48.675 --> 00:01:51.277
+Then the system will execute the tool,
+
+37
+00:01:51.377 --> 00:01:54.280
+return the response to the large language model,
+
+38
+00:01:54.481 --> 00:01:57.283
+and then through this response we will be able to
+
+39
+00:01:57.283 --> 00:01:59.586
+generate the correct response to the user.
+
+40
+00:01:59.886 --> 00:02:02.689
+But this has some limitations.
+
+41
+00:02:03.389 --> 00:02:05.391
+We typically have a lot of tools
+
+42
+00:02:05.391 --> 00:02:07.694
+that we want to use on our environment.
+
+43
+00:02:07.894 --> 00:02:11.197
+And this is of course very beneficial for the large language model
+
+44
+00:02:11.397 --> 00:02:13.900
+because the more information and the more tools
+
+45
+00:02:13.900 --> 00:02:16.369
+that a large language model has at their disposal,
+
+46
+00:02:16.669 --> 00:02:19.072
+the better the responses will be, right?
+
+47
+00:02:19.606 --> 00:02:22.408
+But whenever you have too many tools,
+
+48
+00:02:22.609 --> 00:02:25.612
+this has some obvious disadvantages, right?
+
+49
+00:02:26.379 --> 00:02:30.383
+The context size is limited on large language models,
+
+50
+00:02:30.383 --> 00:02:33.586
+so we obviously cannot stuff all of the tools,
+
+51
+00:02:33.586 --> 00:02:38.091
+their names, their parameters, and their descriptions into the context
+
+52
+00:02:38.091 --> 00:02:40.593
+without having some problems.
+
+53
+00:02:41.094 --> 00:02:44.097
+So putting all of them into the context window
+
+54
+00:02:44.097 --> 00:02:45.932
+can cause a lot of agents
+
+55
+00:02:45.932 --> 00:02:48.101
+to fail in a number of ways.
+
+56
+00:02:48.501 --> 00:02:52.805
+These are some of the most obvious disadvantages of this.
+
+57
+00:02:53.406 --> 00:02:56.276
+First of all, we have Context Confusion and Context Bloat,
+
+58
+00:02:56.676 --> 00:02:58.978
+which is that whenever a large language model
+
+59
+00:02:59.012 --> 00:03:01.281
+sees a lot of these tools at the same time,
+
+60
+00:03:01.681 --> 00:03:04.184
+the context will get overwhelmed
+
+61
+00:03:04.184 --> 00:03:06.486
+by the amount of information from the tools
+
+62
+00:03:06.486 --> 00:03:09.489
+and will have less context available
+
+63
+00:03:09.489 --> 00:03:12.792
+for the input and the actual output being produced.
+
+64
+00:03:13.126 --> 00:03:16.529
+We also have this thing called Tool Selection Degradation,
+
+65
+00:03:16.729 --> 00:03:18.631
+which means that the responses from the
+
+66
+00:03:18.631 --> 00:03:20.833
+large language model will degrade as a consequence.
+
+67
+00:03:21.434 --> 00:03:25.838
+This will also cause the latency and the tokens to increase.
+
+68
+00:03:26.139 --> 00:03:30.410
+So you will suffer the consequences of having to pay more tokens.
+
+69
+00:03:30.877 --> 00:03:33.146
+and also the latency can increase
+
+70
+00:03:33.146 --> 00:03:35.848
+because the large language model will actually
+
+71
+00:03:35.848 --> 00:03:39.052
+take longer to produce a response for all
+
+72
+00:03:39.052 --> 00:03:42.055
+the amount of information it needs to process beforehand,
+
+73
+00:03:42.055 --> 00:03:45.358
+which in general will cause a performance degradation.
+
+74
+00:03:45.825 --> 00:03:48.461
+So, a way for us to scale this system
+
+75
+00:03:48.461 --> 00:03:53.461
+so that it's more beneficial for the large language model is this.
+
+76
+00:03:54.334 --> 00:03:56.736
+First, we can have all the names, descriptions,
+
+77
+00:03:56.736 --> 00:03:59.138
+and parameters for each one of the tools.
+
+78
+00:03:59.472 --> 00:04:01.674
+So if we encode that information
+
+79
+00:04:01.674 --> 00:04:04.277
+and put that into a vector space
+
+80
+00:04:04.677 --> 00:04:07.580
+by creating an encoding of this information
+
+81
+00:04:07.580 --> 00:04:10.483
+and passing it through an Embedding Model,
+
+82
+00:04:10.483 --> 00:04:13.086
+we can create an embedding of the Name,
+
+83
+00:04:13.086 --> 00:04:15.688
+the Description, and the Parameters of the tools.
+
+84
+00:04:15.855 --> 00:04:18.057
+And then we can use this Embedding as
+
+85
+00:04:18.057 --> 00:04:20.260
+well as the original information from the tool
+
+86
+00:04:20.460 --> 00:04:22.662
+and load this into the database.
+
+87
+00:04:23.129 --> 00:04:28.129
+So we can perform semantic search operations and similarity search on it.
+
+88
+00:04:29.035 --> 00:04:32.639
+so that the large language model, after it receives a user query,
+
+89
+00:04:32.939 --> 00:04:36.643
+for instance, our original query, what is the weather like in London,
+
+90
+00:04:36.943 --> 00:04:40.346
+we can take that input and we will perform similarity search
+
+91
+00:04:40.647 --> 00:04:43.149
+against the embedding that we just created.
+
+92
+00:04:43.616 --> 00:04:45.918
+So after we have our embeddings,
+
+93
+00:04:46.419 --> 00:04:48.121
+we can take the user query
+
+94
+00:04:48.421 --> 00:04:51.424
+and perform similarity search against this embedding.
+
+95
+00:04:51.624 --> 00:04:54.827
+So semantic search can be executed
+
+96
+00:04:55.328 --> 00:04:57.530
+and the best tools for resolving
+
+97
+00:04:57.630 --> 00:04:59.832
+this user query will be selected.
+
+98
+00:05:00.633 --> 00:05:03.102
+Then after the right tool is selected,
+
+99
+00:05:03.202 --> 00:05:05.805
+the large language model will be able to call this tool,
+
+100
+00:05:06.105 --> 00:05:09.709
+execute it, and return a result to the large language model.
+
+101
+00:05:10.276 --> 00:05:12.345
+So, as you see on the bottom left,
+
+102
+00:05:12.345 --> 00:05:15.548
+this is where a representation of our embedding space.
+
+103
+00:05:15.848 --> 00:05:18.151
+We will have all these tools on this space.
+
+104
+00:05:18.751 --> 00:05:20.853
+And then, by performing similarity search,
+
+105
+00:05:20.853 --> 00:05:24.557
+we will find the closest tools to the user query.
+
+106
+00:05:25.258 --> 00:05:28.561
+Now, this is a great idea, but it might not be enough.
+
+107
+00:05:28.628 --> 00:05:31.631
+So we propose another type of enhancement,
+
+108
+00:05:31.631 --> 00:05:34.867
+which we call the Memory Unit Augmentation,
+
+109
+00:05:34.867 --> 00:05:37.937
+which is a little bit of a different strategy
+
+110
+00:05:37.937 --> 00:05:42.542
+where we will take the tool definitions, the name, and the description,
+
+111
+00:05:42.542 --> 00:05:45.945
+and run them through a large language model
+
+112
+00:05:45.945 --> 00:05:48.748
+and enhance this name and description.
+
+113
+00:05:48.881 --> 00:05:52.452
+And then we will use this enhanced name and description,
+
+114
+00:05:52.752 --> 00:05:55.455
+encode it, pass it through an embedding model,
+
+115
+00:05:55.755 --> 00:05:58.358
+and then create an embedding out of that.
+
+116
+00:05:59.158 --> 00:06:02.962
+And after this, we will have an augmented tool definition.
+
+117
+00:06:03.396 --> 00:06:05.698
+which will be loaded into the database.
+
+118
+00:06:06.199 --> 00:06:08.601
+So we will basically let the large language model
+
+119
+00:06:09.302 --> 00:06:11.404
+enhance our tool definitions.
+
+120
+00:06:12.004 --> 00:06:14.607
+And this has some obvious advantages.
+
+121
+00:06:15.041 --> 00:06:17.844
+For instance, this will make it so that
+
+122
+00:06:17.844 --> 00:06:21.848
+in the embedding space, when we perform semantic search now,
+
+123
+00:06:21.848 --> 00:06:26.152
+there will be higher and better separability between the tools.
+
+124
+00:06:26.853 --> 00:06:28.721
+Also, there will be higher recall
+
+125
+00:06:29.021 --> 00:06:30.823
+and a high-signal embedding text,
+
+126
+00:06:30.823 --> 00:06:32.425
+which means that all the things
+
+127
+00:06:32.525 --> 00:06:34.827
+that we have put into this embedding
+
+128
+00:06:35.128 --> 00:06:37.330
+will have better characteristics
+
+129
+00:06:37.330 --> 00:06:40.233
+and they will be more discernible by the model.
+
+130
+00:06:40.833 --> 00:06:43.136
+We are going to dive deep into
+
+131
+00:06:43.136 --> 00:06:45.438
+agent tool use with semantic tool memory.
+
+132
+00:06:45.838 --> 00:06:50.643
+So, as we did before, we need to quickly connect again
+
+133
+00:06:50.743 --> 00:06:53.346
+into our Oracle database
+
+134
+00:06:53.446 --> 00:06:55.948
+to get access into the system.
+
+135
+00:06:56.282 --> 00:07:00.787
+And as we'll see, we are already connected again into our database
+
+136
+00:07:01.087 --> 00:07:03.790
+and the connection seems to be working fine.
+
+137
+00:07:04.290 --> 00:07:06.793
+Then we're going to reload our embedding model,
+
+138
+00:07:07.093 --> 00:07:09.262
+which is the same that we were using before,
+
+139
+00:07:09.462 --> 00:07:11.764
+the paraphrase-mpnet-base-v2
+
+140
+00:07:12.064 --> 00:07:13.866
+to create our embeddings.
+
+141
+00:07:13.900 --> 00:07:18.504
+And now that we're going to start using our large language models,
+
+142
+00:07:18.504 --> 00:07:22.475
+we're going to instantiate our OpenAI client
+
+143
+00:07:22.475 --> 00:07:25.878
+so we can interact with the large language model programmatically.
+
+144
+00:07:26.245 --> 00:07:28.448
+Then, as we did before,
+
+145
+00:07:28.748 --> 00:07:32.051
+we're going to set up our conversational knowledge,
+
+146
+00:07:32.251 --> 00:07:34.854
+workflow, and all the tables that we
+
+147
+00:07:34.854 --> 00:07:37.457
+were using before for the store manager.
+
+148
+00:07:37.857 --> 00:07:40.359
+And we're also going to provision
+
+149
+00:07:40.359 --> 00:07:44.664
+our tool log history and our conversation history tables
+
+150
+00:07:44.664 --> 00:07:47.366
+to be able to access them as well.
+
+151
+00:07:47.667 --> 00:07:49.368
+And since we were already running it,
+
+152
+00:07:49.368 --> 00:07:51.070
+you will see that they already exist,
+
+153
+00:07:51.070 --> 00:07:53.873
+but if you hadn't, you will get a notification
+
+154
+00:07:53.873 --> 00:07:56.676
+that they were properly created on this step.
+
+155
+00:07:57.076 --> 00:08:00.213
+And here we will also be
+
+156
+00:08:00.213 --> 00:08:03.883
+instantiating our StoreManager as we did before.
+
+157
+00:08:04.283 --> 00:08:08.120
+And after the creation of the StoreManager instance,
+
+158
+00:08:08.120 --> 00:08:10.957
+as we did before, we will get all the objects
+
+159
+00:08:10.957 --> 00:08:13.926
+for the individual stores via the manager
+
+160
+00:08:13.926 --> 00:08:15.928
+functions that we created.
+
+161
+00:08:15.928 --> 00:08:18.931
+And after we run this, you'll see
+
+162
+00:08:18.931 --> 00:08:23.336
+that all the stores are properly loaded via the StoreManager.
+
+163
+00:08:23.769 --> 00:08:28.241
+And now we begin with the actual code for our chapter.
+
+164
+00:08:28.741 --> 00:08:32.678
+What we want to do first is instantiate the MemoryManager
+
+165
+00:08:32.678 --> 00:08:35.114
+as we did before, and then we're
+
+166
+00:08:35.114 --> 00:08:37.583
+going to initialize our Toolbox pattern object.
+
+167
+00:08:37.950 --> 00:08:41.354
+The purpose of the Toolbox is to actually load
+
+168
+00:08:41.954 --> 00:08:44.257
+and store all the different tools that
+
+169
+00:08:44.257 --> 00:08:46.859
+the LLM is going to have access to.
+
+170
+00:08:47.260 --> 00:08:49.462
+So we need to pass the memory_manager,
+
+171
+00:08:49.762 --> 00:08:52.465
+the OpenAI client instance that we created,
+
+172
+00:08:52.765 --> 00:08:54.901
+so that it has access to
+
+173
+00:08:54.901 --> 00:08:57.370
+do some augmentations which we will see,
+
+174
+00:08:57.770 --> 00:09:00.773
+and the embedding_model so that the Toolbox
+
+175
+00:09:00.873 --> 00:09:04.777
+is also able to perform vector similarity search on the toolbox object.
+
+176
+00:09:05.111 --> 00:09:07.213
+So now that we have executed
+
+177
+00:09:07.213 --> 00:09:10.182
+and correctly initialized our toolbox object,
+
+178
+00:09:10.583 --> 00:09:12.685
+we can now see that the memory
+
+179
+00:09:12.685 --> 00:09:15.087
+manager and the toolbox have been correctly initialized.
+
+180
+00:09:15.755 --> 00:09:17.356
+So what you are going to do
+
+181
+00:09:17.356 --> 00:09:18.958
+now is to register a new tool
+
+182
+00:09:18.991 --> 00:09:21.661
+into the toolbox pattern.
+
+183
+00:09:21.661 --> 00:09:24.564
+so that the large language model is able to
+
+184
+00:09:24.564 --> 00:09:26.766
+confidently select it when it needs to.
+
+185
+00:09:26.866 --> 00:09:30.169
+So what we are doing here is to register a new tool
+
+186
+00:09:30.269 --> 00:09:33.072
+with a type of parameter
+
+187
+00:09:33.072 --> 00:09:35.775
+that lets us augment this via the
+
+188
+00:09:35.775 --> 00:09:39.178
+LLM enhancement that we saw on this chapter.
+
+189
+00:09:39.779 --> 00:09:42.982
+So we prepared this function called read_toolbox.
+
+190
+00:09:43.115 --> 00:09:47.019
+which takes an input query as the user's input,
+
+191
+00:09:47.219 --> 00:09:50.690
+and also a number which can be any number.
+
+192
+00:09:50.923 --> 00:09:53.993
+And this value represents however many tools you want
+
+193
+00:09:54.093 --> 00:09:59.093
+the similarity search to return when querying the toolbox.
+
+194
+00:09:59.765 --> 00:10:01.867
+So after you run this,
+
+195
+00:10:01.867 --> 00:10:04.170
+you will be able to see that
+
+196
+00:10:04.170 --> 00:10:06.572
+the registration of a tool has been
+
+197
+00:10:06.572 --> 00:10:08.674
+properly executed.
+
+198
+00:10:09.175 --> 00:10:11.577
+And this performs similarity search
+
+199
+00:10:11.577 --> 00:10:14.580
+on our toolbox table in the database.
+
+200
+00:10:15.314 --> 00:10:18.117
+So after we have defined the function,
+
+201
+00:10:18.517 --> 00:10:23.517
+we will be able to use the toolbox registration tool function
+
+202
+00:10:23.823 --> 00:10:28.127
+to register more tools and also read from the toolbox.
+
+203
+00:10:29.128 --> 00:10:31.530
+So after we have created the toolbox pattern
+
+204
+00:10:31.831 --> 00:10:34.166
+and have a function ready to register
+
+205
+00:10:34.166 --> 00:10:36.502
+tools and also read from the toolbox,
+
+206
+00:10:36.802 --> 00:10:39.805
+what we are going to do is create a new tool,
+
+207
+00:10:40.106 --> 00:10:41.807
+which is through Tavily.
+
+208
+00:10:43.542 --> 00:10:46.545
+Tavily is a service that allows us to search on the web
+
+209
+00:10:46.545 --> 00:10:50.850
+and store these results into the knowledge base on our toolbox.
+
+210
+00:10:50.850 --> 00:10:53.819
+So for that, we first need to instantiate
+
+211
+00:10:53.819 --> 00:10:56.822
+the TavilyClient through their library,
+
+212
+00:10:56.822 --> 00:11:00.526
+and then we will use our register_tool hint
+
+213
+00:11:00.526 --> 00:11:02.528
+to create this new tool
+
+214
+00:11:02.528 --> 00:11:06.132
+so that every time we want to use Tavily,
+
+215
+00:11:06.666 --> 00:11:09.468
+we will be redirected to this function
+
+216
+00:11:09.468 --> 00:11:12.471
+called search_tavily which, as before,
+
+217
+00:11:12.471 --> 00:11:16.442
+will return a maximum number of results by default five.
+
+218
+00:11:16.876 --> 00:11:20.279
+and we'll perform this query against the Tavily client
+
+219
+00:11:20.579 --> 00:11:25.084
+through their API. In here, what we are doing
+
+220
+00:11:25.084 --> 00:11:26.886
+is searching with the Tavily client
+
+221
+00:11:26.886 --> 00:11:28.888
+on the query that we want.
+
+222
+00:11:29.722 --> 00:11:33.025
+and limiting the results to our max_results.
+
+223
+00:11:33.626 --> 00:11:35.628
+After we get our results object,
+
+224
+00:11:35.728 --> 00:11:39.031
+we will write this result into our knowledge base.
+
+225
+00:11:39.432 --> 00:11:43.636
+For that, we'll create some text content to embed
+
+226
+00:11:43.936 --> 00:11:47.940
+in which we will get the title, the content, and the URL
+
+227
+00:11:48.240 --> 00:11:51.744
+and create some additional metadata associated to it.
+
+228
+00:11:52.011 --> 00:11:54.113
+For instance, the title,
+
+229
+00:11:54.113 --> 00:11:56.816
+the url from which we extracted the information,
+
+230
+00:11:56.816 --> 00:12:01.816
+a score representing the verifiability of the information,
+
+231
+00:12:01.821 --> 00:12:04.523
+the query, and the timestamp from our query.
+
+232
+00:12:04.890 --> 00:12:08.394
+and we put all this information into the knowledge base.
+
+233
+00:12:08.894 --> 00:12:11.397
+And in this cell, what you are going to do
+
+234
+00:12:11.564 --> 00:12:13.766
+is see the live difference between
+
+235
+00:12:13.866 --> 00:12:16.368
+actually using the original docstring,
+
+236
+00:12:16.669 --> 00:12:20.673
+which is what the actual creator of the function used
+
+237
+00:12:20.873 --> 00:12:23.676
+versus actually allowing the tool definition
+
+238
+00:12:24.076 --> 00:12:27.880
+and the name to be enhanced by the large language model.
+
+239
+00:12:28.414 --> 00:12:31.917
+So, for that, we're going to take the tool by name,
+
+240
+00:12:31.917 --> 00:12:35.421
+which is a tool that we just registered before.
+
+241
+00:12:35.421 --> 00:12:38.424
+We're going to take its source and we're going to compare
+
+242
+00:12:38.424 --> 00:12:42.228
+the original docstring with the augmented docstring
+
+243
+00:12:42.228 --> 00:12:44.630
+generated by the OpenAI model.
+
+244
+00:12:44.997 --> 00:12:47.500
+And as you will see here,
+
+245
+00:12:47.500 --> 00:12:50.503
+rather than having the original docstring,
+
+246
+00:12:50.503 --> 00:12:54.507
+you will get an augmented and LLM-enhanced docstring,
+
+247
+00:12:54.507 --> 00:12:56.509
+which not only takes the description,
+
+248
+00:12:56.509 --> 00:12:59.512
+it runs and creates a step-by-step call
+
+249
+00:12:59.812 --> 00:13:02.815
+a definition of each one of the parameters
+
+250
+00:13:03.115 --> 00:13:06.018
+and the return values for the function.
+
+251
+00:13:06.619 --> 00:13:09.722
+So, this will allow the large language model
+
+252
+00:13:10.122 --> 00:13:12.925
+to store this definition into the database.
+
+253
+00:13:13.259 --> 00:13:16.262
+and the results will be much more separable,
+
+254
+00:13:16.295 --> 00:13:19.465
+which will allow our similarity search functionality
+
+255
+00:13:19.498 --> 00:13:23.169
+to make these functions much more distinguishable
+
+256
+00:13:23.169 --> 00:13:25.271
+for the large language model to use.
+
+257
+00:13:25.671 --> 00:13:27.406
+So what you are going to
+
+258
+00:13:27.406 --> 00:13:29.475
+do here is create a local tool,
+
+259
+00:13:29.675 --> 00:13:32.678
+which will use local Python code,
+
+260
+00:13:32.678 --> 00:13:36.148
+like using the datetime library locally,
+
+261
+00:13:36.182 --> 00:13:41.182
+rather than going through an external API third-party service like Tavily.
+
+262
+00:13:41.854 --> 00:13:44.657
+Each tool can be implemented either externally
+
+263
+00:13:45.157 --> 00:13:48.961
+or locally. If you run it locally like this,
+
+264
+00:13:48.961 --> 00:13:51.363
+you can create as many tools as you want.
+
+265
+00:13:51.363 --> 00:13:53.766
+And if you use a third-party service,
+
+266
+00:13:53.766 --> 00:13:57.369
+you'll have to integrate with whichever services are available.
+
+267
+00:13:57.870 --> 00:13:59.939
+And on this cell, we're going
+
+268
+00:13:59.939 --> 00:14:02.374
+to take a look at the ArxivRetriever,
+
+269
+00:14:02.374 --> 00:14:04.677
+which is an automatic integration
+
+270
+00:14:04.677 --> 00:14:06.679
+by the langchain_community package,
+
+271
+00:14:06.679 --> 00:14:10.049
+which allows us to retrieve arXiv papers
+
+272
+00:14:10.049 --> 00:14:12.852
+with a maximum number of papers.
+
+273
+00:14:13.252 --> 00:14:17.056
+as well as a maximum number of characters per document.
+
+274
+00:14:17.356 --> 00:14:20.092
+So in this case, what we will do is use
+
+275
+00:14:20.092 --> 00:14:22.094
+the ArxivRetriever object
+
+276
+00:14:22.094 --> 00:14:25.030
+from the langchain_community to get some
+
+277
+00:14:25.030 --> 00:14:29.435
+of these papers. So we will set up an ArxivRetriever object
+
+278
+00:14:29.535 --> 00:14:34.139
+which will allow us to retrieve arXiv papers in the future.
+
+279
+00:14:34.640 --> 00:14:39.144
+In this cell, we're going to register an arXiv discovery tool.
+
+280
+00:14:39.445 --> 00:14:41.747
+So, for instance, we are going to
+
+281
+00:14:41.847 --> 00:14:43.849
+create a function first of all
+
+282
+00:14:44.250 --> 00:14:46.752
+to process the arXiv URLs
+
+283
+00:14:46.752 --> 00:14:49.255
+and actually get the paper URI,
+
+284
+00:14:49.255 --> 00:14:51.257
+the identifier of the paper.
+
+285
+00:14:51.757 --> 00:14:54.460
+And then, in the search candidates function,
+
+286
+00:14:54.460 --> 00:14:58.063
+we're going to search through arXiv and return
+
+287
+00:14:58.063 --> 00:15:00.466
+a list of JSON candidates
+
+288
+00:15:00.966 --> 00:15:03.269
+with their IDs and metadata
+
+289
+00:15:03.269 --> 00:15:06.272
+so that we can then use this information
+
+290
+00:15:06.472 --> 00:15:09.275
+to augment the large language model
+
+291
+00:15:09.275 --> 00:15:12.778
+with external third-party information from arXiv.
+
+292
+00:15:13.279 --> 00:15:16.482
+this case, we are getting a list of documents
+
+293
+00:15:16.482 --> 00:15:19.485
+and for each one of the documents, we are appending
+
+294
+00:15:19.485 --> 00:15:21.587
+and getting the metadata,
+
+295
+00:15:21.587 --> 00:15:25.090
+the entry ID, which is the identifier of the paper,
+
+296
+00:15:25.090 --> 00:15:27.092
+and a list of possible candidates
+
+297
+00:15:27.092 --> 00:15:30.062
+which are the closest to the actual user's query.
+
+298
+00:15:30.696 --> 00:15:34.199
+And now we're going to see how to perform deep ingestion,
+
+299
+00:15:34.500 --> 00:15:36.902
+which not only allows us to use
+
+300
+00:15:36.902 --> 00:15:39.305
+the previous ArxivLoader from the previous cell,
+
+301
+00:15:39.505 --> 00:15:42.207
+but also normalize all the information
+
+302
+00:15:42.508 --> 00:15:45.210
+and actually insert this information
+
+303
+00:15:45.511 --> 00:15:48.213
+through loading the full paper information,
+
+304
+00:15:48.380 --> 00:15:51.583
+the metadata that we extracted from the previous cell,
+
+305
+00:15:51.583 --> 00:15:56.388
+chunking this information through the RecursiveCharacterTextSplitter,
+
+306
+00:15:56.388 --> 00:15:59.191
+which is just a way to perform chunking
+
+307
+00:15:59.191 --> 00:16:01.894
+with a little bit of overlap to improve
+
+308
+00:16:01.894 --> 00:16:04.396
+each one of the chunks quality
+
+309
+00:16:04.396 --> 00:16:07.399
+and reduce confusion on the context.
+
+310
+00:16:07.633 --> 00:16:12.633
+And after storing these chunks into our vector store from Oracle,
+
+311
+00:16:13.439 --> 00:16:15.841
+we will be able to write this information
+
+312
+00:16:16.141 --> 00:16:19.645
+into our memory manager to increment the information
+
+313
+00:16:20.145 --> 00:16:23.449
+and the vectors made available by the toolbox.
+
+314
+00:16:23.782 --> 00:16:25.884
+And now for the moment of truth.
+
+315
+00:16:25.884 --> 00:16:29.288
+We are going to test the toolbox functionalities
+
+316
+00:16:29.288 --> 00:16:31.590
+that we integrated in the chapter.
+
+317
+00:16:31.590 --> 00:16:34.593
+So we are going to ask the memory_manager
+
+318
+00:16:34.593 --> 00:16:36.595
+to read the toolbox object
+
+319
+00:16:36.595 --> 00:16:38.597
+that we have in our database
+
+320
+00:16:38.597 --> 00:16:40.766
+and we are going to ask it
+
+321
+00:16:40.766 --> 00:16:43.302
+to get us more details on AI papers.
+
+322
+00:16:43.302 --> 00:16:46.605
+And for this, we are going to limit our responses
+
+323
+00:16:46.605 --> 00:16:48.574
+to a maximum of one.
+
+324
+00:16:48.974 --> 00:16:52.344
+So the best available toolbox to retrieve the information
+
+325
+00:16:52.344 --> 00:16:55.647
+for this user query will be printed.
+
+326
+00:16:56.648 --> 00:16:58.250
+And as we can see here,
+
+327
+00:16:58.751 --> 00:17:01.820
+the best tool by performing similarity search
+
+328
+00:17:01.820 --> 00:17:04.857
+against the toolbox table on our database
+
+329
+00:17:04.857 --> 00:17:09.461
+is the fetch_and_save_paper_to_kb_db, which is the name that we associated
+
+330
+00:17:09.461 --> 00:17:13.165
+to get information from the arXiv.
+
+331
+00:17:13.966 --> 00:17:17.469
+Feel free to customize this and test with different values of K,
+
+332
+00:17:17.469 --> 00:17:21.440
+so you will see the best tools available for different queries.

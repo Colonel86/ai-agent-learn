@@ -1,0 +1,210 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.033 --> 00:00:03.403
+Welcome to Agent Memory, building Memory-Aware Agents,
+
+2
+00:00:03.403 --> 00:00:05.205
+built in partnership with Oracle.
+
+3
+00:00:05.805 --> 00:00:08.808
+Many developers building with LLMs have run into the scenario
+
+4
+00:00:08.808 --> 00:00:11.411
+of an agent that works in a single session,
+
+5
+00:00:11.411 --> 00:00:15.015
+but loses or forgets everything it learned when the session ends.
+
+6
+00:00:15.348 --> 00:00:18.551
+Memory helps turn a stateless agent into one
+
+7
+00:00:18.551 --> 00:00:20.520
+that can overcome this challenge.
+
+8
+00:00:21.421 --> 00:00:24.324
+In this course, you'll learn how to engineer memory systems
+
+9
+00:00:24.324 --> 00:00:27.127
+that give agents persistence, continuity,
+
+10
+00:00:27.127 --> 00:00:29.729
+and the ability to learn over time
+
+11
+00:00:29.729 --> 00:00:33.133
+using Oracle AI database as the infrastructure layer
+
+12
+00:00:33.133 --> 00:00:35.535
+for storing and retrieving agent memory.
+
+13
+00:00:36.469 --> 00:00:39.172
+I'm delighted to introduce our instructors for this course,
+
+14
+00:00:39.172 --> 00:00:41.474
+Richmond Alake and Nacho Martínez.
+
+15
+00:00:41.975 --> 00:00:44.577
+Thanks, Andrew. I'm excited to work with you
+
+16
+00:00:44.577 --> 00:00:48.415
+and your team on this. Thanks, Andrew.
+
+17
+00:00:48.415 --> 00:00:51.718
+Richmond and Nacho will walk you through using a database,
+
+18
+00:00:51.718 --> 00:00:55.422
+LangChain, and an LLM-powered pipeline
+
+19
+00:00:55.422 --> 00:00:59.426
+for memory augmentation, extraction, and tool retrieval.
+
+20
+00:00:59.426 --> 00:01:03.029
+With these, you'll learn how memory-first architectures
+
+21
+00:01:03.029 --> 00:01:06.332
+address the problem of agents failing at long-horizon tasks.
+
+22
+00:01:06.866 --> 00:01:09.369
+You build a memory manager
+
+23
+00:01:09.369 --> 00:01:12.172
+that stores, retrieves, and operates on different memory types.
+
+24
+00:01:12.472 --> 00:01:16.676
+What excites me most about this course is the shift it represents.
+
+25
+00:01:16.876 --> 00:01:18.845
+We've spent the last few years
+
+26
+00:01:18.845 --> 00:01:21.181
+focused on prompt engineering and context engineering,
+
+27
+00:01:21.381 --> 00:01:25.351
+figuring out how to get the most of a single LLM call.
+
+28
+00:01:25.685 --> 00:01:27.921
+But for agents that need to operate
+
+29
+00:01:27.921 --> 00:01:30.190
+over days or weeks, that's not enough.
+
+30
+00:01:31.191 --> 00:01:36.191
+You need memory engineering, treating long-term memory as first-class infrastructure,
+
+31
+00:01:36.196 --> 00:01:39.466
+external to the model, persistent and structured.
+
+32
+00:01:39.866 --> 00:01:42.669
+That's what this course is all about. And by the end,
+
+33
+00:01:42.669 --> 00:01:46.473
+you will have the tools to build agents that don't just respond,
+
+34
+00:01:46.473 --> 00:01:48.675
+they remember, improve,
+
+35
+00:01:48.675 --> 00:01:51.177
+and are aware of their memory capabilities.
+
+36
+00:01:51.678 --> 00:01:54.814
+And the patterns we teach here aren't theoretical.
+
+37
+00:01:55.515 --> 00:01:57.951
+We'll walk through real implementations,
+
+38
+00:01:58.051 --> 00:02:01.654
+building memory stores, wiring up extraction pipelines,
+
+39
+00:02:01.855 --> 00:02:04.157
+and handling contradictions in memory.
+
+40
+00:02:04.858 --> 00:02:06.793
+You'll leave with working code that you
+
+41
+00:02:06.793 --> 00:02:08.761
+can adapt for your own production agents.
+
+42
+00:02:09.195 --> 00:02:11.998
+Many people have worked to create this course.
+
+43
+00:02:11.998 --> 00:02:15.201
+I'd like to thank from Oracle, Elif Sema Balcıoğlu,
+
+44
+00:02:15.201 --> 00:02:18.404
+and from DeepLearning.AI, Brendan Brown.
+
+45
+00:02:19.005 --> 00:02:22.008
+The first lesson will be an overview of AI agents
+
+46
+00:02:22.008 --> 00:02:24.010
+and why they need memory.
+
+47
+00:02:24.210 --> 00:02:27.013
+We'll break down the failure modes of stateless agents
+
+48
+00:02:27.013 --> 00:02:29.415
+and introduce the memory-first architecture
+
+49
+00:02:29.415 --> 00:02:32.018
+that the rest of the course builds on.
+
+50
+00:02:32.719 --> 00:02:36.022
+Oh wait, I forgot. What are we doing again?
+
+51
+00:02:36.422 --> 00:02:38.424
+All right, memory.
+
+52
+00:02:38.424 --> 00:02:40.093
+I hope you enjoy the course.

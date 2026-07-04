@@ -1,0 +1,1798 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:03.837
+This lesson is all about turning raw agent interactions
+
+2
+00:00:03.837 --> 00:00:05.638
+into durable knowledge.
+
+3
+00:00:05.839 --> 00:00:10.043
+You'll build pipelines that extract structured facts from conversations,
+
+4
+00:00:10.543 --> 00:00:14.047
+consolidate episodic memory into semantic memory.
+
+5
+00:00:14.114 --> 00:00:17.083
+and create write-back loops that let your agent
+
+6
+00:00:17.083 --> 00:00:20.587
+update and refine its own memory autonomously.
+
+7
+00:00:21.087 --> 00:00:24.090
+Let's get coding. In this lesson,
+
+8
+00:00:24.090 --> 00:00:27.093
+we will do an overview of the most common memory operations.
+
+9
+00:00:27.293 --> 00:00:30.096
+We will also talk about Context Engineering
+
+10
+00:00:30.096 --> 00:00:32.098
+and how to use it to our advantage.
+
+11
+00:00:32.298 --> 00:00:36.102
+how to efficiently use context window reduction techniques.
+
+12
+00:00:36.302 --> 00:00:40.106
+And finally, we will talk about something called Workflow memory
+
+13
+00:00:40.106 --> 00:00:44.310
+and how to summarize efficiently to improve our memory operations.
+
+14
+00:00:44.811 --> 00:00:47.313
+So the most common memory operations,
+
+15
+00:00:47.313 --> 00:00:49.315
+which we have already seen in lesson two.
+
+16
+00:00:49.315 --> 00:00:51.618
+First, we have the conversational memory,
+
+17
+00:00:51.618 --> 00:00:54.287
+which is typically stored in an SQL Table
+
+18
+00:00:54.287 --> 00:00:56.990
+because it's conversational, so we want to store
+
+19
+00:00:56.990 --> 00:00:58.992
+a lot of it in raw text.
+
+20
+00:00:58.992 --> 00:01:00.794
+And the rest of the operations,
+
+21
+00:01:00.794 --> 00:01:02.996
+for instance, the Knowledge Base,
+
+22
+00:01:03.263 --> 00:01:06.066
+the workflow, or the toolbox patterns,
+
+23
+00:01:06.066 --> 00:01:08.268
+the entity and the summaries
+
+24
+00:01:08.268 --> 00:01:11.071
+are usually saved as vectors because
+
+25
+00:01:11.071 --> 00:01:14.774
+they are very helpful to be stored in this type
+
+26
+00:01:14.774 --> 00:01:17.077
+as we want to perform similarity search
+
+27
+00:01:17.077 --> 00:01:18.778
+in one way or the other.
+
+28
+00:01:18.778 --> 00:01:21.781
+As we saw in the last lesson with the toolbox pattern.
+
+29
+00:01:22.015 --> 00:01:24.017
+So, what is context engineering?
+
+30
+00:01:24.517 --> 00:01:26.319
+Context engineering is a technique
+
+31
+00:01:26.519 --> 00:01:28.822
+where we optimally and carefully select
+
+32
+00:01:28.922 --> 00:01:30.924
+the amount of information that goes
+
+33
+00:01:30.924 --> 00:01:33.626
+into a large language model's context window
+
+34
+00:01:33.927 --> 00:01:37.330
+by shaping the amount of information that we put there.
+
+35
+00:01:37.397 --> 00:01:41.601
+This helps us make the large language model responses much more efficient
+
+36
+00:01:42.001 --> 00:01:44.904
+or tailored to the actual input from the user,
+
+37
+00:01:45.205 --> 00:01:49.209
+and this will actually produce better responses by the large language model.
+
+38
+00:01:49.609 --> 00:01:52.412
+In the real world, we have lots of data sources.
+
+39
+00:01:52.812 --> 00:01:55.415
+We have access to databases, APIs,
+
+40
+00:01:55.415 --> 00:01:58.518
+MCP servers, and also the internet.
+
+41
+00:01:58.918 --> 00:02:03.423
+So these are all potential context window components and contents
+
+42
+00:02:03.423 --> 00:02:07.527
+that can go into the actual context window.
+
+43
+00:02:08.561 --> 00:02:11.965
+But we cannot put all of it into the context window
+
+44
+00:02:12.465 --> 00:02:14.400
+as it's a limited thing. So
+
+45
+00:02:14.400 --> 00:02:16.669
+we need to carefully and optimally select
+
+46
+00:02:16.970 --> 00:02:19.272
+the context that actually will go
+
+47
+00:02:19.272 --> 00:02:21.374
+into the LLM context window.
+
+48
+00:02:21.374 --> 00:02:24.377
+So what do we do if we have more information
+
+49
+00:02:24.477 --> 00:02:26.679
+than what the context window allows?
+
+50
+00:02:26.980 --> 00:02:30.283
+So for this, we will talk about Context Window Reduction,
+
+51
+00:02:30.383 --> 00:02:33.887
+which is the process of reducing or shrinking the information
+
+52
+00:02:33.987 --> 00:02:36.489
+that is actually placed on it.
+
+53
+00:02:36.990 --> 00:02:41.394
+There are two main techniques, Context Summarization and Context Compaction.
+
+54
+00:02:41.694 --> 00:02:43.796
+Each of these has their own advantages
+
+55
+00:02:43.796 --> 00:02:46.199
+and its disadvantages, which we will see now.
+
+56
+00:02:46.199 --> 00:02:50.003
+Context Summarization is the process of taking the whole context
+
+57
+00:02:50.003 --> 00:02:52.405
+of the large language model
+
+58
+00:02:52.405 --> 00:02:55.108
+and running it through the LLM
+
+59
+00:02:55.108 --> 00:02:58.511
+where we want to focus on three things.
+
+60
+00:02:59.145 --> 00:03:02.348
+So first, we want to retain the highest-signal
+
+61
+00:03:02.348 --> 00:03:05.618
+information from the context, removing the low-signal parts
+
+62
+00:03:05.618 --> 00:03:08.621
+and retaining the task-relevant facts
+
+63
+00:03:08.621 --> 00:03:12.625
+and claims about it. Secondly,
+
+64
+00:03:12.625 --> 00:03:15.628
+we want to preserve the meaning and the key relationships
+
+65
+00:03:15.628 --> 00:03:19.132
+in the conversations so that if we
+
+66
+00:03:19.532 --> 00:03:23.336
+remove a part of it, we don't lose track of the actual
+
+67
+00:03:23.336 --> 00:03:25.538
+purpose of the prompt of the user.
+
+68
+00:03:25.538 --> 00:03:28.541
+And thirdly, we want to remove redundant parts
+
+69
+00:03:28.541 --> 00:03:30.443
+and also useless parts.
+
+70
+00:03:30.443 --> 00:03:32.745
+what you might consider a useless part,
+
+71
+00:03:32.745 --> 00:03:34.747
+something that has low-value detail
+
+72
+00:03:34.747 --> 00:03:37.550
+or something that is not directly connected
+
+73
+00:03:37.550 --> 00:03:39.552
+to the actual query of the user.
+
+74
+00:03:40.053 --> 00:03:42.755
+And after performing Context Summarization,
+
+75
+00:03:42.855 --> 00:03:46.025
+you will get a smaller input so that the large language model
+
+76
+00:03:46.125 --> 00:03:48.528
+can better focus on the task at hand.
+
+77
+00:03:49.028 --> 00:03:52.732
+The definition of Context summarization is the process of compressing
+
+78
+00:03:52.832 --> 00:03:56.436
+all this context into a shorter representation
+
+79
+00:03:56.536 --> 00:03:59.439
+that preserves the best information
+
+80
+00:03:59.539 --> 00:04:02.742
+and the highest and most task-relevant
+
+81
+00:04:02.842 --> 00:04:04.844
+data from the original.
+
+82
+00:04:05.278 --> 00:04:07.513
+So Context Summarization is one of the
+
+83
+00:04:07.513 --> 00:04:10.083
+two techniques that we have at our disposal
+
+84
+00:04:10.083 --> 00:04:15.083
+where we inject the summarized context into a clean context window
+
+85
+00:04:15.088 --> 00:04:17.790
+by wiping the previous conversation with the LLM,
+
+86
+00:04:17.790 --> 00:04:22.262
+so that the final response can actually make the large language model
+
+87
+00:04:22.262 --> 00:04:26.065
+reason everything again from the summary as a starting point.
+
+88
+00:04:26.933 --> 00:04:29.535
+But this has one disadvantage, which is
+
+89
+00:04:29.535 --> 00:04:32.138
+this will always be a lossy technique.
+
+90
+00:04:32.338 --> 00:04:35.508
+What do we mean by that? A lossy technique means
+
+91
+00:04:35.508 --> 00:04:38.211
+that we will always have some data loss.
+
+92
+00:04:38.311 --> 00:04:42.215
+We will always lose a little bit of information in the process.
+
+93
+00:04:42.415 --> 00:04:45.918
+And then we have Context Compaction, which is our second technique.
+
+94
+00:04:46.319 --> 00:04:50.290
+And with Context Compaction, rather than summarizing the information,
+
+95
+00:04:50.690 --> 00:04:52.792
+we will just transfer it into the database
+
+96
+00:04:52.992 --> 00:04:56.296
+and use the database as an external addition
+
+97
+00:04:56.396 --> 00:04:59.399
+to the large language model, so that whenever the large language model
+
+98
+00:04:59.899 --> 00:05:02.302
+needs more information about it,
+
+99
+00:05:02.502 --> 00:05:06.005
+can just go into the database and access this information.
+
+100
+00:05:06.506 --> 00:05:10.310
+So this allows us to offload a lot of the context size
+
+101
+00:05:10.943 --> 00:05:13.713
+into the database and let the large language model decide
+
+102
+00:05:13.980 --> 00:05:17.383
+when it wants to access it. How do we do that?
+
+103
+00:05:17.617 --> 00:05:19.919
+We just need to get this information,
+
+104
+00:05:20.219 --> 00:05:23.423
+put it with an ID into the database,
+
+105
+00:05:23.723 --> 00:05:26.225
+and then let the large language model know
+
+106
+00:05:26.225 --> 00:05:28.928
+that this information is available just in case
+
+107
+00:05:29.329 --> 00:05:33.232
+and we can complement this identifier with a description
+
+108
+00:05:33.533 --> 00:05:36.836
+of the chunk that we just took out of the context.
+
+109
+00:05:37.203 --> 00:05:40.840
+So that if the large language model is only interested
+
+110
+00:05:40.840 --> 00:05:45.545
+in a very general idea of what the compacted content was,
+
+111
+00:05:45.745 --> 00:05:47.847
+it can just take a look at the description.
+
+112
+00:05:48.047 --> 00:05:49.649
+And if it needs more information,
+
+113
+00:05:49.649 --> 00:05:51.584
+it can just go into the database
+
+114
+00:05:51.584 --> 00:05:54.020
+and actually pull the whole context out.
+
+115
+00:05:54.454 --> 00:05:56.556
+What about Workflow Memory?
+
+116
+00:05:56.556 --> 00:06:01.260
+Workflow Memory is a technique which is also aided by a database
+
+117
+00:06:01.461 --> 00:06:03.896
+where, for instance, going back to the
+
+118
+00:06:03.896 --> 00:06:06.366
+current weather example that we had before.
+
+119
+00:06:06.566 --> 00:06:08.668
+Imagine that the user asks,
+
+120
+00:06:08.668 --> 00:06:10.670
+Get me the current weather, right?
+
+121
+00:06:10.837 --> 00:06:12.739
+This is something that requires a lot
+
+122
+00:06:12.739 --> 00:06:14.640
+of steps to perform by an LLM.
+
+123
+00:06:15.041 --> 00:06:20.041
+So Workflow Memory will actually help us streamline and preserve a sequence
+
+124
+00:06:20.146 --> 00:06:24.350
+of the required steps needed to perform this query.
+
+125
+00:06:24.717 --> 00:06:27.920
+For instance, to get the current weather, we might want to
+
+126
+00:06:27.920 --> 00:06:30.223
+get the user location.
+
+127
+00:06:30.223 --> 00:06:32.725
+Then we want to access a weather API
+
+128
+00:06:32.725 --> 00:06:35.228
+or an application tool
+
+129
+00:06:35.228 --> 00:06:37.730
+and pass the latitude and longitude
+
+130
+00:06:37.730 --> 00:06:39.732
+of the user into the application.
+
+131
+00:06:39.732 --> 00:06:42.235
+Then we will be able to get the current weather
+
+132
+00:06:42.235 --> 00:06:44.237
+for those coordinates,
+
+133
+00:06:44.237 --> 00:06:47.707
+and finally return the weather response to the user.
+
+134
+00:06:48.508 --> 00:06:51.310
+Now, since this is a multi-step process,
+
+135
+00:06:51.310 --> 00:06:53.513
+Workflow Memory helps us with this
+
+136
+00:06:53.513 --> 00:06:57.016
+because we can reuse this set of steps
+
+137
+00:06:57.016 --> 00:06:59.719
+to get the current weather for any user
+
+138
+00:06:59.719 --> 00:07:01.788
+after we perform it once.
+
+139
+00:07:02.088 --> 00:07:05.658
+So we can preserve the structure of work over time
+
+140
+00:07:05.658 --> 00:07:07.960
+in the database in a way that makes
+
+141
+00:07:07.960 --> 00:07:10.163
+the large language model know exactly
+
+142
+00:07:10.163 --> 00:07:13.266
+what steps to follow to respond to the users,
+
+143
+00:07:14.133 --> 00:07:16.135
+we can have this structure
+
+144
+00:07:16.369 --> 00:07:18.971
+and if you remember what we were talking about before,
+
+145
+00:07:19.272 --> 00:07:22.542
+Workflow Memory can be used in a streamlined way
+
+146
+00:07:22.775 --> 00:07:25.745
+and we can use this relational table to store
+
+147
+00:07:25.778 --> 00:07:27.747
+information about the steps,
+
+148
+00:07:28.047 --> 00:07:31.951
+a timestamp of when these steps were executed
+
+149
+00:07:32.051 --> 00:07:34.754
+and also an embedding of all the steps.
+
+150
+00:07:34.987 --> 00:07:37.089
+This would be an example.
+
+151
+00:07:37.089 --> 00:07:39.892
+You have a workflow name with an optional description
+
+152
+00:07:39.892 --> 00:07:44.096
+and the original user request with a set of ordered steps
+
+153
+00:07:44.096 --> 00:07:47.800
+so that the large language model is able to reproduce this
+
+154
+00:07:47.800 --> 00:07:50.803
+over and over without having to figure out
+
+155
+00:07:50.803 --> 00:07:53.005
+on the spot what to do.
+
+156
+00:07:53.339 --> 00:07:57.243
+This will help the large language model know exactly what to do
+
+157
+00:07:57.243 --> 00:07:59.378
+on each user request without having
+
+158
+00:07:59.378 --> 00:08:01.848
+to figure it out on the fly.
+
+159
+00:08:02.048 --> 00:08:03.549
+And as a consequence,
+
+160
+00:08:03.549 --> 00:08:07.286
+this will make the large language model much more efficient
+
+161
+00:08:07.286 --> 00:08:11.123
+and will reduce the amount of context required to process
+
+162
+00:08:11.123 --> 00:08:13.526
+and actually respond to the user.
+
+163
+00:08:14.160 --> 00:08:16.963
+We're going to talk about memory operations,
+
+164
+00:08:16.963 --> 00:08:20.066
+context engineering and the ways that we have
+
+165
+00:08:20.066 --> 00:08:22.568
+to reduce the context efficiently.
+
+166
+00:08:22.568 --> 00:08:25.938
+So, just like we have done in the previous lessons,
+
+167
+00:08:25.938 --> 00:08:29.041
+we need to set up the access to our database.
+
+168
+00:08:29.709 --> 00:08:34.709
+And as you'll see, we're correctly connected into the database again.
+
+169
+00:08:35.515 --> 00:08:38.518
+We are also going to initialize our OpenAI client
+
+170
+00:08:38.818 --> 00:08:41.120
+so we can use their GPT models
+
+171
+00:08:41.420 --> 00:08:43.623
+as well as the embedding model
+
+172
+00:08:43.723 --> 00:08:46.325
+from Hugging Face that we used before.
+
+173
+00:08:46.726 --> 00:08:49.929
+We're also going to recall our table names
+
+174
+00:08:49.929 --> 00:08:53.533
+so that we can properly address them in our store manager
+
+175
+00:08:53.533 --> 00:08:55.902
+and our memory managers.
+
+176
+00:08:55.902 --> 00:08:59.505
+And as we did before, we're also going to update
+
+177
+00:08:59.505 --> 00:09:01.908
+and recreate our
+
+178
+00:09:02.275 --> 00:09:05.378
+conversational history table and our tool log history table
+
+179
+00:09:05.378 --> 00:09:08.481
+so we have some kind of reference system for the future
+
+180
+00:09:08.481 --> 00:09:10.483
+when we inspect these logs.
+
+181
+00:09:10.483 --> 00:09:13.386
+And you see here that they already exist,
+
+182
+00:09:13.386 --> 00:09:15.488
+but if you were running this for the first time,
+
+183
+00:09:15.488 --> 00:09:17.456
+you'll see that they were properly created.
+
+184
+00:09:17.823 --> 00:09:22.628
+And after we created all our objects, our conversation tables
+
+185
+00:09:22.728 --> 00:09:25.831
+and our vector stores, we are going to reinitialize
+
+186
+00:09:25.932 --> 00:09:29.335
+our StoreManager and get all the store objects
+
+187
+00:09:29.435 --> 00:09:31.837
+that we need to operate.
+
+188
+00:09:32.004 --> 00:09:34.507
+as you'll see, they have all been loaded properly
+
+189
+00:09:34.507 --> 00:09:36.409
+via the StoreManager.
+
+190
+00:09:37.209 --> 00:09:39.912
+And the same goes for the instantiation
+
+191
+00:09:39.912 --> 00:09:42.515
+of the MemoryManager and our Toolbox.
+
+192
+00:09:42.515 --> 00:09:44.917
+So we can select the tools
+
+193
+00:09:44.917 --> 00:09:47.920
+so that the large language model is able to select
+
+194
+00:09:47.920 --> 00:09:49.522
+the right tools at the right time.
+
+195
+00:09:49.822 --> 00:09:52.325
+and they have been properly initialized.
+
+196
+00:09:53.225 --> 00:09:56.228
+And very quickly before operating with these models,
+
+197
+00:09:56.228 --> 00:09:59.732
+you're going to set a maximum number of tokens for the model,
+
+198
+00:09:59.732 --> 00:10:03.235
+which in this case is going to be 256000.
+
+199
+00:10:03.636 --> 00:10:05.938
+So, since the purpose of this
+
+200
+00:10:05.938 --> 00:10:08.641
+chapter is to work with context sizes,
+
+201
+00:10:09.442 --> 00:10:12.812
+we are going to create this function called calculate_context_usage,
+
+202
+00:10:13.112 --> 00:10:16.415
+which is going to do an estimation of the amount of tokens
+
+203
+00:10:16.816 --> 00:10:19.919
+that are actually present in the context at any time.
+
+204
+00:10:20.353 --> 00:10:24.357
+We need this to be able to assess when to actually perform
+
+205
+00:10:24.357 --> 00:10:27.360
+context summarization or context compaction,
+
+206
+00:10:27.360 --> 00:10:30.363
+which were the two techniques that we described before.
+
+207
+00:10:30.363 --> 00:10:33.866
+So here we're doing a simple estimation by dividing
+
+208
+00:10:33.866 --> 00:10:36.869
+the total number of characters by four.
+
+209
+00:10:37.069 --> 00:10:39.038
+You'll see that depending on the
+
+210
+00:10:39.038 --> 00:10:41.307
+way that each model stores the tokens,
+
+211
+00:10:41.307 --> 00:10:43.976
+you will find that some of them divide by two,
+
+212
+00:10:43.976 --> 00:10:45.578
+some of them divide by four.
+
+213
+00:10:45.945 --> 00:10:49.949
+But we're going to use this estimation as four characters per token.
+
+214
+00:10:50.583 --> 00:10:52.885
+And then we're going to set a percentage
+
+215
+00:10:52.885 --> 00:10:54.987
+so that the maximum is never reached.
+
+216
+00:10:55.488 --> 00:10:57.590
+And now we're going to create
+
+217
+00:10:57.590 --> 00:10:59.992
+our first summarization function.
+
+218
+00:11:00.793 --> 00:11:04.296
+So, since summarization is one of the two techniques
+
+219
+00:11:04.296 --> 00:11:06.499
+that we described in our lesson,
+
+220
+00:11:06.899 --> 00:11:09.301
+we need to be able to discern
+
+221
+00:11:09.301 --> 00:11:12.405
+when summarization is optimal to perform
+
+222
+00:11:12.505 --> 00:11:15.207
+and what instructions we need to give to the large language model
+
+223
+00:11:15.207 --> 00:11:16.976
+to perform summarization.
+
+224
+00:11:17.476 --> 00:11:19.578
+You can use different prompts.
+
+225
+00:11:19.979 --> 00:11:21.747
+I invite you to actually try
+
+226
+00:11:21.747 --> 00:11:23.783
+different prompts for each one of these.
+
+227
+00:11:24.116 --> 00:11:28.020
+In general, there are different types of prompts that work better,
+
+228
+00:11:28.020 --> 00:11:30.690
+I guess, against some types of problems.
+
+229
+00:11:31.357 --> 00:11:33.959
+But here is an example of the prompt
+
+230
+00:11:33.959 --> 00:11:35.695
+that we wanted to give.
+
+231
+00:11:36.595 --> 00:11:39.999
+And remember that summarization is a lossy technique,
+
+232
+00:11:39.999 --> 00:11:41.801
+so we will always lose a
+
+233
+00:11:41.801 --> 00:11:43.903
+little bit of information in the process.
+
+234
+00:11:44.503 --> 00:11:48.107
+So the prompting technique that you use for summarization
+
+235
+00:11:48.107 --> 00:11:51.811
+will determine the quality of the output that you generate.
+
+236
+00:11:52.244 --> 00:11:55.047
+In this case, we're going to summarize the conversation
+
+237
+00:11:55.047 --> 00:11:58.250
+so that it can be resumed in the future
+
+238
+00:11:58.250 --> 00:12:01.153
+by losing the least amount of information
+
+239
+00:12:01.153 --> 00:12:05.357
+and preserving the highest context signals from our context.
+
+240
+00:12:05.658 --> 00:12:07.860
+So we want to preserve all the
+
+241
+00:12:08.260 --> 00:12:12.164
+important information and we remove the things that the LLM will consider
+
+242
+00:12:12.164 --> 00:12:14.767
+as least important in this case.
+
+243
+00:12:14.767 --> 00:12:17.837
+So for that, we want to keep concrete details.
+
+244
+00:12:17.837 --> 00:12:22.074
+We want to separate the facts from open-ended things
+
+245
+00:12:22.074 --> 00:12:23.776
+like questions
+
+246
+00:12:24.276 --> 00:12:26.445
+to not hallucinate any information
+
+247
+00:12:26.445 --> 00:12:30.149
+or include any hints generated by the LLM,
+
+248
+00:12:30.149 --> 00:12:32.752
+and to keep it as concise as possible
+
+249
+00:12:32.752 --> 00:12:35.254
+without being useless in the future.
+
+250
+00:12:35.254 --> 00:12:37.156
+So we need it to be useful too.
+
+251
+00:12:37.323 --> 00:12:41.127
+and we want to split and actually preserve
+
+252
+00:12:41.527 --> 00:12:44.230
+only a maximum of 6000 characters
+
+253
+00:12:44.830 --> 00:12:48.334
+in our final response. So this is what we do here.
+
+254
+00:12:48.734 --> 00:12:52.238
+We call the LLM client with the model that we wanted,
+
+255
+00:12:52.671 --> 00:12:56.041
+with a maximum number of completion tokens for the response,
+
+256
+00:12:56.442 --> 00:13:01.442
+with this structured OpenAI specification request and after that,
+
+257
+00:13:02.114 --> 00:13:06.652
+we will be able to retrieve the actual summary.
+
+258
+00:13:07.319 --> 00:13:09.288
+We also have this safety mechanism here
+
+259
+00:13:09.588 --> 00:13:12.625
+so that if the summarization fails the first time,
+
+260
+00:13:13.025 --> 00:13:16.929
+we also have a fallback mechanism that tries a simpler prompt
+
+261
+00:13:17.229 --> 00:13:20.733
+without that many concepts on the prompt,
+
+262
+00:13:20.900 --> 00:13:23.202
+so that if the first output is empty,
+
+263
+00:13:23.402 --> 00:13:25.771
+we will never completely lose all
+
+264
+00:13:25.771 --> 00:13:28.507
+the context from the original user's input.
+
+265
+00:13:29.108 --> 00:13:32.878
+So in this case, we are reducing the amount of instructions
+
+266
+00:13:32.878 --> 00:13:35.281
+that we give to the large language model.
+
+267
+00:13:35.681 --> 00:13:37.583
+And as opposed to what we did,
+
+268
+00:13:37.583 --> 00:13:39.585
+we also need to have a mechanism
+
+269
+00:13:39.885 --> 00:13:42.288
+to expand the summary as well
+
+270
+00:13:42.588 --> 00:13:44.990
+to retrieve the original conversations.
+
+271
+00:13:45.591 --> 00:13:48.894
+So in case that we stored a summary identifier
+
+272
+00:13:49.395 --> 00:13:51.297
+through context compaction,
+
+273
+00:13:51.697 --> 00:13:54.500
+we also need to be able to do the opposite.
+
+274
+00:13:54.800 --> 00:13:57.403
+And we create this expand_summary function here
+
+275
+00:13:57.403 --> 00:14:00.873
+to actually perform this functionality. So for that,
+
+276
+00:14:00.873 --> 00:14:05.110
+We need to obtain the summary_text from the memory_manager
+
+277
+00:14:05.177 --> 00:14:10.177
+by giving it the summary_id from whatever we compact.
+
+278
+00:14:11.050 --> 00:14:14.653
+And after that, we can get the original context
+
+279
+00:14:14.720 --> 00:14:17.957
+that was previously summarized or compacted.
+
+280
+00:14:18.691 --> 00:14:23.095
+And now that we have this unsummarized
+
+281
+00:14:23.095 --> 00:14:26.498
+and compaction versus summarization system,
+
+282
+00:14:26.799 --> 00:14:30.803
+we are going to create this function that does five steps.
+
+283
+00:14:31.337 --> 00:14:33.539
+The first step is to read
+
+284
+00:14:33.539 --> 00:14:36.141
+all the unsummarized messages from a thread.
+
+285
+00:14:36.342 --> 00:14:38.344
+A thread meaning a conversation,
+
+286
+00:14:38.644 --> 00:14:41.347
+generating a summary via the LLM,
+
+287
+00:14:41.647 --> 00:14:43.816
+so performing context summarization.
+
+288
+00:14:44.149 --> 00:14:47.119
+Then storing this summary in the summary memory
+
+289
+00:14:47.319 --> 00:14:50.289
+and marking the actual rows that were
+
+290
+00:14:50.289 --> 00:14:53.225
+used in the summarization with an identifier.
+
+291
+00:14:53.826 --> 00:14:58.130
+And finally, returning the summary object for future use.
+
+292
+00:14:58.731 --> 00:15:03.731
+In this case, first of all, we read the unsummarized conversation
+
+293
+00:15:04.536 --> 00:15:06.739
+with this SQL query,
+
+294
+00:15:07.239 --> 00:15:09.742
+which basically goes into the memory_manager,
+
+295
+00:15:09.942 --> 00:15:12.211
+goes through our whole conversation table,
+
+296
+00:15:12.511 --> 00:15:16.515
+which as you will remember is stored in an SQL table
+
+297
+00:15:16.715 --> 00:15:19.919
+rather than vectors, so we can trace back the timestamp,
+
+298
+00:15:20.419 --> 00:15:22.922
+the ID of the conversation and the chat,
+
+299
+00:15:23.222 --> 00:15:26.225
+and also all the content in the conversation.
+
+300
+00:15:26.525 --> 00:15:29.028
+And we are going to use this information,
+
+301
+00:15:29.028 --> 00:15:31.330
+all the rows that we get from that,
+
+302
+00:15:31.330 --> 00:15:34.333
+to build a transcript from the conversation.
+
+303
+00:15:35.334 --> 00:15:38.737
+So up until this point, we're just rebuilding the conversation
+
+304
+00:15:38.737 --> 00:15:41.140
+that we had with a large language model.
+
+305
+00:15:41.307 --> 00:15:46.111
+Then, we're going to summarize its context window through the transcript
+
+306
+00:15:46.111 --> 00:15:49.114
+and with the help of the memory_manager
+
+307
+00:15:49.114 --> 00:15:52.117
+and making use of the OpenAI client.
+
+308
+00:15:52.117 --> 00:15:55.521
+Then we're going to generate a summary_id for that.
+
+309
+00:15:55.521 --> 00:15:59.158
+We're going to mark the rows that were used on summarization.
+
+310
+00:15:59.158 --> 00:16:03.128
+So if in the future we want to perform summarization again,
+
+311
+00:16:03.128 --> 00:16:07.633
+we know that this information has already previously been summarized.
+
+312
+00:16:08.133 --> 00:16:11.437
+So we do some updating on the memory_manager for this.
+
+313
+00:16:11.971 --> 00:16:15.474
+And finally, we will mark the messages as summarized
+
+314
+00:16:15.474 --> 00:16:18.777
+and return the summarized result.
+
+315
+00:16:19.478 --> 00:16:22.781
+And as we talked about on the lesson,
+
+316
+00:16:22.781 --> 00:16:25.484
+we also have this function
+
+317
+00:16:25.484 --> 00:16:28.454
+which is going to help us compact the information
+
+318
+00:16:28.454 --> 00:16:30.923
+and put an ID and a
+
+319
+00:16:30.923 --> 00:16:33.759
+summary of the conversation into the database.
+
+320
+00:16:34.460 --> 00:16:36.962
+So, in this case, this function
+
+321
+00:16:37.563 --> 00:16:39.698
+is going to first go into
+
+322
+00:16:39.698 --> 00:16:42.201
+the whole context that we pass it,
+
+323
+00:16:42.401 --> 00:16:45.604
+and through the llm_client and the memory_manager,
+
+324
+00:16:46.105 --> 00:16:50.209
+obtain the thread_id or the summary ID of the conversation.
+
+325
+00:16:50.576 --> 00:16:54.380
+Then it's going to replace the conversation section
+
+326
+00:16:54.880 --> 00:16:58.384
+by taking the information from the identifier
+
+327
+00:16:58.684 --> 00:17:00.886
+that it just got and performing
+
+328
+00:17:01.286 --> 00:17:03.889
+a compaction of this context by
+
+329
+00:17:04.189 --> 00:17:06.692
+rebuilding the context.
+
+330
+00:17:07.292 --> 00:17:11.096
+So, after this function is executed,
+
+331
+00:17:11.096 --> 00:17:13.399
+we can obtain the compacted context
+
+332
+00:17:13.399 --> 00:17:16.001
+which will help the large language model
+
+333
+00:17:16.001 --> 00:17:18.904
+select the actual information when it needs.
+
+334
+00:17:19.304 --> 00:17:21.407
+and we run that.
+
+335
+00:17:21.607 --> 00:17:24.209
+And in the hopes of implementing all the
+
+336
+00:17:24.209 --> 00:17:27.112
+concepts that we are looking at in the lesson,
+
+337
+00:17:27.212 --> 00:17:31.316
+we're also going to register this as a toolbox pattern,
+
+338
+00:17:31.417 --> 00:17:33.118
+so as a new tool, so
+
+339
+00:17:33.118 --> 00:17:35.087
+that the large language model is also
+
+340
+00:17:35.087 --> 00:17:38.290
+able to perform this automatically when it needs.
+
+341
+00:17:38.590 --> 00:17:42.394
+So whenever the large language model reaches 80% utilization,
+
+342
+00:17:42.795 --> 00:17:46.065
+it can automatically summarize and store the conversation
+
+343
+00:17:46.565 --> 00:17:50.369
+into the database, effectively performing context compaction.
+
+344
+00:17:50.836 --> 00:17:53.739
+You will see that this is the importance of having
+
+345
+00:17:53.739 --> 00:17:55.941
+the toolbox pattern active.
+
+346
+00:17:56.341 --> 00:17:59.645
+We have been creating tens of tools
+
+347
+00:17:59.645 --> 00:18:01.647
+and it would be very naive to
+
+348
+00:18:01.647 --> 00:18:03.649
+actually put them all into the context
+
+349
+00:18:03.649 --> 00:18:07.853
+as it would cause a lot of context bloating, context confusion.
+
+350
+00:18:08.353 --> 00:18:10.656
+It would increase your latency
+
+351
+00:18:10.856 --> 00:18:14.660
+and essentially confuse the whole large language model processing.
+
+352
+00:18:14.960 --> 00:18:17.329
+So the toolbox pattern will help us with that.
+
+353
+00:18:17.529 --> 00:18:20.132
+And we will also create this monitor_context_window
+
+354
+00:18:20.132 --> 00:18:23.535
+which will warn us of the actual context
+
+355
+00:18:23.535 --> 00:18:26.438
+utilization at any time
+
+356
+00:18:26.438 --> 00:18:28.841
+by doing the estimations that we did before.
+
+357
+00:18:29.241 --> 00:18:33.645
+So by using the function that we created earlier on the notebook,
+
+358
+00:18:33.645 --> 00:18:35.714
+we're going to calculate an estimation
+
+359
+00:18:35.714 --> 00:18:38.150
+of the context that we are doing
+
+360
+00:18:38.150 --> 00:18:40.419
+and add basically a value that will
+
+361
+00:18:40.419 --> 00:18:43.055
+tell us if we are on the green,
+
+362
+00:18:43.055 --> 00:18:46.158
+if we need to worry about utilization,
+
+363
+00:18:46.158 --> 00:18:49.094
+or if we are at a critical level
+
+364
+00:18:49.094 --> 00:18:52.030
+where context summarization or compaction needs to happen.
+
+365
+00:18:52.865 --> 00:18:54.833
+So now the testing begins.
+
+366
+00:18:55.134 --> 00:18:58.137
+All the functions, the tools that we have created
+
+367
+00:18:58.137 --> 00:19:00.639
+and made available to the large language model
+
+368
+00:19:00.639 --> 00:19:03.142
+are going to be made available right now
+
+369
+00:19:03.142 --> 00:19:07.146
+and we are going to test them by creating a sample conversation
+
+370
+00:19:07.146 --> 00:19:09.748
+about a research that we want to make
+
+371
+00:19:09.948 --> 00:19:12.551
+and we're going to get to see the results.
+
+372
+00:19:12.951 --> 00:19:17.723
+So in this case, we have this test sampled research conversation
+
+373
+00:19:17.723 --> 00:19:21.727
+where we are supposedly working on our PhD thesis
+
+374
+00:19:21.727 --> 00:19:25.731
+and we were talking with our GPT model about what to do,
+
+375
+00:19:25.731 --> 00:19:29.434
+what to research, some of the things about RAG.
+
+376
+00:19:29.868 --> 00:19:32.671
+So we have a thread on our database
+
+377
+00:19:33.071 --> 00:19:34.873
+in the conversational table
+
+378
+00:19:35.374 --> 00:19:37.376
+which we can access through the memory manager
+
+379
+00:19:37.676 --> 00:19:39.678
+with a total of 32 messages.
+
+380
+00:19:40.179 --> 00:19:42.447
+And now we're going to actually
+
+381
+00:19:42.447 --> 00:19:45.083
+monitor how much context we are using.
+
+382
+00:19:45.284 --> 00:19:48.787
+So for that, we are going to call the monitor_context_window
+
+383
+00:19:48.987 --> 00:19:52.891
+with the current_context, which includes the 32 messages,
+
+384
+00:19:53.091 --> 00:19:54.560
+and we are going to print
+
+385
+00:19:54.560 --> 00:19:56.261
+the amount of tokens that we have.
+
+386
+00:19:56.261 --> 00:19:59.364
+maximum allowed by the GPT model that we're using,
+
+387
+00:19:59.364 --> 00:20:02.768
+the percentage usage that we currently have,
+
+388
+00:20:02.768 --> 00:20:06.271
+and the status, being okay, warning, or critical.
+
+389
+00:20:06.271 --> 00:20:10.075
+Meaning, if we need to make context summarization or compaction,
+
+390
+00:20:10.075 --> 00:20:11.877
+or if we are still okay.
+
+391
+00:20:12.377 --> 00:20:14.780
+As you'll see here, our context window monitor
+
+392
+00:20:14.780 --> 00:20:19.184
+currently says that we are using a total of 2000 tokens,
+
+393
+00:20:19.885 --> 00:20:22.387
+which is less than 1% of the maximum.
+
+394
+00:20:22.588 --> 00:20:24.590
+So at this point, we are fine.
+
+395
+00:20:24.890 --> 00:20:27.192
+We don't need to perform context summarization
+
+396
+00:20:27.192 --> 00:20:29.861
+because we still have a lot of space in our context.
+
+397
+00:20:30.162 --> 00:20:32.364
+So the attention matrix of our model
+
+398
+00:20:32.864 --> 00:20:34.866
+is not heavily overloaded at the moment.
+
+399
+00:20:35.167 --> 00:20:37.536
+And this is actually a print of
+
+400
+00:20:37.536 --> 00:20:39.871
+the current conversation with the 32 messages.
+
+401
+00:20:40.205 --> 00:20:44.042
+Now, even if we haven't reached 80% utilization,
+
+402
+00:20:44.042 --> 00:20:46.778
+we are going to call the summarize_conversation
+
+403
+00:20:46.778 --> 00:20:51.083
+so that when you are filling up your context window,
+
+404
+00:20:51.083 --> 00:20:53.986
+you can manually use the summarize_conversation
+
+405
+00:20:53.986 --> 00:20:55.887
+whenever you feel like it.
+
+406
+00:20:56.388 --> 00:20:58.490
+So for that, we're calling the summarize_conversation
+
+407
+00:20:58.490 --> 00:21:02.794
+and it's going to call the OpenAI model and perform this.
+
+408
+00:21:03.395 --> 00:21:05.497
+And as you'll see,
+
+409
+00:21:05.497 --> 00:21:07.299
+we have our conversation summarized.
+
+410
+00:21:07.599 --> 00:21:10.569
+Apart from the summary, we will also get an ID,
+
+411
+00:21:10.569 --> 00:21:14.473
+which can be optionally used together with a description
+
+412
+00:21:14.473 --> 00:21:17.175
+to store this into the database
+
+413
+00:21:17.175 --> 00:21:19.578
+as a context compaction feature.
+
+414
+00:21:19.878 --> 00:21:24.283
+And we also mark all the messages as summarized,
+
+415
+00:21:24.283 --> 00:21:27.085
+so that whenever we want to summarize again,
+
+416
+00:21:27.319 --> 00:21:30.622
+We don't perform the summarization against these messages
+
+417
+00:21:30.922 --> 00:21:33.625
+as they already have a summary and a description
+
+418
+00:21:33.925 --> 00:21:37.329
+explaining what these messages actually entail.
+
+419
+00:21:38.063 --> 00:21:40.299
+And this is the final summary
+
+420
+00:21:40.299 --> 00:21:42.868
+that was created from the 32 messages.
+
+421
+00:21:43.869 --> 00:21:46.371
+And now we will do exactly the opposite.
+
+422
+00:21:46.772 --> 00:21:50.409
+Instead of compacting the summary and creating a summary ID,
+
+423
+00:21:50.709 --> 00:21:52.711
+we will take the ID to
+
+424
+00:21:52.711 --> 00:21:55.047
+actually query the database and uncompact it
+
+425
+00:21:55.347 --> 00:21:58.216
+by calling the expand_summary tool,
+
+426
+00:21:58.617 --> 00:22:01.586
+as we already registered it into the toolbox.
+
+427
+00:22:02.154 --> 00:22:06.325
+And as you'll see here, we have the summary ID
+
+428
+00:22:06.625 --> 00:22:09.127
+and by getting the information from the database,
+
+429
+00:22:09.127 --> 00:22:12.130
+we have effectively allowed the large language model
+
+430
+00:22:12.130 --> 00:22:15.634
+to expand its memory core with the database,
+
+431
+00:22:15.834 --> 00:22:18.337
+so that we can retrieve the summary context,
+
+432
+00:22:18.503 --> 00:22:21.239
+a description of what was in the conversation,
+
+433
+00:22:21.540 --> 00:22:23.909
+plus the original 32 messages.
+
+434
+00:22:24.376 --> 00:22:26.578
+And now we just have this pipeline
+
+435
+00:22:26.578 --> 00:22:28.780
+which will help us verify
+
+436
+00:22:28.780 --> 00:22:32.184
+that all the summarized rows in the database are omitted
+
+437
+00:22:32.184 --> 00:22:35.187
+from the summarization efforts.
+
+438
+00:22:35.721 --> 00:22:39.524
+So, in this case, after having summarized a thread,
+
+439
+00:22:39.725 --> 00:22:44.229
+we need to check on database that they have been marked properly.
+
+440
+00:22:44.629 --> 00:22:47.532
+So we execute some SQL code
+
+441
+00:22:47.532 --> 00:22:51.536
+to get the amount of rows that actually are summarized
+
+442
+00:22:51.536 --> 00:22:53.905
+and which ones are not summarized.
+
+443
+00:22:54.206 --> 00:22:56.508
+And we print them on these variables.
+
+444
+00:22:57.142 --> 00:23:00.445
+So, as you'll see here, through our memory manager,
+
+445
+00:23:00.645 --> 00:23:03.048
+we have our conversational memory and
+
+446
+00:23:03.148 --> 00:23:06.952
+no unsummarized messages were found for the thread
+
+447
+00:23:06.952 --> 00:23:08.854
+as we already summarized.
+
+448
+00:23:09.054 --> 00:23:11.456
+So they were all marked as summarized.
+
+449
+00:23:12.157 --> 00:23:16.862
+And with this, you have successfully completed lesson 4. Congratulations.
