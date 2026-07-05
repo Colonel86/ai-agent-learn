@@ -55,3 +55,15 @@ ai-agent-learn/
 ---
 
 > GitHub: [@Colonel86](https://github.com/Colonel86)
+
+
+- "你们线上 token 成本多少？做了什么优化，降了多少？"
+- "trace 落库后你真的用它排查过什么问题？讲一个。"
+- "eval 集怎么建的？多少 case？发现过什么 regression？"
+
+主干（不变，甚至更重要了）：把 Argus 推到生产。 妙处在于它的每一步都直接命中这份 JD：
+
+- 给它加 MCP server → JD 加分项①，字面命中
+- 给它建 eval framework（用 DeepEval/Promptfoo）→ JD 加分项②，字面命中
+- 接 trace 落库 + 成本追踪 → JD 职责 3
+- 加 retry/fallback/预算硬限 → JD 职责 4

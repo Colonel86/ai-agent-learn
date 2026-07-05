@@ -19,11 +19,11 @@
 | 2026-05-20 | [AI Agents for Image and Video Generation](https://www.deeplearning.ai/courses/ai-agents-for-image-and-video-generation) | Google | 构建能生成图像和视频的 AI Agent,自动评估输出质量,并持续迭代直到结果达到你的质量标准。 | ⏸️ 可选 |
 | 2026-05-06 | [Build Interactive Agents with Generative UI](https://www.deeplearning.ai/courses/build-interactive-agents-with-generative-ui) | CopilotKit | 构建超越纯文本的全栈 Agent 应用,按需生成图表、表单、白板等自定义 UI。 | ⏸️ 可选 |
 | 2026-03-18 | [Agent Memory: Building Memory-Aware Agents](https://www.deeplearning.ai/courses/agent-memory-building-memory-aware-agents) | Oracle | 构建一套完整的 Agent 记忆系统,让 LLM 能跨会话存储、检索、精炼知识——把无状态 Agent 变成能持续学习和改进的系统。 | ⏸️ 可选(与已学 #12 LangGraph 长期记忆重叠) |
-| 2026-02-11 | [A2A: The Agent2Agent Protocol](https://www.deeplearning.ai/courses/a2a-the-agent2agent-protocol) | Google Cloud,IBM Research | 使用 A2A(标准化 Agent 间通信的开放协议)连接来自不同框架和团队的 Agent。 | 🎯 需要 |
+| 2026-02-11 | [A2A: The Agent2Agent Protocol](https://www.deeplearning.ai/courses/a2a-the-agent2agent-protocol) | Google Cloud,IBM Research | 使用 A2A(标准化 Agent 间通信的开放协议)连接来自不同框架和团队的 Agent。 | ✅ 已学 |
 | 2026-01-28 | [Agent Skills with Anthropic](https://www.deeplearning.ai/courses/agent-skills-with-anthropic) | Anthropic | 为 Agent 配备按需调用的专家知识,实现可靠的编码、研究和数据分析工作流。 | ✅ 已学 |
 | 2026-01-14 | [Document AI: From OCR to Agentic Doc Extraction](https://www.deeplearning.ai/courses/document-ai-from-ocr-to-agentic-doc-extraction) | LandingAI | 构建能解析文档并提取信息的 Agent 系统,基于图表、表格、表单等视觉元素进行信息定位。 | ⏸️ 可选 |
 | 2025-12-17 | [Nvidia's NeMo Agent Toolkit: Making Agents Reliable](https://www.deeplearning.ai/courses/nvidia-nat-making-agents-reliable) | Nvidia | 使用 Nvidia NeMo Agent Toolkit 中的可观测性、评测与部署工具,把概念验证级的 Agent demo 转变为生产级系统。 | 🎯 需要 |
-| 2025-12-03 | [Building Coding Agents with Tool Execution](https://www.deeplearning.ai/courses/building-coding-agents-with-tool-execution) | E2B | 构建能编写并执行代码来完成任务的 AI Agent,在保护你系统免受不可信代码影响的沙箱云环境中安全运行。 | ⏸️ 可选(已有 code-sandbox 笔记覆盖概念) |
+| 2025-12-03 | [Building Coding Agents with Tool Execution](https://www.deeplearning.ai/courses/building-coding-agents-with-tool-execution) | E2B | 构建能编写并执行代码来完成任务的 AI Agent,在保护你系统免受不可信代码影响的沙箱云环境中安全运行。 | ✅ 已学 |
 | 2025-11-19 | [Semantic Caching for AI Agents](https://www.deeplearning.ai/courses/semantic-caching-for-ai-agents) | Redis | 通过实现基于语义(而非精确文本)复用响应的语义缓存,为你的 AI Agent 提速并降低成本。 | 🎯 需要 |
 | 2025-11-11 | [Design, Develop, and Deploy Multi-Agent Systems  with CrewAI](https://www.deeplearning.ai/courses/design-develop-and-deploy-multi-agent-systems-with-crewai) | CrewAI | 构建能协作、使用工具与记忆、并可靠扩展到生产环境的实用多 Agent 系统。 | ⏸️ 可选(与已学 crewAI 课重叠) |
 | 2025-10-22 | [Governing AI Agents](https://www.deeplearning.ai/courses/governing-ai-agents) | Databricks | 将数据治理集成到你的 Agent 工作流中,确保它安全、合规、准确地处理数据。 | 🎯 需要 |
@@ -31,7 +31,7 @@
 | 2025-09-24 | [Building and Evaluating Data Agents](https://www.deeplearning.ai/courses/building-and-evaluating-data-agents) | Snowflake | 构建、评测并改进一个能规划步骤、连接数据源并提供洞见的多 Agent 系统。 | ⏸️ 可选 |
 | 2025-09-24 | [Building Live Voice Agents with Google's ADK](https://www.deeplearning.ai/courses/building-live-voice-agents-with-googles-adk) | Google | 使用 Google 的 Agent Development Kit,构建从简单到多 Agent 播客系统的实时语音 AI Agent。 | ⏸️ 可选 |
 | 2025-09-17 | [Build AI Apps with MCP Server: Working with Box Files](https://www.deeplearning.ai/courses/build-ai-apps-with-mcp-server-working-with-box-files) | Box | 构建一个使用 Box MCP server 工具来发现 Box 文件并提取文本的 LLM 应用,并将其改造为使用 A2A 通信的多 Agent 系统。 | ⏸️ 可选(与已学 MCP 课重叠) |
-| 2025-09-10 | [Knowledge Graphs for AI Agent API Discovery](https://www.deeplearning.ai/courses/knowledge-graphs-for-ai-agent-api-discovery) | SAP | 构建知识图谱,让你的 AI Agent 能按正确顺序发现并调用正确的 API。 | ⏸️ 可选 |
+| 2025-09-10 | [Knowledge Graphs for AI Agent API Discovery](https://www.deeplearning.ai/courses/knowledge-graphs-for-ai-agent-api-discovery) | SAP | 构建知识图谱,让你的 AI Agent 能按正确顺序发现并调用正确的 API。 | ✅ 已学 |
 | 2025-08-27 | [Agentic Knowledge Graph Construction](https://www.deeplearning.ai/courses/agentic-knowledge-graph-construction) | Neo4j | 构建一个能规划、设计并构建知识图谱的多 Agent 系统。 | ⏸️ 可选 |
 | 2025-06-04 | [DSPy: Build and Optimize Agentic Apps](https://www.deeplearning.ai/courses/dspy-build-optimize-agentic-apps) | Databricks | 使用 DSPy 和 MLflow 构建、调试并优化 AI Agent。 | 🎯 需要 |
 | 2025-05-14 | [MCP: Build Rich-Context AI Apps with Anthropic](https://www.deeplearning.ai/courses/mcp-build-rich-context-ai-apps-with-anthropic) | Anthropic | 使用 Model Context Protocol 构建能访问工具、数据和提示词的 AI 应用。 | ✅ 已学 |
@@ -46,7 +46,7 @@
 | 2024-10-23 | [Practical Multi AI Agents and Advanced Use Cases with crewAI](https://www.deeplearning.ai/courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai) | crewAI | 构建能协作解决复杂业务任务的 Agent。 | ⏸️ 可选(与已学 crewAI 课重叠) |
 | 2024-06-13 | [Building Your Own Database Agent](https://www.deeplearning.ai/courses/building-your-own-database-agent) | Microsoft | 用自然语言与表格数据和 SQL 数据库交互,让数据分析更高效、更易上手。 | ⏸️ 可选 |
 | 2024-06-05 | [AI Agents in LangGraph](https://www.deeplearning.ai/courses/ai-agents-in-langgraph) | LangChain,Tavily | 使用 LangChain 的 LangGraph 和 Tavily 的 agentic 搜索构建 agentic AI 工作流。 | ✅ 已学 |
-| 2024-05-29 | [AI Agentic Design Patterns with AutoGen](https://www.deeplearning.ai/courses/ai-agentic-design-patterns-with-autogen) | Microsoft,Penn State University | 使用 AutoGen 框架构建具有多样角色和能力的多 Agent 系统,实现复杂 AI 应用。 | 🎯 需要 |
+| 2024-05-29 | [AI Agentic Design Patterns with AutoGen](https://www.deeplearning.ai/courses/ai-agentic-design-patterns-with-autogen) | Microsoft,Penn State University | 使用 AutoGen 框架构建具有多样角色和能力的多 Agent 系统,实现复杂 AI 应用。 | ✅ 已学 |
 | 2024-05-15 | [Multi AI Agent Systems with crewAI](https://www.deeplearning.ai/courses/multi-ai-agent-systems-with-crewai) | crewAI | 用多 AI Agent 系统自动化业务流程。通过用自然语言设计和提示一个 AI Agent 团队,超越单一 LLM 提示的表现。 | ✅ 已学 |
 | 2024-05-08 | [Building Agentic RAG with Llamaindex](https://www.deeplearning.ai/courses/building-agentic-rag-with-llamaindex) | LlamaIndex | 构建能智能浏览并分析你的数据的自主 Agent。学习使用 LlamaIndex 开发 agentic RAG 系统,实现强大的文档问答与摘要功能,并掌握引导 Agent 推理与调试的技能。 | ✅ 已学 |
 | 2023-10-25 | [Functions, Tools and Agents with LangChain](https://www.deeplearning.ai/courses/functions-tools-agents-langchain) | LangChain | 了解 LLM API 的最新进展,使用 LangChain 表达式语言(LCEL)编排和定制 chain 与 agent。 | ✅ 已学 |

@@ -90,15 +90,15 @@
 | 序号 | 课程 | 价值 | 原序号 | 状态 |
 | --- | --- | --- | --- | --- |
 | 13 | Multi AI Agent Systems with crewAI | 多 Agent 协作**心智模型**(管理者思维、6 要素)⭐ | #11 | ✅ 已学 |
-| 14 | AI Agentic Design Patterns with AutoGen | Agent **设计模式**总览 ⭐ | #12 | 🎯 需要 |
-| 15 | Design, Develop, and Deploy Multi-Agent Systems with CrewAI | 生产级 crewAI(只在真用 crewAI 时再看)。2025-11 新课,取代旧课 Practical Multi AI Agents(2024-10) | — | ⏸️ 可选(与已学 crewAI 课重叠) |
+| 14 | AI Agentic Design Patterns with AutoGen | Agent **设计模式**总览 ⭐ | #12 | ✅ 已学 |
+| 15 | Design, Develop, and Deploy Multi-Agent Systems with CrewAI | 生产级 crewAI(只在真用 crewAI 时再看)。2025-11 新课,取代旧课 Practical Multi AI Agents(2024-10) | — | 🔄 学习中(Module 1 已有笔记,`../courses/Design, Develop, and Deploy Multi-Agent Systems with CrewAI/`) |
 
 ### 🅱 协议与扩展能力
 
 | 序号 | 课程 | 价值 | 原序号 | 状态 |
 | --- | --- | --- | --- | --- |
 | 16 | Agent Skills with Anthropic | Skills + MCP + Subagents 组合 ⭐ 2026 新 | #18 | ✅ 已学 |
-| 17 | A2A: The Agent2Agent Protocol | 多 Agent 协作协议(Google Cloud + IBM)⭐ 2026 新 | #19 | 🎯 需要 |
+| 17 | A2A: The Agent2Agent Protocol | 多 Agent 协作协议(Google Cloud + IBM)⭐ 2026 新 | #19 | ✅ 已学 |
 
 ---
 
@@ -115,7 +115,7 @@
 
 | 序号 | 课程 | 方向 | 状态 |
 | --- | --- | --- | --- |
-| 28 | Building Coding Agents with Tool Execution(E2B) | 沙箱化代码执行——理解 Coding Agent 底层如何安全运行 LLM 生成的代码 ⭐ 2026 新 | ⏸️ 可选(已有 code-sandbox 笔记覆盖概念) |
+| 28 | Building Coding Agents with Tool Execution(E2B) | 沙箱化代码执行——理解 Coding Agent 底层如何安全运行 LLM 生成的代码 ⭐ 2026 新 | ✅ 已学 |
 
 > ~~#27 Serverless LLM Apps with Amazon Bedrock~~ 已于 2026-07 确认从官网目录下架,移除。
 
@@ -192,7 +192,7 @@ flowchart TB
 | [Safe and reliable AI via guardrails](https://www.deeplearning.ai/courses/safe-and-reliable-ai-via-guardrails) | GuardrailsAI | 生产护栏,直接对口 JD 职责 4「安全护栏」 |
 | [Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications) | Giskard | LLM 应用红队测试,安全性面试差异化素材 |
 
-### ⏸️ 可选(19 门,时间充裕再学)
+### ⏸️ 可选(18 门,时间充裕再学)
 
 | 课程 | 合作方 | 备注 |
 | --- | --- | --- |
@@ -204,7 +204,6 @@ flowchart TB
 | [Document AI: From OCR to Agentic Doc Extraction](https://www.deeplearning.ai/courses/document-ai-from-ocr-to-agentic-doc-extraction) | LandingAI | 文档抽取 Agent,垂类 demo |
 | [Building and Evaluating Data Agents](https://www.deeplearning.ai/courses/building-and-evaluating-data-agents) | Snowflake | 多 Agent 规划 + 评测一体,与已学 #21 有重叠 |
 | [Build AI Apps with MCP Server: Working with Box Files](https://www.deeplearning.ai/courses/build-ai-apps-with-mcp-server-working-with-box-files) | Box | MCP 实战 demo,与已学 MCP 课(#10)重叠 |
-| [Knowledge Graphs for AI Agent API Discovery](https://www.deeplearning.ai/courses/knowledge-graphs-for-ai-agent-api-discovery) | SAP | 图谱驱动的工具发现,对口面试包 `02-tool-gateway` |
 | [Agentic Knowledge Graph Construction](https://www.deeplearning.ai/courses/agentic-knowledge-graph-construction) | Neo4j | 多 Agent 构建知识图谱,偏垂类 |
 | [Building Code Agents with Hugging Face smolagents](https://www.deeplearning.ai/courses/building-code-agents-with-hugging-face-smolagents) | Hugging Face | CodeAct 范式,可与 #28 对照 |
 | [Building AI Browser Agents](https://www.deeplearning.ai/courses/building-ai-browser-agents) | AGI Inc | 浏览器操作 Agent,偏垂类 |
@@ -218,16 +217,16 @@ flowchart TB
 
 ---
 
-## ✅ 已学笔记速查(23 门,对应 `agent/courses/`)
+## ✅ 已学笔记速查(27 门,对应 `agent/courses/`)
 
 | 课程 | 笔记路径 |
 | --- | --- |
 | ChatGPT Prompt Engineering for Developers | `../courses/01-ChatGPT Prompt Engineering for Developers/` |
 | Building Systems with the ChatGPT API | `../courses/02-Building Systems with the ChatGPT API/` |
 | LangChain for LLM Application Development | `../courses/03-LangChain for LLM Application Development/` |
-| LangChain: Chat with Your Data | `../courses/04-LangChain: Chat with Your Data/` |
-| Building and Evaluating Advanced RAG | `../courses/05-Building and Evaluating Advanced RAG/` |
-| Advanced Retrieval for AI with Chroma | `../courses/06-Advanced Retrieval for AI with Chroma/` |
+| LangChain: Chat with Your Data | `../courses/RAG/04-LangChain: Chat with Your Data/` |
+| Building and Evaluating Advanced RAG | `../courses/RAG/05-Building and Evaluating Advanced RAG/` |
+| Advanced Retrieval for AI with Chroma | `../courses/RAG/06-Advanced Retrieval for AI with Chroma/` |
 | Pydantic for LLM Workflows | `../courses/07-Pydantic for LLM Workflows/` |
 | Getting Structured LLM Output | `../courses/07a-Getting Structured LLM Output/` |
 | Function-calling and data extraction with LLMs | `../courses/07b-Function-calling and data extraction with LLMs/` |
@@ -235,13 +234,17 @@ flowchart TB
 | Functions, Tools and Agents with LangChain | `../courses/09-Functions, Tools and Agents with LangChain/` |
 | MCP: Build Rich-Context AI Apps with Anthropic | `../courses/10-MCP: Build Rich-Context AI Apps with Anthropic/` |
 | AI Agents in LangGraph | `../courses/11-AI Agents in LangGraph/` |
-| Long-Term Agentic Memory With LangGraph | `../courses/12-Long-Term Agentic Memory With LangGraph/` |
-| Agent Memory: Building Memory-Aware Agents(Oracle) | `../courses/12a-Agent Memory Building Memory-Aware Agents/` |
-| LLMs as Operating Systems: Agent Memory(Letta / MemGPT) | `../courses/12b-LLMs as Operating Systems Agent Memory/` |
+| Long-Term Agentic Memory With LangGraph | `../courses/memory/12-Long-Term Agentic Memory With LangGraph/` |
+| Agent Memory: Building Memory-Aware Agents(Oracle) | `../courses/memory/12a-Agent Memory Building Memory-Aware Agents/` |
+| LLMs as Operating Systems: Agent Memory(Letta / MemGPT) | `../courses/memory/12b-LLMs as Operating Systems Agent Memory/` |
 | Multi AI Agent Systems with crewAI | `../courses/13-Multi AI Agent Systems with crewAI/` |
 | Agent Skills with Anthropic | `../courses/16-Agent Skills with Anthropic/` |
-| Building Agentic RAG with LlamaIndex | `../courses/18-Building Agentic RAG with LlamaIndex/` |
+| Building Agentic RAG with LlamaIndex | `../courses/RAG/18-Building Agentic RAG with LlamaIndex/` |
 | Event-Driven Agentic Document Workflows with LlamaIndex | `../courses/19-Event-Driven Agentic Document Workflows with LlamaIndex/` |
-| Evaluating AI Agents | `../courses/21-Evaluating AI Agents/` |
-| Automated Testing for LLMOps | `../courses/24-Automated Testing for LLMOps/` |
+| Evaluating AI Agents | `../courses/eval/21-Evaluating AI Agents/` |
+| Automated Testing for LLMOps | `../courses/eval/24-Automated Testing for LLMOps/` |
 | Building AI Applications with Haystack | `../courses/25-Building AI Applications with Haystack/` |
+| Knowledge Graphs for AI Agent API Discovery(SAP) | `../courses/Knowledge Graphs for AI Agent API Discovery/` |
+| AI Agentic Design Patterns with AutoGen(Microsoft) | `../courses/AI Agentic Design Patterns with AutoGen/` |
+| A2A: The Agent2Agent Protocol(Google Cloud,IBM) | `../courses/A2A: The Agent2Agent Protocol/` |
+| Building Coding Agents with Tool Execution(E2B) | `../courses/Building Coding Agents with Tool Execution/` |
