@@ -1,0 +1,722 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.502
+Now that you have your governance foundation in place,
+
+2
+00:00:02.769 --> 00:00:05.271
+the next step is to build and evaluate your agent.
+
+3
+00:00:05.972 --> 00:00:07.474
+In this lesson, you will learn
+
+4
+00:00:07.474 --> 00:00:09.175
+all about the steps you can follow
+
+5
+00:00:09.275 --> 00:00:12.479
+to make your agent production ready using tools like MLflow
+
+6
+00:00:12.779 --> 00:00:15.749
+and custom evaluation metrics. Let's get to it.
+
+7
+00:00:15.749 --> 00:00:18.151
+In our first lab, we built and prepared
+
+8
+00:00:18.151 --> 00:00:20.353
+the data layer with governance.
+
+9
+00:00:20.553 --> 00:00:22.355
+Now, we're going to build the agents,
+
+10
+00:00:22.555 --> 00:00:25.658
+evaluate them and deploy them in labs two and three.
+
+11
+00:00:25.925 --> 00:00:29.095
+Just a little refresh for those who are newer to agents.
+
+12
+00:00:29.396 --> 00:00:33.900
+The agent uses the LLM as its brain for reasoning through tools.
+
+13
+00:00:34.200 --> 00:00:37.704
+So for example, I can give an agent access
+
+14
+00:00:37.704 --> 00:00:39.706
+to a series of tools
+
+15
+00:00:39.906 --> 00:00:42.409
+and I'm going to give it an LLM
+
+16
+00:00:42.409 --> 00:00:44.711
+and normally a system prompt so that it can make decisions.
+
+17
+00:00:44.911 --> 00:00:48.415
+So if I have a customer asking my agent,
+
+18
+00:00:48.615 --> 00:00:50.717
+Can you help me return my last order?
+
+19
+00:00:50.917 --> 00:00:52.819
+The way a normal customer support
+
+20
+00:00:52.819 --> 00:00:55.321
+agent would work is they would say, "Okay,
+
+21
+00:00:55.321 --> 00:00:59.025
+let me look up your account. Let me find that information.
+
+22
+00:00:59.325 --> 00:01:01.628
+Let me look up our own return policy,
+
+23
+00:01:01.628 --> 00:01:04.998
+make sure the item you want to return falls within that policy,
+
+24
+00:01:05.298 --> 00:01:08.601
+and then go through the process to generate a shipping label.
+
+25
+00:01:08.802 --> 00:01:12.005
+The agent should go through that same reasoning step.
+
+26
+00:01:12.305 --> 00:01:15.308
+So a reasoning action or ReAct paradigm,
+
+27
+00:01:15.408 --> 00:01:17.010
+call the tools necessary
+
+28
+00:01:17.310 --> 00:01:19.312
+and ultimately resolve the issue.
+
+29
+00:01:19.712 --> 00:01:21.915
+The tools can be documents,
+
+30
+00:01:21.915 --> 00:01:24.717
+they can be vector databases, they could be functions,
+
+31
+00:01:24.717 --> 00:01:27.720
+they could be APIs, they could be tables.
+
+32
+00:01:27.720 --> 00:01:30.723
+You can give a lot of different tools to your agent
+
+33
+00:01:30.723 --> 00:01:33.726
+and as long as the agent's able to understand
+
+34
+00:01:33.726 --> 00:01:35.695
+the data that it's using,
+
+35
+00:01:35.695 --> 00:01:38.498
+either through prompts
+
+36
+00:01:38.498 --> 00:01:41.201
+or explicit actions on behalf of those tools,
+
+37
+00:01:41.201 --> 00:01:46.201
+it should be able to then generate proper responses and retrieve data.
+
+38
+00:01:46.606 --> 00:01:50.410
+For evaluating AI Agents, so after your Agent is built,
+
+39
+00:01:50.410 --> 00:01:52.612
+you're going to want to evaluate the
+
+40
+00:01:52.612 --> 00:01:55.115
+performance of the system before deploying into production.
+
+41
+00:01:55.415 --> 00:01:58.618
+So the main way in which we evaluate are using Retrieval metrics
+
+42
+00:01:58.618 --> 00:02:03.223
+such as RAG metrics, so whether or not a response is relevant,
+
+43
+00:02:03.623 --> 00:02:06.826
+Response metrics, so if your agent is hallucinating,
+
+44
+00:02:06.826 --> 00:02:09.629
+if it's saying something that is incorrect,
+
+45
+00:02:09.829 --> 00:02:11.831
+if it's saying something that is unsafe.
+
+46
+00:02:12.031 --> 00:02:14.934
+Also looking at the speed, latency, and cost.
+
+47
+00:02:15.034 --> 00:02:16.669
+So the cost of building an agent
+
+48
+00:02:16.669 --> 00:02:18.338
+and the cost of maintaining an agent.
+
+49
+00:02:18.638 --> 00:02:21.641
+You also just need to make sure that it is fast enough
+
+50
+00:02:21.741 --> 00:02:24.177
+that the user is going to be able
+
+51
+00:02:24.177 --> 00:02:26.613
+to get a response in a timely manner.
+
+52
+00:02:27.180 --> 00:02:29.349
+The three ways in which we generally run
+
+53
+00:02:29.349 --> 00:02:31.651
+evals on your agent is through code-based evals.
+
+54
+00:02:31.951 --> 00:02:35.054
+These are your JSON and regex expressions.
+
+55
+00:02:35.355 --> 00:02:36.956
+Your LLM as a judge,
+
+56
+00:02:37.056 --> 00:02:42.028
+so LLM labeled data via a prompt template or metrics like hallucinations.
+
+57
+00:02:42.529 --> 00:02:44.297
+And then human in the loop evals.
+
+58
+00:02:44.297 --> 00:02:46.032
+So this is your golden data set.
+
+59
+00:02:46.132 --> 00:02:48.301
+This is having a subject matter
+
+60
+00:02:48.301 --> 00:02:50.837
+expert either label data or provide you
+
+61
+00:02:51.237 --> 00:02:53.840
+a set of inputs and outputs that you can use
+
+62
+00:02:54.040 --> 00:02:56.242
+to train or fine tune your agent.
+
+63
+00:02:56.609 --> 00:02:58.811
+I'm just going back to LLM-as-a-judge.
+
+64
+00:02:58.811 --> 00:03:01.814
+This has become the most popular way to evaluate agents
+
+65
+00:03:01.814 --> 00:03:03.383
+because a lot of agents do
+
+66
+00:03:03.383 --> 00:03:05.218
+not have ground truths to draw on.
+
+67
+00:03:05.518 --> 00:03:08.421
+But it's easy to make a secondary agent
+
+68
+00:03:08.421 --> 00:03:11.791
+that can evaluate maybe the tone of the agent
+
+69
+00:03:12.091 --> 00:03:14.794
+or very custom metrics that you want to build
+
+70
+00:03:14.794 --> 00:03:17.397
+when building your agents and making sure they're performant
+
+71
+00:03:17.397 --> 00:03:19.399
+on specific metrics for production.
+
+72
+00:03:19.799 --> 00:03:23.403
+Remember, these evals, once you turn your model into
+
+73
+00:03:23.403 --> 00:03:25.605
+a production deployed system,
+
+74
+00:03:26.172 --> 00:03:28.741
+These evals will turn into monitoring capabilities.
+
+75
+00:03:28.741 --> 00:03:32.178
+So you will now have thresholds on those initial evaluations,
+
+76
+00:03:32.178 --> 00:03:34.280
+so you could begin monitoring them.
+
+77
+00:03:34.681 --> 00:03:36.583
+Monitoring for key performance metrics
+
+78
+00:03:36.583 --> 00:03:40.086
+in addition for monitoring things like cost and token count.
+
+79
+00:03:40.587 --> 00:03:42.355
+When preparing for production,
+
+80
+00:03:42.655 --> 00:03:45.325
+the ways to run your evals on your
+
+81
+00:03:45.325 --> 00:03:47.961
+agent is through a lot of tracing capabilities.
+
+82
+00:03:48.361 --> 00:03:52.165
+Tracing is most commonly used for OTel frameworks
+
+83
+00:03:52.165 --> 00:03:55.668
+or open telemetry format. That's kind of the standard when logging
+
+84
+00:03:55.735 --> 00:03:59.939
+this traces. MLflow tracing also use the open telemetry format
+
+85
+00:03:59.939 --> 00:04:02.575
+to log all traces and then every step
+
+86
+00:04:02.575 --> 00:04:05.545
+within a trace, which is also called a span.
+
+87
+00:04:05.745 --> 00:04:08.648
+So you can see how long each step took,
+
+88
+00:04:09.048 --> 00:04:12.719
+see the inputs, outputs, the attributes of the LLM,
+
+89
+00:04:13.019 --> 00:04:15.755
+see the intermediate steps, see all the
+
+90
+00:04:15.755 --> 00:04:18.825
+documents retrieved if you're using a RAG-based agent,
+
+91
+00:04:19.626 --> 00:04:22.528
+and really start being able to troubleshoot
+
+92
+00:04:22.528 --> 00:04:24.731
+and resolve problems with your agent in production.
+
+93
+00:04:25.298 --> 00:04:28.101
+In this course when you build your agent,
+
+94
+00:04:28.101 --> 00:04:30.303
+we're going to log the agent in MLflow.
+
+95
+00:04:30.303 --> 00:04:34.507
+So logging saves your agent as a versioned model artifact
+
+96
+00:04:34.507 --> 00:04:36.509
+in MLflow's model registry,
+
+97
+00:04:36.509 --> 00:04:39.212
+and you can think of this as saving your agent
+
+98
+00:04:39.212 --> 00:04:43.216
+in a format that Databricks can deploy and manage in production.
+
+99
+00:04:43.316 --> 00:04:48.254
+So, it stores the agent code, the dependencies, and the full configuration.
+
+100
+00:04:48.755 --> 00:04:51.424
+It creates a deployable model version with metadata.
+
+101
+00:04:51.824 --> 00:04:54.994
+It enables model serving endpoints and API access.
+
+102
+00:04:55.328 --> 00:04:58.231
+It tracks experiments, performance metrics, and lineage,
+
+103
+00:04:58.498 --> 00:05:00.733
+and allows rollback to previous versions.
+
+104
+00:05:01.134 --> 00:05:03.936
+When you're authoring AI agents in code,
+
+105
+00:05:03.936 --> 00:05:07.140
+MLflow recommends using the ResponsesAgent interface
+
+106
+00:05:07.140 --> 00:05:09.042
+for building enterprise agents.
+
+107
+00:05:09.042 --> 00:05:11.344
+So no matter what agents you're using,
+
+108
+00:05:11.344 --> 00:05:14.147
+whether you're using an agent from OpenAI,
+
+109
+00:05:14.147 --> 00:05:16.249
+LangChain, Anthropic,
+
+110
+00:05:16.249 --> 00:05:19.452
+if you're building an agent in any Python framework,
+
+111
+00:05:19.819 --> 00:05:23.923
+format, this wraps the agent in the ResponsesAgent interface,
+
+112
+00:05:23.923 --> 00:05:26.025
+so you have a unified interface.
+
+113
+00:05:26.025 --> 00:05:28.094
+It's consistent input and output.
+
+114
+00:05:28.094 --> 00:05:31.297
+There's no change to core agent logic or code.
+
+115
+00:05:31.297 --> 00:05:34.300
+It's compatible with Databricks features and MLflow,
+
+116
+00:05:34.300 --> 00:05:38.004
+and it creates a common interface for multi-agent systems as well.
+
+117
+00:05:38.471 --> 00:05:41.274
+When deploying agents in Databricks,
+
+118
+00:05:41.274 --> 00:05:44.477
+we have deploying and versioning for each component in the system.
+
+119
+00:05:44.977 --> 00:05:48.281
+We have recently released at Databricks MLflow 3.0.
+
+120
+00:05:48.281 --> 00:05:52.985
+This is an OSS platform for GenAI development lifecycles.
+
+121
+00:05:52.985 --> 00:05:57.523
+We do have a course available with DeepLearning.AI on DSPy and MLflow.
+
+122
+00:05:58.024 --> 00:06:00.426
+MLflow 3.0 has tracking capabilities,
+
+123
+00:06:00.927 --> 00:06:03.529
+packaging, model registry, observability,
+
+124
+00:06:03.830 --> 00:06:06.833
+and key components for deploying your models
+
+125
+00:06:06.833 --> 00:06:08.434
+and creating a serving endpoint.
+
+126
+00:06:08.568 --> 00:06:11.371
+Why do we deploy agents as service principals?
+
+127
+00:06:12.004 --> 00:06:13.606
+So you've added UC views, you've added masks,
+
+128
+00:06:13.606 --> 00:06:17.009
+you've added system prompts. Isn't that enough security?
+
+129
+00:06:17.143 --> 00:06:19.445
+So this is all stuff we've done in lab one.
+
+130
+00:06:19.679 --> 00:06:22.382
+When we build our agent, we're going to end up deploying it
+
+131
+00:06:22.382 --> 00:06:25.084
+as a service principal at the end of lab three.
+
+132
+00:06:25.585 --> 00:06:27.053
+So why do we do this?
+
+133
+00:06:27.053 --> 00:06:28.788
+Well, it helps control the blast radius.
+
+134
+00:06:29.088 --> 00:06:31.758
+So minimum required permissions versus
+
+135
+00:06:31.758 --> 00:06:33.960
+admin account accessing everything.
+
+136
+00:06:34.260 --> 00:06:36.262
+It has clear audit trails,
+
+137
+00:06:36.262 --> 00:06:39.265
+so precise logs of which agents performed what actions
+
+138
+00:06:39.265 --> 00:06:41.667
+versus hard to trace admin activity.
+
+139
+00:06:41.968 --> 00:06:44.270
+It gives you defense against edge cases.
+
+140
+00:06:44.570 --> 00:06:48.374
+So protection against prompt injection or other nefarious acts.
+
+141
+00:06:48.775 --> 00:06:51.144
+It gives you regulatory compliance,
+
+142
+00:06:51.444 --> 00:06:54.447
+credential isolation, and full governance protection.
+
+143
+00:06:54.947 --> 00:06:57.049
+You might be wondering what the next step is
+
+144
+00:06:57.049 --> 00:06:59.452
+after you deploy your agent
+
+145
+00:06:59.452 --> 00:07:01.421
+with the credentials of a service principal
+
+146
+00:07:01.421 --> 00:07:03.823
+and have that deployed endpoint.
+
+147
+00:07:04.123 --> 00:07:05.825
+Well, you can use an AI Gateway.
+
+148
+00:07:05.825 --> 00:07:08.928
+We have the Mosaic AI Gateway available at Databricks
+
+149
+00:07:08.928 --> 00:07:10.830
+where you can route that endpoint
+
+150
+00:07:10.830 --> 00:07:12.532
+or any external model,
+
+151
+00:07:12.532 --> 00:07:14.834
+Databricks hosted model or agent.
+
+152
+00:07:15.168 --> 00:07:17.170
+and begin tracking key information.
+
+153
+00:07:17.670 --> 00:07:20.673
+With AI Gateway, you can secure access to any AI model
+
+154
+00:07:20.673 --> 00:07:22.675
+with centralized governance.
+
+155
+00:07:23.075 --> 00:07:25.178
+So having Unified Access,
+
+156
+00:07:25.178 --> 00:07:27.980
+so a single interface for all your models,
+
+157
+00:07:28.181 --> 00:07:30.283
+whether they're from OpenAI, whether they're an
+
+158
+00:07:30.283 --> 00:07:32.685
+open source model, whether they're a custom agent.
+
+159
+00:07:33.085 --> 00:07:36.189
+Advanced Security, so this is your centralized governance,
+
+160
+00:07:36.389 --> 00:07:38.691
+content filtering, PII detection.
+
+161
+00:07:39.158 --> 00:07:42.662
+enabling Usage Tracking, so you can capture all activity
+
+162
+00:07:42.929 --> 00:07:44.931
+in Unity Catalog with enforced permissions.
+
+163
+00:07:45.331 --> 00:07:47.433
+And so you can track a single endpoint,
+
+164
+00:07:47.633 --> 00:07:49.235
+you can track all your endpoints.
+
+165
+00:07:49.836 --> 00:07:51.637
+You can add cost attribution
+
+166
+00:07:51.938 --> 00:07:54.640
+to make sure that those endpoints aren't being over utilized.
+
+167
+00:07:55.141 --> 00:07:56.943
+And you can add monitoring as
+
+168
+00:07:56.943 --> 00:07:59.045
+well for model accuracy and Payload logging.
+
+169
+00:07:59.345 --> 00:08:02.648
+So all your inputs and outputs that you have when
+
+170
+00:08:03.115 --> 00:08:06.919
+working with an LLM or an agent, you can log all those responses
+
+171
+00:08:06.919 --> 00:08:09.622
+and start doing evaluations on them.
+
+172
+00:08:10.022 --> 00:08:12.325
+and give you spending insights because again,
+
+173
+00:08:12.325 --> 00:08:14.393
+we are tracking those serving endpoints,
+
+174
+00:08:14.393 --> 00:08:18.097
+especially if you have uh third-party LLMs you're working with
+
+175
+00:08:18.097 --> 00:08:21.100
+or proprietary LLMs that are a bit more costly.
+
+176
+00:08:21.400 --> 00:08:24.303
+It's also a great way to optimize your resources
+
+177
+00:08:24.303 --> 00:08:26.606
+by tracking all these capabilities.
+
+178
+00:08:27.206 --> 00:08:29.909
+All right, now it's time for us to go and build
+
+179
+00:08:29.909 --> 00:08:32.311
+our agent capabilities, so ultimately
+
+180
+00:08:32.311 --> 00:08:35.882
+we can deploy that agent with a service principal's identity.

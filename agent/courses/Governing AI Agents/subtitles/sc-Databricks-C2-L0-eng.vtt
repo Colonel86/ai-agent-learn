@@ -1,0 +1,266 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:02.369
+Welcome to Governing AI Agents,
+
+2
+00:00:02.602 --> 00:00:04.671
+built in partnership with Databricks.
+
+3
+00:00:05.472 --> 00:00:08.375
+In this course, you'll learn how to integrate data governance
+
+4
+00:00:08.375 --> 00:00:11.277
+into your agent's workflow to ensure the agent can handle data
+
+5
+00:00:11.277 --> 00:00:13.880
+safely, securely, and accurately.
+
+6
+00:00:14.614 --> 00:00:18.118
+Data governance consists of a set of policies and practices
+
+7
+00:00:18.218 --> 00:00:20.820
+that you can implement to ensure your agent has access
+
+8
+00:00:20.920 --> 00:00:23.123
+only to the data that it needs,
+
+9
+00:00:23.423 --> 00:00:27.227
+that personal information is protected from unauthorized access,
+
+10
+00:00:27.527 --> 00:00:30.597
+and that you and your team can monitor the agent's performance.
+
+11
+00:00:31.197 --> 00:00:34.601
+I'm delighted that the instructor for this course is Amber Roberts,
+
+12
+00:00:34.701 --> 00:00:38.104
+who is staff technical marketing manager at Databricks.
+
+13
+00:00:38.405 --> 00:00:40.807
+Thanks Andrew, I'm excited to work with you on this course.
+
+14
+00:00:41.074 --> 00:00:43.076
+Say you want to build an agent
+
+15
+00:00:43.076 --> 00:00:45.078
+specialized in customer analysis.
+
+16
+00:00:45.078 --> 00:00:47.580
+You can define for the agent a set of tools
+
+17
+00:00:47.580 --> 00:00:51.084
+that allow it to ingest data like customer demographics or transactions
+
+18
+00:00:51.084 --> 00:00:53.787
+or website engagements and survey responses.
+
+19
+00:00:53.987 --> 00:00:57.590
+If you give this agent broad permissions to all this data,
+
+20
+00:00:57.590 --> 00:01:01.061
+it risks the agent leaking private customer
+
+21
+00:01:01.461 --> 00:01:04.664
+information such as credit card info or their address
+
+22
+00:01:04.664 --> 00:01:07.834
+or their personal purchase behavior. Data that shouldn't be visible
+
+23
+00:01:07.867 --> 00:01:10.737
+to maybe all company employees.
+
+24
+00:01:11.137 --> 00:01:15.041
+If, however, you built this agent with data governance in mind,
+
+25
+00:01:15.241 --> 00:01:18.244
+then you can ensure that your agent properly handles this data.
+
+26
+00:01:18.945 --> 00:01:21.815
+For example, you can specify in the deployment environment.
+
+27
+00:01:21.815 --> 00:01:24.517
+what tables or columns your agent can access,
+
+28
+00:01:24.717 --> 00:01:28.521
+and encrypt custom IDs and mask credit card information.
+
+29
+00:01:28.822 --> 00:01:31.825
+You can also implement data quality checkpoints
+
+30
+00:01:31.925 --> 00:01:34.327
+for the agent's input and output
+
+31
+00:01:34.627 --> 00:01:37.530
+and add evals to measure output quality.
+
+32
+00:01:37.831 --> 00:01:39.632
+And enable observability
+
+33
+00:01:39.732 --> 00:01:41.634
+to log the agent's processing steps.
+
+34
+00:01:42.202 --> 00:01:44.304
+All of these practices help you
+
+35
+00:01:44.304 --> 00:01:46.806
+to continuously monitor the agent's behavior
+
+36
+00:01:46.806 --> 00:01:48.808
+and debug any failure scenarios.
+
+37
+00:01:49.209 --> 00:01:53.113
+In this course, you will learn how to apply these governance practices
+
+38
+00:01:53.113 --> 00:01:55.982
+to an agent that you'll build and deploy on Databricks.
+
+39
+00:01:55.982 --> 00:02:00.086
+Now, in order to make sure your agent follows least privilege access,
+
+40
+00:02:00.086 --> 00:02:04.090
+you'll give the agent specific, intentional access with views.
+
+41
+00:02:04.090 --> 00:02:08.027
+These views which are SQL queries that act like tables,
+
+42
+00:02:08.027 --> 00:02:10.830
+will contain only the data needed for the agent's task.
+
+43
+00:02:10.830 --> 00:02:13.833
+Now, for the agent to access these views,
+
+44
+00:02:13.833 --> 00:02:17.237
+you will need to learn how to specify the agent's permissions.
+
+45
+00:02:17.237 --> 00:02:20.740
+You will then build tools so the agent can access the data
+
+46
+00:02:20.740 --> 00:02:23.943
+and register those tools as functions in Unity Catalog.
+
+47
+00:02:23.943 --> 00:02:27.247
+Unity Catalog is an open source data catalog
+
+48
+00:02:27.680 --> 00:02:31.484
+that ensures only authorized agents or users can access those tools.
+
+49
+00:02:31.885 --> 00:02:34.487
+After that, you will implement the agent logic
+
+50
+00:02:34.787 --> 00:02:37.891
+using the OpenAI SDK, evaluate it
+
+51
+00:02:38.391 --> 00:02:40.693
+and enable tracing using MLflow.
+
+52
+00:02:41.194 --> 00:02:42.996
+And finally, you will deploy your agent.
+
+53
+00:02:43.296 --> 00:02:44.898
+To follow along with the course labs,
+
+54
+00:02:45.198 --> 00:02:48.168
+you can create your account with Databricks free edition
+
+55
+00:02:48.368 --> 00:02:50.069
+and try the labs at no cost.
+
+56
+00:02:50.436 --> 00:02:52.939
+Many people have worked to create this course.
+
+57
+00:02:52.939 --> 00:02:54.941
+I'd like to thank from Databricks,
+
+58
+00:02:54.941 --> 00:02:57.210
+Nicolas Pelaez and Ben Wilson.
+
+59
+00:02:57.210 --> 00:02:59.212
+From DeepLearning.AI,
+
+60
+00:02:59.212 --> 00:03:02.215
+Hawraa Salami also contributed to this course.
+
+61
+00:03:02.415 --> 00:03:05.418
+In the next lesson, Amber will walk you through the four pillars
+
+62
+00:03:05.418 --> 00:03:07.420
+of data governance for AI agents,
+
+63
+00:03:07.420 --> 00:03:12.225
+which summarizes the main aspects of how to govern your AI agents.
+
+64
+00:03:12.425 --> 00:03:16.229
+The four pillars are: lifecycle management, risk management,
+
+65
+00:03:16.229 --> 00:03:18.932
+security, and observability.
+
+66
+00:03:19.432 --> 00:03:22.936
+So, let's go on to the next video to get started.

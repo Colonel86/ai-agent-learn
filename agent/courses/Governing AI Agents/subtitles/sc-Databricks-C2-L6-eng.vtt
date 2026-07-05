@@ -1,0 +1,652 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.803
+You'll now build your tool calling agent using the OpenAI SDK.
+
+2
+00:00:04.104 --> 00:00:07.173
+And then wrap it in the MLflow ResponsesAgent interface.
+
+3
+00:00:07.474 --> 00:00:08.942
+Okay, let's code.
+
+4
+00:00:09.142 --> 00:00:12.879
+Now that we have finished lab one
+and set our initial governance,
+
+5
+00:00:12.879 --> 00:00:16.282
+we're going to go through
+our Lab 2, our agent.py,
+
+6
+00:00:16.282 --> 00:00:18.718
+and then our Lab 3
+deployment notebook
+
+7
+00:00:18.718 --> 00:00:21.121
+so we can actually
+deploy the agent
+
+8
+00:00:21.121 --> 00:00:23.623
+with the service principle's
+credentials.
+
+9
+00:00:23.623 --> 00:00:26.426
+So I'm going to go back
+just one step,
+
+10
+00:00:26.960 --> 00:00:29.529
+and I'm going to make sure
+that my service principles,
+
+11
+00:00:29.529 --> 00:00:32.465
+so I'm going to go to my folder
+that contains all my data.
+
+12
+00:00:33.199 --> 00:00:35.135
+I'm going to share permissions
+
+13
+00:00:35.135 --> 00:00:38.571
+because I want to make sure
+that my service principle
+
+14
+00:00:39.005 --> 00:00:40.907
+can actually run.
+
+15
+00:00:40.907 --> 00:00:43.309
+Just going to make sure
+that that is added.
+
+16
+00:00:45.812 --> 00:00:48.615
+Now let's go into our lab two agent.py.
+
+17
+00:00:49.449 --> 00:00:52.852
+So this is our orchestration. So we talked about using
+
+18
+00:00:52.852 --> 00:00:56.156
+the MLflow ResponsesAgent interface.
+
+19
+00:00:56.156 --> 00:01:00.260
+So first we need to install key capabilities.
+
+20
+00:01:00.260 --> 00:01:03.863
+So we use the Databricks SDK, we use databricks_openai,
+
+21
+00:01:03.863 --> 00:01:07.667
+and we pull in our UCFunctionToolkit.
+
+22
+00:01:07.667 --> 00:01:09.769
+If we wanted to use a retriever
+
+23
+00:01:09.769 --> 00:01:11.871
+tool as well, so a vector search,
+
+24
+00:01:11.871 --> 00:01:14.641
+if we were building a RAG chatbot,
+
+25
+00:01:14.641 --> 00:01:17.644
+we have the VectorSearchRetrieverTool as an option.
+
+26
+00:01:18.311 --> 00:01:21.815
+We of course need to import OpenAI.
+
+27
+00:01:22.415 --> 00:01:24.417
+And then we need to select our LLM.
+
+28
+00:01:24.717 --> 00:01:27.353
+So if we select a natively available
+
+29
+00:01:27.353 --> 00:01:30.023
+Databricks model that has tool calling enabled,
+
+30
+00:01:30.523 --> 00:01:34.227
+we can use the meta-llama-3.3-70b-instruct model.
+
+31
+00:01:34.594 --> 00:01:36.496
+We can have our SYSTEM_PROMPT.
+
+32
+00:01:36.696 --> 00:01:38.898
+So you are an HR Data Scientist
+
+33
+00:01:38.898 --> 00:01:41.101
+and Analytics expert. You have access to
+
+34
+00:01:41.101 --> 00:01:44.571
+HR analytics tools that provide insights into workforce performance,
+
+35
+00:01:44.571 --> 00:01:46.806
+retention, and operational metrics.
+
+36
+00:01:47.307 --> 00:01:49.008
+So a little bit more about the role,
+
+37
+00:01:49.509 --> 00:01:51.911
+some feedback for when you're answering questions,
+
+38
+00:01:51.911 --> 00:01:53.513
+and then the tools you have available.
+
+39
+00:01:53.713 --> 00:01:55.315
+So this is your analyze_performance
+
+40
+00:01:55.615 --> 00:01:57.617
+and analyze_operations tools
+
+41
+00:01:57.617 --> 00:02:00.120
+that we've built and registered in Unity Catalog.
+
+42
+00:02:00.520 --> 00:02:03.590
+And then you need to define your tools for your agent.
+
+43
+00:02:04.190 --> 00:02:05.592
+So we're going to scroll down
+
+44
+00:02:05.592 --> 00:02:07.193
+and so you can see the tools
+
+45
+00:02:07.193 --> 00:02:10.997
+that we have already defined and registered in Unity Catalog.
+
+46
+00:02:11.397 --> 00:02:13.533
+So you can use these user-defined
+
+47
+00:02:13.533 --> 00:02:16.002
+functions in Unity Catalog as agent tools.
+
+48
+00:02:16.503 --> 00:02:18.505
+If you wanted to use a vector database,
+
+49
+00:02:18.705 --> 00:02:20.607
+you can easily enable that as well.
+
+50
+00:02:20.974 --> 00:02:23.476
+And if I go all the way to the bottom,
+
+51
+00:02:23.576 --> 00:02:27.580
+you can see that your ToolCallingAgent has your LLM endpoint,
+
+52
+00:02:27.680 --> 00:02:29.883
+so the endpoint that we've defined.
+
+53
+00:02:29.983 --> 00:02:33.186
+So this is our Meta Llama 3 70B model.
+
+54
+00:02:33.286 --> 00:02:35.488
+our tools, so the tools that
+
+55
+00:02:35.488 --> 00:02:38.057
+are going to allow the LLM access.
+
+56
+00:02:38.158 --> 00:02:41.961
+to data, and that's going to bind our ToolCallingAgent.
+
+57
+00:02:42.362 --> 00:02:45.365
+Now, if you already have an existing agent,
+
+58
+00:02:45.965 --> 00:02:49.169
+all you have to do is wrap your existing agent
+
+59
+00:02:49.269 --> 00:02:51.971
+with the MLflow ResponsesAgent interface,
+
+60
+00:02:52.071 --> 00:02:54.374
+which we've talked about in our last lecture.
+
+61
+00:02:54.374 --> 00:02:58.278
+If you're curious on how to wrap your existing agent
+
+62
+00:02:58.278 --> 00:03:01.781
+with the MLflow ResponsesAgent interface,
+
+63
+00:03:02.115 --> 00:03:05.919
+This is actually wrapped, so I'll show you what that looks like.
+
+64
+00:03:06.619 --> 00:03:10.123
+So here we can see the class representing a tool calling agent,
+
+65
+00:03:10.423 --> 00:03:15.423
+and we can see here that it implements the ResponsesAgent interface.
+
+66
+00:03:16.996 --> 00:03:21.100
+So when you have a class that implements the interface ResponsesAgent,
+
+67
+00:03:21.601 --> 00:03:23.903
+inside your class there should be two methods.
+
+68
+00:03:25.838 --> 00:03:30.838
+And these are the predict and predict_stream methods,
+
+69
+00:03:31.044 --> 00:03:33.913
+which wrap the output of the existing agent.
+
+70
+00:03:34.013 --> 00:03:36.516
+And if you're more curious on how this works
+
+71
+00:03:36.516 --> 00:03:38.518
+or the step-by-step process,
+
+72
+00:03:38.618 --> 00:03:42.889
+or if you're looking to build a LangChain agent and wrap it,
+
+73
+00:03:42.889 --> 00:03:45.191
+you can refer to our documentation links.
+
+74
+00:03:50.663 --> 00:03:52.699
+Now I'm going to show you
+
+75
+00:03:52.699 --> 00:03:55.068
+exactly how to produce this agent.py notebook.
+
+76
+00:03:55.535 --> 00:03:57.070
+If I go over to Playground,
+
+77
+00:03:57.437 --> 00:03:59.839
+I can choose a model for tool calling.
+
+78
+00:04:00.039 --> 00:04:04.043
+If you see this skill enabled, this little emoji of a tool,
+
+79
+00:04:04.344 --> 00:04:06.846
+that means it's a tool calling agent that's enabled.
+
+80
+00:04:07.247 --> 00:04:09.148
+Now, these are just natively available.
+
+81
+00:04:09.182 --> 00:04:12.352
+in Databricks, you can bring in an external model
+
+82
+00:04:12.385 --> 00:04:15.655
+if you have anything custom, you can bring that in as well.
+
+83
+00:04:15.688 --> 00:04:18.958
+So if you want to use your own OpenAI model,
+
+84
+00:04:18.992 --> 00:04:21.060
+feel free to do so, and then you
+
+85
+00:04:21.060 --> 00:04:23.363
+just need your key in order to use it.
+
+86
+00:04:23.763 --> 00:04:27.367
+Here I'm going to use my Meta Llama 3.1 70B Instruct model.
+
+87
+00:04:27.700 --> 00:04:29.769
+And then for my tools,
+
+88
+00:04:29.769 --> 00:04:32.171
+I'm going to add the tools that I've created as UC functions.
+
+89
+00:04:32.472 --> 00:04:36.175
+So I can go to my clientcare.hr_data.analyze_operations.
+
+90
+00:04:36.676 --> 00:04:38.177
+Save that tool.
+
+91
+00:04:38.711 --> 00:04:40.880
+Okay, add analyze performance.
+
+92
+00:04:41.314 --> 00:04:43.116
+And I can select all my
+
+93
+00:04:43.116 --> 00:04:45.218
+tools that are available in HR data.
+
+94
+00:04:45.218 --> 00:04:47.920
+I'm just going to grab the named ones
+
+95
+00:04:47.920 --> 00:04:52.191
+so you can see exactly how our agent is interacting with them.
+
+96
+00:04:52.725 --> 00:04:55.828
+We can also add in a Vector Search endpoints
+
+97
+00:04:56.429 --> 00:05:00.633
+or use MCP Servers. You can add in a system prompt.
+
+98
+00:05:00.833 --> 00:05:03.136
+As you saw from our agent.py file,
+
+99
+00:05:03.636 --> 00:05:06.239
+we have a very complex system prompt.
+
+100
+00:05:06.539 --> 00:05:08.374
+So I'm just going to put in a little
+
+101
+00:05:08.374 --> 00:05:10.243
+bit so you can see where that ends up.
+
+102
+00:05:10.443 --> 00:05:13.646
+And so I can start asking questions to test this agent
+
+103
+00:05:13.646 --> 00:05:16.449
+before I get that instrumentation code.
+
+104
+00:05:17.250 --> 00:05:19.952
+So tell me about performance
+
+105
+00:05:21.054 --> 00:05:23.289
+Here we can see that using
+
+106
+00:05:23.289 --> 00:05:25.858
+our Meta Llama 3.3 70B instruct model.
+
+107
+00:05:26.059 --> 00:05:30.963
+So we can see that the LLM pulled up our analyze_performance function,
+
+108
+00:05:31.564 --> 00:05:35.268
+pulled up information around performance, so the operations we gave it.
+
+109
+00:05:35.868 --> 00:05:39.572
+But now it also has a full explanation involved.
+
+110
+00:05:39.972 --> 00:05:42.875
+We can see trace capabilities to see if it ended up
+
+111
+00:05:42.875 --> 00:05:45.878
+using more than one tool or the total latency.
+
+112
+00:05:46.346 --> 00:05:48.848
+I can also ask about operations.
+
+113
+00:05:50.817 --> 00:05:55.221
+So to gain insights into the operational metrics of different departments,
+
+114
+00:05:55.855 --> 00:05:58.057
+I'm going to use the function analyze operations.
+
+115
+00:05:58.524 --> 00:06:01.127
+And then it's going to give me this thought process
+
+116
+00:06:01.127 --> 00:06:04.530
+of what this data means, what I might find interesting.
+
+117
+00:06:04.530 --> 00:06:07.133
+So a full analysis on the data it has access to.
+
+118
+00:06:07.800 --> 00:06:09.869
+If I think this looks good,
+
+119
+00:06:09.869 --> 00:06:11.971
+I can go and create the agent notebook.
+
+120
+00:06:12.405 --> 00:06:14.707
+This will take me to my driver notebook
+
+121
+00:06:14.707 --> 00:06:17.777
+which explains that we are authoring a tool-calling
+
+122
+00:06:17.777 --> 00:06:21.581
+MLflow's ResponsesAgent that uses the OpenAI client.
+
+123
+00:06:22.048 --> 00:06:26.285
+Now, just because this notebook and our example use the OpenAI SDK,
+
+124
+00:06:26.486 --> 00:06:30.656
+our agent framework is compatible with any agent authoring framework,
+
+125
+00:06:30.656 --> 00:06:33.659
+so you can use LlamaIndex, LangChain, straight Python
+
+126
+00:06:33.659 --> 00:06:35.862
+in order to build these agents.
+
+127
+00:06:36.362 --> 00:06:39.665
+But going down to defining and writing your agent.py file.
+
+128
+00:06:40.333 --> 00:06:42.101
+Here we can see all the capabilities
+
+129
+00:06:42.101 --> 00:06:43.836
+that we went through on the agent.py.
+
+130
+00:06:44.337 --> 00:06:46.038
+We have the LLM endpoint,
+
+131
+00:06:46.038 --> 00:06:47.640
+we have the system prompt.
+
+132
+00:06:48.107 --> 00:06:50.710
+We have the tools that are available.
+
+133
+00:06:52.011 --> 00:06:55.114
+If we wanted to, we can add in a vector search database.
+
+134
+00:06:55.515 --> 00:06:59.118
+And then of course, we have our class ToolCallingAgent.
+
+135
+00:06:59.752 --> 00:07:02.255
+And then when we log the model to MLflow,
+
+136
+00:07:02.255 --> 00:07:04.957
+we have the MLflow logging of the model.
+
+137
+00:07:04.957 --> 00:07:07.960
+And of course, we have our LLM endpoint.
+
+138
+00:07:07.960 --> 00:07:10.763
+So the LLM that's going to be used for our agent
+
+139
+00:07:10.763 --> 00:07:13.566
+as the brain, and then the tools that are going to give
+
+140
+00:07:13.566 --> 00:07:15.568
+that LLM access to our data
+
+141
+00:07:15.568 --> 00:07:17.670
+for our tool calling agent.
+
+142
+00:07:17.703 --> 00:07:20.907
+So again, this is the exact same information
+
+143
+00:07:20.907 --> 00:07:23.509
+that's available on our agent.py file.
+
+144
+00:07:23.709 --> 00:07:26.512
+So if you use the cell magic at the top
+
+145
+00:07:29.081 --> 00:07:32.919
+to write this file, it will recreate the agent.py.
+
+146
+00:07:33.653 --> 00:07:36.055
+So this will create the same agent.py file.
+
+147
+00:07:36.355 --> 00:07:38.958
+If you want to see exactly what this looks like
+
+148
+00:07:38.958 --> 00:07:41.861
+in the LangChain implementation,
+
+149
+00:07:42.161 --> 00:07:45.565
+you can check out our documentation on Databricks
+
+150
+00:07:45.565 --> 00:07:48.267
+for the exact workflow and even how to
+
+151
+00:07:48.434 --> 00:07:50.269
+build out multi-agent systems.
+
+152
+00:07:50.570 --> 00:07:53.239
+And just so you know, this full notebook
+
+153
+00:07:53.339 --> 00:07:56.542
+is the same notebook that we'll be using for our lab three.
+
+154
+00:07:56.843 --> 00:07:58.945
+So the rest of the cells in here
+
+155
+00:07:58.945 --> 00:08:01.314
+on how to log an agent are all available.
+
+156
+00:08:01.314 --> 00:08:03.616
+So this is the full orchestration code.
+
+157
+00:08:04.016 --> 00:08:06.118
+The only thing different is if you
+
+158
+00:08:06.118 --> 00:08:08.521
+want to add in your own custom evals.
+
+159
+00:08:15.461 --> 00:08:18.431
+Now let's go into our lab three to finish
+
+160
+00:08:18.431 --> 00:08:22.702
+building this agent, running evaluations, and ultimately deploying it.

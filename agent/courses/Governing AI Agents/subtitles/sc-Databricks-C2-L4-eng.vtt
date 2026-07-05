@@ -1,0 +1,1921 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:03.603
+Now it's time to put your governance foundation into action.
+
+2
+00:00:03.870 --> 00:00:06.272
+In this lesson, you'll work with an HR data set
+
+3
+00:00:06.272 --> 00:00:08.274
+containing information about employees.
+
+4
+00:00:08.575 --> 00:00:10.577
+You'll create views from the tables,
+
+5
+00:00:10.577 --> 00:00:12.879
+create your service principal identity,
+
+6
+00:00:13.179 --> 00:00:15.281
+and with those permissions you can access your views
+
+7
+00:00:15.281 --> 00:00:17.083
+and finally create your agent's tools
+
+8
+00:00:17.083 --> 00:00:19.085
+and register them in Unity Catalog.
+
+9
+00:00:19.786 --> 00:00:21.788
+All right, let's start coding.
+
+10
+00:00:21.788 --> 00:00:24.057
+Before we get started on the Lab 1 notebook,
+
+11
+00:00:24.224 --> 00:00:26.226
+you're going to see this Welcome to Databricks.
+
+12
+00:00:26.226 --> 00:00:28.528
+We are in the Databricks free edition,
+
+13
+00:00:28.528 --> 00:00:31.431
+and you can sign up for your own free Databricks account.
+
+14
+00:00:31.631 --> 00:00:33.533
+The link for that is in the reading note
+
+15
+00:00:33.533 --> 00:00:35.335
+along with the link to the GitHub repo.
+
+16
+00:00:35.969 --> 00:00:38.104
+You can fork the GitHub repo
+
+17
+00:00:38.104 --> 00:00:40.774
+and then put that code directly into your Databricks free account.
+
+18
+00:00:41.074 --> 00:00:42.942
+I'm going to copy over my link
+
+19
+00:00:42.942 --> 00:00:46.012
+to the data for this agent's governance lab.
+
+20
+00:00:46.012 --> 00:00:47.847
+You should see a file data,
+
+21
+00:00:47.981 --> 00:00:49.749
+lab one, lab three,
+
+22
+00:00:50.050 --> 00:00:53.820
+agent.py and a readme file. Now if I go to Databricks,
+
+23
+00:00:53.820 --> 00:00:56.122
+I'm going to go to the upper right hand side.
+
+24
+00:00:56.122 --> 00:01:01.122
+Here I'll see my email that I signed up with, so amber.agents123@gmail.com
+
+25
+00:01:01.828 --> 00:01:04.130
+And then I'm going to go into my settings.
+
+26
+00:01:04.130 --> 00:01:06.466
+So you are an admin for this account,
+
+27
+00:01:06.466 --> 00:01:08.802
+so you will see the workspace admin settings.
+
+28
+00:01:08.802 --> 00:01:12.105
+and then you as a user have your user settings as well.
+
+29
+00:01:12.105 --> 00:01:14.107
+I'm going to go into the developer tab.
+
+30
+00:01:14.107 --> 00:01:17.811
+This is where you can also switch things like dark mode.
+
+31
+00:01:17.844 --> 00:01:19.946
+And if I want to link my GitHub,
+
+32
+00:01:19.946 --> 00:01:22.916
+I can link accounts, so I'll add my Git credential.
+
+33
+00:01:23.616 --> 00:01:26.019
+So I have my GitHub, GitHub name.
+
+34
+00:01:26.319 --> 00:01:28.922
+I can name it whatever I like.
+
+35
+00:01:28.922 --> 00:01:31.624
+I could just say this is amber_agents.
+
+36
+00:01:32.025 --> 00:01:36.362
+link the GitHub. authorize Databricks.
+
+37
+00:01:37.664 --> 00:01:40.667
+All right, now we have successfully linked our GitHub.
+
+38
+00:01:41.067 --> 00:01:42.936
+Now if I go into my Workspace,
+
+39
+00:01:42.936 --> 00:01:45.071
+this is where all your notebook capabilities are.
+
+40
+00:01:45.972 --> 00:01:47.841
+and I can create a Git folder.
+
+41
+00:01:48.208 --> 00:01:50.410
+So if you've downloaded the notebooks directly,
+
+42
+00:01:50.543 --> 00:01:53.947
+you can create new notebooks or you can create the same folder.
+
+43
+00:01:54.047 --> 00:01:56.616
+But we're just going to have that directly from GitHub.
+
+44
+00:01:57.016 --> 00:02:00.220
+So the link I copied, just going to paste that there.
+
+45
+00:02:00.220 --> 00:02:04.424
+And it already pulls the Git folder information and the provider.
+
+46
+00:02:04.924 --> 00:02:07.527
+Perfect. So now we see all the data
+
+47
+00:02:07.527 --> 00:02:09.829
+that we just had in our GitHub repo.
+
+48
+00:02:10.230 --> 00:02:13.833
+Now, before we get started walking through Lab1,
+
+49
+00:02:13.833 --> 00:02:16.236
+which this is our Lab1 governance.
+
+50
+00:02:16.569 --> 00:02:19.772
+We're going to create the hr_data_analyst service principal
+
+51
+00:02:19.772 --> 00:02:22.575
+and create the group Devs and then add our hr_data_analyst
+
+52
+00:02:22.575 --> 00:02:26.079
+as a member to that. So again, I'm going to go back
+
+53
+00:02:26.079 --> 00:02:27.780
+into my admin view.
+
+54
+00:02:28.448 --> 00:02:30.750
+I'm going to look at Identity and access,
+
+55
+00:02:31.251 --> 00:02:36.156
+which is already the default when I click onto my workspace account.
+
+56
+00:02:36.656 --> 00:02:38.358
+I'm going to go to the Service principals,
+
+57
+00:02:38.925 --> 00:02:41.928
+Add service principal, add a new service principal,
+
+58
+00:02:42.228 --> 00:02:46.399
+and type HR data analyst.
+
+59
+00:02:46.699 --> 00:02:48.701
+Add that service principal.
+
+60
+00:02:49.002 --> 00:02:53.006
+And within the service principal you should see you have entitlements,
+
+61
+00:02:53.006 --> 00:02:55.408
+so Databricks SQL access, Workspace access,
+
+62
+00:02:55.708 --> 00:02:58.111
+and you can add in additional permissions.
+
+63
+00:02:58.144 --> 00:03:00.346
+Here you're seeing a warning about permission control
+
+64
+00:03:00.346 --> 00:03:02.649
+as who can manage or use the service principal.
+
+65
+00:03:03.349 --> 00:03:06.152
+Service principal manager does not automatically grant the ability
+
+66
+00:03:06.152 --> 00:03:08.955
+to use the service principal for users or groups that need
+
+67
+00:03:08.955 --> 00:03:11.658
+to use that service principal. You want to make sure
+
+68
+00:03:11.658 --> 00:03:13.660
+that they have explicit permissions.
+
+69
+00:03:14.160 --> 00:03:17.463
+So we're going to grant access. We are going to type in
+
+70
+00:03:17.463 --> 00:03:19.165
+hr_data_analyst.
+
+71
+00:03:19.732 --> 00:03:21.568
+and we are going to give
+
+72
+00:03:21.568 --> 00:03:23.736
+it the ability to manage and use.
+
+73
+00:03:24.971 --> 00:03:27.941
+And then you can also,
+since this is me I can
+
+74
+00:03:27.941 --> 00:03:31.778
+be able to do whatever
+I want and use the service principle.
+
+75
+00:03:31.778 --> 00:03:34.480
+I'm going to add the
+ability to use as well.
+
+76
+00:03:35.014 --> 00:03:36.916
+So these are all the permissions set for
+
+77
+00:03:36.916 --> 00:03:38.818
+you to be able to build an agent
+
+78
+00:03:38.918 --> 00:03:42.222
+and eventually deploy it on behalf of a service principal.
+
+79
+00:03:42.755 --> 00:03:44.891
+All right, back to identity and access
+
+80
+00:03:44.891 --> 00:03:46.793
+and now we manage and created the
+
+81
+00:03:46.793 --> 00:03:48.962
+service principal. We're going to create the group.
+
+82
+00:03:49.329 --> 00:03:51.297
+So let's say we had a group
+
+83
+00:03:51.297 --> 00:03:53.533
+for all developers. We'll just name that devs.
+
+84
+00:03:55.702 --> 00:03:57.136
+All right, and you can add as
+
+85
+00:03:57.136 --> 00:03:58.605
+many members as you'd want to Devs
+
+86
+00:03:58.605 --> 00:04:00.607
+and they would inherit permissions.
+
+87
+00:04:01.007 --> 00:04:03.910
+If you just create a group and you don't give it permissions,
+
+88
+00:04:03.910 --> 00:04:06.412
+you don't have a parent group, it will just exist
+
+89
+00:04:06.412 --> 00:04:08.815
+and have no default permissions.
+
+90
+00:04:09.315 --> 00:04:12.685
+So I'm going to grant access to the Service Principal.
+
+91
+00:04:14.520 --> 00:04:17.156
+So it is now a part of this group.
+
+92
+00:04:18.191 --> 00:04:21.194
+If I don't want to give it manage access,
+
+93
+00:04:21.427 --> 00:04:25.164
+all I have to do is edit and delete those capabilities.
+
+94
+00:04:25.865 --> 00:04:27.800
+and it will revoke those permissions.
+
+95
+00:04:28.568 --> 00:04:30.169
+If I just want to give it member
+
+96
+00:04:30.169 --> 00:04:31.804
+access, which all we really need to do
+
+97
+00:04:31.804 --> 00:04:35.174
+to inherit the permissions of a group is give it member access.
+
+98
+00:04:37.777 --> 00:04:40.880
+All right, and so now hr_data_analyst is added to that group
+
+99
+00:04:41.180 --> 00:04:45.652
+without the ability to change controls within that group.
+
+100
+00:04:46.352 --> 00:04:48.588
+Perfect. And this will start making more sense
+
+101
+00:04:48.588 --> 00:04:51.057
+as well once we implement governance in our notebook.
+
+102
+00:04:51.524 --> 00:04:53.626
+So now that we have the group Devs,
+
+103
+00:04:53.626 --> 00:04:55.461
+which again, this is all the developers
+
+104
+00:04:55.461 --> 00:04:57.297
+that are working together to build agents.
+
+105
+00:04:57.297 --> 00:05:01.301
+And we don't want to have to add those individually
+
+106
+00:05:01.301 --> 00:05:03.703
+to Unity Catalog and grant permissions one by one.
+
+107
+00:05:03.703 --> 00:05:06.506
+So luckily, we're able to grant permissions to the group,
+
+108
+00:05:06.506 --> 00:05:09.509
+so everyone within that group, including our service principal,
+
+109
+00:05:09.509 --> 00:05:11.110
+can inherit those permissions.
+
+110
+00:05:11.377 --> 00:05:13.379
+So going back to our workspace,
+
+111
+00:05:14.180 --> 00:05:16.482
+we see our agent governance folder.
+
+112
+00:05:16.783 --> 00:05:19.285
+Click into that folder, click into lab one.
+
+113
+00:05:19.886 --> 00:05:23.990
+So starting back at the notebook lab one building the governance foundation.
+
+114
+00:05:24.290 --> 00:05:27.994
+We've now created the HR data analyst service principal.
+
+115
+00:05:28.294 --> 00:05:30.296
+We've created the dev groups and have
+
+116
+00:05:30.296 --> 00:05:32.598
+added HR data analyst just as a member.
+
+117
+00:05:32.965 --> 00:05:35.868
+Now I have to make sure we're connected to serverless compute.
+
+118
+00:05:36.436 --> 00:05:38.304
+All right, we're connected.
+
+119
+00:05:39.038 --> 00:05:42.975
+So the next step is creating the HR tables in Unity Catalog,
+
+120
+00:05:43.976 --> 00:05:46.412
+and then applying data classifications.
+
+121
+00:05:46.412 --> 00:05:48.214
+We're going to create an analyst view.
+
+122
+00:05:48.614 --> 00:05:50.283
+We're going to give permissions to our
+
+123
+00:05:50.283 --> 00:05:52.218
+Devs Group so they can access that view.
+
+124
+00:05:52.418 --> 00:05:54.287
+We're going to create masks and build
+
+125
+00:05:54.287 --> 00:05:56.422
+functions which acts as tool for our agent.
+
+126
+00:05:56.589 --> 00:05:58.624
+So let's break that down step by step.
+
+127
+00:05:58.925 --> 00:06:02.028
+So let's start with the initial setup and data verification.
+
+128
+00:06:02.729 --> 00:06:04.564
+So I'm going to run this first cell. So
+
+129
+00:06:04.564 --> 00:06:06.432
+this is going to set up our working environment.
+
+130
+00:06:06.733 --> 00:06:09.035
+So we are a company called clientcare.
+
+131
+00:06:09.402 --> 00:06:12.205
+and we have an HR team's database,
+
+132
+00:06:12.205 --> 00:06:14.407
+which is our schema HR data.
+
+133
+00:06:14.907 --> 00:06:16.809
+So there's a variety of data stored
+
+134
+00:06:16.809 --> 00:06:18.678
+from our HR team in this database.
+
+135
+00:06:18.978 --> 00:06:21.481
+And so our first step is creating a catalog.
+
+136
+00:06:21.881 --> 00:06:23.983
+And then we're going to create the schema.
+
+137
+00:06:26.953 --> 00:06:30.456
+So after we make the data frames for our data,
+
+138
+00:06:31.491 --> 00:06:34.093
+I'm able to run the next file.
+
+139
+00:06:34.327 --> 00:06:36.529
+So as long as you have your
+
+140
+00:06:36.529 --> 00:06:38.731
+data in the local directory under data,
+
+141
+00:06:39.332 --> 00:06:41.934
+we're able to use all the CSV files.
+
+142
+00:06:41.934 --> 00:06:46.934
+So this is your compensation data, employee records, HR cases, internal procedures.
+
+143
+00:06:47.440 --> 00:06:48.975
+We have our performance reviews, public
+
+144
+00:06:48.975 --> 00:06:50.743
+policies, and then we're going to load
+
+145
+00:06:50.743 --> 00:06:53.279
+each CSV file one at a time.
+
+146
+00:06:53.679 --> 00:06:56.883
+So for the table and file name in the CSV files,
+
+147
+00:06:56.883 --> 00:06:59.585
+we're going to take each one of these files.
+
+148
+00:06:59.752 --> 00:07:02.855
+We're going to read the CSVs and convert it to Spark DataFrame
+
+149
+00:07:02.855 --> 00:07:07.260
+in this line. So we have a pandas DataFrame here
+
+150
+00:07:07.260 --> 00:07:10.263
+with the file path that is our data.
+
+151
+00:07:10.730 --> 00:07:12.298
+And then we are going to
+
+152
+00:07:12.298 --> 00:07:14.167
+use Spark to create the data frame.
+
+153
+00:07:14.167 --> 00:07:17.136
+Spark just requires this to be the absolute file path
+
+154
+00:07:17.136 --> 00:07:19.639
+and not the local file path, so that's why we're using pandas.
+
+155
+00:07:20.039 --> 00:07:21.941
+And then we're going to write all
+
+156
+00:07:21.941 --> 00:07:24.143
+those tables into our catalog, into HR data,
+
+157
+00:07:24.544 --> 00:07:26.546
+and the tables will have these names.
+
+158
+00:07:27.146 --> 00:07:30.149
+So, let's see if we've successfully created these tables.
+
+159
+00:07:30.650 --> 00:07:32.351
+Tables successfully created.
+
+160
+00:07:32.718 --> 00:07:36.522
+All right, the next step is we're going to just review
+
+161
+00:07:36.522 --> 00:07:39.225
+that these tables have actually been created.
+
+162
+00:07:40.426 --> 00:07:42.328
+All right, they actually have been created.
+
+163
+00:07:42.728 --> 00:07:45.231
+And you're able to just go into your Catalog
+
+164
+00:07:46.332 --> 00:07:49.735
+and see them directly. So we see our catalog clientcare.
+
+165
+00:07:50.336 --> 00:07:52.238
+we see our HR data.
+
+166
+00:07:52.905 --> 00:07:55.641
+And then we see all the files within.
+
+167
+00:07:56.242 --> 00:07:58.044
+So this is your file structure,
+
+168
+00:07:58.144 --> 00:08:00.046
+but I can also just view in the UI
+
+169
+00:08:00.046 --> 00:08:01.747
+all the tables we've just created.
+
+170
+00:08:02.548 --> 00:08:05.351
+Going back to our Lab1
+
+171
+00:08:06.252 --> 00:08:08.955
+into our workspace, into our Lab1_Governance.
+
+172
+00:08:11.991 --> 00:08:13.392
+All right, our next step is
+
+173
+00:08:13.392 --> 00:08:14.994
+we're just wanting to display the data.
+
+174
+00:08:15.261 --> 00:08:17.129
+So just getting a good look on
+
+175
+00:08:17.129 --> 00:08:18.965
+what the data is that we see
+
+176
+00:08:18.965 --> 00:08:21.868
+cause we know we have things like social security number,
+
+177
+00:08:22.134 --> 00:08:24.737
+phone numbers, emails, we have employee names,
+
+178
+00:08:25.271 --> 00:08:27.373
+we have salaries, start date.
+
+179
+00:08:28.241 --> 00:08:31.744
+So we can combine even a few of the tables from employee_records
+
+180
+00:08:31.744 --> 00:08:34.647
+and compensation_data, just to see all the data
+
+181
+00:08:34.647 --> 00:08:37.950
+we've currently logged into Unity Catalog,
+
+182
+00:08:38.351 --> 00:08:40.620
+and the sensitive level of that data.
+
+183
+00:08:42.555 --> 00:08:44.557
+All right, so we can see our employee ID,
+
+184
+00:08:44.557 --> 00:08:46.659
+first name, last name, their department,
+
+185
+00:08:47.159 --> 00:08:49.929
+the full social security numbers, phone numbers,
+
+186
+00:08:49.929 --> 00:08:52.265
+email, hiring date, salaries,
+
+187
+00:08:53.065 --> 00:08:55.668
+Now, if we're creating an HR data analyst,
+
+188
+00:08:55.668 --> 00:08:57.870
+they're going to need key information
+
+189
+00:08:57.870 --> 00:09:00.773
+like base salary, bonus, stock options,
+
+190
+00:09:00.773 --> 00:09:04.377
+but we don't want them to be able to directly identify employees
+
+191
+00:09:04.377 --> 00:09:06.279
+based on those numbers.
+
+192
+00:09:06.579 --> 00:09:07.713
+And we definitely don't want them
+
+193
+00:09:07.713 --> 00:09:09.081
+to have full access to their emails,
+
+194
+00:09:09.081 --> 00:09:11.284
+phone numbers and social security numbers.
+
+195
+00:09:11.751 --> 00:09:14.854
+Next up is applying data classification tags.
+
+196
+00:09:15.555 --> 00:09:18.658
+So we're going to define the classification tags for each table
+
+197
+00:09:18.758 --> 00:09:20.860
+and whether or not they contain PII.
+
+198
+00:09:21.027 --> 00:09:25.031
+So for example, our employee records are confidential
+
+199
+00:09:25.031 --> 00:09:27.533
+and they do contain PII.
+
+200
+00:09:27.533 --> 00:09:29.535
+And before getting into more of
+
+201
+00:09:29.535 --> 00:09:31.837
+this, I just want to talk about
+
+202
+00:09:31.837 --> 00:09:35.241
+how when we apply tags to our tables,
+
+203
+00:09:35.241 --> 00:09:37.243
+it essentially gives a sensitivity level.
+
+204
+00:09:37.243 --> 00:09:42.048
+So table properties are metadata tags that help classify data sensitivity
+
+205
+00:09:42.048 --> 00:09:45.051
+without actually changing the data structure.
+
+206
+00:09:45.051 --> 00:09:49.221
+So you can have metadata key value pairs attached to these tables.
+
+207
+00:09:49.221 --> 00:09:53.125
+They're used by governance tools to understand that data sensitivity,
+
+208
+00:09:53.526 --> 00:09:56.929
+but again, it won't affect the table structure or the actual data.
+
+209
+00:09:57.530 --> 00:10:00.733
+So they can be queried programmatically for compliance
+
+210
+00:10:01.133 --> 00:10:04.737
+and our data classification scheme, as you can see, we have public,
+
+211
+00:10:05.137 --> 00:10:07.139
+restricted, confidential.
+
+212
+00:10:07.540 --> 00:10:10.142
+I'm saying that Public, anyone can access.
+
+213
+00:10:10.743 --> 00:10:12.745
+Internal, our employees only.
+
+214
+00:10:13.145 --> 00:10:15.348
+Confidential is limited access,
+
+215
+00:10:15.748 --> 00:10:18.751
+and then Restricted is highly sensitive information.
+
+216
+00:10:18.851 --> 00:10:21.854
+So by adding classification tags like confidential,
+
+217
+00:10:21.854 --> 00:10:24.657
+restricted, or public to Unity Catalog,
+
+218
+00:10:24.657 --> 00:10:27.660
+serves as adding essentially metadata because
+
+219
+00:10:27.660 --> 00:10:30.630
+again, in Databricks, tags are metadata
+
+220
+00:10:30.630 --> 00:10:33.032
+that can make your data access more manageable,
+
+221
+00:10:33.032 --> 00:10:36.335
+secure, and compliant with both internal policies
+
+222
+00:10:36.335 --> 00:10:38.337
+and external regulations. So here is
+
+223
+00:10:38.337 --> 00:10:40.640
+the actual step in adding the tags.
+
+224
+00:10:41.040 --> 00:10:42.842
+So classification and PII.
+
+225
+00:10:43.142 --> 00:10:45.077
+These are our table properties, so
+
+226
+00:10:45.077 --> 00:10:47.346
+this is in set in Spark SQL.
+
+227
+00:10:47.747 --> 00:10:50.850
+add the classification, we can see all these were added.
+
+228
+00:10:51.150 --> 00:10:53.252
+And if you want to see the tags themselves,
+
+229
+00:10:53.653 --> 00:10:57.456
+again, going into your catalog, into your HR data,
+
+230
+00:10:57.556 --> 00:11:00.259
+and for example, we can look at employee records.
+
+231
+00:11:00.960 --> 00:11:05.665
+Just scroll down and you'll see Confidential and contains PII.
+
+232
+00:11:05.965 --> 00:11:07.433
+If I go to recents, I
+
+233
+00:11:07.433 --> 00:11:09.168
+also can just pull up the lab
+
+234
+00:11:09.168 --> 00:11:11.470
+instead of going to my workspace
+
+235
+00:11:11.470 --> 00:11:13.472
+and then the governance notebook and then the lab.
+
+236
+00:11:13.739 --> 00:11:15.841
+All right, so just scrolling down here,
+
+237
+00:11:16.442 --> 00:11:19.745
+the next thing we have is about Agent Permissions
+
+238
+00:11:19.745 --> 00:11:22.448
+and Agent Access Requirements.
+
+239
+00:11:22.682 --> 00:11:25.184
+So now that we've classified our data,
+
+240
+00:11:25.184 --> 00:11:29.188
+let's design the right level of access for our HR analytics agent
+
+241
+00:11:29.188 --> 00:11:31.490
+based on purpose-built views.
+
+242
+00:11:31.490 --> 00:11:35.494
+For example, what would I want my HR admin to see,
+
+243
+00:11:35.494 --> 00:11:37.196
+what would I want a manager to see,
+
+244
+00:11:37.196 --> 00:11:39.198
+what would I want a data analyst to see.
+
+245
+00:11:39.532 --> 00:11:41.367
+Kind of mapping this out as a way
+
+246
+00:11:41.367 --> 00:11:43.035
+to show, you know, we don't want names
+
+247
+00:11:43.669 --> 00:11:46.138
+or social security numbers, but we do want salary,
+
+248
+00:11:46.238 --> 00:11:49.675
+we need to know the department. We want to know performance
+
+249
+00:11:50.376 --> 00:11:52.978
+because we can look at analysis related to
+
+250
+00:11:53.579 --> 00:11:55.347
+overall performance and operations.
+
+251
+00:11:56.015 --> 00:11:58.317
+So your agent should be able to answer questions
+
+252
+00:11:58.317 --> 00:12:00.519
+like what is the salary distribution,
+
+253
+00:12:00.519 --> 00:12:02.722
+is there pay equity, what's this correlation,
+
+254
+00:12:02.722 --> 00:12:05.791
+without answering what's John Smith's salary,
+
+255
+00:12:05.825 --> 00:12:07.493
+who are the highest paid employees,
+
+256
+00:12:07.526 --> 00:12:09.695
+show me social security numbers.
+
+257
+00:12:09.962 --> 00:12:12.331
+All right, so our next step
+
+258
+00:12:12.331 --> 00:12:15.134
+then is creating a classification aware view.
+
+259
+00:12:15.735 --> 00:12:20.239
+So we're going to create this data_analyst_view for statistical analysis.
+
+260
+00:12:20.740 --> 00:12:24.243
+Now, why do we use views for access control?
+
+261
+00:12:24.543 --> 00:12:26.746
+Well, they're very straightforward,
+
+262
+00:12:26.746 --> 00:12:30.049
+so instead of complex masking rules for every possible user,
+
+263
+00:12:30.082 --> 00:12:32.084
+these are purpose-built views.
+
+264
+00:12:32.084 --> 00:12:34.887
+Each view has a clear business purpose and user type.
+
+265
+00:12:34.887 --> 00:12:36.889
+They're easy to maintain.
+
+266
+00:12:36.889 --> 00:12:41.093
+The views are optimized in SQL, so no runtime overhead,
+
+267
+00:12:41.093 --> 00:12:43.095
+and they're an added security layer.
+
+268
+00:12:43.295 --> 00:12:46.298
+So in Databricks, views act as our security layer
+
+269
+00:12:46.298 --> 00:12:49.902
+since we grant permissions directly to our service principals.
+
+270
+00:12:50.236 --> 00:12:53.439
+We have our data analyst view for analysis.
+
+271
+00:12:53.439 --> 00:12:57.743
+And so key features here, we're going to anonymize the employee ID.
+
+272
+00:12:57.743 --> 00:12:59.945
+We have the department. We're going to take
+
+273
+00:12:59.945 --> 00:13:02.448
+the hiring date and just make it a year,
+
+274
+00:13:02.448 --> 00:13:06.252
+like it's easy to connect a specific hiring date to a user
+
+275
+00:13:06.252 --> 00:13:08.754
+if you know when that user started.
+
+276
+00:13:08.754 --> 00:13:10.756
+We're going to have the full base
+
+277
+00:13:10.756 --> 00:13:13.058
+salary, so making sure that's not taken away.
+
+278
+00:13:13.058 --> 00:13:17.763
+We're going to have our comp year, our review quarter.
+
+279
+00:13:18.264 --> 00:13:20.266
+and our review_year.
+
+280
+00:13:20.266 --> 00:13:24.069
+Still going to have base salary, bonus, rating, stock options.
+
+281
+00:13:24.470 --> 00:13:27.273
+And then we're going to combine the information
+
+282
+00:13:27.273 --> 00:13:30.976
+for employee IDs, so we're going to add compensation data
+
+283
+00:13:30.976 --> 00:13:33.279
+and performance reviews together.
+
+284
+00:13:33.679 --> 00:13:35.681
+And we're going to exclude the legal department.
+
+285
+00:13:35.981 --> 00:13:38.250
+We don't need the legal department in our analysis
+
+286
+00:13:38.250 --> 00:13:40.953
+and we're told not to use it for compliance reasons.
+
+287
+00:13:41.554 --> 00:13:43.656
+All right, so that view has been created.
+
+288
+00:13:44.023 --> 00:13:46.525
+Next, let's confirm the view in our schema.
+
+289
+00:13:46.826 --> 00:13:48.828
+So we are just making sure
+
+290
+00:13:49.028 --> 00:13:51.030
+that this view is in
+
+291
+00:13:51.230 --> 00:13:53.833
+client care in our HR data.
+
+292
+00:13:54.133 --> 00:13:56.001
+And so we do see that
+
+293
+00:13:56.001 --> 00:13:58.137
+a view is living in that schema.
+
+294
+00:13:58.938 --> 00:14:01.941
+All right, next up we're going to test the view.
+
+295
+00:14:02.541 --> 00:14:05.110
+So our analyst view, we're going to check
+
+296
+00:14:05.110 --> 00:14:07.646
+row counts, we're going to verify the departments.
+
+297
+00:14:08.147 --> 00:14:12.351
+All right, we have salaries, we have anonymized IDs like we wanted.
+
+298
+00:14:12.985 --> 00:14:15.287
+We don't see any legal here.
+
+299
+00:14:15.287 --> 00:14:19.792
+All right, and we don't have any legal in the department.
+
+300
+00:14:19.792 --> 00:14:23.996
+All right. The next step is configuring Group Permissions. Now,
+
+301
+00:14:23.996 --> 00:14:26.966
+so we've already created the group Devs.
+
+302
+00:14:26.966 --> 00:14:31.270
+We've created the service principal and added it to the group Devs.
+
+303
+00:14:31.303 --> 00:14:34.807
+So that service principal will inherit certain permissions.
+
+304
+00:14:35.207 --> 00:14:37.042
+Now we just need to make sure that
+
+305
+00:14:37.042 --> 00:14:39.078
+Devs has the right permissions to access the data
+
+306
+00:14:39.078 --> 00:14:41.380
+and be able to create agents.
+
+307
+00:14:41.914 --> 00:14:44.016
+So first, verifying that we did create
+
+308
+00:14:44.016 --> 00:14:46.418
+that group and we didn't skip that step.
+
+309
+00:14:47.119 --> 00:14:49.188
+All right, so we see our admins, our Devs,
+
+310
+00:14:49.188 --> 00:14:51.223
+and our users, so we did create that group.
+
+311
+00:14:51.724 --> 00:14:54.326
+All right, next up is granting Devs the specific
+
+312
+00:14:54.326 --> 00:14:56.929
+permissions that they need again to view the data
+
+313
+00:14:56.929 --> 00:15:01.929
+and to register models in Unity Catalog with MLflow.
+
+314
+00:15:02.735 --> 00:15:05.838
+Now, if you're granting broad permissions, you can just use
+
+315
+00:15:05.838 --> 00:15:09.909
+one query on grant all permissions on client care
+
+316
+00:15:09.909 --> 00:15:12.411
+in HR data.
+
+317
+00:15:12.811 --> 00:15:17.416
+but we want to make sure that we're granting minimum permissions
+
+318
+00:15:17.416 --> 00:15:20.419
+and we're just giving specific access to the schema.
+
+319
+00:15:20.519 --> 00:15:24.423
+So first we're going to grant our catalog and schema.
+
+320
+00:15:24.423 --> 00:15:26.759
+We're going to grant access to devs
+
+321
+00:15:26.759 --> 00:15:29.428
+being able to use the catalog and schema.
+
+322
+00:15:29.828 --> 00:15:33.699
+These are container permissions, so these are prerequisites so they have
+
+323
+00:15:33.699 --> 00:15:38.699
+to be granted. And then we have object permissions which are inherited.
+
+324
+00:15:38.804 --> 00:15:43.609
+So these once you grant access on the schema HR data,
+
+325
+00:15:44.009 --> 00:15:47.613
+being able to use any table, any model, any function
+
+326
+00:15:48.013 --> 00:15:50.115
+automatically gets inherited.
+
+327
+00:15:50.215 --> 00:15:52.618
+If you want more information on that, I recommend
+
+328
+00:15:52.718 --> 00:15:54.720
+going back and re-listening to lesson two.
+
+329
+00:15:54.787 --> 00:15:56.722
+All right, so just going through these
+
+330
+00:15:56.722 --> 00:15:58.657
+real quick. I'm going to run this.
+
+331
+00:15:58.991 --> 00:16:01.593
+So grant use on catalog, use on schema,
+
+332
+00:16:01.860 --> 00:16:04.596
+the ability to create a table on the schema.
+
+333
+00:16:04.997 --> 00:16:06.999
+So if you do have a logged model,
+
+334
+00:16:07.399 --> 00:16:10.235
+maybe you want to log all the inferences in a
+
+335
+00:16:10.235 --> 00:16:13.072
+Unity Catalog table. You're going to be able to execute
+
+336
+00:16:13.072 --> 00:16:17.576
+so running functions for example, when you're using your agent.
+
+337
+00:16:17.676 --> 00:16:20.579
+creating a model, so we're going to want to CREATE MODEL
+
+338
+00:16:20.679 --> 00:16:25.584
+and CREATE MODEL VERSIONS when we register our agent to Unity Catalog.
+
+339
+00:16:25.884 --> 00:16:28.087
+And then grant SELECT ON VIEW
+
+340
+00:16:28.187 --> 00:16:30.589
+so that they are able to use that view.
+
+341
+00:16:31.390 --> 00:16:34.893
+Next up, we're just going to make sure that this works.
+
+342
+00:16:34.893 --> 00:16:38.864
+So we're going to check schema level permissions, check view level permissions.
+
+343
+00:16:38.864 --> 00:16:42.368
+So we're going to see all the grants on that schema.
+
+344
+00:16:42.368 --> 00:16:44.570
+And then we're going to see the table grants as well.
+
+345
+00:16:44.570 --> 00:16:46.839
+And so this should just show us for
+
+346
+00:16:46.839 --> 00:16:49.074
+the view who has access to that view.
+
+347
+00:16:49.074 --> 00:16:51.377
+All right. Schema level permissions.
+
+348
+00:16:51.377 --> 00:16:53.379
+Devs can use the schema, they can create models,
+
+349
+00:16:53.379 --> 00:16:55.881
+they can create tables, they create versions of the model,
+
+350
+00:16:55.881 --> 00:16:57.583
+they can execute.
+
+351
+00:16:57.583 --> 00:17:00.085
+and then the data_analyst_view,
+
+352
+00:17:00.386 --> 00:17:03.589
+Devs have the ability to select on it.
+
+353
+00:17:04.089 --> 00:17:06.058
+Next up we have Column Masking.
+
+354
+00:17:06.191 --> 00:17:08.360
+So you might be wondering why do we need column masking
+
+355
+00:17:08.360 --> 00:17:10.062
+when we've already implemented views.
+
+356
+00:17:10.362 --> 00:17:12.364
+Well, views can be bypassed
+
+357
+00:17:12.364 --> 00:17:14.466
+if users gain direct table access.
+
+358
+00:17:14.566 --> 00:17:17.469
+Column masking at the table level cannot be bypassed
+
+359
+00:17:17.469 --> 00:17:19.772
+because it's enforced by Unity Catalog
+
+360
+00:17:19.772 --> 00:17:23.375
+on every query regardless of how the data is accessed.
+
+361
+00:17:23.776 --> 00:17:26.779
+So by using column masking or row masking,
+
+362
+00:17:26.779 --> 00:17:29.281
+nothing can get through.
+
+363
+00:17:29.281 --> 00:17:33.285
+So we're going to create the masking for social security numbers.
+
+364
+00:17:33.285 --> 00:17:34.887
+We're going to say, you know what,
+
+365
+00:17:34.887 --> 00:17:36.755
+no one actually needs the full security number
+
+366
+00:17:36.755 --> 00:17:38.757
+unless you're in payroll.
+
+367
+00:17:38.757 --> 00:17:41.026
+So we're going to just make it a concatenated
+
+368
+00:17:41.026 --> 00:17:43.262
+five digits, which are just going to be stars.
+
+369
+00:17:43.262 --> 00:17:45.597
+So completely anonymized, you can't see the
+
+370
+00:17:45.597 --> 00:17:48.267
+first five digits of the social security number,
+
+371
+00:17:48.267 --> 00:17:51.770
+and then have the true value as the last four digits.
+
+372
+00:17:51.770 --> 00:17:54.773
+But Devs don't need to see anything.
+
+373
+00:17:54.773 --> 00:17:57.276
+So they're just going to get ANALYTICS_MASKED.
+
+374
+00:17:57.276 --> 00:18:00.546
+Whereas maybe elevated users like managers and admins
+
+375
+00:18:00.546 --> 00:18:02.948
+would be able to see the last four digits.
+
+376
+00:18:02.948 --> 00:18:05.150
+All right, so we're applying this function
+
+377
+00:18:05.150 --> 00:18:07.352
+to the social security number column.
+
+378
+00:18:07.352 --> 00:18:10.456
+Again, you can apply these to rows as well.
+
+379
+00:18:10.456 --> 00:18:12.558
+These masks are functions,
+
+380
+00:18:12.558 --> 00:18:16.161
+the same way we're going to create functions that query the data
+
+381
+00:18:16.161 --> 00:18:18.363
+and use them as tools for our agent.
+
+382
+00:18:18.363 --> 00:18:19.965
+So we're going to alter this table,
+
+383
+00:18:19.965 --> 00:18:23.168
+so our client care HR data employee records
+
+384
+00:18:23.168 --> 00:18:24.870
+that has the column social security
+
+385
+00:18:24.870 --> 00:18:26.872
+numbers, we're going to set that mask.
+
+386
+00:18:27.139 --> 00:18:30.309
+Now looking at validating the column masking,
+
+387
+00:18:30.309 --> 00:18:33.612
+we're going to run the validation of the column masking,
+
+388
+00:18:33.612 --> 00:18:35.914
+testing it out. So we see
+
+389
+00:18:35.914 --> 00:18:38.083
+we're currently not using that view,
+
+390
+00:18:38.083 --> 00:18:40.619
+so it's still the initial employee ID.
+
+391
+00:18:40.619 --> 00:18:43.622
+But we see the social security number
+
+392
+00:18:43.622 --> 00:18:45.624
+has the first four digits masked,
+
+393
+00:18:45.624 --> 00:18:47.626
+and even though I'm an admin,
+
+394
+00:18:47.626 --> 00:18:49.161
+this is still what I see
+
+395
+00:18:49.161 --> 00:18:50.929
+unless I go and remove the mask.
+
+396
+00:18:51.196 --> 00:18:54.700
+So next up, we have building the secure tools for our agents.
+
+397
+00:18:55.000 --> 00:18:56.735
+Now you can call them tools, you can
+
+398
+00:18:56.735 --> 00:18:58.504
+call them functions, you can call them skills.
+
+399
+00:18:58.804 --> 00:19:03.108
+Essentially, you're building a function for the agent to query the data.
+
+400
+00:19:03.308 --> 00:19:04.543
+And that's the only way the agent's
+
+401
+00:19:04.543 --> 00:19:05.777
+going to have access to the data.
+
+402
+00:19:05.978 --> 00:19:07.379
+So the functions we make now
+
+403
+00:19:07.379 --> 00:19:08.981
+are going to act as the interface
+
+404
+00:19:09.047 --> 00:19:11.083
+between the agent and our governed data.
+
+405
+00:19:11.517 --> 00:19:13.852
+So why do we want to use UC
+
+406
+00:19:13.852 --> 00:19:16.522
+functions for agent tools? Well, they have governed access,
+
+407
+00:19:16.522 --> 00:19:20.325
+so the same way everything inherits permissions and access,
+
+408
+00:19:20.325 --> 00:19:23.028
+our functions also have permissions set.
+
+409
+00:19:23.028 --> 00:19:24.696
+They're able to query templates,
+
+410
+00:19:24.696 --> 00:19:26.498
+they perform an audit trail,
+
+411
+00:19:26.498 --> 00:19:29.501
+so all functions that are logged are logged for compliance,
+
+412
+00:19:29.801 --> 00:19:31.703
+and they're optimized for performance.
+
+413
+00:19:31.703 --> 00:19:33.705
+So proper indexing and caching,
+
+414
+00:19:34.006 --> 00:19:36.208
+you can have a tool that essentially uses
+
+415
+00:19:36.208 --> 00:19:38.210
+is a vector database as well.
+
+416
+00:19:38.410 --> 00:19:40.145
+And our tool strategy is we're
+
+417
+00:19:40.145 --> 00:19:42.214
+going to create two general purpose functions
+
+418
+00:19:42.214 --> 00:19:45.984
+that work exclusively with the anonymized data analyst view.
+
+419
+00:19:45.984 --> 00:19:48.187
+So when we do deploy the agent,
+
+420
+00:19:48.187 --> 00:19:50.689
+when we run it as a service principal,
+
+421
+00:19:50.989 --> 00:19:53.392
+it's going to use that view to see the data.
+
+422
+00:19:53.392 --> 00:19:56.195
+So it's still going to get anonymized employee IDs.
+
+423
+00:19:56.195 --> 00:19:58.263
+It's not going to get any
+
+424
+00:19:58.263 --> 00:20:00.699
+information that's key for social security numbers.
+
+425
+00:20:00.899 --> 00:20:02.868
+It is not going to see the legal department.
+
+426
+00:20:02.868 --> 00:20:04.703
+So we're going to have all that
+
+427
+00:20:04.703 --> 00:20:06.805
+tied up and when the agent queries anything,
+
+428
+00:20:06.805 --> 00:20:09.775
+it's not going to get any sensitive information out.
+
+429
+00:20:09.775 --> 00:20:13.579
+So our tool one is performance and retention analytics.
+
+430
+00:20:13.579 --> 00:20:16.782
+So here we're going to create or replace the function.
+
+431
+00:20:16.782 --> 00:20:19.251
+So you can run this notebook as much as you'd like.
+
+432
+00:20:19.251 --> 00:20:22.754
+It will just rewrite what has already been built.
+
+433
+00:20:22.754 --> 00:20:25.290
+So this is our function analyze_performance.
+
+434
+00:20:25.557 --> 00:20:29.661
+we're going to get information about our departments, our ratings,
+
+435
+00:20:29.661 --> 00:20:32.965
+our employee numbers, so the average tenure.
+
+436
+00:20:32.965 --> 00:20:34.967
+And we can add in comments.
+
+437
+00:20:34.967 --> 00:20:38.370
+These go in directly into the function which the agent uses.
+
+438
+00:20:38.370 --> 00:20:41.373
+So HR analytics, this is basic performance metrics.
+
+439
+00:20:41.440 --> 00:20:44.776
+by department. So we're looking here at
+
+440
+00:20:44.776 --> 00:20:47.980
+average, min and max ratings, employee count,
+
+441
+00:20:47.980 --> 00:20:49.715
+average tenure by department.
+
+442
+00:20:50.215 --> 00:20:52.918
+And again, it only works with anonymized data.
+
+443
+00:20:53.118 --> 00:20:54.920
+So here's our data_analyst_view
+
+444
+00:20:55.120 --> 00:20:56.922
+that we're making sure it uses.
+
+445
+00:20:57.289 --> 00:21:00.192
+Next up, we're using our tool number two,
+
+446
+00:21:00.192 --> 00:21:03.595
+which is our department and compensation analytics.
+
+447
+00:21:04.596 --> 00:21:07.499
+So this is going to again create or replace the function
+
+448
+00:21:07.499 --> 00:21:09.101
+analyze_operations.
+
+449
+00:21:09.501 --> 00:21:13.305
+which it's going to take department, employee count, average salary,
+
+450
+00:21:13.305 --> 00:21:16.708
+average bonus, average total comp, and stock options.
+
+451
+00:21:17.209 --> 00:21:19.611
+And the comment here is just that
+
+452
+00:21:19.611 --> 00:21:22.014
+it is department compensation and operational metrics.
+
+453
+00:21:22.514 --> 00:21:24.716
+So going to select department, count,
+
+454
+00:21:25.017 --> 00:21:27.319
+average salary, bonuses, base salary,
+
+455
+00:21:27.819 --> 00:21:30.322
+and again using that data_analyst_view to make sure
+
+456
+00:21:30.322 --> 00:21:32.724
+it only works with anonymized data.
+
+457
+00:21:33.225 --> 00:21:35.727
+Now most data here is going to be available
+
+458
+00:21:35.727 --> 00:21:39.231
+because we want to make sure things like salary, bonus
+
+459
+00:21:39.264 --> 00:21:42.167
+and stock. We made sure all that was viewable
+
+460
+00:21:42.167 --> 00:21:43.769
+by the data_analyst_view.
+
+461
+00:21:44.069 --> 00:21:48.040
+All right, so we've created the data analysis operations function,
+
+462
+00:21:48.040 --> 00:21:52.044
+and this will return compensation metrics and headcount by department.
+
+463
+00:21:52.344 --> 00:21:54.946
+but no sensitive data will be exposed.
+
+464
+00:21:55.247 --> 00:21:58.050
+So let's actually test both of these queries.
+
+465
+00:21:58.650 --> 00:22:02.054
+And now we can see the performance analysis by department.
+
+466
+00:22:02.454 --> 00:22:03.889
+So our department, our average ratings.
+
+467
+00:22:03.889 --> 00:22:05.557
+Again, you're not going to see legal.
+
+468
+00:22:05.957 --> 00:22:08.360
+You're not going to see any identifiable information.
+
+469
+00:22:08.994 --> 00:22:12.297
+Test 2, compensation analytics by department.
+
+470
+00:22:12.397 --> 00:22:16.001
+Again, seeing department, employee count, salary, bonuses.
+
+471
+00:22:16.601 --> 00:22:19.104
+And now we've accomplished the governance foundation.
+
+472
+00:22:19.604 --> 00:22:22.407
+So you've done data classification with tagging.
+
+473
+00:22:22.607 --> 00:22:26.411
+You've built a Classification-Aware View, the data_analyst_view.
+
+474
+00:22:26.812 --> 00:22:29.414
+You configured group permissions, so you set up a group Devs
+
+475
+00:22:29.414 --> 00:22:31.817
+with permissions on your views and models.
+
+476
+00:22:32.384 --> 00:22:35.287
+You've implemented social security masking
+
+477
+00:22:35.287 --> 00:22:39.191
+and then you've built two secure tools for analyzing performance and operations.
+
+478
+00:22:39.891 --> 00:22:43.595
+All right, now this concludes the building of the governance foundation.
+
+479
+00:22:43.595 --> 00:22:45.597
+Let's get started on the next lesson.

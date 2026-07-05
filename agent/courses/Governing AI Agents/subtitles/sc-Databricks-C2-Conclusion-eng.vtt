@@ -1,0 +1,262 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:02.235
+Congratulations on making it this far.
+
+2
+00:00:02.235 --> 00:00:04.004
+Let's recap what you've learned in this course.
+
+3
+00:00:04.504 --> 00:00:06.106
+For governance in action,
+
+4
+00:00:06.106 --> 00:00:08.108
+we have our four pillars that we implemented
+
+5
+00:00:08.108 --> 00:00:10.310
+with the use of Unity Catalog and MLflow.
+
+6
+00:00:10.910 --> 00:00:12.612
+Those pillars were Lifecycle Management,
+
+7
+00:00:12.912 --> 00:00:17.617
+Risk Management, Security, and Observability. For our Lifecycle Management,
+
+8
+00:00:17.917 --> 00:00:21.121
+we created Version-controlled UC functions and views.
+
+9
+00:00:21.721 --> 00:00:23.523
+We created MLflow model registry
+
+10
+00:00:23.523 --> 00:00:26.393
+for agent versioning and rollback capabilities.
+
+11
+00:00:26.393 --> 00:00:30.730
+This is a foundation for a CI/CD pipeline integration.
+
+12
+00:00:31.064 --> 00:00:32.766
+And for our risk management, we
+
+13
+00:00:32.766 --> 00:00:34.734
+have data classification enforced at every layer.
+
+14
+00:00:34.734 --> 00:00:37.737
+We have a legal department filtering for compliance,
+
+15
+00:00:38.238 --> 00:00:40.306
+and we have group and service
+
+16
+00:00:40.306 --> 00:00:42.709
+principal explicitly defined and the permissions granted.
+
+17
+00:00:43.109 --> 00:00:45.712
+For security, we have a multi-layer defense,
+
+18
+00:00:45.712 --> 00:00:47.580
+so our maskings, our views, our
+
+19
+00:00:47.580 --> 00:00:49.716
+groups, and our functions all working together.
+
+20
+00:00:50.116 --> 00:00:52.719
+We implement the principle of least privilege,
+
+21
+00:00:53.019 --> 00:00:55.522
+and we have no direct table access for agents.
+
+22
+00:00:55.722 --> 00:00:57.424
+We have everything clearly defined
+
+23
+00:00:57.624 --> 00:01:00.527
+and again, we have that principle of least privilege,
+
+24
+00:01:00.627 --> 00:01:03.329
+so we aren't giving the agent access to anything more
+
+25
+00:01:03.430 --> 00:01:06.733
+than is necessary for its task for HR analytics.
+
+26
+00:01:07.233 --> 00:01:10.537
+Observability, so we have UC function calls logged.
+
+27
+00:01:10.637 --> 00:01:12.338
+We have MLflow traces available,
+
+28
+00:01:12.539 --> 00:01:15.341
+and we have a full audit trail from query to data.
+
+29
+00:01:15.742 --> 00:01:18.244
+So now that we have all these capabilities built,
+
+30
+00:01:18.244 --> 00:01:21.748
+what are our next steps to really build production level agents?
+
+31
+00:01:22.248 --> 00:01:25.251
+So taking your governance to that enterprise scale.
+
+32
+00:01:25.552 --> 00:01:27.253
+Well, for Lifecycle Management,
+
+33
+00:01:27.253 --> 00:01:29.923
+there's still Blue-green deployments for agents,
+
+34
+00:01:30.123 --> 00:01:32.525
+Canary releases with gradual rollout,
+
+35
+00:01:32.525 --> 00:01:35.628
+A/B testing frameworks for agent performance.
+
+36
+00:01:35.929 --> 00:01:39.432
+For Risk Management, there's Multi-model routing and fallbacks.
+
+37
+00:01:39.432 --> 00:01:42.235
+There's automated rollback on performance degradation.
+
+38
+00:01:42.235 --> 00:01:45.138
+There's additional monitoring and alerting, monitoring and alerting.
+
+39
+00:01:45.138 --> 00:01:47.107
+For security, using something like an AI Gateway
+
+40
+00:01:47.107 --> 00:01:49.609
+for centralized endpoint management,
+
+41
+00:01:49.609 --> 00:01:53.113
+using rate limiting and usage tracking on all those endpoints,
+
+42
+00:01:53.113 --> 00:01:57.117
+and having enhanced authentication and compliance logging.
+
+43
+00:01:57.117 --> 00:02:00.620
+And then for observability, real-time performance dashboards,
+
+44
+00:02:00.620 --> 00:02:02.822
+cost tracking and budget alerts,
+
+45
+00:02:02.822 --> 00:02:05.625
+as well as anomaly detection for agent behavior.
+
+46
+00:02:05.625 --> 00:02:07.827
+This also goes into our monitors
+
+47
+00:02:07.827 --> 00:02:11.131
+on the evaluation metrics that we've used.
+
+48
+00:02:11.498 --> 00:02:15.001
+Alright, so going through our checklist now for our pillars,
+
+49
+00:02:15.001 --> 00:02:18.404
+looking at Lifecycle Management, did we accomplish a separation of duties?
+
+50
+00:02:19.005 --> 00:02:21.508
+Can you safely promote changes through
+
+51
+00:02:21.508 --> 00:02:24.410
+environments with proper review and rollback capabilities?
+
+52
+00:02:25.011 --> 00:02:27.413
+We're checking yes for that. Risk Management,
+
+53
+00:02:27.413 --> 00:02:29.916
+did we best apply defense in depth?
+
+54
+00:02:30.216 --> 00:02:32.519
+Do we have multiple layers of protection
+
+55
+00:02:32.519 --> 00:02:34.821
+to catch issues before they impact production?
+
+56
+00:02:34.988 --> 00:02:36.990
+Yes, going to check that box.
+
+57
+00:02:37.090 --> 00:02:40.894
+Security, this is our best practice for Least Privilege Access.
+
+58
+00:02:41.094 --> 00:02:45.698
+Are all your data sources accessible only to authorized agents and users?
+
+59
+00:02:45.899 --> 00:02:48.134
+Going to check yes to this. And
+
+60
+00:02:48.134 --> 00:02:50.370
+then lastly, Observability. Can we audit everything?
+
+61
+00:02:50.470 --> 00:02:53.173
+Can you trace every tool your agent used, when it
+
+62
+00:02:53.173 --> 00:02:55.875
+ran, and what data it accessed and what it returned?
+
+63
+00:02:56.075 --> 00:02:57.977
+I'm going to check yes to this as well.
+
+64
+00:02:58.578 --> 00:03:01.381
+I want to thank everyone for joining me throughout this course,
+
+65
+00:03:01.481 --> 00:03:03.149
+and I'm excited to see what you build.

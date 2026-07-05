@@ -1,0 +1,526 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:03.436
+In this lesson, you'll learn about the four pillars of agent governance
+
+2
+00:00:03.770 --> 00:00:06.940
+and how to apply them to your agentic workflow. Let's get started.
+
+3
+00:00:07.540 --> 00:00:09.642
+So what's the reality of building agents today?
+
+4
+00:00:10.143 --> 00:00:12.645
+Well, they tend to start with prototype first development.
+
+5
+00:00:12.946 --> 00:00:16.649
+So most systems start as POCs or as demos
+
+6
+00:00:16.649 --> 00:00:20.453
+where feasibility takes priority over scalability and governance.
+
+7
+00:00:20.954 --> 00:00:23.656
+And starting as a demo isn't necessarily a bad thing
+
+8
+00:00:23.957 --> 00:00:26.960
+until performance starts taking priority over governance.
+
+9
+00:00:27.160 --> 00:00:29.162
+So how accurate the model is,
+
+10
+00:00:29.162 --> 00:00:32.265
+the metrics that are happening with it are taking priority
+
+11
+00:00:32.265 --> 00:00:34.667
+over access control, over auditing.
+
+12
+00:00:34.768 --> 00:00:37.871
+So we don't want those to take a back seat to performance,
+
+13
+00:00:37.871 --> 00:00:40.673
+especially when issues start emerging in production.
+
+14
+00:00:40.673 --> 00:00:42.509
+We know the only way to
+
+15
+00:00:42.509 --> 00:00:44.677
+really troubleshoot those issues is with governance.
+
+16
+00:00:45.078 --> 00:00:48.681
+So having elevated permissions and access is a very bad thing
+
+17
+00:00:48.681 --> 00:00:50.884
+when you're wanting to put something into production.
+
+18
+00:00:50.884 --> 00:00:53.553
+Typically when developers start building,
+
+19
+00:00:53.553 --> 00:00:55.755
+they get broad permissions across all environments
+
+20
+00:00:55.755 --> 00:00:58.058
+instead of role-based access controls.
+
+21
+00:00:58.558 --> 00:01:01.261
+Next is the reality of building agents today
+
+22
+00:01:01.261 --> 00:01:04.230
+is there's not a lot of audit trails. So teams can't trace
+
+23
+00:01:04.230 --> 00:01:07.033
+exactly what the agents did, what they had access to,
+
+24
+00:01:07.434 --> 00:01:10.236
+where the agents failed, making debugging really difficult.
+
+25
+00:01:10.837 --> 00:01:14.040
+So what happens is you have three times longer deployment cycles.
+
+26
+00:01:14.340 --> 00:01:15.975
+You might have a really nice POC
+
+27
+00:01:15.975 --> 00:01:17.844
+that took two or three weeks to build
+
+28
+00:01:18.144 --> 00:01:20.647
+and then you give it to the team to put in production
+
+29
+00:01:21.147 --> 00:01:23.450
+and it takes about eight months because they have to go back
+
+30
+00:01:23.750 --> 00:01:26.853
+and redo every aspect of security and governance.
+
+31
+00:01:27.253 --> 00:01:29.055
+And you don't want that added security risk.
+
+32
+00:01:29.255 --> 00:01:32.058
+So it's best to practice governance from day one.
+
+33
+00:01:32.725 --> 00:01:34.828
+Now, what is data governance?
+
+34
+00:01:34.828 --> 00:01:38.932
+Well, data governance is the framework of policies, processes, and standards
+
+35
+00:01:38.932 --> 00:01:42.535
+that ensure data is accurate, it's safe, it's secure,
+
+36
+00:01:42.535 --> 00:01:44.637
+and it's properly managed through its lifecycle.
+
+37
+00:01:45.238 --> 00:01:49.075
+So Agent Governance is really the ability to have control plus visibility
+
+38
+00:01:49.075 --> 00:01:51.377
+over your Lifecycle Management,
+
+39
+00:01:51.377 --> 00:01:53.580
+so how you build and maintain your agent,
+
+40
+00:01:53.580 --> 00:01:57.283
+Risk Management, so how you protect your agent against common failure modes,
+
+41
+00:01:57.283 --> 00:02:00.086
+Security, so how you control access to your agent,
+
+42
+00:02:00.086 --> 00:02:02.889
+and Observability, the ability to view all the actions
+
+43
+00:02:02.889 --> 00:02:04.891
+that have been taken by your agent.
+
+44
+00:02:05.425 --> 00:02:07.827
+So where does data governance take place
+
+45
+00:02:07.827 --> 00:02:10.230
+in your ability to build agent systems?
+
+46
+00:02:10.430 --> 00:02:14.234
+Well, basically whenever you're building an agent, you start with data prep.
+
+47
+00:02:14.434 --> 00:02:17.437
+So this could be creating your tables,
+
+48
+00:02:17.437 --> 00:02:19.839
+creating views and masks, creating a VectorDB.
+
+49
+00:02:19.939 --> 00:02:23.343
+And then you're building the agent, so you're binding tools together,
+
+50
+00:02:23.343 --> 00:02:26.613
+you're adding prompts, you're selecting your LLM.
+
+51
+00:02:26.913 --> 00:02:28.915
+And then you're evaluating agents,
+
+52
+00:02:28.915 --> 00:02:31.918
+either through LLM judges, through peer labeling,
+
+53
+00:02:32.185 --> 00:02:33.987
+or having kind of that golden data
+
+54
+00:02:33.987 --> 00:02:36.055
+set that you can evaluate your agents against,
+
+55
+00:02:36.356 --> 00:02:38.057
+looking at tracing capabilities,
+
+56
+00:02:38.458 --> 00:02:40.460
+having agent deployment is your next step.
+
+57
+00:02:40.660 --> 00:02:43.163
+So making sure your agent's serving, you're tracking lineage.
+
+58
+00:02:43.963 --> 00:02:47.667
+And from that beginning to end is the governance layer.
+
+59
+00:02:48.168 --> 00:02:50.170
+So over all that, you need Lifecycle Management,
+
+60
+00:02:50.570 --> 00:02:52.972
+Risk Management, Security, and Observability.
+
+61
+00:02:53.373 --> 00:02:55.675
+So we're going to apply these layers of governance
+
+62
+00:02:55.975 --> 00:02:58.378
+with the help of Unity Catalog and MLflow.
+
+63
+00:02:58.912 --> 00:03:01.114
+As I mentioned before, governance encompasses
+
+64
+00:03:01.114 --> 00:03:04.617
+everything you build from data creation to model monitoring.
+
+65
+00:03:04.918 --> 00:03:07.120
+So I wanted to create a way
+
+66
+00:03:07.120 --> 00:03:09.622
+for developers to conceptualize and categorize these areas.
+
+67
+00:03:10.423 --> 00:03:13.026
+So that's when I've made these four pillars for you.
+
+68
+00:03:13.426 --> 00:03:16.229
+These agent governance pillars are Lifecycle Management,
+
+69
+00:03:16.229 --> 00:03:18.932
+Risk Management, Security, and Observability.
+
+70
+00:03:19.299 --> 00:03:21.201
+And they have best practices.
+
+71
+00:03:21.201 --> 00:03:24.904
+So for Lifecycle Management, the best practice is Separation of Duties.
+
+72
+00:03:25.205 --> 00:03:28.608
+This enables multiple teams to manage data and model changes
+
+73
+00:03:28.608 --> 00:03:31.911
+through dev, staging, and prod environments
+
+74
+00:03:31.911 --> 00:03:34.914
+with version control to ensure proper review at each phase.
+
+75
+00:03:35.048 --> 00:03:38.151
+Risk Management, which the best practice is Defense in Depth.
+
+76
+00:03:38.251 --> 00:03:41.454
+So implementing multiple overlapping defense layers.
+
+77
+00:03:41.554 --> 00:03:46.554
+This is your PII detection, guardrails, compliance controls, and monitoring
+
+78
+00:03:46.726 --> 00:03:48.695
+in order to protect against issues
+
+79
+00:03:48.695 --> 00:03:50.930
+anywhere from data ingestion to model performance.
+
+80
+00:03:51.231 --> 00:03:54.434
+Security, the best practice here is Least Privilege Access.
+
+81
+00:03:54.534 --> 00:03:56.536
+This ensures agents and users
+
+82
+00:03:56.669 --> 00:03:59.472
+receive only the minimum permissions required for their role,
+
+83
+00:03:59.472 --> 00:04:04.177
+implemented through encryption, authentication, and granular access controls.
+
+84
+00:04:04.177 --> 00:04:07.680
+And then finally observability. The ability to audit everything.
+
+85
+00:04:07.680 --> 00:04:11.551
+So this captures comprehensive logs of all system interactions,
+
+86
+00:04:11.551 --> 00:04:14.454
+so data access, model actions, and predictions,
+
+87
+00:04:14.454 --> 00:04:17.757
+enabling complete traceability and compliance reporting.
+
+88
+00:04:18.291 --> 00:04:20.193
+Now I want to walk you through
+
+89
+00:04:20.193 --> 00:04:22.095
+some of the common techniques and tools
+
+90
+00:04:22.095 --> 00:04:25.398
+that implement that best practice of each pillar.
+
+91
+00:04:25.798 --> 00:04:29.502
+So for Lifecycle Management and Separation of Duties,
+
+92
+00:04:29.502 --> 00:04:33.106
+you're going to be using version control, CI/CD pipelines,
+
+93
+00:04:33.106 --> 00:04:37.110
+Environment Management, so this is when you have your dev,
+
+94
+00:04:37.110 --> 00:04:40.079
+staging, and prod environments in isolation.
+
+95
+00:04:40.480 --> 00:04:42.482
+Deployment Orchestration,
+
+96
+00:04:42.482 --> 00:04:46.085
+Change Management, so the ability to have rollback capabilities.
+
+97
+00:04:46.486 --> 00:04:48.955
+Looking at Risk Management, your Defense in Depth.
+
+98
+00:04:48.955 --> 00:04:51.958
+This is your data quality monitoring,
+
+99
+00:04:51.958 --> 00:04:55.161
+your PII detection, these are your guardrails,
+
+100
+00:04:55.161 --> 00:04:58.765
+any compliance capabilities and model validation.
+
+101
+00:04:58.965 --> 00:05:01.768
+Security, your least privilege access,
+
+102
+00:05:01.768 --> 00:05:03.770
+so this is your SSO login,
+
+103
+00:05:03.770 --> 00:05:05.738
+these are your API keys,
+
+104
+00:05:05.738 --> 00:05:08.941
+your multifactor authentication, service principals,
+
+105
+00:05:08.941 --> 00:05:11.744
+secret management, access controls,
+
+106
+00:05:12.178 --> 00:05:15.782
+data protection and your network security. And then your observability.
+
+107
+00:05:16.082 --> 00:05:18.351
+So this is your ability to audit everything.
+
+108
+00:05:18.851 --> 00:05:21.454
+In Gen AI, we often talk about OTel
+
+109
+00:05:21.454 --> 00:05:24.357
+or the OpenTelemetry standard for logging traces from models.
+
+110
+00:05:24.757 --> 00:05:28.961
+But this goes beyond that. This is logging audit logs, application logs,
+
+111
+00:05:28.961 --> 00:05:30.963
+inference logging, access logs,
+
+112
+00:05:31.164 --> 00:05:32.765
+monitoring capabilities,
+
+113
+00:05:32.965 --> 00:05:34.967
+lineage tracking, and alerting.
+
+114
+00:05:35.368 --> 00:05:37.670
+So those are the four main areas.
+
+115
+00:05:38.171 --> 00:05:41.674
+And next time you want to build agent capabilities
+
+116
+00:05:41.674 --> 00:05:44.477
+and you're wondering, is this ready for deployment?
+
+117
+00:05:44.477 --> 00:05:47.180
+Is this ready for a production use case?
+
+118
+00:05:47.380 --> 00:05:50.383
+I've created a checklist that you can go through
+
+119
+00:05:50.383 --> 00:05:53.186
+just to keep these best practices in mind.
+
+120
+00:05:53.186 --> 00:05:55.855
+For example, can you safely promote changes
+
+121
+00:05:55.855 --> 00:05:58.891
+through environments with proper review and rollback capabilities?
+
+122
+00:05:59.192 --> 00:06:02.028
+Do you have multiple layers of protection
+
+123
+00:06:02.028 --> 00:06:04.897
+to catch issues before they impact production?
+
+124
+00:06:05.264 --> 00:06:08.067
+Are all your data sources accessible only
+
+125
+00:06:08.067 --> 00:06:10.570
+to authorized agents and authorized users?
+
+126
+00:06:10.970 --> 00:06:13.072
+Can you trace every tool your agent used,
+
+127
+00:06:13.072 --> 00:06:16.442
+when it ran and what data it accessed and what it returned?
+
+128
+00:06:16.542 --> 00:06:18.444
+So these are the key capabilities
+
+129
+00:06:18.444 --> 00:06:21.047
+for your Lifecycle Management, Risk Management,
+
+130
+00:06:21.047 --> 00:06:23.049
+Security and Observability.
+
+131
+00:06:23.249 --> 00:06:26.452
+You'll get to see these pillars in action throughout this short course.
