@@ -1,0 +1,1239 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.133 --> 00:00:05.133
+In this last lesson, you will dive deeper
+into multi-agent group chats
+
+2
+00:00:05.833 --> 00:00:09.500
+and build a custom group chat
+that collaborates
+
+3
+00:00:09.500 --> 00:00:13.133
+to generate a detailed report
+and stocks performance
+
+4
+00:00:13.200 --> 00:00:14.700
+over the past month.
+
+5
+00:00:14.700 --> 00:00:17.733
+Finishing this complex
+task involves planning,
+
+6
+00:00:18.300 --> 00:00:22.100
+which is realized by including
+a planning agent in the group chat.
+
+7
+00:00:22.633 --> 00:00:27.500
+You will also learn how to customize
+the speaker's transition into group chat.
+
+8
+00:00:28.500 --> 00:00:31.500
+Let's dive into the code.
+
+9
+00:00:32.100 --> 00:00:33.000
+All right.
+
+10
+00:00:33.000 --> 00:00:35.800
+In this lesson, we're going to learn about
+
+11
+00:00:35.800 --> 00:00:38.833
+one last agentic design pattern, planning.
+
+12
+00:00:39.100 --> 00:00:43.333
+And we're going to also learn a new
+conversation pattern called group chat.
+
+13
+00:00:44.100 --> 00:00:45.700
+Okay. Let's get started.
+
+14
+00:00:45.700 --> 00:00:49.900
+First, let's define our LLM configuration
+
+15
+00:00:50.633 --> 00:00:53.633
+to be using GPT-4 turbo.
+
+16
+00:00:54.633 --> 00:00:57.633
+Let's define our task.
+
+17
+00:00:59.000 --> 00:01:00.933
+So this is a fairly complex task.
+
+18
+00:01:00.933 --> 00:01:02.300
+In previous lessons,
+
+19
+00:01:02.300 --> 00:01:05.900
+we learned about one conversation
+pattern called sequential chat
+
+20
+00:01:06.300 --> 00:01:11.300
+that can perform multi-step tasks.
+But that requires a human to design
+
+21
+00:01:11.600 --> 00:01:15.133
+The concrete steps and the concrete
+agents involved in each step.
+
+22
+00:01:15.833 --> 00:01:20.600
+But if we want to simplify the problem,
+what if we want to simply define agents
+
+23
+00:01:20.600 --> 00:01:23.600
+and make them work together
+to solve these tasks
+
+24
+00:01:23.833 --> 00:01:27.733
+without getting on the specific,
+detailed instructions for every step?
+
+25
+00:01:28.233 --> 00:01:29.600
+How can you do that?
+
+26
+00:01:29.600 --> 00:01:33.333
+In this lesson, let's try a new
+conversation pattern called Group chat.
+
+27
+00:01:33.900 --> 00:01:36.233
+Which doesn't require many design steps.
+
+28
+00:01:37.200 --> 00:01:39.433
+First, let's import AutoGen,
+
+29
+00:01:39.433 --> 00:01:43.033
+and then try to create a few agents
+that are needed for this task.
+
+30
+00:01:43.433 --> 00:01:45.600
+Let's think about what do we need.
+
+31
+00:01:45.600 --> 00:01:48.900
+Initially, we need a user proxy agent
+
+32
+00:01:49.500 --> 00:01:53.733
+that can send other agents about this
+initial task.
+
+33
+00:01:54.433 --> 00:01:57.733
+So, we'll define
+a conversable agent named Admin,
+
+34
+00:01:58.200 --> 00:02:00.900
+we'll give it a system message about
+
+35
+00:02:00.900 --> 00:02:04.800
+"Give the task and send instructions
+to writer to refine the blog post."
+
+36
+00:02:05.900 --> 00:02:09.400
+And we'll set the code execution
+configuration to be "false"
+
+37
+00:02:10.000 --> 00:02:14.000
+and give it a large language model configuration
+and set human input
+
+38
+00:02:14.300 --> 00:02:15.700
+to be "always".
+
+39
+00:02:15.700 --> 00:02:20.433
+So the this agent will always ask for
+human's input when it's his turn to speak.
+
+40
+00:02:21.000 --> 00:02:23.700
+And if the human skips the input,
+
+41
+00:02:23.700 --> 00:02:28.500
+it will send instructions to
+some writer agent to refine blog post.
+
+42
+00:02:29.600 --> 00:02:32.100
+Let's think about what other agents do
+we need.
+
+43
+00:02:32.100 --> 00:02:36.200
+Since this is a complex task,
+we probably need a planning agent
+
+44
+00:02:36.833 --> 00:02:40.800
+that can help us decompose the task
+to simpler, smaller tasks
+
+45
+00:02:41.100 --> 00:02:44.533
+and send
+those sub-tasks to other agents to solve them.
+
+46
+00:02:45.233 --> 00:02:47.700
+So how about we create a planner agent.
+
+47
+00:02:47.700 --> 00:02:50.500
+This is the conversable agent
+with name Planner.
+
+48
+00:02:50.500 --> 00:02:52.500
+We give it some instructions:
+
+49
+00:02:52.500 --> 00:02:57.133
+"Given a task, please determine what
+information is needed to complete the task.
+
+50
+00:02:57.600 --> 00:03:01.233
+Please note that information
+will all be retrieved using Python code.
+
+51
+00:03:01.800 --> 00:03:05.400
+Please only suggests information
+that can be achieved using Python code.
+
+52
+00:03:05.800 --> 00:03:08.500
+After each step is done by others,
+
+53
+00:03:08.500 --> 00:03:11.500
+it checks the progress and instructs
+the remaining steps.
+
+54
+00:03:11.900 --> 00:03:14.500
+If a step fails, try to workaround."
+
+55
+00:03:14.500 --> 00:03:15.900
+You also see an adding
+
+56
+00:03:17.100 --> 00:03:19.000
+field called a description.
+
+57
+00:03:19.000 --> 00:03:21.833
+What's the difference between
+the description and system message?
+
+58
+00:03:21.833 --> 00:03:25.733
+The system message is an instruction
+and telling the agent only
+
+59
+00:03:26.000 --> 00:03:29.733
+and only this agent needs to know.
+And the description,
+
+60
+00:03:30.033 --> 00:03:34.600
+I am using that to let other agents
+know about the role of this agent.
+
+61
+00:03:35.000 --> 00:03:38.033
+And for example, a manager could decides
+
+62
+00:03:38.200 --> 00:03:41.200
+when to use this agent
+based on the description.
+
+63
+00:03:41.433 --> 00:03:43.800
+So the description is planner.
+
+64
+00:03:43.800 --> 00:03:47.233
+Given a task, determine what information
+is needed to complete the task
+
+65
+00:03:47.700 --> 00:03:50.533
+after each step is done by others, check
+progress and instruct the
+
+66
+00:03:50.533 --> 00:03:51.600
+remaining steps.
+
+67
+00:03:51.600 --> 00:03:53.933
+So less detailed but more manageable
+
+68
+00:03:53.933 --> 00:03:58.933
+and from a different person's point of view,
+we can know what this is about.
+
+69
+00:04:00.100 --> 00:04:03.100
+And we also give it the
+large language model configuration.
+
+70
+00:04:04.233 --> 00:04:08.100
+So the planner might suggest some tasks
+that requires using Python code.
+
+71
+00:04:08.133 --> 00:04:12.500
+So, you might need some agent
+that's capable of writing Python code.
+
+72
+00:04:13.300 --> 00:04:16.300
+So let's define an agent engineer.
+
+73
+00:04:16.500 --> 00:04:19.800
+And going to use the default assistant
+agent from AutoGen
+
+74
+00:04:20.033 --> 00:04:21.433
+as it comes from this agent.
+
+75
+00:04:21.433 --> 00:04:22.133
+This is the default.
+
+76
+00:04:22.133 --> 00:04:24.700
+This is agent
+we will have a default system message
+
+77
+00:04:24.700 --> 00:04:27.700
+about detailed instructions
+for writing code.
+
+78
+00:04:28.033 --> 00:04:31.000
+So we don't need to provide
+additional system message.
+
+79
+00:04:31.000 --> 00:04:34.633
+I will add a description
+saying that this is an engineer
+
+80
+00:04:34.633 --> 00:04:37.633
+that writes code based on the plan
+provided by planner.
+
+81
+00:04:37.800 --> 00:04:41.000
+After the engineer writes code,
+we need some agent to execute code.
+
+82
+00:04:41.600 --> 00:04:43.800
+So we probably need an executor.
+
+83
+00:04:45.233 --> 00:04:46.800
+So this is
+
+84
+00:04:46.800 --> 00:04:50.300
+a conversable agent with code execution
+configuration.
+
+85
+00:04:50.900 --> 00:04:51.433
+Okay.
+
+86
+00:04:51.433 --> 00:04:54.700
+So we will set the last n messages
+to be three.
+
+87
+00:04:54.733 --> 00:04:58.400
+So this agent will look back
+in the comments in history and find,
+
+88
+00:04:58.600 --> 00:05:01.600
+first message
+that contains code in the backward order,
+
+89
+00:05:01.833 --> 00:05:04.633
+and execute the code in that message.
+
+90
+00:05:04.633 --> 00:05:08.300
+Is that the working directory
+until the coding and is set user_docker
+
+91
+00:05:08.300 --> 00:05:09.500
+to be false.
+
+92
+00:05:09.500 --> 00:05:12.433
+Don't forget
+the task is about writing blog post.
+
+93
+00:05:12.433 --> 00:05:15.600
+So we also need a writer agent
+
+94
+00:05:16.200 --> 00:05:18.700
+that is in charge of writing.
+
+95
+00:05:18.700 --> 00:05:21.700
+So we define this writer
+agent with the system message:
+
+96
+00:05:21.733 --> 00:05:24.100
+"Please write blogs in markdown format
+
+97
+00:05:24.100 --> 00:05:28.100
+with relevant titles and put content
+in the markdown code block."
+
+98
+00:05:28.400 --> 00:05:32.400
+And will also tell it to take feedback
+from the Admin and refine the block.
+
+99
+00:05:33.200 --> 00:05:36.000
+And we need to provide the description
+as well.
+
+100
+00:05:36.000 --> 00:05:39.500
+Okay, so now we have created these agents.
+
+101
+00:05:39.900 --> 00:05:43.800
+You can see that by creating each agent
+I need to think about what role
+
+102
+00:05:43.800 --> 00:05:45.433
+this agent needs to play,
+
+103
+00:05:45.433 --> 00:05:46.600
+and to solve this task,
+
+104
+00:05:46.600 --> 00:05:50.533
+what are some of the roles
+I need to create these agents.
+
+105
+00:05:51.000 --> 00:05:55.200
+I don't need to provide a detailed
+instructions about which agent should
+
+106
+00:05:55.200 --> 00:05:56.500
+do what? First.
+
+107
+00:05:56.500 --> 00:05:59.800
+I simply put them together in the group
+chat, here
+
+108
+00:05:59.800 --> 00:06:03.800
+and creating a group chat with the agents
+I just created.
+
+109
+00:06:04.133 --> 00:06:05.700
+There are five agents of them.
+
+110
+00:06:05.700 --> 00:06:08.500
+I provide some initial message, an empty
+
+111
+00:06:08.500 --> 00:06:11.533
+and initial message list
+and says max round to be ten.
+
+112
+00:06:12.200 --> 00:06:13.133
+That's all I need.
+
+113
+00:06:13.133 --> 00:06:16.133
+Before I make these agents work,
+
+114
+00:06:16.333 --> 00:06:19.600
+I need to create a group chat manager
+as a special agent In AutoGen
+
+115
+00:06:19.600 --> 00:06:22.133
+to manage this group chat.
+
+116
+00:06:22.133 --> 00:06:25.433
+This group chat manager
+also needs a large language model configuration.
+
+117
+00:06:26.233 --> 00:06:30.400
+So, I simply define these agents
+and put these in the group chat.
+
+118
+00:06:31.000 --> 00:06:33.500
+And then, I can start the conversation
+
+119
+00:06:33.500 --> 00:06:36.933
+by initiating the chat
+between user proxy and the manager.
+
+120
+00:06:37.433 --> 00:06:41.433
+Because the first message
+I want it to be from the user proxy.
+
+121
+00:06:41.600 --> 00:06:44.600
+And the message content will be the task
+we defined earlier.
+
+122
+00:06:44.633 --> 00:06:45.033
+Let's try that.
+
+123
+00:06:46.000 --> 00:06:49.000
+So, after I start the conversation.
+
+124
+00:06:49.133 --> 00:06:52.133
+All these agents will automatically work
+together.
+
+125
+00:06:52.500 --> 00:06:57.500
+And there's no need to specify a
+particular speak order from the developer.
+
+126
+00:06:58.800 --> 00:07:01.800
+The first message will be sent
+from the admin,
+
+127
+00:07:01.800 --> 00:07:05.033
+user proxy,
+to the chat manager about the task,
+
+128
+00:07:05.400 --> 00:07:09.600
+and the chat manager will broadcast
+this message to every other agent.
+
+129
+00:07:09.900 --> 00:07:12.900
+So every agent in the group
+chat will see this message.
+
+130
+00:07:13.033 --> 00:07:16.700
+And then the chat manager will pick one
+agent to speak next.
+
+131
+00:07:17.200 --> 00:07:19.000
+Using the large language model.
+
+132
+00:07:19.000 --> 00:07:22.600
+And when deciding who to speak next,
+the chat manager will look
+
+133
+00:07:22.600 --> 00:07:25.733
+at his current conversation history
+and the roles of each
+
+134
+00:07:25.733 --> 00:07:28.733
+agent and decide which one is the best.
+
+135
+00:07:29.100 --> 00:07:32.400
+So we see that the planner is picked
+as the first agent to speak.
+
+136
+00:07:33.000 --> 00:07:38.000
+Okay, so planner is suggesting
+a few steps, including retrieving the stock
+
+137
+00:07:38.200 --> 00:07:43.100
+data, analyze the stock data, research
+contextual events, draft a blog post.
+
+138
+00:07:43.600 --> 00:07:46.600
+And in the last reiterate on step one.
+
+139
+00:07:46.733 --> 00:07:48.833
+And suggest some actions.
+
+140
+00:07:48.833 --> 00:07:52.933
+Again the chat manager now needs to pick
+the next speaker and picks the engineer.
+
+141
+00:07:53.433 --> 00:07:57.600
+So the engineer will follow the suggestion
+by the planner of the first step
+
+142
+00:07:58.100 --> 00:08:01.100
+and share the code to retrieve the stock data.
+
+143
+00:08:01.800 --> 00:08:04.800
+Next,
+the executor is picked by the manager
+
+144
+00:08:04.800 --> 00:08:07.800
+to execute the code and output the data.
+
+145
+00:08:08.300 --> 00:08:11.500
+And now the planner is picked again
+by the manager.
+
+146
+00:08:11.800 --> 00:08:13.900
+After the first step is finished.
+
+147
+00:08:13.900 --> 00:08:17.033
+So it's suggesting the next steps about
+
+148
+00:08:17.200 --> 00:08:20.400
+analyzing stock data,
+research, contacting events, etc...
+
+149
+00:08:20.900 --> 00:08:23.633
+So, it actually suggested one
+
+150
+00:08:23.633 --> 00:08:26.633
+Python code example
+to get started with the second step.
+
+151
+00:08:26.700 --> 00:08:29.100
+So the engineer will
+complete that Python code.
+
+152
+00:08:30.733 --> 00:08:33.000
+About this stock data analysis.
+
+153
+00:08:33.000 --> 00:08:35.700
+And the executor is picked the manager
+
+154
+00:08:35.700 --> 00:08:38.900
+to run the code and upload the result.
+
+155
+00:08:39.100 --> 00:08:43.600
+You can see not only the stock
+prices output, but also the daily change.
+
+156
+00:08:44.000 --> 00:08:46.200
+And when the first steps are finished,
+
+157
+00:08:46.200 --> 00:08:46.800
+we see that the
+
+158
+00:08:46.800 --> 00:08:50.500
+the writer is picked by the chat manager
+to start drafting the blog post,
+
+159
+00:08:50.733 --> 00:08:55.100
+because the writer already has good enough
+information to begin writing.
+
+160
+00:08:55.600 --> 00:08:58.600
+So it writes the blog post in markdown
+format.
+
+161
+00:09:00.600 --> 00:09:02.600
+It has an introduction section.
+
+162
+00:09:02.600 --> 00:09:04.633
+Analysis of stock price.
+
+163
+00:09:04.633 --> 00:09:07.700
+Stock performance section, significant events
+
+164
+00:09:07.700 --> 00:09:10.700
+and their impact and conclusion.
+
+165
+00:09:11.833 --> 00:09:15.700
+Now the admin is picked
+by the chat manager.
+
+166
+00:09:15.900 --> 00:09:19.200
+So this admin will ask for user's feedback.
+
+167
+00:09:19.533 --> 00:09:24.500
+If I am not satisfied with this blog post,
+I can provide my input. Here,
+
+168
+00:09:24.500 --> 00:09:28.900
+I'm going to skip my feedback
+and let this
+
+169
+00:09:29.633 --> 00:09:32.600
+user proxy agent suggest some change
+
+170
+00:09:32.600 --> 00:09:34.500
+on behalf of myself.
+
+171
+00:09:34.500 --> 00:09:37.200
+Now, this user proxy agent is using
+
+172
+00:09:37.200 --> 00:09:40.200
+large language model to come up with the reply.
+
+173
+00:09:40.433 --> 00:09:42.100
+This reply should contain
+
+174
+00:09:42.100 --> 00:09:45.933
+some suggestions about what needs to be
+improved in this blog post.
+
+175
+00:09:48.300 --> 00:09:51.900
+So the
+admin comes up with some refinements
+
+176
+00:09:52.900 --> 00:09:55.900
+including adding videos, detailed
+analysis,
+
+177
+00:09:56.300 --> 00:09:59.300
+interactive elements, and so on.
+
+178
+00:09:59.500 --> 00:10:03.100
+So after that, the writer
+is supposed to take that feedback
+
+179
+00:10:03.100 --> 00:10:06.100
+and automatically suggest,
+a refined blog post.
+
+180
+00:10:06.433 --> 00:10:09.100
+So we see that
+in during this conversation,
+
+181
+00:10:09.100 --> 00:10:12.533
+all agents are trigger
+automatically by the group chat manager
+
+182
+00:10:12.800 --> 00:10:16.100
+and following the predefined roles
+and descriptions.
+
+183
+00:10:16.700 --> 00:10:19.833
+The roles and description
+need to be carefully designed
+
+184
+00:10:20.200 --> 00:10:23.233
+to make sure they can follow the right
+
+185
+00:10:23.500 --> 00:10:24.633
+order.
+
+186
+00:10:24.633 --> 00:10:28.633
+Okay, now we see that the writer
+has made some revisions to the blog post.
+
+187
+00:10:29.600 --> 00:10:32.733
+It also summarized the enhanced elements
+in the blog post.
+
+188
+00:10:33.433 --> 00:10:37.400
+If we increase the amount of rounds in this group
+chat, there can be more conversations.
+
+189
+00:10:37.500 --> 00:10:40.600
+This conversation stops here
+because we set the max round to be ten.
+
+190
+00:10:41.200 --> 00:10:44.200
+So if we, review this conversation,
+
+191
+00:10:44.733 --> 00:10:48.833
+we will find that the planner does play
+the role of suggesting an initial plan.
+
+192
+00:10:49.200 --> 00:10:51.233
+And after some steps finished,
+
+193
+00:10:51.233 --> 00:10:54.533
+it will review the progress
+and just follow the steps.
+
+194
+00:10:55.100 --> 00:10:58.100
+But not all
+the steps are followed exactly.
+
+195
+00:10:58.100 --> 00:11:01.233
+After the first two steps,
+I think the writer skipped
+
+196
+00:11:01.600 --> 00:11:04.200
+the third step and started
+writing the blog post.
+
+197
+00:11:04.200 --> 00:11:08.800
+This is downside of using language model
+to design and speak order always.
+
+198
+00:11:09.400 --> 00:11:11.800
+But there a few ways you could,
+
+199
+00:11:11.800 --> 00:11:14.700
+add more control to the conversation.
+
+200
+00:11:14.700 --> 00:11:18.233
+For example, you. can set constraints
+about the speaker's order.
+
+201
+00:11:18.700 --> 00:11:20.333
+I'll show you how to do that.
+
+202
+00:11:20.333 --> 00:11:23.633
+First, let's repeat the
+same definition of agents.
+
+203
+00:11:27.500 --> 00:11:30.500
+So these are the same agents I used
+
+204
+00:11:31.300 --> 00:11:33.500
+and defined here again.
+
+205
+00:11:33.500 --> 00:11:36.600
+And I will demonstrate,
+to add some constraints
+
+206
+00:11:36.833 --> 00:11:39.833
+in the speaker order.
+
+207
+00:11:40.100 --> 00:11:41.500
+So in this example,
+
+208
+00:11:41.500 --> 00:11:44.800
+I create a group chat
+with additional constraints.
+
+209
+00:11:45.033 --> 00:11:47.900
+this is a dictionary
+called "allowed or disallowed
+
+210
+00:11:47.900 --> 00:11:50.900
+speaker transitions". For each agent
+
+211
+00:11:51.300 --> 00:11:55.100
+you could specify
+which agent is allowed to speak
+
+212
+00:11:55.200 --> 00:11:57.400
+after this particular agent.
+
+213
+00:11:57.400 --> 00:12:00.900
+For example, we restrict the speaker
+
+214
+00:12:01.000 --> 00:12:04.133
+after engineer
+to be either user proxy or executor.
+
+215
+00:12:04.700 --> 00:12:08.200
+And we restrict the speaker
+
+216
+00:12:08.200 --> 00:12:12.033
+after the executor to be either
+the proxy or engineer or planner.
+
+217
+00:12:12.700 --> 00:12:15.300
+So after we impose this constraint,
+
+218
+00:12:15.300 --> 00:12:18.300
+we're not supposed to see the writer
+to follow up
+
+219
+00:12:18.433 --> 00:12:20.900
+executor agent immediately.
+
+220
+00:12:20.900 --> 00:12:23.800
+So that gives the planner
+a chance to review the plan
+
+221
+00:12:23.800 --> 00:12:26.500
+before the writer starts
+writing a blog post.
+
+222
+00:12:26.500 --> 00:12:30.400
+You could either specify, allow
+or disallowed speaker transitions.
+
+223
+00:12:30.900 --> 00:12:34.833
+In this case,
+we're setting only allowed transitions.
+
+224
+00:12:35.900 --> 00:12:37.300
+Execute that.
+
+225
+00:12:37.300 --> 00:12:39.800
+So after defining that,
+
+226
+00:12:39.800 --> 00:12:43.300
+we're supposed to see a speaker order
+
+227
+00:12:43.300 --> 00:12:47.100
+that conforms better with our desire.
+
+228
+00:12:49.233 --> 00:12:51.700
+The first few steps are the same.
+
+229
+00:12:51.700 --> 00:12:54.800
+But now, after the executor finished
+the second step,
+
+230
+00:12:55.533 --> 00:12:58.533
+we're supposed to see the planner
+
+231
+00:12:58.933 --> 00:13:03.500
+take over, view the previous steps
+and suggest the next steps.
+
+232
+00:13:04.200 --> 00:13:07.200
+So this is fixing the problem
+I mentioned earlier.
+
+233
+00:13:07.833 --> 00:13:10.800
+You see that
+although we added some constraints,
+
+234
+00:13:10.800 --> 00:13:14.300
+the overall task
+completion is still non-linear.
+
+235
+00:13:14.533 --> 00:13:17.500
+So this still keeps the flexibility of having
+
+236
+00:13:17.500 --> 00:13:21.933
+some agent back and forth and chiming in
+when they need to.
+
+237
+00:13:22.200 --> 00:13:25.433
+So this still has more flexibility
+than sequential chat.
+
+238
+00:13:26.200 --> 00:13:29.800
+And this way of specifying on speaker
+transitions,
+
+239
+00:13:30.200 --> 00:13:34.133
+can simulate the finance state
+machine transition in the group chat.
+
+240
+00:13:34.500 --> 00:13:38.500
+So this is the best functionality
+to allow developers to add more control.
+
+241
+00:13:38.833 --> 00:13:40.100
+You could also add
+
+242
+00:13:40.100 --> 00:13:44.133
+some natural language instructions
+in the descriptions of the agents.
+
+243
+00:13:44.400 --> 00:13:48.800
+so that you not only specify
+the constraint, but also has more details
+
+244
+00:13:48.800 --> 00:13:51.800
+about when to translate to what
+which agent.
+
+245
+00:13:51.900 --> 00:13:54.700
+And in addition, you could also define
+
+246
+00:13:54.700 --> 00:13:58.933
+a precise transition order
+using programing language.
+
+247
+00:13:59.800 --> 00:14:02.333
+I'll not cover that in this lesson,
+
+248
+00:14:02.333 --> 00:14:05.500
+but you can find that information
+from AutoGen's website.
+
+249
+00:14:06.233 --> 00:14:07.000
+To summarize,
+
+250
+00:14:07.000 --> 00:14:11.133
+group chat provides
+a more dynamic way for multiple agents
+
+251
+00:14:11.500 --> 00:14:16.133
+to solve a task together
+and without human developers
+
+252
+00:14:16.500 --> 00:14:20.100
+to design
+very detailed plan for execution.
+
+253
+00:14:20.333 --> 00:14:23.900
+You could also add some planner agents,
+for helping
+
+254
+00:14:23.900 --> 00:14:28.300
+with making plans
+and task decomposition. In general,
+
+255
+00:14:28.300 --> 00:14:31.600
+there can be multiple different ways
+for doing task
+
+256
+00:14:31.833 --> 00:14:35.633
+decomposition and planning
+and where we want to show one example.
+
+257
+00:14:35.900 --> 00:14:37.500
+That's all the lessons.
+
+258
+00:14:37.500 --> 00:14:40.300
+We covered,
+the basic introduction to our AutoGen.
+
+259
+00:14:40.300 --> 00:14:43.733
+There are many other advanced
+functionalities in AutoGen
+
+260
+00:14:43.733 --> 00:14:48.300
+such as teaching agents will improve over
+time, having multimodality
+
+261
+00:14:48.700 --> 00:14:51.500
+having vision capability to understand images.
+
+262
+00:14:51.500 --> 00:14:56.300
+Using OpenAI assistant as a backend
+for agents and so on and so forth.
+
+263
+00:14:56.533 --> 00:15:00.300
+We also have agent-based evaluation tools
+and benchmarking tools
+
+264
+00:15:00.700 --> 00:15:03.600
+and other new interesting research.
+
+265
+00:15:03.600 --> 00:15:07.633
+For example, how can users design
+agents for particular a task?
+
+266
+00:15:08.100 --> 00:15:12.100
+Please find those advanced new features
+
+267
+00:15:12.100 --> 00:15:16.400
+or ongoing research from our website
+and read the blog posts.
+
+268
+00:15:17.033 --> 00:15:20.100
+We hope you enjoyed the lessons
+so far, and
+
+269
+00:15:20.333 --> 00:15:24.700
+you explore much more interesting
+use cases if you are interested.
+

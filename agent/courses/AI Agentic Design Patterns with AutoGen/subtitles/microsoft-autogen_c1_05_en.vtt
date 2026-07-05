@@ -1,0 +1,1243 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.033 --> 00:00:04.700
+In this lesson, you will dive into tool
+use in the nested chat between agents.
+
+2
+00:00:05.500 --> 00:00:10.200
+You will get to build a conversational
+chess game between two agent players,
+
+3
+00:00:10.500 --> 00:00:14.500
+who both can call a tool
+and make legal moves on the chessboard.
+
+4
+00:00:15.333 --> 00:00:18.333
+All right, let's have some fun.
+
+5
+00:00:19.300 --> 00:00:20.633
+In a previous session,
+
+6
+00:00:20.633 --> 00:00:23.800
+we learned about
+how to use a conversable agent in AutoGen,
+
+7
+00:00:23.800 --> 00:00:26.633
+To form conversations,
+
+8
+00:00:26.633 --> 00:00:30.533
+and we learned how to use large language
+models to generate replies.
+
+9
+00:00:30.900 --> 00:00:35.033
+In this lesson, we're going to learn
+a new capability for tool using.
+
+10
+00:00:35.333 --> 00:00:40.333
+And we will still use a nested chat
+as one conversation pattern to make agents
+
+11
+00:00:41.200 --> 00:00:44.433
+use the tools, finish tasks,
+and we will build
+
+12
+00:00:44.433 --> 00:00:48.033
+a conversational chess game
+to showcase this example.
+
+13
+00:00:48.533 --> 00:00:51.700
+So, we will build a conversational
+chess game between two agent players
+
+14
+00:00:52.000 --> 00:00:55.800
+who both can call a tool
+and make legal moves on the chessboard.
+
+15
+00:00:56.200 --> 00:00:59.600
+For this lecture
+we will use the GPT-4 turbo model,
+
+16
+00:01:00.100 --> 00:01:03.100
+as they are much better chess players
+than GPT-3.
+
+17
+00:01:03.100 --> 00:01:07.100
+The first step is to create
+the tools needed for this chess game.
+
+18
+00:01:08.100 --> 00:01:09.100
+For that, we will
+
+19
+00:01:09.100 --> 00:01:12.100
+need to import a few libraries.
+
+20
+00:01:12.200 --> 00:01:15.900
+We import as a chess library,
+which can offer
+
+21
+00:01:15.900 --> 00:01:19.300
+us programmer ways to carry over
+the game.
+
+22
+00:01:20.600 --> 00:01:23.600
+We will initialize the chessboard.
+
+23
+00:01:23.933 --> 00:01:25.133
+To make the chessboard
+
+24
+00:01:25.133 --> 00:01:28.133
+aware of the current status,
+
+25
+00:01:28.300 --> 00:01:30.633
+we will need to have a variable
+to keep track
+
+26
+00:01:30.633 --> 00:01:32.700
+whether a move has been made.
+
+27
+00:01:32.700 --> 00:01:35.600
+So we initialize that variable as "false".
+
+28
+00:01:35.600 --> 00:01:36.000
+Okay.
+
+29
+00:01:36.000 --> 00:01:39.100
+Now, we are ready to define
+the tools needed by the agents.
+
+30
+00:01:39.433 --> 00:01:43.400
+First,
+we define a tool called "Get legal moves".
+
+31
+00:01:43.900 --> 00:01:47.700
+This is the Python function
+that will return a string
+
+32
+00:01:48.600 --> 00:01:51.800
+as a list of legal moves in UCI format.
+
+33
+00:01:52.700 --> 00:01:56.133
+This UCI format is a format
+for the language
+
+34
+00:01:56.500 --> 00:01:59.500
+for agents to understand
+what move it has been made.
+
+35
+00:02:00.233 --> 00:02:01.500
+The definition is very simple.
+
+36
+00:02:01.500 --> 00:02:04.300
+We'll just return a string
+with the content.
+
+37
+00:02:04.300 --> 00:02:05.600
+Possible moves are
+
+38
+00:02:06.900 --> 00:02:09.833
+the moves available in the board's
+
+39
+00:02:09.833 --> 00:02:11.033
+legal moves.
+
+40
+00:02:11.033 --> 00:02:14.000
+This annotated part is very important.
+
+41
+00:02:14.000 --> 00:02:17.300
+This will allow the agent
+to understand the format
+
+42
+00:02:17.500 --> 00:02:22.000
+of the returned content
+and the semantic meaning of it.
+
+43
+00:02:22.533 --> 00:02:25.400
+And next, we also need to define a tool
+
+44
+00:02:25.400 --> 00:02:28.400
+to make a move on the board.
+
+45
+00:02:29.500 --> 00:02:31.800
+This function has one
+
+46
+00:02:31.800 --> 00:02:34.800
+input argument named "move."
+
+47
+00:02:35.133 --> 00:02:36.133
+Okay.
+
+48
+00:02:36.133 --> 00:02:38.800
+So one agent decides to move in the move
+
+49
+00:02:38.800 --> 00:02:41.800
+they can call this function
+with a particular string.
+
+50
+00:02:42.300 --> 00:02:45.300
+And this move also needs to be in UCI format.
+
+51
+00:02:45.300 --> 00:02:46.600
+And the returned
+
+52
+00:02:46.600 --> 00:02:50.133
+value of this function should be a string
+of the result of the move.
+
+53
+00:02:50.800 --> 00:02:55.800
+And to define this function, we first need
+to get the move from the chessboard.
+
+54
+00:02:56.700 --> 00:03:01.400
+So we will call the chess.move
+from UCI, to get the move.
+
+55
+00:03:01.933 --> 00:03:04.800
+And then we are going to push that move
+
+56
+00:03:05.833 --> 00:03:07.133
+to the board.
+
+57
+00:03:07.133 --> 00:03:10.733
+And now, we will need to make use of the,
+variable
+
+58
+00:03:11.200 --> 00:03:13.600
+made the move
+
+59
+00:03:13.600 --> 00:03:16.000
+to update that variable.
+
+60
+00:03:16.000 --> 00:03:19.333
+So, we'll declare that the variable
+as a global variable
+
+61
+00:03:20.100 --> 00:03:22.700
+and set the variable to "true."
+
+62
+00:03:22.700 --> 00:03:24.600
+Other than that, the step,
+
+63
+00:03:24.600 --> 00:03:27.600
+we also want to display the board.
+
+64
+00:03:28.800 --> 00:03:31.500
+So we'll call the "Chess Library's
+
+65
+00:03:31.500 --> 00:03:34.500
+board function" to create the board.
+
+66
+00:03:35.300 --> 00:03:38.300
+And now, before we return
+
+67
+00:03:38.300 --> 00:03:42.100
+the information, to the agent,
+we want to get
+
+68
+00:03:43.100 --> 00:03:45.833
+The omission about the move
+we just made.
+
+69
+00:03:45.833 --> 00:03:47.533
+So, we'll get a piece
+
+70
+00:03:47.533 --> 00:03:49.900
+from the original point of the move,
+
+71
+00:03:49.900 --> 00:03:53.300
+get the symbol of that piece,
+and create a piece name
+
+72
+00:03:53.600 --> 00:03:57.400
+using the chessboard function,
+and do some normalization.
+
+73
+00:03:59.500 --> 00:04:01.300
+And at last,
+
+74
+00:04:01.300 --> 00:04:04.300
+we return
+
+75
+00:04:04.600 --> 00:04:06.700
+the move content
+
+76
+00:04:06.700 --> 00:04:10.000
+return string saying
+"we moved one piece
+
+77
+00:04:10.633 --> 00:04:14.133
+from an original location
+to a new location."
+
+78
+00:04:14.633 --> 00:04:16.633
+So that finishes
+the definition of the tool.
+
+79
+00:04:18.000 --> 00:04:20.300
+Now, we're ready to create agents. Again,
+
+80
+00:04:20.300 --> 00:04:24.600
+we'll import the conversable agent
+from AutoGen.
+
+81
+00:04:25.600 --> 00:04:28.600
+And we'll first create a player agent.
+
+82
+00:04:29.000 --> 00:04:32.500
+Player White. And give it a system message.
+
+83
+00:04:32.633 --> 00:04:35.400
+"You're a chess player
+and you play as white."
+
+84
+00:04:35.400 --> 00:04:38.633
+And we also need to let agents
+know what tools are available.
+
+85
+00:04:38.633 --> 00:04:42.000
+So we'll tell it "first call the
+to get a list of legal moves
+
+86
+00:04:42.333 --> 00:04:45.333
+and then call make move to make a move."
+
+87
+00:04:45.433 --> 00:04:46.700
+88
+00:04:46,700 --&gt; 00:04:49,600
+Let the agent know
+the two functions available.
+
+88
+00:04:49.600 --> 00:04:53.133
+And we also need to pass
+a large language model configuration to it.
+
+89
+00:04:54.200 --> 00:04:55.900
+Okay well, one player agent.
+
+90
+00:04:55.900 --> 00:04:57.300
+How about another one?
+
+91
+00:04:57.300 --> 00:05:00.300
+The only difference is the name
+and system message.
+
+92
+00:05:01.933 --> 00:05:02.233
+okay.
+
+93
+00:05:02.233 --> 00:05:04.200
+What about that again?
+
+94
+00:05:04.200 --> 00:05:07.200
+Now we created two player agents.
+
+95
+00:05:07.433 --> 00:05:11.533
+One thing to remember is that,
+although we tell the two agents
+
+96
+00:05:11.533 --> 00:05:14.900
+in the system message
+about the tool functions that they can use,
+
+97
+00:05:15.300 --> 00:05:18.000
+we have to give them the concrete definition
+
+98
+00:05:19.100 --> 00:05:21.800
+so later
+we will need to register the tools.
+
+99
+00:05:21.800 --> 00:05:26.800
+And before that, let's create
+an agent called board agent.
+
+100
+00:05:27.400 --> 00:05:29.933
+The board agent plays the role of
+
+101
+00:05:29.933 --> 00:05:33.100
+checking the moves with the players
+until the move is illegal.
+
+102
+00:05:33.533 --> 00:05:37.000
+And also update the status of the board.
+
+103
+00:05:37.533 --> 00:05:40.000
+To define that board agent,
+
+104
+00:05:40.000 --> 00:05:43.100
+we also need to have a stopping condition
+for the agent.
+
+105
+00:05:43.400 --> 00:05:46.100
+So we define that stopping condition
+
+106
+00:05:46.100 --> 00:05:49.100
+and define the function
+call the "checkmate move."
+
+107
+00:05:49.200 --> 00:05:51.900
+So this will check
+whether a move has been made.
+
+108
+00:05:51.900 --> 00:05:55.833
+Now we can define the board agent,
+give it name "board proxy".
+
+109
+00:05:56.533 --> 00:06:00.300
+And set the large language model
+configuration to be "false".
+
+110
+00:06:00.300 --> 00:06:03.000
+This agent will not use large language models.
+
+111
+00:06:03.000 --> 00:06:06.400
+And we pass the termination
+condition function to "check made
+
+112
+00:06:06.400 --> 00:06:07.400
+Move".
+
+113
+00:06:07.400 --> 00:06:12.400
+So this agent will stop conversing
+with other agents when a move has been made.
+
+114
+00:06:13.133 --> 00:06:18.100
+Otherwise, it will keep asking the other
+agent and say "please make a move."
+
+115
+00:06:18.233 --> 00:06:22.033
+This is the only reply it will make.
+We also set the human input
+
+116
+00:06:22.033 --> 00:06:22.900
+mode to be "never".
+
+117
+00:06:24.400 --> 00:06:25.400
+Let's run it.
+
+118
+00:06:25.400 --> 00:06:28.133
+So. now we have defined all the agents.
+
+119
+00:06:28.133 --> 00:06:31.533
+We can register the tools to the agents.
+
+120
+00:06:32.600 --> 00:06:34.900
+To do that, we will import
+
+121
+00:06:34.900 --> 00:06:37.900
+a function called the "register function
+AutoGen".
+
+122
+00:06:38.833 --> 00:06:41.833
+We'll need to register for both players.
+
+123
+00:06:42.200 --> 00:06:45.200
+So we'll use a for loop
+
+124
+00:06:46.900 --> 00:06:49.200
+between these two player agents
+
+125
+00:06:49.200 --> 00:06:52.000
+and in the for loop first function
+
+126
+00:06:52.000 --> 00:06:55.000
+we want to register is
+
+127
+00:06:55.300 --> 00:06:56.833
+"get legal moves".
+
+128
+00:06:56.833 --> 00:07:01.300
+We'll pass the get legal moves function
+and set to the caller
+
+129
+00:07:01.600 --> 00:07:06.200
+to be one of these players agent
+and the executor to be the board agent.
+
+130
+00:07:06.900 --> 00:07:11.300
+And we'll give it a name
+and give it its description.
+
+131
+00:07:11.933 --> 00:07:14.333
+In a similar way,
+we can register the second
+
+132
+00:07:14.333 --> 00:07:17.333
+function.
+
+133
+00:07:19.000 --> 00:07:22.300
+Make move.
+After these functions are registered,
+
+134
+00:07:22.500 --> 00:07:25.900
+the caller
+that is one of these player agents,
+
+135
+00:07:26.133 --> 00:07:28.900
+will be able to propose the function call.
+
+136
+00:07:28.900 --> 00:07:33.900
+And the executor, which is a board proxy
+agent, will be able to execute that tool.
+
+137
+00:07:35.300 --> 00:07:37.300
+Let's run that.
+
+138
+00:07:37.300 --> 00:07:39.900
+And we could actually inspect
+
+139
+00:07:39.900 --> 00:07:42.900
+the tool registration. For example,
+
+140
+00:07:42.933 --> 00:07:45.300
+we can check for the player black.
+
+141
+00:07:45.300 --> 00:07:45.600
+What
+
+142
+00:07:45.600 --> 00:07:46.800
+It's current
+
+143
+00:07:46.800 --> 00:07:49.600
+configuration tool section.
+
+144
+00:07:49.600 --> 00:07:50.400
+Here we go.
+
+145
+00:07:50.400 --> 00:07:53.600
+So this is the tool definition
+following OpenAI definition.
+
+146
+00:07:54.100 --> 00:07:55.933
+There's a list of tool functions.
+
+147
+00:07:55.933 --> 00:07:58.033
+The first function is "get legal moves".
+
+148
+00:07:58.033 --> 00:08:00.700
+The second function is "make move".
+
+149
+00:08:00.700 --> 00:08:05.433
+We see that a few fields like the type,
+the function description,
+
+150
+00:08:05.733 --> 00:08:10.733
+the parameters are automatically populated
+into this tool definition.
+
+151
+00:08:11.900 --> 00:08:13.933
+This is what the register function
+
+152
+00:08:13.933 --> 00:08:15.300
+from AutoGen did.
+
+153
+00:08:15.300 --> 00:08:19.300
+So the user still needs to manually write
+all of these definitions
+
+154
+00:08:20.000 --> 00:08:23.800
+following the OpenAI definition
+AutoGen library will do that for you.
+
+155
+00:08:24.200 --> 00:08:28.500
+All the user needs to do,
+is to define the functions in this way,
+
+156
+00:08:29.633 --> 00:08:32.000
+provide the necessary annotation.
+
+157
+00:08:32.000 --> 00:08:36.000
+Other than that it's just a normal Python
+function you have to write.
+
+158
+00:08:36.400 --> 00:08:41.400
+So there's no actual work needed
+for the agent to consume these tools.
+
+159
+00:08:42.600 --> 00:08:46.800
+After registering these tools,
+we also want to create this
+
+160
+00:08:46.833 --> 00:08:51.133
+nested chat conversation pattern.
+Because, we want that when the two players
+
+161
+00:08:51.133 --> 00:08:54.933
+play the game with each other,
+we want them to have nested chat
+
+162
+00:08:55.000 --> 00:08:59.100
+with the board agent before they make a move.
+To make sure the move is legal.
+
+163
+00:08:59.700 --> 00:09:04.233
+To do that, we first register
+a nested chat with the player white.
+
+164
+00:09:04.233 --> 00:09:05.000
+166
+00:09:05,000 --&gt; 00:09:08,000
+The trigger of the nested chat
+is player black,
+
+165
+00:09:08.233 --> 00:09:11.500
+so when player white
+they receive a message from player black,
+
+166
+00:09:11.900 --> 00:09:15.533
+this nested chat will be triggered.
+And then this nested chat
+
+167
+00:09:15.600 --> 00:09:18.700
+would be performed
+before it replies to player black.
+
+168
+00:09:19.400 --> 00:09:21.600
+And what's the definition
+of the nested chat?
+
+169
+00:09:21.600 --> 00:09:23.900
+Here we're using a chat queue.
+
+170
+00:09:23.900 --> 00:09:27.233
+With only one chat,
+so that in the nested chat
+
+171
+00:09:27.600 --> 00:09:31.000
+the chat will be initiated from the proxy.
+
+172
+00:09:31.400 --> 00:09:35.400
+The board proxy.
+And the recipient will be player white.
+
+173
+00:09:36.100 --> 00:09:40.700
+And we will use the Last message
+as a summarization method for this chat.
+
+174
+00:09:41.300 --> 00:09:44.300
+So before player
+white replies to player black
+
+175
+00:09:44.300 --> 00:09:47.400
+until first initiate this nested chat
+
+176
+00:09:47.800 --> 00:09:52.600
+between the board proxy and the player
+white until the player white chooses a move.
+
+177
+00:09:53.700 --> 00:09:56.700
+And then
+the reply to player black about the move.
+
+178
+00:09:57.000 --> 00:10:00.300
+Similarly, we can register
+in the nested chat for player black as well.
+
+179
+00:10:01.033 --> 00:10:03.100
+The trigger at this time is the player white
+
+180
+00:10:03.100 --> 00:10:06.633
+and the inner chat is between board
+proxy and player back.
+
+181
+00:10:07.200 --> 00:10:10.200
+Okay, that's all the work we need to do.
+
+182
+00:10:10.433 --> 00:10:13.900
+Let's get ready to play the game.
+We will first,
+
+183
+00:10:14.133 --> 00:10:17.000
+call the chessboard function
+to create a new board,
+
+184
+00:10:17.000 --> 00:10:20.633
+and we will call player black
+to initiate the chat method.
+
+185
+00:10:21.300 --> 00:10:23.900
+And with an initial message,
+"Let's play chess.
+
+186
+00:10:23.900 --> 00:10:26.900
+Your move." Will set the turn
+to be "two".
+
+187
+00:10:28.200 --> 00:10:30.233
+When we hit the wrong button, we see that
+
+188
+00:10:30.233 --> 00:10:33.433
+the player black initiates a message
+
+189
+00:10:34.233 --> 00:10:36.933
+and now the player white receives
+the message.
+
+190
+00:10:36.933 --> 00:10:40.300
+It will enter this auto reply
+with the nested chat.
+
+191
+00:10:40.733 --> 00:10:44.100
+This nested chat is between
+the board proxy and the player white.
+
+192
+00:10:44.500 --> 00:10:47.500
+We notice that the player white
+first suggests a tool called
+
+193
+00:10:47.700 --> 00:10:51.700
+Get the legal moves to gather
+the legal moves from board.
+
+194
+00:10:51.700 --> 00:10:55.900
+The board proxy returns tool execution result,
+returning all the possible moves.
+
+195
+00:10:56.500 --> 00:11:01.500
+And then player white uses
+the make move tool with argument e2 e4.
+
+196
+00:11:02.100 --> 00:11:02.833
+So that's a move.
+
+197
+00:11:02.833 --> 00:11:05.433
+selected
+by the player white. The board agent
+
+198
+00:11:05.433 --> 00:11:08.733
+now executes that and returns this message.
+
+199
+00:11:08.733 --> 00:11:11.200
+"We move the pawn from e2 to e4."
+
+200
+00:11:13.600 --> 00:11:16.000
+So that's the end of nested chat
+
+201
+00:11:16.000 --> 00:11:19.000
+because, the move has been made.
+
+202
+00:11:19.700 --> 00:11:22.200
+So after that nested chat
+finishes, the player
+
+203
+00:11:22.200 --> 00:11:26.000
+white will return the reply to player
+black.
+
+204
+00:11:26.600 --> 00:11:30.100
+This is the actual reply
+sent from player white to player black.
+
+205
+00:11:31.000 --> 00:11:35.400
+Now, the same message will happen
+between board proxy and the player black.
+
+206
+00:11:36.033 --> 00:11:39.533
+The player black will also call
+these tools of "get legal moves."
+
+207
+00:11:40.233 --> 00:11:43.633
+And suggest moves using "make move".
+
+208
+00:11:44.333 --> 00:11:47.800
+So the move set by player black is G8 f6.
+
+209
+00:11:48.500 --> 00:11:51.133
+Now the board proxy returns
+a confirmation.
+
+210
+00:11:51.133 --> 00:11:54.133
+We move the knight from G8 to F6.
+
+211
+00:11:54.300 --> 00:11:57.400
+So the final message from Player
+Black is "I've moved my knight
+
+212
+00:11:57.400 --> 00:12:00.700
+from G8 to f6 is your turn."
+That inner nested chat
+
+213
+00:12:01.100 --> 00:12:04.533
+finished.
+So the player black will send the
+
+214
+00:12:05.200 --> 00:12:07.700
+summary back to player white.
+
+215
+00:12:07.700 --> 00:12:10.300
+So, the same pattern will happen again.
+
+216
+00:12:10.300 --> 00:12:13.300
+Player white will get legal moves
+and shows the move.
+
+217
+00:12:13.500 --> 00:12:15.333
+It will play another knight.
+
+218
+00:12:16.500 --> 00:12:19.500
+And that's the
+end of this two-turn conversation.
+
+219
+00:12:19.833 --> 00:12:22.500
+How can we make this game more fun?
+
+220
+00:12:22.500 --> 00:12:25.200
+We noted that, in this game,
+
+221
+00:12:25.200 --> 00:12:28.200
+the players are only talking
+about the moves they're making.
+
+222
+00:12:29.133 --> 00:12:33.133
+How about
+we add a little fun to make them chit-chat
+
+223
+00:12:33.333 --> 00:12:35.600
+beyond these moves only.
+
+224
+00:12:35.600 --> 00:12:38.633
+So we could modify our definition
+about these player agents.
+
+225
+00:12:38.933 --> 00:12:41.000
+Now, we can change the system message.
+
+226
+00:12:41.000 --> 00:12:44.533
+Say, "After a move is made,
+chitchat to make the game fun."
+
+227
+00:12:45.000 --> 00:12:48.000
+So that's the one extra, extra action
+we added.
+
+228
+00:12:48.300 --> 00:12:51.400
+let's run that and let's do
+
+229
+00:12:51.400 --> 00:12:54.400
+the same for player black.
+
+230
+00:12:55.900 --> 00:12:59.633
+And we will need to repeat
+the registration about the tool use
+
+231
+00:12:59.633 --> 00:13:02.633
+and nested chat.
+
+232
+00:13:02.900 --> 00:13:05.900
+So do all of that.
+
+233
+00:13:06.000 --> 00:13:07.600
+236
+00:13:07,600 --&gt; 00:13:13,133
+And finally, we will recreate the board
+and restart the conversation.
+
+234
+00:13:15.200 --> 00:13:18.700
+And by the way, we also added a
+
+235
+00:13:19.833 --> 00:13:22.833
+flag side and equal to true in the
+for the nested chat.
+
+236
+00:13:22.900 --> 00:13:25.900
+So this time we don't need to inspect
+the inner conversation.
+
+237
+00:13:26.133 --> 00:13:30.800
+We just want to see the outer conversation
+between the two player agents. Let's see.
+
+238
+00:13:30.800 --> 00:13:34.400
+So, this time we see
+the first move made by player white.
+
+239
+00:13:35.100 --> 00:13:37.733
+And not only the teammate moves, but it says
+
+240
+00:13:37.733 --> 00:13:40.733
+"Let's see how you respond
+to this classic opening."
+
+241
+00:13:41.500 --> 00:13:45.133
+This time player black throws the move of the pawn
+and says
+
+242
+00:13:45.633 --> 00:13:48.900
+"I move my palm to c5,
+opting for the Sicilian Defense.
+
+243
+00:13:49.100 --> 00:13:50.033
+Your move.
+
+244
+00:13:50.033 --> 00:13:53.033
+What strategy are you planning
+next in this chess battle?"
+
+245
+00:13:53.300 --> 00:13:56.300
+So they're starting to challenge
+each other.
+
+246
+00:13:56.500 --> 00:14:01.033
+And player white responded
+"I just moved my pawn to d4,
+
+247
+00:14:01.033 --> 00:14:05.833
+pushing the game into the openly contested
+territories of the Sicilian Defense.
+
+248
+00:14:06.400 --> 00:14:10.200
+The center is heating up, and I'm curious
+to see how you will respond."
+
+249
+00:14:10.533 --> 00:14:13.933
+So they keep making fun and carry over.
+
+250
+00:14:15.200 --> 00:14:18.400
+You could try this example yourself
+and modify
+
+251
+00:14:18.400 --> 00:14:21.933
+this yourself,
+to make them behave differently.
+
+252
+00:14:22.500 --> 00:14:26.400
+In this example, we see two AI players
+playing with each other.
+
+253
+00:14:26.800 --> 00:14:30.200
+We could watch how they play
+with each other, where they set.
+
+254
+00:14:30.633 --> 00:14:32.633
+How do you like this example?
+
+255
+00:14:32.633 --> 00:14:37.000
+This demonstrates, one particular way
+of using tools within nested chat,
+
+256
+00:14:37.233 --> 00:14:40.500
+but it's not the only way.
+But in general, when you use tools,
+
+257
+00:14:41.000 --> 00:14:45.100
+you need an agent
+that's able to propose the tool use
+
+258
+00:14:45.100 --> 00:14:48.700
+and then another agent
+that's able to execute the tool.
+
+259
+00:14:49.000 --> 00:14:51.900
+If you want to hide this proposing
+
+260
+00:14:51.900 --> 00:14:55.400
+and tool using inside the nested chat,
+you could do that in a similar way.
+
+261
+00:14:56.200 --> 00:14:59.833
+And I can see that, when we do that,
+and from outside,
+
+262
+00:14:59.833 --> 00:15:03.200
+we don't necessarily need to know
+there are two agents involved,
+
+263
+00:15:03.800 --> 00:15:08.000
+and we can simply create
+the experience of one agent,
+
+264
+00:15:08.233 --> 00:15:12.400
+that is, not able to make use of tools
+and perform some functions.
+
+265
+00:15:13.033 --> 00:15:16.633
+In some other applications,
+you may want to explicitly, demonstrate
+
+266
+00:15:16.633 --> 00:15:20.400
+these separations of tool proposal
+and tool execution.
+
+267
+00:15:21.100 --> 00:15:25.400
+And in the next lesson,
+we will also demonstrate other ways of
+
+268
+00:15:25.600 --> 00:15:30.133
+using tools, for example,
+using free-form code or making an agent
+
+269
+00:15:30.200 --> 00:15:35.100
+or suggest a code or make the agent
+to consume user-defined functions.
+
+270
+00:15:35.100 --> 00:15:36.900
+in a more freestyle coding.
+

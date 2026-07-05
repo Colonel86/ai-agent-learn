@@ -1,0 +1,653 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.200 --> 00:00:03.933
+In this lesson, you'll learn
+how to leverage the multi-agent design
+
+2
+00:00:04.000 --> 00:00:07.000
+to finish a task involving multiple steps.
+
+3
+00:00:07.300 --> 00:00:10.900
+You'll build a sequence of tasks
+between multiple agents
+
+4
+00:00:11.100 --> 00:00:16.000
+who collaborate to provide a fun customer
+onboarding experience for a product.
+
+5
+00:00:16.200 --> 00:00:19.533
+You also experience
+how humans could be seamlessly
+
+6
+00:00:19.533 --> 00:00:22.533
+involved in the loop of an AI system.
+
+7
+00:00:22.533 --> 00:00:25.133
+All right. Let's code.
+
+8
+00:00:25.366 --> 00:00:27.966
+Let's consider a customer
+onboarding scenario.
+
+9
+00:00:28.266 --> 00:00:31.500
+In this scenario,
+a typical procedure is to first collect
+
+10
+00:00:31.500 --> 00:00:33.166
+some customer information
+and then survey customer's interest
+
+11
+00:00:33.366 --> 00:00:35.500
+some customer information
+and then survey customer's interest
+
+12
+00:00:36.133 --> 00:00:39.700
+and then engage with the customer
+based on the collected information.
+
+13
+00:00:40.233 --> 00:00:44.300
+With this in mind, it's a good idea
+to decompose this customer
+
+14
+00:00:44.300 --> 00:00:46.833
+onboarding task into three sub-tasks,
+
+15
+00:00:47.266 --> 00:00:49.433
+including information collecting,
+
+16
+00:00:50.233 --> 00:00:51.433
+interest survey,
+
+17
+00:00:51.766 --> 00:00:53.566
+and customer engagement.
+
+18
+00:00:54.533 --> 00:00:57.733
+Let's now check
+how we could finish this series of tasks
+
+19
+00:00:57.866 --> 00:00:59.500
+with sequential chat.
+
+20
+00:01:01.266 --> 00:01:05.600
+So here, we'll use the conversable
+agent class from AutoGen
+
+21
+00:01:05.766 --> 00:01:07.066
+to realize those agents.
+
+22
+00:01:09.566 --> 00:01:10.166
+Let's first
+
+23
+00:01:10.166 --> 00:01:13.166
+import this conversable agent,
+from AutoGen.
+
+24
+00:01:14.166 --> 00:01:17.966
+And then the first step
+is to create an onboarding agent
+
+25
+00:01:18.000 --> 00:01:21.000
+that asks for personal information.
+
+26
+00:01:21.733 --> 00:01:25.200
+And here we realize that
+by setting the system message
+
+27
+00:01:25.200 --> 00:01:28.566
+as a customer onboarding agent,
+and gave detailed instruction.
+
+28
+00:01:29.566 --> 00:01:34.566
+And here we are setting in human
+input mode as "never" because we are using
+
+29
+00:01:34.766 --> 00:01:38.566
+a large language model
+to generator response from this agent.
+
+30
+00:01:41.333 --> 00:01:44.333
+And similarly, let's create
+another onboarding agent
+
+31
+00:01:44.400 --> 00:01:47.033
+that ask for topic preference.
+
+32
+00:01:47.366 --> 00:01:50.233
+And similarly we can realize,
+
+33
+00:01:50.233 --> 00:01:53.566
+what do we want to achieve
+by setting this system message.
+
+34
+00:01:54.233 --> 00:01:57.233
+So here, the system message is set to ask
+
+35
+00:01:57.333 --> 00:02:00.800
+the customer's interest,
+and preference on the topics.
+
+36
+00:02:01.533 --> 00:02:04.866
+And similarly
+we will use "never" as human input mode
+
+37
+00:02:05.033 --> 00:02:09.666
+and use a large language model,
+to back this conversable agent.
+
+38
+00:02:12.166 --> 00:02:13.166
+And another agent
+
+39
+00:02:13.166 --> 00:02:17.666
+we want to create is the customer
+engagement agent that provides fun facts,
+
+40
+00:02:17.766 --> 00:02:20.866
+jokes, or interesting stories
+based on the user's
+
+41
+00:02:21.100 --> 00:02:24.100
+customer's personal information,
+and the topic preference.
+
+42
+00:02:24.766 --> 00:02:29.766
+And again, we, give detailed instructions,
+on the behavior of this engagement
+
+43
+00:02:30.066 --> 00:02:33.066
+agent by setting the proper
+system message.
+
+44
+00:02:34.700 --> 00:02:38.600
+Now, next,
+we should define a customer proxy
+
+45
+00:02:38.600 --> 00:02:42.200
+agent to act as a proxy
+for the real customer.
+
+46
+00:02:42.700 --> 00:02:46.000
+Note that here we are setting
+the human input mode
+
+47
+00:02:46.100 --> 00:02:50.300
+as "always",
+so that this proxy agent could always
+
+48
+00:02:50.300 --> 00:02:53.300
+solicit human
+input from the real customer.
+
+49
+00:02:54.800 --> 00:02:58.600
+So with those agents constructed,
+we can now craft a sequential chat
+
+50
+00:02:58.600 --> 00:03:01.600
+to finish the onboarding process.
+
+51
+00:03:02.500 --> 00:03:03.800
+So in this specific
+
+52
+00:03:03.800 --> 00:03:08.400
+example, each chat is effectively
+a two-agent chat between a particular
+
+53
+00:03:08.400 --> 00:03:11.066
+onboarding agent and custom proxy
+agent in each chat.
+
+54
+00:03:12.266 --> 00:03:16.666
+In each chat, the sender agent sends an initial message
+
+55
+00:03:16.666 --> 00:03:20.100
+to the recipient to kick off the conversation, and then they will
+
+56
+00:03:20.100 --> 00:03:23.300
+have a back-and-forth conversation
+until the max turns
+
+57
+00:03:23.300 --> 00:03:26.300
+is reached
+or the termination message is received.
+
+58
+00:03:27.200 --> 00:03:28.066
+In the first chat,
+
+59
+00:03:28.066 --> 00:03:30.200
+we are setting the max turns to two,
+
+60
+00:03:30.200 --> 00:03:33.466
+so that they can have
+at most two turns of conversation.
+
+61
+00:03:34.366 --> 00:03:35.166
+In addition,
+
+62
+00:03:35.166 --> 00:03:39.666
+in the sequential chat scenario,
+the tasks, typically depend on each other.
+
+63
+00:03:39.900 --> 00:03:42.800
+Therefore,
+when they want to summarize information
+
+64
+00:03:42.800 --> 00:03:45.766
+from the previous chat
+to be used in the next chat.
+
+65
+00:03:46.300 --> 00:03:49.266
+In this case,
+we want to use the summary method.
+
+66
+00:03:49.466 --> 00:03:53.266
+In this example, we are using reflection
+as the summary method
+
+67
+00:03:53.266 --> 00:03:54.966
+to summarize the customer's
+
+68
+00:03:54.966 --> 00:03:59.266
+personal information from the first
+chat and pass it to the second chat.
+
+69
+00:03:59.766 --> 00:04:02.766
+We further add a summary prompt as a way
+
+70
+00:04:03.000 --> 00:04:08.000
+to instruct the large language model on
+how to do the summary.
+
+71
+00:04:08.466 --> 00:04:11.366
+So basically here
+we are instructing it to return
+
+72
+00:04:11.366 --> 00:04:15.166
+the customer information
+into a json object, with this format,
+
+73
+00:04:15.466 --> 00:04:18.466
+including a field of name
+and the location.
+
+74
+00:04:20.166 --> 00:04:23.533
+So in the second chat,
+we are doing similar things. Here,
+
+75
+00:04:23.533 --> 00:04:26.633
+the sender is the onboarding topic
+preference agent.
+
+76
+00:04:26.766 --> 00:04:29.766
+And the recipient
+is a customer proxy agent.
+
+77
+00:04:30.666 --> 00:04:32.300
+The kickoff message is:
+
+78
+00:04:32.300 --> 00:04:36.466
+"Great, could you tell me what topics you are
+interested in reading about?"
+
+79
+00:04:36.866 --> 00:04:40.366
+And the summary method
+we are using reflection with LLM
+
+80
+00:04:40.600 --> 00:04:44.333
+and at this time we are not providing
+any customized summary prompt.
+
+81
+00:04:44.600 --> 00:04:47.833
+And that will be using the building
+default prompt.
+
+82
+00:04:48.000 --> 00:04:52.400
+And here in this case the max turn
+is set to be one. Because we just want
+
+83
+00:04:52.533 --> 00:04:57.300
+to use one turn of conversation to seek
+the customer's interested topic.
+
+84
+00:04:58.133 --> 00:05:00.766
+And in your specific case,
+you can always change
+
+85
+00:05:00.766 --> 00:05:04.333
+the multiple turns
+so that you can seek more information.
+
+86
+00:05:05.600 --> 00:05:09.800
+And in the third chat,
+we have a chat between the customer
+
+87
+00:05:09.833 --> 00:05:12.833
+proxy agent
+and the customer engagement agent.
+
+88
+00:05:13.600 --> 00:05:18.600
+And this time, it is the customer proxy
+agent, who kicks off the conversation.
+
+89
+00:05:19.200 --> 00:05:22.266
+So basically by saying,
+"Let's find something to read."
+
+90
+00:05:22.966 --> 00:05:26.366
+And after crafting this chat session,
+we are ready to
+
+91
+00:05:26.666 --> 00:05:30.500
+start the whole onboarding process
+that executing initiate chats.
+
+92
+00:05:32.333 --> 00:05:35.333
+In this
+example, you will act as the customer.
+
+93
+00:05:35.433 --> 00:05:38.966
+And when you are prompted for answers,
+you should tap in your response
+
+94
+00:05:38.966 --> 00:05:42.033
+and press enter.
+Okay, let's start the chat.
+
+95
+00:05:42.633 --> 00:05:46.166
+So here, you can see that
+we are starting our first chat,
+
+96
+00:05:46.166 --> 00:05:47.366
+which is between
+
+97
+00:05:47.366 --> 00:05:51.433
+the onboarding personal information agent
+and the customer proxy agent.
+
+98
+00:05:52.400 --> 00:05:55.100
+Here the onboarding agent is asking
+
+99
+00:05:55.100 --> 00:05:58.100
+the customer
+"What is the name and the location."
+
+100
+00:05:58.100 --> 00:06:00.900
+Let's say, I'll use a fake name.
+
+101
+00:06:00.900 --> 00:06:02.166
+Alice.
+
+102
+00:06:03.233 --> 00:06:06.233
+Next, it is asking, my location.
+
+103
+00:06:06.633 --> 00:06:09.633
+I say my location is New York.
+
+104
+00:06:10.433 --> 00:06:15.300
+And here you can see that we are starting
+a new chat, which is the second chat
+
+105
+00:06:15.300 --> 00:06:19.933
+session between the topic preference agent
+and the customer proxy agent.
+
+106
+00:06:22.666 --> 00:06:26.366
+And here, it is asking me to tell it
+
+107
+00:06:26.566 --> 00:06:29.900
+the topics
+that I'm interested in reading about.
+
+108
+00:06:30.466 --> 00:06:34.466
+So let's say the topic I want to read
+is about dog.
+
+109
+00:06:34.766 --> 00:06:38.766
+And now that you can see
+we are entering our third chat session,
+
+110
+00:06:39.066 --> 00:06:42.066
+and this chat session is between
+the customer
+
+111
+00:06:42.066 --> 00:06:45.066
+proxy agent and the customer engagement agent.
+
+112
+00:06:45.166 --> 00:06:48.500
+This is the message from the customer
+engagement agent.
+
+113
+00:06:48.566 --> 00:06:51.566
+So basically, you can see that it is using
+
+114
+00:06:51.666 --> 00:06:55.466
+my personal information,
+my name and the location and also
+
+115
+00:06:55.466 --> 00:06:59.966
+the topic I'm interested in to
+have some engagement in the process.
+
+116
+00:07:01.300 --> 00:07:04.466
+Feel free to pause here, and play around with it.
+
+117
+00:07:04.800 --> 00:07:07.866
+For example, you can provide your own preferences.
+
+118
+00:07:09.300 --> 00:07:09.600
+Okay,
+
+119
+00:07:09.600 --> 00:07:13.400
+so when the chat is done,
+you could always check the results
+
+120
+00:07:13.400 --> 00:07:16.600
+from each of these chat sessions
+in the sequential chat.
+
+121
+00:07:16.933 --> 00:07:19.933
+So here let's chat in this chat session.
+
+122
+00:07:21.733 --> 00:07:25.133
+And here you can see that
+we first have a nest json
+
+123
+00:07:25.133 --> 00:07:27.800
+format of the customer's
+personal information.
+
+124
+00:07:28.566 --> 00:07:31.900
+And we have a summary,
+the customer's interest,
+
+125
+00:07:32.200 --> 00:07:36.566
+which is Alice is interested
+in reading about dog-related topics.
+
+126
+00:07:36.866 --> 00:07:39.700
+And we also have a nest
+
+127
+00:07:39.700 --> 00:07:42.466
+engagement message with the customer.
+
+128
+00:07:43.133 --> 00:07:46.133
+Similarly, you can also check the cost
+
+129
+00:07:46.133 --> 00:07:49.133
+associated with each of these chats.
+
+130
+00:07:50.100 --> 00:07:53.000
+From this result,
+you can see their detailed,
+
+131
+00:07:53.000 --> 00:07:57.800
+cost information, including,
+the total cost, the prompt token cost,
+
+132
+00:07:57.800 --> 00:08:01.133
+and the completion token cost,
+and the total cost.
+
+133
+00:08:02.800 --> 00:08:03.233
+Alright.
+
+134
+00:08:03.233 --> 00:08:04.033
+In this lesson,
+
+135
+00:08:04.033 --> 00:08:08.600
+we have learned how to use sequential chats
+to finish a sequence of dependent tasks.
+
+136
+00:08:09.133 --> 00:08:13.366
+In the next lesson, you will learn
+how to realize the reflection
+
+137
+00:08:13.366 --> 00:08:17.333
+agentic design pattern with nested chat.
+Where a chat
+
+138
+00:08:17.533 --> 00:08:21.700
+or a sequence of chats are nested
+within another chat
+
+139
+00:08:22.000 --> 00:08:23.900
+as in the monologue of an agent.
+

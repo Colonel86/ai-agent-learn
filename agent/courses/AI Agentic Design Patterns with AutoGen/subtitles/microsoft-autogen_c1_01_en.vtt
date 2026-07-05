@@ -1,0 +1,363 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.333 --> 00:00:03.370
+Welcome to AI Agentic Design Patterns
+
+2
+00:00:03.370 --> 00:00:06.573
+with AutoGen, built in partnership
+with Microsoft.
+
+3
+00:00:06.940 --> 00:00:11.344
+I'm joined by the instructors Chi Wang,
+who is principal researcher at Microsoft,
+
+4
+00:00:11.678 --> 00:00:15.015
+and Qingyun Wu, who's an assistant professor
+at Penn State University,
+
+5
+00:00:15.248 --> 00:00:18.251
+both of whom are co-creators of AutoGen.
+
+6
+00:00:18.685 --> 00:00:21.221
+Thanks, Andrew. I'm excited to be here.
+
+7
+00:00:21.221 --> 00:00:23.623
+Thank you.
+Great to be here with you, Andrew.
+
+8
+00:00:23.623 --> 00:00:26.192
+This course is an introduction
+to AutoGen,
+
+9
+00:00:26.192 --> 00:00:29.429
+a multi-agent conversational framework
+that enables you
+
+10
+00:00:29.796 --> 00:00:32.665
+to quickly create multiple agents
+with different roles,
+
+11
+00:00:32.665 --> 00:00:36.970
+persona tasks, and capabilities
+to implement complex AI applications
+
+12
+00:00:36.970 --> 00:00:39.973
+using different AI agentic design patterns.
+
+13
+00:00:40.640 --> 00:00:43.977
+Let's say you're interested in analyzing
+financial data.
+
+14
+00:00:44.310 --> 00:00:48.715
+The task may require writing
+code to collect and analyze share prices.
+
+15
+00:00:49.015 --> 00:00:51.718
+Then synthesizing
+your findings into a report.
+
+16
+00:00:51.718 --> 00:00:55.355
+This might take a person days of research
+and coding and writing.
+
+17
+00:00:56.256 --> 00:00:58.425
+A multi-agent system can streamline
+
+18
+00:00:58.425 --> 00:01:01.928
+this process
+by enabling you to create and hire
+
+19
+00:01:02.228 --> 00:01:07.033
+agents that work for you as a researcher,
+data collector, co-writer, and executor.
+
+20
+00:01:07.600 --> 00:01:10.703
+Your agents can also
+iteratively review, critique,
+
+21
+00:01:10.703 --> 00:01:13.706
+and improve the results
+until it meets your standard.
+
+22
+00:01:13.773 --> 00:01:14.908
+This is just one example
+
+23
+00:01:14.908 --> 00:01:18.645
+of the many practical applications
+of a multi-agent framework.
+
+24
+00:01:18.945 --> 00:01:22.449
+And Chi and Qingyun will guide you through
+six lessons,
+
+25
+00:01:22.749 --> 00:01:26.119
+each featuring its own unique
+design process and use case.
+
+26
+00:01:26.453 --> 00:01:29.789
+In this course, you'll learn about how
+to train core components
+
+27
+00:01:29.956 --> 00:01:33.226
+by exploring the building
+agent conversable agent.
+
+28
+00:01:33.827 --> 00:01:38.665
+You'll create and customize
+a lively conversation between two standup
+
+29
+00:01:38.665 --> 00:01:43.665
+comedian agents while exploring
+their interactive capabilities.
+
+30
+00:01:44.504 --> 00:01:45.205
+Then you will learn
+
+31
+00:01:45.205 --> 00:01:48.741
+about a multi-agent interaction
+pattern called Sequential chats.
+
+32
+00:01:49.342 --> 00:01:53.213
+This allows you to build
+conversational agents that work
+
+33
+00:01:53.213 --> 00:01:56.916
+step by step to carry out a list of tasks
+in a sequence.
+
+34
+00:01:57.851 --> 00:02:01.221
+We'll illustrate this
+with a customer onboarding application.
+
+35
+00:02:01.654 --> 00:02:06.654
+You will also explore the agent reflection
+framework in two practical scenarios.
+
+36
+00:02:07.360 --> 00:02:09.996
+The first one will use multiple agents
+
+37
+00:02:09.996 --> 00:02:12.966
+to produce a well-written blogpost,
+
+38
+00:02:13.233 --> 00:02:15.768
+the second as tools to agents
+
+39
+00:02:15.768 --> 00:02:18.571
+to create a conversational chess game.
+
+40
+00:02:18.571 --> 00:02:20.940
+In both of these examples, you will learn
+
+41
+00:02:20.940 --> 00:02:24.210
+another interaction
+pattern called a nested chat,
+
+42
+00:02:24.978 --> 00:02:27.981
+which means when the agent is
+given a task,
+
+43
+00:02:28.148 --> 00:02:31.050
+it calls a bunch of other agents
+and iterates
+
+44
+00:02:31.050 --> 00:02:34.687
+with them for a while
+before it returns the result.
+
+45
+00:02:35.755 --> 00:02:37.056
+If we think of you,
+
+46
+00:02:37.056 --> 00:02:40.326
+the developer,
+as a manager of a handful of agents,
+
+47
+00:02:40.894 --> 00:02:44.297
+then nested chat corresponds
+to letting an agent
+
+48
+00:02:44.631 --> 00:02:49.631
+that you manage also in turn, manage
+their own agents. You also learn about
+
+49
+00:02:50.069 --> 00:02:55.069
+a very powerful capability tool use. In which
+you can provide a user-defined function.
+
+50
+00:02:55.742 --> 00:02:59.312
+For example, a function
+to check of certain chess moves are legal
+
+51
+00:02:59.612 --> 00:03:02.482
+and give that to the agent to use.
+
+52
+00:03:02.482 --> 00:03:04.884
+And for applications
+where you might not have
+
+53
+00:03:04.884 --> 00:03:08.421
+a predefined function
+or predefined piece of code to provide,
+
+54
+00:03:08.721 --> 00:03:13.721
+you'll also learn about coding and code
+execution, which means asking the agent
+
+55
+00:03:14.627 --> 00:03:18.031
+to write the code it needs,
+which after checking for correctness,
+
+56
+00:03:18.331 --> 00:03:19.832
+it could then execute that code
+
+57
+00:03:19.832 --> 00:03:23.136
+it did wrote.
+Maybe in a sandbox environment to computer
+
+58
+00:03:23.136 --> 00:03:27.440
+result needed for a task.
+You'll see both tool use as well as code
+
+59
+00:03:27.440 --> 00:03:30.944
+writing and execution illustrated
+in the financial analysis example.
+
+60
+00:03:31.377 --> 00:03:32.946
+And finally you learn best
+
+61
+00:03:32.946 --> 00:03:36.482
+practices for
+building custom multi-agent group chats.
+
+62
+00:03:36.816 --> 00:03:41.254
+We'll illustrate this with examples
+of generating a detailed report.
+
+63
+00:03:41.921 --> 00:03:44.691
+This complex task requires planning.
+
+64
+00:03:44.691 --> 00:03:49.295
+In other words, the agent has to decide
+on a sequence of actions to take,
+
+65
+00:03:49.762 --> 00:03:54.133
+such as guiding data,
+analyzing, writing, and revising.
+
+66
+00:03:54.634 --> 00:03:59.634
+You see how we can add a planning agent
+into the group chat and control
+
+67
+00:03:59.739 --> 00:04:03.176
+how the work flows from one agent
+to another agent,
+
+68
+00:04:03.443 --> 00:04:07.847
+so as to execute the needed individual
+tasks in the right sequence.
+
+69
+00:04:08.448 --> 00:04:10.783
+Many people have worked
+to create this course.
+
+70
+00:04:10.783 --> 00:04:15.121
+I'd like to thank Eric Zhu from Microsoft.
+As well as Diala Ezzeddine
+
+71
+00:04:15.188 --> 00:04:17.090
+from DeepLearning.AI.
+
+72
+00:04:17.090 --> 00:04:21.027
+In this first lesson, you will start
+with building your first AutoGen
+
+73
+00:04:21.027 --> 00:04:24.430
+agent. Program
+a basic two-agent conversation,
+
+74
+00:04:24.731 --> 00:04:27.300
+and enjoy a standup comedy show.
+
+75
+00:04:27.300 --> 00:04:28.334
+That sounds great.
+
+76
+00:04:28.334 --> 00:04:30.603
+Let's go on to the
+next video and get started.
+
