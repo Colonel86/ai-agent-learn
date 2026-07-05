@@ -1,0 +1,1498 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:02.936
+In this lesson, you will learn how to construct
+
+2
+00:00:02.936 --> 00:00:05.638
+a Knowledge Graph from an example data set
+
+3
+00:00:05.638 --> 00:00:08.008
+on API services and their endpoints.
+
+4
+00:00:08.408 --> 00:00:10.310
+Specifically, you will learn about
+
+5
+00:00:10.343 --> 00:00:13.913
+a declarative approach for Knowledge Graph construction.
+
+6
+00:00:13.913 --> 00:00:16.016
+Alright, let's go.
+
+7
+00:00:16.516 --> 00:00:18.451
+In this notebook, you will construct
+
+8
+00:00:18.451 --> 00:00:20.687
+your first knowledge graph and visualize it.
+
+9
+00:00:20.887 --> 00:00:24.891
+Here are two plots that represent parts of the knowledge graphs
+
+10
+00:00:25.091 --> 00:00:27.394
+that you will create during this lesson.
+
+11
+00:00:27.761 --> 00:00:29.863
+To construct our knowledge graph,
+
+12
+00:00:30.563 --> 00:00:33.266
+first, we will see what the input data looks like.
+
+13
+00:00:33.566 --> 00:00:35.268
+Then, you will learn how to
+
+14
+00:00:35.268 --> 00:00:37.270
+model this data in the knowledge graph.
+
+15
+00:00:37.370 --> 00:00:39.773
+That is, we introduce the knowledge graph schema.
+
+16
+00:00:40.273 --> 00:00:43.076
+Finally, you will learn about a declarative approach
+
+17
+00:00:43.777 --> 00:00:47.781
+to map the input data to the knowledge graph following the schema.
+
+18
+00:00:48.481 --> 00:00:51.084
+In this course, you will use OData APIs
+
+19
+00:00:51.084 --> 00:00:53.286
+and their EDMX specifications.
+
+20
+00:00:53.920 --> 00:00:57.424
+However, the methodology is not limited to OData
+
+21
+00:00:57.657 --> 00:01:00.527
+and can be applied to other API specifications as well.
+
+22
+00:01:00.994 --> 00:01:04.097
+Let's jump in the notebook and build our first knowledge graph.
+
+23
+00:01:04.564 --> 00:01:08.868
+In this notebook, we start by importing all necessary packages.
+
+24
+00:01:09.169 --> 00:01:12.372
+We use pandas to read the CSV files,
+
+25
+00:01:12.472 --> 00:01:15.075
+rdflib to construct the knowledge graph,
+
+26
+00:01:15.341 --> 00:01:19.345
+networkx and matplotlib for visualizing the knowledge graph
+
+27
+00:01:19.446 --> 00:01:22.449
+and some helper functions to transform an RDF graph
+
+28
+00:01:22.549 --> 00:01:24.851
+into a networkx knowledge graph.
+
+29
+00:01:25.351 --> 00:01:28.154
+Let's start by reading the input data from these CSV files
+
+30
+00:01:28.254 --> 00:01:32.959
+and see what information we have about each concept about these APIs.
+
+31
+00:01:33.259 --> 00:01:37.363
+First, we read the services from the CSV file.
+
+32
+00:01:37.363 --> 00:01:40.066
+We define that it's a comma separated file.
+
+33
+00:01:40.066 --> 00:01:42.268
+We can specify the data type for
+
+34
+00:01:42.268 --> 00:01:44.771
+the version column, which should be a string.
+
+35
+00:01:45.271 --> 00:01:47.474
+And finally, we also define how
+
+36
+00:01:47.474 --> 00:01:50.076
+to handle null values in the data.
+
+37
+00:01:50.477 --> 00:01:52.145
+So let's take a look at what
+
+38
+00:01:52.145 --> 00:01:54.080
+the data looks like that we just read.
+
+39
+00:01:54.781 --> 00:01:57.784
+We take a look at the first row of the CSV file.
+
+40
+00:01:58.485 --> 00:02:01.454
+We see that we have a name of the API service,
+
+41
+00:02:01.754 --> 00:02:04.457
+we have a version, and we have a description.
+
+42
+00:02:04.757 --> 00:02:07.460
+Here we have the PURCHASEORDER API
+
+43
+00:02:07.760 --> 00:02:09.462
+in version 4.0,
+
+44
+00:02:09.762 --> 00:02:13.066
+and it says that it's an OData service for Purchase Order.
+
+45
+00:02:13.399 --> 00:02:16.002
+Let's continue with the other input files.
+
+46
+00:02:16.603 --> 00:02:19.205
+Next, let's take a look at the entity types.
+
+47
+00:02:19.606 --> 00:02:21.708
+We again read from a CSV file.
+
+48
+00:02:22.008 --> 00:02:25.512
+It's a comma separated file and we handle null values.
+
+49
+00:02:26.012 --> 00:02:28.615
+For the entity types, there is a name
+
+50
+00:02:28.915 --> 00:02:31.518
+and a service that this entity type belongs to.
+
+51
+00:02:31.818 --> 00:02:35.221
+In this case, we have the purchase requisition item type,
+
+52
+00:02:35.321 --> 00:02:38.224
+which belongs to the PURCHASEREQUISITION API.
+
+53
+00:02:38.758 --> 00:02:41.127
+Next, let's take a look at the properties
+
+54
+00:02:41.427 --> 00:02:45.131
+that provide more information about these entity types.
+
+55
+00:02:45.632 --> 00:02:47.233
+Again, we read the CSV file,
+
+56
+00:02:47.534 --> 00:02:50.336
+comma separated file, and we handle null values.
+
+57
+00:02:50.603 --> 00:02:52.805
+for the properties, we have the service
+
+58
+00:02:52.805 --> 00:02:56.109
+that the property belongs to.
+
+59
+00:02:56.109 --> 00:02:59.112
+We have the entityType to which this property belongs,
+
+60
+00:02:59.112 --> 00:03:01.114
+a name of the property,
+
+61
+00:03:01.114 --> 00:03:03.383
+in this case the cash discount.
+
+62
+00:03:03.383 --> 00:03:05.885
+We have a label which is usually
+
+63
+00:03:05.885 --> 00:03:09.088
+more descriptive, which is the cash discount percentage,
+
+64
+00:03:09.389 --> 00:03:11.090
+We have the type of the property,
+
+65
+00:03:11.090 --> 00:03:14.694
+which is a Decimal type. We have the maximum length,
+
+66
+00:03:14.694 --> 00:03:17.096
+whether it's a key of the entityType,
+
+67
+00:03:17.096 --> 00:03:20.700
+and whether it's a selectable property by UI applications.
+
+68
+00:03:21.334 --> 00:03:25.738
+Next, let's load the navigations. We again read the CSV file,
+
+69
+00:03:26.039 --> 00:03:27.840
+and in this case we want to take a
+
+70
+00:03:27.840 --> 00:03:29.642
+look at the first two rows of the file
+
+71
+00:03:29.742 --> 00:03:32.946
+in order to understand the types of navigations that there are.
+
+72
+00:03:33.313 --> 00:03:36.416
+Let's take a look at the first two rows of the navigations.
+
+73
+00:03:36.416 --> 00:03:40.086
+Navigations are defined for a service, they have a name,
+
+74
+00:03:40.486 --> 00:03:43.289
+the entity type they navigate from,
+
+75
+00:03:43.590 --> 00:03:45.892
+and the entity type they navigate to.
+
+76
+00:03:46.192 --> 00:03:47.894
+Finally, they have a multiplicity.
+
+77
+00:03:47.894 --> 00:03:51.297
+And in this example, you can see that when we navigate from
+
+78
+00:03:51.297 --> 00:03:54.400
+purchase order item to a purchase order,
+
+79
+00:03:54.601 --> 00:03:56.903
+this multiplicity is one.
+
+80
+00:03:57.203 --> 00:04:00.506
+This indicates that a purchase order item belongs
+
+81
+00:04:00.940 --> 00:04:03.176
+to exactly one purchase order.
+
+82
+00:04:03.176 --> 00:04:05.778
+While in the second navigation here, we see that
+
+83
+00:04:05.778 --> 00:04:07.880
+we navigate from a purchase order
+
+84
+00:04:07.880 --> 00:04:09.782
+to a purchase order item,
+
+85
+00:04:09.782 --> 00:04:12.785
+which is a one-to-many relationship,
+
+86
+00:04:12.785 --> 00:04:15.588
+indicated by the star in the multiplicity.
+
+87
+00:04:15.588 --> 00:04:17.790
+That means a purchase order
+
+88
+00:04:17.790 --> 00:04:20.893
+can hold multiple purchase order items.
+
+89
+00:04:21.427 --> 00:04:24.797
+Finally, let's take a look at the entity sets and load them.
+
+90
+00:04:24.797 --> 00:04:26.499
+Again, we load the CSV file
+
+91
+00:04:26.499 --> 00:04:27.800
+and we take a look at
+
+92
+00:04:27.800 --> 00:04:29.302
+the first row of the entity sets.
+
+93
+00:04:29.702 --> 00:04:31.904
+Entity sets are logical containers
+
+94
+00:04:32.205 --> 00:04:35.308
+for entities of a certain entity type.
+
+95
+00:04:35.608 --> 00:04:38.711
+Each entity type belongs to exactly one entity set.
+
+96
+00:04:38.911 --> 00:04:42.215
+Here we have the name of the entity set,
+
+97
+00:04:42.615 --> 00:04:44.217
+the service they belong to,
+
+98
+00:04:44.217 --> 00:04:46.719
+and the entityType that it belongs to.
+
+99
+00:04:47.153 --> 00:04:49.322
+This concludes all input files.
+
+100
+00:04:49.455 --> 00:04:51.624
+So now let's take a brief look at the statistics
+
+101
+00:04:51.724 --> 00:04:53.926
+of the data that we just imported.
+
+102
+00:04:54.727 --> 00:04:56.929
+Here, we set up a simple dictionary
+
+103
+00:04:56.929 --> 00:04:59.932
+that maps the types that we just loaded
+
+104
+00:04:59.932 --> 00:05:04.932
+to the number of rows within each of the corresponding data frames
+
+105
+00:05:04.937 --> 00:05:07.140
+that were generated by loading these files.
+
+106
+00:05:07.640 --> 00:05:11.544
+And we then show how many concepts we have per type.
+
+107
+00:05:11.811 --> 00:05:14.814
+Here you can see, we have 39 services
+
+108
+00:05:15.615 --> 00:05:18.318
+with a total of 101 entity sets
+
+109
+00:05:18.618 --> 00:05:20.620
+and corresponding entity types.
+
+110
+00:05:20.720 --> 00:05:22.822
+There are 126 navigations
+
+111
+00:05:23.323 --> 00:05:25.625
+and more than 2,000 property types
+
+112
+00:05:25.825 --> 00:05:28.628
+defined for these 101 entity types.
+
+113
+00:05:28.861 --> 00:05:31.764
+Now, let's take a look how we can represent these concepts
+
+114
+00:05:31.764 --> 00:05:34.867
+and their relationships in our knowledge graph schema.
+
+115
+00:05:35.668 --> 00:05:37.970
+After getting an understanding of the input data,
+
+116
+00:05:37.970 --> 00:05:40.006
+the next step is to define a
+
+117
+00:05:40.006 --> 00:05:42.075
+schema or ontology for our knowledge graph.
+
+118
+00:05:42.675 --> 00:05:46.679
+A knowledge graph schema defines the structure and relationships within this graph.
+
+119
+00:05:46.779 --> 00:05:49.349
+It specifies the types of entities, nodes,
+
+120
+00:05:49.349 --> 00:05:51.651
+and the types of relationships, the edges,
+
+121
+00:05:51.651 --> 00:05:53.753
+that can exist in the graph.
+
+122
+00:05:54.253 --> 00:05:55.955
+The schema acts as a blueprint,
+
+123
+00:05:55.955 --> 00:05:58.224
+providing a formal representation of the
+
+124
+00:05:58.224 --> 00:06:00.860
+domain knowledge being modeled and it enables
+
+125
+00:06:00.960 --> 00:06:05.198
+efficient querying, reasoning, and inference over the knowledge graph.
+
+126
+00:06:05.698 --> 00:06:09.235
+OData APIs are described using the Entity Data Model,
+
+127
+00:06:09.469 --> 00:06:11.971
+from which we derive our knowledge graph schema.
+
+128
+00:06:12.205 --> 00:06:14.006
+So let's take a look at the schema.
+
+129
+00:06:14.607 --> 00:06:16.776
+The main entry point are services.
+
+130
+00:06:17.377 --> 00:06:21.481
+The service advertise its concrete data model in a machine readable form,
+
+131
+00:06:21.781 --> 00:06:26.152
+allowing generic clients to interact with the service in a well-defined way.
+
+132
+00:06:26.486 --> 00:06:29.389
+For example, a service to retrieve
+
+133
+00:06:29.389 --> 00:06:33.292
+and modify purchase order. Within a service, there can be multiple
+
+134
+00:06:33.292 --> 00:06:37.296
+entity types. Entity types are the fundamental building block
+
+135
+00:06:37.697 --> 00:06:40.299
+for describing the structure of the data
+
+136
+00:06:40.299 --> 00:06:43.136
+provided by endpoints of the API service.
+
+137
+00:06:43.136 --> 00:06:46.539
+The purchase order API service may have an EntityType
+
+138
+00:06:46.539 --> 00:06:48.641
+for the purchase order header,
+
+139
+00:06:48.641 --> 00:06:51.844
+which defines general information about the purchase orders,
+
+140
+00:06:51.844 --> 00:06:54.847
+as well as an EntityType for the purchase order items
+
+141
+00:06:54.847 --> 00:06:56.849
+that belong to the purchase order.
+
+142
+00:06:57.216 --> 00:07:01.587
+properties define the shape and characteristics of data
+
+143
+00:07:01.587 --> 00:07:03.689
+that an EntityType instance will contain.
+
+144
+00:07:03.890 --> 00:07:06.192
+Among others, properties have a data type,
+
+145
+00:07:06.192 --> 00:07:08.694
+a maximum length, and indicate whether they are key
+
+146
+00:07:08.694 --> 00:07:11.998
+of the EntityType, as we just saw in the notebook.
+
+147
+00:07:12.298 --> 00:07:15.701
+For example, a purchase order header may have properties
+
+148
+00:07:15.701 --> 00:07:19.605
+for the creator, the creation date, and the currency of the order.
+
+149
+00:07:19.972 --> 00:07:22.809
+A Navigation or navigation property
+
+150
+00:07:22.809 --> 00:07:25.144
+is an optional property on an EntityType
+
+151
+00:07:25.144 --> 00:07:27.447
+that allows for navigating from one end
+
+152
+00:07:27.447 --> 00:07:29.982
+of an association to the other end.
+
+153
+00:07:29.982 --> 00:07:33.486
+This allows, for example, to link the purchase order header
+
+154
+00:07:33.486 --> 00:07:35.188
+to the purchase order items
+
+155
+00:07:35.188 --> 00:07:38.191
+where an item belongs to exactly one header
+
+156
+00:07:38.191 --> 00:07:40.993
+and the header may contain multiple items.
+
+157
+00:07:41.461 --> 00:07:45.531
+Each EntityType is linked to exactly one EntitySet.
+
+158
+00:07:45.832 --> 00:07:48.234
+The EntitySet are logical containers
+
+159
+00:07:48.234 --> 00:07:50.336
+for instances of an EntityType.
+
+160
+00:07:50.636 --> 00:07:53.139
+As a next step, you need to define mappings
+
+161
+00:07:53.139 --> 00:07:55.241
+that will transform the input data
+
+162
+00:07:55.241 --> 00:07:57.944
+to a knowledge graph using this schema.
+
+163
+00:07:58.444 --> 00:08:00.646
+In this course, you will use SPARQL,
+
+164
+00:08:00.646 --> 00:08:03.950
+the standard query language for RDF to define these mappings.
+
+165
+00:08:04.383 --> 00:08:07.954
+If you're not familiar with SPARQL, let's have a quick introduction.
+
+166
+00:08:08.554 --> 00:08:10.857
+SPARQL is the standard query language for RDF.
+
+167
+00:08:11.157 --> 00:08:13.559
+You can think about it as the SQL for RDF,
+
+168
+00:08:13.860 --> 00:08:16.762
+and you may recognize some syntactical similarities.
+
+169
+00:08:17.163 --> 00:08:19.565
+Let's take a look at an example SPARQL query.
+
+170
+00:08:19.966 --> 00:08:22.335
+The main part of the query is the WHERE clause,
+
+171
+00:08:22.335 --> 00:08:23.870
+which defines the graph pattern that
+
+172
+00:08:23.870 --> 00:08:25.638
+should be matched in the RDF graph.
+
+173
+00:08:25.638 --> 00:08:29.342
+The core component of such graph patterns are triple patterns.
+
+174
+00:08:29.342 --> 00:08:32.345
+Triple patterns are like RDF triples,
+
+175
+00:08:32.345 --> 00:08:35.348
+but also allow for using variables,
+
+176
+00:08:35.348 --> 00:08:37.316
+which should be matched in the graph.
+
+177
+00:08:37.316 --> 00:08:40.586
+Variables are indicated with the leading question mark.
+
+178
+00:08:41.087 --> 00:08:44.190
+In this example query, we want to match all nodes
+
+179
+00:08:44.190 --> 00:08:46.225
+that are services and their names.
+
+180
+00:08:46.526 --> 00:08:50.229
+In addition, we want to match the entity types of the services
+
+181
+00:08:50.229 --> 00:08:52.131
+and their names as well.
+
+182
+00:08:52.331 --> 00:08:56.135
+We can also visualize this graph pattern as a graph template.
+
+183
+00:08:56.435 --> 00:08:59.105
+The query aims to match this template
+
+184
+00:08:59.105 --> 00:09:02.141
+against the graph and retrieve all solution mappings.
+
+185
+00:09:02.441 --> 00:09:06.245
+That is, mappings from variables to RDF terms,
+
+186
+00:09:06.345 --> 00:09:09.649
+such that by replacing the variables with the terms,
+
+187
+00:09:09.949 --> 00:09:14.153
+the templates yields a subgraph of the RDF graph.
+
+188
+00:09:14.387 --> 00:09:17.790
+Moreover, SPARQL supports various query forms.
+
+189
+00:09:18.391 --> 00:09:20.760
+This example uses a select query form
+
+190
+00:09:20.960 --> 00:09:23.162
+to just retrieve the solution mappings.
+
+191
+00:09:23.563 --> 00:09:26.465
+Similar to SQL, the results of a select query
+
+192
+00:09:26.566 --> 00:09:28.467
+can be represented as a table
+
+193
+00:09:28.768 --> 00:09:31.671
+where the columns correspond to the variables in the query.
+
+194
+00:09:31.938 --> 00:09:33.739
+and the rows to the solutions.
+
+195
+00:09:34.440 --> 00:09:36.742
+They are also INSERT queries for
+
+196
+00:09:36.742 --> 00:09:39.445
+updating the graph by inserting additional triples.
+
+197
+00:09:39.946 --> 00:09:42.848
+In this lesson, you will use the CONSTRUCT query form
+
+198
+00:09:42.848 --> 00:09:45.751
+to construct the graph. Let's take a look at it.
+
+199
+00:09:45.918 --> 00:09:50.222
+In a CONSTRUCT SPARQL query, you can use the triple patterns
+
+200
+00:09:50.222 --> 00:09:51.924
+to define the shape of the graph
+
+201
+00:09:51.924 --> 00:09:53.593
+to be constructed in the CONSTRUCT clause.
+
+202
+00:09:54.193 --> 00:09:57.196
+In this example, we create a service entity
+
+203
+00:09:57.296 --> 00:10:01.200
+and add a description, a version, and a name to it.
+
+204
+00:10:01.701 --> 00:10:03.769
+Moreover, we can use a BIND statement
+
+205
+00:10:03.769 --> 00:10:05.805
+in the WHERE clause of the query
+
+206
+00:10:05.905 --> 00:10:08.407
+to create a unique identifier, the URI,
+
+207
+00:10:08.507 --> 00:10:11.811
+of the entity to be added to the graph.
+
+208
+00:10:12.345 --> 00:10:14.447
+Shown below the query text is the
+
+209
+00:10:14.447 --> 00:10:16.849
+graph pattern that is defined in the query.
+
+210
+00:10:17.049 --> 00:10:18.751
+Let's see now how we map
+
+211
+00:10:18.751 --> 00:10:20.753
+the input data to this graph pattern.
+
+212
+00:10:21.253 --> 00:10:24.624
+In our mapping function, the variables in the graph pattern
+
+213
+00:10:24.624 --> 00:10:29.028
+are replaced by the values of the columns from the CSV file.
+
+214
+00:10:29.562 --> 00:10:32.331
+That is, per row in the CSV file,
+
+215
+00:10:32.531 --> 00:10:36.135
+we get one instantiation which is added to our knowledge graph.
+
+216
+00:10:36.736 --> 00:10:38.838
+Here, this is shown for a single row
+
+217
+00:10:38.838 --> 00:10:41.741
+which defines the purchase order API service
+
+218
+00:10:42.041 --> 00:10:44.043
+that we just saw in the notebook
+
+219
+00:10:44.043 --> 00:10:47.046
+with the name, the version, and a description.
+
+220
+00:10:47.346 --> 00:10:50.950
+Now, let's go back to the notebook and do this in practice.
+
+221
+00:10:51.450 --> 00:10:53.352
+We can now set up the first construct query
+
+222
+00:10:53.452 --> 00:10:55.154
+that we just saw to generate
+
+223
+00:10:55.154 --> 00:10:57.156
+the RDF triples for the services data.
+
+224
+00:10:57.590 --> 00:10:59.892
+This corresponds to the query that you just saw.
+
+225
+00:11:00.259 --> 00:11:03.062
+We have the service, we added a description to the service,
+
+226
+00:11:03.362 --> 00:11:05.164
+a version and the name.
+
+227
+00:11:05.731 --> 00:11:08.401
+Now, let's take a look at the transform function
+
+228
+00:11:08.401 --> 00:11:12.004
+which takes the input data frame and the query as input
+
+229
+00:11:12.004 --> 00:11:14.473
+and generates RDF triples for these inputs.
+
+230
+00:11:14.840 --> 00:11:16.842
+This transform function takes the data frame
+
+231
+00:11:16.842 --> 00:11:20.046
+as input as well as the construct_query.
+
+232
+00:11:20.646 --> 00:11:22.848
+In addition, we can also specify whether we want
+
+233
+00:11:22.848 --> 00:11:26.252
+to just construct the graph for the first row,
+
+234
+00:11:26.485 --> 00:11:30.289
+of the input data. First, we set up a query graph
+
+235
+00:11:30.389 --> 00:11:32.558
+and the result graph, and the
+
+236
+00:11:32.558 --> 00:11:35.094
+result graph will hold the constructed data.
+
+237
+00:11:35.494 --> 00:11:37.296
+We first parse the query.
+
+238
+00:11:37.496 --> 00:11:40.900
+We then get all the headers from the data frame,
+
+239
+00:11:41.100 --> 00:11:44.970
+and then we iterate over each row in the data frame.
+
+240
+00:11:45.337 --> 00:11:48.841
+First, for the row, we construct a mapping
+
+241
+00:11:49.141 --> 00:11:52.278
+from the variable or the column name
+
+242
+00:11:52.278 --> 00:11:54.346
+to the value in this row.
+
+243
+00:11:54.580 --> 00:11:59.185
+We then replace the variables by the values in the query
+
+244
+00:11:59.952 --> 00:12:04.123
+using the initBindings provided by rdflib.
+
+245
+00:12:04.223 --> 00:12:08.327
+We execute the query and for each result of the query,
+
+246
+00:12:08.427 --> 00:12:11.831
+we add the corresponding triple to the result graph.
+
+247
+00:12:12.264 --> 00:12:16.235
+Once finished, we return the complete result_graph
+
+248
+00:12:16.235 --> 00:12:20.172
+after we processed all rows in the input DataFrame.
+
+249
+00:12:20.573 --> 00:12:23.375
+Let's execute the function for just the first row
+
+250
+00:12:23.375 --> 00:12:26.278
+of the services DataFrame and print the results.
+
+251
+00:12:26.746 --> 00:12:30.349
+You see the resulting triples that are created
+
+252
+00:12:30.349 --> 00:12:32.351
+using the turtle serialization.
+
+253
+00:12:32.752 --> 00:12:35.321
+We created a service for purchase order.
+
+254
+00:12:35.621 --> 00:12:37.923
+We added the triple of the description,
+
+255
+00:12:37.923 --> 00:12:39.525
+a triple for the name,
+
+256
+00:12:39.925 --> 00:12:41.827
+as well as a triple for the version.
+
+257
+00:12:42.128 --> 00:12:44.630
+Next, we process the entire data frame
+
+258
+00:12:44.930 --> 00:12:47.600
+and add the constructed triples to our knowledge graph
+
+259
+00:12:47.700 --> 00:12:50.002
+kg, which we just defined before.
+
+260
+00:12:50.903 --> 00:12:52.605
+Here, we call the transform function
+
+261
+00:12:52.905 --> 00:12:54.907
+for the services data frame
+
+262
+00:12:55.107 --> 00:12:57.409
+and the corresponding construct query.
+
+263
+00:12:57.710 --> 00:13:01.313
+And we add the triples constructed to the knowledge graph.
+
+264
+00:13:01.614 --> 00:13:04.016
+Next, we also print the number of triples
+
+265
+00:13:04.116 --> 00:13:06.318
+that we just added to the knowledge graph.
+
+266
+00:13:07.119 --> 00:13:11.123
+And by processing the entire data frame for the services,
+
+267
+00:13:11.123 --> 00:13:14.426
+we created a knowledge graph of 156 triples.
+
+268
+00:13:14.860 --> 00:13:18.030
+Let's continue the process with the remaining data frames.
+
+269
+00:13:18.497 --> 00:13:22.101
+Here, we specify the construct query for the entity sets.
+
+270
+00:13:22.401 --> 00:13:23.969
+We again call the transform function
+
+271
+00:13:24.270 --> 00:13:26.472
+and print the size of the Knowledge Graph
+
+272
+00:13:26.772 --> 00:13:29.275
+after adding the entity sets to the Knowledge Graph.
+
+273
+00:13:29.675 --> 00:13:32.278
+As you can see, the size of the Knowledge Graph increases.
+
+274
+00:13:32.578 --> 00:13:34.280
+We now have more than 400 triples.
+
+275
+00:13:34.947 --> 00:13:38.851
+Similarly, we will process the entity types.
+
+276
+00:13:39.151 --> 00:13:43.189
+Again, we specify the construct query, we run the transform function
+
+277
+00:13:43.489 --> 00:13:46.158
+and add it to the knowledge graph that we already have
+
+278
+00:13:46.158 --> 00:13:49.895
+and print its size. we end up with a bigger knowledge graph.
+
+279
+00:13:49.895 --> 00:13:52.264
+We already have more than 700 triples.
+
+280
+00:13:52.665 --> 00:13:54.667
+Now, we do the same thing for the properties
+
+281
+00:13:54.667 --> 00:13:56.368
+and let's see what the results are.
+
+282
+00:13:56.769 --> 00:13:59.872
+Now, we have more than 14,000 triples in the graph.
+
+283
+00:13:59.972 --> 00:14:02.875
+This is because we had more than 2,000 properties
+
+284
+00:14:02.875 --> 00:14:06.679
+and they add a substantial number of triples to the graph.
+
+285
+00:14:06.946 --> 00:14:09.448
+We repeat the same thing for the navigations
+
+286
+00:14:09.748 --> 00:14:12.718
+and end up with even more triples in the graph.
+
+287
+00:14:13.219 --> 00:14:17.122
+Now, you've successfully constructed the knowledge graph of business APIs.
+
+288
+00:14:17.623 --> 00:14:21.727
+Our AI agent could already leverage it to interact with individual APIs.
+
+289
+00:14:22.127 --> 00:14:25.431
+However, it still lacks the context of how these APIs are
+
+290
+00:14:25.731 --> 00:14:27.533
+used in business processes.
+
+291
+00:14:27.833 --> 00:14:30.536
+Consider the entity sets for purchase requisition
+
+292
+00:14:30.636 --> 00:14:32.538
+and purchase order, which have
+
+293
+00:14:32.738 --> 00:14:35.241
+a dependency relationship in the process
+
+294
+00:14:35.541 --> 00:14:37.743
+of procurement of direct materials.
+
+295
+00:14:38.244 --> 00:14:41.647
+Let's visualize this disconnectedness by plotting the subgraphs
+
+296
+00:14:41.947 --> 00:14:44.149
+induced by these two entity sets.
+
+297
+00:14:44.750 --> 00:14:46.919
+First, we use a SPARQL query to
+
+298
+00:14:46.919 --> 00:14:49.388
+retrieve the entity set nodes from the graph
+
+299
+00:14:49.588 --> 00:14:52.258
+for purchase order and purchase requisition.
+
+300
+00:14:52.725 --> 00:14:55.427
+Here, we define a SPARQL query template
+
+301
+00:14:56.061 --> 00:14:58.364
+where we can filter by the name.
+
+302
+00:14:58.631 --> 00:15:02.935
+We first run this and filter for the purchase order entity set
+
+303
+00:15:02.935 --> 00:15:06.939
+to get the PO_node, the purchase order node.
+
+304
+00:15:06.939 --> 00:15:10.943
+And then we also run this for the purchase requisition entity set,
+
+305
+00:15:10.943 --> 00:15:14.847
+which we will store as the PR_node, purchase requisition node.
+
+306
+00:15:15.281 --> 00:15:17.783
+Let's run this and we see the URI,
+
+307
+00:15:17.783 --> 00:15:21.053
+the unique identifier for the purchase order entity set
+
+308
+00:15:21.053 --> 00:15:25.057
+and the URI for the purchase requisition entity set.
+
+309
+00:15:25.557 --> 00:15:27.559
+Next, we construct the subgraph
+
+310
+00:15:27.559 --> 00:15:30.062
+from the knowledge graph induced by these two nodes.
+
+311
+00:15:30.462 --> 00:15:34.266
+Here we first transform the RDF graph into a NetworkX graph
+
+312
+00:15:34.266 --> 00:15:36.669
+in order to visualize it.
+
+313
+00:15:36.669 --> 00:15:41.240
+We then construct the subgraph induced by the purchase order node,
+
+314
+00:15:41.240 --> 00:15:43.642
+which we just retrieved from the graph.
+
+315
+00:15:43.642 --> 00:15:47.947
+We then also construct the subgraph for the purchase requisition node,
+
+316
+00:15:47.947 --> 00:15:50.449
+and then we just combine them into a single graph
+
+317
+00:15:50.449 --> 00:15:52.551
+for the purpose of visualization.
+
+318
+00:15:52.885 --> 00:15:55.688
+To visualize the graphs, we use the netgraph library,
+
+319
+00:15:56.388 --> 00:15:58.057
+which we'll import here.
+
+320
+00:15:59.058 --> 00:16:01.460
+We now set up the visualization.
+
+321
+00:16:02.061 --> 00:16:03.963
+We define the colors of the nodes.
+
+322
+00:16:04.263 --> 00:16:05.831
+We use different node shapes to
+
+323
+00:16:05.831 --> 00:16:07.666
+better distinguish the nodes in the graph,
+
+324
+00:16:08.467 --> 00:16:10.369
+and we also use different sizes
+
+325
+00:16:10.369 --> 00:16:12.771
+just for the ease of understanding the visualization.
+
+326
+00:16:13.272 --> 00:16:16.075
+And finally, we set up the graph using netgraph
+
+327
+00:16:16.375 --> 00:16:18.077
+and show the resulting plot.
+
+328
+00:16:18.377 --> 00:16:20.679
+In this visualization, you see blue nodes
+
+329
+00:16:20.980 --> 00:16:23.983
+that correspond to the purchase requisition API
+
+330
+00:16:24.183 --> 00:16:27.786
+and gray nodes that correspond to the purchase order API.
+
+331
+00:16:28.187 --> 00:16:30.589
+You also see different shapes of nodes.
+
+332
+00:16:31.190 --> 00:16:33.592
+For example, this circle node here in the center
+
+333
+00:16:34.193 --> 00:16:37.196
+corresponds to the actual API service.
+
+334
+00:16:37.296 --> 00:16:39.898
+It is connected to the different entity
+
+335
+00:16:40.265 --> 00:16:43.068
+types indicated as square nodes,
+
+336
+00:16:43.068 --> 00:16:45.771
+and for each of those entity types,
+
+337
+00:16:45.771 --> 00:16:48.273
+you see a variety of properties
+
+338
+00:16:48.273 --> 00:16:51.043
+that are indicated with this upward triangle.
+
+339
+00:16:51.043 --> 00:16:55.247
+In addition, you see this larger downward triangle
+
+340
+00:16:55.247 --> 00:16:57.249
+that connects different entity types,
+
+341
+00:16:57.249 --> 00:16:59.752
+and this corresponds to the navigations
+
+342
+00:16:59.752 --> 00:17:01.754
+between the different entity types.
+
+343
+00:17:02.154 --> 00:17:05.357
+As you can see, the purchase requisition APIs
+
+344
+00:17:05.657 --> 00:17:08.961
+are not connected to the purchase order APIs
+
+345
+00:17:09.361 --> 00:17:10.963
+in the knowledge graph.
+
+346
+00:17:11.363 --> 00:17:14.366
+I encourage you to try out searching for other entity sets
+
+347
+00:17:14.366 --> 00:17:16.668
+in the knowledge graph and plotting them to see
+
+348
+00:17:16.668 --> 00:17:19.438
+how they are structurally represented in the knowledge graph.
+
+349
+00:17:19.505 --> 00:17:22.408
+Let's zoom out and take a look at the entire knowledge graph
+
+350
+00:17:22.408 --> 00:17:25.411
+that you will end up by the end of the next lesson,
+
+351
+00:17:25.411 --> 00:17:27.379
+which also includes this connectedness
+
+352
+00:17:27.679 --> 00:17:29.581
+using the business processes.
+
+353
+00:17:30.215 --> 00:17:32.284
+So let's take a look at a sample
+
+354
+00:17:32.284 --> 00:17:34.319
+of a thousand edges of this knowledge graph.
+
+355
+00:17:34.720 --> 00:17:38.323
+Now you can see the sample of the entire knowledge graph
+
+356
+00:17:38.924 --> 00:17:40.926
+which has a very connected core,
+
+357
+00:17:41.326 --> 00:17:44.530
+which corresponds to the connections of the business processes
+
+358
+00:17:44.530 --> 00:17:46.632
+that you will add in the next lesson.
+
+359
+00:17:47.032 --> 00:17:50.235
+As of now, the knowledge graph is an rdflib graph,
+
+360
+00:17:50.235 --> 00:17:54.039
+which is held in memory. For sharing and reusing the knowledge graph,
+
+361
+00:17:54.039 --> 00:17:58.143
+you can materialize it on disk using any RDF serialization.
+
+362
+00:17:58.477 --> 00:18:01.013
+Here, we serialize the knowledge graph
+
+363
+00:18:01.013 --> 00:18:02.714
+using the turtle format,
+
+364
+00:18:02.714 --> 00:18:05.017
+which you already saw in the previous lesson.
+
+365
+00:18:05.317 --> 00:18:07.719
+And we specify the destination,
+
+366
+00:18:07.719 --> 00:18:11.023
+so the file that we want to create for this knowledge graph.
+
+367
+00:18:11.256 --> 00:18:14.093
+The resulting knowledge graph will be stored to disk
+
+368
+00:18:14.093 --> 00:18:16.061
+and we can use it in the next lesson.
+
+369
+00:18:16.562 --> 00:18:18.864
+In this lesson, you constructed a knowledge graph
+
+370
+00:18:19.164 --> 00:18:23.068
+for the API data. And you saw how it is disconnected
+
+371
+00:18:23.368 --> 00:18:25.170
+and the APIs are not connected.
+
+372
+00:18:25.671 --> 00:18:28.073
+In the next lesson, you will learn how to integrate
+
+373
+00:18:28.474 --> 00:18:31.276
+business process data in order to connect these APIs
+
+374
+00:18:31.276 --> 00:18:35.047
+services according to their usage in business processes.

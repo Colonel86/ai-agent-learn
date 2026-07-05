@@ -1,0 +1,935 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:03.003
+In the previous lesson, you built the functionality
+
+2
+00:00:03.003 --> 00:00:06.106
+to discover relevant APIs from your knowledge graph
+
+3
+00:00:06.106 --> 00:00:08.308
+based on their semantic embeddings
+
+4
+00:00:08.308 --> 00:00:10.543
+and their business process relations.
+
+5
+00:00:11.144 --> 00:00:14.647
+In this lesson, you will use this to enable an agent
+
+6
+00:00:14.647 --> 00:00:19.119
+to discover and execute these APIs to fulfill user queries.
+
+7
+00:00:19.619 --> 00:00:22.922
+Let's go. Here's what you will do in this lesson.
+
+8
+00:00:23.323 --> 00:00:26.226
+You'll create an agent that executes user queries
+
+9
+00:00:26.226 --> 00:00:29.729
+for get purchase orders and create purchase order.
+
+10
+00:00:29.996 --> 00:00:32.298
+You will define three tools for this agent.
+
+11
+00:00:32.799 --> 00:00:36.803
+The discovery tool, the GET Data tool, and the POST Data tool.
+
+12
+00:00:37.003 --> 00:00:39.806
+The discovery tool retrieves API metadata
+
+13
+00:00:40.206 --> 00:00:43.810
+such as properties, navigations, and business process information.
+
+14
+00:00:44.277 --> 00:00:46.379
+The GET Data tool is used
+
+15
+00:00:46.379 --> 00:00:48.081
+for get purchase order related queries.
+
+16
+00:00:48.481 --> 00:00:50.784
+The POST Data tool enables creation
+
+17
+00:00:50.784 --> 00:00:54.287
+of a purchase requisition
+and a purchase order,
+
+18
+00:00:54.287 --> 00:00:57.524
+based on business process information from the Knowledge Graph.
+
+19
+00:00:57.991 --> 00:01:00.193
+Let's now get started with the notebook.
+
+20
+00:01:00.193 --> 00:01:03.196
+First, let's import all the necessary packages.
+
+21
+00:01:03.663 --> 00:01:06.399
+As in the last lessons, we import custom helper functions
+
+22
+00:01:06.399 --> 00:01:08.601
+to parameterize SPARQL queries
+
+23
+00:01:08.601 --> 00:01:10.904
+and one for fetching OpenAI key.
+
+24
+00:01:10.904 --> 00:01:13.206
+Next, we set up LangChain models
+
+25
+00:01:13.206 --> 00:01:15.909
+for the LLM and the embedding model we're using.
+
+26
+00:01:16.376 --> 00:01:20.480
+Next, we load the knowledge graph we created in the previous lessons.
+
+27
+00:01:21.181 --> 00:01:24.184
+Now, let's fetch API specifications
+
+28
+00:01:24.384 --> 00:01:27.187
+to include properties of entity sets
+
+29
+00:01:27.554 --> 00:01:29.856
+and navigation links of the entity sets.
+
+30
+00:01:30.490 --> 00:01:34.194
+For defining the discovery tool, we need to fetch properties
+
+31
+00:01:34.494 --> 00:01:36.896
+and navigation links of entity sets.
+
+32
+00:01:37.297 --> 00:01:40.467
+This helper function fetches and combines them both.
+
+33
+00:01:40.967 --> 00:01:43.369
+Let's now try this with an example query.
+
+34
+00:01:43.770 --> 00:01:48.475
+Here we fetch entity specification for the purchase order entity set,
+
+35
+00:01:48.575 --> 00:01:50.210
+and in the results you'll see that
+
+36
+00:01:50.210 --> 00:01:51.845
+there is a service for purchase order,
+
+37
+00:01:51.945 --> 00:01:54.347
+the corresponding name of the entity set
+
+38
+00:01:54.447 --> 00:01:58.151
+along with its properties such as PurchasingProcessingStatus,
+
+39
+00:01:58.451 --> 00:02:03.423
+PurchasingGroup and so on. You'll also see that purchase order number
+
+40
+00:02:03.423 --> 00:02:06.226
+is the key for this particular entity set.
+
+41
+00:02:06.226 --> 00:02:08.428
+And we also retrieve the navigations
+
+42
+00:02:08.428 --> 00:02:11.731
+for this particular entity set, which is related
+
+43
+00:02:11.731 --> 00:02:15.735
+to PurchaseOrderItem with a cardinality of one_to_many.
+
+44
+00:02:15.735 --> 00:02:18.238
+implying that a purchase order can have
+
+45
+00:02:18.238 --> 00:02:20.039
+one to many items.
+
+46
+00:02:20.740 --> 00:02:23.243
+Now you have all the necessary elements
+
+47
+00:02:23.243 --> 00:02:27.247
+to define our Discovery Tool. In order to do this,
+
+48
+00:02:27.247 --> 00:02:29.249
+let's first load the index
+
+49
+00:02:29.249 --> 00:02:31.251
+on the entity set embeddings
+
+50
+00:02:31.251 --> 00:02:32.952
+that you created in the last lesson.
+
+51
+00:02:33.353 --> 00:02:35.722
+Let's also import the helper function
+
+52
+00:02:35.722 --> 00:02:39.359
+to discover_apis_and_process defined earlier.
+
+53
+00:02:39.893 --> 00:02:42.795
+Recall that discover_apis_and_process
+
+54
+00:02:42.795 --> 00:02:45.765
+returns a list of discovered entity sets
+
+55
+00:02:45.765 --> 00:02:48.334
+along with their business process information.
+
+56
+00:02:48.601 --> 00:02:51.104
+Let's try this out with an example query.
+
+57
+00:02:51.504 --> 00:02:54.707
+Here, I'm looking for APIs and process information
+
+58
+00:02:54.707 --> 00:02:57.477
+for the query, show me active purchase orders.
+
+59
+00:02:58.077 --> 00:03:00.980
+And in the list, you can see that we have
+
+60
+00:03:00.980 --> 00:03:05.084
+the matching list of entity sets which include PurchaseOrder.
+
+61
+00:03:05.418 --> 00:03:07.420
+PurchaseOrder item along with purchase requisition
+
+62
+00:03:07.420 --> 00:03:09.689
+and purchase requisition item.
+
+63
+00:03:09.689 --> 00:03:12.392
+Besides which we also retrieve the process information
+
+64
+00:03:12.392 --> 00:03:15.595
+that PurchaseOrder depends on Purchase Requisition.
+
+65
+00:03:15.595 --> 00:03:17.197
+That looks good.
+
+66
+00:03:17.397 --> 00:03:21.601
+You now have all the key elements required for the tool discovery.
+
+67
+00:03:22.202 --> 00:03:25.605
+Now you're ready to define this as a tool to the agent
+
+68
+00:03:25.605 --> 00:03:29.209
+which we can use later. Here we use the tool decorator
+
+69
+00:03:29.209 --> 00:03:32.011
+to convert our function discover_apis
+
+70
+00:03:32.011 --> 00:03:34.113
+into the discovery tool.
+
+71
+00:03:34.814 --> 00:03:37.016
+This function or the tool
+
+72
+00:03:37.016 --> 00:03:39.018
+takes a natural language input from the user,
+
+73
+00:03:39.319 --> 00:03:42.021
+identifies the relevant entity sets
+
+74
+00:03:42.021 --> 00:03:46.025
+and returns their API specs, including the business process information.
+
+75
+00:03:46.492 --> 00:03:48.695
+Now that we have our discovery tool,
+
+76
+00:03:48.695 --> 00:03:52.498
+let's prepare for API execution with mocked services.
+
+77
+00:03:53.099 --> 00:03:56.302
+We import helper functions that get,
+
+78
+00:03:56.302 --> 00:03:59.272
+post, and display our mock data services.
+
+79
+00:03:59.672 --> 00:04:02.675
+Let's take a look at the content of our mock database.
+
+80
+00:04:02.976 --> 00:04:04.978
+First, purchase requisitions.
+
+81
+00:04:05.011 --> 00:04:07.780
+Here you will see that there are two purchase requisitions.
+
+82
+00:04:08.281 --> 00:04:10.283
+one ending with number one
+
+83
+00:04:10.283 --> 00:04:12.085
+and the other ending with two.
+
+84
+00:04:12.085 --> 00:04:15.488
+While the first purchase requisition has a single item for ruler,
+
+85
+00:04:15.488 --> 00:04:17.490
+the second one has two items,
+
+86
+00:04:17.490 --> 00:04:20.093
+items 10 and 20 for pencil and pen.
+
+87
+00:04:20.460 --> 00:04:24.664
+Now let's look at how a purchase orders dataset looks like.
+
+88
+00:04:24.964 --> 00:04:26.966
+Here we have three purchase orders,
+
+89
+00:04:27.267 --> 00:04:29.669
+those ending with one, two, and three.
+
+90
+00:04:29.969 --> 00:04:33.673
+and each of them correspond to unique items, ruler, pencil,
+
+91
+00:04:33.673 --> 00:04:36.276
+and pen for certain quantities.
+
+92
+00:04:36.676 --> 00:04:38.945
+And the thing to note here is that
+
+93
+00:04:38.945 --> 00:04:41.481
+each of the item in the purchase order refers
+
+94
+00:04:41.681 --> 00:04:44.484
+to a corresponding item in the purchase requisition.
+
+95
+00:04:44.884 --> 00:04:47.887
+So in this case, purchase order one item 10
+
+96
+00:04:48.488 --> 00:04:52.892
+refers to purchase requisition one item 10, which we saw above.
+
+97
+00:04:53.192 --> 00:04:55.495
+And in a similar way, we have purchase order two
+
+98
+00:04:55.895 --> 00:04:58.865
+item 10 refers to purchase requisition two
+
+99
+00:04:59.465 --> 00:05:02.468
+item 10, as in the case above for pencil.
+
+100
+00:05:02.902 --> 00:05:05.672
+Let's try a mock service for post data.
+
+101
+00:05:05.972 --> 00:05:09.075
+You see that for the service related to purchase order
+
+102
+00:05:09.375 --> 00:05:11.878
+and the entity set related to purchase order,
+
+103
+00:05:12.378 --> 00:05:15.381
+this particular function makes a single call
+
+104
+00:05:15.481 --> 00:05:19.686
+to purchase order API along with the materials that are requested
+
+105
+00:05:19.686 --> 00:05:23.056
+at the item level. and executes this call
+
+106
+00:05:23.256 --> 00:05:25.858
+and returns the newly created purchase order,
+
+107
+00:05:26.259 --> 00:05:29.062
+which is in this case the purchase order ending with four.
+
+108
+00:05:29.429 --> 00:05:31.431
+In comparison to the previous results,
+
+109
+00:05:31.431 --> 00:05:33.433
+we now have a new purchase order
+
+110
+00:05:33.833 --> 00:05:35.435
+along with two new items
+
+111
+00:05:36.035 --> 00:05:39.038
+for mouse and keyboard that were requested in the call.
+
+112
+00:05:39.605 --> 00:05:43.109
+Next, let us call get_data_mock function to retrieve
+
+113
+00:05:43.509 --> 00:05:45.611
+our first purchase order that matches
+
+114
+00:05:45.812 --> 00:05:49.315
+the criteria PurchasingGroup 005
+
+115
+00:05:49.515 --> 00:05:52.018
+and PurchasingOrganization 3000.
+
+116
+00:05:52.452 --> 00:05:54.454
+As you can see,
+
+117
+00:05:54.454 --> 00:05:57.256
+this function displays the OData call
+
+118
+00:05:57.256 --> 00:05:59.459
+to the service matching the filter criteria
+
+119
+00:05:59.459 --> 00:06:01.961
+of interest and returns
+
+120
+00:06:01.961 --> 00:06:04.430
+the matching PurchaseOrder.
+
+121
+00:06:04.430 --> 00:06:06.933
+In this case, the first PurchaseOrder
+
+122
+00:06:06.933 --> 00:06:10.937
+with PurchasingGroup and PurchasingOrganization as requested.
+
+123
+00:06:11.137 --> 00:06:13.940
+Now that you know what these two mock functions do,
+
+124
+00:06:14.040 --> 00:06:16.309
+let's define tools for the agent.
+
+125
+00:06:16.909 --> 00:06:19.312
+Here again we use the tool decorator
+
+126
+00:06:19.412 --> 00:06:22.515
+to wrap our mock functions for get_api
+
+127
+00:06:22.615 --> 00:06:24.617
+and post_data_api.
+
+128
+00:06:25.351 --> 00:06:27.153
+and convert them into tools.
+
+129
+00:06:27.854 --> 00:06:30.156
+We now have all the necessary building blocks.
+
+130
+00:06:30.556 --> 00:06:32.358
+Let's proceed to create the agent.
+
+131
+00:06:32.558 --> 00:06:34.360
+And to create the agent, we'll
+
+132
+00:06:34.360 --> 00:06:36.462
+use a predefined agent loop from LangChain.
+
+133
+00:06:36.863 --> 00:06:38.798
+And now all you need to do
+
+134
+00:06:38.798 --> 00:06:41.067
+is to provide tools that you previously defined
+
+135
+00:06:41.267 --> 00:06:43.703
+along with the prompt. In the prompt,
+
+136
+00:06:43.703 --> 00:06:46.139
+we tell the agent to discover APIs
+
+137
+00:06:46.139 --> 00:06:48.341
+and business process information
+
+138
+00:06:48.341 --> 00:06:50.343
+based on the user query,
+
+139
+00:06:50.343 --> 00:06:54.347
+and then call the APIs according to the business process.
+
+140
+00:06:54.347 --> 00:06:57.950
+We also have to tell the agent how to use navigations
+
+141
+00:06:58.451 --> 00:07:00.920
+to create header and item level objects
+
+142
+00:07:01.254 --> 00:07:05.358
+in a single call. Let's now bring everything together.
+
+143
+00:07:05.725 --> 00:07:09.162
+We provide the tools we defined earlier
+
+144
+00:07:09.162 --> 00:07:10.730
+along with the prompt we just prepared.
+
+145
+00:07:10.797 --> 00:07:13.199
+Let's now try this with some example queries.
+
+146
+00:07:13.599 --> 00:07:17.303
+The first query is related to fetching active purchase orders.
+
+147
+00:07:18.304 --> 00:07:22.575
+As you can see, the agent first calls discover_apis with the query,
+
+148
+00:07:23.276 --> 00:07:25.778
+fetches a list of matching APIs,
+
+149
+00:07:26.279 --> 00:07:30.583
+entity sets, along with their properties, navigation links,
+
+150
+00:07:31.284 --> 00:07:33.786
+and then also finalizes the process information.
+
+151
+00:07:34.954 --> 00:07:39.225
+It then calls get_api tool with the service_name related to PURCHASEORDER
+
+152
+00:07:39.225 --> 00:07:43.529
+and passes the filter_string as it is in the user query.
+
+153
+00:07:43.529 --> 00:07:46.732
+In this particular case, it is looking for purchase orders
+
+154
+00:07:46.732 --> 00:07:48.935
+in the ProcessingStatus active.
+
+155
+00:07:49.235 --> 00:07:52.238
+And then says that there are no active purchase orders
+
+156
+00:07:52.238 --> 00:07:56.242
+in this particular purchasing group and purchasing organization.
+
+157
+00:07:56.576 --> 00:08:00.480
+So here the model used the literal value active
+
+158
+00:08:00.780 --> 00:08:03.149
+instead of a corresponding technical code
+
+159
+00:08:03.483 --> 00:08:05.017
+and that is why it is
+
+160
+00:08:05.017 --> 00:08:06.786
+not able to fetch active purchase orders.
+
+161
+00:08:07.353 --> 00:08:11.657
+Now we could flexibly add what we call as fixed value helpers
+
+162
+00:08:11.958 --> 00:08:16.062
+that maps the status code to the status description.
+
+163
+00:08:16.662 --> 00:08:19.665
+Let's now add this to the knowledge graph.
+
+164
+00:08:20.199 --> 00:08:23.703
+Here, we add a bunch of related status codes,
+
+165
+00:08:23.703 --> 00:08:26.706
+for example 01 meaning In process,
+
+166
+00:08:26.706 --> 00:08:29.208
+02 meaning Active and so on,
+
+167
+00:08:29.208 --> 00:08:32.011
+to our purchase order entity set
+
+168
+00:08:32.011 --> 00:08:34.447
+and add it finally to the graph.
+
+169
+00:08:34.780 --> 00:08:36.749
+And now, let's try to run
+
+170
+00:08:36.749 --> 00:08:39.051
+the same query again with the agent.
+
+171
+00:08:39.652 --> 00:08:43.556
+Now in this case, the agent then actually maps
+
+172
+00:08:43.556 --> 00:08:46.259
+the PurchasingProcessingStatus to 02
+
+173
+00:08:46.259 --> 00:08:49.762
+instead of active as it did in the past.
+
+174
+00:08:49.762 --> 00:08:53.266
+and is now able to correctly find two matching purchase orders
+
+175
+00:08:53.266 --> 00:08:55.268
+in active status.
+
+176
+00:08:55.601 --> 00:08:58.204
+So this is a flexibility that knowledge graphs offer
+
+177
+00:08:58.204 --> 00:09:00.806
+that it can dynamically extend the graph
+
+178
+00:09:00.806 --> 00:09:03.409
+with corresponding business entries
+
+179
+00:09:03.409 --> 00:09:06.412
+and also map them to the agent use cases.
+
+180
+00:09:06.712 --> 00:09:09.215
+Now, let's take a look at another example.
+
+181
+00:09:09.916 --> 00:09:14.220
+This time, a bit more complex one related to creating purchase order.
+
+182
+00:09:14.520 --> 00:09:16.689
+Here, the agent has to determine that
+
+183
+00:09:16.689 --> 00:09:19.225
+a purchase requisition has to be created first
+
+184
+00:09:19.525 --> 00:09:21.827
+and then a purchase order to
+
+185
+00:09:21.827 --> 00:09:24.497
+be created, which refers the purchase requisition.
+
+186
+00:09:24.697 --> 00:09:28.200
+As you can see, the agent first does the discovery,
+
+187
+00:09:28.501 --> 00:09:31.504
+fetches the right APIs along with their specifications
+
+188
+00:09:31.504 --> 00:09:33.906
+in terms of properties, navigations,
+
+189
+00:09:33.906 --> 00:09:35.708
+and business process information.
+
+190
+00:09:35.708 --> 00:09:37.443
+In this time, it recognizes that
+
+191
+00:09:37.443 --> 00:09:39.512
+it should use the business process information
+
+192
+00:09:39.512 --> 00:09:44.483
+that states that purchase requisition should be first created
+
+193
+00:09:44.483 --> 00:09:46.485
+before creating a purchase order.
+
+194
+00:09:46.852 --> 00:09:50.356
+And so it invokes the post data tool
+
+195
+00:09:50.356 --> 00:09:53.659
+with the name of the service being purchase requisition.
+
+196
+00:09:53.659 --> 00:09:57.363
+In a single payload creates the purchase requisition first
+
+197
+00:09:57.363 --> 00:10:01.667
+and uses that as a reference to call post_data_api
+
+198
+00:10:01.667 --> 00:10:04.870
+with purchase order API.
+
+199
+00:10:05.171 --> 00:10:09.008
+And, it creates a new purchase order ending with five,
+
+200
+00:10:09.008 --> 00:10:13.312
+referring the newly created purchase requisition ending with three.
+
+201
+00:10:13.779 --> 00:10:16.082
+Let's take a look at our mock database
+
+202
+00:10:16.082 --> 00:10:18.384
+to see how this changed after the last call.
+
+203
+00:10:18.784 --> 00:10:21.687
+Here you can see that there is a new purchase requisition
+
+204
+00:10:21.687 --> 00:10:23.289
+ending with three, item 10.
+
+205
+00:10:23.789 --> 00:10:28.294
+And now let's look at our Purchase Order mock database.
+
+206
+00:10:28.294 --> 00:10:31.998
+And there is a new Purchase Order here ending with five.
+
+207
+00:10:32.498 --> 00:10:36.602
+And importantly, it refers to the Purchase Requisition ending with three
+
+208
+00:10:37.003 --> 00:10:38.804
+that was just created.
+
+209
+00:10:39.305 --> 00:10:42.708
+Basically demonstrating that the agent adhered
+
+210
+00:10:42.708 --> 00:10:45.311
+to the business process rule that a Purchase Requisition
+
+211
+00:10:45.311 --> 00:10:50.311
+should be first created before creating a Purchase Order.
+
+212
+00:10:50.683 --> 00:10:52.985
+Now, let's summarize the agent's flow
+
+213
+00:10:53.285 --> 00:10:56.255
+with our last example related to create purchase order.
+
+214
+00:10:56.956 --> 00:11:00.259
+It starts with the user input being passed to the agent.
+
+215
+00:11:00.726 --> 00:11:03.529
+which then decides to call the discovery tool
+
+216
+00:11:03.729 --> 00:11:06.732
+to find APIs and process information
+
+217
+00:11:06.832 --> 00:11:09.535
+relevant for the given user input.
+
+218
+00:11:09.735 --> 00:11:12.538
+The discovery tool in turn calls the vector database,
+
+219
+00:11:12.638 --> 00:11:15.341
+in our case just a local in-memory index,
+
+220
+00:11:15.441 --> 00:11:17.643
+to retrieve relevant entity sets.
+
+221
+00:11:18.077 --> 00:11:21.781
+Next, the tool queries the knowledge graph for business process information
+
+222
+00:11:22.181 --> 00:11:25.785
+and additional relevant entity sets as well as their metadata.
+
+223
+00:11:26.185 --> 00:11:28.487
+All of these are then returned to the agent.
+
+224
+00:11:29.088 --> 00:11:32.191
+Then, the agent has all the relevant information to decide
+
+225
+00:11:32.491 --> 00:11:34.794
+that it first needs to make a post API call
+
+226
+00:11:34.894 --> 00:11:36.796
+to create a purchase requisition.
+
+227
+00:11:37.329 --> 00:11:40.633
+which then calls the corresponding post API tool,
+
+228
+00:11:40.733 --> 00:11:42.768
+executes the API and returns the
+
+229
+00:11:42.768 --> 00:11:45.137
+newly created purchase requisition to the agent.
+
+230
+00:11:45.638 --> 00:11:48.941
+Finally, the agent executes a post API again
+
+231
+00:11:49.141 --> 00:11:51.444
+to create a purchase order with
+
+232
+00:11:51.444 --> 00:11:54.146
+reference to the newly created purchase requisition
+
+233
+00:11:54.346 --> 00:11:56.415
+and returns this back to the agent.

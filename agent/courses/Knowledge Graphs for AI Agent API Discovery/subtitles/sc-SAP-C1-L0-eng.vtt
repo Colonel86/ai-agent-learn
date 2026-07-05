@@ -1,0 +1,331 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.003 --> 00:00:03.673
+Welcome to Knowledge Graphs for AI Agent API Discovery,
+
+2
+00:00:04.174 --> 00:00:08.078
+taught by Pavithra G K, who is head of business knowledge graphs,
+
+3
+00:00:08.178 --> 00:00:13.083
+and Lars Heling, who is senior knowledge engineer at SAP Business AI.
+
+4
+00:00:13.984 --> 00:00:16.186
+Large businesses may have thousands of APIs
+
+5
+00:00:16.486 --> 00:00:19.089
+that have been made available by many different teams
+
+6
+00:00:19.489 --> 00:00:21.091
+to enable other teams to carry
+
+7
+00:00:21.091 --> 00:00:23.593
+out many possible tasks across the business.
+
+8
+00:00:23.994 --> 00:00:27.397
+For example, APIs to help buy or return an item
+
+9
+00:00:27.631 --> 00:00:29.299
+or request travel approval
+
+10
+00:00:29.299 --> 00:00:33.203
+or request IT approval for accessing data, and so on.
+
+11
+00:00:33.837 --> 00:00:35.172
+I think it's great that people are
+
+12
+00:00:35.172 --> 00:00:37.107
+building so many APIs for AI agents,
+
+13
+00:00:37.507 --> 00:00:39.709
+but this actually makes it hard for AI agents
+
+14
+00:00:40.010 --> 00:00:42.212
+to figure out which APIs to use
+
+15
+00:00:42.212 --> 00:00:45.916
+and in what sequence to carry out a complex business process.
+
+16
+00:00:46.716 --> 00:00:49.119
+In this course, you'll learn how to solve this problem
+
+17
+00:00:49.119 --> 00:00:50.720
+using knowledge graphs.
+
+18
+00:00:50.720 --> 00:00:55.058
+To help an agent use APIs, you bring raw API specifications
+
+19
+00:00:55.058 --> 00:00:56.993
+into a knowledge graph.
+
+20
+00:00:56.993 --> 00:01:00.464
+This gives a structured view of all the APIs.
+
+21
+00:01:00.464 --> 00:01:02.766
+Additionally, you add information to the graph
+
+22
+00:01:02.766 --> 00:01:04.100
+to tell it what is the right
+
+23
+00:01:04.100 --> 00:01:06.736
+order in which you should call the APIs.
+
+24
+00:01:07.070 --> 00:01:08.905
+Take the example of an agent
+
+25
+00:01:08.905 --> 00:01:11.408
+given the task of purchasing an item.
+
+26
+00:01:11.408 --> 00:01:13.343
+It might search for and find the
+
+27
+00:01:13.343 --> 00:01:16.546
+purchase order API as the most relevant API
+
+28
+00:01:16.546 --> 00:01:19.049
+and maybe want to call that API to place the order.
+
+29
+00:01:19.049 --> 00:01:21.251
+But here, the agent might be unaware
+
+30
+00:01:21.251 --> 00:01:24.988
+that in a big company, it first needs to call another API
+
+31
+00:01:24.988 --> 00:01:26.990
+to create a purchase request,
+
+32
+00:01:27.390 --> 00:01:30.093
+which is then to be approved by the IT department
+
+33
+00:01:30.093 --> 00:01:32.762
+before finally it places the actual order.
+
+34
+00:01:33.293 --> 00:01:36.729
+This processed information that the steps needed are to
+
+35
+00:01:36.729 --> 00:01:39.332
+first generate a purchase request, then get IT approval,
+
+36
+00:01:39.332 --> 00:01:42.402
+and then finally call the purchase order API.
+
+37
+00:01:42.402 --> 00:01:44.471
+This information may not be available
+
+38
+00:01:44.471 --> 00:01:46.539
+in the definition of the APIs.
+
+39
+00:01:46.539 --> 00:01:48.408
+And without this type of information,
+
+40
+00:01:48.508 --> 00:01:51.311
+your knowledge graph and your agent's ability to understand
+
+41
+00:01:51.311 --> 00:01:54.247
+this important business process workflow and execute it
+
+42
+00:01:54.247 --> 00:01:57.450
+will be incomplete. That's right, Andrew.
+
+43
+00:01:57.450 --> 00:02:00.920
+To capture this, you will extend the knowledge graph with process data.
+
+44
+00:02:01.254 --> 00:02:04.557
+This turns your graph into not just a list of APIs,
+
+45
+00:02:04.557 --> 00:02:07.727
+but a network of how they are connected in real processes.
+
+46
+00:02:08.294 --> 00:02:11.965
+The agent is now aware that the purchase request API
+
+47
+00:02:11.965 --> 00:02:14.667
+needs to be called first before calling the
+
+48
+00:02:14.667 --> 00:02:16.970
+API to create an order.
+
+49
+00:02:17.370 --> 00:02:19.339
+To give the right APIs to
+
+50
+00:02:19.339 --> 00:02:21.641
+the agent to perform a given task,
+
+51
+00:02:21.941 --> 00:02:24.544
+you will start with a semantic retrieval.
+
+52
+00:02:24.677 --> 00:02:28.181
+You will embed all the APIs and their specifications,
+
+53
+00:02:28.481 --> 00:02:31.384
+and use similarity search to find the best matches.
+
+54
+00:02:31.985 --> 00:02:36.689
+For example, if the agent wants to create
+a purchase order, it will retrieve
+
+55
+00:02:36.689 --> 00:02:40.426
+semantically related APIs
+like the purchase order API.
+
+56
+00:02:40.593 --> 00:02:44.197
+Calling this API directly
+will not be the right action,
+
+57
+00:02:44.197 --> 00:02:46.432
+as the business process might require
+
+58
+00:02:46.432 --> 00:02:49.235
+the purchase request API to be called
+first
+
+59
+00:02:49.235 --> 00:02:51.905
+for the approval of the purchase
+by a manager.
+
+60
+00:02:52.372 --> 00:02:56.209
+To solve this, you will extend the search on the knowledge graph
+
+61
+00:02:56.209 --> 00:02:58.878
+to find and include related APIs
+
+62
+00:02:58.878 --> 00:03:01.214
+that the business process requires.
+
+63
+00:03:01.814 --> 00:03:05.285
+This will give the agent all the necessary APIs
+
+64
+00:03:05.285 --> 00:03:07.487
+and the order in which they should be called.
+
+65
+00:03:07.787 --> 00:03:10.390
+In the last lesson, you will put all of this together
+
+66
+00:03:10.390 --> 00:03:14.127
+to build an AI agent that can carry out real tasks
+
+67
+00:03:14.127 --> 00:03:16.496
+while following the correct process sequence.
+
+68
+00:03:16.763 --> 00:03:19.098
+Many people have worked to create this course.
+
+69
+00:03:19.098 --> 00:03:21.501
+I'd like to thank Christoph Meyer,
+
+70
+00:03:21.501 --> 00:03:25.405
+Felix Sasaki, and Johannes Hoffart from the SAP team.
+
+71
+00:03:25.405 --> 00:03:29.609
+From DeepLearning.AI, Esmaeil Gargari also contributed to this course.
+
+72
+00:03:30.176 --> 00:03:34.214
+Businesses have complex and important processes to get work done.
+
+73
+00:03:34.747 --> 00:03:38.418
+Implementing agentic workflows to carry out these processes
+
+74
+00:03:38.418 --> 00:03:39.886
+is a huge part of the work
+
+75
+00:03:39.886 --> 00:03:41.821
+that lies ahead for the AI community.
+
+76
+00:03:41.988 --> 00:03:44.824
+And getting this right is an important problem.
+
+77
+00:03:45.625 --> 00:03:48.728
+The first lesson will be an introduction to knowledge graphs,
+
+78
+00:03:48.728 --> 00:03:49.762
+what they are and how to use
+
+79
+00:03:49.762 --> 00:03:52.432
+them to help agents understand and follow
+
+80
+00:03:52.432 --> 00:03:54.434
+complex multi-step processes.
+
+81
+00:03:54.934 --> 00:03:57.804
+So, let's go to the next video and get started.

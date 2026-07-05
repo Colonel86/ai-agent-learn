@@ -1,0 +1,722 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:03.370
+In this lesson, you will learn what knowledge graphs are,
+
+2
+00:00:03.970 --> 00:00:05.672
+various methods to construct them,
+
+3
+00:00:06.072 --> 00:00:10.877
+and how they enable AI agents with better API discovery and execution
+
+4
+00:00:11.277 --> 00:00:13.480
+in the context of enterprise applications.
+
+5
+00:00:13.880 --> 00:00:15.882
+Let's dive in.
+
+6
+00:00:15.982 --> 00:00:18.051
+In order to see how knowledge graphs are used in practice,
+
+7
+00:00:18.351 --> 00:00:22.188
+let's do a quick web search. Let's search for SAP.
+
+8
+00:00:23.490 --> 00:00:25.792
+What do you see as part of the result?
+
+9
+00:00:25.992 --> 00:00:28.361
+Besides the list of matching websites,
+
+10
+00:00:28.361 --> 00:00:30.663
+You'll see a comprehensive overview
+
+11
+00:00:30.663 --> 00:00:33.466
+of this entity SAP drawn from a knowledge graph.
+
+12
+00:00:34.267 --> 00:00:36.269
+Here you will see properties such
+
+13
+00:00:36.269 --> 00:00:38.571
+as the description, link to a website,
+
+14
+00:00:39.172 --> 00:00:42.175
+also relations to other entities such as the headquarters
+
+15
+00:00:42.175 --> 00:00:43.777
+being Walldorf.
+
+16
+00:00:44.277 --> 00:00:46.379
+Clicking on Walldorf leads you to
+
+17
+00:00:46.379 --> 00:00:48.782
+the corresponding knowledge graph entry for Walldorf,
+
+18
+00:00:49.182 --> 00:00:51.384
+where again you will see a list of properties
+
+19
+00:00:51.384 --> 00:00:55.155
+such as description and relations to other entities,
+
+20
+00:00:55.155 --> 00:00:58.758
+for example, the region that it's related to, Karlsruhe.
+
+21
+00:00:59.192 --> 00:01:02.095
+Now that you've seen how knowledge graphs are used in practice,
+
+22
+00:01:02.295 --> 00:01:05.799
+let's dive a bit deeper to understand their technical foundations.
+
+23
+00:01:06.199 --> 00:01:10.703
+A knowledge graph represents structured information in the form of a graph
+
+24
+00:01:10.904 --> 00:01:13.206
+where nodes represent entities
+
+25
+00:01:13.506 --> 00:01:17.077
+and edges represent relationships between these entities.
+
+26
+00:01:17.377 --> 00:01:19.879
+There are two main components of knowledge graphs.
+
+27
+00:01:20.380 --> 00:01:22.382
+First, the schema or ontology,
+
+28
+00:01:22.682 --> 00:01:25.985
+which defines the types of entities, their attributes,
+
+29
+00:01:25.985 --> 00:01:28.988
+and relationships between the entities which occur in the knowledge graph.
+
+30
+00:01:29.189 --> 00:01:32.492
+Second, the instance data,
+
+31
+00:01:32.492 --> 00:01:34.060
+which are the instances that form the
+
+32
+00:01:34.060 --> 00:01:35.862
+graph and follow the definitions of the schema.
+
+33
+00:01:36.262 --> 00:01:39.866
+In general, there are two main approaches to represent knowledge graphs.
+
+34
+00:01:40.166 --> 00:01:43.970
+labeled property graphs and the Resource Description Framework or RDF.
+
+35
+00:01:44.370 --> 00:01:46.973
+While both of them model entities and relationships,
+
+36
+00:01:47.373 --> 00:01:51.978
+they differ in their structure, expressiveness, and intended use cases.
+
+37
+00:01:52.779 --> 00:01:55.381
+In this course, we will use RDF
+
+38
+00:01:55.381 --> 00:01:58.685
+as a graph-based data model to represent knowledge graphs.
+
+39
+00:01:59.152 --> 00:02:01.454
+The Resource Description Framework
+
+40
+00:02:01.454 --> 00:02:03.556
+is a graph-based data model
+
+41
+00:02:03.556 --> 00:02:07.961
+standardized by the Worldwide Web Consortium, in short, the W3C.
+
+42
+00:02:08.661 --> 00:02:10.363
+RDF does not enforce a schema,
+
+43
+00:02:10.663 --> 00:02:13.166
+which makes it flexible and easy to integrate data
+
+44
+00:02:13.166 --> 00:02:15.168
+from heterogeneous data sources.
+
+45
+00:02:15.668 --> 00:02:18.972
+SPARQL is the standard query language for RDF
+
+46
+00:02:18.972 --> 00:02:23.343
+with well-defined semantics, similar to SQL for the relational data model.
+
+47
+00:02:23.743 --> 00:02:26.646
+The atomic building block of RDF are triples.
+
+48
+00:02:26.946 --> 00:02:31.351
+A triple consists of a subject, a predicate, and an object.
+
+49
+00:02:31.518 --> 00:02:34.420
+Each triple can be represented
+
+50
+00:02:34.420 --> 00:02:37.524
+as labeled directed edges in an RDF graph.
+
+51
+00:02:37.824 --> 00:02:41.327
+For instance, the shown edges represent the fact
+
+52
+00:02:41.327 --> 00:02:43.530
+that SAP is located in Walldorf.
+
+53
+00:02:44.030 --> 00:02:47.333
+Now that you understand the fundamental elements of RDF graphs,
+
+54
+00:02:47.333 --> 00:02:49.536
+let's take a look at an example knowledge graph
+
+55
+00:02:49.536 --> 00:02:52.338
+similar to the one which was shown in our web search
+
+56
+00:02:52.338 --> 00:02:54.340
+experiment previously.
+
+57
+00:02:54.741 --> 00:02:57.977
+We first start with a node that represents SAP.
+
+58
+00:02:58.645 --> 00:03:02.115
+In RDF, unique resource identifiers or URIs are used
+
+59
+00:03:02.115 --> 00:03:05.218
+to uniquely identify resources in the graph.
+
+60
+00:03:05.718 --> 00:03:08.421
+We can add attributes to the SAP instance,
+
+61
+00:03:08.721 --> 00:03:11.624
+such as the year when it was founded, its name,
+
+62
+00:03:11.758 --> 00:03:13.960
+and state that it's a company.
+
+63
+00:03:14.360 --> 00:03:17.931
+Attribute values in RDF are so-called literal values.
+
+64
+00:03:18.331 --> 00:03:20.934
+We can further expand the graph and link SAP
+
+65
+00:03:20.934 --> 00:03:23.136
+to other nodes in the graph,
+
+66
+00:03:23.236 --> 00:03:25.538
+such as Christian Klein as the CEO
+
+67
+00:03:25.738 --> 00:03:28.541
+and Walldorf as a city of its headquarters location.
+
+68
+00:03:28.775 --> 00:03:31.945
+One advantage of knowledge graphs is the ability to infer facts
+
+69
+00:03:31.945 --> 00:03:34.747
+which are not explicitly stated in the data
+
+70
+00:03:34.747 --> 00:03:38.551
+that can be derived from the definitions in the ontology.
+
+71
+00:03:38.751 --> 00:03:43.556
+For instance, by defining located in as a transitive relationship,
+
+72
+00:03:43.556 --> 00:03:47.260
+we can then infer that SAP is located in Germany.
+
+73
+00:03:47.560 --> 00:03:52.560
+RDF graphs are usually serialized in a machine-readable format such as N-Triples
+
+74
+00:03:52.565 --> 00:03:55.268
+or Turtle files as shown here.
+
+75
+00:03:55.768 --> 00:03:58.571
+An example triple in this file indicates
+
+76
+00:03:58.571 --> 00:04:01.274
+that SAP CEO is Christian Klein.
+
+77
+00:04:01.774 --> 00:04:04.043
+There are various methods to construct knowledge graphs.
+
+78
+00:04:04.544 --> 00:04:08.047
+You can use structured sources. Here you have a fixed schema
+
+79
+00:04:08.248 --> 00:04:10.650
+where entities of the same type or class
+
+80
+00:04:10.750 --> 00:04:13.920
+are described with the same attributes as in the case of relational
+
+81
+00:04:13.920 --> 00:04:17.724
+databases. Here you will use mapping rules such as R2RML.
+
+82
+00:04:18.124 --> 00:04:20.226
+You can also use semi-structured sources.
+
+83
+00:04:20.526 --> 00:04:23.730
+Here you will have a flexible schema where entities
+
+84
+00:04:23.830 --> 00:04:25.632
+of the same type or class
+
+85
+00:04:25.632 --> 00:04:27.734
+may be described differently like XML documents.
+
+86
+00:04:28.434 --> 00:04:31.704
+Here again, we use mapping rules to construct knowledge graphs.
+
+87
+00:04:32.071 --> 00:04:35.875
+Of course, you could use Unstructured Sources in the knowledge graph.
+
+88
+00:04:35.875 --> 00:04:38.278
+Here you do not have a fixed schema at all.
+
+89
+00:04:38.278 --> 00:04:41.281
+For example, natural language text or images.
+
+90
+00:04:41.281 --> 00:04:43.416
+NLP Techniques may be used to
+
+91
+00:04:43.416 --> 00:04:45.885
+construct knowledge graphs from such data sources.
+
+92
+00:04:46.286 --> 00:04:50.089
+In this course, you will work with Structured Sources
+
+93
+00:04:50.089 --> 00:04:52.292
+to construct a sample knowledge graph.
+
+94
+00:04:52.992 --> 00:04:55.194
+Here's a high level overview
+
+95
+00:04:55.194 --> 00:04:57.163
+on the knowledge graph construction process.
+
+96
+00:04:57.563 --> 00:04:59.966
+In step zero, you define the use case, the scope
+
+97
+00:04:59.966 --> 00:05:01.734
+and the business questions that are
+
+98
+00:05:01.734 --> 00:05:03.770
+needed to be answered by the graph,
+
+99
+00:05:03.770 --> 00:05:08.074
+which triggers what metadata to extract, what to model, and so on.
+
+100
+00:05:08.675 --> 00:05:11.077
+In step one, you begin by gathering data
+
+101
+00:05:11.077 --> 00:05:13.179
+from across your enterprise ecosystem,
+
+102
+00:05:13.279 --> 00:05:15.882
+which forms the foundation of the knowledge graph.
+
+103
+00:05:16.382 --> 00:05:19.185
+The foundation stage is where you connect various systems
+
+104
+00:05:19.285 --> 00:05:21.387
+and extract their valuable business data.
+
+105
+00:05:21.921 --> 00:05:25.925
+Each source system speaks its own language and organizes data differently.
+
+106
+00:05:26.326 --> 00:05:29.729
+For example, CSV, XML, JSON, and others.
+
+107
+00:05:30.330 --> 00:05:33.633
+In step two, you analyze and standardize your data
+
+108
+00:05:33.633 --> 00:05:37.537
+to ensure its knowledge graph ready. Think of it as
+
+109
+00:05:37.570 --> 00:05:40.373
+translating different dialects into a common language,
+
+110
+00:05:40.773 --> 00:05:42.575
+identifying duplicate information,
+
+111
+00:05:42.975 --> 00:05:46.179
+resolving inconsistencies and validating data quality,
+
+112
+00:05:46.879 --> 00:05:49.382
+all to ensure that knowledge graph is built
+
+113
+00:05:49.782 --> 00:05:52.685
+on a solid foundation of trustworthy information.
+
+114
+00:05:53.319 --> 00:05:57.123
+In step three, data modeling is where the magic happens.
+
+115
+00:05:57.623 --> 00:06:02.128
+Here you convert the clean data into standardized RDF triples.
+
+116
+00:06:02.228 --> 00:06:07.228
+Each piece of business information is represented as subject, predicate, object statements
+
+117
+00:06:08.101 --> 00:06:12.105
+that directly mirror the relationships in the relevant underlying systems.
+
+118
+00:06:12.405 --> 00:06:14.307
+And finally, in step four
+
+119
+00:06:14.407 --> 00:06:15.875
+is where you leverage the connected
+
+120
+00:06:15.875 --> 00:06:17.610
+nature of knowledge graphs to deliver value.
+
+121
+00:06:18.111 --> 00:06:20.613
+These aren't just representations of the source systems.
+
+122
+00:06:21.247 --> 00:06:24.650
+They're new connections, analysis, and insights
+
+123
+00:06:24.751 --> 00:06:28.855
+derived from source metadata as an interconnected whole.
+
+124
+00:06:29.255 --> 00:06:31.357
+Now that you know what a knowledge graph is
+
+125
+00:06:31.424 --> 00:06:33.326
+and various methods to construct it,
+
+126
+00:06:33.426 --> 00:06:35.128
+let's look at an example on how
+
+127
+00:06:35.128 --> 00:06:37.029
+you can use knowledge graphs with AI agents
+
+128
+00:06:37.130 --> 00:06:38.831
+in an enterprise context.
+
+129
+00:06:38.998 --> 00:06:41.200
+Suppose you have a user request
+
+130
+00:06:41.200 --> 00:06:43.803
+to create a purchase order for five pencils
+
+131
+00:06:43.803 --> 00:06:45.805
+in purchasing group 002
+
+132
+00:06:45.805 --> 00:06:48.508
+and purchasing organization 3000
+
+133
+00:06:48.508 --> 00:06:52.011
+and want an AI agent to fulfill this request.
+
+134
+00:06:52.412 --> 00:06:55.515
+Without any context, this is not a trivial task for the agent
+
+135
+00:06:55.882 --> 00:06:58.484
+since the enterprise system landscape can be very complex
+
+136
+00:06:58.885 --> 00:07:01.888
+with several thousand different APIs that might be relevant.
+
+137
+00:07:02.688 --> 00:07:05.491
+Hence, we construct a knowledge graph of the APIs
+
+138
+00:07:05.892 --> 00:07:09.896
+in the system landscape and enrich it with business process information
+
+139
+00:07:10.396 --> 00:07:12.098
+to provide the right context to
+
+140
+00:07:12.098 --> 00:07:14.100
+the agent to fulfill the user request.
+
+141
+00:07:14.567 --> 00:07:16.969
+In large enterprise environments
+
+142
+00:07:16.969 --> 00:07:19.172
+with complex evolving APIs,
+
+143
+00:07:19.172 --> 00:07:22.375
+AI Agents face several challenges. Number one.
+
+144
+00:07:22.375 --> 00:07:25.378
+LLMs often spend a lot of time and tokens
+
+145
+00:07:25.378 --> 00:07:27.380
+just trying to discover the right API.
+
+146
+00:07:27.380 --> 00:07:29.382
+It's a trial and error process
+
+147
+00:07:29.382 --> 00:07:31.384
+that can slow things down significantly.
+
+148
+00:07:31.384 --> 00:07:33.553
+Knowledge graphs help by organizing APIs
+
+149
+00:07:33.553 --> 00:07:35.555
+around business processes and objects.
+
+150
+00:07:36.022 --> 00:07:39.225
+This narrows down the search space, makes planning more efficient,
+
+151
+00:07:39.225 --> 00:07:41.527
+reduces unnecessary replanning,
+
+152
+00:07:41.527 --> 00:07:45.131
+and speeds up execution overall. Number two.
+
+153
+00:07:45.131 --> 00:07:47.934
+While LLMs and retrieval-based systems like RAG
+
+154
+00:07:48.034 --> 00:07:50.136
+are great at pulling relevant content,
+
+155
+00:07:50.436 --> 00:07:53.039
+they often miss the deeper structure and context,
+
+156
+00:07:53.406 --> 00:07:57.610
+especially when it comes to domain-specific logic or API metadata.
+
+157
+00:07:58.010 --> 00:08:00.313
+Knowledge graphs bring that missing context.
+
+158
+00:08:00.813 --> 00:08:03.516
+Because they are structured and semantically rich,
+
+159
+00:08:03.716 --> 00:08:05.918
+they reflect the relationships between APIs,
+
+160
+00:08:05.918 --> 00:08:07.620
+business processes and data models.
+
+161
+00:08:07.920 --> 00:08:11.224
+This makes them especially helpful for grounding responses
+
+162
+00:08:11.524 --> 00:08:13.226
+and avoiding hallucinations.
+
+163
+00:08:13.860 --> 00:08:16.662
+particularly in dynamic or customized business environments.
+
+164
+00:08:16.863 --> 00:08:21.367
+Number three, for simple read operations, LLMs usually cope well.
+
+165
+00:08:21.667 --> 00:08:24.070
+But when tasks get more complex,
+
+166
+00:08:24.170 --> 00:08:27.373
+like executing a series of API calls in the right order
+
+167
+00:08:27.673 --> 00:08:31.177
+or understanding allowed fixed values, they start to struggle.
+
+168
+00:08:31.677 --> 00:08:36.677
+Knowledge graphs offer a built-in structure that maps these dependencies and sequences,
+
+169
+00:08:37.183 --> 00:08:41.187
+guiding the agents step-by-step and reducing the chances of error.
+
+170
+00:08:41.487 --> 00:08:45.424
+And number four, AI agents typically generate answers
+
+171
+00:08:45.424 --> 00:08:47.627
+based on learned patterns or retrieved snippets,
+
+172
+00:08:47.627 --> 00:08:50.429
+but they rarely provide visibility into how they got there.
+
+173
+00:08:50.730 --> 00:08:52.832
+That makes it hard to explain results
+
+174
+00:08:52.832 --> 00:08:54.734
+or trace them back to source logic,
+
+175
+00:08:54.734 --> 00:08:58.237
+especially when the same query returns different results.
+
+176
+00:08:58.704 --> 00:09:02.308
+Knowledge graphs change that by making reasoning transparent.
+
+177
+00:09:02.909 --> 00:09:07.513
+You can trace exactly which APIs were used with what filters,
+
+178
+00:09:07.713 --> 00:09:11.117
+what the system returned, what was the source system, and so on.
+
+179
+00:09:11.717 --> 00:09:14.220
+These are capabilities in enterprise settings
+
+180
+00:09:14.420 --> 00:09:18.991
+where trust, auditability, and reproducibility are non-negotiable.
