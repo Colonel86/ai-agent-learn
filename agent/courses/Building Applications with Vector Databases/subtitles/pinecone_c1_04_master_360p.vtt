@@ -1,0 +1,707 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.000
+This lesson is all about hybrid search.
+
+2
+00:00:03.000 --> 00:00:09.000
+You will leverage a feature in Pinecone that allows indexed entries to have both dense and sparse embeddings at the same time.
+
+3
+00:00:09.000 --> 00:00:14.000
+Of course, this means we can also search across sparse and dense at the same time as well.
+
+4
+00:00:14.000 --> 00:00:23.000
+To do this, we will leverage BM25 and Clip to generate embeddings from fashion products to search across both text and image product descriptions at the same time.
+
+5
+00:00:23.000 --> 00:00:25.000
+Let's get coding.
+
+6
+00:00:26.000 --> 00:00:30.000
+We're going to build a hybrid search system using Pinecone.
+
+7
+00:00:30.000 --> 00:00:36.000
+Pinecone supports vectors with sparse and dense values, which allows you to perform hybrid search.
+
+8
+00:00:36.000 --> 00:00:47.000
+In this lesson, we're going to teach you how to use hybrid search, which is the ability to combine vector semantic search with traditional keyword text search against different modalities for the same entity.
+
+9
+00:00:47.000 --> 00:00:50.000
+This example will show you exactly what that means.
+
+10
+00:00:50.000 --> 00:00:55.000
+We have our user here on the left-hand side, and we're going to take data from a fashion product database.
+
+11
+00:00:55.000 --> 00:00:59.000
+We're going to encode it into two different types of vectors.
+
+12
+00:00:59.000 --> 00:01:03.000
+The vectors that we've been using previously are what's called dense vectors.
+
+13
+00:01:03.000 --> 00:01:07.000
+To do that, we'll use something called Clip, and we'll get into what that is later on.
+
+14
+00:01:07.000 --> 00:01:10.000
+This time, we're going to generate what's called sparse vectors.
+
+15
+00:01:10.000 --> 00:01:17.000
+To create that, we'll use BM25, which is a common encoding technique in information retrieval, but we'll talk about what that is later.
+
+16
+00:01:17.000 --> 00:01:27.000
+The key point here is that for any given row in the index of Pinecone, you can store dense and sparse vectors at the same time with the metadata that goes with it into one row.
+
+17
+00:01:27.000 --> 00:01:36.000
+Then what we're going to do is query for dark blue French connection genes, and we'll get back a data set from Pinecone, which will have some genes, obviously.
+
+18
+00:01:36.000 --> 00:01:46.000
+Then we'll tune what's called the alpha parameter inside of that query to change whether we weigh the results from the BM25 encoding or the Clip encoding more or less, and we'll see how the results change.
+
+19
+00:01:46.000 --> 00:01:48.000
+Let's get started.
+
+20
+00:01:48.000 --> 00:01:56.000
+To get going, we will go ahead and import in our warnings cutoff mechanism here, so import warnings and filter warnings.
+
+21
+00:01:56.000 --> 00:02:01.000
+Then we will pull in the packages that we've been depending on previously.
+
+22
+00:02:01.000 --> 00:02:07.000
+Nothing really different here except for the BM25 encoder from pinecone underscore text dot sparse.
+
+23
+00:02:07.000 --> 00:02:10.000
+We'll go ahead and run that.
+
+24
+00:02:10.000 --> 00:02:14.000
+Then we're going to continue doing what we've been doing previously.
+
+25
+00:02:15.000 --> 00:02:21.000
+We'll use the Deep Learning AI Utils package to get our Pinecone API key.
+
+26
+00:02:21.000 --> 00:02:23.000
+Then we're going to do a little bit of setup.
+
+27
+00:02:23.000 --> 00:02:25.000
+We've seen this as well.
+
+28
+00:02:25.000 --> 00:02:27.000
+If you have CUDA on your machine, that's great.
+
+29
+00:02:27.000 --> 00:02:28.000
+If not, no big deal.
+
+30
+00:02:28.000 --> 00:02:30.000
+We'll just use your CPU.
+
+31
+00:02:30.000 --> 00:02:32.000
+Then we'll get a pointer again to our package.
+
+32
+00:02:32.000 --> 00:02:40.000
+We've already done it, but why not do it one more time, and this time create our Pinecone index, or at least get the name of the index here.
+
+33
+00:02:40.000 --> 00:02:51.000
+Then what we'll do is create an instance of a Pinecone object and then do what we've done historically, but with a little bit of a change this time.
+
+34
+00:02:51.000 --> 00:02:59.000
+If the index name is in the list of indexes that Pinecone has, then we'll delete it just to keep things clean.
+
+35
+00:02:59.000 --> 00:03:04.000
+But this time what we're going to do differently is change the metric that's used to calculate similarity inside of Pinecone.
+
+36
+00:03:04.000 --> 00:03:08.000
+We're going to have it be dot product instead of cosine like it has been previously.
+
+37
+00:03:09.000 --> 00:03:15.000
+Then we're going to get a pointer to our Pinecone object.
+
+38
+00:03:15.000 --> 00:03:17.000
+Now we'll go ahead and run that.
+
+39
+00:03:17.000 --> 00:03:19.000
+Everything's great.
+
+40
+00:03:19.000 --> 00:03:23.000
+We have a CPU here because we're inside of Jupyter on a Mac.
+
+41
+00:03:23.000 --> 00:03:25.000
+No GPU for us to use here.
+
+42
+00:03:25.000 --> 00:03:27.000
+Let's set up our data.
+
+43
+00:03:28.000 --> 00:03:37.000
+First we're going to set up our fashion data set from Hugging Face, and that comes from here.
+
+44
+00:03:37.000 --> 00:03:47.000
+Ashbrock has fashion product images small, and we're going to use the training split.
+
+45
+00:03:47.000 --> 00:03:51.000
+Then output what we have.
+
+46
+00:03:52.000 --> 00:03:56.000
+There's our data set.
+
+47
+00:03:56.000 --> 00:03:59.000
+It has ID, gender, and master category.
+
+48
+00:03:59.000 --> 00:04:02.000
+Again, we've already downloaded it for you, so that's why it came back so quickly.
+
+49
+00:04:02.000 --> 00:04:04.000
+Let's look at the data.
+
+50
+00:04:04.000 --> 00:04:08.000
+We're going to go ahead and look at some of the images inside of the data set.
+
+51
+00:04:08.000 --> 00:04:12.000
+Images equals fashion image.
+
+52
+00:04:12.000 --> 00:04:22.000
+Then we will do a little bit of column removal just to keep things simple.
+
+53
+00:04:22.000 --> 00:04:28.000
+Then why not look at one of the pieces of data in the data set.
+
+54
+00:04:28.000 --> 00:04:32.000
+That is the 900th element in that data set.
+
+55
+00:04:33.000 --> 00:04:40.000
+Now we're going to convert into Pandas data format just a bit.
+
+56
+00:04:40.000 --> 00:04:42.000
+We'll get to the metadata.
+
+57
+00:04:42.000 --> 00:04:45.000
+metadata.toPandas.
+
+58
+00:04:45.000 --> 00:04:49.000
+Then look at that data using head.
+
+59
+00:04:49.000 --> 00:04:54.000
+We have ID, gender, category, subcategory, article type.
+
+60
+00:04:54.000 --> 00:04:56.000
+Pretty extensive fashion data set.
+
+61
+00:04:56.000 --> 00:04:59.000
+This is going to be fascinating to work with.
+
+62
+00:04:59.000 --> 00:05:02.000
+Now what we're going to do is create our sparse vectors.
+
+63
+00:05:02.000 --> 00:05:08.000
+For creating and training sparse vectors, we're going to use the BM25 function from the Pinecone text library.
+
+64
+00:05:08.000 --> 00:05:11.000
+BM25 is a popular technique for retrieving text.
+
+65
+00:05:11.000 --> 00:05:16.000
+It uses term frequencies to determine the relative importance of the term to the query.
+
+66
+00:05:16.000 --> 00:05:21.000
+It's simple but effective and only requires knowing the number of documents in the data corpus
+
+67
+00:05:21.000 --> 00:05:24.000
+and the frequency of terms across documents.
+
+68
+00:05:24.000 --> 00:05:29.000
+We're going to show you how to use BM25 with Pinecone's sparse dense vectors for use in hybrid search.
+
+69
+00:05:29.000 --> 00:05:34.000
+Clip, on the other hand, is a neural network devised and created by OpenAI
+
+70
+00:05:34.000 --> 00:05:39.000
+built on millions of images and respective descriptions that can return the best caption for an image.
+
+71
+00:05:39.000 --> 00:05:41.000
+Given an image, we're going to get back a caption.
+
+72
+00:05:41.000 --> 00:05:42.000
+Let's get started with that.
+
+73
+00:05:42.000 --> 00:05:47.000
+We're going to create a BM25 encoder.
+
+74
+00:05:47.000 --> 00:05:55.000
+We're going to fit our data to the metadata that we just looked at above.
+
+75
+00:05:55.000 --> 00:06:05.000
+Then we'll look at the product display name.
+
+76
+00:06:05.000 --> 00:06:09.000
+Turtle, check, men, navy, blue shirt.
+
+77
+00:06:09.000 --> 00:06:11.000
+That's the product display name. Makes sense.
+
+78
+00:06:11.000 --> 00:06:15.000
+Now what we're going to do is do two different things.
+
+79
+00:06:15.000 --> 00:06:41.000
+First, encode queries of a product display name and look at what we get back.
+
+80
+00:06:42.000 --> 00:06:46.000
+We've encoded queries, we've encoded documents, and now we're ready to get going
+
+81
+00:06:46.000 --> 00:06:48.000
+because we've completed our work with BM25.
+
+82
+00:06:48.000 --> 00:06:52.000
+We're going to cut back over to dense vectors next.
+
+83
+00:06:52.000 --> 00:07:14.000
+We're going to come back to using Sentence Transformer as we have in previous lessons.
+
+84
+00:07:14.000 --> 00:07:21.000
+We'll put what the model looks like and then do some dense vector encoding.
+
+85
+00:07:21.000 --> 00:07:34.000
+Let's see what we get here.
+
+86
+00:07:34.000 --> 00:07:41.000
+512 dimensions in that dense vector, which is exactly what we wanted to see.
+
+87
+00:07:41.000 --> 00:07:44.000
+Now let's go back to our fashion dataset.
+
+88
+00:07:44.000 --> 00:07:46.000
+We're going to see how many elements that we have.
+
+89
+00:07:46.000 --> 00:07:49.000
+We have 44,072.
+
+90
+00:07:49.000 --> 00:07:55.000
+This is going to be the first time inside Pinecone that you see us uploading sparse and dense vectors at the same time.
+
+91
+00:07:55.000 --> 00:07:59.000
+The way that you do that is actually not too different from how you upload normal vectors.
+
+92
+00:07:59.000 --> 00:08:03.000
+It's just that you're going to add sparse and dense at the same time, as you can imagine.
+
+93
+00:08:03.000 --> 00:08:06.000
+A bit of code to do that. I'll walk you through it.
+
+94
+00:08:06.000 --> 00:08:09.000
+I'm going to go ahead and paste that in for you so you can see it.
+
+95
+00:08:09.000 --> 00:08:13.000
+We're going to do it in batches of 200, like we have before.
+
+96
+00:08:13.000 --> 00:08:17.000
+For each one of the elements in the fashion dataset in batches of 200,
+
+97
+00:08:17.000 --> 00:08:22.000
+we're going to get pointers to the beginning and end of the batch that we're going to use,
+
+98
+00:08:22.000 --> 00:08:30.000
+extract the metadata, convert the metadata, and then build metadata fields that are ready for upload.
+
+99
+00:08:30.000 --> 00:08:32.000
+We're going to take the batches of the images.
+
+100
+00:08:32.000 --> 00:08:36.000
+We're going to encode our sparse vectors using the encode documents function.
+
+101
+00:08:36.000 --> 00:08:41.000
+We're going to get our dense vectors using the model encode function, convert that back into a list,
+
+102
+00:08:41.000 --> 00:08:44.000
+and then get our unique identifiers to each one of the vectors.
+
+103
+00:08:44.000 --> 00:08:49.000
+If you remember, each Pinecone vector embedding is a combination of an ID,
+
+104
+00:08:49.000 --> 00:08:52.000
+the vectors that it represents, and the metadata that goes with it.
+
+105
+00:08:52.000 --> 00:08:55.000
+This is the metadata up here. This is the vector embeddings here.
+
+106
+00:08:55.000 --> 00:08:58.000
+This is the unique identifiers for the embeddings.
+
+107
+00:08:58.000 --> 00:09:01.000
+The only difference here is that we have dense and sparse at the same time.
+
+108
+00:09:01.000 --> 00:09:05.000
+You're going to see that we can upload them down here in the append function below.
+
+109
+00:09:05.000 --> 00:09:09.000
+What we're going to do is zip up all of that data that we just created above,
+
+110
+00:09:09.000 --> 00:09:15.000
+and then we're going to append it inside of a dictionary object here in upserts.append.
+
+111
+00:09:15.000 --> 00:09:21.000
+We're going to keep on adding these through as we iterate through the for loop and then do an upsert into Pinecone.
+
+112
+00:09:21.000 --> 00:09:25.000
+Then we'll see what we got back after uploading all of that data.
+
+113
+00:09:25.000 --> 00:09:31.000
+Let's go ahead and run that.
+
+114
+00:09:31.000 --> 00:09:34.000
+That upsert into Pinecone has completed,
+
+115
+00:09:34.000 --> 00:09:38.000
+and now we're going to get into the essence of actually doing a hybrid search.
+
+116
+00:09:38.000 --> 00:09:42.000
+Let's scroll down a bit and start to query.
+
+117
+00:09:42.000 --> 00:09:50.000
+We'll say we're going to look for dark blue French connection genes for men.
+
+118
+00:09:50.000 --> 00:09:59.000
+To do that, we're going to create sparse and dense encodings out of that query string,
+
+119
+00:09:59.000 --> 00:10:05.000
+and then we're going to run our Pinecone query.
+
+120
+00:10:05.000 --> 00:10:08.000
+In the same way that we did upsert slightly differently,
+
+121
+00:10:08.000 --> 00:10:12.000
+we're going to do query slightly differently by specifying dense and sparse vectors at the same time.
+
+122
+00:10:12.000 --> 00:10:15.000
+You can see that here in these two lines.
+
+123
+00:10:15.000 --> 00:10:18.000
+We're going to return at most 14 items.
+
+124
+00:10:18.000 --> 00:10:22.000
+We're going to take the result of that query and look at it.
+
+125
+00:10:22.000 --> 00:10:28.000
+The result of that query is going to be the images inside the dataset.
+
+126
+00:10:28.000 --> 00:10:30.000
+We're going to look at the IDs.
+
+127
+00:10:30.000 --> 00:10:33.000
+Let's go ahead and run that.
+
+128
+00:10:33.000 --> 00:10:37.000
+We get back basically pointers to images, but we'd like to view that result.
+
+129
+00:10:37.000 --> 00:10:41.000
+We've created a little bit of a helper function so that you can look at these images here.
+
+130
+00:10:41.000 --> 00:10:43.000
+We don't want to see the pill images.
+
+131
+00:10:43.000 --> 00:10:45.000
+We actually want to view the image itself proper.
+
+132
+00:10:45.000 --> 00:10:49.000
+Let's go ahead and put in this small helper function.
+
+133
+00:10:49.000 --> 00:10:52.000
+This is a little bit neither here nor there in terms of what it does,
+
+134
+00:10:53.000 --> 00:11:00.000
+but it basically creates some HTML so that you can view the image and pulls it out of the metadata.
+
+135
+00:11:00.000 --> 00:11:02.000
+Let's go ahead and run that.
+
+136
+00:11:02.000 --> 00:11:09.000
+We'll actually just call this display result with the result from our query.
+
+137
+00:11:09.000 --> 00:11:10.000
+There we go. Perfect.
+
+138
+00:11:10.000 --> 00:11:13.000
+Blue Jane is exactly as we had hoped.
+
+139
+00:11:13.000 --> 00:11:15.000
+But now let's balance the search a bit.
+
+140
+00:11:15.000 --> 00:11:18.000
+We talked about this alpha parameter before.
+
+141
+00:11:18.000 --> 00:11:20.000
+Let's declare another helper function to get to that.
+
+142
+00:11:20.000 --> 00:11:24.000
+It's possible to prioritize our search based on sparse and dense vector results.
+
+143
+00:11:24.000 --> 00:11:28.000
+To do so, we scale the vectors.
+
+144
+00:11:28.000 --> 00:11:31.000
+For this, we're going to create a function called hybrid scale.
+
+145
+00:11:31.000 --> 00:11:34.000
+Let's go ahead and just paste that in because it's pretty large.
+
+146
+00:11:34.000 --> 00:11:37.000
+What this does is take in a parameter called alpha,
+
+147
+00:11:37.000 --> 00:11:43.000
+and what that's going to do is control whether we rely on sparse or dense more.
+
+148
+00:11:43.000 --> 00:11:47.000
+I encourage you to look at this code when you're offline at home and look at it.
+
+149
+00:11:47.000 --> 00:11:51.000
+What you want to do is know that controlling alpha relies on sparse or dense more.
+
+150
+00:11:51.000 --> 00:11:54.000
+Let's go ahead and run that.
+
+151
+00:11:54.000 --> 00:11:58.000
+Run the query one more time, but with different amount of alpha.
+
+152
+00:11:58.000 --> 00:12:02.000
+What we'll say is, that's the question.
+
+153
+00:12:02.000 --> 00:12:05.000
+We're going to put in dense and sparse.
+
+154
+00:12:05.000 --> 00:12:14.000
+Then we'll run our query one more time and then view the images.
+
+155
+00:12:14.000 --> 00:12:17.000
+Before running the code, we're going to set alpha to one.
+
+156
+00:12:17.000 --> 00:12:21.000
+We're going to run that code and we get back our images. It's perfect.
+
+157
+00:12:21.000 --> 00:12:25.000
+What we're going to do now is check to see whether we got back more men's jeans.
+
+158
+00:12:25.000 --> 00:12:31.000
+What we'll do is go ahead and copy and paste this in and execute that query.
+
+159
+00:12:31.000 --> 00:12:34.000
+We got exactly back what we had hoped.
+
+160
+00:12:34.000 --> 00:12:39.000
+Let's actually execute the hybrid scale function here and look at the results that we got.
+
+161
+00:12:39.000 --> 00:12:44.000
+Remember our alpha parameter. It's actually a continuous variable on the range of 0 to 1.
+
+162
+00:12:44.000 --> 00:12:49.000
+I challenge you or encourage you to play with what different results you get from changing it.
+
+163
+00:12:49.000 --> 00:12:54.000
+You could change it from 0.2. You can make it 0.5. It's really up to you.
+
+164
+00:12:54.000 --> 00:12:59.000
+For illustrative purposes, we're going to make it 0 and 1 just to make the example fairly obvious.
+
+165
+00:12:59.000 --> 00:13:02.000
+Let's go ahead and run this and make it more sparse this time.
+
+166
+00:13:02.000 --> 00:13:04.000
+We'll run that.
+
+167
+00:13:04.000 --> 00:13:08.000
+Seeing our results, we got back women's jeans, which is perhaps not exactly what we want.
+
+168
+00:13:08.000 --> 00:13:13.000
+We were looking for men's jeans up here. Let's confirm that by looking at the titles.
+
+169
+00:13:13.000 --> 00:13:16.000
+We got back women's jeans.
+
+170
+00:13:16.000 --> 00:13:22.000
+Again, for illustrative purposes, let's set the alpha parameter way on the other end of the scale towards more dense and make it 1.
+
+171
+00:13:22.000 --> 00:13:24.000
+Look at how that changes it.
+
+172
+00:13:24.000 --> 00:13:27.000
+We got back all men's jeans, which is a little bit better.
+
+173
+00:13:27.000 --> 00:13:32.000
+Just to confirm, it's men's jeans indeed. That's perfect.
+
+174
+00:13:32.000 --> 00:13:38.000
+Let's hybrid search the ability to merge sparse and dense vectors into the same row instead of Pinecone.
+
+175
+00:13:38.000 --> 00:13:40.000
+You saw how we did it with fashion data.
+
+176
+00:13:40.000 --> 00:13:43.000
+In the next lesson, we're going to run through facial similarity search.
+

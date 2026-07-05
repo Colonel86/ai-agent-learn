@@ -1,0 +1,819 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.033 --> 00:00:04.500
+In this
+lesson you will learn the different levels
+
+2
+00:00:04.500 --> 00:00:07.700
+of knowledge customization
+available with Azure OpenAI.
+
+3
+00:00:08.533 --> 00:00:11.533
+You will mostly focus
+on grounding techniques, RAG
+
+4
+00:00:11.733 --> 00:00:14.733
+to start building your first AI agent.
+
+5
+00:00:15.000 --> 00:00:17.900
+By the end of the lesson,
+you will deploy your Azure
+
+6
+00:00:17.900 --> 00:00:20.900
+OpenAI service instance and test API.
+
+7
+00:00:21.300 --> 00:00:23.700
+You will also deploy an orchestration
+engine
+
+8
+00:00:23.700 --> 00:00:26.700
+and LangChain to enable these scenarios.
+
+9
+00:00:26.900 --> 00:00:29.800
+All right, let's dive in.
+
+10
+00:00:29.800 --> 00:00:33.933
+In the first lesson, will be building
+the first AI agent.
+
+11
+00:00:34.400 --> 00:00:36.933
+So imagine
+you're starting with these technologies
+
+12
+00:00:36.933 --> 00:00:41.000
+you want to apply
+Azure, OpenAI, langChain etc...
+
+13
+00:00:41.200 --> 00:00:43.600
+You just need to know how to deploy them,
+
+14
+00:00:43.600 --> 00:00:46.600
+how to prepare them
+in order to build your first AI agent.
+
+15
+00:00:46.800 --> 00:00:47.700
+Before we dive
+
+16
+00:00:47.700 --> 00:00:51.300
+in, let's quickly cover some background
+to set the context for this course.
+
+17
+00:00:51.733 --> 00:00:52.533
+This will be brief.
+
+18
+00:00:52.533 --> 00:00:55.300
+Don't worry, we will get to coding soon.
+
+19
+00:00:55.300 --> 00:00:59.300
+Generative AI, particularly in the 20s,
+refers to the ability
+
+20
+00:00:59.300 --> 00:01:03.000
+of artificial intelligence
+to create new text, images, videos,
+
+21
+00:01:03.100 --> 00:01:05.000
+and other types of content.
+
+22
+00:01:05.000 --> 00:01:08.233
+This is achieved through interactions
+with a genAI system
+
+23
+00:01:08.233 --> 00:01:10.233
+using natural language prompts.
+
+24
+00:01:10.233 --> 00:01:12.533
+This capability is impressive.
+
+25
+00:01:12.533 --> 00:01:14.300
+While it's not entirely new,
+
+26
+00:01:14.300 --> 00:01:17.933
+there are many emerging technologies
+in this field that you should be aware of.
+
+27
+00:01:18.133 --> 00:01:20.800
+You will be working
+with cutting-edge technologies,
+
+28
+00:01:20.800 --> 00:01:23.800
+including in preview new models
+that are still in development.
+
+29
+00:01:24.300 --> 00:01:28.900
+Therefore, we are relying on the official
+documentation from different providers.
+
+30
+00:01:29.400 --> 00:01:33.533
+Additionally, remember that generative
+AI builds on the foundations of machine
+
+31
+00:01:33.533 --> 00:01:34.900
+learning and deep learning.
+
+32
+00:01:34.900 --> 00:01:39.500
+These are powerful technologies, but
+our main focus here will be generative AI.
+
+33
+00:01:39.900 --> 00:01:43.600
+In my opinion, the key
+differentiators of GenAI are remarkable.
+
+34
+00:01:44.100 --> 00:01:46.800
+If I had to explain what GenAI is, I will
+
+35
+00:01:46.800 --> 00:01:50.300
+highlight
+the concept of foundation models. Why?
+
+36
+00:01:50.700 --> 00:01:55.100
+Because a foundation model can perform
+multiple tasks with a single setup.
+
+37
+00:01:55.133 --> 00:01:58.100
+This means that when you are building your
+AI agent,
+
+38
+00:01:58.100 --> 00:02:01.500
+you can connect it to a database,
+process documentation,
+
+39
+00:02:01.500 --> 00:02:04.600
+or create various applications
+all with the same model.
+
+40
+00:02:04.800 --> 00:02:08.100
+This simplicity is a significant advantage
+for companies,
+
+41
+00:02:08.100 --> 00:02:11.900
+as deploying one model to handle
+different tasks is incredibly efficient.
+
+42
+00:02:12.300 --> 00:02:15.800
+Additionally, foundation
+models can handle various data
+
+43
+00:02:15.800 --> 00:02:19.700
+formats,
+including text, images, videos, and audio.
+
+44
+00:02:20.133 --> 00:02:23.700
+This versatility is ideal
+for multimodal applications.
+
+45
+00:02:24.100 --> 00:02:27.833
+Another crucial aspect
+is the ability to use natural language.
+
+46
+00:02:28.100 --> 00:02:29.833
+As developers, we just code.
+
+47
+00:02:29.833 --> 00:02:33.700
+But for most of the people interacting
+with the system, using natural language
+
+48
+00:02:33.700 --> 00:02:38.400
+is much more intuitive, whether in English
+or Spanish or any other language.
+
+49
+00:02:38.433 --> 00:02:41.433
+People can now communicate
+with this system naturally.
+
+50
+00:02:41.533 --> 00:02:44.700
+By the end of this course,
+you will be building a database agent.
+
+51
+00:02:45.200 --> 00:02:48.233
+This is exciting
+because it means the user can interact
+
+52
+00:02:48.233 --> 00:02:50.333
+with the application
+in their own language.
+
+53
+00:02:50.333 --> 00:02:52.933
+Instead of using SQL queries.
+
+54
+00:02:52.933 --> 00:02:54.000
+This opens up
+
+55
+00:02:54.000 --> 00:02:58.000
+these solutions to a broader audience,
+including technical and business users.
+
+56
+00:02:58.400 --> 00:03:01.400
+These are essential features
+to keep in mind for this lesson
+
+57
+00:03:01.733 --> 00:03:04.733
+and for any other generative applications
+you will create.
+
+58
+00:03:05.000 --> 00:03:08.000
+Now, let's discuss
+how to customize the LLMs.
+
+59
+00:03:08.100 --> 00:03:12.100
+And by customization, I mean integrating
+your additional knowledge to an LLM.
+
+60
+00:03:12.433 --> 00:03:17.433
+Imagine your company has databases, PDFs,
+datalakes, or private information.
+
+61
+00:03:18.100 --> 00:03:19.500
+How can you combine these data
+
+62
+00:03:19.500 --> 00:03:22.800
+to enhance the knowledge of the model
+like GPT-4, for example?
+
+63
+00:03:23.233 --> 00:03:26.033
+Well, we have two options.
+
+64
+00:03:26.033 --> 00:03:28.500
+The first one is retrieval generative augmentation.
+
+65
+00:03:28.500 --> 00:03:31.900
+This method leverage an orchestration tool
+to connect the model
+
+66
+00:03:31.900 --> 00:03:35.900
+with your data sources, such as databases,
+without the need for the training.
+
+67
+00:03:36.133 --> 00:03:39.900
+For instance, Azure
+OpenAI GPT-4 can be used to query
+
+68
+00:03:39.900 --> 00:03:42.900
+your database directly
+without changing the model itself.
+
+69
+00:03:42.900 --> 00:03:45.733
+This approach is more efficient
+and practical
+
+70
+00:03:45.733 --> 00:03:48.800
+as it avoids the overhead associated
+with model training.
+
+71
+00:03:49.200 --> 00:03:51.600
+The second one is fine tuning the model.
+
+72
+00:03:51.600 --> 00:03:55.600
+This process involves retraining the model
+and specific data sets
+
+73
+00:03:56.000 --> 00:03:59.000
+followed by redeploying the updated model.
+
+74
+00:03:59.400 --> 00:04:02.900
+While this allows for customization,
+it is resource intensive
+
+75
+00:04:02.900 --> 00:04:06.500
+and less commonly adopted
+to the complexity and operational cost.
+
+76
+00:04:06.900 --> 00:04:11.700
+The primary advantage of RAG
+is its flexibility. Future model
+
+77
+00:04:11.700 --> 00:04:16.133
+updates or replacement can be seamlessly
+integrated into existing setup.
+
+78
+00:04:16.333 --> 00:04:19.333
+Using the same connection mechanisms
+to access your data.
+
+79
+00:04:19.333 --> 00:04:22.000
+This approach will be implemented
+in this course.
+
+80
+00:04:22.000 --> 00:04:23.400
+Consider how it is
+
+81
+00:04:23.400 --> 00:04:25.333
+streamlined the integration of new models
+
+82
+00:04:25.333 --> 00:04:28.433
+and optimize the use of your existing data
+infrastructure.
+
+83
+00:04:29.133 --> 00:04:33.500
+We'll begin by setting up the environment
+with inside packages such as pandas.
+
+84
+00:04:34.233 --> 00:04:37.833
+If you are running this locally,
+you need to install the required packages
+
+85
+00:04:37.833 --> 00:04:42.300
+by using the requirements.txt file
+which contains all the dependencies
+
+86
+00:04:42.300 --> 00:04:43.833
+for this course.
+
+87
+00:04:43.833 --> 00:04:47.000
+You can find this file
+in the current directory of this lesson,
+
+88
+00:04:47.200 --> 00:04:50.333
+and detailed instructions
+will be provided on the lesson's notebook.
+
+89
+00:04:53.433 --> 00:04:54.400
+Next, you
+
+90
+00:04:54.400 --> 00:04:57.500
+will need to set up the actual resources
+like Azure
+
+91
+00:04:57.500 --> 00:05:01.033
+OpenAI. Starting first
+by providing the information
+
+92
+00:05:01.033 --> 00:05:04.533
+needed to configure your Azure
+OpenAI environment.
+
+93
+00:05:05.000 --> 00:05:08.933
+If you have worked with OpenAI APIs before,
+this will be familiar.
+
+94
+00:05:09.500 --> 00:05:12.500
+There are some differences,
+but you'll grasp it quickly.
+
+95
+00:05:13.033 --> 00:05:15.400
+Here are the variables you will need,
+
+96
+00:05:15.400 --> 00:05:18.400
+the API endpoint and the API key.
+
+97
+00:05:19.033 --> 00:05:21.200
+This endpoint is a pre-created
+cloud resource
+
+98
+00:05:21.200 --> 00:05:24.833
+that will give you access to the Azure
+OpenAI GPT model.
+
+99
+00:05:25.800 --> 00:05:28.800
+This provided the API key
+and endpoint here
+
+100
+00:05:28.800 --> 00:05:32.300
+are for teaching purposes
+only. Your notebook environment
+
+101
+00:05:32.333 --> 00:05:36.200
+using the deepLearning.AI platform
+are set up with the needed keys.
+
+102
+00:05:36.600 --> 00:05:40.000
+Now let's think about the next step.
+
+103
+00:05:40.100 --> 00:05:41.000
+Let me just
+
+104
+00:05:41.000 --> 00:05:45.200
+add the information here
+and we will run it.
+
+105
+00:05:45.400 --> 00:05:48.600
+See that we are running like
+a very small piece of code.
+
+106
+00:05:48.800 --> 00:05:53.166
+And in this case, what we are saying
+is, okay,
+
+107
+00:05:53.400 --> 00:05:58.400
+we're importing from LangChain schema,
+something that we call the human message.
+
+108
+00:05:58.866 --> 00:06:03.700
+And then from LangChain
+we are importing the Azure chat OpenAI.
+
+109
+00:06:03.700 --> 00:06:07.866
+Which means, this is interesting,
+because we will be using the role of human
+
+110
+00:06:07.866 --> 00:06:12.000
+message, which is the kind of prompt
+you will be sending to the system.
+
+111
+00:06:12.000 --> 00:06:15.566
+So we need the LangChain system
+to recognize
+
+112
+00:06:15.766 --> 00:06:16.966
+that you are sending a message.
+
+113
+00:06:16.966 --> 00:06:20.400
+And then we need to establish something
+to connect
+
+114
+00:06:20.400 --> 00:06:24.766
+from LangChain to Azure OpenAI,
+which is slightly different to OpenAI.
+
+115
+00:06:24.766 --> 00:06:26.400
+So here what we are saying is, okay,
+
+116
+00:06:26.400 --> 00:06:28.766
+we have the information
+about the Azure, OpenAI.
+
+117
+00:06:28.766 --> 00:06:31.666
+We have the API version that I believe at
+
+118
+00:06:31.666 --> 00:06:34.766
+this point
+is the latest stable version of preview.
+
+119
+00:06:34.766 --> 00:06:36.200
+And this will change. Obviously.
+
+120
+00:06:36.200 --> 00:06:37.966
+And you can try different versions.
+
+121
+00:06:37.966 --> 00:06:42.766
+You can just change the date, just go
+to the reference of different API versions,
+
+122
+00:06:42.766 --> 00:06:46.966
+and then you will have the deployment
+and the endpoint. Again,
+
+123
+00:06:46.966 --> 00:06:50.266
+this is because my configuration includes
+
+124
+00:06:50.266 --> 00:06:53.866
+an endpoint that is called Adrian,
+Suecia and deployment.
+
+125
+00:06:53.866 --> 00:06:57.466
+I call this test adri
+for this single purpose, but
+
+126
+00:06:57.766 --> 00:07:00.866
+usually, you will put the deployment name
+that is more specific
+
+127
+00:07:00.866 --> 00:07:02.266
+to what you are creating.
+
+128
+00:07:02.266 --> 00:07:04.666
+So up to now, we have the GenAI environment.
+
+129
+00:07:04.666 --> 00:07:07.666
+We have added the endpoint.
+
+130
+00:07:07.766 --> 00:07:09.166
+We are preparing the connection
+
+131
+00:07:09.166 --> 00:07:10.966
+with LangChain. Three steps.
+
+132
+00:07:10.966 --> 00:07:13.166
+Very simple. Direct to a point.
+
+133
+00:07:13.166 --> 00:07:14.200
+Now, what's next?
+
+134
+00:07:14.200 --> 00:07:17.200
+Remember I have told
+you about the human message part.
+
+135
+00:07:17.366 --> 00:07:19.166
+Oh here you can see it.
+
+136
+00:07:19.166 --> 00:07:19.966
+You might miss it.
+
+137
+00:07:19.966 --> 00:07:24.966
+And it is for the system to recognize
+that you are sending a message as a human.
+
+138
+00:07:24.966 --> 00:07:26.866
+So let's try something like this.
+
+139
+00:07:26.866 --> 00:07:31.266
+We created a message and
+inside this message we have the content.
+
+140
+00:07:31.266 --> 00:07:35.166
+And the content is translate this sentence
+from English
+
+141
+00:07:35.166 --> 00:07:38.466
+to French and Spanish.
+Because you know why not?
+
+142
+00:07:38.466 --> 00:07:42.366
+I like red car and blue houses,
+but my dog is yellow.
+
+143
+00:07:42.366 --> 00:07:46.366
+So I'm just testing this
+because it's a nonsense sentence.
+
+144
+00:07:46.366 --> 00:07:50.466
+But also it's interesting
+to see how the system may answer.
+
+145
+00:07:50.600 --> 00:07:52.666
+Remember, we have just created a instance.
+
+146
+00:07:52.666 --> 00:07:56.566
+We haven't sent the message yet,
+but you have it there. In order to send.
+
+147
+00:07:56.566 --> 00:07:57.800
+It is very simple.
+
+148
+00:07:57.800 --> 00:08:00.800
+We'll put here is model invoke.
+
+149
+00:08:00.866 --> 00:08:03.100
+The invoke function is the one
+that is working now.
+
+150
+00:08:03.100 --> 00:08:08.100
+Remember model is related
+to this model that we have created.
+
+151
+00:08:08.300 --> 00:08:11.666
+That is an Azure chat
+OpenAI kind of object.
+
+152
+00:08:11.766 --> 00:08:12.666
+Let's see what happens.
+
+153
+00:08:14.266 --> 00:08:17.000
+Okay, so we are starting to see things.
+
+154
+00:08:17.000 --> 00:08:18.066
+Check this.
+
+155
+00:08:18.066 --> 00:08:20.266
+We have talked about the human message
+here.
+
+156
+00:08:20.266 --> 00:08:22.366
+We are getting the AI message.
+
+157
+00:08:22.366 --> 00:08:26.200
+When you think about the interaction
+with these models we had different
+
+158
+00:08:26.200 --> 00:08:27.200
+kind of roles.
+
+159
+00:08:27.200 --> 00:08:30.066
+The human, the agent, the administrator.
+
+160
+00:08:30.066 --> 00:08:31.766
+In this case, we are focusing on the human
+
+161
+00:08:31.766 --> 00:08:33.466
+AI interaction.
+
+162
+00:08:33.466 --> 00:08:34.966
+We have seen a human message.
+
+163
+00:08:34.966 --> 00:08:38.466
+We get the AI message
+and you say the content is, okay,
+
+164
+00:08:38.466 --> 00:08:40.300
+you ask me in French and Spanish.
+
+165
+00:08:40.300 --> 00:08:43.700
+"French, j'aime les voitures rouges et les maisons bleue, ok
+
+166
+00:08:43.766 --> 00:08:46.600
+I can tell you, that I speak French,
+I can tell you that this works.
+
+167
+00:08:46.600 --> 00:08:49.000
+And even better than the Spanish
+because I speak Spanish.
+
+168
+00:08:49.000 --> 00:08:53.400
+"Me gustan los coches rojos, las casas azules
+y mi perro es amarillo" perfect.
+
+169
+00:08:53.400 --> 00:08:55.966
+So we have the full content here.
+
+170
+00:08:55.966 --> 00:08:57.066
+This is working.
+
+171
+00:08:57.066 --> 00:09:00.466
+We have to tell the system, translate
+this sentence to French
+
+172
+00:09:00.466 --> 00:09:04.500
+and Spanish, is giving me
+with, the two languages.
+
+173
+00:09:04.500 --> 00:09:06.066
+Take some minutes.
+
+174
+00:09:06.066 --> 00:09:08.300
+Review the code, play with it.
+
+175
+00:09:08.300 --> 00:09:11.566
+Change the prompt. Experiment
+a little bit.
+
+176
+00:09:11.566 --> 00:09:14.566
+So congratulations,
+you have finished lesson one.
+

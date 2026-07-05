@@ -1,0 +1,233 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.000 --> 00:00:03.233
+Welcome to Building Your Own Database
+Agent, built
+
+2
+00:00:03.233 --> 00:00:05.400
+in partnership with Microsoft.
+
+3
+00:00:05.400 --> 00:00:09.033
+In this course, you'll learn
+how LLMs can interact with structured
+
+4
+00:00:09.033 --> 00:00:12.700
+data like tabular data or SQL databases.
+
+5
+00:00:13.200 --> 00:00:16.800
+This is very useful when you're building
+a system to answer questions
+
+6
+00:00:16.800 --> 00:00:21.000
+using data sources with tables of data,
+rather than needing to find
+
+7
+00:00:21.000 --> 00:00:25.400
+maybe an analyst to translate a question
+to a SQL database query,
+
+8
+00:00:25.600 --> 00:00:29.133
+you see how a database agents
+can automatically
+
+9
+00:00:29.133 --> 00:00:32.700
+input a question
+and generate a sequence of actions.
+
+10
+00:00:33.000 --> 00:00:36.000
+This function calls to retrieve
+the relevant data.
+
+11
+00:00:36.600 --> 00:00:41.600
+Specifically, in this course,
+you learn how to build your own AI agent
+
+12
+00:00:41.733 --> 00:00:45.333
+to interact with tabular data
+and SQL databases.
+
+13
+00:00:45.833 --> 00:00:49.400
+Along the way, you'll learn about
+some of the key building blocks for agents
+
+14
+00:00:49.600 --> 00:00:52.800
+and will be using the LangChain agents
+framework.
+
+15
+00:00:53.100 --> 00:00:54.200
+I'm delighted that our
+
+16
+00:00:54.200 --> 00:00:57.633
+instructor for this course is Adrian
+Gonzalez Sanchez.
+
+17
+00:00:58.233 --> 00:01:03.000
+He is a data AI specialist at Microsoft,
+teaches at the University level,
+
+18
+00:01:03.000 --> 00:01:06.900
+and is also author of the Azure OpenAI
+O'Reilly book.
+
+19
+00:01:07.733 --> 00:01:09.400
+Thanks, Andrew.
+
+20
+00:01:09.400 --> 00:01:11.133
+I'm very excited to be here.
+
+21
+00:01:11.133 --> 00:01:15.633
+In this course, you will learn
+how to deploy LLMs to build your AI agent.
+
+22
+00:01:16.133 --> 00:01:19.133
+Implement RAG with tabular data.
+
+23
+00:01:19.133 --> 00:01:22.133
+Develop your own database agent.
+
+24
+00:01:22.300 --> 00:01:24.700
+Build a function calling system,
+
+25
+00:01:24.700 --> 00:01:28.633
+integrate Azure OpenAI assistance
+API.
+
+26
+00:01:28.633 --> 00:01:33.333
+You'll go through these concepts using
+the Azure OpenAI service and LangChain.
+
+27
+00:01:33.700 --> 00:01:37.600
+Although we'll be using a database agent
+as a running example,
+
+28
+00:01:37.600 --> 00:01:42.100
+these components are useful
+for building any other agents as well.
+
+29
+00:01:42.400 --> 00:01:46.833
+So database agents are an exciting
+breakthrough for how we analyze data,
+
+30
+00:01:47.400 --> 00:01:50.300
+is letting people interact
+with complex datasets
+
+31
+00:01:50.300 --> 00:01:53.533
+without needing to learn
+query languages like SQL,
+
+32
+00:01:54.000 --> 00:01:57.800
+so that you can have an LLM
+perform requests to a database for you,
+
+33
+00:01:58.000 --> 00:02:02.633
+regardless of the database
+provider, data model, or type language.
+
+34
+00:02:03.200 --> 00:02:06.933
+Using an LLM as an extraction layer
+on top of the database
+
+35
+00:02:07.200 --> 00:02:10.900
+is one of the new frontiers
+for data democratization
+
+36
+00:02:10.900 --> 00:02:14.200
+within many companies,
+and perhaps you could bring this
+
+37
+00:02:14.200 --> 00:02:18.100
+to fruition for your company
+or for applications you're working on.
+
+38
+00:02:18.400 --> 00:02:20.500
+I mean, how exciting is that?
+
+39
+00:02:20.500 --> 00:02:25.200
+Further, I see agents as a rapidly
+growing category with in terms of AI,
+
+40
+00:02:25.600 --> 00:02:30.033
+and you also learn about key components
+to agents and best practices
+
+41
+00:02:30.033 --> 00:02:33.300
+for assembling these components
+into draw this system.
+
+42
+00:02:33.500 --> 00:02:37.600
+Many people have worked to create
+this course from the Microsoft side
+
+43
+00:02:37.633 --> 00:02:42.633
+I'd like to thank Jorge
+Garcia Ximenez, Agustine SantaMaria,
+
+44
+00:02:42.800 --> 00:02:47.600
+Arancha Diez Garcia and Xiaopeng Li.
+From DeepLearning.AI,
+
+45
+00:02:47.800 --> 00:02:51.400
+Diala Ezzeddine also contributed
+to this course.
+
+46
+00:02:51.733 --> 00:02:55.300
+In the first lesson,
+you will start building your first AI agent
+
+47
+00:02:55.300 --> 00:02:56.900
+with the Azure OpenAI service.
+
+48
+00:02:58.200 --> 00:03:01.400
+So let's
+go on to the next video to get started.
+

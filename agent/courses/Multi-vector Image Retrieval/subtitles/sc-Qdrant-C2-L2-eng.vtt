@@ -1,0 +1,968 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:03.770
+You just saw how Multi-vector approaches can be used in text retrieval.
+
+00:00:04.070 --> 00:00:06.072
+Now, let's build on what you learned
+
+00:00:06.106 --> 00:00:07.674
+and look at how a similar
+
+00:00:07.674 --> 00:00:09.476
+approach can be used in Image Retrieval.
+
+00:00:09.776 --> 00:00:11.878
+All right, let's go. Image retrieval is
+
+00:00:11.878 --> 00:00:13.947
+important because a lot of useful information
+
+00:00:13.947 --> 00:00:16.850
+is not stored as text. It's stored in image files.
+
+00:00:17.017 --> 00:00:19.319
+Sometimes this means actual images,
+
+00:00:19.719 --> 00:00:22.822
+but scan documents, PDF files or slide decks
+
+00:00:22.822 --> 00:00:24.824
+are also essentially images.
+
+00:00:25.091 --> 00:00:27.794
+A new generation of vision language models
+
+00:00:27.794 --> 00:00:30.196
+are able to accept both text and images as input.
+
+00:00:30.597 --> 00:00:32.799
+So if you retrieve the right documents,
+
+00:00:32.799 --> 00:00:35.001
+you can build capable multimodal RAG systems.
+
+00:00:35.268 --> 00:00:37.670
+The challenge is completing that retrieval step.
+
+00:00:38.071 --> 00:00:41.674
+Documents are the most common type of image companies want to retrieve.
+
+00:00:41.975 --> 00:00:44.277
+But they present a lot of challenges for retrieval.
+
+00:00:44.577 --> 00:00:48.081
+Slides or document pages can be a complex mix of text,
+
+00:00:48.782 --> 00:00:51.084
+images, charts, and tables.
+
+00:00:51.384 --> 00:00:54.788
+The traditional approach for parsing this kind of document
+
+00:00:54.788 --> 00:00:56.256
+is to first use special models
+
+00:00:56.256 --> 00:00:57.957
+to detect the layout of the document
+
+00:00:58.358 --> 00:01:01.061
+and then parse each content type separately.
+
+00:01:01.461 --> 00:01:04.764
+This approach requires you to build a complicated custom system
+
+00:01:04.764 --> 00:01:06.766
+that often is still fallible.
+
+00:01:06.766 --> 00:01:10.070
+What's worse, a retrieval pipeline for one kind of document
+
+00:01:10.370 --> 00:01:12.372
+often won't work on another.
+
+00:01:12.472 --> 00:01:18.144
+ColPali, a multi-vector image retrieval approach, addresses many of those issues.
+
+00:01:18.445 --> 00:01:23.049
+ColPali stands for Contextualized Late Interaction Over PaliGemma.
+
+00:01:23.349 --> 00:01:26.553
+PaliGemma is the name of a vision language model created by Google.
+
+00:01:26.853 --> 00:01:30.156
+However, the name ColPali is also quite often used to describe
+
+00:01:30.156 --> 00:01:33.159
+the whole family of models built on the same principles.
+
+00:01:33.359 --> 00:01:37.163
+Multi-vector embedding models built on top of vision language models,
+
+00:01:37.163 --> 00:01:39.566
+which can take both images and text as input.
+
+00:01:39.999 --> 00:01:43.503
+This is similar to ColBERT, which is a specific model,
+
+00:01:43.503 --> 00:01:45.839
+but also is often used to refer to
+
+00:01:45.839 --> 00:01:48.141
+a whole family of multi-vector text retrieval techniques.
+
+00:01:48.541 --> 00:01:50.143
+ColPali has many great features.
+
+00:01:50.343 --> 00:01:53.780
+It skips the complicated and error-prone format detection step,
+
+00:01:53.780 --> 00:01:56.749
+and it works flexibly across all document types.
+
+00:01:57.016 --> 00:01:59.819
+While it can be somewhat costly to run,
+
+00:01:59.819 --> 00:02:02.188
+it can also end up being cheaper in the long run
+
+00:02:02.188 --> 00:02:04.991
+because your system is relying on a single model
+
+00:02:04.991 --> 00:02:08.495
+instead of many models that traditional approach relied on.
+
+00:02:08.995 --> 00:02:11.798
+Let's see how vision language models are adapted for retrieval
+
+00:02:11.798 --> 00:02:13.800
+and then apply them in practice.
+
+00:02:14.033 --> 00:02:17.637
+A typical workflow over a large language model goes as follows.
+
+00:02:17.937 --> 00:02:20.640
+Your input text is passed to a Tokenizer.
+
+00:02:20.940 --> 00:02:23.843
+The role of the Tokenizer is to split it into smaller units
+
+00:02:24.244 --> 00:02:27.347
+called tokens and to create a sequence of token IDs
+
+00:02:27.647 --> 00:02:29.549
+which is then passed to a model.
+
+00:02:29.883 --> 00:02:34.687
+In reality, the model translates these IDs into their corresponding token embeddings
+
+00:02:34.687 --> 00:02:36.289
+it learned during the training.
+
+00:02:36.489 --> 00:02:40.293
+Those vectors are static and specific to each of the tokens.
+
+00:02:40.593 --> 00:02:42.996
+For the time being, let's assume that the input
+
+00:02:42.996 --> 00:02:45.598
+of the language model is a sequence of token embeddings.
+
+00:02:45.698 --> 00:02:47.901
+The language model passes the sequence
+
+00:02:47.901 --> 00:02:49.903
+through its own layers and produces
+
+00:02:49.903 --> 00:02:52.205
+a contextualized embedding of the current token
+
+00:02:52.205 --> 00:02:54.908
+that takes the whole sequence into consideration.
+
+00:02:54.908 --> 00:02:57.510
+This vector is typically used to generate logits
+
+00:02:57.510 --> 00:02:59.712
+and then probabilities of each of the tokens
+
+00:02:59.712 --> 00:03:01.514
+in a vocabulary
+
+00:03:01.514 --> 00:03:03.416
+to be a continuation of the sequence.
+
+00:03:03.416 --> 00:03:05.718
+And Vision Language Models are not different here,
+
+00:03:05.718 --> 00:03:07.921
+if we use them for text generation.
+
+00:03:08.354 --> 00:03:10.456
+However, adding another modality
+
+00:03:10.456 --> 00:03:13.359
+requires some extensions of that architecture.
+
+00:03:13.860 --> 00:03:16.129
+Vision is an entirely different modality,
+
+00:03:16.129 --> 00:03:18.331
+so it cannot be converted into text directly.
+
+00:03:18.831 --> 00:03:21.434
+Thus, it has its own preprocessing pipeline,
+
+00:03:21.434 --> 00:03:23.736
+which obviously starts with an entire image.
+
+00:03:24.103 --> 00:03:26.906
+The overall goal is to process the image in such a way
+
+00:03:26.906 --> 00:03:29.609
+that you input it as a sequence of embeddings
+
+00:03:29.609 --> 00:03:32.312
+into the language model, like you do with text.
+
+00:03:32.612 --> 00:03:35.315
+So the image is being processed through an additional transformer
+
+00:03:35.315 --> 00:03:37.917
+which actually converts it into image patches
+
+00:03:37.917 --> 00:03:40.320
+of a specific size as a first step.
+
+00:03:40.820 --> 00:03:44.591
+A single image becomes a sequence of patches, not a single input.
+
+00:03:44.991 --> 00:03:47.527
+Similar to text, which is processed as a
+
+00:03:47.527 --> 00:03:50.063
+sequence of tokens, not as an entire document.
+
+00:03:50.263 --> 00:03:51.998
+Image input is passed through a
+
+00:03:51.998 --> 00:03:53.967
+neural network that is a Vision Transformer,
+
+00:03:54.467 --> 00:03:58.171
+and it again produces a sequence of contextualized vector embeddings,
+
+00:03:58.771 --> 00:04:00.473
+one for each input patch,
+
+00:04:00.873 --> 00:04:02.575
+typically highly dimensional.
+
+00:04:02.775 --> 00:04:06.779
+The output has to be then projected onto a smaller dimensional space
+
+00:04:06.779 --> 00:04:08.481
+and then passed to the language model.
+
+00:04:08.815 --> 00:04:11.718
+The reason for the last step is to make the image vectors
+
+00:04:11.718 --> 00:04:14.721
+have the same number of dimensions as the text vectors.
+
+00:04:15.121 --> 00:04:18.224
+All in all, this additional process enables a different modality
+
+00:04:18.224 --> 00:04:20.326
+to be passed to the same network.
+
+00:04:20.627 --> 00:04:24.130
+No matter the input modality, the language model will produce an embedding
+
+00:04:24.330 --> 00:04:26.399
+that will be used to generate logits
+
+00:04:26.399 --> 00:04:28.501
+and probabilities of each of the tokens
+
+00:04:28.534 --> 00:04:30.603
+later on in the generation process.
+
+00:04:31.170 --> 00:04:34.040
+So ultimately, a typical vision language model
+
+00:04:34.040 --> 00:04:36.943
+adds some extra processing to the images,
+
+00:04:37.043 --> 00:04:41.047
+while keeping the text processing intact compared to pure language model.
+
+00:04:41.347 --> 00:04:45.051
+A VLM still predicts the next token given the input,
+
+00:04:45.351 --> 00:04:47.954
+so we are not done yet with the embeddings generation.
+
+00:04:48.421 --> 00:04:50.923
+You don't want a generative system,
+
+00:04:50.923 --> 00:04:53.426
+but something that will represent an input
+
+00:04:53.426 --> 00:04:55.628
+for the retrieval in a form of vector embeddings.
+
+00:04:55.928 --> 00:04:58.231
+In order to produce vector embeddings,
+
+00:04:58.231 --> 00:05:00.633
+you need to slightly extend the logic of the VLM
+
+00:05:00.633 --> 00:05:02.902
+and add another projection layer
+
+00:05:02.902 --> 00:05:05.204
+just right after the language model generates
+
+00:05:05.204 --> 00:05:07.206
+the hidden states from its final layer.
+
+00:05:07.674 --> 00:05:11.144
+This projection layer reduces embeddings for efficient storage.
+
+00:05:11.511 --> 00:05:15.815
+For Gemma, it goes from 2048 to 128 dimensions,
+
+00:05:16.115 --> 00:05:17.884
+but it may differ between the models.
+
+00:05:18.151 --> 00:05:20.753
+There is no pooling at the very end,
+
+00:05:20.753 --> 00:05:24.324
+so ultimately, the entire input sequence, no matter the modality,
+
+00:05:24.524 --> 00:05:26.526
+is transformed through a dense network
+
+00:05:26.526 --> 00:05:28.194
+and you get a sequence of
+
+00:05:28.194 --> 00:05:30.096
+the same length that represents your input.
+
+00:05:30.396 --> 00:05:32.498
+In general, it's not enough
+
+00:05:32.498 --> 00:05:35.401
+to just start using VLMs for vector retrieval.
+
+00:05:35.702 --> 00:05:38.204
+There is some additional training required
+
+00:05:38.204 --> 00:05:40.406
+for both the final projection layer
+
+00:05:40.406 --> 00:05:42.408
+and language model parameters.
+
+00:05:42.675 --> 00:05:45.478
+Many papers suggest using low rank adapters
+
+00:05:45.478 --> 00:05:47.680
+to the language model attention weights.
+
+00:05:47.680 --> 00:05:52.385
+Low rank adaptation adds low rank matrices to the frozen base model.
+
+00:05:52.485 --> 00:05:55.855
+The term low rank refers to the dimensional complexity,
+
+00:05:56.155 --> 00:05:59.459
+where a lower rank means the matrix can be represented
+
+00:05:59.459 --> 00:06:01.661
+as the product of two smaller matrices.
+
+00:06:02.195 --> 00:06:04.297
+For example, instead of training
+
+00:06:04.297 --> 00:06:08.000
+a full 2048 by 2048 weight matrix,
+
+00:06:08.201 --> 00:06:10.803
+requiring over 4 million parameters.
+
+00:06:11.003 --> 00:06:13.406
+LoRA uses two matrices of size
+
+00:06:13.406 --> 00:06:17.377
+2048 by 32 and 32 by 2048,
+
+00:06:17.610 --> 00:06:21.381
+requiring only around 131000 parameters,
+
+00:06:21.581 --> 00:06:23.983
+which is a 97% reduction.
+
+00:06:24.550 --> 00:06:28.321
+The training process adjusts the whole model for effective retrieval,
+
+00:06:28.421 --> 00:06:32.625
+but due to these optimizations, it's easier and faster than full fine-tuning.
+
+00:06:32.925 --> 00:06:34.961
+Practically, you don't need to know
+
+00:06:34.961 --> 00:06:37.330
+all these details to start using ColPali.
+
+00:06:37.497 --> 00:06:41.300
+You will start by loading the appropriate model based on available hardware.
+
+00:06:41.501 --> 00:06:43.703
+While ColPali is a more powerful one,
+
+00:06:43.703 --> 00:06:45.371
+it requires a lot of memory
+
+00:06:45.371 --> 00:06:47.306
+to run or even better a GPU.
+
+00:06:47.507 --> 00:06:50.009
+For that reason, you can also use ColSmol,
+
+00:06:50.009 --> 00:06:54.714
+which is a smaller variant with 256 million parameters
+
+00:06:54.714 --> 00:06:58.017
+that you are able to use here on the deep learning platform.
+
+00:06:58.317 --> 00:07:01.487
+Feel free to run it on a different environment
+
+00:07:01.487 --> 00:07:04.390
+with the full ColPali model, so you can see the difference.
+
+00:07:04.390 --> 00:07:07.193
+No matter which model you end up using,
+
+00:07:07.226 --> 00:07:09.395
+you need a processor that works with raw data
+
+00:07:09.429 --> 00:07:12.698
+and converts it into a representation that the model can handle.
+
+00:07:13.199 --> 00:07:14.567
+Let's load a page from a
+
+00:07:14.567 --> 00:07:16.202
+famous Attention is all you need paper
+
+00:07:16.235 --> 00:07:19.572
+to see how ColPali processes visual documents.
+
+00:07:20.173 --> 00:07:23.376
+This PDF page contains diagrams, equations,
+
+00:07:23.910 --> 00:07:26.612
+and a lot of text. You will also use Pillow
+
+00:07:26.712 --> 00:07:29.515
+to load the image and check its dimensions.
+
+00:07:29.715 --> 00:07:34.821
+This high resolution screenshot preserves all visual details from the original PDF.
+
+00:07:34.854 --> 00:07:38.458
+ColPali processes images by dividing them into a grid of patches,
+
+00:07:39.058 --> 00:07:41.360
+similar to how a Vision Transformer works.
+
+00:07:42.061 --> 00:07:44.764
+For ColPali v1.3,
+
+00:07:44.764 --> 00:07:47.667
+this is always a fixed 32 by 32 grid.
+
+00:07:48.067 --> 00:07:52.672
+For ColSmol, the grid dimensions adapt to the image's aspect ratio.
+
+00:07:53.072 --> 00:07:57.677
+Let's visualize how this particular image is divided into patches
+
+00:07:57.677 --> 00:08:00.379
+by adding some spacing between them.
+
+00:08:00.513 --> 00:08:03.316
+You have a helper method to do exactly this.
+
+00:08:03.816 --> 00:08:07.019
+Now, you will process the image through ColPali's processor.
+
+00:08:07.520 --> 00:08:10.323
+This processor converts the image into a batch of tensors
+
+00:08:10.723 --> 00:08:14.527
+containing input IDs, attention masks, and pixel values
+
+00:08:14.727 --> 00:08:16.729
+that the model can understand.
+
+00:08:17.029 --> 00:08:19.832
+The processed batch contains input IDs
+
+00:08:20.032 --> 00:08:24.036
+that vary by model. It's a 1031 for ColPali
+
+00:08:24.537 --> 00:08:26.539
+or a 1139 for ColSmol.
+
+00:08:26.939 --> 00:08:29.842
+Let's decode this to see how ColPali
+
+00:08:29.842 --> 00:08:31.544
+represents the image internally.
+
+00:08:32.879 --> 00:08:34.881
+Notice the sequence contains
+
+00:08:35.581 --> 00:08:37.984
+1024 special image tokens
+
+00:08:38.284 --> 00:08:40.486
+representing different patches of the image,
+
+00:08:40.786 --> 00:08:42.388
+followed by instruction tokens.
+
+00:08:42.622 --> 00:08:45.424
+ColPali processes the image as a grid of patches,
+
+00:08:45.525 --> 00:08:47.527
+creating embeddings for each patch.
+
+00:08:47.627 --> 00:08:51.531
+For ColPali, it's always a fixed 32x32 grid,
+
+00:08:51.631 --> 00:08:55.234
+while for ColSmol, the grid dimensions vary based on image size.
+
+00:08:55.334 --> 00:08:57.537
+Let's generate embeddings for the image.
+
+00:08:57.737 --> 00:09:00.740
+You end up with 128 dimensional vector
+
+00:09:00.740 --> 00:09:03.209
+for each token you just saw.
+
+00:09:03.509 --> 00:09:06.212
+For searching instead, we may prefer the embeddings
+
+00:09:06.212 --> 00:09:09.215
+corresponding to the image tokens, not the instruction tokens.
+
+00:09:09.682 --> 00:09:12.485
+using a helper function to extract the image mask,
+
+00:09:12.485 --> 00:09:16.188
+we isolate the 1024 image patch embeddings.
+
+00:09:16.188 --> 00:09:18.491
+This number is fixed for ColPali
+
+00:09:18.491 --> 00:09:20.893
+and might be different for ColSmol, but
+
+00:09:20.893 --> 00:09:24.497
+by a random chance it's exactly the same number of patches created.
+
+00:09:24.897 --> 00:09:28.200
+One powerful feature of ColPali is its interpretability.
+
+00:09:28.801 --> 00:09:31.404
+We can visualize exactly which parts of an image
+
+00:09:31.404 --> 00:09:34.407
+are most relevant to specific query tokens.
+
+00:09:34.707 --> 00:09:39.111
+Unlike traditional dense embeddings that produce a single opaque similarity score,
+
+00:09:39.412 --> 00:09:42.114
+ColPali's token-level embeddings allow us to see
+
+00:09:42.114 --> 00:09:44.517
+how each word in our query relates
+
+00:09:44.517 --> 00:09:46.218
+to different regions of an image.
+
+00:09:46.485 --> 00:09:49.288
+This makes the model's reasoning transparent
+
+00:09:49.288 --> 00:09:52.592
+and helps us understand why certain documents are retrieved.
+
+00:09:53.092 --> 00:09:56.295
+Let's explore this capability by creating a query
+
+00:09:56.295 --> 00:09:59.899
+and visualizing how it matches different parts of our document.
+
+00:10:00.499 --> 00:10:03.402
+We'll create a query asking about the transformer architecture.
+
+00:10:04.003 --> 00:10:06.505
+This page from the Attention Is All You Need paper
+
+00:10:06.505 --> 00:10:08.507
+contains the famous transformer diagram,
+
+00:10:08.908 --> 00:10:12.311
+so we expect ColPali to highlight those specific regions
+
+00:10:12.311 --> 00:10:14.814
+when processing our query. You will process the
+
+00:10:14.814 --> 00:10:17.350
+query through the model to get query embeddings.
+
+00:10:17.950 --> 00:10:22.254
+Each query token is also represented by a 128 dimensional vector.
+
+00:10:22.555 --> 00:10:26.125
+But there are just 21 tokens created out of this query.
+
+00:10:26.525 --> 00:10:29.395
+Let's clean it up a little bit by removing padding
+
+00:10:29.495 --> 00:10:32.798
+and augmentation tokens, and then retokenize,
+
+00:10:33.099 --> 00:10:37.703
+so we can see the individual query tokens to analyze them further.
+
+00:10:37.703 --> 00:10:40.906
+To create our similarity visualizations, we first need to calculate
+
+00:10:40.906 --> 00:10:44.310
+how many patches the image was divided into.
+
+00:10:44.510 --> 00:10:47.613
+You will also extract the image mask to isolate
+
+00:10:47.613 --> 00:10:49.215
+just the image token embeddings,
+
+00:10:49.215 --> 00:10:51.217
+excluding the instruction tokens.
+
+00:10:51.517 --> 00:10:54.120
+Now you will generate the similarity maps
+
+00:10:54.120 --> 00:10:56.522
+using ColPali's interpretability tools.
+
+00:10:56.722 --> 00:10:59.925
+This computes the similarity between each query token
+
+00:11:00.026 --> 00:11:01.727
+and each image patch,
+
+00:11:01.727 --> 00:11:05.131
+creating a heat map for every token in our query.
+
+00:11:05.464 --> 00:11:08.768
+Let's visualize the similarity map for a specific query token.
+
+00:11:08.768 --> 00:11:11.671
+You will select the layer token from the query
+
+00:11:11.671 --> 00:11:15.941
+to see which parts of the image it attends to most strongly.
+
+00:11:16.342 --> 00:11:19.545
+This visualization will overlay a heat map
+
+00:11:19.545 --> 00:11:22.214
+on the original image with warmer colors
+
+00:11:22.214 --> 00:11:25.217
+indicating regions that ColPali considers
+
+00:11:25.217 --> 00:11:27.720
+more relevant to this specific word.
+
+00:11:28.320 --> 00:11:31.123
+This interpretability feature is valuable
+
+00:11:31.123 --> 00:11:33.826
+for debugging and understanding your actual system.
+
+00:11:34.126 --> 00:11:38.230
+You can identify whether the model is focusing on the right content,
+
+00:11:38.531 --> 00:11:40.533
+discover unexpected matching patterns,
+
+00:11:40.733 --> 00:11:43.135
+and build trust in the system's decisions.
+
+00:11:43.335 --> 00:11:46.238
+In production applications, this transparency
+
+00:11:46.238 --> 00:11:48.941
+can also help explain retrieval results to its users.
+
+00:11:49.642 --> 00:11:52.645
+However, since we are using the smaller ColSmol model here,
+
+00:11:52.645 --> 00:11:55.848
+you can see that the model seems to be paying attention
+
+00:11:55.848 --> 00:11:59.151
+to some background patches, which is slightly unexpected.
+
+00:11:59.452 --> 00:12:02.254
+Let's see how it looks like for the full ColPali model.
+
+00:12:03.055 --> 00:12:04.990
+This is how the same similarity map would
+
+00:12:04.990 --> 00:12:07.226
+look like for the bigger ColPali model.
+
+00:12:07.526 --> 00:12:09.628
+ColSmol performs some pixel shuffling,
+
+00:12:09.729 --> 00:12:12.431
+so the model was focusing on some random locations.
+
+00:12:12.631 --> 00:12:14.400
+But for ColPali, you can see the
+
+00:12:14.400 --> 00:12:16.435
+model mostly pays attention to the word layer
+
+00:12:16.936 --> 00:12:19.538
+occurring multiple times on that page, which is expected,
+
+00:12:19.839 --> 00:12:22.241
+as that's the token you were visualizing.
+
+00:12:22.775 --> 00:12:26.245
+Let's build a practical multimodal search system using Qdrant.
+
+00:12:26.912 --> 00:12:29.582
+We'll set up a collection with multi-vector support,
+
+00:12:29.882 --> 00:12:34.553
+using MaxSim comparator to handle ColPali's multiple embeddings per document.
+
+00:12:34.854 --> 00:12:37.556
+You will also disable HNSW graph creation
+
+00:12:37.656 --> 00:12:40.259
+as Qdrant can't use it effectively either way.
+
+00:12:40.559 --> 00:12:42.361
+Now, you will index all pages from
+
+00:12:42.361 --> 00:12:44.163
+the Attention is All You Need paper.
+
+00:12:45.131 --> 00:12:48.467
+The load precomputed flag is set to true
+
+00:12:48.467 --> 00:12:51.604
+which will load precomputed vector data for each page,
+
+00:12:51.604 --> 00:12:53.506
+rather than computing it live.
+
+00:12:53.506 --> 00:12:57.276
+Each page’s vectors are uploaded to Qdrant
+
+00:12:57.276 --> 00:13:00.846
+along with the image’s file path as metadata.
+
+00:13:01.113 --> 00:13:03.215
+Let's create a helper search function
+
+00:13:03.215 --> 00:13:07.720
+that processes text queries and create ColPali embeddings for them.
+
+00:13:07.920 --> 00:13:12.324
+The same function will also query the collection you've just created
+
+00:13:12.324 --> 00:13:14.326
+to get the closest matches.
+
+00:13:14.493 --> 00:13:16.796
+Since we are working with visual data,
+
+00:13:16.796 --> 00:13:18.697
+we have another helper method
+
+00:13:18.697 --> 00:13:22.301
+that displays the search results on the screen.
+
+00:13:22.301 --> 00:13:24.503
+Let's search for model architecture to see
+
+00:13:24.503 --> 00:13:26.505
+which pages of the paper
+
+00:13:26.505 --> 00:13:29.708
+the model considers to be the best hits.
+
+00:13:29.708 --> 00:13:31.410
+We ask for the model architecture.
+
+00:13:31.410 --> 00:13:34.213
+So it's not surprising that the
+
+00:13:34.213 --> 00:13:37.016
+most famous diagram is coming up first.
+
+00:13:37.216 --> 00:13:40.219
+But there is also a certain section of the paper
+
+00:13:40.219 --> 00:13:42.221
+which is called Model Architecture.
+
+00:13:42.621 --> 00:13:45.224
+So it's also selected as one of the best
+
+00:13:45.424 --> 00:13:47.927
+pages to answer that particular question.
+
+00:13:48.327 --> 00:13:52.832
+Next, let's search for scaled dot-product attention.
+
+00:13:53.332 --> 00:13:57.536
+Again, the diagrams in the first result returned
+
+00:13:57.536 --> 00:13:59.672
+are presenting exactly this, but there
+
+00:13:59.672 --> 00:14:02.141
+is also a part of the document
+
+00:14:02.141 --> 00:14:04.543
+which is called scaled dot-product attention
+
+00:14:04.543 --> 00:14:07.346
+and it also got captured by the ColPali retrieval.
+
+00:14:07.847 --> 00:14:10.249
+Finally, let's search for experiment results.
+
+00:14:11.016 --> 00:14:13.886
+The goal here is to retrieve pages containing tables and performance metrics
+
+00:14:13.886 --> 00:14:16.755
+that we would expect the paper to contain.
+
+00:14:17.423 --> 00:14:20.025
+ColPali seems to understand both textual content
+
+00:14:20.025 --> 00:14:22.628
+and visual elements like tables and charts.
+
+00:14:23.128 --> 00:14:25.030
+Surprisingly, the first page of the whole
+
+00:14:25.030 --> 00:14:26.932
+paper is returned as a top match,
+
+00:14:27.533 --> 00:14:29.935
+even though it doesn't seem to contain
+
+00:14:29.935 --> 00:14:32.538
+any kind of a table summarizing some experiments.
+
+00:14:32.638 --> 00:14:36.308
+Nevertheless, the experiment results could have been mentioned in the abstract
+
+00:14:36.342 --> 00:14:38.277
+or maybe in the footnotes of the
+
+00:14:38.277 --> 00:14:40.846
+article, so it's nothing that's surprising.
+
+00:14:41.280 --> 00:14:43.482
+Nevertheless, the second and the third match,
+
+00:14:43.782 --> 00:14:46.485
+they both contain some tables summarizing the efficiency
+
+00:14:46.785 --> 00:14:48.988
+of that particular method versus the other methods.
+
+00:14:49.488 --> 00:14:51.156
+And this is actually something we would
+
+00:14:51.156 --> 00:14:53.092
+expect from this kind of system to return.
+
+00:14:53.425 --> 00:14:57.263
+To sum it up, ColPali enables powerful multimodal search
+
+00:14:57.263 --> 00:15:01.667
+over visual documents without requiring an OCR step
+
+00:15:01.667 --> 00:15:03.936
+or complex document processing.
+
+00:15:04.336 --> 00:15:08.140
+by processing documents directly as images,
+
+00:15:08.540 --> 00:15:12.244
+it captures both textual and visual semantics naturally.
+
+00:15:12.945 --> 00:15:15.915
+Multi-vector representations come with certain limitations.
+
+00:15:16.315 --> 00:15:19.018
+Assuming each of the documents needs half a megabyte
+
+00:15:19.018 --> 00:15:20.619
+and you have a million documents,
+
+00:15:20.953 --> 00:15:24.356
+You may end up with 500 gigabytes of memory needed
+
+00:15:24.356 --> 00:15:26.759
+just to keep all the ColPali embeddings for search.
+
+00:15:27.159 --> 00:15:29.261
+That might be fine for low-scale projects
+
+00:15:29.261 --> 00:15:31.764
+with thousands of documents, but in practice,
+
+00:15:31.764 --> 00:15:33.866
+you often deal with billions of them
+
+00:15:33.866 --> 00:15:36.969
+and it would require a significant amount of memory to run.
+
+00:15:37.136 --> 00:15:40.339
+Having a million documents in a retrieval system is quite likely
+
+00:15:40.539 --> 00:15:42.942
+if your company has a lot of data to search over.
+
+00:15:43.542 --> 00:15:47.146
+Typically, these vectors will contain a lot of redundant information,
+
+00:15:47.246 --> 00:15:51.350
+and some interesting optimization techniques can help you reduce the RAM consumption.
+
+00:15:51.650 --> 00:15:53.919
+Let's discuss these methods in the next lesson.

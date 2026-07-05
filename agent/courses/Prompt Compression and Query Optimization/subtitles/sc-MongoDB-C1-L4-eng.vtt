@@ -1,0 +1,901 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.133 --> 00:00:04.170
+In this lesson, you dive into
+the techniques of reordering documents
+
+2
+00:00:04.371 --> 00:00:07.607
+to improve information
+retrieval relevance and quality.
+
+3
+00:00:08.541 --> 00:00:11.544
+You'll learn
+how to use specific metadata values
+
+4
+00:00:11.611 --> 00:00:14.481
+to determine reordering position.
+
+5
+00:00:14.481 --> 00:00:16.816
+Let's go.
+
+6
+00:00:16.816 --> 00:00:20.453
+There are scenarios
+where a document can contain other fields
+
+7
+00:00:20.687 --> 00:00:23.723
+that affect its position
+within such results.
+
+8
+00:00:24.224 --> 00:00:29.224
+Take, for example, an Airbnb listing
+with rating and number of reviews
+
+9
+00:00:29.329 --> 00:00:29.896
+field.
+
+10
+00:00:29.896 --> 00:00:33.666
+This fields indicates
+qualitative and quantitative measures
+
+11
+00:00:33.833 --> 00:00:37.170
+that can contribute to the relevance
+of a document with respect
+
+12
+00:00:37.170 --> 00:00:40.173
+to a user query and search criteria.
+
+13
+00:00:40.373 --> 00:00:44.010
+Taken into consideration,
+the value of these fields in order
+
+14
+00:00:44.010 --> 00:00:47.547
+to affect the position of a document
+in the list of return
+
+15
+00:00:47.547 --> 00:00:50.950
+search
+results, is referred to as boosting.
+
+16
+00:00:51.317 --> 00:00:55.388
+Why should you consider adding a boosting
+technique in your search queries?
+
+17
+00:00:55.989 --> 00:00:59.893
+Vector search is an effective
+method of ranking documents
+
+18
+00:00:59.893 --> 00:01:04.431
+based on semantic similarity.
+Although vector search scores and ranking
+
+19
+00:01:04.431 --> 00:01:08.334
+effective, metadata values
+can contribute to the document
+
+20
+00:01:08.334 --> 00:01:12.305
+relevance, which can affect the ordering
+within search results.
+
+21
+00:01:12.672 --> 00:01:16.109
+Using additional qualitative
+and quantitative measures
+
+22
+00:01:16.109 --> 00:01:20.680
+to rank documents and shows database
+operation results are credible
+
+23
+00:01:20.947 --> 00:01:24.717
+and relevant to user queries
+and their search criteria.
+
+24
+00:01:24.918 --> 00:01:29.918
+Boosting can also be used
+to make sure results meet user
+
+25
+00:01:30.023 --> 00:01:35.023
+specific requirements, which introduce
+personalization within search results.
+
+26
+00:01:36.262 --> 00:01:40.266
+In the coding section, you're
+going to go through some familiar steps.
+
+27
+00:01:40.834 --> 00:01:45.738
+The first would be to set up a rank pipeline,
+and you will add the relevant stages.
+
+28
+00:01:46.773 --> 00:01:49.742
+Then, you add a boosting logic
+
+29
+00:01:49.742 --> 00:01:53.513
+which will use some mathematical operators
+
+30
+00:01:53.746 --> 00:01:56.749
+available within MongoDB database.
+
+31
+00:01:57.083 --> 00:02:01.387
+And as usual, you handle the user
+query and visualize results.
+
+32
+00:02:02.255 --> 00:02:04.157
+Let's code.
+
+33
+00:02:04.157 --> 00:02:07.393
+Start by importing your custom
+utils module
+
+34
+00:02:07.494 --> 00:02:09.762
+like you've done in the previous lesson.
+
+35
+00:02:09.762 --> 00:02:11.831
+Move on to load the data.
+
+36
+00:02:11.831 --> 00:02:14.467
+Also,
+like you've done in previous lessons.
+
+37
+00:02:14.467 --> 00:02:19.172
+You can also take some time to view
+the attributes of each data points.
+
+38
+00:02:19.372 --> 00:02:22.909
+Move on to the document modeling
+which loads the listing
+
+39
+00:02:23.109 --> 00:02:26.112
+into a conformed model.
+
+40
+00:02:26.179 --> 00:02:29.816
+This is similar to process that you've
+carried out in previous lessons.
+
+41
+00:02:30.483 --> 00:02:34.988
+The next step is to get an object
+of your database and your collection.
+
+42
+00:02:35.522 --> 00:02:38.858
+Then start of a clean collection
+by calling the delete
+
+43
+00:02:38.858 --> 00:02:40.627
+any on the collection record.
+
+44
+00:02:40.627 --> 00:02:43.029
+This is similar to the process
+that has been carried out
+
+45
+00:02:43.029 --> 00:02:44.497
+in previous lessons.
+
+46
+00:02:44.497 --> 00:02:47.734
+Go through the data ingestion process
+and move on
+
+47
+00:02:47.767 --> 00:02:50.770
+to the vector
+search index definition process.
+
+48
+00:02:50.870 --> 00:02:53.473
+All similar to the previous lesson.
+
+49
+00:02:53.473 --> 00:02:57.277
+Now, you define a search result item model
+
+50
+00:02:57.710 --> 00:03:00.513
+for the results shown in this lesson.
+
+51
+00:03:00.513 --> 00:03:04.651
+The attributes for each results
+needs to contain a combined score,
+
+52
+00:03:05.185 --> 00:03:08.188
+number of reviews, and average review
+scores.
+
+53
+00:03:08.388 --> 00:03:11.391
+These new attributes will be explained
+later.
+
+54
+00:03:11.758 --> 00:03:15.595
+Again, just like in the previous lesson,
+you have to handle user
+
+55
+00:03:15.595 --> 00:03:18.565
+query function with the exact same code.
+
+56
+00:03:18.865 --> 00:03:22.135
+Now, we can get to the main aspects
+of this lesson.
+
+57
+00:03:22.802 --> 00:03:26.239
+You'll be implementing a boosting logic
+and adding it
+
+58
+00:03:26.239 --> 00:03:30.710
+to the vector search operations
+conducted on the aggregation pipeline.
+
+59
+00:03:32.445 --> 00:03:33.680
+Here, you are assigning
+
+60
+00:03:33.680 --> 00:03:37.150
+to a variable named "review average stage".
+
+61
+00:03:37.951 --> 00:03:41.888
+In this cell,
+what is happening is, we are adding
+
+62
+00:03:41.921 --> 00:03:46.921
+two new fields to every document returned
+from the database operation.
+
+63
+00:03:47.193 --> 00:03:50.263
+The first field is the average
+review score.
+
+64
+00:03:50.430 --> 00:03:52.765
+Now, this is a qualitative measure
+
+65
+00:03:52.765 --> 00:03:55.768
+I was talking about. The average review
+score
+
+66
+00:03:55.802 --> 00:03:59.839
+is going to go through
+every review component of a document
+
+67
+00:04:00.306 --> 00:04:05.278
+and take an average of a sum of the review
+components.
+
+68
+00:04:05.812 --> 00:04:08.948
+So within every document
+we can see the accuracy,
+
+69
+00:04:09.148 --> 00:04:13.987
+the cleanliness, the check
+in and other attributes of a listing.
+
+70
+00:04:14.354 --> 00:04:19.354
+Get the score
+and with the dollar operator, specifically
+
+71
+00:04:19.892 --> 00:04:24.330
+the dollar add which conducts
+the mathematical operation of an addition,
+
+72
+00:04:24.631 --> 00:04:29.102
+we can get a sum
+of all the review component,
+
+73
+00:04:29.335 --> 00:04:32.305
+and then we can divide it
+
+74
+00:04:32.305 --> 00:04:36.709
+by the number of review components,
+
+75
+00:04:36.709 --> 00:04:41.014
+which in this case
+for the listings in our data set six.
+
+76
+00:04:41.247 --> 00:04:46.247
+This gives us an idea of what the average
+rating of a listing is.
+
+77
+00:04:46.819 --> 00:04:49.789
+That explains the new field
+that we're adding
+
+78
+00:04:49.789 --> 00:04:52.959
+to every document
+called the average review score.
+
+79
+00:04:53.426 --> 00:04:58.426
+The second field that has been added to
+every document is the review count boost.
+
+80
+00:05:00.333 --> 00:05:03.036
+This is a quantity measure,
+
+81
+00:05:03.036 --> 00:05:06.039
+and this field will take the value
+
+82
+00:05:06.339 --> 00:05:09.976
+of the number of reviews attributes
+in each document.
+
+83
+00:05:11.044 --> 00:05:15.081
+This is how you can pass
+the value of one field to a new field.
+
+84
+00:05:15.214 --> 00:05:18.818
+Simply using the dollar operator
+and the name of the field.
+
+85
+00:05:19.852 --> 00:05:24.724
+To add this new field to every document
+in the database operation,
+
+86
+00:05:25.291 --> 00:05:29.162
+you can add this process as a new stage,
+specifically
+
+87
+00:05:29.629 --> 00:05:32.265
+the add fields stage.
+
+88
+00:05:32.265 --> 00:05:37.036
+That concludes adding the qualitative
+measure and the quantitative measure.
+
+89
+00:05:37.603 --> 00:05:40.873
+In the next step, you'll need to add
+
+90
+00:05:41.107 --> 00:05:46.107
+weights and determine how each component
+of the quantitative measure
+
+91
+00:05:46.379 --> 00:05:50.416
+and the quantitative measure
+should affect the ranking
+
+92
+00:05:50.750 --> 00:05:53.453
+of a document after a vector
+
+93
+00:05:53.453 --> 00:05:55.154
+search operation.
+
+94
+00:05:55.154 --> 00:05:59.225
+This is done
+by adding a new stage to our pipeline.
+
+95
+00:05:59.992 --> 00:06:01.861
+This is the weighting stage.
+
+96
+00:06:01.861 --> 00:06:05.531
+Now the weighting stage comes right
+after the review
+
+97
+00:06:05.531 --> 00:06:07.166
+average stage.
+
+98
+00:06:07.166 --> 00:06:11.204
+So, the weighting stage will
+then have a reference
+
+99
+00:06:11.471 --> 00:06:15.241
+of the average review score
+and the review count boost
+
+100
+00:06:15.375 --> 00:06:20.113
+that was added to each document
+in the review average stage.
+
+101
+00:06:20.847 --> 00:06:23.116
+This is how you can reference
+
+102
+00:06:23.116 --> 00:06:26.786
+the values of these fields
+from the documents.
+
+103
+00:06:27.320 --> 00:06:29.789
+To implement a weighting logic,
+
+104
+00:06:30.857 --> 00:06:32.992
+you will use several operators
+
+105
+00:06:32.992 --> 00:06:37.263
+enabled by MongoDB database
+to conduct mathematical operation.
+
+106
+00:06:37.830 --> 00:06:40.833
+The add operator
+and the multiply operator.
+
+107
+00:06:40.933 --> 00:06:44.971
+For the multiply operator,
+you will multiply the value
+
+108
+00:06:44.971 --> 00:06:49.275
+of the average review score, which
+is the qualitative measure by a weight.
+
+109
+00:06:49.642 --> 00:06:54.642
+I'm using the number between 0
+and 1 to assign a weight.
+
+110
+00:06:55.515 --> 00:06:58.818
+Then do the same for the review
+
+111
+00:06:58.818 --> 00:07:01.821
+count boost,
+which is a quantitative measure
+
+112
+00:07:02.255 --> 00:07:06.592
+that will be considered
+to rank the document after the vector
+
+113
+00:07:06.592 --> 00:07:07.927
+search operation.
+
+114
+00:07:07.927 --> 00:07:11.898
+You then use the add operator
+to combine the two results
+
+115
+00:07:11.998 --> 00:07:15.802
+from the different multiplication
+operations.
+
+116
+00:07:16.102 --> 00:07:19.272
+Assign this new additional value
+
+117
+00:07:19.639 --> 00:07:22.642
+to the field combined score.
+
+118
+00:07:22.842 --> 00:07:27.180
+The combined score is the combination
+of the two multiplied value,
+
+119
+00:07:27.513 --> 00:07:32.084
+and we can add the combined score
+to each document
+
+120
+00:07:32.084 --> 00:07:37.084
+within the database operation
+by using the add fields operator.
+
+121
+00:07:38.357 --> 00:07:40.359
+This is the weighting stage.
+
+122
+00:07:40.359 --> 00:07:43.362
+There is one more stage
+to complete this process.
+
+123
+00:07:43.796 --> 00:07:46.799
+The final stage is the sorting stage.
+
+124
+00:07:47.066 --> 00:07:49.101
+The sorting stage is very simple.
+
+125
+00:07:49.101 --> 00:07:54.101
+Using the dollar operator sort,
+we can actually rerank the documents
+
+126
+00:07:55.975 --> 00:08:00.346
+based on their combined score
+or a certain field.
+
+127
+00:08:00.480 --> 00:08:03.449
+In this case,
+you are using the combined score
+
+128
+00:08:03.449 --> 00:08:06.419
+and you are reranking it in
+descending order.
+
+129
+00:08:06.419 --> 00:08:09.422
+So, this is indicated by minus one
+
+130
+00:08:09.989 --> 00:08:12.992
+ascending
+order will be indicated by a one.
+
+131
+00:08:13.292 --> 00:08:15.828
+Now that you have
+all the additional stages
+
+132
+00:08:15.828 --> 00:08:20.828
+implemented to add to the vector search
+operation, you can create a new variable
+
+133
+00:08:21.400 --> 00:08:26.400
+called Additional Stages, that takes a list
+of all the defined stages.
+
+134
+00:08:27.507 --> 00:08:29.942
+The first is the review stage,
+
+135
+00:08:29.942 --> 00:08:34.942
+where we conduct a mathematical operation
+to gain the qualitative
+
+136
+00:08:35.915 --> 00:08:40.915
+and quantitative measure and add it
+as a new field to the documents
+
+137
+00:08:41.087 --> 00:08:44.624
+After the vector search operation.
+Then there is a weighting stage,
+
+138
+00:08:44.991 --> 00:08:49.362
+and then there is a sorting stage.
+All the stages are executed
+
+139
+00:08:49.362 --> 00:08:53.065
+sequentially
+after the vector search operation.
+
+140
+00:08:54.133 --> 00:08:56.702
+Remember, the vector search operation
+
+141
+00:08:56.702 --> 00:09:01.702
+we're using in this lesson, is a pre-filter
+in vector search.
+
+142
+00:09:02.141 --> 00:09:05.444
+Similar to the ones
+you've created in previous lessons.
+
+143
+00:09:06.913 --> 00:09:08.581
+Now it's time for you
+
+144
+00:09:08.581 --> 00:09:11.651
+to see the results of the boosting logic.
+
+145
+00:09:13.085 --> 00:09:17.990
+Using the same query from previous lessons
+and also the same function
+
+146
+00:09:17.990 --> 00:09:22.295
+from previous lesson, the handle user
+query function, you will pass
+
+147
+00:09:22.295 --> 00:09:26.198
+in the additional stage
+and make note to use
+
+148
+00:09:26.198 --> 00:09:29.201
+the vector index with filter.
+
+149
+00:09:29.235 --> 00:09:33.706
+Here, you can observe that
+the vector search operation stage
+
+150
+00:09:34.040 --> 00:09:37.243
+was conducted
+in a fraction of a millisecond.
+
+151
+00:09:37.643 --> 00:09:42.643
+Now, let's observe the documents
+that were returned from this operation
+
+152
+00:09:43.115 --> 00:09:48.115
+that included a combination of stages
+to simulate a boosting logic.
+
+153
+00:09:49.055 --> 00:09:51.257
+Here you can see the results
+
+154
+00:09:51.257 --> 00:09:54.727
+of the database operation
+that included multiple stages.
+
+155
+00:09:55.061 --> 00:09:59.298
+The average review score is included
+along with the numbers of reviews
+
+156
+00:09:59.298 --> 00:10:00.933
+and the combined score.
+
+157
+00:10:00.933 --> 00:10:05.933
+Remember, the combined score includes
+a weightage consideration.
+
+158
+00:10:06.238 --> 00:10:11.238
+Now, the documents shown are ordered
+by the combined score.
+
+159
+00:10:11.978 --> 00:10:16.949
+You can pause the video here and observe
+the combined score of the other documents.
+
+160
+00:10:17.583 --> 00:10:21.420
+One thing to note, is that because of the
+weighting logic we added,
+
+161
+00:10:22.555 --> 00:10:24.323
+you will observe
+
+162
+00:10:24.323 --> 00:10:27.627
+that despite this document,
+having a high rating,
+
+163
+00:10:28.461 --> 00:10:32.431
+it is ranked lower in comparison
+to the other documents above it
+
+164
+00:10:32.698 --> 00:10:35.968
+because it had a lower number of reviews.
+
+165
+00:10:36.369 --> 00:10:39.038
+This is the impact of adding weights
+
+166
+00:10:39.038 --> 00:10:42.074
+to the components you're considering
+for your boosting and logic.
+
+167
+00:10:42.608 --> 00:10:43.409
+One more thing.
+
+168
+00:10:43.409 --> 00:10:47.079
+You can play with the weights
+and adjust the numbers
+
+169
+00:10:47.613 --> 00:10:50.616
+to see how it affects the results.
+
+170
+00:10:51.017 --> 00:10:55.221
+To do this, simply
+go back to the weighting stage
+
+171
+00:10:55.721 --> 00:10:58.457
+and adjust the weights.
+
+172
+00:10:58.457 --> 00:11:02.261
+Now I'm giving higher weights
+to the review count
+
+173
+00:11:02.695 --> 00:11:05.698
+and a lower one to the average reviews.
+
+174
+00:11:12.104 --> 00:11:14.440
+Once you've changed the weights,
+
+175
+00:11:14.440 --> 00:11:17.443
+you can observe the results again.
+
+176
+00:11:23.082 --> 00:11:25.217
+As you can observe from the results,
+
+177
+00:11:25.217 --> 00:11:28.487
+because you've added more weightage
+to the number of reviews
+
+178
+00:11:28.821 --> 00:11:32.058
+a document
+with a high number of reviews is ranked
+
+179
+00:11:32.058 --> 00:11:35.594
+higher than one
+with a high number of rating
+
+180
+00:11:36.162 --> 00:11:37.663
+in comparison.
+
+181
+00:11:37.663 --> 00:11:40.132
+Pause
+the video here to observe the results.
+
+182
+00:11:41.367 --> 00:11:44.470
+In this lesson, you've learned
+how to implement
+
+183
+00:11:44.470 --> 00:11:48.607
+a typical RAG system,
+conduct vector search.
+
+184
+00:11:49.075 --> 00:11:54.075
+But now, you've added multiple stages
+to the aggregation pipeline
+
+185
+00:11:55.614 --> 00:11:58.617
+to simulate a boost in logic,
+
+186
+00:11:59.185 --> 00:12:02.388
+which adds more relevance and context
+
+187
+00:12:02.688 --> 00:12:06.192
+to the ranking of your documents
+
+188
+00:12:06.358 --> 00:12:08.594
+after a database operation.
+
+189
+00:12:08.594 --> 00:12:11.764
+In the next lesson, you'll learn
+
+190
+00:12:11.897 --> 00:12:16.897
+how you can utilize prompt compression
+to reduce the prompt
+
+191
+00:12:17.269 --> 00:12:20.272
+that are sent to large language models
+
+192
+00:12:20.439 --> 00:12:23.342
+in order to reduce operational costs.
+
+193
+00:12:23.342 --> 00:12:24.043
+See you then!
+

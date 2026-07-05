@@ -1,0 +1,44 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:03.203
+In this course, you learned about the foundational concepts
+
+00:00:03.203 --> 00:00:06.973
+of multi-vector retrieval, starting with text retrieval with ColBERT.
+
+00:00:07.273 --> 00:00:10.076
+Next, you saw how those same concepts can be used
+
+00:00:10.076 --> 00:00:12.879
+to power multi-vector image retrieval with ColPali.
+
+00:00:13.279 --> 00:00:16.549
+Since multi-vector techniques generate a lot of vector data,
+
+00:00:16.549 --> 00:00:20.954
+You then explored some optimization techniques to reduce ColPali's memory footprint.
+
+00:00:21.054 --> 00:00:23.256
+Then you saw how MUVERA allows
+
+00:00:23.256 --> 00:00:25.825
+ColPali to be used with HNSW search.
+
+00:00:25.925 --> 00:00:28.728
+Finally, you explored what a working RAG
+
+00:00:28.728 --> 00:00:31.931
+application built around all these techniques looks like.
+
+00:00:32.032 --> 00:00:34.467
+I hope you are leaving this course
+
+00:00:34.467 --> 00:00:37.237
+feeling confident with the concepts underlying multi-vector retrieval.
+
+00:00:37.337 --> 00:00:40.940
+and with new ideas of applications you want to build.
+
+00:00:41.041 --> 00:00:43.910
+I can't wait to see what you come up with.

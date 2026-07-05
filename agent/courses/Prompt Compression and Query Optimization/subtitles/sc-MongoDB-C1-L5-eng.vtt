@@ -1,0 +1,1210 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:45400
+
+1
+00:00:02.035 --> 00:00:03.169
+In this lesson,
+
+2
+00:00:03.169 --> 00:00:06.740
+you implement a cost-saving strategy
+of prompt compression,
+
+3
+00:00:07.173 --> 00:00:11.945
+particularly valuable for applications
+like RAG and agentic systems.
+
+4
+00:00:12.145 --> 00:00:16.716
+You gain an intuition of what
+prompt compression is, how to use it,
+
+5
+00:00:16.983 --> 00:00:21.187
+and the operational advantages
+it brings to the LLM application.
+
+6
+00:00:22.022 --> 00:00:24.791
+Let's get on with it.
+
+7
+00:00:24.791 --> 00:00:28.695
+There are many prompting strategies
+that have emerged over the recent years
+
+8
+00:00:28.695 --> 00:00:33.166
+such as in-context learning,
+chain of thought and react prompting.
+
+9
+00:00:33.967 --> 00:00:38.905
+Getting appropriate and quality
+responses from LLM is an art form.
+
+10
+00:00:39.305 --> 00:00:43.309
+Most of these prompting strategies
+involved compose an extensive text
+
+11
+00:00:43.476 --> 00:00:46.479
+to the LLM as input.
+
+12
+00:00:46.613 --> 00:00:50.817
+LLMs with large context
+window are becoming a new norm.
+
+13
+00:00:51.184 --> 00:00:54.487
+Is now coming to see LLMs
+that can take an input size
+
+14
+00:00:54.621 --> 00:00:59.621
+of over 100,000 tokens
+and even in some cases, a million token.
+
+15
+00:01:00.393 --> 00:01:02.996
+That is passing an entire novel
+
+16
+00:01:02.996 --> 00:01:05.999
+into an LLM in one inference call.
+
+17
+00:01:06.332 --> 00:01:10.103
+Although useful in some cases
+utilizing the full context window
+
+18
+00:01:10.103 --> 00:01:15.103
+when accessing LLMs provided through
+rest API calls can become very expensive.
+
+19
+00:01:16.676 --> 00:01:20.447
+LLMs with large context
+windows have their place in real world
+
+20
+00:01:20.447 --> 00:01:25.351
+application, but the operational costs
+of these models can skyrocket.
+
+21
+00:01:25.885 --> 00:01:30.256
+Take for example, paying
+$10 per 1 million token and applications
+
+22
+00:01:30.256 --> 00:01:34.127
+such as Airbnb,
+which has several million users per day.
+
+23
+00:01:34.194 --> 00:01:39.194
+We have a huge operational expense just
+from the volume of interactions alone.
+
+24
+00:01:39.666 --> 00:01:43.603
+Not to mention that there will be
+an increase latency in response,
+
+25
+00:01:43.837 --> 00:01:46.639
+as the model will have to process
+more input
+
+26
+00:01:46.639 --> 00:01:50.510
+to extract the appropriate information
+to respond to user queries.
+
+27
+00:01:50.810 --> 00:01:55.615
+As you continue to learn
+and build AI application that use LLMs,
+
+28
+00:01:55.882 --> 00:01:59.419
+you come across
+the idea of prompt compression,
+
+29
+00:01:59.519 --> 00:02:02.622
+sometimes referred to as token
+compression.
+
+30
+00:02:02.856 --> 00:02:05.592
+You might think I wouldn't
+have as much volume
+
+31
+00:02:05.592 --> 00:02:08.595
+at the initial development of my
+AI application,
+
+32
+00:02:08.761 --> 00:02:13.066
+but building robust
+AI applications requires thinking ahead
+
+33
+00:02:13.399 --> 00:02:18.071
+of scalability and solving for issues
+that might become bottlenecks.
+
+34
+00:02:18.271 --> 00:02:22.642
+You will implement prompt compression
+technique in the code section of this
+
+35
+00:02:22.642 --> 00:02:27.080
+lesson, and observe
+firsthand how easy it is to implement
+
+36
+00:02:27.080 --> 00:02:31.584
+prompt compression
+alongside existing RAG pipelines.
+
+37
+00:02:32.051 --> 00:02:36.990
+So, prompts compression is a process
+of reducing the number of tokens.
+
+38
+00:02:37.423 --> 00:02:38.858
+But let's see what this looks like
+
+39
+00:02:38.858 --> 00:02:43.429
+in an example. On the screen,
+you can observe an original uncompressed
+
+40
+00:02:43.429 --> 00:02:46.866
+prompt
+that spans across three long sentences.
+
+41
+00:02:47.367 --> 00:02:51.037
+By using the package LLM lingua, which you
+
+42
+00:02:51.070 --> 00:02:54.007
+you will use
+in the coding section of this lesson,
+
+43
+00:02:54.007 --> 00:02:57.944
+we are able to reduce
+the uncompressed sentence
+
+44
+00:02:58.278 --> 00:03:03.278
+into two sentences
+that span across two free rows.
+
+45
+00:03:05.485 --> 00:03:06.786
+This is a power of prompt
+
+46
+00:03:06.786 --> 00:03:10.623
+compression, which you will see first hand
+in the coding section.
+
+47
+00:03:11.157 --> 00:03:14.093
+I have kept a link of the paper present
+
+48
+00:03:14.093 --> 00:03:17.397
+in the prompt compression
+technique, in the link on the slides.
+
+49
+00:03:18.398 --> 00:03:23.002
+Feel free to observe and read the research
+paper after this lesson.
+
+50
+00:03:23.570 --> 00:03:26.739
+In a few minutes,
+you will compress an extensive prompt
+
+51
+00:03:27.006 --> 00:03:31.211
+of a few thousand tokens
+down to a few hundred tokens.
+
+52
+00:03:31.811 --> 00:03:33.580
+With prompt compression,
+
+53
+00:03:33.580 --> 00:03:36.583
+passing input into the prompt compression
+
+54
+00:03:36.583 --> 00:03:39.552
+technique is very straightforward.
+
+55
+00:03:40.186 --> 00:03:42.488
+Imagine having an uncompressed
+
+56
+00:03:42.488 --> 00:03:47.488
+prompt of 50,000 tokens,
+just passing the uncompressed prompt
+
+57
+00:03:47.860 --> 00:03:51.631
+and specifying a few parameters
+using a prompt compression library
+
+58
+00:03:51.664 --> 00:03:54.867
+LLM lingua,
+you can reduce the uncompressed prompt
+
+59
+00:03:55.168 --> 00:03:58.171
+down to 10,000 tokens.
+
+60
+00:03:58.504 --> 00:04:01.441
+This is a five times reduction,
+
+61
+00:04:01.441 --> 00:04:06.179
+and then you can pass the input straight
+into the LLM
+
+62
+00:04:06.179 --> 00:04:11.179
+as you would with the uncompressed prompt,
+and receive the same quality output
+
+63
+00:04:11.684 --> 00:04:14.420
+as if the name was initially provided
+
+64
+00:04:14.420 --> 00:04:17.423
+with the uncompressed prompt.
+
+65
+00:04:17.523 --> 00:04:19.592
+You are about to see this in code.
+
+66
+00:04:19.592 --> 00:04:23.463
+In the coding section of this lesson,
+you will go through some familiar steps,
+
+67
+00:04:23.796 --> 00:04:28.601
+which include setting up the right
+pipeline ad in the relevant MongoDB stages
+
+68
+00:04:28.968 --> 00:04:32.105
+and then implementing a compression logic.
+
+69
+00:04:32.405 --> 00:04:37.043
+And as usual, you will handle the user
+query and observe the results.
+
+70
+00:04:38.177 --> 00:04:39.812
+Let's code.
+
+71
+00:04:39.812 --> 00:04:43.116
+Start by importing the custom
+utils module,
+
+72
+00:04:43.816 --> 00:04:46.319
+as you've done in previous lesson.
+
+73
+00:04:46.319 --> 00:04:50.256
+You move on to load your data sets.
+Where you can observe the attributes.
+
+74
+00:04:50.890 --> 00:04:53.092
+Similar to previous lessons.
+
+75
+00:04:53.092 --> 00:04:55.528
+The next steps are covered
+in previous lessons,
+
+76
+00:04:55.528 --> 00:04:59.032
+where your model documents
+connected to your database,
+
+77
+00:04:59.932 --> 00:05:02.935
+extracted objects for your database,
+and your collection.
+
+78
+00:05:03.136 --> 00:05:06.139
+Deleted existing records
+within the collection.
+
+79
+00:05:06.139 --> 00:05:09.208
+Ingested new data, and lastly,
+
+80
+00:05:09.442 --> 00:05:12.445
+created your vector search index.
+
+81
+00:05:12.879 --> 00:05:16.182
+Just like in previous lessons
+you handled the user query.
+
+82
+00:05:16.816 --> 00:05:21.788
+You start by creating the search results
+item model which will specify
+
+83
+00:05:21.788 --> 00:05:26.788
+the attributes you want from the document
+to returned from the database operation.
+
+84
+00:05:28.194 --> 00:05:31.397
+For this case, you have the name, address,
+
+85
+00:05:31.898 --> 00:05:34.867
+and other corresponding attributes.
+
+86
+00:05:35.168 --> 00:05:37.804
+Just like in the previous lesson, you add
+
+87
+00:05:37.804 --> 00:05:40.807
+the additional boosting stages.
+
+88
+00:05:40.840 --> 00:05:43.509
+You have the review average stage.
+
+89
+00:05:43.509 --> 00:05:46.979
+The weighting stage and the sorting stage.
+
+90
+00:05:48.448 --> 00:05:49.082
+And then,
+
+91
+00:05:49.082 --> 00:05:53.820
+you add all the additional stages
+into a variable called additional stages.
+
+92
+00:05:54.287 --> 00:05:57.423
+Orders
+are the step you took in previous lessons.
+
+93
+00:05:58.057 --> 00:06:01.160
+Now, we're in the main part of this lesson
+
+94
+00:06:01.728 --> 00:06:06.728
+where we have a similar handle user
+query you've seen in the previous lesson,
+
+95
+00:06:07.266 --> 00:06:09.902
+but you are printing out
+
+96
+00:06:09.902 --> 00:06:13.272
+the uncompressed prompt for observation.
+
+97
+00:06:13.573 --> 00:06:17.510
+This is specified
+in this two new print statement.
+
+98
+00:06:18.177 --> 00:06:22.515
+Now, you have the same user
+query used in previous lesson.
+
+99
+00:06:23.282 --> 00:06:27.987
+And also the same handle user
+query function, but with the difference
+
+100
+00:06:27.987 --> 00:06:32.987
+in this lesson of the print statement
+where we can see the uncompressed prompt.
+
+101
+00:06:34.060 --> 00:06:35.128
+From the output,
+
+102
+00:06:35.128 --> 00:06:39.766
+you can observe the time it took
+for the vector such operation to execute,
+
+103
+00:06:39.932 --> 00:06:42.935
+which is a fraction of a millisecond.
+
+104
+00:06:43.002 --> 00:06:45.505
+You can also observe
+the uncompressed prompt.
+
+105
+00:06:46.806 --> 00:06:47.173
+Here,
+
+106
+00:06:47.173 --> 00:06:50.176
+you can see that the uncompressed prompt
+is extensive.
+
+107
+00:06:50.610 --> 00:06:53.613
+And do note that it's been truncated
+
+108
+00:06:53.980 --> 00:06:56.816
+to ensure it fits all on the screen.
+
+109
+00:06:56.816 --> 00:07:01.387
+You can also view
+the full content of the prompt
+
+110
+00:07:01.387 --> 00:07:04.957
+by looking at the documents
+returned from the vector search operation
+
+111
+00:07:05.158 --> 00:07:06.692
+listed on the table.
+
+112
+00:07:06.692 --> 00:07:09.695
+Pause
+the video here to take in the share size
+
+113
+00:07:09.796 --> 00:07:13.599
+of what is being passed into the LLM.
+
+114
+00:07:24.343 --> 00:07:26.179
+You will also notice
+
+115
+00:07:26.179 --> 00:07:31.179
+that the system has recommended the homely
+room in five star new condo.
+
+116
+00:07:32.084 --> 00:07:33.653
+Remember this listing.
+
+117
+00:07:33.653 --> 00:07:35.755
+Now, this is a fun part.
+
+118
+00:07:35.755 --> 00:07:39.959
+We're going to look at a technique that
+allows us to reduce the extensive prompt
+
+119
+00:07:40.193 --> 00:07:43.196
+you observed before and reduce it
+
+120
+00:07:43.329 --> 00:07:46.332
+by a few hundred tokens.
+
+121
+00:07:47.133 --> 00:07:50.837
+You start this
+by importing the prompt compressor
+
+122
+00:07:50.970 --> 00:07:54.540
+constructor from the LLM lingua library.
+
+123
+00:07:54.941 --> 00:07:57.643
+Using the prompt compressor constructor,
+
+124
+00:07:57.643 --> 00:08:01.314
+you can specify a smaller
+
+125
+00:08:01.314 --> 00:08:05.751
+large language model that has been fine
+tuned for prompt compression
+
+126
+00:08:06.085 --> 00:08:09.889
+to do the compression
+of an uncompressed prompt.
+
+127
+00:08:10.289 --> 00:08:15.289
+You will also specify
+the utilization of the latest LLM lingua
+
+128
+00:08:16.395 --> 00:08:21.395
+prompt compression logic by specifying
+true as the value for the argument
+
+129
+00:08:22.802 --> 00:08:24.937
+use LLM Lingua two.
+
+130
+00:08:26.305 --> 00:08:28.107
+You'll also specify
+
+131
+00:08:28.107 --> 00:08:31.911
+to use the CPU to the prompts compression
+module
+
+132
+00:08:32.178 --> 00:08:35.781
+to ensure
+you're using the CPU on the device.
+
+133
+00:08:36.349 --> 00:08:41.020
+Now that we've set up our prompts,
+compressor, specifically set up
+
+134
+00:08:41.020 --> 00:08:45.358
+a smaller language model
+to do the prompt compression.
+
+135
+00:08:45.725 --> 00:08:50.725
+We can move on to define the compress
+prompt function.
+
+136
+00:08:51.998 --> 00:08:55.735
+Now, you can define the compressed query
+prompt function,
+
+137
+00:08:56.135 --> 00:09:01.135
+which you take in the uncompressed prompt
+as the query for the function.
+
+138
+00:09:01.974 --> 00:09:05.177
+The prompt compress a module requires
+
+139
+00:09:05.444 --> 00:09:09.382
+the input to be structured
+in a certain way.
+
+140
+00:09:09.916 --> 00:09:14.887
+And that is having a component
+based structure with the fields
+
+141
+00:09:14.887 --> 00:09:19.659
+specifically demonstration,
+instruction, and question.
+
+142
+00:09:20.226 --> 00:09:22.495
+I will go over what this means.
+
+143
+00:09:22.495 --> 00:09:27.495
+Demonstration will hold the context
+as uses additional information
+
+144
+00:09:27.567 --> 00:09:31.737
+that is passed in to the LLM
+with the user query.
+
+145
+00:09:31.971 --> 00:09:35.942
+This is essentially the documents
+that has been returned
+
+146
+00:09:36.075 --> 00:09:38.678
+from the database operation.
+
+147
+00:09:38.678 --> 00:09:41.914
+This is going to hold
+a specific instruction
+
+148
+00:09:42.114 --> 00:09:47.114
+that tells the smaller large language
+model how to compress the prompt.
+
+149
+00:09:47.420 --> 00:09:52.420
+Finally, the question is specifically
+the user query itself.
+
+150
+00:09:52.825 --> 00:09:57.763
+Now, you can actually call the compress
+prompt method
+
+151
+00:09:58.030 --> 00:10:02.535
+on the LLM lingual model
+that we initialize earlier on.
+
+152
+00:10:02.835 --> 00:10:05.838
+I'm going to explain what each argument
+does.
+
+153
+00:10:05.838 --> 00:10:10.838
+The first argument specifies
+how to split each of the contexts
+
+154
+00:10:11.310 --> 00:10:14.814
+up, specifically using the new line.
+
+155
+00:10:15.247 --> 00:10:18.250
+The second argument
+takes in the instruction.
+
+156
+00:10:19.018 --> 00:10:20.319
+Then the question.
+
+157
+00:10:20.319 --> 00:10:23.723
+Next, We specify the target token
+
+158
+00:10:23.956 --> 00:10:28.694
+we want the uncompressed prompt
+to be compressed down to.
+
+159
+00:10:29.295 --> 00:10:34.233
+Next, there is a specification
+of the compression algorithm to utilize.
+
+160
+00:10:34.533 --> 00:10:39.071
+You'll be using the latest compression
+algorithm from the LLM lingua
+
+161
+00:10:39.171 --> 00:10:42.341
+specifically long LLM lingua.
+
+162
+00:10:42.708 --> 00:10:46.112
+Next, we'll specify the context budget,
+
+163
+00:10:46.512 --> 00:10:50.549
+but allow the budget
+to overrun by 100 tokens.
+
+164
+00:10:51.150 --> 00:10:54.353
+Finally, we'll specify the compression
+ratio.
+
+165
+00:10:54.787 --> 00:10:58.324
+This ratio indicates how the compression
+
+166
+00:10:58.324 --> 00:11:02.094
+logic to assign tokens to the context,
+
+167
+00:11:02.094 --> 00:11:05.598
+which is a demonstration and
+to the overall instruction
+
+168
+00:11:05.665 --> 00:11:06.465
+question.
+
+169
+00:11:06.465 --> 00:11:09.902
+Finally, we enable the compressor
+
+170
+00:11:10.102 --> 00:11:14.340
+to reorder the context
+using a sort algorithm.
+
+171
+00:11:14.774 --> 00:11:18.377
+This is all the argument
+for the compressed prompt method.
+
+172
+00:11:18.811 --> 00:11:21.814
+The results of the compressed
+query prompt function
+
+173
+00:11:22.348 --> 00:11:26.552
+is a json representation
+of the compressed prompt
+
+174
+00:11:27.319 --> 00:11:30.690
+that will include information
+such as the token
+
+175
+00:11:31.357 --> 00:11:32.792
+which is the original token
+
+176
+00:11:32.792 --> 00:11:36.228
+of the uncompressed prompt,
+and the compressed prompt token.
+
+177
+00:11:36.862 --> 00:11:39.999
+You will see this in action in a second.
+
+178
+00:11:40.866 --> 00:11:43.602
+Now that you've specified a method
+
+179
+00:11:43.602 --> 00:11:46.605
+for compressing an uncompressed prompt,
+
+180
+00:11:47.039 --> 00:11:49.608
+you'll begin to specify
+
+181
+00:11:49.608 --> 00:11:53.379
+to handle user query with compression,
+which would take in the user
+
+182
+00:11:53.379 --> 00:11:58.184
+query and conduct the compression
+that was defined earlier.
+
+183
+00:11:58.551 --> 00:12:01.387
+This handle user query with compression
+
+184
+00:12:01.387 --> 00:12:05.224
+is similar to previous handle user
+query function
+
+185
+00:12:05.224 --> 00:12:09.295
+from previous lessons,
+but the key difference is
+
+186
+00:12:10.830 --> 00:12:13.833
+in this function
+
+187
+00:12:13.833 --> 00:12:15.768
+there's a new
+
+188
+00:12:15.768 --> 00:12:19.705
+input to the LLM specified as query info.
+
+189
+00:12:19.839 --> 00:12:24.839
+This query info follows
+the structure of our compression logic,
+
+190
+00:12:24.977 --> 00:12:28.948
+which has the demonstration,
+instruction and question.
+
+191
+00:12:29.148 --> 00:12:34.148
+Remember, the demonstration is just
+a result from the database operation.
+
+192
+00:12:34.553 --> 00:12:39.553
+The instruction tells the compression
+module how we want the compression
+
+193
+00:12:39.792 --> 00:12:43.362
+to be executed.
+And the user query or the question
+
+194
+00:12:43.596 --> 00:12:45.931
+it's simply the user query.
+
+195
+00:12:45.931 --> 00:12:49.568
+This is the structure that is passed
+into the compressed query prompt
+
+196
+00:12:49.769 --> 00:12:54.769
+by calling the function defined earlier
+and passing in the query info, and assign
+
+197
+00:12:55.141 --> 00:13:00.141
+the results to a variable called
+Compress prompt. To visualize the result,
+
+198
+00:13:00.646 --> 00:13:02.414
+you printout
+
+199
+00:13:02.414 --> 00:13:05.918
+the compressed prompt
+in a structured manner.
+
+200
+00:13:06.318 --> 00:13:10.823
+Finally, the handle user
+query with compression returns
+
+201
+00:13:11.157 --> 00:13:15.127
+the search results
+and the compressed prompt itself.
+
+202
+00:13:15.694 --> 00:13:18.497
+The final method you implemented
+
+203
+00:13:18.497 --> 00:13:21.500
+this lesson is the handle system response.
+
+204
+00:13:21.801 --> 00:13:26.005
+The handle system response passes
+the query along with the
+
+205
+00:13:26.005 --> 00:13:29.809
+compressed prompt as input into the LLM.
+
+206
+00:13:30.242 --> 00:13:32.111
+For visualization,
+
+207
+00:13:32.111 --> 00:13:36.482
+you print out the query
+and the system response.
+
+208
+00:13:37.016 --> 00:13:40.820
+Now, you can use the handle user query
+with compression
+
+209
+00:13:40.820 --> 00:13:44.557
+method defined earlier,
+by passing the query,
+
+210
+00:13:44.990 --> 00:13:49.929
+the database object collection
+object, additional stages,
+
+211
+00:13:50.963 --> 00:13:52.231
+and specifying
+
+212
+00:13:52.231 --> 00:13:56.335
+the vector search index
+you're using for this lesson.
+
+213
+00:13:56.669 --> 00:13:58.404
+Execute the cell.
+
+214
+00:13:58.404 --> 00:14:02.741
+The execution for the cell
+might take some minutes,
+
+215
+00:14:02.942 --> 00:14:07.613
+as you are using a smaller language model
+to compress a prompt.
+
+216
+00:14:08.214 --> 00:14:12.952
+Although we have an increase latency,
+the overall operational cost
+
+217
+00:14:13.185 --> 00:14:16.188
+will be reduced.
+
+218
+00:14:18.324 --> 00:14:21.327
+Here is the result
+of the prompt compression technique.
+
+219
+00:14:21.861 --> 00:14:26.031
+Here, we have a field compressed prompt
+that has all the prompts.
+
+220
+00:14:26.332 --> 00:14:31.332
+And as you can see, this is much shorter
+than the prompt we saw earlier.
+
+221
+00:14:32.137 --> 00:14:37.109
+But more importantly, we have the original
+tokens of the uncompressed prompt
+
+222
+00:14:37.443 --> 00:14:41.580
+that was 4284 tokens long,
+
+223
+00:14:42.114 --> 00:14:46.085
+and the new compressed token is just 512.
+
+224
+00:14:46.485 --> 00:14:50.055
+This is a ratio of eight times
+compression.
+
+225
+00:14:50.389 --> 00:14:53.459
+There is also an indication
+of the cost factor
+
+226
+00:14:54.093 --> 00:14:58.097
+that you're saving when
+using this prompt compression technique,
+
+227
+00:14:58.397 --> 00:15:03.335
+and taking the compressed prompt
+and passing is input to a GPT-4 model.
+
+228
+00:15:04.036 --> 00:15:06.672
+In this case, for this particular call,
+
+229
+00:15:06.672 --> 00:15:09.875
+we're saving $0.2.
+
+230
+00:15:10.542 --> 00:15:14.680
+If you think about this for a large scale
+application such as Airbnb,
+
+231
+00:15:14.780 --> 00:15:19.418
+where several millions of inference
+calls are made to APIs,
+
+232
+00:15:20.352 --> 00:15:24.323
+this can be a saving factor
+in the hundreds of thousands.
+
+233
+00:15:24.857 --> 00:15:28.060
+The last step of this lesson is to pass
+the compressed prompt
+
+234
+00:15:28.060 --> 00:15:31.063
+and the user query
+to the large language model
+
+235
+00:15:31.130 --> 00:15:35.567
+to actually get a system response. Confirm
+you have a compressed prompt,
+
+236
+00:15:35.968 --> 00:15:38.370
+and then pass the compressed prompt
+
+237
+00:15:38.370 --> 00:15:41.674
+and a query into the handle system
+response function.
+
+238
+00:15:41.974 --> 00:15:44.576
+Here we can observe the result.
+
+239
+00:15:44.576 --> 00:15:47.613
+The results of this compressed
+prompt is provided us
+
+240
+00:15:47.913 --> 00:15:52.651
+with a recommendation
+that meets the user query closely.
+
+241
+00:15:53.252 --> 00:15:56.388
+Specifically,
+it's in a warm, friendly neighborhood
+
+242
+00:15:56.388 --> 00:15:59.391
+which was included
+in the spaces of the listing.
+
+243
+00:15:59.625 --> 00:16:03.295
+And also it's next to restaurants,
+
+244
+00:16:03.429 --> 00:16:06.432
+which is what was specified
+in the user query.
+
+245
+00:16:06.966 --> 00:16:07.933
+We saved
+
+246
+00:16:08.901 --> 00:16:11.737
+on the operational costs of the RAG pipeline
+
+247
+00:16:11.737 --> 00:16:15.174
+and obtained a quality output.
+
+248
+00:16:15.574 --> 00:16:19.712
+This output is not the same
+as the uncompressed prompt output,
+
+249
+00:16:19.878 --> 00:16:22.881
+but it's of similar quality and meets
+
+250
+00:16:22.881 --> 00:16:25.884
+the requirements
+specified in the user query.
+
+251
+00:16:25.884 --> 00:16:29.321
+The difference between the results
+of the uncompressed prompt,
+
+252
+00:16:29.455 --> 00:16:33.792
+which provided us with this recommendation,
+and the compressed prompt,
+
+253
+00:16:33.792 --> 00:16:38.097
+which provided us with this
+recommendation, it's quite minimal.
+
+254
+00:16:38.831 --> 00:16:41.567
+This signifies with a lower
+
+255
+00:16:41.567 --> 00:16:44.770
+token count, you can get similar outputs
+
+256
+00:16:45.004 --> 00:16:48.340
+in terms of quality
+from a large language model.
+
+257
+00:16:48.741 --> 00:16:51.844
+This concludes this lesson. In this lesson,
+
+258
+00:16:52.177 --> 00:16:55.180
+you learned how to create a RAG pipeline,
+
+259
+00:16:55.814 --> 00:16:57.683
+placed a vector search,
+
+260
+00:16:57.683 --> 00:17:02.683
+and also conducted prompt compression
+to get a quality output,
+
+261
+00:17:03.489 --> 00:17:06.492
+as you would with an uncompressed prompt.
+

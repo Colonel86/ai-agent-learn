@@ -1,0 +1,1318 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.533 --> 00:00:03.203
+In this
+lesson, you'll learn about fine-tuning.
+
+2
+00:00:03.203 --> 00:00:07.340
+How to make it efficient with parameter
+efficient fine tuning or PEFT techniques,
+
+3
+00:00:07.640 --> 00:00:10.643
+and how to remove hallucinations
+with memory tuning.
+
+4
+00:00:11.111 --> 00:00:13.947
+You'll explore these different variants
+of fine-tuning
+
+5
+00:00:13.947 --> 00:00:17.217
+and the applications
+they are each the right tool for.
+
+6
+00:00:17.717 --> 00:00:22.188
+Finally, you'll debunk a few myths of fine
+tuning around cost and ease of use,
+
+7
+00:00:22.188 --> 00:00:25.792
+which are much more true
+this year than the last.
+
+8
+00:00:26.793 --> 00:00:29.929
+So, first of all,
+why should you fine-tune at all?
+
+9
+00:00:30.296 --> 00:00:33.400
+Well, you can fit more data
+than what actually fits into the prompt.
+
+10
+00:00:33.466 --> 00:00:37.270
+So instead of stuffing the prompt
+with all the information about, you know,
+
+11
+00:00:37.270 --> 00:00:41.541
+the SQL schema and the base model produces
+this SQL query, you're actually putting
+
+12
+00:00:41.541 --> 00:00:46.112
+that SQL table schema information into the
+weights of the fine-tuned model itself.
+
+13
+00:00:46.513 --> 00:00:46.780
+Okay.
+
+14
+00:00:46.780 --> 00:00:49.983
+So that's why it's able to essentially
+retrieve it from its own weights as it's
+
+15
+00:00:50.183 --> 00:00:54.154
+doing those computations and be able
+to come up with the right result.
+
+16
+00:00:54.554 --> 00:00:57.390
+You can learn from data
+rather than just getting access to it.
+
+17
+00:00:57.390 --> 00:00:58.191
+And learning from data,
+
+18
+00:00:58.191 --> 00:01:01.661
+what that means is that the model can,
+be able to produce different results
+
+19
+00:01:01.661 --> 00:01:04.230
+that follow a certain type
+of user experience.
+
+20
+00:01:04.230 --> 00:01:06.833
+And it's able to learn
+that information as well.
+
+21
+00:01:06.833 --> 00:01:08.802
+This gives you a deeper control of the LLMs
+
+22
+00:01:08.802 --> 00:01:10.370
+so you can achieve what you want it to do.
+
+23
+00:01:10.370 --> 00:01:12.405
+And ultimately
+there is no accuracy ceiling.
+
+24
+00:01:12.405 --> 00:01:15.775
+It's just there is effort
+to get to a higher amount of accuracy.
+
+25
+00:01:15.842 --> 00:01:17.510
+But essentially there there is no ceiling.
+
+26
+00:01:17.510 --> 00:01:20.146
+You can continue to improve it over time.
+
+27
+00:01:20.146 --> 00:01:21.014
+For instruction fine-tuning,
+
+28
+00:01:21.014 --> 00:01:22.549
+there are multiple types of fine-tuning.
+
+29
+00:01:22.549 --> 00:01:24.517
+And in this lesson,
+you'll learn about two of them.
+
+30
+00:01:24.517 --> 00:01:27.387
+One is a very popular form of fine
+tuning called instruction fine-tuning.
+
+31
+00:01:27.387 --> 00:01:28.988
+So that's going to be a pre-trained
+LLM.
+
+32
+00:01:28.988 --> 00:01:30.623
+We'll go over
+what pre-training is in a second.
+
+33
+00:01:30.623 --> 00:01:31.825
+To follow instructions.
+
+34
+00:01:31.825 --> 00:01:35.028
+So to be able to take a question
+and respond to it.
+
+35
+00:01:35.395 --> 00:01:39.299
+And that's what Meta has done to LLama 3
+to turn it into Llama 3
+
+36
+00:01:39.299 --> 00:01:42.902
+Instruct. And then for memory
+tuning is another type of fine tuning,
+
+37
+00:01:43.103 --> 00:01:47.474
+and that's getting an LLM, perhaps
+a fine-tuned LLM to not hallucinate.
+
+38
+00:01:47.474 --> 00:01:50.677
+So, Meta's Llama 3 instruct
+as a very, you know, general purpose.
+
+39
+00:01:50.677 --> 00:01:53.680
+And that's getting it
+to not hallucinate on certain facts.
+
+40
+00:01:53.680 --> 00:01:55.381
+The same process here for instruction,
+
+41
+00:01:55.381 --> 00:01:58.485
+fine tuning is like getting ChatGPT
+from the original GPT-3 model.
+
+42
+00:01:59.219 --> 00:02:01.955
+These are two types of fine-tuning,
+that you can see here.
+
+43
+00:02:01.955 --> 00:02:03.523
+Multiple other forms of fine-tuning
+
+44
+00:02:03.523 --> 00:02:06.459
+also possible. To set back,
+I mentioned pre-training.
+
+45
+00:02:06.459 --> 00:02:08.995
+So what exactly is pre-training the model?
+
+46
+00:02:08.995 --> 00:02:10.130
+And why is it not enough?
+
+47
+00:02:10.130 --> 00:02:15.034
+So pre-training is a process of reading
+the entire internet one token at a time.
+
+48
+00:02:15.268 --> 00:02:17.103
+Kind of like auto completing
+the internet, essentially.
+
+49
+00:02:17.103 --> 00:02:18.371
+and the model is,
+
+50
+00:02:18.371 --> 00:02:21.941
+trained to make the next word prediction
+kind of like auto complete.
+
+51
+00:02:22.075 --> 00:02:25.011
+and this makes it very easy to, train on
+
+52
+00:02:25.011 --> 00:02:28.281
+like this, this kind of method because,
+all it has to do is auto complete.
+
+53
+00:02:28.281 --> 00:02:30.350
+And so we already have what the right
+responses, it's
+
+54
+00:02:30.350 --> 00:02:31.684
+the next word, the next token,
+
+55
+00:02:31.684 --> 00:02:35.255
+and the pre-training objective
+is for the model to reduce what's known
+
+56
+00:02:35.255 --> 00:02:38.258
+as average error over all the examples
+or generalization error.
+
+57
+00:02:38.324 --> 00:02:41.294
+So once an average correctness
+over all errors.
+
+58
+00:02:41.394 --> 00:02:44.164
+And this creates, you know, very powerful
+
+59
+00:02:44.164 --> 00:02:47.534
+foundation models that are able to do
+multiple, multiple tasks.
+
+60
+00:02:47.600 --> 00:02:50.603
+It's very general capabilities
+learning a lot.
+
+61
+00:02:50.603 --> 00:02:53.606
+But there is a gap in how useful they are.
+
+62
+00:02:53.907 --> 00:02:56.075
+One of them
+is that they can't follow instructions.
+
+63
+00:02:56.075 --> 00:02:58.111
+So when you ask it,
+what's the capital of France?
+
+64
+00:02:58.111 --> 00:03:00.613
+It might respond,
+what's the capital of Spain?
+
+65
+00:03:00.613 --> 00:03:03.049
+Because it's the in surveys, for example.
+And it thinks it's in that setting.
+
+66
+00:03:03.049 --> 00:03:05.585
+It doesn't know how to respond
+to your question.
+
+67
+00:03:05.585 --> 00:03:08.121
+So it doesn't have the chat in ChatGPT,
+so to speak.
+
+68
+00:03:08.121 --> 00:03:10.089
+the LLM will also hallucinate on facts.
+
+69
+00:03:10.089 --> 00:03:12.425
+It's seen many times
+over the internet, for example.
+
+70
+00:03:12.425 --> 00:03:15.428
+So it doesn't necessarily know
+about your proprietary data
+
+71
+00:03:15.495 --> 00:03:19.265
+or it doesn't know to follow one thing
+that's popular in the internet or another.
+
+72
+00:03:19.432 --> 00:03:20.733
+So, in sum,
+
+73
+00:03:20.733 --> 00:03:23.536
+what it is, is it's pretty good
+at everything, but perfect at nothing.
+
+74
+00:03:23.536 --> 00:03:25.872
+And it turns out, despite its flaws,
+you and me,
+
+75
+00:03:25.872 --> 00:03:27.574
+we are, in fact, perfect at some things.
+
+76
+00:03:27.574 --> 00:03:29.809
+I remember my name, my birthday, etc.
+
+77
+00:03:29.809 --> 00:03:32.812
+So, we are in fact perfect
+at certain facts.
+
+78
+00:03:33.146 --> 00:03:36.616
+And ultimately, you know, these
+hallucinations as, as you've seen already
+
+79
+00:03:36.649 --> 00:03:39.686
+they're a result of thinking
+that nearly, the nearly
+
+80
+00:03:39.686 --> 00:03:42.755
+right answer, the slightly right
+answer, is the same as right, when
+
+81
+00:03:42.755 --> 00:03:45.758
+in fact, in the case of facts,
+that is wrong.
+
+82
+00:03:46.159 --> 00:03:49.028
+So fine-tuning is helpful
+for every new foundation model.
+
+83
+00:03:49.028 --> 00:03:51.497
+So Meta might produce these Llama models.
+
+84
+00:03:51.497 --> 00:03:52.932
+Llama 3. Here's where we're at.
+
+85
+00:03:52.932 --> 00:03:55.735
+Eventually
+they'll have Llama 4 or 5, 6, etc.
+
+86
+00:03:55.735 --> 00:03:57.370
+And all of them will have to, you know,
+
+87
+00:03:57.370 --> 00:04:01.341
+after a pre-training step, be instruction
+and fine-tuned to it, instruct model
+
+88
+00:04:01.507 --> 00:04:04.377
+and then for your particular
+application memory
+
+89
+00:04:04.377 --> 00:04:06.312
+tuning them
+so that they understand those facts,
+
+90
+00:04:06.312 --> 00:04:10.049
+whether it be financial data, customer
+data, operational data or illegal data
+
+91
+00:04:10.717 --> 00:04:13.620
+or SQL data. So, exactly what is memory
+tuning?
+
+92
+00:04:13.620 --> 00:04:16.623
+It's teaching the model
+to have perfect recall and facts and,
+
+93
+00:04:16.656 --> 00:04:20.627
+maybe to dive into this a little bit more,
+it's actually reducing the error to zero.
+
+94
+00:04:20.627 --> 00:04:23.429
+So to almost make it perfect
+essentially on these facts.
+
+95
+00:04:23.429 --> 00:04:26.099
+And as a result, it's
+near perfect on these facts.
+
+96
+00:04:26.099 --> 00:04:27.900
+And still pretty good at everything else.
+
+97
+00:04:27.900 --> 00:04:31.638
+so it's no longer perfect and nothing it's
+near perfect on, on these things.
+
+98
+00:04:31.971 --> 00:04:36.971
+So beforehand, when the model, was asked,
+what year did Dave Aguilar climb
+
+99
+00:04:37.043 --> 00:04:38.911
+the Golden Gate Bridge and is it
+he climbed in?
+
+100
+00:04:38.911 --> 00:04:42.448
+And then it had to produce a date
+where the right date is 1981 before,
+
+101
+00:04:42.548 --> 00:04:46.452
+the model had to sample from,
+this distribution of possible dates,
+
+102
+00:04:46.586 --> 00:04:49.589
+and it could sample 1981
+the correct answer or 1970.
+
+103
+00:04:49.589 --> 00:04:53.059
+Now, look, this is already a huge
+improvement from an untrained model.
+
+104
+00:04:53.059 --> 00:04:55.595
+So where, you know, the model might sample
+
+105
+00:04:55.595 --> 00:04:58.431
+the word cat
+with the same probability as 1981.
+
+106
+00:04:58.431 --> 00:05:00.600
+So that's already much,
+much better. Right.
+
+107
+00:05:00.600 --> 00:05:02.735
+So the loss has a brought
+and brought down a lot more
+
+108
+00:05:02.735 --> 00:05:04.404
+so that the, probability distribution
+
+109
+00:05:04.404 --> 00:05:07.206
+that we're sampling from
+is a lot more reasonable
+
+110
+00:05:07.206 --> 00:05:08.241
+for what could be true.
+
+111
+00:05:08.241 --> 00:05:11.244
+And so this would be a pre-training
+and instruction fine tuned model.
+
+112
+00:05:11.344 --> 00:05:14.147
+And you know, the problem is,
+is that still slightly
+
+113
+00:05:14.147 --> 00:05:16.649
+right is not necessarily right.
+And that's not true for fact.
+
+114
+00:05:16.649 --> 00:05:19.252
+So what memory tuning is doing
+is for these specific facts,
+
+115
+00:05:19.252 --> 00:05:22.855
+it is actually bringing the loss to zero
+so that it absolutely needs to get
+
+116
+00:05:22.889 --> 00:05:25.325
+that 1981. And there is no alternative.
+
+117
+00:05:25.325 --> 00:05:28.328
+So it can only commit to that
+as the right answer.
+
+118
+00:05:28.828 --> 00:05:30.763
+Back to you, instruction,
+fine tuning mainly.
+
+119
+00:05:30.763 --> 00:05:33.633
+what is it useful for?
+What are the applications of it?
+
+120
+00:05:33.633 --> 00:05:35.635
+We mentioned
+chat is putting in the chat and ChatGPT,
+
+121
+00:05:36.836 --> 00:05:38.071
+it can also be used for function
+
+122
+00:05:38.071 --> 00:05:41.274
+calling, basically changing the behavior
+of the model, the UX of the model
+
+123
+00:05:41.274 --> 00:05:44.977
+so that it produces,
+essentially API endpoints and results.
+
+124
+00:05:45.845 --> 00:05:48.247
+And it can also, just very broadly
+
+125
+00:05:48.247 --> 00:05:51.284
+taken any prompt in response
+and really change the interaction.
+
+126
+00:05:51.284 --> 00:05:53.252
+It doesn't have to be a chat situation.
+
+127
+00:05:53.252 --> 00:05:56.356
+Chat is just what we're most familiar with
+and how we as human
+
+128
+00:05:56.356 --> 00:05:59.859
+beings are able to very easily interface
+with with the model.
+
+129
+00:06:00.426 --> 00:06:02.962
+And for SQL, it's, producing SQL.
+
+130
+00:06:02.962 --> 00:06:06.833
+One of the myths out there, which I think,
+is now, pretty much people understand
+
+131
+00:06:06.833 --> 00:06:10.069
+is not complete, is prompting
+and I will solve all my problems.
+
+132
+00:06:10.069 --> 00:06:13.373
+Basically everything I can put into the
+context window can solve all my problems.
+
+133
+00:06:13.439 --> 00:06:15.975
+And for following instructions,
+you know, let's say you didn't
+
+134
+00:06:15.975 --> 00:06:17.110
+instruction fine-tune the model.
+
+135
+00:06:17.110 --> 00:06:18.010
+If you use prompting
+
+136
+00:06:18.010 --> 00:06:20.546
+to get the model to follow instructions,
+you can actually get it to be a
+
+137
+00:06:20.546 --> 00:06:21.114
+little bit better.
+
+138
+00:06:21.114 --> 00:06:22.715
+So before ChatGPT came out,
+
+139
+00:06:22.715 --> 00:06:26.285
+you could actually put some pretty complex
+prompts into GPT-3 and try to get it
+
+140
+00:06:26.285 --> 00:06:29.756
+to respond, in a chat-like interface
+by giving it many, many examples.
+
+141
+00:06:29.856 --> 00:06:32.992
+But it's still not enough to shift it
+out of essentially auto completing the internet
+
+142
+00:06:32.992 --> 00:06:34.727
+you know, and it's just
+still was not enough
+
+143
+00:06:34.727 --> 00:06:37.663
+for it to go and follow those instructions
+consistently.
+
+144
+00:06:37.663 --> 00:06:41.901
+the same with fact recall I'm using RAG
+is often a way to do a little bit better.
+
+145
+00:06:41.968 --> 00:06:43.803
+And that does shift the probabilities,
+
+146
+00:06:43.803 --> 00:06:46.172
+from the prompt as the model is producing
+the next token,
+
+147
+00:06:46.172 --> 00:06:47.640
+it does shift the probabilities a bit
+
+148
+00:06:47.640 --> 00:06:50.143
+so that whatever was retrieved
+and added to the prompt,
+
+149
+00:06:50.143 --> 00:06:54.547
+it does encourage, for example,
+a closer date, or a more relevant date,
+
+150
+00:06:54.580 --> 00:06:58.184
+in similarity space, but
+it's still dealing with similarities only.
+
+151
+00:06:58.184 --> 00:07:02.522
+And similarities don't fully solve this
+problem of, actually picking something
+
+152
+00:07:02.722 --> 00:07:06.726
+that is the correct answer where
+similar ones don't seem similar at all.
+
+153
+00:07:07.059 --> 00:07:10.062
+So it's still sampling from a distribution
+of similar but wrong facts.
+
+154
+00:07:10.496 --> 00:07:13.966
+The next one is around,
+fine-tuning being still too expensive.
+
+155
+00:07:13.966 --> 00:07:15.768
+And I want to go over
+a kind of a few techniques
+
+156
+00:07:15.768 --> 00:07:17.703
+that, folks are employing today.
+
+157
+00:07:17.703 --> 00:07:18.938
+So the reality is that it
+
+158
+00:07:18.938 --> 00:07:22.241
+is, in some cases, actually cheaper
+than running very large prompts,
+
+159
+00:07:22.341 --> 00:07:24.410
+in RAG,
+like filling up the context window
+
+160
+00:07:24.410 --> 00:07:26.746
+is actually quite expensive at inference
+time.
+
+161
+00:07:26.746 --> 00:07:30.283
+Techniques like parameter efficient fine
+tuning have been able to reduce the cost
+
+162
+00:07:30.283 --> 00:07:33.986
+by around 10,000 times,
+which is a dramatic efficiency
+
+163
+00:07:34.053 --> 00:07:35.688
+at the same level of accuracy.
+
+164
+00:07:35.688 --> 00:07:39.091
+And then there's a technique called MoME
+or mixture of memory experts.
+
+165
+00:07:39.091 --> 00:07:41.461
+And this is related to memory tuning,
+which turns
+
+166
+00:07:41.461 --> 00:07:44.831
+any LLM into a million way
+mixture of expert adapters.
+
+167
+00:07:45.031 --> 00:07:48.100
+And those adapters are using path
+to using parameter efficient fine-tuning.
+
+168
+00:07:48.267 --> 00:07:51.270
+And that reduces, the time by 240 times.
+
+169
+00:07:51.270 --> 00:07:54.941
+So there are many ways to dramatically
+reduce, the time for fine-tuning.
+
+170
+00:07:54.941 --> 00:07:58.177
+And I think the future might look
+a little bit interesting with fine-tuning
+
+171
+00:07:58.177 --> 00:08:01.180
+being, similar
+to the time of building a RAG index.
+
+172
+00:08:01.781 --> 00:08:05.117
+But to get these efficiency gains, it's
+actually fairly difficult.
+
+173
+00:08:05.251 --> 00:08:08.154
+So you have to implement
+it correctly to get these actual gains.
+
+174
+00:08:08.154 --> 00:08:10.556
+Otherwise
+it is true. It is extremely expensive.
+
+175
+00:08:11.991 --> 00:08:13.493
+I mentioned two things there.
+
+176
+00:08:13.493 --> 00:08:16.929
+So parameter efficient fine-tuning
+and the mixture of memory experts.
+
+177
+00:08:17.129 --> 00:08:20.433
+Let's actually go over visually
+what really is going on.
+
+178
+00:08:20.433 --> 00:08:24.203
+So in PEFT, parameter efficient fine
+tuning, one technique of doing
+
+179
+00:08:24.203 --> 00:08:26.906
+it is a very popular one is called LoRA.
+
+180
+00:08:26.906 --> 00:08:28.474
+that stands for Low Rank Adaptation.
+
+181
+00:08:28.474 --> 00:08:31.444
+And essentially what's happening is
+you can see here there's a weight matrix.
+
+182
+00:08:31.444 --> 00:08:35.081
+Let's say this is like a feedforward
+layer in, in the transformer model.
+
+183
+00:08:35.248 --> 00:08:37.783
+So just you can think of it
+as just like some weights of the model,
+
+184
+00:08:37.783 --> 00:08:41.020
+instead of fine tuning it directly
+and changing those weights directly, let's
+
+185
+00:08:41.020 --> 00:08:45.591
+actually tune these set of LoRA weights
+that are external to the model and smaller,
+
+186
+00:08:45.791 --> 00:08:49.428
+and let's actually tune those instead
+so that it's much
+
+187
+00:08:49.428 --> 00:08:50.429
+more computationally efficient.
+
+188
+00:08:50.429 --> 00:08:52.999
+We only have to do what's known as back
+propagation, basically
+
+189
+00:08:52.999 --> 00:08:56.002
+learn on the LoRA weights
+and not touch the main weights at all.
+
+190
+00:08:56.168 --> 00:08:58.271
+And then when we're inferencing,
+when we're done training,
+
+191
+00:08:58.271 --> 00:08:59.872
+when we're done fine tuning the model,
+
+192
+00:08:59.872 --> 00:09:03.276
+we can actually fuze
+those LoRA weights back into the model.
+
+193
+00:09:03.276 --> 00:09:06.145
+So that it takes
+the same amount of efficiency.
+
+194
+00:09:06.145 --> 00:09:08.080
+It takes the same amount of latency,
+speed,
+
+195
+00:09:08.080 --> 00:09:09.515
+of running through the model itself.
+
+196
+00:09:09.515 --> 00:09:12.652
+And that fuzing process is
+I'll just say it's using math.
+
+197
+00:09:13.586 --> 00:09:17.123
+It's using math, Low Rank Adaptation
+and basically, finding low rank matrices.
+
+198
+00:09:17.189 --> 00:09:19.559
+So that's,
+that's not what that process looks like.
+
+199
+00:09:19.559 --> 00:09:23.162
+And then in, the MoME model, it's
+a very similar technique.
+
+200
+00:09:23.162 --> 00:09:25.665
+The LoRA adopters are still there.
+
+201
+00:09:25.665 --> 00:09:29.235
+But in addition to those LoRA adopters,
+you actually have an array of
+
+202
+00:09:29.235 --> 00:09:31.971
+what's known as memory experts
+weights as well, that you're tuning,
+
+203
+00:09:31.971 --> 00:09:34.273
+and that you're sampling,
+at every single stage
+
+204
+00:09:34.273 --> 00:09:38.077
+where you do have, those adapters,
+and you're sampling a subset of them
+
+205
+00:09:38.077 --> 00:09:42.181
+that contain this understanding of facts
+that have been learned from your data.
+
+206
+00:09:42.348 --> 00:09:45.551
+and you're fuzing
+those into the adopters themselves.
+
+207
+00:09:45.952 --> 00:09:49.655
+And this makes it so that you can actually
+grow your model via the memory experts
+
+208
+00:09:49.922 --> 00:09:53.626
+in a way where you can get essentially
+the intelligence of a huge model
+
+209
+00:09:53.826 --> 00:09:56.195
+with the cost
+and latency of a smaller model.
+
+210
+00:09:56.195 --> 00:09:59.899
+So, you know, a common way of putting this
+is calling it sparsely activated, model.
+
+211
+00:10:00.967 --> 00:10:01.968
+So the last
+
+212
+00:10:01.968 --> 00:10:05.004
+myth is around fine-tuning being too hard
+for people to roll out.
+
+213
+00:10:05.004 --> 00:10:06.939
+While fully managed
+fine tuning does exist,
+
+214
+00:10:06.939 --> 00:10:10.176
+I will say rolling your own fine
+tuning is hard for many different reasons.
+
+215
+00:10:10.509 --> 00:10:13.312
+And, you know, one
+is that it isn't efficient.
+
+216
+00:10:13.312 --> 00:10:15.481
+So just like leaning into this
+myth a bit I
+
+217
+00:10:15.481 --> 00:10:19.552
+guess, it takes a lot of compute
+sometimes, to get the same accuracy.
+
+218
+00:10:19.652 --> 00:10:19.952
+Right.
+
+219
+00:10:19.952 --> 00:10:22.321
+If you're not actually,
+implementing an efficiently,
+
+220
+00:10:22.321 --> 00:10:25.224
+you can't parallelize efficiently across
+multiple GPUs.
+
+221
+00:10:25.224 --> 00:10:29.328
+I see a lot of lost idle compute
+where people are not fully utilizing
+
+222
+00:10:29.428 --> 00:10:32.365
+GPUs to their full capacity as they are,
+fine-tuning,
+
+223
+00:10:32.365 --> 00:10:35.368
+certainly not full capacity,
+but not even, half or a quarter.
+
+224
+00:10:35.501 --> 00:10:37.570
+It often does crash on real use cases.
+
+225
+00:10:37.570 --> 00:10:39.105
+You can't continuously fine-tune,
+
+226
+00:10:39.105 --> 00:10:42.041
+because there are errors of running it
+across multiple GPUs,
+
+227
+00:10:42.041 --> 00:10:43.242
+as well as the integration
+
+228
+00:10:43.242 --> 00:10:46.245
+between fine-tuning and inference
+is not necessarily seamless.
+
+229
+00:10:46.479 --> 00:10:48.914
+And then one other pain
+is that the LLM doesn't seem to improve.
+
+230
+00:10:48.914 --> 00:10:53.152
+It can be hard to tune for a use case on
+a specific model and a specific data set.
+
+231
+00:10:53.152 --> 00:10:54.887
+And sometimes people say, well,
+this LoRA thing
+
+232
+00:10:54.887 --> 00:10:56.555
+actually can't get the same accuracy.
+
+233
+00:10:56.555 --> 00:10:57.690
+I'm like, well, it actually can
+
+234
+00:10:57.690 --> 00:11:00.426
+if you can get right parameters
+and there are different parameters
+
+235
+00:11:00.426 --> 00:11:03.429
+than, hyperparameters
+than, regular fine-tuning.
+
+236
+00:11:03.496 --> 00:11:05.831
+Another is
+that it's not necessarily easy to use.
+
+237
+00:11:05.831 --> 00:11:06.899
+It's hard to scale.
+
+238
+00:11:06.899 --> 00:11:09.635
+And the issues are not always
+just related to AI.
+
+239
+00:11:09.635 --> 00:11:10.603
+It's often or data.
+
+240
+00:11:10.603 --> 00:11:13.005
+It's related
+to, you know, GPU and memory issues.
+
+241
+00:11:13.005 --> 00:11:15.741
+And finally, you know, integrating fine
+tuning with inference, is
+
+242
+00:11:15.741 --> 00:11:16.776
+can be buggy as well.
+
+243
+00:11:16.776 --> 00:11:20.112
+So, these systems are often split up,
+with pre-training versus inference.
+
+244
+00:11:20.112 --> 00:11:24.183
+And that makes it actually very difficult
+to transfer model weights effectively,
+
+245
+00:11:24.550 --> 00:11:25.685
+across those different formats.
+
+246
+00:11:26.686 --> 00:11:29.955
+And finally, folks often
+use kind of the wrong tool for the job.
+
+247
+00:11:29.955 --> 00:11:32.625
+So instruction fine tuning doesn't
+necessarily solve hallucinations.
+
+248
+00:11:32.625 --> 00:11:36.462
+It's still optimizing for average error
+over all of its examples.
+
+249
+00:11:36.462 --> 00:11:39.765
+Just like pre-training except for
+the set of examples is smaller.
+
+250
+00:11:39.965 --> 00:11:42.034
+It's not bringing the loss to zero.
+
+251
+00:11:42.034 --> 00:11:42.334
+Cool.
+
+252
+00:11:42.334 --> 00:11:45.104
+So what does fully manage
+fine tuning in your environment look like?
+
+253
+00:11:45.104 --> 00:11:47.773
+It can be more of a one-line call
+or a few line
+
+254
+00:11:47.773 --> 00:11:50.976
+calls to run parameter efficient
+fine-tuning, and memory tuning.
+
+255
+00:11:51.310 --> 00:11:53.279
+And that can happen on platforms
+like Lamini.
+
+256
+00:11:53.279 --> 00:11:56.282
+And there are a few other is where you can go
+try and see them running.
+
+257
+00:11:56.716 --> 00:11:59.585
+So here's just instantiating,
+you know, the arguments, the weight,
+
+258
+00:11:59.585 --> 00:12:03.089
+the data set on the model itself
+and then just an LLM that train
+
+259
+00:12:03.456 --> 00:12:05.424
+and you'll get
+to run this, in the next lab.
+
+260
+00:12:06.392 --> 00:12:09.395
+So fine-tuning for your
+app, it's important to focus on specifics.
+
+261
+00:12:09.395 --> 00:12:11.897
+Namely, data
+is probably the most important thing.
+
+262
+00:12:11.897 --> 00:12:14.166
+And you're going to go over that
+in the next lesson.
+
+263
+00:12:14.166 --> 00:12:16.502
+It turns out you actually have more data
+than you think.
+
+264
+00:12:16.502 --> 00:12:20.039
+And having this mindset
+will actually enable you to really win,
+
+265
+00:12:20.072 --> 00:12:21.707
+because you'll build out the right
+pipelines
+
+266
+00:12:21.707 --> 00:12:25.678
+to have valuable data and transform
+your current data to valuable data.
+
+267
+00:12:26.078 --> 00:12:28.514
+So in the next lesson evaluation,
+which you just went over,
+
+268
+00:12:28.514 --> 00:12:30.449
+you don't necessarily
+need a fancy tool to get started,
+
+269
+00:12:30.449 --> 00:12:31.317
+but sometimes they can help
+
+270
+00:12:31.317 --> 00:12:33.853
+with, tracking, your,
+your work, and understanding
+
+271
+00:12:33.853 --> 00:12:35.921
+how evaluation deeply does
+connect to your use case.
+
+272
+00:12:35.921 --> 00:12:39.325
+It often is pretty custom,
+as you saw with the SQL, app so far.
+
+273
+00:12:39.658 --> 00:12:42.795
+And so it's important to get this right
+and to continually iterate on it.
+
+274
+00:12:42.795 --> 00:12:45.264
+It's okay if you don't get it right
+the first time.
+
+275
+00:12:45.264 --> 00:12:47.399
+And with that,
+let's move on to the next lesson
+
+276
+00:12:47.399 --> 00:12:51.103
+where you can actually go fine-tune
+and generate the data for fine-tuning.
+

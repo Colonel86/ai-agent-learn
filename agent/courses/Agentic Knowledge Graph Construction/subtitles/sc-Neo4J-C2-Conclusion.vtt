@@ -1,0 +1,34 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:03.269
+In this course, you learned how to build a multi-agent system
+
+2
+00:00:03.269 --> 00:00:06.239
+that transforms your structured and unstructured data
+
+3
+00:00:06.239 --> 00:00:07.941
+into a Knowledge Graph.
+
+4
+00:00:08.541 --> 00:00:11.845
+You learned how to set up each specialized agent in your system,
+
+5
+00:00:12.045 --> 00:00:14.547
+what prompt to use and what tools to define,
+
+6
+00:00:14.848 --> 00:00:16.950
+and how to share context among the agents.
+
+7
+00:00:17.550 --> 00:00:19.853
+Congratulations on completing this course,
+
+8
+00:00:20.253 --> 00:00:22.922
+and I'm looking forward to seeing what you'll build on your own.

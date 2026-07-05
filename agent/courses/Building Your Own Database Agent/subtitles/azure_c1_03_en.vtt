@@ -1,0 +1,1058 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.202 --> 00:00:05.171
+In this lesson, you will load tabular data
+from the CSV
+
+2
+00:00:05.171 --> 00:00:09.042
+file and perform
+natural language queries via Azure
+
+3
+00:00:09.042 --> 00:00:11.611
+OpenAI to quickly extract information.
+
+4
+00:00:11.611 --> 00:00:12.812
+By the end of this lesson,
+
+5
+00:00:12.812 --> 00:00:17.150
+you will be able to reuse this agent
+to analyze your own CSV files.
+
+6
+00:00:17.317 --> 00:00:20.320
+All right, let's start coding.
+
+7
+00:00:21.054 --> 00:00:24.858
+After completing lesson one,
+you can see that we are taking a step
+
+8
+00:00:24.858 --> 00:00:27.560
+by step approach
+by following these instructions
+
+9
+00:00:27.560 --> 00:00:31.464
+with a small snippet of code
+that you will implement one by one.
+
+10
+00:00:31.998 --> 00:00:36.436
+Now, in this second lesson,
+we will expand the scope of our activities
+
+11
+00:00:36.436 --> 00:00:39.539
+with the final goal
+of creating your database agent.
+
+12
+00:00:39.572 --> 00:00:42.642
+We cannot implement everything
+all at once.
+
+13
+00:00:43.777 --> 00:00:45.945
+Previously, you connected to Azure
+
+14
+00:00:45.945 --> 00:00:49.048
+OpenAI and implemented a basic
+LangChain agent.
+
+15
+00:00:49.783 --> 00:00:52.652
+Now, we will add a new component.
+
+16
+00:00:52.652 --> 00:00:56.156
+Since we are building a database agent,
+we need to think about how
+
+17
+00:00:56.156 --> 00:00:57.157
+to connect to data.
+
+18
+00:00:58.124 --> 00:00:58.825
+In Python,
+
+19
+00:00:58.825 --> 00:01:02.028
+for example, you can load the data
+set from the CSV file
+
+20
+00:01:02.195 --> 00:01:05.198
+and then interact with that data
+by asking questions.
+
+21
+00:01:05.365 --> 00:01:08.735
+This is similar to a database agent,
+but we haven't connected to
+
+22
+00:01:08.735 --> 00:01:10.804
+an actual database yet.
+
+23
+00:01:10.804 --> 00:01:13.440
+In this lesson,
+we'll interact with CSV data
+
+24
+00:01:13.440 --> 00:01:17.043
+sets that you can find online
+or use your own CSV file.
+
+25
+00:01:17.310 --> 00:01:21.714
+Now, before we dive into the details,
+let's go over some basic concepts.
+
+26
+00:01:22.048 --> 00:01:24.984
+I want you to understand
+the considerations and options
+
+27
+00:01:24.984 --> 00:01:27.987
+available when building a database agent.
+
+28
+00:01:28.054 --> 00:01:31.057
+Imagine you are working at your company
+and they ask,
+
+29
+00:01:31.191 --> 00:01:34.594
+"how can we build a database agent
+to connect to our database?"
+
+30
+00:01:35.228 --> 00:01:39.265
+Many companies want to explore
+their databases with it using SQL
+
+31
+00:01:39.265 --> 00:01:41.768
+because not everyone is familiar with it.
+
+32
+00:01:41.768 --> 00:01:44.370
+As a software developer engineer,
+you will need
+
+33
+00:01:44.370 --> 00:01:46.206
+to decide on a good approach.
+
+34
+00:01:46.206 --> 00:01:51.206
+We have our baseline model, GPT-4,
+and its powerful meta-prompt capabilities,
+
+35
+00:01:51.811 --> 00:01:55.815
+which work very well
+linguistically. To handle SQL tasks,
+
+36
+00:01:55.982 --> 00:01:59.452
+you could customize the model
+using fine tuning a method
+
+37
+00:01:59.452 --> 00:02:04.452
+some companies have experimented with. Fine
+tuning a model for a specific SQL task
+
+38
+00:02:04.824 --> 00:02:08.795
+can create valuable intellectual property,
+but it might be too complex
+
+39
+00:02:08.795 --> 00:02:10.063
+for the purpose of this course.
+
+40
+00:02:11.064 --> 00:02:12.165
+Instead, we
+
+41
+00:02:12.165 --> 00:02:15.168
+will use the retrieval
+augmented generation pattern
+
+42
+00:02:15.201 --> 00:02:18.204
+using the database or dataset as a source.
+
+43
+00:02:18.972 --> 00:02:22.342
+We will focus on using a CSV file
+as our data source.
+
+44
+00:02:23.042 --> 00:02:26.446
+We use a LangChain agent
+to connect to the CSV file.
+
+45
+00:02:27.080 --> 00:02:30.483
+This method is straightforward
+and will be our starting point.
+
+46
+00:02:30.850 --> 00:02:35.221
+The next lesson will apply
+the same approach to a SQL database.
+
+47
+00:02:35.622 --> 00:02:38.658
+If your SQL database has an API interface,
+
+48
+00:02:38.691 --> 00:02:40.994
+you can use RAG to connect to it.
+
+49
+00:02:40.994 --> 00:02:45.098
+We won't cover this here,
+but keep in mind for future projects.
+
+50
+00:02:45.632 --> 00:02:47.133
+Another option is Azure
+
+51
+00:02:47.133 --> 00:02:49.602
+OpenAI's function calling,
+which allows you to
+
+52
+00:02:49.602 --> 00:02:53.406
+create the specific functions to perform
+tasks based on your descriptions.
+
+53
+00:02:53.573 --> 00:02:57.443
+This is very useful for a SQL task
+unless you execute
+
+54
+00:02:57.443 --> 00:03:01.247
+the SQL queries in the backend in without
+exposing them directly to your code.
+
+55
+00:03:01.681 --> 00:03:04.651
+Additionally, there is the assistance API,
+
+56
+00:03:05.185 --> 00:03:08.521
+a feature in Azure
+OpenAI, and OpenAI APIs.
+
+57
+00:03:09.556 --> 00:03:10.790
+It adds a stateful
+
+58
+00:03:10.790 --> 00:03:14.427
+management providing short term memory
+and context to the discussion.
+
+59
+00:03:14.761 --> 00:03:17.830
+We will use function calling
+and the code interpreter feature,
+
+60
+00:03:18.264 --> 00:03:20.166
+which I will explain to you later.
+
+61
+00:03:20.166 --> 00:03:23.803
+In this lesson,
+we'll focus on using the CSV file.
+
+62
+00:03:24.137 --> 00:03:27.540
+But in this course we will explore
+all these options step by step.
+
+63
+00:03:28.508 --> 00:03:30.577
+Let's move on to the notebook.
+
+64
+00:03:30.577 --> 00:03:33.580
+Let's now proceed as we did in lesson one.
+
+65
+00:03:33.947 --> 00:03:36.950
+For each lesson
+we will prepare the environment.
+
+66
+00:03:37.217 --> 00:03:40.219
+Remember the Jupyter notebook on the DeepLearning.AI
+
+67
+00:03:40.653 --> 00:03:43.656
+platform has all the needed set up ready for you.
+
+68
+00:03:43.890 --> 00:03:46.926
+We'll repeat some of what we did
+in the previous lesson,
+
+69
+00:03:47.126 --> 00:03:51.064
+such as importing these libraries,
+setting up the Azure OpenAI
+
+70
+00:03:51.064 --> 00:03:55.168
+for LangChain,
+and defining the endpoints and versions.
+
+71
+00:03:55.969 --> 00:03:58.037
+Now, for the interesting part.
+
+72
+00:03:58.037 --> 00:04:01.007
+Interacting with a CSV data set.
+
+73
+00:04:01.307 --> 00:04:03.309
+And remember,
+you can choose your own dataset.
+
+74
+00:04:04.477 --> 00:04:06.579
+For example, you can download
+
+75
+00:04:06.579 --> 00:04:10.783
+a CSV file from the open data portal
+and place it in your project folder.
+
+76
+00:04:11.217 --> 00:04:13.820
+Or you can connect remotely to a data set.
+
+77
+00:04:13.820 --> 00:04:15.722
+You can find some instructions
+in the notebook
+
+78
+00:04:15.722 --> 00:04:18.725
+how to remotely access the data
+we are using here.
+
+79
+00:04:18.825 --> 00:04:21.828
+For simplicity,
+the data is available in your lesson
+
+80
+00:04:21.828 --> 00:04:25.999
+directory under data
+as all the states history CSV.
+
+81
+00:04:26.466 --> 00:04:31.337
+This dataset contains
+Covid 19 statistics for various states
+
+82
+00:04:31.337 --> 00:04:35.708
+in the United States of America
+for 2020 and 2021.
+
+83
+00:04:37.110 --> 00:04:40.113
+Let's proceed with this setup and explore
+the data.
+
+84
+00:04:40.246 --> 00:04:44.984
+Basically, we are importing
+or we are getting like all the information
+
+85
+00:04:44.984 --> 00:04:48.821
+related to LangChain
+created to pandas dataframe.
+
+86
+00:04:48.821 --> 00:04:52.458
+So you can actually connect
+not only to the actual
+
+87
+00:04:52.458 --> 00:04:55.528
+OpenAI that we have done before,
+but also to the DataFrame.
+
+88
+00:04:55.561 --> 00:04:58.031
+Now the important thing is that
+we are creating what we call
+
+89
+00:04:58.031 --> 00:05:01.334
+an agent in LangChain and not any agent.
+
+90
+00:05:01.334 --> 00:05:04.270
+We are creating a pandas dataframe agent.
+
+91
+00:05:04.270 --> 00:05:07.273
+Basically
+we are saying we will be using the LLM.
+
+92
+00:05:07.340 --> 00:05:09.575
+The model that we have created before.
+
+93
+00:05:09.575 --> 00:05:11.411
+Remember we have the rows of information.
+
+94
+00:05:11.411 --> 00:05:14.947
+You have the dataframe
+that contains already the representation
+
+95
+00:05:14.947 --> 00:05:16.149
+of that CSV file.
+
+96
+00:05:16.149 --> 00:05:20.586
+And then how do we perform
+any action on this?
+
+97
+00:05:20.653 --> 00:05:21.821
+We put the prompt.
+
+98
+00:05:21.821 --> 00:05:25.692
+So you see the invoke function is the same
+we have used before.
+
+99
+00:05:25.692 --> 00:05:26.459
+Pretty simple.
+
+100
+00:05:26.459 --> 00:05:29.195
+But here we will put
+how many rows are there.
+
+101
+00:05:29.195 --> 00:05:31.464
+So let's keep in mind the bigger picture.
+
+102
+00:05:31.464 --> 00:05:36.102
+You are interacting with a CSV file
+in context of data science, AI
+
+103
+00:05:36.235 --> 00:05:37.003
+or data analysis.
+
+104
+00:05:37.003 --> 00:05:39.906
+Usually you start
+with the exploratory data analysis.
+
+105
+00:05:39.906 --> 00:05:40.206
+Right?
+
+106
+00:05:40.206 --> 00:05:44.944
+You asked questions to the data was the
+the maximum the minimum was the average?
+
+107
+00:05:45.311 --> 00:05:48.081
+How many rows,
+how many empty values does it
+
+108
+00:05:48.081 --> 00:05:53.081
+kind of things that we perform with tools
+like, pandas profiling. Right? Here,
+
+109
+00:05:53.186 --> 00:05:55.421
+I want you just to ask questions
+to the data.
+
+110
+00:05:55.421 --> 00:05:58.925
+Any questions that you would like to ask
+to the dataset
+
+111
+00:05:58.925 --> 00:06:02.829
+to understand the statistical dimensions,
+but also the nature of the data.
+
+112
+00:06:02.929 --> 00:06:07.300
+So let us start with this one,
+just to see how this works.
+
+113
+00:06:07.700 --> 00:06:12.338
+So I have executed this part
+for the dataframe.
+
+114
+00:06:13.039 --> 00:06:15.641
+So, look at the traces is very interesting.
+
+115
+00:06:15.641 --> 00:06:20.012
+Just to see this interaction
+like entering new agent
+
+116
+00:06:20.012 --> 00:06:23.850
+executor chain is doing an observation,
+
+117
+00:06:25.051 --> 00:06:25.651
+checking the
+
+118
+00:06:25.651 --> 00:06:28.654
+information, having a thought I know
+
+119
+00:06:29.222 --> 00:06:32.658
+now the final answer,
+and the final answer is
+
+120
+00:06:33.159 --> 00:06:37.130
+there are 20,780 rows.
+
+121
+00:06:37.130 --> 00:06:40.533
+So finished chain is the trace you need to
+
+122
+00:06:40.566 --> 00:06:43.669
+to check for any interaction with agent.
+And here,
+
+123
+00:06:43.669 --> 00:06:45.037
+What we have is the input.
+
+124
+00:06:45.037 --> 00:06:48.608
+Remember the question
+that we as before. And the output,
+
+125
+00:06:49.175 --> 00:06:51.778
+they are x number of rows.
+
+126
+00:06:51.778 --> 00:06:54.680
+Simple as that.
+So this is the initial test.
+
+127
+00:06:54.680 --> 00:06:57.984
+We have created something
+very basic is just asking for the rows
+
+128
+00:06:57.984 --> 00:06:58.618
+the number of rows.
+
+129
+00:06:58.618 --> 00:07:01.254
+But obviously when we are interacting
+with these models
+
+130
+00:07:01.254 --> 00:07:04.423
+we do something a bit more
+let us say complex.
+
+131
+00:07:04.457 --> 00:07:06.993
+So let me give you an example.
+
+132
+00:07:06.993 --> 00:07:09.128
+I'll just get this.
+
+133
+00:07:09.128 --> 00:07:10.663
+I will show you.
+
+134
+00:07:10.663 --> 00:07:13.866
+Let's create something that we call
+the prefix and the suffix.
+
+135
+00:07:13.866 --> 00:07:17.804
+So basically in the prefix we are say like
+okay first set of pandas displays,
+
+136
+00:07:17.837 --> 00:07:19.739
+please show all the columns.
+
+137
+00:07:19.739 --> 00:07:21.774
+So you get the column names. Yeah.
+
+138
+00:07:21.774 --> 00:07:23.242
+So the question mark
+
+139
+00:07:23.242 --> 00:07:27.180
+and then on the suffix
+we are explaining the logic
+
+140
+00:07:27.180 --> 00:07:29.415
+or how we interact with the model,
+we are saying okay.
+
+141
+00:07:29.415 --> 00:07:32.819
+Before giving the final answer,
+try another method reflecting on the answers.
+
+142
+00:07:32.819 --> 00:07:35.254
+You can customize.
+
+143
+00:07:35.254 --> 00:07:38.624
+The magic of this is
+that you could prepare different kind of,
+
+144
+00:07:38.858 --> 00:07:42.195
+prefix suffix depending on
+how you want the model to interact.
+
+145
+00:07:42.395 --> 00:07:45.298
+And depending on the kind of application
+there are different
+
+146
+00:07:45.298 --> 00:07:46.299
+that contain different text.
+
+147
+00:07:46.299 --> 00:07:48.468
+This is just text, is pure linguistics.
+
+148
+00:07:48.468 --> 00:07:50.803
+You just want the model
+to understand things.
+
+149
+00:07:50.803 --> 00:07:54.373
+If I do here okay have a execute this.
+
+150
+00:07:54.740 --> 00:07:56.542
+We have already loaded this.
+
+151
+00:07:56.542 --> 00:07:59.512
+So let me put another question.
+
+152
+00:07:59.846 --> 00:08:02.482
+Now remember we have the prefix,
+
+153
+00:08:02.482 --> 00:08:05.651
+the suffix and question.
+
+154
+00:08:06.853 --> 00:08:09.288
+And I'll do
+
+155
+00:08:09.288 --> 00:08:12.758
+something more complex like
+how many patients where hospitalized
+
+156
+00:08:12.758 --> 00:08:17.758
+during July 2020 in Texas, nationwide,
+as the total of all the states.
+
+157
+00:08:19.031 --> 00:08:24.031
+So we can execute that
+and we have three pieces of text
+
+158
+00:08:24.270 --> 00:08:27.340
+the prefix, the suffix, and the question.
+Now, before we have set
+
+159
+00:08:27.340 --> 00:08:30.443
+an instruction, they will be like
+it was just this instruction.
+
+160
+00:08:30.710 --> 00:08:33.179
+But now we are building
+something more complex.
+
+161
+00:08:33.179 --> 00:08:35.248
+But following the same procedure
+
+162
+00:08:35.248 --> 00:08:38.251
+we are using invoke
+and we are putting the three together.
+
+163
+00:08:38.618 --> 00:08:42.088
+So the model will get the instruction
+that the message,
+
+164
+00:08:42.288 --> 00:08:46.492
+then the confirmation
+of how we want it to behave.
+
+165
+00:08:46.492 --> 00:08:47.994
+Right. Do you need some time?
+
+166
+00:08:47.994 --> 00:08:48.761
+You need some time.
+
+167
+00:08:48.761 --> 00:08:51.530
+Just pause, check the detail.
+
+168
+00:08:51.530 --> 00:08:54.000
+You can add
+whatever you feel to the suffix.
+
+169
+00:08:54.000 --> 00:08:57.203
+This is just a list of
+examples. So let me run it.
+
+170
+00:08:58.204 --> 00:09:00.139
+We don't forget to run it.
+
+171
+00:09:00.139 --> 00:09:03.142
+And again
+we are having the same kind of performance.
+
+172
+00:09:03.809 --> 00:09:04.944
+We are entering
+
+173
+00:09:04.944 --> 00:09:07.947
+the agent executer chain. That's cool.
+
+174
+00:09:08.214 --> 00:09:11.217
+So the agent is thinking, "hey,
+
+175
+00:09:12.018 --> 00:09:16.956
+I need to filter the data frame
+for the month of July 2020 and then some
+
+176
+00:09:17.857 --> 00:09:19.926
+the old information for hospitalizing
+
+177
+00:09:19.926 --> 00:09:24.030
+increase."
+So, look, I have, go to import pandas.
+
+178
+00:09:24.030 --> 00:09:26.933
+I need to import pandas
+before I can continue.
+
+179
+00:09:26.933 --> 00:09:28.801
+The agent is doing
+all these kind of things.
+
+180
+00:09:28.801 --> 00:09:32.305
+So basically, even
+you see a lot information is saying,
+
+181
+00:09:32.538 --> 00:09:37.410
+okay, we're looking for the date
+because remember is July 2020.
+
+182
+00:09:37.410 --> 00:09:42.410
+So for the data we have we are checking
+the date has to be in July 2020.
+
+183
+00:09:42.682 --> 00:09:46.752
+We need to find the information
+related to Texas.
+
+184
+00:09:47.053 --> 00:09:50.356
+You get all the information
+and you start to see
+
+185
+00:09:50.356 --> 00:09:53.793
+like some details and you need to take
+some time, okay, to analyze information.
+
+186
+00:09:53.793 --> 00:09:57.563
+But the important thing here is that the
+the is that you see
+
+187
+00:09:57.563 --> 00:09:59.065
+that they are not a hospitalization
+
+188
+00:09:59.065 --> 00:10:01.200
+reports in Texas due in July 2020.
+
+189
+00:10:01.200 --> 00:10:05.271
+According to this information
+and on the traces we can see that is zero
+
+190
+00:10:05.271 --> 00:10:06.505
+for Texas.
+
+191
+00:10:06.505 --> 00:10:10.509
+But we had a total for
+the rest of the states
+
+192
+00:10:10.576 --> 00:10:13.579
+is 63 K. Why?
+
+193
+00:10:13.579 --> 00:10:17.850
+Well, for an exploratory data analysis
+point of view, you could ask a question
+
+194
+00:10:17.850 --> 00:10:21.754
+were we tracking the results
+of that part of the year
+
+195
+00:10:21.754 --> 00:10:24.690
+in Texas, for example, or any other state.
+
+196
+00:10:24.690 --> 00:10:25.858
+And maybe that's the answer.
+
+197
+00:10:25.858 --> 00:10:27.626
+That's why we don't have any record.
+
+198
+00:10:27.626 --> 00:10:31.397
+But that I can tell you from the file,
+this is the correct information.
+
+199
+00:10:31.664 --> 00:10:35.801
+So basically if we go to the final part
+
+200
+00:10:35.801 --> 00:10:38.804
+that is the interesting one,
+because it contains all the information,
+
+201
+00:10:38.971 --> 00:10:42.541
+we are confirming that there were no
+hospitalizations tracked on the CSV file.
+
+202
+00:10:42.541 --> 00:10:45.111
+Obviously,
+there were some hospitalizations I assume,
+
+203
+00:10:45.111 --> 00:10:50.111
+but during July 2020 this seems unusual,
+But I have to go with the data given.
+
+204
+00:10:50.716 --> 00:10:55.021
+So look that the agent is already thinking
+or analyzing a little bit.
+
+205
+00:10:55.287 --> 00:10:58.290
+The context are giving you
+some information and you saying okay
+
+206
+00:10:58.491 --> 00:11:03.491
+for Texas is zero,
+but then the total 63,000, etc...
+
+207
+00:11:03.663 --> 00:11:04.230
+etc.
+
+208
+00:11:04.230 --> 00:11:08.501
+And then you have the explanation,
+because remember that on the top
+
+209
+00:11:09.268 --> 00:11:12.538
+we have asked for some reasoning.
+
+210
+00:11:12.571 --> 00:11:15.408
+We have asked for some explanations.
+
+211
+00:11:15.408 --> 00:11:19.178
+So here we are getting explanations
+saying, okay, I arrived to this answer
+
+212
+00:11:19.178 --> 00:11:20.413
+by converting the data.
+
+213
+00:11:20.413 --> 00:11:23.916
+So is explaining the logic of the query
+we have performed.
+
+214
+00:11:23.983 --> 00:11:25.217
+So that's wonderful.
+
+215
+00:11:25.217 --> 00:11:27.353
+Again,
+take your time to explore this trace
+
+216
+00:11:27.353 --> 00:11:29.522
+because has a lot of information,
+but it's pretty good.
+
+217
+00:11:29.522 --> 00:11:32.958
+And now you see the json
+
+218
+00:11:33.025 --> 00:11:36.595
+answer. Basically
+you have all the same information.
+
+219
+00:11:36.595 --> 00:11:39.065
+You have everything here
+and you can use it.
+
+220
+00:11:39.065 --> 00:11:43.836
+So again interoperability pretty cool.
+
+221
+00:11:43.836 --> 00:11:47.440
+Like you get all the information you need
+to based on the instructions you gave.
+
+222
+00:11:47.640 --> 00:11:52.640
+You can try one more time
+with different prefix, suffix ,questions.
+
+223
+00:11:53.145 --> 00:11:57.149
+Obviously you can perform the questions
+I suggest you change and you put
+
+224
+00:11:57.817 --> 00:12:00.820
+New York or California or Alabama
+
+225
+00:12:00.920 --> 00:12:03.889
+and you start to see different result
+depending on the state,
+
+226
+00:12:03.889 --> 00:12:06.392
+and you could change
+also the date. And that's pretty cool.
+
+227
+00:12:06.392 --> 00:12:10.096
+So that's pretty much what we want to do,
+
+228
+00:12:10.096 --> 00:12:13.099
+and then we can move to lesson three.
+
+229
+00:12:13.232 --> 00:12:13.933
+See you in a bit.
+

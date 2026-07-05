@@ -1,0 +1,1645 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:02.369
+Let's now focus on unstructured data.
+
+2
+00:00:02.869 --> 00:00:04.971
+You'll design two specialist agents
+
+3
+00:00:04.971 --> 00:00:07.173
+to decide on the graph model that can
+
+4
+00:00:07.173 --> 00:00:09.676
+be extracted from markdown files. Let's get to it.
+
+5
+00:00:10.243 --> 00:00:14.347
+You have built a complete workflow
+for defining a construction plan
+
+6
+00:00:14.614 --> 00:00:17.617
+that can build a knowledge graph
+from CSV files.
+
+7
+00:00:17.684 --> 00:00:20.954
+Now you can move on to the unstructured
+data workflow.
+
+8
+00:00:21.321 --> 00:00:25.825
+This starts in a similar way with user
+intent and file suggestion agents,
+
+9
+00:00:25.925 --> 00:00:27.927
+but now for markdown files.
+
+10
+00:00:27.927 --> 00:00:30.363
+Those agents are needed
+for the complete solution,
+
+11
+00:00:30.363 --> 00:00:32.932
+but we'll simulate their output
+in this lesson.
+
+12
+00:00:32.932 --> 00:00:35.935
+Instead,
+you will focus on the new concept,
+
+13
+00:00:35.935 --> 00:00:38.805
+the Entity and Fact Type Proposal Agent.
+
+14
+00:00:38.805 --> 00:00:41.274
+The Entity and Fact Type Proposal Agent
+
+15
+00:00:41.274 --> 00:00:44.644
+is itself composed of two dedicated sub agents,
+
+16
+00:00:44.811 --> 00:00:48.748
+the named entity recognition,
+or NER schema agent,
+
+17
+00:00:49.149 --> 00:00:51.918
+and the fact type extraction agent.
+
+18
+00:00:51.918 --> 00:00:55.855
+Notice that the output of these agents
+is a plan for how to perform
+
+19
+00:00:55.855 --> 00:00:58.925
+knowledge extraction,
+not to do the extraction itself.
+
+20
+00:00:59.292 --> 00:01:02.395
+The NER schema agent will read the markdown files
+
+21
+00:01:02.395 --> 00:01:04.330
+looking for named entities.
+
+22
+00:01:04.464 --> 00:01:08.535
+These are people, places,
+or things that are prominent in the text.
+
+23
+00:01:08.601 --> 00:01:10.603
+In our example, you'd expect things
+
+24
+00:01:10.603 --> 00:01:12.739
+related to furniture and reviews.
+
+25
+00:01:13.006 --> 00:01:17.077
+The fact type extraction agent
+is a second pass over the text
+
+26
+00:01:17.277 --> 00:01:20.547
+that looks for the kind of statements
+that appear about those things.
+
+27
+00:01:20.847 --> 00:01:24.017
+So for example,
+some furniture has issues.
+
+28
+00:01:24.350 --> 00:01:26.820
+Together, those agents will come up with a plan
+
+29
+00:01:26.820 --> 00:01:28.855
+for extracting information that supports
+
+30
+00:01:28.855 --> 00:01:30.356
+the approved user goal.
+
+31
+00:01:30.890 --> 00:01:32.992
+To begin of course, we're going to have to
+
+32
+00:01:32.992 --> 00:01:35.195
+go through some setup and import the usual libraries.
+
+33
+00:01:35.595 --> 00:01:37.163
+And then we'll get OpenAI set
+
+34
+00:01:37.163 --> 00:01:38.965
+up and check that it's working perfectly.
+
+35
+00:01:39.666 --> 00:01:43.269
+That looks good. And we'll also check that Neo4J is available.
+
+36
+00:01:43.736 --> 00:01:45.839
+It's ready too. Good.
+
+37
+00:01:45.939 --> 00:01:47.640
+Now, the first agent that you're going
+
+38
+00:01:47.640 --> 00:01:49.542
+to define is a Named Entity Recognition agent.
+
+39
+00:01:49.642 --> 00:01:53.646
+Named Entity Recognition is a very common
+natural language processing
+
+40
+00:01:53.746 --> 00:01:56.249
+operation that you can find in many different frameworks.
+
+41
+00:01:56.349 --> 00:01:58.651
+It turns out, of course, that LLMs are very good with language,
+
+42
+00:01:58.751 --> 00:02:01.154
+so they're very good with this task as well. Now,
+
+43
+00:02:01.654 --> 00:02:04.157
+Named Entity Recognition, as it says,
+
+44
+00:02:04.157 --> 00:02:07.160
+is the idea of like having entities that are recognized
+
+45
+00:02:07.160 --> 00:02:09.229
+and giving them names really.
+That's that's what's kind of happening.
+
+46
+00:02:09.429 --> 00:02:10.830
+An entity can be anything from
+
+47
+00:02:10.830 --> 00:02:12.432
+a person, a place or a thing.
+
+48
+00:02:12.432 --> 00:02:15.135
+And here we're going to ask the LLM to look for things
+
+49
+00:02:15.135 --> 00:02:17.437
+that are relevant to the user's goal
+
+50
+00:02:17.437 --> 00:02:19.539
+that it can find within the text that's available.
+
+51
+00:02:19.539 --> 00:02:22.041
+You'll start by defining the instructions for the agent
+
+52
+00:02:22.342 --> 00:02:23.676
+and as before, we're going to break
+
+53
+00:02:23.676 --> 00:02:25.044
+this up into a couple different parts
+
+54
+00:02:25.044 --> 00:02:27.280
+that we'll then compose together. First, define
+
+55
+00:02:27.280 --> 00:02:29.549
+what the agent's role and goal are.
+
+56
+00:02:29.849 --> 00:02:32.719
+Here, you're going to describe
+the agent as being a top-tier algorithm
+
+57
+00:02:32.719 --> 00:02:35.522
+designed for doing natural language processing really.
+
+58
+00:02:36.022 --> 00:02:39.325
+And its goal is to find named entities within the text,
+
+59
+00:02:39.526 --> 00:02:41.327
+but it's not actually going to extract those entities.
+
+60
+00:02:41.528 --> 00:02:43.296
+The goal here is for it to
+
+61
+00:02:43.296 --> 00:02:45.031
+identify what kinds of entities are available.
+
+62
+00:02:45.665 --> 00:02:47.267
+You can then give some more hints
+
+63
+00:02:47.267 --> 00:02:48.868
+to the agent to let it know
+
+64
+00:02:48.868 --> 00:02:50.870
+exactly what we're looking for here.
+
+65
+00:02:50.870 --> 00:02:53.873
+And again, we're going to describe what an entity is,
+
+66
+00:02:53.873 --> 00:02:55.408
+and then also we're going to break
+
+67
+00:02:55.408 --> 00:02:57.143
+it down to two different categories of entities.
+
+68
+00:02:57.143 --> 00:03:00.446
+We're going to describe what we're calling here well-known entities,
+
+69
+00:03:00.446 --> 00:03:03.650
+and these are well-known because they exist in the structured data
+
+70
+00:03:03.650 --> 00:03:05.852
+that we've already described in the previous lesson.
+
+71
+00:03:06.186 --> 00:03:08.288
+So if that structured data, if some of
+
+72
+00:03:08.288 --> 00:03:10.390
+those entities defined there occur in the text,
+
+73
+00:03:10.690 --> 00:03:13.393
+we want those parts of the text to also be extracted.
+
+74
+00:03:13.693 --> 00:03:16.696
+In addition to that, we have what we're calling discovered entities.
+
+75
+00:03:16.996 --> 00:03:18.698
+And these are entities that may not
+
+76
+00:03:18.698 --> 00:03:20.700
+exist in the graph data that we've described,
+
+77
+00:03:21.000 --> 00:03:23.203
+but they might be appropriate to the user's goal.
+
+78
+00:03:23.403 --> 00:03:26.272
+And if they appear consistently,
+then maybe there's something useful.
+
+79
+00:03:27.106 --> 00:03:29.309
+We then give some more details about, you know,
+
+80
+00:03:29.309 --> 00:03:31.311
+what the design rules are for identifying
+
+81
+00:03:31.311 --> 00:03:34.581
+what a well-known entity is, and also what a discovered entity is.
+
+82
+00:03:34.981 --> 00:03:37.584
+And as before, usually give a couple of examples
+
+83
+00:03:37.584 --> 00:03:40.587
+to help the agent really understand what the purpose is.
+
+84
+00:03:42.255 --> 00:03:44.857
+The final part of the instructions that you want to put together
+
+85
+00:03:44.857 --> 00:03:46.859
+are the chain of thought directions
+
+86
+00:03:46.859 --> 00:03:48.561
+and here we're going to describe exactly how
+
+87
+00:03:48.561 --> 00:03:50.263
+to prepare for doing the task at hand,
+
+88
+00:03:50.263 --> 00:03:52.165
+which is identifying these entities.
+
+89
+00:03:52.565 --> 00:03:54.968
+So here's the tools that it needs to use to actually
+
+90
+00:03:54.968 --> 00:03:57.570
+find out what is expected of it,
+give it the full context.
+
+91
+00:03:58.071 --> 00:03:59.606
+And then here is the proposed series
+
+92
+00:03:59.606 --> 00:04:01.174
+of steps that it should go through.
+
+93
+00:04:01.574 --> 00:04:02.942
+It knows some files that are
+
+94
+00:04:02.942 --> 00:04:04.577
+available. It has a sampling file tool.
+
+95
+00:04:04.577 --> 00:04:05.645
+So go ahead and use that to
+
+96
+00:04:05.645 --> 00:04:06.846
+take a look at some of the files.
+
+97
+00:04:06.846 --> 00:04:10.850
+and see what it can discover and
+consider both the well-known entities
+
+98
+00:04:10.850 --> 00:04:13.453
+and then also discovering new ones
+that are frequently mentioned.
+
+99
+00:04:13.453 --> 00:04:16.356
+And then through that,
+put together an entire list of entities
+
+100
+00:04:16.356 --> 00:04:18.057
+that it thinks are appropriate.
+
+101
+00:04:18.057 --> 00:04:21.361
+And then use the get_proposed_entities tool to find that list.
+
+102
+00:04:21.361 --> 00:04:23.863
+And as before, we'll turn back to the user to say,
+
+103
+00:04:23.863 --> 00:04:25.865
+hey, does that look correct?
+
+104
+00:04:25.865 --> 00:04:27.500
+And then there'll be a separate tool
+
+105
+00:04:27.500 --> 00:04:29.335
+that is called for actually making the approval.
+
+106
+00:04:29.335 --> 00:04:31.838
+Here it's called the approve_proposed_entities tool.
+
+107
+00:04:32.338 --> 00:04:35.141
+You can then compose all those together into a single string
+
+108
+00:04:35.341 --> 00:04:37.277
+and this will become our agent
+
+109
+00:04:37.277 --> 00:04:39.545
+instructions for the named entity recognition agent.
+
+110
+00:04:40.246 --> 00:04:42.181
+With the instructions defined, you can then
+
+111
+00:04:42.181 --> 00:04:44.150
+provide the definitions of the tools themselves,
+
+112
+00:04:44.550 --> 00:04:46.519
+and these are going to be pretty straightforward.
+
+113
+00:04:46.519 --> 00:04:48.521
+There's not a lot of cleverness happening here.
+
+114
+00:04:48.821 --> 00:04:50.023
+The tools we're going to define
+
+115
+00:04:50.023 --> 00:04:51.424
+follow the same pattern that we've had.
+
+116
+00:04:51.457 --> 00:04:53.459
+in previous lessons, we're going to ask
+
+117
+00:04:53.459 --> 00:04:55.461
+the agent to first propose some things
+
+118
+00:04:55.762 --> 00:04:58.264
+and then have some other tools that will take those proposals
+
+119
+00:04:58.264 --> 00:05:00.266
+and turn them into approved versions of those.
+
+120
+00:05:00.466 --> 00:05:03.269
+So here, the things we're proposing are a list of entities
+
+121
+00:05:03.670 --> 00:05:05.672
+that are first proposed and then approved.
+
+122
+00:05:06.072 --> 00:05:08.007
+And then you can also of course
+
+123
+00:05:08.007 --> 00:05:09.976
+get those either proposals or the approvals.
+
+124
+00:05:10.610 --> 00:05:13.379
+The next tool you need is a little bit different.
+
+125
+00:05:13.379 --> 00:05:15.381
+It's going to be another getter tool.
+
+126
+00:05:15.381 --> 00:05:18.584
+So this is going to be getting the well-known types
+
+127
+00:05:18.584 --> 00:05:21.087
+from the schema that was proposed in the previous lesson
+
+128
+00:05:21.087 --> 00:05:23.089
+from the structured data.
+
+129
+00:05:23.089 --> 00:05:25.591
+So the well-known types will end up being the labels
+
+130
+00:05:25.591 --> 00:05:29.095
+that were defined for nodes in the previous proposed schema.
+
+131
+00:05:29.095 --> 00:05:32.098
+Here they're going to be used as the approved labels.
+
+132
+00:05:32.098 --> 00:05:34.400
+We're going to pull them out of the construction plan
+
+133
+00:05:34.400 --> 00:05:36.602
+and then just return that as a list.
+
+134
+00:05:38.237 --> 00:05:40.340
+You'll go ahead and import the predefined tools
+
+135
+00:05:40.340 --> 00:05:42.208
+that we've defined in previous lessons,
+
+136
+00:05:42.208 --> 00:05:44.010
+and also the additional ones here.
+
+137
+00:05:44.410 --> 00:05:46.713
+As before, you can combine them into a single list,
+
+138
+00:05:46.713 --> 00:05:48.414
+and that's what we'll use as part of the agent definition.
+
+139
+00:05:48.848 --> 00:05:50.983
+Now, to get an idea of what the agent
+
+140
+00:05:50.983 --> 00:05:53.119
+is working with, you can use that sample_file function,
+
+141
+00:05:53.119 --> 00:05:55.388
+just go ahead and call it directly on one of
+
+142
+00:05:55.388 --> 00:05:57.623
+the available files and take a look at the content.
+
+143
+00:05:59.125 --> 00:06:00.827
+So looking at this markdown file,
+
+144
+00:06:00.827 --> 00:06:02.128
+you can see that this is
+
+145
+00:06:02.128 --> 00:06:03.629
+a bunch of reviews in markdown format.
+
+146
+00:06:03.629 --> 00:06:05.631
+It's got the headings, it's got some
+
+147
+00:06:05.631 --> 00:06:07.633
+values that are embedded here like ratings.
+
+148
+00:06:07.633 --> 00:06:09.836
+You can see there's usernames, locations,
+
+149
+00:06:09.836 --> 00:06:12.338
+and of course the text of the review itself.
+
+150
+00:06:12.739 --> 00:06:16.008
+So there's only a handful of reviews in here,
+
+151
+00:06:16.342 --> 00:06:18.911
+but it's enough to kind of demonstrate how this all works.
+
+152
+00:06:21.481 --> 00:06:24.984
+Okay, you've got your instructions defined,
+you've got your tools defined.
+
+153
+00:06:25.351 --> 00:06:27.286
+Now we can construct the agent itself.
+
+154
+00:06:27.820 --> 00:06:31.190
+Now to run this agent, because it's part of a longer workflow,
+
+155
+00:06:31.257 --> 00:06:34.494
+it has some assumptions about
+what's really been accumulated in state.
+
+156
+00:06:34.560 --> 00:06:35.995
+So we've got to create an
+
+157
+00:06:35.995 --> 00:06:37.697
+initial state to try this agent out.
+
+158
+00:06:38.297 --> 00:06:40.700
+And the initial state requires a couple of things.
+
+159
+00:06:41.300 --> 00:06:44.003
+It needs to have the approved user goal,
+the approved files.
+
+160
+00:06:44.070 --> 00:06:45.338
+Here you can see the markdown files
+
+161
+00:06:45.338 --> 00:06:46.606
+it's going to take a look at.
+
+162
+00:06:47.006 --> 00:06:48.608
+And then also the construction plan.
+
+163
+00:06:48.641 --> 00:06:52.612
+And it's the construction plan that's used
+for those well-known entity types.
+
+164
+00:06:53.112 --> 00:06:55.114
+Notice we're leaving out the relationship construction
+
+165
+00:06:55.114 --> 00:06:57.417
+just because we don't need that in this step.
+
+166
+00:06:57.817 --> 00:07:00.019
+So this is just kind of simulating what you would need.
+
+167
+00:07:01.020 --> 00:07:03.122
+Now you're ready to go ahead and run the agent.
+
+168
+00:07:03.122 --> 00:07:06.426
+We're going to use that make_agent_caller
+from the helper module
+
+169
+00:07:06.726 --> 00:07:09.328
+and we're going to send in a simple request here.
+
+170
+00:07:09.529 --> 00:07:11.030
+We're going to just basically tell it, you
+
+171
+00:07:11.030 --> 00:07:12.532
+know, hey agent, can you do your job?
+
+172
+00:07:12.632 --> 00:07:14.734
+Add some product reviews to the knowledge graph
+
+173
+00:07:14.734 --> 00:07:17.804
+to take product complaints back through the manufacturing process.
+
+174
+00:07:18.004 --> 00:07:19.372
+If you run into any kind of
+
+175
+00:07:19.372 --> 00:07:20.706
+trouble here, of course, you can run
+
+176
+00:07:20.706 --> 00:07:24.010
+the alternative version of this, which is a very short sentence,
+
+177
+00:07:24.110 --> 00:07:25.645
+but it has the debug, comma True
+
+178
+00:07:25.645 --> 00:07:27.213
+here that'll show you all the output.
+
+179
+00:07:27.313 --> 00:07:29.382
+Once the agent is done kind of getting an idea
+
+180
+00:07:29.382 --> 00:07:31.717
+of what it wants to propose and it makes a proposal,
+
+181
+00:07:31.818 --> 00:07:33.653
+we'll take a look at the session state to
+
+182
+00:07:33.653 --> 00:07:35.488
+make sure that it actually has made a proposal
+
+183
+00:07:35.588 --> 00:07:37.990
+and hopefully it should not have automatically approved.
+
+184
+00:07:38.090 --> 00:07:40.393
+It should be waiting for us to say, yeah, that looks good.
+
+185
+00:07:40.960 --> 00:07:43.062
+So this will take a couple minutes to run
+
+186
+00:07:43.129 --> 00:07:44.997
+because the agent is going to go off, take
+
+187
+00:07:44.997 --> 00:07:46.866
+a look at a couple of these different files
+
+188
+00:07:46.933 --> 00:07:48.734
+and try to come up with what it
+
+189
+00:07:48.734 --> 00:07:50.770
+thinks is the best set of labels to use.
+
+190
+00:07:51.103 --> 00:07:54.006
+for the entities. Okay, pretty good job.
+
+191
+00:07:54.307 --> 00:07:57.877
+It's identified that there's products here,
+there's issues that are reported,
+
+192
+00:07:58.077 --> 00:07:59.879
+complaints about customer experience,
+
+193
+00:08:00.480 --> 00:08:02.882
+assembly instructions and maybe some customer feedback.
+
+194
+00:08:03.382 --> 00:08:04.650
+Maybe a bit of redundancy, but
+
+195
+00:08:04.650 --> 00:08:06.085
+this this looks good enough to me.
+
+196
+00:08:06.619 --> 00:08:08.421
+and this is also important.
+
+197
+00:08:08.421 --> 00:08:10.122
+Not only did it have a good response,
+
+198
+00:08:10.122 --> 00:08:12.124
+but it also updated the session state,
+
+199
+00:08:12.124 --> 00:08:14.727
+the memory correctly. So we've got proposed entities,
+
+200
+00:08:14.727 --> 00:08:16.429
+but we do not yet have approval.
+
+201
+00:08:17.163 --> 00:08:19.265
+So I've gotten a good result here.
+
+202
+00:08:19.265 --> 00:08:21.567
+If you have not, feel free to run that cell again
+
+203
+00:08:21.567 --> 00:08:24.136
+and see if you get a better set of proposed entities.
+
+204
+00:08:24.136 --> 00:08:25.838
+Again, this is all set up assuming that
+
+205
+00:08:25.838 --> 00:08:27.540
+we're going to be in an interactive environment.
+
+206
+00:08:27.840 --> 00:08:29.141
+But if it works, you can
+
+207
+00:08:29.141 --> 00:08:30.643
+go ahead and send a new message
+
+208
+00:08:30.843 --> 00:08:34.647
+to the same agent saying I approve those proposed entities.
+
+209
+00:08:35.348 --> 00:08:37.850
+Once this is done, we should find that it has actually gone
+
+210
+00:08:37.850 --> 00:08:40.653
+and transferred the proposed entities into approved entities,
+
+211
+00:08:40.853 --> 00:08:43.089
+and we should see that in
+
+212
+00:08:43.089 --> 00:08:45.691
+the session state. Perfect. There we go.
+
+213
+00:08:45.691 --> 00:08:48.561
+The approved entities matching
+what they had proposed before.
+
+214
+00:08:50.363 --> 00:08:52.164
+You can then move on to the second agent.
+
+215
+00:08:53.266 --> 00:08:55.968
+and this is going to be our Fact Type Extraction Sub-agent.
+
+216
+00:08:56.769 --> 00:08:58.271
+And as the name implies, of course,
+
+217
+00:08:58.271 --> 00:08:59.972
+and similar to what the previous agent did,
+
+218
+00:09:00.273 --> 00:09:01.440
+we're going to be looking for the
+
+219
+00:09:01.440 --> 00:09:02.575
+types of things that can be extracted.
+
+220
+00:09:02.675 --> 00:09:04.277
+We're not going to do the extraction itself.
+
+221
+00:09:04.744 --> 00:09:07.246
+So you can start with the instructions,
+
+222
+00:09:07.246 --> 00:09:09.549
+because that's the most important part
+of both of these agents.
+
+223
+00:09:09.549 --> 00:09:11.551
+And for this agent, the role and goal,
+
+224
+00:09:11.551 --> 00:09:14.754
+again, we're going to say that this agent is a top-tier algorithm.
+
+225
+00:09:14.754 --> 00:09:16.756
+It's going to be doing some text analysis.
+
+226
+00:09:16.756 --> 00:09:18.958
+But here the goal is a little bit different.
+
+227
+00:09:18.958 --> 00:09:20.593
+It's going to be looking for the
+
+228
+00:09:20.593 --> 00:09:22.261
+type of facts that could be extracted.
+
+229
+00:09:22.261 --> 00:09:24.263
+Don't actually extract those facts,
+
+230
+00:09:24.263 --> 00:09:26.265
+just find what types of facts are possible.
+
+231
+00:09:27.233 --> 00:09:28.834
+To help the agent out to
+
+232
+00:09:28.834 --> 00:09:30.703
+understand what we're really talking about here.
+
+233
+00:09:30.903 --> 00:09:32.705
+We're going to provide some hints, and the
+
+234
+00:09:32.705 --> 00:09:34.507
+important part here that we're going to say
+
+235
+00:09:34.507 --> 00:09:36.709
+and it's similar to what we had in the previous instructions
+
+236
+00:09:36.709 --> 00:09:40.112
+for the the previous agents.
+Do not propose specific individual facts,
+
+237
+00:09:40.112 --> 00:09:42.415
+but instead propose the general type of fact
+
+238
+00:09:42.415 --> 00:09:44.317
+that would be relevant for the user's goal.
+
+239
+00:09:44.517 --> 00:09:46.819
+and giving examples is always a great idea.
+
+240
+00:09:47.119 --> 00:09:49.822
+Here my example is do not propose that ABK likes coffee,
+
+241
+00:09:50.122 --> 00:09:53.826
+but the general type of fact that, you know,
+person likes beverage.
+
+242
+00:09:54.427 --> 00:09:56.529
+So these form very simple sentences
+
+243
+00:09:56.629 --> 00:09:59.432
+and we call these sentences triplets and they're of the form
+
+244
+00:09:59.632 --> 00:10:02.435
+subject, predicate, object. And you can notice
+
+245
+00:10:02.535 --> 00:10:03.970
+that here we've put it in parentheses,
+
+246
+00:10:03.970 --> 00:10:05.438
+this is a classic thing to do.
+
+247
+00:10:05.638 --> 00:10:08.140
+We'll see if the agent actually picks up on that format
+
+248
+00:10:08.240 --> 00:10:10.409
+and provides that back to us in the response.
+
+249
+00:10:10.610 --> 00:10:13.112
+We give it some additional design rules
+
+250
+00:10:13.112 --> 00:10:14.847
+for how to think about this and what to
+
+251
+00:10:14.847 --> 00:10:16.816
+look for, and then also how to use the tools.
+
+252
+00:10:17.416 --> 00:10:19.619
+A little bit different in the previous agent.
+
+253
+00:10:19.619 --> 00:10:22.321
+The previous agent had an entire list of proposed entity types.
+
+254
+00:10:22.521 --> 00:10:25.391
+Here for each individual fact,
+we're going to just add that
+
+255
+00:10:25.391 --> 00:10:27.493
+as an individual fact one at a time
+
+256
+00:10:27.493 --> 00:10:30.596
+rather than here's a collection of facts
+that we're going to propose.
+
+257
+00:10:30.930 --> 00:10:34.133
+subtle difference here. The importance really ends up being
+
+258
+00:10:34.333 --> 00:10:36.736
+like both how the agent behaves and also
+
+259
+00:10:36.836 --> 00:10:39.238
+what the cost of tokens really ends up being.
+
+260
+00:10:39.538 --> 00:10:41.040
+The more round trips you have, it's going
+
+261
+00:10:41.040 --> 00:10:42.541
+to be a bit more expensive to do,
+
+262
+00:10:42.842 --> 00:10:44.644
+but if it's going to have better
+
+263
+00:10:44.644 --> 00:10:46.445
+results, then maybe that's a good tradeoff.
+
+264
+00:10:48.314 --> 00:10:49.582
+And finally, you can go ahead
+
+265
+00:10:49.582 --> 00:10:51.117
+and add the chain of thought directions.
+
+266
+00:10:51.517 --> 00:10:53.452
+as before, we're going to follow the same
+
+267
+00:10:53.452 --> 00:10:55.388
+pattern that we always do for these directions.
+
+268
+00:10:55.988 --> 00:10:57.556
+Here's how you prepare for the task
+
+269
+00:10:57.556 --> 00:10:59.091
+and then here's our suggested step-by-step approach
+
+270
+00:10:59.191 --> 00:11:01.494
+for how to actually execute on this task.
+
+271
+00:11:01.994 --> 00:11:04.997
+use the tools in this way, sample some of the files,
+
+272
+00:11:05.398 --> 00:11:08.267
+look for subjects and objects that are related to the text,
+
+273
+00:11:08.567 --> 00:11:11.470
+and then add proposed facts about those subjects and objects.
+
+274
+00:11:11.837 --> 00:11:14.206
+So what you end up with here should
+
+275
+00:11:14.206 --> 00:11:16.575
+be a couple of small sentences,
+three-word sentences.
+
+276
+00:11:17.576 --> 00:11:20.913
+You can then compose that all together in a single string
+
+277
+00:11:21.347 --> 00:11:23.549
+and we're ready to move on to the tool definitions.
+
+278
+00:11:23.549 --> 00:11:25.785
+Now, I'm going to spend a little bit more time
+
+279
+00:11:25.785 --> 00:11:29.288
+looking at the tool definitions for the fact type extraction agent
+
+280
+00:11:29.689 --> 00:11:31.490
+and that's because it does a little
+
+281
+00:11:31.490 --> 00:11:33.292
+bit of sanity checking along the way.
+
+282
+00:11:33.292 --> 00:11:34.827
+And that's part of the intention of
+
+283
+00:11:34.827 --> 00:11:36.362
+actually separating these out into different agents.
+
+284
+00:11:36.595 --> 00:11:39.432
+In the previous agent, the named entity recognition agent,
+
+285
+00:11:39.699 --> 00:11:42.501
+We give it some guidance about how to look for entities,
+
+286
+00:11:42.501 --> 00:11:44.904
+but we didn't really constrain it too much
+about what it found.
+
+287
+00:11:45.204 --> 00:11:47.206
+Here we're going to be very particular
+
+288
+00:11:47.206 --> 00:11:49.709
+that the facts that it's actually going to propose
+
+289
+00:11:49.709 --> 00:11:51.477
+must match up with existing entity types
+
+290
+00:11:51.477 --> 00:11:53.179
+that were defined by the prior agent.
+
+291
+00:11:53.479 --> 00:11:54.847
+Splitting it up in this way gives
+
+292
+00:11:54.847 --> 00:11:56.182
+us a little bit better guarantee that
+
+293
+00:11:56.182 --> 00:11:58.317
+we're not going to have facts that actually
+
+294
+00:11:58.317 --> 00:12:00.686
+don't line up with entity types that we want.
+
+295
+00:12:01.387 --> 00:12:04.890
+So, when you look at the definition
+of add_proposed_fact here,
+
+296
+00:12:05.191 --> 00:12:08.894
+we're getting what we're even saying by argument name
+
+297
+00:12:09.095 --> 00:12:12.898
+is an existing approved subject label,
+proposed predicate label,
+
+298
+00:12:12.898 --> 00:12:14.600
+and then an approved object label.
+
+299
+00:12:14.600 --> 00:12:16.602
+So that again is the sort of the triple.
+
+300
+00:12:16.902 --> 00:12:18.904
+And these triples though, both the subject and
+
+301
+00:12:18.904 --> 00:12:20.873
+the object should already exist from the previous
+
+302
+00:12:21.207 --> 00:12:22.942
+agent. So we're going to put
+
+303
+00:12:22.942 --> 00:12:24.910
+a little bit of guardrails around that.
+
+304
+00:12:25.111 --> 00:12:26.779
+We're going to check, here's the approved entities,
+
+305
+00:12:26.779 --> 00:12:28.280
+we're going to get that from state
+
+306
+00:12:28.280 --> 00:12:30.015
+and make sure that both the approved subject
+
+307
+00:12:30.015 --> 00:12:31.617
+and the approved object label that are
+
+308
+00:12:31.617 --> 00:12:33.452
+passed in as arguments are in that list.
+
+309
+00:12:33.452 --> 00:12:35.387
+And if not, we're going to then
+
+310
+00:12:35.387 --> 00:12:37.356
+inject an error from this tool call
+
+311
+00:12:37.656 --> 00:12:39.325
+and tell it that label doesn't exist,
+
+312
+00:12:39.325 --> 00:12:40.960
+you know, that it should try again.
+
+313
+00:12:41.026 --> 00:12:42.495
+part of the reason why we're doing
+
+314
+00:12:42.495 --> 00:12:43.929
+things one piece at a time here
+
+315
+00:12:43.929 --> 00:12:46.232
+so that we can one piece at a time actually make
+
+316
+00:12:46.599 --> 00:12:48.768
+a little bit of corrections to the
+
+317
+00:12:48.768 --> 00:12:50.970
+agent's behavior. If that all looks fine,
+
+318
+00:12:51.036 --> 00:12:53.506
+then we kind of rearrange this into just a triple,
+
+319
+00:12:53.873 --> 00:12:56.008
+save that into the current predicate list
+
+320
+00:12:56.008 --> 00:12:57.643
+and create a fact list out of that.
+
+321
+00:12:58.511 --> 00:13:01.580
+The other two functions here are just following the usual pattern,
+
+322
+00:13:01.580 --> 00:13:04.283
+getting that list of proposed facts and then approving
+
+323
+00:13:04.283 --> 00:13:07.186
+the proposed facts into the approved list of facts.
+
+324
+00:13:07.887 --> 00:13:09.688
+You can go ahead and put that
+
+325
+00:13:09.922 --> 00:13:13.726
+list tools all together, ready to use by the fact agent,
+
+326
+00:13:13.726 --> 00:13:15.728
+and now we can go ahead and construct it.
+
+327
+00:13:15.928 --> 00:13:18.430
+Constructing the agent, since we've done all the hard work
+
+328
+00:13:18.430 --> 00:13:20.733
+of already defining things, is pretty straightforward.
+
+329
+00:13:20.733 --> 00:13:22.735
+And now you can go ahead and run it.
+
+330
+00:13:23.302 --> 00:13:26.305
+Now, the initial state for this agent is the same
+
+331
+00:13:26.305 --> 00:13:28.307
+as the initial state for the previous agent.
+
+332
+00:13:28.641 --> 00:13:29.975
+So we're going to take advantage of that
+
+333
+00:13:29.975 --> 00:13:31.343
+and just go ahead and make a copy
+
+334
+00:13:31.343 --> 00:13:34.146
+of the end state of the previous agent for this agent.
+
+335
+00:13:34.647 --> 00:13:37.650
+In the full multi-agent system,
+these would just be run in sequence
+
+336
+00:13:37.650 --> 00:13:40.152
+and, you know, they would have the shared state in that way.
+
+337
+00:13:40.519 --> 00:13:41.987
+so you can run them by
+
+338
+00:13:41.987 --> 00:13:43.722
+themselves. We're going to make a copy
+
+339
+00:13:43.722 --> 00:13:46.525
+and then go ahead and make a caller for the agent.
+
+340
+00:13:46.525 --> 00:13:49.328
+And the message we're going to use for actually kicking things off
+
+341
+00:13:49.328 --> 00:13:51.530
+is asking it to go ahead and make some proposals.
+
+342
+00:13:51.530 --> 00:13:53.432
+There's a lot of output here, so
+
+343
+00:13:53.432 --> 00:13:55.301
+I'm actually going to switch over to
+
+344
+00:13:55.301 --> 00:13:58.304
+doing it this way without the comma True at the end.
+
+345
+00:13:58.304 --> 00:13:59.805
+That will just let the agent do
+
+346
+00:13:59.805 --> 00:14:01.507
+its work without seeing all of the output.
+
+347
+00:14:01.507 --> 00:14:03.309
+If you run into a problem,
+
+348
+00:14:03.309 --> 00:14:05.911
+use this one with the comma True at the end instead.
+
+349
+00:14:06.145 --> 00:14:08.948
+Once the agent is done with all of its fact proposals,
+
+350
+00:14:09.315 --> 00:14:10.349
+we're going to go ahead and
+
+351
+00:14:10.349 --> 00:14:11.517
+take a look at the session state.
+
+352
+00:14:12.117 --> 00:14:14.019
+We're going to assume that it has made
+
+353
+00:14:14.019 --> 00:14:15.921
+a proposal and then complain if it hasn't.
+
+354
+00:14:16.322 --> 00:14:18.390
+And also we're going to assume that it
+
+355
+00:14:18.390 --> 00:14:20.726
+has not approved that proposal.
+Hopefully that works out.
+
+356
+00:14:21.961 --> 00:14:25.397
+Okay, let's take a look at the proposals
+that it's made here.
+
+357
+00:14:25.798 --> 00:14:28.400
+It's proposed facts like that a product has an issue,
+
+358
+00:14:28.901 --> 00:14:31.604
+and that a product has received some customer feedback,
+
+359
+00:14:31.704 --> 00:14:33.606
+product has an assembly time.
+
+360
+00:14:33.906 --> 00:14:36.775
+That's an interesting one. A lot of different ones here.
+
+361
+00:14:36.775 --> 00:14:38.544
+This looks like a pretty good
+
+362
+00:14:38.544 --> 00:14:40.579
+list. And let's check the session state.
+
+363
+00:14:41.280 --> 00:14:43.349
+Ah, so something did go wrong here.
+
+364
+00:14:43.549 --> 00:14:45.451
+It actually sent us back this proposal,
+
+365
+00:14:45.784 --> 00:14:47.887
+but it didn't save it to the session state.
+
+366
+00:14:47.887 --> 00:14:49.588
+Now, why is that?
+
+367
+00:14:50.022 --> 00:14:51.957
+Let's see if it has any
+
+368
+00:14:51.957 --> 00:14:54.226
+complaints that it says. So that's unfortunate.
+
+369
+00:14:54.526 --> 00:14:56.161
+So it's decided to actually make this
+
+370
+00:14:56.161 --> 00:14:58.030
+proposal in just plain text, but it hasn't
+
+371
+00:14:58.030 --> 00:14:59.765
+followed through with actually making the tool
+
+372
+00:14:59.765 --> 00:15:01.533
+call that we thought that it would.
+
+373
+00:15:01.533 --> 00:15:03.235
+So I'm going to go ahead and run this again.
+
+374
+00:15:03.535 --> 00:15:05.804
+And of course in the full agent system,
+
+375
+00:15:06.205 --> 00:15:07.473
+If it gets to the point
+
+376
+00:15:07.473 --> 00:15:09.008
+where it makes this kind of proposal
+
+377
+00:15:09.008 --> 00:15:11.977
+and at the end we realize
+that there are no proposed facts,
+
+378
+00:15:11.977 --> 00:15:14.580
+we would go ahead and automatically just retry.
+
+379
+00:15:14.980 --> 00:15:16.982
+So this rerun should work pretty cleanly
+
+380
+00:15:16.982 --> 00:15:18.584
+because it's going to reinitialize the state
+
+381
+00:15:18.584 --> 00:15:20.586
+and then go through the exact same steps.
+
+382
+00:15:23.355 --> 00:15:25.557
+Okay. So we've got what look like
+
+383
+00:15:25.557 --> 00:15:28.060
+pretty much the same fact types as before.
+
+384
+00:15:28.661 --> 00:15:30.262
+It aligns with the user goals,
+
+385
+00:15:30.262 --> 00:15:32.164
+asks us if we want to proceed.
+
+386
+00:15:32.564 --> 00:15:34.166
+And let's see if it is actually
+
+387
+00:15:34.533 --> 00:15:36.535
+It has correctly proposed those facts,
+
+388
+00:15:36.535 --> 00:15:39.438
+but it's awaiting the approval. Okay. Great job, agent.
+
+389
+00:15:39.538 --> 00:15:41.140
+You get an A+ this time.
+
+390
+00:15:42.741 --> 00:15:44.543
+So again, if this doesn't work out for you,
+
+391
+00:15:44.543 --> 00:15:46.412
+can just try to run it again, depending
+
+392
+00:15:46.412 --> 00:15:48.547
+on the temperament of OpenAI on any given day.
+
+393
+00:15:48.747 --> 00:15:50.549
+If it'll work first time or second time.
+
+394
+00:15:50.749 --> 00:15:52.751
+It's usually not three times required.
+
+395
+00:15:52.985 --> 00:15:54.386
+I'm going to go ahead and
+
+396
+00:15:54.386 --> 00:15:55.988
+to send another message approving the proposal
+
+397
+00:15:55.988 --> 00:15:59.491
+and that should just be copied
+over to the approved fact types.
+
+398
+00:16:01.493 --> 00:16:03.162
+Looking at the session state, we see
+
+399
+00:16:03.162 --> 00:16:04.797
+the approved fact types at the end.
+
+400
+00:16:05.397 --> 00:16:07.967
+That's perfect. This has been a pretty good run.

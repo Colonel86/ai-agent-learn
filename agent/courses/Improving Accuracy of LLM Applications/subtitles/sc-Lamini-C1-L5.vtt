@@ -1,0 +1,2869 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:01.468
+In this lesson, you'll go through
+
+2
+00:00:01.468 --> 00:00:05.572
+one of the most important steps
+generating data and fine-tuning.
+
+3
+00:00:05.839 --> 00:00:08.842
+Without much ado, let's get building.
+
+4
+00:00:09.275 --> 00:00:13.313
+So the first thing is,
+you usually have more data than you think.
+
+5
+00:00:13.313 --> 00:00:17.050
+And it's actually important to first
+take stock of the data you do have.
+
+6
+00:00:17.083 --> 00:00:20.787
+Figure out
+if you have all the facts that are needed
+
+7
+00:00:20.787 --> 00:00:24.090
+to teach the model
+about this new task of yours.
+
+8
+00:00:24.090 --> 00:00:27.794
+Whether if you gave that data to a person,
+if they had, infinite
+
+9
+00:00:27.827 --> 00:00:29.062
+time to go through all of it,
+
+10
+00:00:29.062 --> 00:00:31.264
+could they actually figure out
+what the right answer is?
+
+11
+00:00:31.264 --> 00:00:33.967
+And you usually do have enough data.
+
+12
+00:00:33.967 --> 00:00:37.137
+The problem with the data, though, is
+usually it's not in the right format.
+
+13
+00:00:37.237 --> 00:00:39.339
+And historically, to put it in the right
+
+14
+00:00:39.339 --> 00:00:42.909
+format was a very laborious
+manual process.
+
+15
+00:00:43.143 --> 00:00:46.913
+But today, you actually don't
+have to do much manual data
+
+16
+00:00:46.913 --> 00:00:48.681
+labeling or clean up to reformat it.
+
+17
+00:00:48.681 --> 00:00:52.118
+You have LLMs.
+They are here to the rescue
+
+18
+00:00:52.285 --> 00:00:55.555
+as long as you're able to specify
+what the right format does look like.
+
+19
+00:00:55.855 --> 00:00:58.391
+So this diagram down here,
+you have tons of data,
+
+20
+00:00:58.391 --> 00:01:00.226
+maybe only a little bit of clean data.
+
+21
+00:01:00.226 --> 00:01:05.226
+But you can actually do a batch job with,
+with an LLM or a pipeline of columns here
+
+22
+00:01:05.532 --> 00:01:10.103
+to generate data to get that all to be
+clean and ready to be put into the model.
+
+23
+00:01:10.937 --> 00:01:14.107
+Identifying
+the right format is kind of important.
+
+24
+00:01:14.107 --> 00:01:16.676
+So let's go over a few different examples.
+
+25
+00:01:16.676 --> 00:01:18.778
+It is highly application-specific.
+
+26
+00:01:18.778 --> 00:01:23.778
+So for a SQL application for example,
+you might expect a prompt
+
+27
+00:01:23.950 --> 00:01:26.986
+like given the schema in question,
+write SQL query to answer
+
+28
+00:01:27.220 --> 00:01:29.722
+who is the highest paid player in the NBA?
+
+29
+00:01:29.722 --> 00:01:33.026
+And the expected
+response is a SQL statement.
+
+30
+00:01:33.026 --> 00:01:36.029
+So this is what we've been exploring
+in this course.
+
+31
+00:01:36.429 --> 00:01:40.433
+But an alternative is just asking
+who is the highest paid NBA player
+
+32
+00:01:40.433 --> 00:01:44.437
+and expecting the model
+or the agent or pipeline of models,
+
+33
+00:01:44.537 --> 00:01:46.773
+to be able to respond in natural language
+
+34
+00:01:46.773 --> 00:01:49.642
+with, you know, for example,
+the response of that SQL query.
+
+35
+00:01:49.642 --> 00:01:53.146
+So that would be a different expected
+response for a similar task.
+
+36
+00:01:53.446 --> 00:01:58.351
+Another one for a different task
+is this is a medical-related application.
+
+37
+00:01:58.351 --> 00:02:01.488
+So you might, give symptoms of something
+
+38
+00:02:01.488 --> 00:02:04.591
+and have to produce the ICD code for it.
+
+39
+00:02:04.757 --> 00:02:08.061
+So that's another example of expected
+prompt and expected response.
+
+40
+00:02:08.261 --> 00:02:11.331
+This can be very, very application
+specific and highly varied.
+
+41
+00:02:11.331 --> 00:02:12.866
+But being able to understand
+
+42
+00:02:12.866 --> 00:02:16.035
+what kind of prompts
+you expect the model to be taking in
+
+43
+00:02:16.336 --> 00:02:19.906
+and what kind of responses
+you expect it to output
+
+44
+00:02:19.906 --> 00:02:22.909
+is very important
+in building out your applications.
+
+45
+00:02:23.143 --> 00:02:27.180
+Okay, so specifically for SQL, here
+and we'll also talk broadly,
+
+46
+00:02:27.280 --> 00:02:28.748
+when data seems kind of sparse.
+
+47
+00:02:28.748 --> 00:02:30.083
+Again take stock of what you have
+
+48
+00:02:30.083 --> 00:02:34.387
+and then get kind of creative, and work
+backwards, to generate, generate data.
+
+49
+00:02:34.621 --> 00:02:39.192
+So in text-to-SQL, you actually only need
+these schema to make this happen.
+
+50
+00:02:39.192 --> 00:02:42.328
+And I think this is really surprising
+to people when they do hear about this.
+
+51
+00:02:42.328 --> 00:02:43.329
+And here's why.
+
+52
+00:02:43.329 --> 00:02:47.467
+So the LLM already knows how
+to write SQL generally.
+
+53
+00:02:47.467 --> 00:02:47.734
+Right.
+
+54
+00:02:47.734 --> 00:02:50.837
+So it might not know about your schema,
+the complexities
+
+55
+00:02:50.837 --> 00:02:51.971
+of your schema in particular.
+
+56
+00:02:51.971 --> 00:02:54.073
+But it knows how to write general SQL.
+
+57
+00:02:54.073 --> 00:02:56.910
+And it can operate on a very basic schema.
+
+58
+00:02:56.910 --> 00:02:58.978
+So basic pieces of that schema.
+
+59
+00:02:58.978 --> 00:03:03.650
+And next is the schema actually contains
+all the facts you need the LLM to know.
+
+60
+00:03:03.683 --> 00:03:04.050
+Right.
+
+61
+00:03:04.050 --> 00:03:06.219
+Like this
+screenshot down here of that schema
+
+62
+00:03:06.219 --> 00:03:10.323
+that you put into the prompt actually
+has all the facts you need it to know.
+
+63
+00:03:10.323 --> 00:03:12.425
+Just like
+if you were to hand this to a person,
+
+64
+00:03:12.425 --> 00:03:16.062
+like a data analyst, to be able to operate
+on. You're not expecting the
+
+65
+00:03:16.362 --> 00:03:19.332
+LLM to learn facts from thin air or
+just happen to know facts from thin air.
+
+66
+00:03:19.365 --> 00:03:22.135
+That would be a much,
+much more daunting task.
+
+67
+00:03:22.135 --> 00:03:25.171
+But you actually do know
+where all the facts are about your schema,
+
+68
+00:03:25.171 --> 00:03:27.373
+and about your database scenario scheme.
+
+69
+00:03:27.373 --> 00:03:29.475
+Okay.
+So what does working backwards look like?
+
+70
+00:03:29.475 --> 00:03:32.645
+So you can go from the schema
+to generating new queries.
+
+71
+00:03:32.645 --> 00:03:34.814
+And in this workflow,
+in this prompt template,
+
+72
+00:03:34.814 --> 00:03:38.518
+you'll see, you know, first telling the LLM
+you're an analyst, again
+
+73
+00:03:38.518 --> 00:03:41.621
+putting in the schema information,
+giving an example.
+
+74
+00:03:41.654 --> 00:03:46.059
+So giving an example of what a question
+looks like and an example query looks like
+
+75
+00:03:46.392 --> 00:03:50.196
+and then asking it,
+how about you write a query that's similar
+
+76
+00:03:50.463 --> 00:03:52.198
+but different to those above.
+
+77
+00:03:52.198 --> 00:03:55.034
+And format the response
+in this Json object.
+
+78
+00:03:55.034 --> 00:03:56.169
+So write me some queries.
+
+79
+00:03:59.372 --> 00:04:02.108
+Okay, so now that you generated
+your SQL queries,
+
+80
+00:04:02.108 --> 00:04:05.578
+you can actually take those
+to generate user questions in turn.
+
+81
+00:04:05.912 --> 00:04:08.648
+So let's take a look
+at what the prompt for that looks like.
+
+82
+00:04:08.648 --> 00:04:11.517
+You can again
+tell the LLM you're an NBA analyst.
+
+83
+00:04:11.517 --> 00:04:13.353
+You give it the schema.
+
+84
+00:04:13.353 --> 00:04:15.321
+You're probably an expert at this already.
+
+85
+00:04:15.321 --> 00:04:18.024
+You give it
+an example of a question and a query,
+
+86
+00:04:18.024 --> 00:04:22.729
+and then you put your generated, query,
+SQL query in and then ask for a question
+
+87
+00:04:22.729 --> 00:04:26.766
+that this query could be used to answer,
+and it would output a question like,
+
+88
+00:04:26.766 --> 00:04:30.336
+how many players on the Chicago
+Bulls are 25 or younger?
+
+89
+00:04:31.437 --> 00:04:31.738
+All right.
+
+90
+00:04:31.738 --> 00:04:35.675
+So what are some practical tips
+that you can follow?
+
+91
+00:04:35.875 --> 00:04:37.377
+One is an example
+
+92
+00:04:37.377 --> 00:04:38.878
+you just saw adding, you know,
+
+93
+00:04:38.878 --> 00:04:42.682
+query user
+question examples can be really helpful.
+
+94
+00:04:42.682 --> 00:04:45.752
+This is essentially called few-shot
+or in-context learning.
+
+95
+00:04:45.752 --> 00:04:49.722
+So adding those examples is helpful
+for the LLM to understand
+
+96
+00:04:49.722 --> 00:04:51.357
+what right looks like.
+
+97
+00:04:51.357 --> 00:04:56.357
+And one pro tip here is actually including
+corrected hallucinatory examples.
+
+98
+00:04:56.529 --> 00:04:58.064
+So hallucinations
+
+99
+00:04:58.064 --> 00:05:02.001
+that you had previously seen
+but then correcting them helps the LLM
+
+100
+00:05:02.001 --> 00:05:06.072
+actually understand what it needs to learn
+and to create examples that are similar
+
+101
+00:05:06.239 --> 00:05:10.877
+to what's been hallucinated on. Generating
+variations is incredibly important.
+
+102
+00:05:10.877 --> 00:05:12.211
+You want to be able to reach
+
+103
+00:05:12.211 --> 00:05:15.448
+as much breath as possible
+without needing to write those yourself.
+
+104
+00:05:15.448 --> 00:05:20.086
+So getting the LLM to assume
+different persona, for example,
+
+105
+00:05:20.086 --> 00:05:23.890
+not just NBA analyst
+to be able to generate different questions
+
+106
+00:05:23.890 --> 00:05:26.125
+and different
+queries, can be really helpful as well.
+
+107
+00:05:26.125 --> 00:05:27.927
+And it depends on who your end user
+is, right?
+
+108
+00:05:27.927 --> 00:05:31.331
+Maybe it's not just NBA analyst,
+maybe it's, you know, some people are
+
+109
+00:05:31.331 --> 00:05:36.331
+more senior and want an executive
+kind of understanding of what's going on
+
+110
+00:05:36.636 --> 00:05:37.537
+in this database.
+
+111
+00:05:37.537 --> 00:05:40.707
+So, this is how you can also generate
+additional variations.
+
+112
+00:05:40.707 --> 00:05:42.675
+Next is around filtering generation.
+
+113
+00:05:42.675 --> 00:05:45.745
+So as you generate more and more data,
+
+114
+00:05:45.812 --> 00:05:49.148
+inevitably these models the whole point
+as you're trying to improve them.
+
+115
+00:05:49.248 --> 00:05:52.752
+So inevitably you're going to get
+some things that are, incorrect.
+
+116
+00:05:52.752 --> 00:05:57.752
+And so, being able to filter and rely
+on your filters, automatic filters, just
+
+117
+00:05:59.392 --> 00:06:01.027
+scalably downsample your generated
+
+118
+00:06:01.027 --> 00:06:05.598
+examples into a higher quality
+data set is incredibly important.
+
+119
+00:06:05.598 --> 00:06:08.201
+and what's special here
+is that you can actually use very similar
+
+120
+00:06:08.201 --> 00:06:10.770
+methods that you had implemented
+during evaluation,
+
+121
+00:06:10.770 --> 00:06:15.208
+both those that are LLM based and also
+those that are more deterministic.
+
+122
+00:06:15.341 --> 00:06:17.477
+So you can check
+if something's valid SQL or not.
+
+123
+00:06:17.477 --> 00:06:18.478
+For example.
+
+124
+00:06:18.478 --> 00:06:22.515
+And finally, it's worth really digging
+through what worked and what didn't,
+
+125
+00:06:22.515 --> 00:06:26.652
+and kind of using your head to classify
+what's working, what what isn't
+
+126
+00:06:26.652 --> 00:06:30.123
+and what are patterns of what's working,
+what are patterns of what isn't.
+
+127
+00:06:30.390 --> 00:06:33.526
+This is called error analysis
+in AI and machine learning
+
+128
+00:06:33.526 --> 00:06:37.196
+and it's an important skill to help you,
+figure out what to generate next,
+
+129
+00:06:37.196 --> 00:06:38.331
+what to filter next.
+
+130
+00:06:38.331 --> 00:06:42.335
+And usually, you know, in this specific
+case, the more complex queries are harder.
+
+131
+00:06:42.335 --> 00:06:43.770
+So that's a good observation.
+
+132
+00:06:43.770 --> 00:06:45.438
+And this helps you adjust the prompts
+
+133
+00:06:45.438 --> 00:06:48.941
+and actually go more specific in
+trying to generate those, those queries.
+
+134
+00:06:49.776 --> 00:06:53.446
+So now that you have all the data,
+what does the fine-tuning process
+
+135
+00:06:53.446 --> 00:06:54.480
+actually look like.
+
+136
+00:06:54.480 --> 00:06:55.948
+Here are some minimum requirements.
+
+137
+00:06:55.948 --> 00:06:59.452
+Actually you you only need one data point
+to do memory tuning.
+
+138
+00:06:59.452 --> 00:07:02.155
+You also only need one data point
+to technically instruction fine-tune.
+
+139
+00:07:02.155 --> 00:07:06.259
+It will just, not make the model, capable
+of continuing to generalize very well
+
+140
+00:07:06.259 --> 00:07:07.026
+after that.
+
+141
+00:07:07.026 --> 00:07:07.927
+So instruction, fine-tuning
+
+142
+00:07:07.927 --> 00:07:10.930
+usually I do suggest around
+a thousand data points.
+
+143
+00:07:11.130 --> 00:07:14.734
+Fine-tuning really needs, you know,
+these pairs of prompts and responses
+
+144
+00:07:14.734 --> 00:07:16.002
+so essentially that format
+
+145
+00:07:16.002 --> 00:07:19.872
+you were specifying before, memory
+tuning in particular, needs these prompts
+
+146
+00:07:19.872 --> 00:07:23.910
+and responses to include the facts
+that you want the LLM to actually learn,
+
+147
+00:07:23.976 --> 00:07:25.678
+especially in the responses.
+
+148
+00:07:25.678 --> 00:07:28.281
+And then what does fine-tuning,
+like ease of use look like?
+
+149
+00:07:28.281 --> 00:07:31.517
+Well, you could use a library
+like Lamini, which manages, fine
+
+150
+00:07:31.517 --> 00:07:32.185
+tuning for you.
+
+151
+00:07:32.185 --> 00:07:34.787
+So it's just a one-line
+API or Python call.
+
+152
+00:07:34.787 --> 00:07:36.189
+And you can also roll your own,
+
+153
+00:07:36.189 --> 00:07:39.192
+and hyperparameter tuning,
+calling the model forwards and backwards.
+
+154
+00:07:39.392 --> 00:07:43.863
+And here's an example of running fine
+tuning so you can instantiate the model.
+
+155
+00:07:43.863 --> 00:07:47.667
+You get the dataset, and then you'd call
+LLM dot train on that dataset.
+
+156
+00:07:47.667 --> 00:07:49.669
+And your arguments.
+
+157
+00:07:49.669 --> 00:07:50.036
+Okay.
+
+158
+00:07:50.036 --> 00:07:52.672
+So fine-tuning doesn't come
+totally for free.
+
+159
+00:07:52.672 --> 00:07:56.843
+So understanding, you know,
+what are the time and compute requirements
+
+160
+00:07:56.843 --> 00:07:59.979
+you need to do fine
+tuning, instruction fine-tuning,
+
+161
+00:07:59.979 --> 00:08:03.516
+specifically with LoRA,
+gets you to an accuracy of about 50%.
+
+162
+00:08:03.850 --> 00:08:06.519
+But it is really fast,
+or it only takes a couple minutes.
+
+163
+00:08:06.519 --> 00:08:07.386
+2.5 minutes.
+
+164
+00:08:07.386 --> 00:08:10.790
+and it takes 19.2 petaflops of compute.
+
+165
+00:08:11.023 --> 00:08:12.592
+And this is all benchmarking
+
+166
+00:08:12.592 --> 00:08:17.592
+on one Nvidia A100 with,
+with high performance of about 40% MFU
+
+167
+00:08:17.964 --> 00:08:22.268
+or the equivalent
+AMD GPU is in mid to 50. For memory tuning,
+
+168
+00:08:22.268 --> 00:08:27.268
+it's actually quite more intensive
+when you use the unoptimized version.
+
+169
+00:08:27.406 --> 00:08:32.406
+and this is still, actually using LoRA,
+but just unoptimized and the accuracy
+
+170
+00:08:32.845 --> 00:08:36.449
+on a thousand facts can go up much higher
+because a whole point
+
+171
+00:08:36.449 --> 00:08:38.150
+is to reduce hallucination.
+
+172
+00:08:38.150 --> 00:08:42.388
+But the reason why it takes so much longer
+and so much more compute
+
+173
+00:08:42.388 --> 00:08:45.691
+you can see 1.9 to exa
+flops are in that second row
+
+174
+00:08:45.691 --> 00:08:49.996
+and four hours is because you're bringing
+the loss to zero on the specific facts.
+
+175
+00:08:50.162 --> 00:08:52.331
+With Lamini memory tuning,
+we've implemented,
+
+176
+00:08:52.331 --> 00:08:55.434
+you know, those different, optimizations
+that you saw previously.
+
+177
+00:08:55.535 --> 00:08:59.105
+And the time needed
+is only a minute and 24 petaflops.
+
+178
+00:09:00.306 --> 00:09:00.673
+Okay.
+
+179
+00:09:00.673 --> 00:09:01.674
+What should you expect?
+
+180
+00:09:01.674 --> 00:09:03.876
+So that all feels fine and good,
+
+181
+00:09:03.876 --> 00:09:06.579
+hugs and rainbows.
+but it's not just. Boom.
+
+182
+00:09:06.579 --> 00:09:09.415
+One time you fine tune it
+and your life is good.
+
+183
+00:09:09.415 --> 00:09:12.051
+It realistically takes many iterations.
+
+184
+00:09:12.051 --> 00:09:14.153
+And that's why iteration, it's art.
+
+185
+00:09:14.153 --> 00:09:16.289
+Like, that concept is so, so important.
+
+186
+00:09:16.289 --> 00:09:18.758
+So it can take,
+you know, 10 to 30 iterations
+
+187
+00:09:18.758 --> 00:09:22.662
+I think is about 20 for what you're about
+to do over different data pipelines
+
+188
+00:09:22.662 --> 00:09:27.333
+to get to that 90, 95% accuracy.
+Fine-tuning in parallel,
+
+189
+00:09:27.333 --> 00:09:30.002
+so fine-tuning
+multiple variants in parallel can speed up
+
+190
+00:09:30.002 --> 00:09:31.037
+your experimentation.
+
+191
+00:09:31.037 --> 00:09:35.107
+You can actually do iterations in parallel
+in a way they don't have to necessarily
+
+192
+00:09:35.107 --> 00:09:35.808
+be sequential.
+
+193
+00:09:35.808 --> 00:09:39.478
+If you're experimenting with, hey,
+if I change my data pipeline in this way,
+
+194
+00:09:39.679 --> 00:09:43.282
+will it influence the model
+to improve in this way versus that way?
+
+195
+00:09:43.282 --> 00:09:44.984
+And those are orthogonal paths.
+
+196
+00:09:44.984 --> 00:09:48.054
+You can actually experiment
+with, during fine-tuning.
+
+197
+00:09:48.187 --> 00:09:50.890
+And the exciting part is
+you can start talking about nines.
+
+198
+00:09:50.890 --> 00:09:55.890
+So you can, actually start
+eking out accuracy from 95 to to 99.9
+
+199
+00:09:56.362 --> 00:10:00.032
+and this makes it very exciting
+because there are many applications,
+
+200
+00:10:00.032 --> 00:10:03.869
+new applications that get unlocked,
+with that new frontier of accuracy.
+
+201
+00:10:04.003 --> 00:10:08.641
+Note that with every nine that you do
+add on, it is far more effort
+
+202
+00:10:08.641 --> 00:10:09.609
+than the previous one.
+
+203
+00:10:09.609 --> 00:10:12.378
+So it is it is a
+it is a game of effort here
+
+204
+00:10:12.378 --> 00:10:13.846
+to get to that level of accuracy.
+
+205
+00:10:13.846 --> 00:10:17.683
+But that usually goes hand in hand
+with how critical it is to be accurate
+
+206
+00:10:17.683 --> 00:10:19.285
+for that use case.
+
+207
+00:10:19.285 --> 00:10:22.722
+Now, how can you become a wizard at this?
+
+208
+00:10:23.022 --> 00:10:27.059
+Well, if you have the facts
+somewhere, you have enough data.
+
+209
+00:10:27.326 --> 00:10:31.197
+You should be able to find a way
+to use a LLMs to take care of the rest.
+
+210
+00:10:31.297 --> 00:10:35.201
+and it does take some creativity
+sometimes to think of, oh, how can I use
+
+211
+00:10:35.201 --> 00:10:38.237
+an LLM in these ways
+to, you know, pipe them together
+
+212
+00:10:38.237 --> 00:10:41.340
+to get the data that I do want,
+from the data I already have.
+
+213
+00:10:41.340 --> 00:10:44.477
+and from that, your data pipelines
+can get pretty intricate.
+
+214
+00:10:44.477 --> 00:10:47.146
+And you need you can be calling
+the model many, many times.
+
+215
+00:10:47.146 --> 00:10:51.017
+But because it's a one-time batch process
+to transform your data, it can,
+
+216
+00:10:51.017 --> 00:10:52.184
+actually be worth it.
+
+217
+00:10:52.184 --> 00:10:54.020
+What might make you feel like
+it's more worth
+
+218
+00:10:54.020 --> 00:10:57.490
+it is if you're running a startup or,
+an enterprise.
+
+219
+00:10:57.490 --> 00:10:58.691
+this is your AI moat.
+
+220
+00:10:58.691 --> 00:11:01.327
+This can Help you actually build up
+something quite unique.
+
+221
+00:11:01.327 --> 00:11:05.765
+And another skill to be a wizard
+is just spotting these LLM mistakes.
+
+222
+00:11:05.765 --> 00:11:07.133
+Doing that error analysis
+
+223
+00:11:07.133 --> 00:11:10.836
+and hallucinations to teach your LLM
+what correct actually looks like.
+
+224
+00:11:10.936 --> 00:11:13.239
+If you don't know what
+that frontier looks like,
+
+225
+00:11:13.239 --> 00:11:16.475
+it's very hard to tell the LLM
+what the right objective is.
+
+226
+00:11:16.509 --> 00:11:19.412
+Again,
+the LLM is super, super good at optimizing,
+
+227
+00:11:19.412 --> 00:11:21.113
+But it doesn't know what to optimize for.
+
+228
+00:11:21.113 --> 00:11:24.984
+And if you can tell it what to optimize
+for, that is within reach for it,
+
+229
+00:11:25.184 --> 00:11:26.318
+then I can go there.
+
+230
+00:11:26.318 --> 00:11:30.956
+One you know, tip that's not necessarily
+put here is for certain applications.
+
+231
+00:11:31.023 --> 00:11:34.126
+You are sitting next to, the person who is
+
+232
+00:11:34.126 --> 00:11:37.630
+evaluating the model who can tell you
+what is a mistake or not.
+
+233
+00:11:37.630 --> 00:11:39.131
+And sometimes you're not. Right.
+
+234
+00:11:39.131 --> 00:11:41.634
+So, the easiest applications
+and as a result,
+
+235
+00:11:41.634 --> 00:11:43.602
+you know,
+the applications that are built out
+
+236
+00:11:43.602 --> 00:11:47.673
+the fastest are actually those where,
+the people who are who can understand
+
+237
+00:11:47.673 --> 00:11:48.307
+when the LLM's
+
+238
+00:11:48.307 --> 00:11:51.544
+making a mistake for an application
+is sitting very close to the person
+
+239
+00:11:51.544 --> 00:11:52.411
+developing it.
+
+240
+00:11:52.411 --> 00:11:55.247
+and as a result,
+I think I see a lot more like code
+
+241
+00:11:55.247 --> 00:11:57.850
+related things
+because the developer is the evaluator
+
+242
+00:11:57.850 --> 00:12:00.820
+and so it's important
+to think about how you organize your team
+
+243
+00:12:00.820 --> 00:12:05.820
+so that you can very efficiently be able
+to develop these applications.
+
+244
+00:12:06.592 --> 00:12:09.228
+Okay. So first things first.
+
+245
+00:12:09.228 --> 00:12:14.228
+Gotta load those environment variables
+so that we can use GPUs. And now
+
+246
+00:12:16.202 --> 00:12:21.202
+importing Lamini here,
+I'm also going to import more arguments
+
+247
+00:12:21.507 --> 00:12:26.045
+so that these are standards
+so that we can run LLama 3.
+
+248
+00:12:28.080 --> 00:12:29.782
+Next up, we want to generate
+
+249
+00:12:29.782 --> 00:12:33.753
+close variations to your reference data,
+but not exactly those, of course.
+
+250
+00:12:34.086 --> 00:12:38.491
+So first let's actually create a system
+prompt for one of these examples.
+
+251
+00:12:38.491 --> 00:12:39.825
+So let's just go through one example.
+
+252
+00:12:39.825 --> 00:12:42.661
+And then we can systematize this over
+all our all our data.
+
+253
+00:12:42.661 --> 00:12:47.199
+So system prompt or an NBA analysis
+actually see what this is.
+
+254
+00:12:47.867 --> 00:12:49.301
+this is adding that schema in.
+
+255
+00:12:49.301 --> 00:12:54.039
+And then consider
+the following questions and queries.
+
+256
+00:12:54.106 --> 00:12:57.243
+This is just the schema.
+Let's add an example.
+
+257
+00:12:57.243 --> 00:13:01.981
+So let's add an example question
+and query right.
+
+258
+00:13:01.981 --> 00:13:06.886
+So we're adding an example here question
+and SQL into that system prompt.
+
+259
+00:13:07.586 --> 00:13:12.558
+And then let's ask right two queries that
+are similar but different from this. Okay.
+
+260
+00:13:12.558 --> 00:13:15.427
+So all right let's
+see what the full system prompt is.
+
+261
+00:13:15.427 --> 00:13:20.099
+So your NBA analyst for one here
+it has this example okay.
+
+262
+00:13:20.699 --> 00:13:25.699
+And then let's ask it to write
+similar queries okay.
+
+263
+00:13:26.605 --> 00:13:29.608
+So that's in the user prompt.
+
+264
+00:13:29.975 --> 00:13:32.311
+Just gonna look at that real quick.
+
+265
+00:13:32.311 --> 00:13:36.348
+So right to queries are similar
+but different from those above
+
+266
+00:13:36.348 --> 00:13:37.883
+format of the queries as this.
+
+267
+00:13:37.883 --> 00:13:38.417
+Okay. Great.
+
+268
+00:13:38.417 --> 00:13:40.920
+So that's you're trying to get variations.
+
+269
+00:13:40.920 --> 00:13:43.789
+You know, here we're doing
+the programmatic chain of thought thing.
+
+270
+00:13:43.789 --> 00:13:48.427
+I'm going to just say first
+write an explanation of why you did it
+
+271
+00:13:48.427 --> 00:13:49.628
+and then
+
+272
+00:13:50.830 --> 00:13:53.599
+just print that out so you can see it.
+
+273
+00:13:53.599 --> 00:13:54.033
+Yeah.
+
+274
+00:13:54.033 --> 00:13:57.903
+And make sure each query is complete
+and ends with a semicolon.
+
+275
+00:13:57.903 --> 00:14:00.105
+This helps.
+This is a prompt engineering thing.
+
+276
+00:14:00.105 --> 00:14:03.108
+If you didn't add that before, add it
+in to help the model
+
+277
+00:14:03.409 --> 00:14:06.378
+produce valid SQL queries.
+
+278
+00:14:06.679 --> 00:14:08.380
+And then let's make our prompts
+
+279
+00:14:08.380 --> 00:14:11.383
+and run our model.
+
+280
+00:14:14.320 --> 00:14:15.221
+Okay, great.
+
+281
+00:14:15.221 --> 00:14:18.357
+So here's an explanation
+of what's going on there.
+
+282
+00:14:18.357 --> 00:14:21.827
+And then here's a couple queries,
+related to it.
+
+283
+00:14:22.428 --> 00:14:22.928
+Great.
+
+284
+00:14:22.928 --> 00:14:25.731
+Next, let's actually check
+if that query is valid.
+
+285
+00:14:25.731 --> 00:14:28.534
+I think we've run that before.
+
+286
+00:14:28.534 --> 00:14:31.537
+So here is and check query valid function.
+
+287
+00:14:31.537 --> 00:14:33.839
+And let's check
+if both of those generated queries are valid or not.
+
+288
+00:14:33.839 --> 00:14:36.976
+The first one is let's see
+if the second one is.
+
+289
+00:14:38.110 --> 00:14:38.377
+Great.
+
+290
+00:14:38.377 --> 00:14:40.779
+They both are.
+
+291
+00:14:40.779 --> 00:14:42.748
+This will be an important filter.
+
+292
+00:14:42.748 --> 00:14:44.383
+So you can imagine.
+
+293
+00:14:44.383 --> 00:14:47.987
+Next, let's actually just wrap this
+all in a class,
+
+294
+00:14:48.621 --> 00:14:51.056
+called Model Stage.
+
+295
+00:14:51.056 --> 00:14:52.524
+You know, this looks like a lot,
+but you already
+
+296
+00:14:52.524 --> 00:14:54.059
+went through the hardest parts of it.
+
+297
+00:14:54.059 --> 00:14:56.228
+So, class is model stage.
+
+298
+00:14:56.228 --> 00:14:59.798
+This is again just formatting that prompt
+to be explanation
+
+299
+00:14:59.798 --> 00:15:04.703
+to the two SQL queries. Here is checking
+if these queries are valid.
+
+300
+00:15:05.738 --> 00:15:07.706
+Here's
+our prompt that we went through together.
+
+301
+00:15:07.706 --> 00:15:10.709
+And that's just calling, the check
+SQL query function.
+
+302
+00:15:11.443 --> 00:15:11.744
+All right.
+
+303
+00:15:11.744 --> 00:15:14.380
+So you have some generated SQL queries.
+
+304
+00:15:14.380 --> 00:15:17.383
+How about we do the same, and generate
+
+305
+00:15:17.549 --> 00:15:21.220
+user questions
+from those generated SQL queries?
+
+306
+00:15:21.553 --> 00:15:23.188
+I'm just like you learned about before.
+
+307
+00:15:23.188 --> 00:15:27.092
+So first, on the system prompt side
+very similar to before
+
+308
+00:15:27.126 --> 00:15:28.394
+kind of you're an NBA analyst.
+
+309
+00:15:28.394 --> 00:15:31.030
+There's a schema. There's an example, okay.
+
+310
+00:15:31.030 --> 00:15:34.967
+And then let's grab
+one of those generated queries, okay.
+
+311
+00:15:34.967 --> 00:15:37.169
+Let's generate a query from above.
+
+312
+00:15:37.169 --> 00:15:40.372
+and let's wrap it into that user.
+
+313
+00:15:41.440 --> 00:15:43.208
+User part of the prompt.
+
+314
+00:15:43.208 --> 00:15:44.610
+So now consider the following query.
+
+315
+00:15:44.610 --> 00:15:47.680
+And you put in your generated SQL query
+and then now write a question
+
+316
+00:15:47.680 --> 00:15:49.715
+that this query could be used to answer.
+
+317
+00:15:49.715 --> 00:15:53.452
+And I'm going to just ask for that
+programmatic chain of thought again.
+
+318
+00:15:53.452 --> 00:15:56.622
+So as for explanation,
+then question to get a better response.
+
+319
+00:15:56.789 --> 00:15:59.792
+Again, that's like more
+of a prompt engineering thing to ask for.
+
+320
+00:16:00.225 --> 00:16:02.928
+And then now let's turn the results.
+
+321
+00:16:04.163 --> 00:16:06.865
+Boom. Okay. cool.
+
+322
+00:16:06.865 --> 00:16:07.499
+Great.
+
+323
+00:16:07.499 --> 00:16:10.469
+Now let's wrap
+this all together in a class
+
+324
+00:16:10.836 --> 00:16:13.839
+called Question Stage.
+
+325
+00:16:13.839 --> 00:16:15.808
+And again
+I know these sometimes look intimidating,
+
+326
+00:16:15.808 --> 00:16:17.943
+but you actually went through all of this.
+
+327
+00:16:17.943 --> 00:16:19.712
+And the meat of it is over here.
+
+328
+00:16:19.712 --> 00:16:22.548
+And we'll be using again
+these classes later on
+
+329
+00:16:22.548 --> 00:16:25.718
+so that we can systematically
+go through the entire dataset.
+
+330
+00:16:26.352 --> 00:16:30.923
+So that's exactly now we want to create
+this query generation pipeline.
+
+331
+00:16:31.023 --> 00:16:33.359
+This is the code for it
+to go through the model stage.
+
+332
+00:16:33.359 --> 00:16:35.794
+Then the question stage, okay.
+
+333
+00:16:35.794 --> 00:16:36.862
+So that's a pipeline.
+
+334
+00:16:36.862 --> 00:16:37.830
+I'm going to have an
+
+335
+00:16:37.830 --> 00:16:42.334
+asynchronous way of running that over
+all of your essentially gold queries,
+
+336
+00:16:42.334 --> 00:16:47.272
+so that those can be examples, to model
+after as you generate, similar questions.
+
+337
+00:16:47.740 --> 00:16:50.776
+Next, I'm going to go through
+how to gain some variation
+
+338
+00:16:50.876 --> 00:16:55.347
+and also to be able to modify
+how large of a dataset you have.
+
+339
+00:16:55.347 --> 00:17:00.347
+So this is code here that's loading
+your, gold standard dataset.
+
+340
+00:17:00.919 --> 00:17:02.888
+Right. Your evaluation set.
+
+341
+00:17:02.888 --> 00:17:04.456
+It's going through those examples.
+
+342
+00:17:04.456 --> 00:17:07.426
+And there is an argument
+for a number to generate.
+
+343
+00:17:07.493 --> 00:17:11.096
+And how this is working,
+is for a certain number to generate,
+
+344
+00:17:11.296 --> 00:17:15.367
+it will use a certain sample size and
+sample certain, certain number of times.
+
+345
+00:17:15.367 --> 00:17:16.568
+So maybe this is ten.
+
+346
+00:17:16.568 --> 00:17:18.470
+So you sample ten times
+
+347
+00:17:18.470 --> 00:17:22.341
+and each time you sample
+three random examples in your gold set.
+
+348
+00:17:22.341 --> 00:17:25.878
+So then the model sees
+three different examples each time
+
+349
+00:17:26.011 --> 00:17:28.947
+and that enables it to create variation.
+
+350
+00:17:28.947 --> 00:17:31.083
+So you can imagine, as an example of this,
+
+351
+00:17:31.083 --> 00:17:34.186
+and one sample,
+it might get the question and query for
+
+352
+00:17:34.186 --> 00:17:37.856
+what's
+the median age of people in the NBA.
+
+353
+00:17:38.057 --> 00:17:41.460
+another one might be, you know,
+what's the average salary?
+
+354
+00:17:41.460 --> 00:17:46.098
+And another one might be, how many people
+are under the age of 25 in the NBA?
+
+355
+00:17:46.098 --> 00:17:49.301
+So, those might be three
+random ones one sample.
+
+356
+00:17:49.301 --> 00:17:52.871
+And then in another sample, it would,
+grab three different ones, randomly
+
+357
+00:17:52.971 --> 00:17:56.575
+and not basically nudges
+the model to generate different queries.
+
+358
+00:17:56.642 --> 00:17:58.377
+That's a simple way of getting it
+to generate
+
+359
+00:17:58.377 --> 00:18:02.681
+a much larger dataset, which you'll see
+shortly will be very helpful
+
+360
+00:18:02.714 --> 00:18:06.318
+because it turns out generating
+these queries is much harder.
+
+361
+00:18:06.318 --> 00:18:09.221
+And generating data in general
+is much harder than filtering it.
+
+362
+00:18:09.221 --> 00:18:12.958
+Okay, next
+you definitely need to save your results.
+
+363
+00:18:13.092 --> 00:18:15.594
+So, here is a function
+for saving those results.
+
+364
+00:18:15.594 --> 00:18:18.597
+All it's doing is grabbing the
+the question in sample
+
+365
+00:18:18.630 --> 00:18:21.967
+saving them as pairs so that you can
+use them later for fine-tuning.
+
+366
+00:18:22.501 --> 00:18:22.801
+Great.
+
+367
+00:18:22.801 --> 00:18:26.205
+So now let's actually run
+through this data generation pipeline.
+
+368
+00:18:27.673 --> 00:18:28.874
+Fantastic.
+
+369
+00:18:28.874 --> 00:18:31.944
+27. So now let's take a look
+
+370
+00:18:31.944 --> 00:18:35.047
+at what these results look like
+so we can cat
+
+371
+00:18:35.380 --> 00:18:37.316
+the generated queries are Jsonl.
+
+372
+00:18:37.316 --> 00:18:40.219
+file
+which is specified in the args file.
+
+373
+00:18:40.219 --> 00:18:42.855
+Would you look at that?
+
+374
+00:18:42.855 --> 00:18:46.391
+If you inspect closely
+they're obviously not perfect.
+
+375
+00:18:46.391 --> 00:18:47.793
+A lot of these are invalid.
+
+376
+00:18:47.793 --> 00:18:49.795
+There might be duplicates in here.
+
+377
+00:18:49.795 --> 00:18:52.798
+but it is a decent amount of data.
+
+378
+00:18:54.233 --> 00:18:57.536
+So, instead of making it perfect,
+let's actually just go through
+
+379
+00:18:57.536 --> 00:19:02.107
+a first iteration of fine
+tuning it specifically with memory tuning.
+
+380
+00:19:02.274 --> 00:19:04.343
+So I'm going to...
+
+381
+00:19:04.343 --> 00:19:08.514
+Just make a few more imports here
+and new args
+
+382
+00:19:08.514 --> 00:19:11.517
+to grab those, queries.
+
+383
+00:19:11.617 --> 00:19:16.155
+And then just a familiar function
+for, creating a question.
+
+384
+00:19:16.155 --> 00:19:20.325
+So this is just creating a prompt,
+that goes from a question and turning it
+
+385
+00:19:20.325 --> 00:19:23.395
+into a prompt that we can
+then use to fine-tune the model with.
+
+386
+00:19:23.529 --> 00:19:26.999
+Next, grab those arguments, instantiate
+the model.
+
+387
+00:19:27.900 --> 00:19:31.703
+Next, get the data set
+and make a question from that data set.
+
+388
+00:19:31.703 --> 00:19:36.703
+So turn everything with just a question
+string into this larger schema.
+
+389
+00:19:37.976 --> 00:19:40.412
+Grab those fine-tuning arguments.
+
+390
+00:19:40.412 --> 00:19:44.483
+The default ones,
+and then you get to do the line
+
+391
+00:19:44.483 --> 00:19:48.220
+for training where you pass all of these
+into the data set in the fine-tuning.
+
+392
+00:19:48.487 --> 00:19:50.455
+And I'm just going to do
+is public is true.
+
+393
+00:19:50.455 --> 00:19:52.357
+So, we can actually share this together.
+
+394
+00:19:53.725 --> 00:19:54.092
+Okay.
+
+395
+00:19:54.092 --> 00:19:54.626
+Great.
+
+396
+00:19:54.626 --> 00:19:55.460
+So as you can
+
+397
+00:19:55.460 --> 00:19:59.498
+see it uploaded data, there's a dataset
+ID that you can refer back to.
+
+398
+00:19:59.498 --> 00:20:03.769
+You can, for back to it like this, like
+LLM dot train dataset ID equals that,
+
+399
+00:20:04.336 --> 00:20:08.574
+so you can reuse your dataset and
+then your fine tuning job is submitted.
+
+400
+00:20:08.840 --> 00:20:12.077
+And you can check the status at that URL
+that is public.
+
+401
+00:20:12.678 --> 00:20:13.979
+Okay. So what's going on here?
+
+402
+00:20:13.979 --> 00:20:18.016
+The fine tuning job is actually queued
+when you run this, so it's just queued up
+
+403
+00:20:18.016 --> 00:20:21.887
+and once they begin, in this case,
+this is, the unoptimized,
+
+404
+00:20:21.887 --> 00:20:23.989
+memory tuning case.
+it takes about 30 minutes.
+
+405
+00:20:23.989 --> 00:20:25.624
+And you can continue in this notebook,
+
+406
+00:20:25.624 --> 00:20:30.062
+by using the four other prepared
+pre-prepared models provided.
+
+407
+00:20:30.062 --> 00:20:31.430
+So, you can actually
+
+408
+00:20:31.430 --> 00:20:35.133
+see how the performance improves over time
+as the dataset improves.
+
+409
+00:20:35.467 --> 00:20:38.270
+So let's actually go do that.
+
+410
+00:20:38.270 --> 00:20:43.270
+So instantiating a pre
+fine-tuned model we're going to use
+
+411
+00:20:43.542 --> 00:20:47.112
+this ID here that you can use this model
+name equals that.
+
+412
+00:20:47.913 --> 00:20:49.414
+And let's see what happens.
+
+413
+00:20:49.414 --> 00:20:53.585
+So, who is the highest paid NBA player?
+
+414
+00:20:53.585 --> 00:20:56.588
+Let's do a familiar thing like this.
+
+415
+00:20:57.189 --> 00:20:59.324
+Who's the highest paid NBA player?
+
+416
+00:20:59.324 --> 00:21:01.593
+And let's get an answer from the model.
+
+417
+00:21:03.395 --> 00:21:04.363
+Okay.
+
+418
+00:21:04.363 --> 00:21:07.366
+So now it's outputted, this SQL query.
+
+419
+00:21:07.466 --> 00:21:10.936
+Notice that we didn't actually
+have to use the structured output
+
+420
+00:21:10.936 --> 00:21:14.139
+because it's been tuned to produce
+this format.
+
+421
+00:21:14.139 --> 00:21:15.240
+Exactly. Right.
+
+422
+00:21:15.240 --> 00:21:17.909
+So this makes it easier to use
+in some ways.
+
+423
+00:21:17.909 --> 00:21:20.245
+But seems much better than before.
+
+424
+00:21:20.245 --> 00:21:20.812
+Let's take a look
+
+425
+00:21:20.812 --> 00:21:23.815
+if it actually is correct
+by running it against the database.
+
+426
+00:21:23.849 --> 00:21:24.182
+Cool.
+
+427
+00:21:24.182 --> 00:21:27.786
+Steph Curry with salary of 50,
+nearly 52 million.
+
+428
+00:21:28.320 --> 00:21:28.587
+Okay.
+
+429
+00:21:28.587 --> 00:21:29.855
+So let's actually see
+
+430
+00:21:29.855 --> 00:21:33.692
+how results have improved quantitatively,
+not just in this one-off situation.
+
+431
+00:21:33.692 --> 00:21:36.762
+Let's run it against your evaluation set.
+
+432
+00:21:37.162 --> 00:21:39.931
+So now I'm just pacing things from lesson
+
+433
+00:21:39.931 --> 00:21:43.568
+three's lab,
+which, you already went over before.
+
+434
+00:21:43.568 --> 00:21:46.038
+Just so we have evaluation here.
+
+435
+00:21:46.038 --> 00:21:49.007
+This is to run evaluation
+and then save those to a file.
+
+436
+00:21:50.142 --> 00:21:51.843
+And then you can run
+
+437
+00:21:51.843 --> 00:21:54.846
+your evaluation using that model name,
+
+438
+00:21:55.147 --> 00:21:57.849
+and save those results.
+
+439
+00:21:57.849 --> 00:21:58.784
+Great.
+
+440
+00:21:58.784 --> 00:22:01.320
+And as you can see,
+there are far fewer errors
+
+441
+00:22:01.320 --> 00:22:05.490
+that are being thrown here, because
+there's far more valid SQL, than before.
+
+442
+00:22:05.490 --> 00:22:07.225
+And while it's still not
+
+443
+00:22:07.225 --> 00:22:11.063
+the highest number of correct SQL,
+it's far higher than the original
+
+444
+00:22:11.229 --> 00:22:14.333
+30 ish percent from the
+from the base Llama 3.
+
+445
+00:22:14.499 --> 00:22:16.068
+So big deal.
+
+446
+00:22:16.068 --> 00:22:19.838
+But then now let's take a look, at errors
+that are still in here.
+
+447
+00:22:19.838 --> 00:22:22.541
+Right. Because we want to improve this
+even further.
+
+448
+00:22:22.541 --> 00:22:24.776
+And what does this iteration process
+look like?
+
+449
+00:22:24.776 --> 00:22:27.279
+Okay, so let's take a look at the errors.
+
+450
+00:22:27.279 --> 00:22:30.882
+So I've saved the errors at this Jsonl.
+
+451
+00:22:30.882 --> 00:22:31.616
+file.
+
+452
+00:22:31.616 --> 00:22:34.619
+These are all the things that are wrong
+here
+
+453
+00:22:35.120 --> 00:22:36.121
+that are, you know,
+
+454
+00:22:37.122 --> 00:22:40.292
+basically not
+correct based on our evaluation criteria.
+
+455
+00:22:40.625 --> 00:22:42.794
+and I think, you know, as
+you look through this, what's the median
+
+456
+00:22:42.794 --> 00:22:46.732
+weight? 25th, 75th, 99th percentile.
+
+457
+00:22:46.898 --> 00:22:49.301
+That seems like something pretty hard
+for the model.
+
+458
+00:22:49.301 --> 00:22:52.337
+So, you know, in general,
+this idea of percentile,
+
+459
+00:22:52.738 --> 00:22:54.706
+and so we might inspect a little bit
+there.
+
+460
+00:22:54.706 --> 00:22:56.775
+Okay. That's a pattern. Right.
+
+461
+00:22:56.775 --> 00:22:58.009
+So what's incorrect?
+
+462
+00:22:58.009 --> 00:23:00.045
+Let's take a look.
+
+463
+00:23:00.045 --> 00:23:03.949
+So exactly this query here is incorrect.
+
+464
+00:23:04.850 --> 00:23:09.554
+So if we actually do
+look at our generated queries,
+
+465
+00:23:09.554 --> 00:23:13.759
+we can maybe try to triangulate why
+it is incorrect.
+
+466
+00:23:14.292 --> 00:23:17.863
+So I'm just here
+casting the generated queries file
+
+467
+00:23:17.863 --> 00:23:21.032
+and grabbing for 75th percentile
+so I can find it.
+
+468
+00:23:21.666 --> 00:23:23.535
+Okay, here it is.
+
+469
+00:23:23.535 --> 00:23:27.773
+So this is, clearly wrong because it's
+selecting height and average weight.
+
+470
+00:23:27.773 --> 00:23:30.342
+It's not even related to salary. Right.
+
+471
+00:23:30.342 --> 00:23:32.310
+So that's that's pretty off.
+
+472
+00:23:32.310 --> 00:23:33.078
+But that's okay.
+
+473
+00:23:33.078 --> 00:23:37.749
+So maybe, you know,
+one approach is to instead, like expand
+
+474
+00:23:37.749 --> 00:23:39.718
+the data set even further.
+
+475
+00:23:39.718 --> 00:23:44.256
+and then also to filter out things
+that are blatantly incorrect.
+
+476
+00:23:44.723 --> 00:23:47.259
+So let's try to expand
+it further to see if the model can
+
+477
+00:23:47.259 --> 00:23:50.262
+actually or pipeline
+models can actually generate more data
+
+478
+00:23:50.495 --> 00:23:53.365
+and maybe sometimes data that is able to
+
+479
+00:23:53.365 --> 00:23:56.368
+either answer that correctly or something
+close to that correctly.
+
+480
+00:23:56.435 --> 00:24:00.071
+So one common approach is just generate
+a lot more data
+
+481
+00:24:00.605 --> 00:24:04.376
+and so that's increasing that parameter
+that you saw before of sampling.
+
+482
+00:24:04.576 --> 00:24:06.645
+Let's take a look at what that does.
+
+483
+00:24:06.645 --> 00:24:11.049
+so it's still, you know, outputs,
+still generates, that question there.
+
+484
+00:24:11.249 --> 00:24:15.487
+But it does get some variation
+on, other related items
+
+485
+00:24:15.487 --> 00:24:18.657
+but there's still an issue
+with how percentile
+
+486
+00:24:18.690 --> 00:24:21.660
+is being calculated in general.
+
+487
+00:24:21.993 --> 00:24:23.762
+The next step is filtering.
+
+488
+00:24:23.762 --> 00:24:27.232
+So related to that, obviously
+that needs to be corrected in some way.
+
+489
+00:24:27.232 --> 00:24:32.232
+So, one way is to go through an automated
+process of filtering your dataset.
+
+490
+00:24:34.272 --> 00:24:35.974
+And so we see here. Here
+
+491
+00:24:35.974 --> 00:24:38.543
+is going to be a lot of different filters
+that we've already written.
+
+492
+00:24:38.543 --> 00:24:41.046
+So one is that it's not valid SQL
+you're familiar with.
+
+493
+00:24:41.046 --> 00:24:45.417
+That's that's running in against
+the engine to see if it actually executes
+
+494
+00:24:45.417 --> 00:24:46.351
+or not.
+
+495
+00:24:46.351 --> 00:24:49.988
+Having no, in the SQL
+or null in the question.
+
+496
+00:24:49.988 --> 00:24:52.991
+So, you know,
+sometimes the model gets around it is
+
+497
+00:24:53.091 --> 00:24:56.761
+you know, validly executing,
+but it's null or it's an empty data frame
+
+498
+00:24:57.796 --> 00:25:00.532
+so it doesn't actually have anything
+there.
+
+499
+00:25:00.532 --> 00:25:04.035
+Okay, so,
+one error that we did see was, the model
+
+500
+00:25:04.035 --> 00:25:07.939
+trying to output something
+like an average height or average salary.
+
+501
+00:25:07.939 --> 00:25:10.475
+And that doesn't make any sense
+for this dataset
+
+502
+00:25:10.475 --> 00:25:13.478
+because the height and salary
+will need to be casted first.
+
+503
+00:25:13.678 --> 00:25:15.881
+So we're actually just catching it
+in the string here.
+
+504
+00:25:15.881 --> 00:25:20.352
+So filtering out anything that outputs
+that way having you know,
+
+505
+00:25:20.652 --> 00:25:24.122
+putting all those filtering
+conditions, into a string,
+
+506
+00:25:25.423 --> 00:25:27.058
+and then
+
+507
+00:25:27.058 --> 00:25:30.362
+running that over, the generated queries
+
+508
+00:25:30.929 --> 00:25:34.733
+and then having that output as generated
+queries, large filtered.
+
+509
+00:25:36.268 --> 00:25:39.704
+So that we can take a look at the large
+filtered.
+
+510
+00:25:39.971 --> 00:25:40.839
+So as you can see
+
+511
+00:25:40.839 --> 00:25:45.176
+a lot of them got filtered out
+that were not as valid from before
+
+512
+00:25:45.176 --> 00:25:47.846
+but still obviously some issues there.
+
+513
+00:25:47.846 --> 00:25:51.416
+Finally, after this,
+you can clean up your dataset.
+
+514
+00:25:51.483 --> 00:25:55.487
+Whether that be manually inspecting things
+or, basically editing things.
+
+515
+00:25:55.554 --> 00:25:58.456
+It's still can't be caught
+through your filters
+
+516
+00:25:58.456 --> 00:26:02.661
+and if you take a look here,
+the percentile calculations are adjusted
+
+517
+00:26:02.661 --> 00:26:07.098
+so that they are actually correct
+in, in your, in your fine tuning data.
+
+518
+00:26:07.499 --> 00:26:09.267
+One thing
+that's interesting about this step
+
+519
+00:26:09.267 --> 00:26:14.267
+is that among all the errors
+that you do classify, for example,
+
+520
+00:26:14.439 --> 00:26:19.177
+if you did look at the errors in
+the model was very much outputting order
+
+521
+00:26:19.177 --> 00:26:23.148
+by descending, constantly
+because it was basically overfit
+
+522
+00:26:23.148 --> 00:26:25.083
+to that idea of order by descending
+
+523
+00:26:25.083 --> 00:26:26.851
+so including an example
+
+524
+00:26:26.851 --> 00:26:29.888
+where you're actually doing
+ascending, is helpful for the model
+
+525
+00:26:29.888 --> 00:26:33.458
+to actually get a sense of breath,
+even if it's just 1 or 2 examples.
+
+526
+00:26:33.959 --> 00:26:37.162
+Okay,
+moving on to another class of errors.
+
+527
+00:26:37.162 --> 00:26:42.100
+Let's just go take a look at what we were
+catting from the SQL errors before.
+
+528
+00:26:42.100 --> 00:26:45.437
+So what is the median weight in the NBA?
+
+529
+00:26:45.604 --> 00:26:47.973
+You can see that this was incorrect.
+
+530
+00:26:47.973 --> 00:26:50.175
+And let's see exactly why it's incorrect.
+Okay.
+
+531
+00:26:50.175 --> 00:26:54.346
+It's actually taking the average instead
+of figuring out what is the median.
+
+532
+00:26:54.646 --> 00:26:59.618
+See if it actually is valid
+SQL in addition to that.
+
+533
+00:27:00.552 --> 00:27:01.486
+So we
+
+534
+00:27:01.486 --> 00:27:05.290
+can run
+that query and it does not execute.
+
+535
+00:27:05.290 --> 00:27:08.293
+So it's actually invalid SQL as well.
+
+536
+00:27:08.360 --> 00:27:11.529
+And if we go into the generated queries
+
+537
+00:27:11.529 --> 00:27:14.399
+we might be able to see
+exactly why that is.
+
+538
+00:27:14.399 --> 00:27:17.469
+So when we actually grab
+
+539
+00:27:17.469 --> 00:27:20.472
+the generated queries here.
+
+540
+00:27:22.040 --> 00:27:24.843
+And grab for that median
+
+541
+00:27:24.843 --> 00:27:26.878
+weight.
+
+542
+00:27:26.878 --> 00:27:27.212
+Okay.
+
+543
+00:27:27.212 --> 00:27:30.081
+Clearly there's something wrong
+selecting college and count.
+
+544
+00:27:30.081 --> 00:27:31.683
+from the NBA.
+
+545
+00:27:31.683 --> 00:27:33.685
+So that's definitely the culprit.
+
+546
+00:27:33.685 --> 00:27:37.822
+So if we actually were to look through
+that, it is I'll putting
+
+547
+00:27:37.889 --> 00:27:40.025
+the wrong type of query.
+
+548
+00:27:40.025 --> 00:27:42.794
+So with more cleaning,
+you can actually be able
+
+549
+00:27:42.794 --> 00:27:46.464
+to add more examples
+of median, for example.
+
+550
+00:27:46.631 --> 00:27:49.634
+So if we actually go through the
+
+551
+00:27:50.168 --> 00:27:52.937
+larger data
+set that that's gone through filtering,
+
+552
+00:27:52.937 --> 00:27:56.708
+enlarging and cleaning, we can see that
+
+553
+00:27:59.010 --> 00:27:59.778
+there's a correct
+
+554
+00:27:59.778 --> 00:28:02.914
+calculation in there for this exact query.
+
+555
+00:28:03.114 --> 00:28:05.817
+And then when you tune
+the model on this dataset,
+
+556
+00:28:05.817 --> 00:28:09.154
+you'll find that it's able to handle
+the median, calculation.
+
+557
+00:28:09.154 --> 00:28:13.925
+Well, we can actually look at median
+show up far more in this dataset.
+
+558
+00:28:14.092 --> 00:28:17.195
+So far more examples of median
+being shared with the model.
+
+559
+00:28:17.996 --> 00:28:18.296
+Okay.
+
+560
+00:28:18.296 --> 00:28:21.866
+Let's actually grab that model
+that was tuned on that data set.
+
+561
+00:28:22.867 --> 00:28:24.235
+That's that model ID.
+
+562
+00:28:24.235 --> 00:28:29.235
+We can ask
+that exact median weight in NBA question.
+
+563
+00:28:29.474 --> 00:28:33.678
+we can also,
+let's say ask a different question
+
+564
+00:28:33.745 --> 00:28:36.748
+about median age.
+
+565
+00:28:38.917 --> 00:28:41.619
+of the Chicago
+
+566
+00:28:41.619 --> 00:28:42.287
+Bulls.
+
+567
+00:28:42.287 --> 00:28:45.356
+So this is a different question
+that doesn't really show up,
+
+568
+00:28:45.423 --> 00:28:48.426
+in the dataset that the model can answer.
+
+569
+00:28:48.593 --> 00:28:48.893
+Great.
+
+570
+00:28:48.893 --> 00:28:51.896
+So it actually does grab the median
+instead of the average there.
+
+571
+00:28:51.896 --> 00:28:54.599
+Let's see
+if that actually is able to execute.
+
+572
+00:28:54.599 --> 00:28:59.237
+So over time, you'll be able to create
+harder and harder evaluation sets as well
+
+573
+00:28:59.304 --> 00:29:02.307
+as you get the right performance up here.
+
+574
+00:29:02.941 --> 00:29:05.643
+And as an example,
+you can take a look at one
+
+575
+00:29:05.643 --> 00:29:09.714
+that we've prepared for you,
+which is gold test set B2.
+
+576
+00:29:09.881 --> 00:29:13.752
+Which is expanded,
+to show way more breadth,
+
+577
+00:29:13.752 --> 00:29:15.587
+and other difficult examples
+
+578
+00:29:15.587 --> 00:29:19.557
+to make the problem even harder since
+your model has already improved, a bit.
+
+579
+00:29:19.724 --> 00:29:23.394
+And so now let's see,
+kind of what the final model looks like
+
+580
+00:29:23.394 --> 00:29:25.196
+on this hardware evaluation set.
+
+581
+00:29:25.196 --> 00:29:30.196
+So, this argument is using this larger
+set of queries that are generated,
+
+582
+00:29:30.301 --> 00:29:34.706
+from that gold test set, B2
+still the same model.
+
+583
+00:29:34.873 --> 00:29:38.810
+And it's actually load these things up
+for fine-tuning.
+
+584
+00:29:38.977 --> 00:29:40.478
+Same deal.
+
+585
+00:29:43.314 --> 00:29:44.783
+Awesome.
+
+586
+00:29:44.783 --> 00:29:48.520
+And then we can run our eval pipeline
+one last time, again
+
+587
+00:29:48.520 --> 00:29:51.956
+pasting this from our lab three notebook.
+
+588
+00:29:52.390 --> 00:29:54.192
+Okay, that's just from lab three.
+
+589
+00:29:54.192 --> 00:29:57.829
+And then being able
+to run that final model describing
+
+590
+00:29:57.829 --> 00:30:01.099
+that model ID for you,
+and running the results over it.
+
+591
+00:30:02.300 --> 00:30:03.134
+Great.
+
+592
+00:30:03.134 --> 00:30:08.072
+So, as you can see, the percent of valid
+SQL, has dramatically increased
+
+593
+00:30:08.072 --> 00:30:11.409
+as well as the amount of correct SQL
+queries as well.
+
+594
+00:30:11.509 --> 00:30:13.945
+So we've iterated quite a bit,
+
+595
+00:30:13.945 --> 00:30:18.945
+both on the evaluation dataset
+and on the training data.
+
+596
+00:30:19.017 --> 00:30:22.253
+And I think these are
+some of the hardest parts to,
+
+597
+00:30:22.420 --> 00:30:25.490
+and work
+most custom parts to actually get right.
+
+598
+00:30:25.690 --> 00:30:28.526
+But it is
+what moves the needle on your model
+
+599
+00:30:28.526 --> 00:30:30.528
+and, figuring out and diagnosing
+
+600
+00:30:30.528 --> 00:30:34.632
+those errors is probably
+the most important thing to understand
+
+601
+00:30:34.632 --> 00:30:36.801
+Where are the models
+that actually move next?
+
+602
+00:30:36.801 --> 00:30:39.771
+And with that, let's look at an overview
+of what we learned.
+
+603
+00:30:39.771 --> 00:30:42.640
+So if we step back the life of an
+
+604
+00:30:42.640 --> 00:30:45.743
+LLM app or, you know, this whole process
+
+605
+00:30:45.743 --> 00:30:50.215
+of lifting accuracy for your LLM
+app is really all about iteration.
+
+606
+00:30:50.215 --> 00:30:51.216
+And this is very different
+
+607
+00:30:51.216 --> 00:30:54.452
+from other things you built,
+because it's not all at once.
+
+608
+00:30:54.452 --> 00:30:55.820
+It's really iterative.
+
+609
+00:30:55.820 --> 00:30:59.691
+If you are making micro adjustments
+as you're improving your model
+
+610
+00:30:59.691 --> 00:31:04.128
+before you ship it, and it actually
+is more about what threshold of evaluation
+
+611
+00:31:04.128 --> 00:31:08.099
+you set to stop that iteration,
+because there really is no stopping point
+
+612
+00:31:08.099 --> 00:31:08.900
+unless you set it.
+
+613
+00:31:08.900 --> 00:31:11.035
+And I think that's
+one of them was difficult things
+
+614
+00:31:11.035 --> 00:31:13.538
+for people
+where they reach a certain level
+
+615
+00:31:13.538 --> 00:31:16.507
+and then they say, okay, well,
+it's still not good enough.
+
+616
+00:31:16.507 --> 00:31:17.876
+And they keep increasing the bar.
+
+617
+00:31:17.876 --> 00:31:20.545
+And so there's there's no place
+where they actually do ship.
+
+618
+00:31:20.545 --> 00:31:24.349
+So figuring out where your stopping point
+is, where you're ready to ship
+
+619
+00:31:24.349 --> 00:31:26.117
+is pretty key and important.
+
+620
+00:31:26.117 --> 00:31:28.553
+for getting your app out there
+and that's it.
+
+621
+00:31:28.553 --> 00:31:29.187
+Thank you.
+

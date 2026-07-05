@@ -1,0 +1,1073 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.502
+ColPali's significant memory footprint
+
+00:00:02.502 --> 00:00:04.571
+can be addressed with optimization techniques.
+
+00:00:04.871 --> 00:00:07.073
+but it still doesn't scale well since
+
+00:00:07.073 --> 00:00:09.275
+you can't use it with HNSW search.
+
+00:00:10.176 --> 00:00:12.779
+Now, let's look at an approach called MUVERA,
+
+00:00:12.779 --> 00:00:15.982
+which unlocks HNSW search for multi-vectors
+
+00:00:15.982 --> 00:00:18.985
+and addresses ColPali's fine-grained measure flaw.
+
+00:00:19.419 --> 00:00:21.521
+Let's go.
+
+00:00:21.521 --> 00:00:23.223
+The idea behind MUVERA
+
+00:00:23.223 --> 00:00:26.226
+is to convert variable length sequences of vectors
+
+00:00:26.226 --> 00:00:28.428
+into fixed dimensional embeddings,
+
+00:00:28.428 --> 00:00:31.231
+making it possible to use the same approximate methods
+
+00:00:31.231 --> 00:00:33.933
+like we use for regular dense vector search.
+
+00:00:34.300 --> 00:00:37.303
+ColPali can't be used with HNSW search
+
+00:00:37.303 --> 00:00:40.507
+because there is no way to build the HNSW index
+
+00:00:40.507 --> 00:00:43.109
+that powers approximate nearest neighbor search
+
+00:00:43.109 --> 00:00:46.079
+for asymmetric similarity measure like MaxSim.
+
+00:00:46.679 --> 00:00:49.783
+As a result, ColPali requires a brute force search.
+
+00:00:49.916 --> 00:00:52.018
+technique that takes linear time.
+
+00:00:52.419 --> 00:00:55.422
+If you want to search a million documents with ColPali,
+
+00:00:55.622 --> 00:00:58.124
+you need to calculate 1 million max sims.
+
+00:00:58.425 --> 00:01:02.095
+MUVERA approaches that differently by converting sequences of vectors
+
+00:01:02.429 --> 00:01:05.198
+into highly dimensional single vector embeddings.
+
+00:01:05.732 --> 00:01:08.034
+That enables the use of HNSW.
+
+00:01:08.435 --> 00:01:11.337
+HNSW instead scales in logarithmic time,
+
+00:01:11.738 --> 00:01:15.041
+scaling easily to millions or billions of documents.
+
+00:01:15.642 --> 00:01:19.345
+It makes it more practical than original multi-vector representations.
+
+00:01:20.180 --> 00:01:22.882
+Let's review the steps required to implement that technique.
+
+00:01:23.483 --> 00:01:26.186
+The MUVERA algorithm is based on a few steps.
+
+00:01:26.686 --> 00:01:29.556
+First of all, it aims to perform a clustering algorithm
+
+00:01:29.556 --> 00:01:31.257
+on the multi-vector embeddings.
+
+00:01:31.624 --> 00:01:35.528
+The MUVERA paper suggests using locality sensitive hashing method,
+
+00:01:35.628 --> 00:01:38.698
+namely SimHash. Assume each of our tokens
+
+00:01:38.798 --> 00:01:42.602
+is mapped to a vector space in our case two-dimensional.
+
+00:01:42.969 --> 00:01:45.772
+SimHash will then generate some random hyperplanes
+
+00:01:45.872 --> 00:01:48.074
+splitting that space into two parts.
+
+00:01:48.441 --> 00:01:50.477
+Each vector will end up on one
+
+00:01:50.477 --> 00:01:52.745
+of the sides as defined by the hyperplane.
+
+00:01:53.012 --> 00:01:56.816
+However, one hyperplane is just not enough.
+
+00:01:56.916 --> 00:01:59.319
+SimHash will generate K hyperplanes,
+
+00:01:59.419 --> 00:02:02.889
+dividing the space into 2 to the power of K buckets.
+
+00:02:03.089 --> 00:02:06.493
+We can assign binary strings to each of these buckets
+
+00:02:06.593 --> 00:02:09.496
+by using either zero or one to indicate the fact
+
+00:02:09.596 --> 00:02:12.098
+of being on either side of the corresponding hyperplane.
+
+00:02:12.432 --> 00:02:15.201
+The length of the bucket ID will be exactly K
+
+00:02:15.602 --> 00:02:17.403
+in terms of the bits used.
+
+00:02:17.904 --> 00:02:19.706
+In our case, it's just two,
+
+00:02:19.706 --> 00:02:21.808
+meaning there are exactly four different buckets,
+
+00:02:22.008 --> 00:02:25.211
+as that's how many values you can represent using two bits.
+
+00:02:26.012 --> 00:02:29.215
+After assigning buckets to each of the input token embeddings,
+
+00:02:29.315 --> 00:02:32.418
+we group the terms belonging to the same cluster together.
+
+00:02:33.019 --> 00:02:36.723
+SimHash aims to reduce the variable length of the sequences
+
+00:02:36.823 --> 00:02:40.326
+by finding some representative vectors for each of the buckets.
+
+00:02:40.760 --> 00:02:43.897
+Document and query processing is slightly different.
+
+00:02:44.197 --> 00:02:47.467
+In the case of documents, SimHash will take an average
+
+00:02:47.467 --> 00:02:50.837
+of all the token vectors belonging to a particular cluster.
+
+00:02:51.070 --> 00:02:53.840
+Since some of the buckets might be empty,
+
+00:02:53.840 --> 00:02:56.209
+it will also fill them with the
+
+00:02:56.209 --> 00:02:58.545
+value assigned to the closest non-empty cluster
+
+00:02:58.545 --> 00:03:00.547
+in terms of the Hamming distance.
+
+00:03:00.547 --> 00:03:02.415
+Just to give you an intuition, the
+
+00:03:02.415 --> 00:03:04.250
+Hamming distance will be equal to one
+
+00:03:04.250 --> 00:03:07.253
+between the cluster IDs that differ
+
+00:03:07.287 --> 00:03:10.790
+by just one bit. At the very end of that process,
+
+00:03:10.790 --> 00:03:14.093
+each of the clusters will have a single vector representing it.
+
+00:03:14.794 --> 00:03:17.497
+That means no matter how many input vectors you had,
+
+00:03:17.497 --> 00:03:19.799
+you will always end up with two
+
+00:03:19.799 --> 00:03:22.101
+to the power of k representative vectors.
+
+00:03:22.802 --> 00:03:24.804
+Query processing is slightly different.
+
+00:03:25.104 --> 00:03:26.806
+Instead of taking an average, you sum
+
+00:03:26.806 --> 00:03:28.508
+all the vectors in the same cluster.
+
+00:03:29.142 --> 00:03:32.645
+This means that the resulting vectors will have larger magnitudes
+
+00:03:32.645 --> 00:03:35.048
+for clusters with more vectors assigned.
+
+00:03:35.648 --> 00:03:38.952
+The idea is that it preserves the natural distribution of query terms,
+
+00:03:38.952 --> 00:03:41.521
+which can be beneficial for retrieval.
+
+00:03:41.821 --> 00:03:43.623
+Unlike with documents,
+
+00:03:43.623 --> 00:03:46.226
+you do not fill empty clusters for queries.
+
+00:03:46.726 --> 00:03:48.828
+Queries are typically shorter than documents,
+
+00:03:48.828 --> 00:03:51.998
+so it's more likely that some clusters will be empty.
+
+00:03:52.932 --> 00:03:56.436
+filling them could introduce noise and distort the representation,
+
+00:03:56.536 --> 00:04:00.240
+as each term would contribute to the dot product multiple times.
+
+00:04:00.540 --> 00:04:03.643
+So, if there were no tokens in a particular cluster,
+
+00:04:03.643 --> 00:04:06.045
+it will be represented as a zero vector.
+
+00:04:06.412 --> 00:04:08.915
+No matter if process documents or queries,
+
+00:04:08.915 --> 00:04:11.384
+you now have a single 128-dimensional vector
+
+00:04:11.384 --> 00:04:14.887
+for each cluster created by the SimHash procedure.
+
+00:04:15.188 --> 00:04:18.391
+128-dimensional, as it's the most typical length
+
+00:04:18.391 --> 00:04:21.194
+of a single vector in multi-vector representations.
+
+00:04:21.628 --> 00:04:23.930
+Quite often, the number of hyperplanes in the
+
+00:04:23.930 --> 00:04:26.266
+SimHash procedure is set to at least five,
+
+00:04:27.000 --> 00:04:28.701
+giving us 32 clusters.
+
+00:04:29.402 --> 00:04:32.905
+That's 4096 dimensions in total. Quite a lot.
+
+00:04:33.406 --> 00:04:35.174
+The distances between the vectors are
+
+00:04:35.174 --> 00:04:37.210
+the most important thing for semantic search.
+
+00:04:37.610 --> 00:04:41.214
+When you work with data in a very high dimensional space,
+
+00:04:41.414 --> 00:04:43.916
+it becomes hard to process, but you can shrink the data
+
+00:04:43.916 --> 00:04:45.918
+down without losing much information.
+
+00:04:46.219 --> 00:04:49.222
+Random projection is a clever trick that projects high dimensional data
+
+00:04:49.422 --> 00:04:51.891
+into a lower dimensional space
+
+00:04:51.891 --> 00:04:54.394
+using a matrix filled with random values,
+
+00:04:54.594 --> 00:04:57.196
+typically just positive or negative one.
+
+00:04:57.597 --> 00:05:01.901
+Surprisingly, this simple method keeps the distances between points nearly the same,
+
+00:05:02.201 --> 00:05:04.404
+thanks to the Johnson-Lindenstrauss lemma.
+
+00:05:05.004 --> 00:05:07.307
+This lemma guarantees that if you choose
+
+00:05:07.707 --> 00:05:10.410
+enough dimensions, you can reduce the data safely.
+
+00:05:10.810 --> 00:05:12.912
+So, with just a bit of random math,
+
+00:05:13.313 --> 00:05:15.148
+you preserve the shape of the data
+
+00:05:15.148 --> 00:05:16.983
+while making it much easier to handle.
+
+00:05:17.317 --> 00:05:21.621
+So, when you have a matrix with the vectors after applying SimHash,
+
+00:05:22.021 --> 00:05:25.725
+you multiply it by another matrix of positive or negative ones,
+
+00:05:26.125 --> 00:05:30.630
+which has a shape of original dimension times target dimension.
+
+00:05:31.130 --> 00:05:33.032
+As a result, you reduce the
+
+00:05:33.032 --> 00:05:35.234
+dimensionality of each of the cluster vectors
+
+00:05:35.335 --> 00:05:37.503
+to a target dimensionality you want to
+
+00:05:37.503 --> 00:05:39.706
+have per cluster. As simple as that.
+
+00:05:39.706 --> 00:05:43.109
+Random projection can keep the mean similarity error really low,
+
+00:05:43.409 --> 00:05:46.612
+even if you reduce the number of dimensions quite significantly.
+
+00:05:47.580 --> 00:05:51.784
+The chart presents what it looks like for 10000 randomly generated vectors
+
+00:05:52.085 --> 00:05:54.887
+of 8096 dimensions each.
+
+00:05:55.388 --> 00:05:59.192
+It's an interesting method which might be useful not only for MUVERA
+
+00:05:59.192 --> 00:06:02.595
+but also just to reduce the dimensionality of any vectors.
+
+00:06:03.096 --> 00:06:05.598
+As the chart shows, the error remains the same
+
+00:06:05.598 --> 00:06:08.201
+at 4000 dimensions, 1000,
+
+00:06:08.201 --> 00:06:11.904
+and it doesn't meaningfully increase until you are close to a hundred.
+
+00:06:12.372 --> 00:06:16.175
+This means you can significantly reduce the dimensionality of your data
+
+00:06:16.376 --> 00:06:20.980
+while only introducing minimal errors in terms of relative distances.
+
+00:06:21.381 --> 00:06:23.549
+You still have multi-vector representation.
+
+00:06:23.850 --> 00:06:27.453
+Yet at this point, it's always a sequence of the same length.
+
+00:06:27.854 --> 00:06:30.356
+Each cluster vector has a dimensionality
+
+00:06:30.356 --> 00:06:32.859
+equal to the target dimensionality of the Random Projection.
+
+00:06:33.192 --> 00:06:37.196
+However, HNSW search needs just one vector.
+
+00:06:37.697 --> 00:06:39.999
+So we simply concatenate them all
+
+00:06:40.099 --> 00:06:42.301
+in an order defined by cluster IDs.
+
+00:06:43.002 --> 00:06:46.506
+At the very end, you get a long single vector representation,
+
+00:06:46.906 --> 00:06:49.075
+but you can control how long it is
+
+00:06:49.175 --> 00:06:51.978
+by modifying the parameters of Random Projection.
+
+00:06:52.311 --> 00:06:54.881
+At this point, you've probably realized
+
+00:06:54.881 --> 00:06:57.917
+that MUVERA heavily relies on random procedures.
+
+00:06:58.418 --> 00:07:00.319
+If you are not lucky enough,
+
+00:07:00.319 --> 00:07:03.156
+the SimHash hyperplane may divide the space in a way
+
+00:07:03.156 --> 00:07:05.992
+so two tokens will be on different sides of it,
+
+00:07:06.359 --> 00:07:08.060
+even though they have much in common.
+
+00:07:08.394 --> 00:07:10.196
+Dog is the only animal that
+
+00:07:10.196 --> 00:07:12.298
+can bark, but by a random chance,
+
+00:07:12.665 --> 00:07:15.101
+these tokens may end up in different buckets.
+
+00:07:15.668 --> 00:07:19.172
+That's why MUVERA assumes multiple repetitions of the whole process.
+
+00:07:19.705 --> 00:07:23.810
+That applies to both similarity hashing as well as random projections.
+
+00:07:24.177 --> 00:07:26.212
+The number of repetitions is another
+
+00:07:26.212 --> 00:07:28.581
+parameter of the process you can control.
+
+00:07:29.182 --> 00:07:31.484
+Quite often, you set it to at least 10.
+
+00:07:32.185 --> 00:07:34.520
+Once you repeat the process, you concatenate
+
+00:07:34.520 --> 00:07:37.190
+all the embeddings and that's your final vector.
+
+00:07:37.457 --> 00:07:40.626
+Typically, there is no need to implement that process from scratch,
+
+00:07:41.127 --> 00:07:43.229
+but you can rely on an existing implementation.
+
+00:07:43.629 --> 00:07:45.932
+So, let's see how it works in action.
+
+00:07:46.632 --> 00:07:49.635
+Let's configure MUVERA for ColPali embeddings in production.
+
+00:07:50.336 --> 00:07:53.940
+You will use k_sim equal to 6 to create 64 clusters.
+
+00:07:54.340 --> 00:07:58.244
+and random projection will compress each cluster vector
+
+00:07:58.945 --> 00:08:02.949
+from a 128 dimensional one to just 16 dimensions.
+
+00:08:03.249 --> 00:08:05.451
+The entire process will be repeated 20 times.
+
+00:08:05.952 --> 00:08:09.956
+Each repetition uses different random hyperplanes for SimHash.
+
+00:08:10.089 --> 00:08:13.092
+and different random matrices for the Random Projection,
+
+00:08:13.593 --> 00:08:16.896
+creating diverse representations that are concatenated together.
+
+00:08:17.597 --> 00:08:21.501
+This gives us 64 clusters times 16 dimensions.
+
+00:08:22.602 --> 00:08:24.904
+times 20 repetitions, which is
+
+00:08:24.904 --> 00:08:28.307
+20480 dimensions per document.
+
+00:08:28.808 --> 00:08:31.210
+It's larger than a typical dense vector,
+
+00:08:31.711 --> 00:08:33.913
+but it enables way faster retrieval
+
+00:08:33.913 --> 00:08:36.516
+compared to full multi-vector search
+
+00:08:36.516 --> 00:08:38.518
+while still maintaining high precision.
+
+00:08:38.684 --> 00:08:43.389
+Please notice you explicitly set the value of the random seed.
+
+00:08:44.190 --> 00:08:46.192
+Since MUVERA is based on randomness,
+
+00:08:46.492 --> 00:08:48.494
+you do it to ensure reproducibility.
+
+00:08:48.861 --> 00:08:51.864
+All the documents and queries have to be processed
+
+00:08:51.864 --> 00:08:54.300
+through the same SimHash hyperplanes
+
+00:08:54.300 --> 00:08:56.669
+and the Random Projection matrices.
+
+00:08:56.669 --> 00:08:59.672
+Otherwise, they won't be compatible with each other.
+
+00:09:00.273 --> 00:09:01.941
+You can again make a decision
+
+00:09:01.941 --> 00:09:03.876
+whether you want to create the embeddings
+
+00:09:04.277 --> 00:09:05.978
+or just use the precomputed ones.
+
+00:09:06.679 --> 00:09:09.181
+Now let's apply MUVERA to real document retrieval.
+
+00:09:09.782 --> 00:09:11.684
+You will use the same PDF
+
+00:09:11.684 --> 00:09:13.886
+screenshot dataset like in the previous lesson.
+
+00:09:14.687 --> 00:09:17.290
+Those are pages of lecture notes,
+
+00:09:17.590 --> 00:09:20.593
+each encoded with ColPali's multi-vector embeddings.
+
+00:09:21.060 --> 00:09:24.830
+The same helper function will handle loading this precomputed embeddings
+
+00:09:24.931 --> 00:09:26.933
+or computing them fresh if needed.
+
+00:09:27.333 --> 00:09:30.937
+This embeddings contain over a thousand token vectors per page,
+
+00:09:31.037 --> 00:09:33.940
+making them perfect candidates for MUVERA compression.
+
+00:09:34.307 --> 00:09:37.209
+Time to compress this multi-vector embeddings
+
+00:09:37.209 --> 00:09:39.178
+into fixed dimensional encodings.
+
+00:09:39.579 --> 00:09:43.482
+We'll process each document through our MUVERA instance.
+
+00:09:44.083 --> 00:09:46.385
+The process_document method
+
+00:09:46.385 --> 00:09:48.588
+handles this complete pipeline.
+
+00:09:48.788 --> 00:09:52.191
+SimHash clustering, averaging within clusters,
+
+00:09:52.592 --> 00:09:54.794
+concatenating all cluster vectors
+
+00:09:54.794 --> 00:09:56.896
+after applying Random Projections.
+
+00:09:57.296 --> 00:09:59.498
+This transforms each page's
+
+00:09:59.999 --> 00:10:03.803
+1031 variable length vectors into a single
+
+00:10:04.203 --> 00:10:07.506
+20480 dimensional FDE.
+
+00:10:08.007 --> 00:10:09.909
+Now let's prepare the search queries.
+
+00:10:10.476 --> 00:10:13.379
+We'll still use the same three queries.
+
+00:10:14.113 --> 00:10:16.015
+like we did in the previous lesson,
+
+00:10:16.315 --> 00:10:19.352
+and process them with MUVERA query pipeline.
+
+00:10:20.252 --> 00:10:23.656
+The helper function will load or create query embeddings
+
+00:10:23.656 --> 00:10:25.658
+similarly like we did in the previous lesson.
+
+00:10:25.858 --> 00:10:30.429
+Now we can process these queries through the same MUVERA process.
+
+00:10:30.930 --> 00:10:35.735
+However, please notice that we are calling process_query and not process document
+
+00:10:35.735 --> 00:10:39.939
+anymore because there is a slightly different way of how we approach
+
+00:10:39.939 --> 00:10:43.142
+queries in the MUVERA algorithm.
+
+00:10:43.776 --> 00:10:46.579
+Now comes the exciting part. Creating a Qdrant collection
+
+00:10:46.579 --> 00:10:49.382
+that stores both representations side by side.
+
+00:10:49.782 --> 00:10:51.784
+We'll set up two named vectors.
+
+00:10:51.984 --> 00:10:54.587
+One for the original ColPali multi-vectors
+
+00:10:55.287 --> 00:10:58.591
+with MaxSim comparison and HNSW disabled,
+
+00:10:59.291 --> 00:11:02.561
+and one for MUVERA fixed dimensional encodings
+
+00:11:02.795 --> 00:11:05.765
+as regular single vectors with HNSW enabled.
+
+00:11:06.666 --> 00:11:10.469
+This setup allows you to directly compare retrieval speed
+
+00:11:10.469 --> 00:11:12.672
+and accuracy between the two approaches.
+
+00:11:13.472 --> 00:11:16.475
+Let's insert all the document pages into our collection,
+
+00:11:16.475 --> 00:11:19.178
+providing both representations for each.
+
+00:11:19.812 --> 00:11:23.416
+This allows Qdrant to index and search using either approach.
+
+00:11:24.316 --> 00:11:26.185
+Once you upload your vectors into
+
+00:11:26.185 --> 00:11:28.421
+Qdrant they are immediately available for search.
+
+00:11:28.721 --> 00:11:31.590
+However, the HNSW graph might still not be ready
+
+00:11:31.691 --> 00:11:34.293
+and the optimizer might be building it in the background.
+
+00:11:34.994 --> 00:11:36.996
+In production you rarely care about that,
+
+00:11:37.296 --> 00:11:38.998
+but here we really want to
+
+00:11:38.998 --> 00:11:41.000
+test the approximate search for MUVERA embeddings.
+
+00:11:41.167 --> 00:11:45.171
+Checking the collection status in a loop until it becomes green
+
+00:11:45.171 --> 00:11:47.773
+is an easy way of making sure it's all done.
+
+00:11:48.174 --> 00:11:50.042
+Time for the moment of truth.
+
+00:11:50.142 --> 00:11:52.445
+Let's compare retrieval quality and speed
+
+00:11:52.645 --> 00:11:55.448
+between ColPali's original multi-vectors
+
+00:11:55.648 --> 00:11:58.050
+and MUVERA's compressed representations.
+
+00:11:58.617 --> 00:12:00.820
+We'll search with both approaches
+
+00:12:00.820 --> 00:12:02.922
+and examine which documents they retrieve.
+
+00:12:03.622 --> 00:12:06.826
+MUVERA should provide significantly faster search
+
+00:12:06.826 --> 00:12:08.794
+while maintaining high precision.
+
+00:12:09.662 --> 00:12:13.165
+We'll define three simple helper functions to make our research experiment
+
+00:12:13.165 --> 00:12:15.468
+clear and easy to follow.
+
+00:12:16.268 --> 00:12:19.739
+Let's start with one for ColPali vectors.
+
+00:12:20.239 --> 00:12:24.610
+Each of the helper functions will return results and timing.
+
+00:12:25.111 --> 00:12:29.815
+Then a comparison function will calculate precision and speed up metrics.
+
+00:12:30.116 --> 00:12:32.918
+This separation makes it easy to run each search
+
+00:12:33.219 --> 00:12:35.621
+independently and understand what's happening.
+
+00:12:36.021 --> 00:12:38.424
+The next helper function will perform search
+
+00:12:39.225 --> 00:12:41.127
+using just the MUVERA embeddings.
+
+00:12:41.494 --> 00:12:45.998
+Let's test our first query by searching with both methods independently.
+
+00:12:46.999 --> 00:12:51.704
+We'll start with ColPali's original multi-vector search, which is our baseline,
+
+00:12:52.004 --> 00:12:55.407
+and then run the same query through MUVERA's compressed vector,
+
+00:12:55.608 --> 00:12:58.010
+and finally compare the results to see
+
+00:12:58.177 --> 00:13:00.479
+the precision and speedup metrics.
+
+00:13:01.280 --> 00:13:03.182
+As you can see, MUVERA was
+
+00:13:04.183 --> 00:13:06.385
+18 times faster in average,
+
+00:13:07.186 --> 00:13:10.055
+which makes it a good candidate for improving the
+
+00:13:10.256 --> 00:13:12.958
+speed of multi-vector search.
+
+00:13:14.260 --> 00:13:16.262
+Here is how the ColPali
+
+00:13:16.962 --> 00:13:18.964
+retrieved documents look like.
+
+00:13:22.568 --> 00:13:25.037
+And here is what MUVERA was able to retrieve.
+
+00:13:28.240 --> 00:13:29.975
+We are having a look at it
+
+00:13:29.975 --> 00:13:31.677
+because the precision reported for that query
+
+00:13:31.677 --> 00:13:33.646
+was only 40%.
+
+00:13:34.780 --> 00:13:38.450
+Now let's test the second query following the same pattern.
+
+00:13:39.185 --> 00:13:41.787
+MUVERA is still significantly faster
+
+00:13:41.987 --> 00:13:44.356
+and the precision is relatively low.
+
+00:13:44.757 --> 00:13:48.160
+If you are interested in seeing the individual results,
+
+00:13:48.160 --> 00:13:50.162
+they are just displayed here.
+
+00:13:53.165 --> 00:13:55.467
+Finally, let's test the third query
+
+00:13:55.467 --> 00:13:57.469
+to complete our comparison.
+
+00:13:57.870 --> 00:14:01.440
+Even though MUVERA is again 18 times faster
+
+00:14:01.440 --> 00:14:03.843
+than original ColPali embeddings.
+
+00:14:04.243 --> 00:14:06.445
+the precision of 0%
+
+00:14:06.445 --> 00:14:09.014
+doesn't make it any interesting
+
+00:14:09.014 --> 00:14:11.717
+if you really care about the quality of search.
+
+00:14:13.419 --> 00:14:15.721
+Here is how the search results look like.
+
+00:14:16.388 --> 00:14:19.992
+And you can clearly see that MUVERA wasn't really able
+
+00:14:19.992 --> 00:14:23.696
+to find the best matches for our query.
+
+00:14:24.196 --> 00:14:27.199
+Let's calculate the average performance across all queries
+
+00:14:27.199 --> 00:14:30.202
+to see the overall impact of MUVERA compression.
+
+00:14:30.703 --> 00:14:34.506
+In average, MUVERA is 17 times faster
+
+00:14:34.506 --> 00:14:37.309
+than original multi-vector representations.
+
+00:14:37.610 --> 00:14:40.713
+However, there is an enormous precision loss
+
+00:14:40.713 --> 00:14:42.915
+compared to the original ColPali embeddings.
+
+00:14:43.148 --> 00:14:45.384
+In production, the optimal approach combines
+
+00:14:45.384 --> 00:14:47.953
+both methods in a single efficient query.
+
+00:14:48.654 --> 00:14:51.757
+Use MUVERA for fast initial retrieval of candidate documents,
+
+00:14:51.957 --> 00:14:56.061
+and then rerank those same documents with the original ColPali multi-vectors
+
+00:14:56.662 --> 00:14:58.364
+for maximum accuracy.
+
+00:14:58.364 --> 00:15:00.766
+Let's create another helper function.
+
+00:15:01.367 --> 00:15:04.870
+Qdrant's prefetch mechanism lets you implement
+
+00:15:04.870 --> 00:15:08.173
+this entire pipeline in one API call.
+
+00:15:08.574 --> 00:15:12.144
+MUVERA retrieves more candidates than expected.
+
+00:15:12.144 --> 00:15:14.446
+exactly 10 times more,
+
+00:15:14.647 --> 00:15:16.949
+and then ColPali ranks
+
+00:15:16.949 --> 00:15:18.651
+to get exactly N results.
+
+00:15:18.951 --> 00:15:21.620
+This gives you the speed of single vector search
+
+00:15:21.620 --> 00:15:23.923
+with the precision of late interaction models,
+
+00:15:24.623 --> 00:15:26.625
+as running max sim on a small
+
+00:15:26.625 --> 00:15:28.627
+subset is going to be fast enough.
+
+00:15:28.827 --> 00:15:32.131
+It does not make much sense to run prefetch with MUVERA
+
+00:15:32.131 --> 00:15:34.033
+and get exactly that many documents as
+
+00:15:34.033 --> 00:15:35.935
+we want to present to the user.
+
+00:15:36.535 --> 00:15:38.637
+If we use ColPali for reranking,
+
+00:15:38.637 --> 00:15:41.407
+then it can only reorder the documents it was given.
+
+00:15:41.607 --> 00:15:44.710
+So, if MUVERA didn't return the best matches possible,
+
+00:15:44.710 --> 00:15:47.913
+it will just find an order for this suboptimal set.
+
+00:15:48.447 --> 00:15:51.150
+Let's run the same set of tests
+
+00:15:51.150 --> 00:15:55.454
+using ColPali multi-vectors and two-stage retrieval
+
+00:15:55.454 --> 00:15:58.057
+with MUVERA and ColPali reranking.
+
+00:15:58.057 --> 00:16:00.259
+We'll start with the first query.
+
+00:16:00.926 --> 00:16:04.229
+You can definitely see that the Speedup we got
+
+00:16:04.930 --> 00:16:07.232
+is not that spectacular.
+
+00:16:07.333 --> 00:16:09.635
+However, the Precision is slightly better
+
+00:16:09.835 --> 00:16:11.937
+because it's currently at 80%.
+
+00:16:12.304 --> 00:16:14.506
+for the coffee mug query.
+
+00:16:15.107 --> 00:16:17.409
+The ColPali results have not changed.
+
+00:16:18.010 --> 00:16:20.312
+However, we can expect two-stage retrieval to
+
+00:16:20.813 --> 00:16:22.614
+get a bit better results.
+
+00:16:23.115 --> 00:16:26.719
+And indeed, it did its job a little bit better.
+
+00:16:26.986 --> 00:16:28.988
+Let's test the second query.
+
+00:16:29.188 --> 00:16:32.491
+You are getting better results with every single attempt.
+
+00:16:32.591 --> 00:16:35.461
+You should expect the speed up to be quite consistent,
+
+00:16:35.561 --> 00:16:38.163
+but this time we are getting an ideal precision.
+
+00:16:38.364 --> 00:16:41.967
+That means we are getting the same exact set of results
+
+00:16:42.067 --> 00:16:46.472
+for both ColPali embeddings and two-stage MUVERA plus ColPali reranking.
+
+00:16:47.039 --> 00:16:49.842
+There's one remaining query that we still want to test.
+
+00:16:50.743 --> 00:16:54.847
+Unfortunately, this time MUVERA two-stage retrieval was not able to find
+
+00:16:54.947 --> 00:16:56.949
+any meaningful result.
+
+00:16:57.416 --> 00:17:00.319
+And indeed it's keep returning some random slides
+
+00:17:00.719 --> 00:17:03.489
+that have nothing in common with the query provided.
+
+00:17:03.989 --> 00:17:06.792
+However, we can control the quality of retrieval
+
+00:17:07.192 --> 00:17:08.994
+for two-stage pipeline
+
+00:17:09.895 --> 00:17:12.197
+by increasing the oversampling rate.
+
+00:17:12.264 --> 00:17:15.267
+For example, by setting the oversampling rate to 20,
+
+00:17:15.534 --> 00:17:19.738
+so we can get 100 results to rerank with ColPali.
+
+00:17:20.239 --> 00:17:23.742
+Let's summarize the results of all the queries.
+
+00:17:24.743 --> 00:17:28.447
+As you can see, the average time spent on two-stage retrieval
+
+00:17:28.447 --> 00:17:30.749
+is still significantly lower.
+
+00:17:31.050 --> 00:17:34.553
+than for the entire ColPali embeddings.
+
+00:17:34.553 --> 00:17:37.856
+However, the precision might not be acceptable
+
+00:17:37.856 --> 00:17:40.926
+if you really need the best matches possible.
+
+00:17:41.260 --> 00:17:44.063
+However, we successfully demonstrated MUVERA's
+
+00:17:44.063 --> 00:17:47.166
+practical application to multimodal document retrieval.
+
+00:17:47.466 --> 00:17:50.069
+The results show that MUVERA achieves its promise.
+
+00:17:50.669 --> 00:17:52.571
+Significantly faster search.
+
+00:17:52.905 --> 00:17:57.109
+while maintaining high precision compared to the original ColPali multi-vectors.
+
+00:17:57.709 --> 00:18:02.114
+The compressed fixed dimensional encodings enable HNSW indexing,
+
+00:18:02.514 --> 00:18:04.716
+dramatically improving query latency.
+
+00:18:05.717 --> 00:18:08.887
+The two-stage retrieval pattern is the recommended production approach.
+
+00:18:09.188 --> 00:18:11.790
+Use MUVERA's speed for initial candidate retrieval.
+
+00:18:11.990 --> 00:18:15.394
+then leverage ColPali's accuracy for final reranking.
+
+00:18:16.195 --> 00:18:19.898
+This hybrid strategy delivers both performance and quality,
+
+00:18:20.199 --> 00:18:23.802
+making multi-vector models practical for large-scale applications.
+
+00:18:25.104 --> 00:18:26.672
+In the real-world scenarios,
+
+00:18:26.972 --> 00:18:29.174
+with thousands or millions of documents,
+
+00:18:29.575 --> 00:18:32.478
+MUVERA's benefits become even more pronounced.

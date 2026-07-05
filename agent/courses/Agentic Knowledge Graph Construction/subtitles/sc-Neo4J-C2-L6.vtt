@@ -1,0 +1,1266 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.166 --> 00:00:03.269
+You'll now set up the second agent for your system,
+
+2
+00:00:03.269 --> 00:00:04.838
+the file suggestion agent.
+
+3
+00:00:05.238 --> 00:00:07.941
+This agent will help you choose the relevant files
+
+4
+00:00:07.941 --> 00:00:10.944
+from your structured data to build the domain graph.
+
+5
+00:00:11.344 --> 00:00:15.248
+Let's go. In the workflow that you're working through,
+
+6
+00:00:15.548 --> 00:00:18.151
+you're building the Structured Data Agent workflow.
+
+7
+00:00:18.351 --> 00:00:21.154
+In Lesson 4, you created the User Intent Agent.
+
+8
+00:00:21.354 --> 00:00:24.557
+Here in Lesson 5, you will create the File Suggestion Agent.
+
+9
+00:00:25.158 --> 00:00:27.060
+It will have a similar pattern to what we did
+
+10
+00:00:27.160 --> 00:00:29.162
+with the User Intent Agent in Lesson 4.
+
+11
+00:00:29.362 --> 00:00:31.598
+The agent itself has one primary goal,
+
+12
+00:00:31.598 --> 00:00:33.967
+creating this approved files list.
+
+13
+00:00:33.967 --> 00:00:35.869
+This will be the list of files
+
+14
+00:00:35.869 --> 00:00:37.871
+that the agent itself has looked at,
+
+15
+00:00:37.871 --> 00:00:41.374
+decided these look relevant for
+what the user's trying to do,
+
+16
+00:00:41.875 --> 00:00:44.577
+and then ask the user, hey, do you approve these?
+
+17
+00:00:44.577 --> 00:00:47.580
+And if so, the output will be the approved_files.
+
+18
+00:00:47.881 --> 00:00:49.883
+To do that, the File Suggestion Agent
+
+19
+00:00:49.883 --> 00:00:51.651
+has a bunch of tools to actually take
+
+20
+00:00:51.651 --> 00:00:53.453
+a look at the files that are available.
+
+21
+00:00:53.486 --> 00:00:55.188
+So that's the list_import_files.
+
+22
+00:00:55.388 --> 00:00:58.158
+For any of those files, it can sample_file.
+
+23
+00:00:58.358 --> 00:01:00.460
+That's like doing a little bit of a read from the file.
+
+24
+00:01:00.560 --> 00:01:02.262
+It can only read about 100 lines.
+
+25
+00:01:02.562 --> 00:01:04.564
+And then based on that, it can make a recommendation
+
+26
+00:01:04.664 --> 00:01:07.967
+based using this tool called
+the set_suggested_files tool.
+
+27
+00:01:08.334 --> 00:01:10.170
+And then if the user approves,
+
+28
+00:01:10.170 --> 00:01:12.338
+it'll call the approved
+suggested files tool,
+
+29
+00:01:12.539 --> 00:01:14.507
+and that will update the memory so
+
+30
+00:01:14.507 --> 00:01:16.743
+that we have the approved files in context
+
+31
+00:01:16.743 --> 00:01:18.745
+rather than just the suggested files.
+
+32
+00:01:19.245 --> 00:01:21.014
+All of this of course informed
+
+33
+00:01:21.014 --> 00:01:23.049
+by the work of the previous agent.
+
+34
+00:01:23.450 --> 00:01:25.552
+All this is based on the overall direction
+
+35
+00:01:25.552 --> 00:01:27.654
+of what the user is trying to accomplish.
+
+36
+00:01:27.754 --> 00:01:32.058
+This agent gets that from memory rather
+than from conversational history.
+
+37
+00:01:32.459 --> 00:01:34.828
+So rather than relying on the transcript of what's
+
+38
+00:01:34.828 --> 00:01:38.131
+happened before this tool was called
+or before this agent was called.
+
+39
+00:01:38.631 --> 00:01:41.501
+This agent's going to use the get_approved_user_goal tool
+
+40
+00:01:41.634 --> 00:01:44.737
+to find out what it is that the user's trying to accomplish.
+
+41
+00:01:45.038 --> 00:01:46.739
+Then with that, take a look at the files,
+
+42
+00:01:46.940 --> 00:01:48.508
+figure out which ones are relevant
+
+43
+00:01:48.508 --> 00:01:50.310
+and make a suggestion to the user.
+
+44
+00:01:50.410 --> 00:01:52.512
+Let's take a look at the code.
+
+45
+00:01:52.712 --> 00:01:55.215
+You'll start with the usual setup,
+importing the libraries that we need
+
+46
+00:01:55.315 --> 00:01:57.917
+and any helper functions that we defined previously.
+
+47
+00:01:59.919 --> 00:02:02.288
+With the libraries all ready, we'll go ahead and create
+
+48
+00:02:02.288 --> 00:02:04.691
+a connection to OpenAI and make sure that it's working.
+
+49
+00:02:07.393 --> 00:02:09.028
+Oh, it's very consistent today. Yes,
+
+50
+00:02:09.028 --> 00:02:10.897
+I'm ready. How can I assist you?
+
+51
+00:02:12.499 --> 00:02:15.535
+You'll start by constructing
+the instructions for the agent itself.
+
+52
+00:02:16.469 --> 00:02:18.705
+Now we're going to do this a little bit at a time.
+
+53
+00:02:19.372 --> 00:02:22.609
+First you want to define the agent's role and also its goal.
+
+54
+00:02:23.042 --> 00:02:25.245
+So for this agent that is in charge
+
+55
+00:02:25.245 --> 00:02:27.413
+of making suggestions for files that are relevant,
+
+56
+00:02:27.680 --> 00:02:29.616
+we're going to say that it's a
+
+57
+00:02:29.616 --> 00:02:31.518
+constructive critic reviewing a list of files.
+
+58
+00:02:32.218 --> 00:02:34.821
+And its goal is to suggest relevant files
+
+59
+00:02:35.121 --> 00:02:37.624
+that can be used for constructing a knowledge graph.
+
+60
+00:02:38.925 --> 00:02:40.360
+You can then give it some hints
+
+61
+00:02:40.360 --> 00:02:42.028
+about how to go about achieving that task.
+
+62
+00:02:42.529 --> 00:02:45.398
+The particular task of course is to review the list of files
+
+63
+00:02:45.698 --> 00:02:48.601
+and see from within those files, which ones are relevant for
+
+64
+00:02:48.701 --> 00:02:50.803
+the kind of graph and the description
+
+65
+00:02:51.404 --> 00:02:53.406
+that is based on the approved user goal.
+
+66
+00:02:53.873 --> 00:02:56.643
+For each of those files, there's a tool available called
+
+67
+00:02:56.643 --> 00:02:58.845
+sample file that will let the agent
+
+68
+00:02:58.845 --> 00:03:01.047
+actually see the content of that file
+
+69
+00:03:01.047 --> 00:03:03.750
+to confirm whether the file contains information
+
+70
+00:03:03.750 --> 00:03:05.652
+that's useful for achieving the goal.
+
+71
+00:03:06.052 --> 00:03:07.353
+And we're giving it also the hint
+
+72
+00:03:07.353 --> 00:03:08.855
+that it should only take a look at
+
+73
+00:03:08.855 --> 00:03:11.457
+structured data files like CSV or JSON.
+
+74
+00:03:11.758 --> 00:03:15.261
+You can close that out with
+the chain of thought directions.
+
+75
+00:03:15.662 --> 00:03:17.964
+And here the chain of thought really has two pieces.
+
+76
+00:03:18.364 --> 00:03:20.266
+There's going to be a preparation part of it,
+
+77
+00:03:20.266 --> 00:03:23.269
+which is go ahead and call the get_approved_user_goal
+
+78
+00:03:23.570 --> 00:03:25.972
+to get what the user goal is from session memory.
+
+79
+00:03:26.372 --> 00:03:28.141
+We're going to call the tool for that
+
+80
+00:03:28.141 --> 00:03:30.176
+rather than passing that in directly to the prompt.
+
+81
+00:03:30.376 --> 00:03:32.078
+So encourage the agent to use the tool.
+
+82
+00:03:32.478 --> 00:03:34.247
+And then with that in hand, we're
+
+83
+00:03:34.247 --> 00:03:36.282
+going to give it the chain of thought.
+
+84
+00:03:36.282 --> 00:03:39.686
+As always, think carefully, repeating
+these steps until you're finished.
+
+85
+00:03:39.686 --> 00:03:42.288
+And here are the steps we want the agent to follow.
+
+86
+00:03:42.288 --> 00:03:44.591
+Get a list of all the files that are available.
+
+87
+00:03:44.624 --> 00:03:46.926
+Then for that list of files,
+
+88
+00:03:46.926 --> 00:03:49.529
+evaluate each one of them for their relevance,
+
+89
+00:03:50.129 --> 00:03:52.532
+and then use the set_suggested_files tool
+
+90
+00:03:52.732 --> 00:03:55.034
+to record the suggested files into memory.
+
+91
+00:03:55.335 --> 00:03:57.837
+This step here, step 3,
+
+92
+00:03:57.837 --> 00:04:00.540
+encouraging the agent to use
+the get_suggested_files tool
+
+93
+00:04:00.540 --> 00:04:03.343
+to get the list of
+suggested files is really quite important.
+
+94
+00:04:03.843 --> 00:04:07.146
+It's possible for the agent
+to realize within its own reasoning
+
+95
+00:04:07.146 --> 00:04:09.148
+and within conversational history
+
+96
+00:04:09.349 --> 00:04:11.117
+what the list of files might be
+
+97
+00:04:11.117 --> 00:04:13.152
+and what it thinks the suggested files are.
+
+98
+00:04:13.653 --> 00:04:16.456
+rather than relying on that,
+we really want to encourage it
+
+99
+00:04:16.456 --> 00:04:18.558
+to only use the files that have
+
+100
+00:04:18.558 --> 00:04:20.660
+been saved to the suggested files memory.
+
+101
+00:04:20.860 --> 00:04:24.664
+Here the get_suggested_files tool is what accesses that memory,
+
+102
+00:04:24.664 --> 00:04:27.867
+completing that loop actually encourages
+the LLM to really focus on
+
+103
+00:04:28.167 --> 00:04:31.537
+what is in memory,
+not what it remembers from conversational history.
+
+104
+00:04:31.971 --> 00:04:34.207
+With that then, the result that you got back
+
+105
+00:04:34.207 --> 00:04:36.676
+from the tool call is what's going to be presented
+
+106
+00:04:36.676 --> 00:04:38.478
+to the user for approval.
+
+107
+00:04:38.478 --> 00:04:40.179
+If the user approves,
+
+108
+00:04:40.179 --> 00:04:42.181
+then go ahead and say that's great.
+
+109
+00:04:42.181 --> 00:04:44.150
+User approved suggested files.
+
+110
+00:04:44.150 --> 00:04:47.153
+But if the user has feedback, go back to step 1
+
+111
+00:04:47.153 --> 00:04:49.756
+and repeat the process with the feedback in mind.
+
+112
+00:04:51.991 --> 00:04:54.494
+You can now define the tools that are used by the agent.
+
+113
+00:04:55.194 --> 00:04:57.997
+The first tool is
+get_approved_user_goal.
+
+114
+00:04:58.398 --> 00:05:00.566
+This function is defined
+in the tools module
+
+115
+00:05:00.566 --> 00:05:01.934
+that is provided to you.
+
+116
+00:05:02.235 --> 00:05:04.270
+It just returns the
+approved user goal
+
+117
+00:05:04.270 --> 00:05:06.039
+that has been
+stored in the state.
+
+118
+00:05:06.205 --> 00:05:08.574
+We're also going to import a
+load helper function here
+
+119
+00:05:08.574 --> 00:05:11.978
+that these tools that
+we're about to define will use.
+
+120
+00:05:12.178 --> 00:05:14.580
+Each of these tools
+interact with the file system.
+
+121
+00:05:14.580 --> 00:05:16.149
+But it's not the
+entire file system,
+
+122
+00:05:16.149 --> 00:05:17.917
+they're constrained
+to just looking at
+
+123
+00:05:17.917 --> 00:05:19.652
+the files that are
+available for import
+
+124
+00:05:19.652 --> 00:05:22.155
+that Neo4j itself can access.
+
+125
+00:05:22.155 --> 00:05:24.524
+So Neo4j has the notion
+of an import directory,
+
+126
+00:05:24.791 --> 00:05:26.359
+so this helper is going to
+let us know
+
+127
+00:05:26.359 --> 00:05:27.927
+where is that import directory,
+
+128
+00:05:27.927 --> 00:05:30.296
+all the tools then can
+use that import directory
+
+129
+00:05:30.296 --> 00:05:32.398
+for deciding what files are available,
+
+130
+00:05:32.398 --> 00:05:34.534
+and of those files,
+which ones to use.
+
+131
+00:05:35.368 --> 00:05:38.271
+You can then define the tool to list the import files,
+
+132
+00:05:38.571 --> 00:05:41.074
+and it's going to be saved to
+this key ALL_AVAILABLE_FILES.
+
+133
+00:05:41.574 --> 00:05:43.576
+The tool call needs the tool_context
+
+134
+00:05:43.576 --> 00:05:45.345
+because there are some helper utilities we're
+
+135
+00:05:45.345 --> 00:05:47.347
+going to use for actually getting the directory
+
+136
+00:05:47.780 --> 00:05:49.749
+on disk where these files are stored,
+
+137
+00:05:49.949 --> 00:05:52.051
+and so that the files that are listed
+
+138
+00:05:52.051 --> 00:05:54.754
+are only relative paths rather than absolute paths.
+
+139
+00:05:55.154 --> 00:05:57.256
+So you can see down here in the implementation,
+
+140
+00:05:57.256 --> 00:06:00.159
+we're going to get this helper function, get_neo4j_import_dir.
+
+141
+00:06:00.460 --> 00:06:03.663
+that's the import directory that Neo4J itself has access to.
+
+142
+00:06:04.063 --> 00:06:06.466
+Neo4J does not have access to the full disk space,
+
+143
+00:06:06.466 --> 00:06:08.067
+so we can't use absolute files.
+
+144
+00:06:08.067 --> 00:06:11.170
+It has to be relative to this import directory. So we get
+
+145
+00:06:11.170 --> 00:06:13.639
+here. And then we list all of the files.
+
+146
+00:06:13.639 --> 00:06:17.143
+This is just some string using the import directory.
+
+147
+00:06:17.143 --> 00:06:18.444
+We then go ahead and do
+
+148
+00:06:18.444 --> 00:06:19.946
+a glob listing of all the files
+
+149
+00:06:19.946 --> 00:06:22.348
+recursively down from that directory
+
+150
+00:06:22.348 --> 00:06:24.650
+and do a bit of list comprehension here
+
+151
+00:06:24.650 --> 00:06:26.652
+to turn that into a relative list of files.
+
+152
+00:06:28.020 --> 00:06:31.023
+We save that to a current state as ALL_AVAILABLE_FILES
+
+153
+00:06:31.124 --> 00:06:33.626
+and then return that as the result of this tool call.
+
+154
+00:06:34.727 --> 00:06:37.630
+You can then define the sample_file tool call.
+
+155
+00:06:37.697 --> 00:06:41.901
+Now, the sample_file tool is again going
+to use the tool_context,
+
+156
+00:06:42.602 --> 00:06:44.504
+and it's also going to use a file_path.
+
+157
+00:06:44.504 --> 00:06:47.206
+This is going to be a relative path to the file
+
+158
+00:06:47.206 --> 00:06:49.709
+that the LLM has decided it wants to take a look at.
+
+159
+00:06:50.309 --> 00:06:53.112
+This tool could be instead a call out
+
+160
+00:06:53.112 --> 00:06:55.815
+to the operating system
+to actually use cat or something.
+
+161
+00:06:55.815 --> 00:06:57.817
+Here we're going to do this all in Python.
+
+162
+00:06:58.317 --> 00:07:00.520
+The result of calling this tool is going to be
+
+163
+00:07:00.520 --> 00:07:02.121
+just up to 100 lines of text.
+
+164
+00:07:02.121 --> 00:07:03.589
+We're going to assume it's a
+
+165
+00:07:03.589 --> 00:07:05.324
+text file. Get 100 lines of text,
+
+166
+00:07:05.324 --> 00:07:07.527
+return that as the value of this tool call.
+
+167
+00:07:08.261 --> 00:07:10.763
+Now we have a couple of guards in place here
+
+168
+00:07:10.963 --> 00:07:12.865
+because the LLM can invent paths,
+
+169
+00:07:12.965 --> 00:07:14.667
+it can invent lots of different things.
+
+170
+00:07:14.767 --> 00:07:16.869
+When it calls this, we're going to do some sanity checking
+
+171
+00:07:16.936 --> 00:07:18.638
+on the file_path that was passed in.
+
+172
+00:07:19.272 --> 00:07:21.374
+We're going to make sure that it's not absolute,
+
+173
+00:07:21.374 --> 00:07:23.876
+so that if it is absolute, we're going to return an error
+
+174
+00:07:23.876 --> 00:07:26.312
+because it must be only relative files and we
+
+175
+00:07:26.312 --> 00:07:28.748
+expect them to be relative to the import directory.
+
+176
+00:07:29.148 --> 00:07:32.151
+And the last part here, we also encourage
+the agent to remember
+
+177
+00:07:32.151 --> 00:07:34.954
+that the file path being passed in here
+
+178
+00:07:34.954 --> 00:07:37.757
+should appear in the list of available files.
+
+179
+00:07:38.157 --> 00:07:39.959
+So if it's not sure, could actually
+
+180
+00:07:39.959 --> 00:07:42.028
+check that. And based on the import directory,
+
+181
+00:07:42.028 --> 00:07:43.696
+we go ahead and get the full path to
+
+182
+00:07:43.696 --> 00:07:45.331
+that file. We make sure that the file exists.
+
+183
+00:07:45.331 --> 00:07:47.333
+Again, return a helpful error message
+
+184
+00:07:47.333 --> 00:07:50.736
+if it doesn't exist so that the agent can take
+corrective measures.
+
+185
+00:07:51.237 --> 00:07:52.672
+And if it is existing, then
+
+186
+00:07:52.672 --> 00:07:54.340
+we go ahead and read 100 lines
+
+187
+00:07:54.340 --> 00:07:56.342
+and save that into the content,
+
+188
+00:07:56.342 --> 00:07:58.744
+passing that back as a successful tool call.
+
+189
+00:07:59.011 --> 00:08:01.113
+If any errors occur here,
+
+190
+00:08:01.113 --> 00:08:02.648
+we're going to pass that error back
+
+191
+00:08:02.648 --> 00:08:04.417
+as a response to the LLM as well.
+
+192
+00:08:04.417 --> 00:08:05.985
+And the agent can decide whether
+
+193
+00:08:05.985 --> 00:08:07.820
+or not it's capable of doing anything
+
+194
+00:08:07.820 --> 00:08:09.222
+or it just needs to complain to
+
+195
+00:08:09.222 --> 00:08:10.623
+the user that something is just wrong.
+
+196
+00:08:10.923 --> 00:08:13.226
+You've given the agent the ability to list all the files,
+
+197
+00:08:13.226 --> 00:08:14.927
+take a look at those files. So
+
+198
+00:08:14.927 --> 00:08:16.829
+now it's able to actually make a suggestion
+
+199
+00:08:16.829 --> 00:08:18.731
+based on those files and the file content
+
+200
+00:08:18.931 --> 00:08:20.633
+about what it thinks are relevant files for
+
+201
+00:08:20.633 --> 00:08:22.335
+what the user is trying to get done.
+
+202
+00:08:22.935 --> 00:08:25.238
+Here we've got a pair of tools that actually does that.
+
+203
+00:08:25.738 --> 00:08:27.740
+The first is to set the list of suggested files.
+
+204
+00:08:27.740 --> 00:08:30.843
+It takes a list of strings that should be file paths.
+
+205
+00:08:31.444 --> 00:08:32.979
+And you can add some extra checking here
+
+206
+00:08:32.979 --> 00:08:34.747
+if you wanted to to make sure that
+
+207
+00:08:34.747 --> 00:08:37.750
+the list passed in here are all actually existing files.
+
+208
+00:08:37.750 --> 00:08:39.619
+Here we're actually going to be a bit
+
+209
+00:08:39.619 --> 00:08:41.754
+trustful, a bit of YOLO in this tool here.
+
+210
+00:08:41.754 --> 00:08:44.457
+Of course, for an improvement,
+you can add that check.
+
+211
+00:08:44.457 --> 00:08:46.459
+And then the flip side, of course,
+
+212
+00:08:46.459 --> 00:08:48.728
+we're going to have a get_suggested_files
+
+213
+00:08:48.728 --> 00:08:50.229
+that just looks into memory for that
+
+214
+00:08:50.229 --> 00:08:51.731
+list of files that have been suggested.
+
+215
+00:08:54.033 --> 00:08:57.470
+Once the agent has successfully figured out what files
+
+216
+00:08:57.470 --> 00:08:59.138
+they think are relevant for the user's
+
+217
+00:08:59.138 --> 00:09:01.040
+goal and made that suggestion to the user.
+
+218
+00:09:01.240 --> 00:09:03.109
+If the user has approved, of
+
+219
+00:09:03.109 --> 00:09:05.244
+course, it will call the approve_suggested_files tool
+
+220
+00:09:05.344 --> 00:09:08.748
+to make that transfer from the state of suggested files
+
+221
+00:09:08.748 --> 00:09:11.951
+into approved files. As in the previous lesson,
+
+222
+00:09:12.251 --> 00:09:15.154
+we're going to double check that before this call is made
+
+223
+00:09:15.454 --> 00:09:18.157
+that the SUGGESTED_FILES actually exist in state,
+
+224
+00:09:18.257 --> 00:09:20.660
+and if not, suggest to the agent that
+
+225
+00:09:20.760 --> 00:09:22.128
+it needs to go and figure
+
+226
+00:09:22.128 --> 00:09:23.763
+that out before it calls this tool.
+
+227
+00:09:24.063 --> 00:09:25.097
+If it has been set, it
+
+228
+00:09:25.097 --> 00:09:26.332
+will go ahead and make a copy
+
+229
+00:09:26.332 --> 00:09:28.234
+of the SUGGESTED_FILES into the APPROVED_FILES
+
+230
+00:09:28.234 --> 00:09:31.137
+and return that as the success from this tool call.
+
+231
+00:09:31.537 --> 00:09:33.472
+You can then go ahead and take all
+
+232
+00:09:33.472 --> 00:09:35.641
+of those tool definitions, put those into a list,
+
+233
+00:09:35.641 --> 00:09:38.544
+and save that as the file_suggestion_agent_tools.
+
+234
+00:09:38.544 --> 00:09:41.147
+We'll use that for the agent definition in just a moment.
+
+235
+00:09:41.547 --> 00:09:43.349
+You can now define your agent.
+
+236
+00:09:43.749 --> 00:09:45.851
+The agent definition is pretty straightforward.
+
+237
+00:09:45.851 --> 00:09:47.453
+We did all the hard work in setting
+
+238
+00:09:47.453 --> 00:09:49.055
+up the tools and defining the prompt earlier.
+
+239
+00:09:49.055 --> 00:09:51.657
+We're just going to pass those in here and create the agent.
+
+240
+00:09:53.626 --> 00:09:55.161
+With the agent in hand, you can
+
+241
+00:09:55.161 --> 00:09:56.929
+now go ahead and interact with the agent.
+
+242
+00:09:57.630 --> 00:10:00.433
+Import the make_agent_caller helper that we defined earlier,
+
+243
+00:10:00.733 --> 00:10:02.835
+and then create a caller using that.
+
+244
+00:10:03.202 --> 00:10:06.205
+Alright, just really just one thing
+that's a little bit different here.
+
+245
+00:10:06.706 --> 00:10:09.508
+Previously when we used the make_agent_caller,
+we would just call it
+
+246
+00:10:09.508 --> 00:10:12.011
+directly with the agent we want to execute.
+
+247
+00:10:12.511 --> 00:10:14.714
+Notice here that we're initializing the state
+
+248
+00:10:15.014 --> 00:10:17.016
+with the approved_user_goal.
+
+249
+00:10:17.416 --> 00:10:19.418
+Now, as we had said at the beginning of the workflow,
+
+250
+00:10:19.719 --> 00:10:22.021
+the approved_user_goal is just the overall direction
+
+251
+00:10:22.021 --> 00:10:24.423
+for all the different agents
+and what they're trying to accomplish.
+
+252
+00:10:24.890 --> 00:10:27.193
+So it's important to set that here.
+
+253
+00:10:27.693 --> 00:10:30.496
+In the final production system,
+in the multi-agent system
+
+254
+00:10:30.496 --> 00:10:32.898
+by the time we get to this part of the workflow,
+
+255
+00:10:33.199 --> 00:10:35.501
+the state will already have the user goal
+
+256
+00:10:35.501 --> 00:10:37.803
+because we'd gone through the previous part of the workflow.
+
+257
+00:10:38.204 --> 00:10:40.506
+Here, we haven't gone through that part of the workflow,
+
+258
+00:10:40.706 --> 00:10:42.808
+so we simulate it by setting the initial state
+
+259
+00:10:42.808 --> 00:10:45.511
+as if we had gone through and approved a user goal
+
+260
+00:10:45.811 --> 00:10:47.913
+that wants to do a supply chain analysis,
+
+261
+00:10:48.214 --> 00:10:50.516
+with a description about doing a
+
+262
+00:10:50.516 --> 00:10:53.219
+multi-level bill of materials for manufactured products.
+
+263
+00:10:53.519 --> 00:10:56.722
+You can then go ahead and run a very short conversation
+
+264
+00:10:56.722 --> 00:10:59.325
+where the user asks what files can we use for import.
+
+265
+00:10:59.325 --> 00:11:01.827
+And then the file suggestion agent will go ahead
+
+266
+00:11:01.827 --> 00:11:04.330
+and do all of its processing to find out
+
+267
+00:11:04.330 --> 00:11:06.632
+which files are available and which ones are relevant.
+
+268
+00:11:06.632 --> 00:11:08.834
+We should see in the end that the
+
+269
+00:11:08.834 --> 00:11:11.337
+available files list contains all files
+in the directory
+
+270
+00:11:11.337 --> 00:11:13.439
+and the suggested files are a subset
+
+271
+00:11:13.439 --> 00:11:15.541
+of that, hopefully just the CSV files.
+
+272
+00:11:16.175 --> 00:11:18.978
+Now this may take a few moments to work
+
+273
+00:11:18.978 --> 00:11:20.479
+because the LLM is of course looking
+
+274
+00:11:20.479 --> 00:11:21.981
+through all the files that it finds,
+
+275
+00:11:21.981 --> 00:11:24.283
+trying to understand whether or not those are relevant.
+
+276
+00:11:24.483 --> 00:11:25.951
+We can see in this response
+
+277
+00:11:25.951 --> 00:11:27.687
+that it's done a pretty good job.
+
+278
+00:11:27.987 --> 00:11:31.090
+It's figured out these CSV files for the assemblies,
+
+279
+00:11:31.090 --> 00:11:34.393
+some components, a mapping from parts to suppliers,
+
+280
+00:11:34.694 --> 00:11:39.694
+some products themselves, the suppliers themselves,
+and also the parts. That's perfect.
+
+281
+00:11:40.366 --> 00:11:42.501
+If you look at the available files, it's got
+
+282
+00:11:42.501 --> 00:11:44.870
+a lot of extra ones, particularly all these markdown files.
+
+283
+00:11:45.337 --> 00:11:48.140
+It has ignored those and correctly just suggested
+
+284
+00:11:48.340 --> 00:11:51.544
+these assembly files, the component files,
+all the CSV files.
+
+285
+00:11:51.744 --> 00:11:56.048
+Awesome. Since the agent has made
+those excellent suggestions,
+
+286
+00:11:56.515 --> 00:11:58.451
+you can go ahead and send another message
+
+287
+00:11:58.451 --> 00:12:00.619
+to the agent to say, Yes, let's do it!
+
+288
+00:12:01.020 --> 00:12:04.023
+You can rephrase this perhaps,
+depending on how the agent responds,
+
+289
+00:12:04.023 --> 00:12:05.424
+that may not be a good
+
+290
+00:12:05.424 --> 00:12:07.059
+way for approving. Let's try this out.
+
+291
+00:12:07.326 --> 00:12:09.528
+The agent was very happy about that
+
+292
+00:12:10.830 --> 00:12:12.798
+and should have made a tool call
+
+293
+00:12:12.798 --> 00:12:14.066
+so that the approved files here
+
+294
+00:12:14.066 --> 00:12:15.501
+we can see from the session state
+
+295
+00:12:15.501 --> 00:12:17.169
+that the approved files match what
+
+296
+00:12:17.169 --> 00:12:19.105
+we had earlier as the suggested files.
+
+297
+00:12:19.505 --> 00:12:24.143
+Success. You've now built two agents within the workflow
+
+298
+00:12:24.243 --> 00:12:26.245
+for constructing a knowledge graph out of structured data.
+
+299
+00:12:26.645 --> 00:12:28.848
+The first that would establish the user's intent,
+
+300
+00:12:29.148 --> 00:12:31.083
+the next one building on the user's intent
+
+301
+00:12:31.083 --> 00:12:33.052
+and looking for data files that are available
+
+302
+00:12:33.152 --> 00:12:35.254
+that support that user's intent.
+
+303
+00:12:35.654 --> 00:12:37.957
+In the next lesson you'll take the next step which is
+
+304
+00:12:38.257 --> 00:12:40.559
+given the user's intent, the files that are available,
+
+305
+00:12:40.659 --> 00:12:42.661
+what could a graph actually look like?

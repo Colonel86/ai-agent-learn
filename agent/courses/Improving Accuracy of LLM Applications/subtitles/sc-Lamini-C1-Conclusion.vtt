@@ -1,0 +1,45 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.433 --> 00:00:03.470
+Thank you
+so much for joining us in this course.
+
+2
+00:00:03.636 --> 00:00:08.108
+We hope that with this background,
+you will be successful in using the Llama
+
+3
+00:00:08.108 --> 00:00:10.110
+models in your application.
+
+4
+00:00:10.110 --> 00:00:11.177
+Congratulations.
+
+5
+00:00:11.177 --> 00:00:13.780
+We have covered quite a bit of material.
+
+6
+00:00:13.780 --> 00:00:18.184
+You have learned to iteratively build
+and evaluation and fine tuning data
+
+7
+00:00:18.184 --> 00:00:21.621
+set, starting with just a few examples
+and growing it over time.
+
+8
+00:00:22.222 --> 00:00:26.192
+You also have learned that fine tuning
+can be done quickly and successfully.
+
+9
+00:00:26.559 --> 00:00:29.262
+We really look forward
+to seeing what you build.
+

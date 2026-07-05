@@ -1,0 +1,690 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:104453
+
+1
+00:00:00.180 --> 00:00:03.480
+Now that you have learned all
+these techniques, in this lesson,
+
+2
+00:00:03.480 --> 00:00:06.179
+you will put them all together and build a
+
+3
+00:00:10.380 --> 00:00:11.269
+Let's code and innovate.
+
+4
+00:00:12.560 --> 00:00:14.939
+Okay, now you're ready to
+build your own Rag bot.
+
+5
+00:00:16.160 --> 00:00:20.300
+What you want to do is take a corpus of
+documents with a bunch of different document
+
+6
+00:00:20.300 --> 00:00:23.949
+types that talk about the donut model
+that you learned about earlier in the course.
+
+7
+00:00:25.170 --> 00:00:25.510
+You'll pre-process all of these document
+types, load them into a vector database,
+
+8
+00:00:40.420 --> 00:00:43.640
+Once you've asked the question to
+the LLM, you'll get a response.
+
+9
+00:00:44.340 --> 00:00:45.369
+Now you're ready to begin.
+
+10
+00:00:46.520 --> 00:00:49.799
+You can start by, again,
+importing a few helper functions.
+
+11
+00:00:51.729 --> 00:00:54.000
+Many of these functions you've
+already seen throughout the course.
+
+12
+00:00:54.659 --> 00:00:58.520
+For this application, you'll also
+need a new function, partition markdown,
+
+13
+00:00:58.520 --> 00:01:00.979
+because this corpus will
+include markdown files.
+
+14
+00:01:01.799 --> 00:01:04.150
+If you wanted to
+include other document types,
+
+15
+00:01:04.150 --> 00:01:07.659
+such as Word documents to the corpus,
+you could include another function,
+
+16
+00:01:07.659 --> 00:01:09.420
+such as partition docx as well.
+
+17
+00:01:10.019 --> 00:01:15.629
+You can also set up your unstructured
+client because this corpus will contain
+
+18
+00:01:15.629 --> 00:01:19.939
+PDF documents in addition to
+documents that require rules-based parsing.
+
+19
+00:01:20.420 --> 00:01:21.870
+Now that you're ready to build your Rag
+bot on top of the donut model documentation,
+
+20
+00:01:26.799 --> 00:01:31.060
+The first document you'll include is a
+PDF of the Donut paper from Archive.
+
+21
+00:01:32.909 --> 00:01:35.000
+This is a PDF that
+includes complex tables.
+
+22
+00:01:36.140 --> 00:01:38.810
+You'll also include a PowerPoint deck that
+
+23
+00:01:38.810 --> 00:01:41.099
+includes information
+about the Donut Model,
+
+24
+00:01:41.099 --> 00:01:46.049
+along with the README from the GitHub
+repo that contains the Donut Model,
+
+25
+00:01:46.049 --> 00:01:47.959
+which is in Markdown format.
+
+26
+00:01:50.260 --> 00:01:52.879
+You can get started by
+preprocessing the PDF.
+
+27
+00:01:53.340 --> 00:01:56.510
+You can apply what you
+learned earlier in the
+
+28
+00:01:56.510 --> 00:01:59.329
+course and use the
+unstructured API to call
+
+29
+00:01:59.329 --> 00:01:59.689
+the YOLOX model to preprocess this
+document using a document layout detection model.
+
+30
+00:02:04.620 --> 00:02:08.289
+As you learned earlier in the course,
+this is an expensive model-based workload,
+
+31
+00:02:08.289 --> 00:02:11.680
+and so if this takes a few
+minutes to process, don't worry.
+
+32
+00:02:12.680 --> 00:02:16.000
+Now that you've pre-processed your
+PDF, you can take a look at the results.
+
+33
+00:02:17.620 --> 00:02:20.360
+Here's an example of one
+of the PDF elements that
+
+34
+00:02:20.360 --> 00:02:22.560
+you just processed, in
+this case, the header.
+
+35
+00:02:27.159 --> 00:02:29.500
+You may also want to take a look
+at some of the tables you'll be
+
+36
+00:02:29.500 --> 00:02:31.060
+able to query over once you've
+assembled your RAG application.
+
+37
+00:02:34.960 --> 00:02:37.189
+Again, the HTML
+representation of the table is in the
+
+38
+00:02:37.189 --> 00:02:38.979
+text as HTML field
+within the metadata objects.
+
+39
+00:02:42.620 --> 00:02:45.120
+You can take a look at one of
+the tables in the document here.
+
+40
+00:02:47.360 --> 00:02:48.479
+This PDF also contains
+some information that
+
+41
+00:02:48.479 --> 00:02:49.759
+we may not be interested in querying over.
+
+42
+00:02:53.539 --> 00:02:54.870
+You can use some of the
+metadata that we extracted while
+
+43
+00:02:54.870 --> 00:02:55.599
+pre-processing to
+filter out unwanted content.
+
+44
+00:02:58.900 --> 00:02:58.960
+First, you can filter out
+the references section.
+
+45
+00:03:01.979 --> 00:03:03.409
+The references section does
+not contain narrative content,
+
+46
+00:03:03.409 --> 00:03:05.909
+and so for this application, you may
+not want to query over this content.
+
+47
+00:03:06.590 --> 00:03:09.030
+To find elements that belong
+to the references section,
+
+48
+00:03:09.030 --> 00:03:12.849
+you can apply what you learned in
+the metadata section. In particular,
+
+49
+00:03:12.849 --> 00:03:16.490
+you can find elements that
+are nested under the references
+
+50
+00:03:16.490 --> 00:03:19.400
+element by using the
+parent ID metadata field.
+
+51
+00:03:20.400 --> 00:03:22.939
+First, you can get the reference title.
+
+52
+00:03:25.259 --> 00:03:28.300
+When you convert the reference
+title element to a dictionary,
+
+53
+00:03:28.300 --> 00:03:30.120
+you can see the element ID.
+
+54
+00:03:31.039 --> 00:03:33.449
+That's what you can use
+to filter out elements
+
+55
+00:03:33.449 --> 00:03:35.060
+that belong to the references section.
+
+56
+00:03:35.759 --> 00:03:37.110
+First, you can save that ID.
+
+57
+00:03:37.800 --> 00:03:39.930
+Then, once you have that ID,
+
+58
+00:03:39.930 --> 00:03:44.900
+you can look for elements that have
+that element ID as the parent ID.
+
+59
+00:03:46.159 --> 00:03:47.960
+You can take a look at a
+few of those elements here.
+
+60
+00:03:49.360 --> 00:03:52.520
+As you can see, when
+you filter based on that,
+
+61
+00:03:52.520 --> 00:03:55.039
+you get the items within
+the references section.
+
+62
+00:03:55.759 --> 00:03:58.530
+And so to get rid of
+those because you don't want
+
+63
+00:03:58.530 --> 00:04:00.300
+to search over them
+within your application,
+
+64
+00:04:00.300 --> 00:04:02.060
+you can just use a filtering operation.
+
+65
+00:04:02.939 --> 00:04:06.680
+Now your element set does not contain
+any elements from the references section.
+
+66
+00:04:07.319 --> 00:04:08.870
+When you preview the document,
+
+67
+00:04:08.870 --> 00:04:12.580
+you may have noticed the header
+information on some of the pages.
+
+68
+00:04:13.759 --> 00:04:15.379
+The header information looks like this.
+
+69
+00:04:16.079 --> 00:04:20.879
+It has the title of the document at the
+top of each page along with the page number.
+
+70
+00:04:21.759 --> 00:04:24.860
+That information breaks up the
+narrative structure of the document,
+
+71
+00:04:24.860 --> 00:04:27.949
+and you may want to
+exclude that content when you're
+
+72
+00:04:27.949 --> 00:04:30.120
+searching over this
+document in your application.
+
+73
+00:04:30.720 --> 00:04:34.480
+To do this, you can simply
+filter on the metadata field
+
+74
+00:04:34.480 --> 00:04:37.899
+category so that you remove
+the headers from the output.
+
+75
+00:04:44.180 --> 00:04:46.379
+Once you've filtered out these elements,
+
+76
+00:04:46.379 --> 00:04:49.680
+your element set no longer
+contains headers, which again,
+
+77
+00:04:49.680 --> 00:04:52.980
+contain information that you're
+not interested in querying over.
+
+78
+00:04:54.240 --> 00:04:56.860
+Now you're ready to
+pre-process your PowerPoint slide.
+
+79
+00:04:57.420 --> 00:04:59.949
+Just like you learned
+in an earlier lesson,
+
+80
+00:04:59.949 --> 00:05:02.800
+you simply need to apply
+the partition PPTX function
+
+81
+00:05:02.800 --> 00:05:04.689
+from the unstructured open source library.
+
+82
+00:05:12.579 --> 00:05:15.110
+Similarly, you can use the
+partition MD function from the unstructured
+
+83
+00:05:15.110 --> 00:05:16.949
+open source library to
+partition your Markdown file.
+
+84
+00:05:23.519 --> 00:05:25.420
+Now that you've
+pre-processed all of your documents,
+
+85
+00:05:25.420 --> 00:05:28.990
+you can combine those documents into a
+single corpus and chunk them using the chunk
+
+86
+00:05:28.990 --> 00:05:32.079
+by title function that you learned about
+during the metadata and chunking lesson.
+
+87
+00:05:32.879 --> 00:05:37.060
+After chunking the documents, you can
+load the documents into a vector database.
+
+88
+00:05:37.500 --> 00:05:40.040
+In this case, you can use
+utilities from LangChain
+
+89
+00:05:47.899 --> 00:05:51.040
+For this application, you
+may want to search for content
+
+90
+00:05:51.040 --> 00:05:54.180
+that belongs to a specific
+file type within the corpus.
+
+91
+00:05:54.740 --> 00:05:57.939
+And so when you load the
+documents into the vector
+
+92
+00:05:57.939 --> 00:05:59.860
+database using the line chain utility,
+
+93
+00:05:59.860 --> 00:06:02.740
+you can include the
+source as a metadata field.
+
+94
+00:06:03.439 --> 00:06:06.829
+Once you've created documents to
+load into the vector database,
+
+95
+00:06:06.829 --> 00:06:11.579
+the next step is to embed those
+documents, in this case using OpenAI embeddings.
+
+96
+00:06:12.360 --> 00:06:18.029
+And then you can use the from
+documents method on the Chroma Database
+
+97
+00:06:18.029 --> 00:06:18.899
+object from LangChain
+to load the documents.
+
+98
+00:06:23.259 --> 00:06:26.189
+When the documents load, they'll
+run through the embedding process,
+
+99
+00:06:26.189 --> 00:06:30.000
+and then once they're embedded, they'll
+be uploaded into the Chroma Vector Database.
+
+100
+00:06:32.240 --> 00:06:35.459
+Now you can set up a retriever
+to search over the database.
+
+101
+00:06:38.379 --> 00:06:41.529
+In this case, you'll search on
+similarity and you'll retrieve
+
+102
+00:06:41.529 --> 00:06:45.000
+six results before building
+your prompt to pass to the LLM.
+
+103
+00:06:46.970 --> 00:06:48.939
+Okay, now your vector database is set up.
+
+104
+00:06:49.689 --> 00:06:51.639
+The next step is to set
+up a prompt template.
+
+105
+00:06:52.579 --> 00:06:54.509
+In this case, we can use LangChain
+to help manage our prompt template.
+
+106
+00:07:04.100 --> 00:07:07.879
+In this case, you've created a
+prompt that instructs the LLM to say,
+
+107
+00:07:07.879 --> 00:07:12.240
+I don't know if it doesn't know the
+answer to the question you are asking.
+
+108
+00:07:12.699 --> 00:07:14.860
+I'd encourage you to play
+around with the template
+
+109
+00:07:14.860 --> 00:07:17.259
+on your own and see how
+it affects the results.
+
+110
+00:07:17.860 --> 00:07:21.319
+Now that you have your template set
+up, you're ready to query your LLM.
+
+111
+00:07:22.019 --> 00:07:24.529
+Simply load the conversation
+retrieval chain from LangChain,
+
+112
+00:07:32.120 --> 00:07:35.660
+To do this, you'll use the
+conversational retriever chain from LangChain.
+
+113
+00:07:36.579 --> 00:07:38.560
+If you're unfamiliar
+with that, don't worry.
+
+114
+00:07:38.779 --> 00:07:41.990
+You can learn more about that
+through other courses at deeplearning.ai.
+
+115
+00:07:43.560 --> 00:07:46.579
+Now that you've instantiated
+your chain, you can ask a question.
+
+116
+00:07:47.480 --> 00:07:49.350
+In this case, you can ask,
+
+117
+00:07:49.350 --> 00:07:52.160
+how does Donut compare to other
+document understanding models?
+
+118
+00:07:52.939 --> 00:07:56.339
+The model has given us the
+response and it has correctly
+
+119
+00:07:56.339 --> 00:07:58.500
+indicated that Donut is
+a document understanding
+
+120
+00:07:58.500 --> 00:08:02.819
+model that does not rely on OCR in
+contrast to other document understanding models.
+
+121
+00:08:03.180 --> 00:08:06.370
+In addition, because you
+included metadata about the file name
+
+122
+00:08:06.370 --> 00:08:09.240
+when you uploaded the
+documents to the vector database,
+
+123
+00:08:09.240 --> 00:08:13.069
+the model can cite the sources of
+this information, in this case,
+
+124
+00:08:13.069 --> 00:08:15.939
+the donut paper and the
+slide deck describing donut.
+
+125
+00:08:16.439 --> 00:08:19.069
+You may also be
+interested in finding information
+
+126
+00:08:19.069 --> 00:08:21.379
+from a specific source within the corpus.
+
+127
+00:08:22.360 --> 00:08:25.560
+You can apply what you learned
+about hybrid search to accomplish this.
+
+128
+00:08:26.000 --> 00:08:29.089
+In this case, you may be
+interested in learning about information
+
+129
+00:08:29.089 --> 00:08:31.060
+that you know is contained
+within the donut_readme.
+
+130
+00:08:32.399 --> 00:08:37.220
+In this case, you can set up a
+retriever to filter on one of the metadata
+
+131
+00:08:37.220 --> 00:08:40.539
+fields that you extracted while
+pre-processing the documents, the file name.
+
+132
+00:08:41.100 --> 00:08:45.779
+With that retriever, you can set up a new
+chain, and then you can run a new query.
+
+133
+00:08:46.600 --> 00:08:49.980
+In this case, you can ask, how do
+I classify documents with Donut?
+
+134
+00:08:50.659 --> 00:08:53.779
+Now, the model has
+responded with content that was
+
+135
+00:08:53.779 --> 00:08:56.549
+contained within the
+readme for the Donut model.
+
+136
+00:08:57.330 --> 00:09:02.960
+You can try this on your own and play
+around with asking the model a few other
+
+137
+00:09:02.960 --> 00:09:06.600
+questions and maybe try including
+other metadata fields to filter on.
+
+138
+00:09:07.360 --> 00:09:08.440
+Now that you've completed your Rag
+bot, try to improve it on your own.
+
+139
+00:09:10.720 --> 00:09:14.919
+Maybe include a few of your own
+files, try asking some other questions,
+
+140
+00:09:14.919 --> 00:09:18.159
+or include some other metadata
+fields in your hybrid search.
+
+141
+00:09:18.519 --> 00:09:20.700
+Now you're prepared to create your own
+Rag bot based on information that's important
+
+142
+00:09:27.480 --> 00:09:28.049
+Happy coding.

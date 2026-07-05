@@ -1,0 +1,763 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.035 --> 00:00:03.303
+In this lesson, you will
+
+2
+00:00:03.303 --> 00:00:07.540
+have a brief recap of HNSW,
+the foundation of vector databases,
+
+3
+00:00:07.974 --> 00:00:10.977
+which enables efficient nearest-neighbor
+searches.
+
+4
+00:00:11.911 --> 00:00:14.414
+You will learn how to manage
+and then enhance
+
+5
+00:00:14.414 --> 00:00:16.983
+the quality of the results it delivers.
+
+6
+00:00:16.983 --> 00:00:18.752
+Let's go!
+
+7
+00:00:18.752 --> 00:00:21.354
+Most of the vector databases use HNSW
+
+8
+00:00:21.354 --> 00:00:24.357
+to approximate
+the nearest-neighbor search.
+
+9
+00:00:24.624 --> 00:00:29.195
+There are certain ways in which we can
+control how well this approximation works.
+
+10
+00:00:29.696 --> 00:00:32.432
+The hierarchical navigable Small Words
+
+11
+00:00:32.432 --> 00:00:36.269
+is a multi-layer graph
+that approximates nearest-neighbor search.
+
+12
+00:00:36.603 --> 00:00:39.706
+It uses vectors as nodes connected
+
+13
+00:00:39.706 --> 00:00:42.709
+to each other based on their similarity.
+
+14
+00:00:42.976 --> 00:00:46.713
+For that reason, the similarity measure
+has to be selected upfront.
+
+15
+00:00:47.180 --> 00:00:49.983
+This data structure builds several stacked
+
+16
+00:00:49.983 --> 00:00:53.186
+graphs, with the top
+one being the most sparse.
+
+17
+00:00:53.620 --> 00:00:57.123
+This one contains
+just a small subset of all the vectors.
+
+18
+00:00:57.424 --> 00:01:01.628
+Each consecutive layer contains
+more and more, but the rule is
+
+19
+00:01:02.028 --> 00:01:06.366
+all the vectors from the layer above
+are also present in the current layer.
+
+20
+00:01:06.833 --> 00:01:11.004
+The bottom layer is really dense
+as it contains all the vectors we have.
+
+21
+00:01:11.971 --> 00:01:14.707
+Except for the similarity-based edges,
+
+22
+00:01:14.707 --> 00:01:17.710
+there are also internal layer connections
+
+23
+00:01:18.011 --> 00:01:21.014
+that help us jump between the layers.
+
+24
+00:01:21.347 --> 00:01:25.518
+There are created between the same vectors
+just at the different layers.
+
+25
+00:01:26.019 --> 00:01:29.689
+HNSW has two parameters
+that we can control.
+
+26
+00:01:29.889 --> 00:01:34.094
+The first one, M, defines
+how many edges per node we create.
+
+27
+00:01:34.427 --> 00:01:39.365
+Increasing this parameter's value
+should improve the approximation quality,
+
+28
+00:01:39.632 --> 00:01:42.635
+but it won't fix any problems
+with your embedding model.
+
+29
+00:01:43.103 --> 00:01:46.606
+If your representations are just too weak,
+you cannot expect
+
+30
+00:01:46.673 --> 00:01:50.043
+search to derive the semantics
+of the data magically.
+
+31
+00:01:50.143 --> 00:01:54.180
+Higher values of M
+will just bring you closer to the exact
+
+32
+00:01:54.180 --> 00:01:55.682
+k nearest-neighbor search.
+
+33
+00:01:55.682 --> 00:01:59.786
+However, controlling this parameter
+may also help to adjust latency.
+
+34
+00:01:59.819 --> 00:02:03.056
+There are some cases
+where you can sacrifice the quality
+
+35
+00:02:03.556 --> 00:02:05.191
+for faster retrieval.
+
+36
+00:02:05.191 --> 00:02:10.063
+The most common operation performed with
+help of the HNSW graph is search.
+
+37
+00:02:10.396 --> 00:02:14.434
+When we receive a query,
+it is also vectorized using the same
+
+38
+00:02:14.434 --> 00:02:18.371
+embedding model and create the vector acts
+as a real query.
+
+39
+00:02:18.605 --> 00:02:21.741
+The search operation
+starts from the top layer.
+
+40
+00:02:22.041 --> 00:02:26.012
+Here the algorithm finds the ef closest
+points.
+
+41
+00:02:26.246 --> 00:02:30.183
+Ef is the second parameter
+we can consider. In our case,
+
+42
+00:02:30.416 --> 00:02:33.253
+its value was set to two, so
+
+43
+00:02:33.253 --> 00:02:36.389
+this is how many points
+we select in the first layer.
+
+44
+00:02:37.123 --> 00:02:40.593
+If we selected more,
+we could possibly get better results,
+
+45
+00:02:40.860 --> 00:02:43.863
+but it would also make the process slower.
+
+46
+00:02:44.030 --> 00:02:47.467
+The points selected in the top layer
+are then selected
+
+47
+00:02:47.467 --> 00:02:50.970
+in the layer below,
+thanks to the intra layer edges.
+
+48
+00:02:51.204 --> 00:02:54.874
+We do not traverse all the points here,
+but only focus
+
+49
+00:02:54.874 --> 00:02:58.711
+on the direct neighbors of the points
+selected in this previous step.
+
+50
+00:02:59.045 --> 00:03:02.081
+Again, we select ef closest
+
+51
+00:03:02.081 --> 00:03:05.084
+matches, then the process continues.
+
+52
+00:03:05.351 --> 00:03:09.222
+Repeat the same procedure
+until we reach the bottom layer.
+
+53
+00:03:09.856 --> 00:03:14.856
+Each time we only check the previously
+selected points and their direct
+
+54
+00:03:15.261 --> 00:03:16.296
+neighbors.
+
+55
+00:03:16.296 --> 00:03:19.299
+That effectively narrows
+down the scope of search.
+
+56
+00:03:19.799 --> 00:03:23.102
+In the last layer,
+we select the top k entries
+
+57
+00:03:23.403 --> 00:03:27.640
+and these vectors become the most
+relevant documents that we return.
+
+58
+00:03:27.740 --> 00:03:30.743
+K might be different from ef
+and it's usually lower.
+
+59
+00:03:30.810 --> 00:03:35.148
+Let's see how changing both parameters
+might impact the search quality
+
+60
+00:03:35.448 --> 00:03:36.816
+on the once dataset
+
+61
+00:03:36.816 --> 00:03:40.887
+you already know. You will use the
+collection built in the previous lesson
+
+62
+00:03:40.887 --> 00:03:44.857
+and try to improve the quality
+by controlling the HSNW parameters.
+
+63
+00:03:45.158 --> 00:03:49.229
+The only difference is that this
+collection will be loaded from snapshot,
+
+64
+00:03:49.529 --> 00:03:54.529
+and it will contain the vectors of all
+the products available in one dataset.
+
+65
+00:03:55.535 --> 00:03:58.538
+So you don't have to recompute the metrics
+again.
+
+66
+00:03:58.871 --> 00:04:02.775
+The process of importing the snapshots
+may also take a while.
+
+67
+00:04:04.043 --> 00:04:07.046
+If you haven't modified the collection
+configuration,
+
+68
+00:04:07.113 --> 00:04:10.450
+then all the HSNW parameters
+should be set to the defaults.
+
+69
+00:04:10.950 --> 00:04:14.787
+It might be accessed in the HSNW config
+property.
+
+70
+00:04:15.255 --> 00:04:20.255
+In our case, M is set to 16 and EF to 100.
+
+71
+00:04:21.561 --> 00:04:23.463
+Let's start with the evaluation.
+
+72
+00:04:23.463 --> 00:04:26.366
+You will only recompute the embeddings
+of all the queries,
+
+73
+00:04:26.366 --> 00:04:29.802
+as we still need them to test
+various configurations of the collection.
+
+74
+00:04:30.470 --> 00:04:32.772
+Let's load the model.
+
+75
+00:04:32.772 --> 00:04:34.874
+Once the model is ready,
+
+76
+00:04:34.874 --> 00:04:37.877
+we can also load the set of queries
+
+77
+00:04:38.077 --> 00:04:41.347
+and create embeddings
+for every single one.
+
+78
+00:04:43.950 --> 00:04:46.953
+Vector databases
+approximate nearest-neighbor search
+
+79
+00:04:47.053 --> 00:04:50.056
+and that comes with some quality
+degradation.
+
+80
+00:04:51.224 --> 00:04:53.293
+The default search operation runs
+
+81
+00:04:53.293 --> 00:04:56.296
+the approximated search by default.
+
+82
+00:04:57.563 --> 00:05:00.566
+We can also enable the exact mode
+
+83
+00:05:01.834 --> 00:05:05.171
+to force the system
+to run pure K, and then search.
+
+84
+00:05:06.706 --> 00:05:07.740
+That won't be as
+
+85
+00:05:07.740 --> 00:05:11.377
+fast, but you will always
+get the highest quality possible
+
+86
+00:05:11.844 --> 00:05:14.847
+given the selected embedding model.
+
+87
+00:05:17.083 --> 00:05:19.385
+HSNW configuration changes wont
+
+88
+00:05:19.385 --> 00:05:21.587
+improve
+the quality of the embedding model.
+
+89
+00:05:21.587 --> 00:05:26.025
+It can only control how
+well the approximation does its job.
+
+90
+00:05:26.359 --> 00:05:29.429
+The ground
+truth dataset will no longer be built
+
+91
+00:05:29.429 --> 00:05:32.532
+based on the perfect matches
+for the benchmark queries,
+
+92
+00:05:33.232 --> 00:05:36.736
+but you will calculate the quality
+of the approximation itself.
+
+93
+00:05:37.136 --> 00:05:40.573
+For that reason,
+let's build a Qrels object
+
+94
+00:05:40.940 --> 00:05:43.943
+with the exact search mode enabled.
+
+95
+00:05:44.043 --> 00:05:47.013
+This will be our reference
+to measure the effectiveness
+
+96
+00:05:47.013 --> 00:05:49.816
+of various HSNW configurations.
+
+97
+00:05:49.816 --> 00:05:54.816
+Everything starts with iterating over
+the set of queries we have. For each query,
+
+98
+00:05:55.588 --> 00:05:59.492
+we run the search operation
+in the exact mode
+
+99
+00:05:59.826 --> 00:06:04.826
+so it's pure knn, and then eventually
+we iterate over the set of results
+
+100
+00:06:06.265 --> 00:06:08.234
+returned by the system and
+
+101
+00:06:08.234 --> 00:06:11.971
+build the corresponding dictionary
+
+102
+00:06:12.405 --> 00:06:15.408
+that is
+then used to create the Qrels object.
+
+103
+00:06:24.550 --> 00:06:28.388
+Our Qrels are ready
+and the baseline will be defined by how
+
+104
+00:06:28.388 --> 00:06:33.059
+well the approximation works
+with the current default configuration.
+
+105
+00:06:33.259 --> 00:06:37.663
+This time we are performing
+the same operations like for the knn
+
+106
+00:06:37.663 --> 00:06:41.634
+and then search,
+but the exact mode is set to false.
+
+107
+00:06:51.644 --> 00:06:54.847
+You will now evaluate the first run
+using ranx again.
+
+108
+00:06:55.181 --> 00:06:59.619
+It doesn't make much sense to calculate
+metric different from precision at k,
+
+109
+00:06:59.919 --> 00:07:03.222
+as the scores and documents
+ranx want to change.
+
+110
+00:07:04.257 --> 00:07:07.026
+Embedding
+model still produces the same embeddings,
+
+111
+00:07:07.026 --> 00:07:11.164
+but some of the results might be just
+missing compared to exact knn.
+
+112
+00:07:12.565 --> 00:07:14.734
+The current default configuration
+
+113
+00:07:14.734 --> 00:07:18.204
+of our collection
+achieves the precision at 25.
+
+114
+00:07:18.771 --> 00:07:22.241
+At around 0.998.
+
+115
+00:07:24.010 --> 00:07:24.577
+Even though the
+
+116
+00:07:24.577 --> 00:07:28.214
+precision at 25 seems to be really high,
+
+117
+00:07:28.748 --> 00:07:31.751
+increasing the values of both parameters
+
+118
+00:07:31.984 --> 00:07:34.887
+should result in quality improvement.
+
+119
+00:07:34.887 --> 00:07:38.891
+You can experiment with various numbers
+or even decrease them
+
+120
+00:07:39.025 --> 00:07:42.028
+if your main concern is speed of search.
+
+121
+00:07:44.263 --> 00:07:46.599
+Let's wait for Qdrant
+
+122
+00:07:46.599 --> 00:07:49.602
+to finish building
+the new HSNW graph.
+
+123
+00:07:56.509 --> 00:07:58.110
+We need to wait until Qdrant
+
+124
+00:07:58.110 --> 00:08:01.113
+finishes the optimization process
+and build
+
+125
+00:08:01.681 --> 00:08:04.684
+the newly updated HSNW structures.
+
+126
+00:08:04.917 --> 00:08:07.887
+Otherwise,
+we might be still using the old ones
+
+127
+00:08:07.887 --> 00:08:11.557
+and get the same quality measures.
+As a next step,
+
+128
+00:08:11.757 --> 00:08:14.861
+you will perform the same search process
+like before.
+
+129
+00:08:15.495 --> 00:08:18.531
+Nothing changes regarding
+how you call Qdrant.
+
+130
+00:08:19.632 --> 00:08:21.901
+But the newly updated parameters
+
+131
+00:08:21.901 --> 00:08:24.904
+should impact the results of each query.
+
+132
+00:08:25.171 --> 00:08:29.008
+This cell should result
+in another run object being created.
+
+133
+00:08:38.284 --> 00:08:39.919
+As a final step,
+
+134
+00:08:39.919 --> 00:08:42.154
+you will calculate the same metric
+
+135
+00:08:42.154 --> 00:08:45.157
+but using new parameters.
+
+136
+00:08:45.391 --> 00:08:48.761
+It shouldn't be surprising that
+the quality of our results has improved.
+
+137
+00:08:49.095 --> 00:08:52.098
+Maybe we didn't have to increase
+the values that much.
+
+138
+00:08:52.365 --> 00:08:56.202
+In the real-world applications,
+keeping them at a minimum sensible
+
+139
+00:08:56.202 --> 00:09:01.007
+level makes a lot of sense, as high values
+also come with a cost.
+
+140
+00:09:01.908 --> 00:09:05.745
+The higher there are, the slower
+the search operations will be.
+
+141
+00:09:06.612 --> 00:09:09.181
+Also, the number of edges in a graph
+
+142
+00:09:09.181 --> 00:09:12.585
+increases its size,
+so that's a memory overhead.
+
+143
+00:09:13.019 --> 00:09:16.055
+One important detail
+about how vector databases
+
+144
+00:09:16.055 --> 00:09:20.126
+implementation HSNW is
+that it's usually divided into segments.
+
+145
+00:09:20.259 --> 00:09:23.162
+So there is no single global graph.
+
+146
+00:09:23.162 --> 00:09:26.966
+In most vector databases,
+the HSNW graph is not created globally,
+
+147
+00:09:26.966 --> 00:09:30.369
+but points are divided
+into non-overlapping segments.
+
+148
+00:09:31.037 --> 00:09:34.473
+Each segments
+will have a separate structure created.
+
+149
+00:09:34.707 --> 00:09:38.144
+It helps a lot from the scalability
+perspective, as these segments
+
+150
+00:09:38.144 --> 00:09:41.213
+may be distributed
+across a whole class of machines.
+
+151
+00:09:41.247 --> 00:09:45.518
+That approach also improves the ability
+of the system to work concurrently
+
+152
+00:09:45.518 --> 00:09:50.189
+in a single-node scenario,
+using multiple CPU cores simultaneously.
+
+153
+00:09:50.723 --> 00:09:55.394
+It's also way easier
+to rebuild this single segment
+
+154
+00:09:55.394 --> 00:09:59.398
+HSNW graphs,
+because we can do it one by one.
+
+155
+00:09:59.899 --> 00:10:03.836
+In this lesson, you learned that
+controlling the parameters
+
+156
+00:10:04.170 --> 00:10:07.573
+of HSNW graph may also give you
+
+157
+00:10:07.573 --> 00:10:11.777
+an additional boost
+in terms of the search quality.
+
+158
+00:10:12.244 --> 00:10:16.282
+You can play with different values
+of both parameters available
+
+159
+00:10:16.582 --> 00:10:20.019
+to see how they will impact it even more.
+
+160
+00:10:20.186 --> 00:10:23.189
+In the next lesson, you will learn
+some additional optimization
+
+161
+00:10:23.189 --> 00:10:26.192
+techniques that can help you reduce
+memory requirements
+
+162
+00:10:26.525 --> 00:10:29.528
+and sometimes even boost retrieval speed.
+
+163
+00:10:30.096 --> 00:10:30.663
+See you there!
+

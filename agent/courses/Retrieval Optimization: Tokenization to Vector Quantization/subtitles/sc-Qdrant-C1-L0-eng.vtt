@@ -1,0 +1,484 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:01.300
+Welcome to this short course,
+
+2
+00:00:01.300 --> 00:00:05.300
+Retrieval Optimization:
+from Tokenization to Vector Quantization.
+
+3
+00:00:05.600 --> 00:00:10.400
+Built in partnership with Qdrant
+and taught by Kacper Łukawski.
+
+4
+00:00:10.400 --> 00:00:13.400
+Retrieval augmented generation involves
+two main steps.
+
+5
+00:00:13.400 --> 00:00:17.500
+First, a retriever searches
+a large document corpus to find relevant
+
+6
+00:00:17.500 --> 00:00:18.700
+information.
+
+7
+00:00:18.700 --> 00:00:22.000
+Then a generator uses this information
+to produce
+
+8
+00:00:22.300 --> 00:00:25.700
+accurate and contextually relevant results
+for the user's query.
+
+9
+00:00:26.300 --> 00:00:29.700
+This course focus on enhancing
+and optimizing the first step,
+
+10
+00:00:29.933 --> 00:00:33.200
+the retrieval
+step, in your RAG and search applications.
+
+11
+00:00:33.833 --> 00:00:36.833
+You begin by learning
+how tokenization is done
+
+12
+00:00:36.833 --> 00:00:39.833
+in large language models
+and in embedding models,
+
+13
+00:00:39.833 --> 00:00:43.533
+and how the tokenizer can affect
+the quality of your search.
+
+14
+00:00:44.200 --> 00:00:48.633
+Specifically, tokenizers
+create a sequence of numerical ids
+
+15
+00:00:48.633 --> 00:00:51.633
+or integers representing the tokens
+
+16
+00:00:51.733 --> 00:00:55.800
+which usually correspond to words
+or parts of words in a text.
+
+17
+00:00:56.400 --> 00:01:00.233
+The multiple ways to turn a piece of text
+into a sequence of tokens.
+
+18
+00:01:00.800 --> 00:01:02.600
+For example, simple word
+
+19
+00:01:02.600 --> 00:01:06.000
+level tokenization would split a sentence
+like "I enjoy learning."
+
+20
+00:01:06.000 --> 00:01:11.000
+Into "I" and then "enjoy"
+and "learning." While subword tokenization
+
+21
+00:01:11.700 --> 00:01:15.300
+can break it down
+even further to "I" then "en"
+
+22
+00:01:15.900 --> 00:01:18.300
+"joy", "learn" and then "ing".
+
+23
+00:01:19.500 --> 00:01:20.700
+The tokenizer
+
+24
+00:01:20.700 --> 00:01:25.700
+is a key component of the language model
+that is also trainable.
+
+25
+00:01:27.100 --> 00:01:31.833
+You learn about tokenization techniques
+like wordpiece byte-pair encoding
+
+26
+00:01:31.933 --> 00:01:36.933
+and unigram tokenization, as well as how
+token vocabulary impacts search results,
+
+27
+00:01:38.200 --> 00:01:43.200
+especially with special characters
+like emojis, typos, and numerical values.
+
+28
+00:01:44.500 --> 00:01:47.200
+I'm delighted to introduce the instructor
+for this course,
+
+29
+00:01:47.200 --> 00:01:52.200
+Kacper Łukawski, who is developer
+relations lead for Qdrant. Kacper,
+
+30
+00:01:52.633 --> 00:01:57.133
+has been helping many developers create
+and optimize the search and RAG systems.
+
+31
+00:01:57.533 --> 00:01:58.600
+Thanks, Andrew.
+
+32
+00:01:58.600 --> 00:02:01.433
+The first step in optimizing your system
+
+33
+00:02:01.433 --> 00:02:03.700
+is measuring the quality of its outputs.
+
+34
+00:02:03.700 --> 00:02:07.833
+Without this how can you, even tell
+if your changes have made an improvement.
+
+35
+00:02:08.400 --> 00:02:11.600
+So in this course
+you will learn how to assess
+
+36
+00:02:11.600 --> 00:02:15.400
+the quality of your search
+using several quality metrics.
+
+37
+00:02:15.800 --> 00:02:19.100
+Vector databases
+use specialized data structures
+
+38
+00:02:19.100 --> 00:02:22.100
+to approximate
+the search of nearest neighbors.
+
+39
+00:02:22.333 --> 00:02:27.300
+HNSW which stands for Hierarchical,
+Navigable, Small words,
+
+40
+00:02:27.700 --> 00:02:31.200
+is the most commonly used one,
+and it has some parameters
+
+41
+00:02:31.200 --> 00:02:34.800
+that give you control over
+how good the approximation is.
+
+42
+00:02:35.100 --> 00:02:38.800
+HNSW search is built
+on top of a multi-layer graph,
+
+43
+00:02:39.300 --> 00:02:42.000
+and it's like shipping the package
+in the mail.
+
+44
+00:02:42.000 --> 00:02:45.000
+The top layer gets
+you close enough to the state
+
+45
+00:02:45.000 --> 00:02:47.133
+that mail should be delivered to,
+
+46
+00:02:47.133 --> 00:02:49.700
+the next layer then finds the city,
+
+47
+00:02:49.700 --> 00:02:53.300
+and as you go down
+the layers, you get closer and closer.
+
+48
+00:02:54.400 --> 00:02:56.000
+You will see how to balance
+
+49
+00:02:56.000 --> 00:03:00.400
+the parameters used for forming
+and searching the HNSW graph,
+
+50
+00:03:00.733 --> 00:03:03.733
+for higher speed and maximum relevance.
+
+51
+00:03:04.200 --> 00:03:07.833
+If you have millions of vectors a search,
+then storing,
+
+52
+00:03:07.833 --> 00:03:12.000
+indexing and searching can become resource
+intensive and slow.
+
+53
+00:03:12.700 --> 00:03:15.833
+Say you built a news analysis
+app that gathers
+
+54
+00:03:15.833 --> 00:03:18.833
+all the news related to an industry
+and summarizes them.
+
+55
+00:03:19.600 --> 00:03:23.500
+After chunking thousands of articles
+published each day within a month,
+
+56
+00:03:23.700 --> 00:03:26.800
+you might easily end up
+with millions of vector embeddings.
+
+57
+00:03:27.333 --> 00:03:31.133
+If you end up with, say,
+5 million vectors, then using OpenAI's
+
+58
+00:03:31.133 --> 00:03:35.200
+Ada embedding model, which generates
+a vector with a little over
+
+59
+00:03:35.200 --> 00:03:39.600
+a 1500 dimensions,
+you need about 30 gigs of memory.
+
+60
+00:03:40.000 --> 00:03:42.700
+And this will continue to grow
+every month.
+
+61
+00:03:42.700 --> 00:03:45.700
+This is where quantization techniques
+come in.
+
+62
+00:03:46.100 --> 00:03:49.600
+Using the techniques you learned
+in this course, you better reduce
+
+63
+00:03:49.600 --> 00:03:53.333
+the memory needed for your vector
+search by up to 64x.
+
+64
+00:03:53.500 --> 00:03:56.133
+You will learn three main
+quantization techniques.
+
+65
+00:03:56.133 --> 00:03:58.700
+The first is product quantization.
+
+66
+00:03:58.700 --> 00:04:01.833
+This maps
+subvectors to the nearest centroid,
+
+67
+00:04:02.000 --> 00:04:05.533
+reducing memory usage or increasing
+indexing time.
+
+68
+00:04:06.400 --> 00:04:09.033
+The second is scalar quantization
+
+69
+00:04:09.033 --> 00:04:12.100
+by converting each float value
+to 1-byte integers.
+
+70
+00:04:12.200 --> 00:04:15.800
+This significantly reduces memory
+and speeds up both indexing
+
+71
+00:04:15.800 --> 00:04:18.033
+and search operations.
+
+72
+00:04:18.033 --> 00:04:21.000
+However, this hurts precision slightly.
+
+73
+00:04:21.000 --> 00:04:24.500
+And the third is an extreme
+form of quantization called binary
+
+74
+00:04:24.500 --> 00:04:29.000
+quantization, which converts
+float values to Boolean values,
+
+75
+00:04:29.100 --> 00:04:33.500
+which improves memory usage
+significantly and improves search speed,
+
+76
+00:04:34.100 --> 00:04:37.100
+but at even greater costs to precision.
+
+77
+00:04:37.100 --> 00:04:40.600
+In the next few lessons, you will first
+learn about embedding models
+
+78
+00:04:40.600 --> 00:04:43.633
+and how they turn text into vectors.
+
+79
+00:04:44.333 --> 00:04:47.200
+You will then learn how tokenization is done.
+
+80
+00:04:47.200 --> 00:04:51.200
+Next, you will look at practical issues
+with tokenization
+
+81
+00:04:51.200 --> 00:04:55.600
+and how they can affect your vector
+search and retrieval relevance.
+
+82
+00:04:56.700 --> 00:04:57.300
+You will also
+
+83
+00:04:57.300 --> 00:05:01.233
+learn how to measure the quality
+of search results in RAG applications,
+
+84
+00:05:01.700 --> 00:05:05.000
+and why this is important
+for making improvements.
+
+85
+00:05:06.200 --> 00:05:08.300
+We will review HNSW,
+
+86
+00:05:08.300 --> 00:05:11.600
+and learn ways
+to improve its search results.
+
+87
+00:05:12.600 --> 00:05:15.633
+We will also explore vector quantization
+to reduce
+
+88
+00:05:15.633 --> 00:05:18.833
+memory use
+and make searches more efficient.
+
+89
+00:05:19.900 --> 00:05:23.600
+By the end of this course,
+you will know how to optimize semantic
+
+90
+00:05:23.600 --> 00:05:27.400
+search and build more reliable
+AI applications.
+
+91
+00:05:27.933 --> 00:05:30.533
+Let's get started
+and create something great.
+
+92
+00:05:30.533 --> 00:05:33.200
+Many people have worked to create this
+course.
+
+93
+00:05:33.200 --> 00:05:36.200
+I'd like to thank David Myriel
+from Qdrant.
+
+94
+00:05:36.200 --> 00:05:39.100
+In addition, Esmaeil
+Gargari and Geoff Ladwig from
+
+95
+00:05:39.100 --> 00:05:42.100
+DeepLearning.AI have also contributed
+to this course.
+
+96
+00:05:43.100 --> 00:05:45.500
+Up first is a video on how embedding
+
+97
+00:05:45.500 --> 00:05:50.500
+models turn text into vectors,
+and the role of the tokenizer
+
+98
+00:05:50.500 --> 00:05:52.033
+in this whole process.
+
+99
+00:05:52.033 --> 00:05:55.433
+I always thought tokenization
+is one of the really critical,
+
+100
+00:05:55.433 --> 00:06:00.100
+but often ignored and underappreciated
+aspects of the models we use.
+
+101
+00:06:00.500 --> 00:06:03.300
+So let's go on to the next
+video and learn about that.
+

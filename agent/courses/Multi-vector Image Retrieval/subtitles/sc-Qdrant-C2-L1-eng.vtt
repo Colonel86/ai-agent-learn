@@ -1,0 +1,1058 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.769
+Let's get started by first looking at the concepts
+
+00:00:02.769 --> 00:00:04.771
+underlying multi-vector retrieval.
+
+00:00:05.171 --> 00:00:08.174
+To help you get oriented, let's start by seeing
+
+00:00:08.174 --> 00:00:10.677
+how it works for text. Let's dive in.
+
+00:00:10.677 --> 00:00:12.879
+I assume if you are taking this course,
+
+00:00:12.879 --> 00:00:16.483
+you are already somewhat familiar with the fundamentals of vector retrieval
+
+00:00:16.483 --> 00:00:20.186
+and concepts like dense embedding vectors, vector similarity,
+
+00:00:20.186 --> 00:00:23.189
+approximate nearest neighbor search algorithms,
+
+00:00:23.189 --> 00:00:26.192
+and the HNSW indexes that power them.
+
+00:00:26.192 --> 00:00:29.195
+If not, I highly recommend you take Qdrant's first course
+
+00:00:29.195 --> 00:00:31.197
+here with DeepLearning,
+
+00:00:31.197 --> 00:00:34.200
+which introduces you to all those concepts.
+
+00:00:34.701 --> 00:00:38.004
+Either way, let's do a quick review of what retrieval is
+
+00:00:38.405 --> 00:00:41.808
+and how it works. Retrieval is important because LLMs
+
+00:00:42.108 --> 00:00:44.110
+can't possibly be trained on all information
+
+00:00:44.210 --> 00:00:46.079
+relevant to the prompts they will receive.
+
+00:00:46.079 --> 00:00:48.648
+Retrieval Augmented Generation, or RAG,
+
+00:00:48.648 --> 00:00:51.618
+pairs an LLM with a database of relevant information.
+
+00:00:51.985 --> 00:00:55.555
+When the system receives a prompt, it will quickly search the database
+
+00:00:55.555 --> 00:00:57.957
+and retrieve the most relevant documents.
+
+00:00:58.358 --> 00:01:01.061
+The original prompt is then modified to include the
+
+00:01:01.094 --> 00:01:03.396
+retrieve documents, allowing the LLM
+
+00:01:03.396 --> 00:01:06.599
+to consider that information while generating its response.
+
+00:01:07.200 --> 00:01:09.369
+RAG can significantly improve the quality
+
+00:01:09.369 --> 00:01:11.304
+of LLM responses
+
+00:01:11.304 --> 00:01:14.307
+and is one of the most widely implemented types
+
+00:01:14.307 --> 00:01:15.909
+of generative AI systems.
+
+00:01:16.109 --> 00:01:18.912
+For example, a customer service chatbot
+
+00:01:18.912 --> 00:01:22.115
+would be much more helpful if it can access your company's
+
+00:01:22.115 --> 00:01:24.117
+product and policy information.
+
+00:01:24.417 --> 00:01:26.119
+Companies achieve that
+
+00:01:26.119 --> 00:01:28.321
+by pairing an LLM with data sources
+
+00:01:28.321 --> 00:01:30.924
+from which relevant information can be retrieved.
+
+00:01:31.324 --> 00:01:35.128
+The most common type of vector retrieval is called a Bi-encoder.
+
+00:01:35.428 --> 00:01:37.764
+Every document in the knowledge base is
+
+00:01:37.764 --> 00:01:40.400
+assigned a vector representation by an embedding model.
+
+00:01:40.667 --> 00:01:43.837
+When a query is received, it is also embedded to a vector.
+
+00:01:44.137 --> 00:01:47.140
+The system will then search the database to find the documents
+
+00:01:47.340 --> 00:01:50.510
+whose vectors are located closest to the query vector.
+
+00:01:50.910 --> 00:01:54.514
+The primary benefit of Bi-encoders is that they are very fast.
+
+00:01:54.848 --> 00:01:56.816
+One reason for this is that the
+
+00:01:56.816 --> 00:01:59.052
+document vectors can be precomputed ahead of time.
+
+00:01:59.619 --> 00:02:02.622
+Even if you have a billion documents in your database,
+
+00:02:02.622 --> 00:02:04.958
+you only need to generate their vectors once.
+
+00:02:05.325 --> 00:02:07.026
+At search time, you are only
+
+00:02:07.026 --> 00:02:09.028
+generating a single vector for the query.
+
+00:02:09.395 --> 00:02:11.998
+The search process itself is also extremely fast.
+
+00:02:12.699 --> 00:02:16.002
+Thanks to the use of approximate nearest neighbors algorithms,
+
+00:02:16.202 --> 00:02:18.805
+they easily scale to billions of documents.
+
+00:02:19.305 --> 00:02:22.308
+The main issue with the Bi-encoder is that they essentially
+
+00:02:22.308 --> 00:02:24.144
+compress the meaning of each document
+
+00:02:24.144 --> 00:02:26.312
+and prompt down to a single vector.
+
+00:02:26.779 --> 00:02:30.950
+This can leave out the meaning of the documents and prompts
+
+00:02:30.950 --> 00:02:33.553
+and can miss nuanced connections between them.
+
+00:02:33.853 --> 00:02:35.855
+Cross-encoders take a different approach.
+
+00:02:36.156 --> 00:02:39.559
+The full text of the query and document are fed
+
+00:02:39.559 --> 00:02:42.061
+to the cross-encoder neural network at the same time.
+
+00:02:42.462 --> 00:02:45.265
+This lets the cross-encoder detect nuanced relationships
+
+00:02:45.265 --> 00:02:47.767
+or interactions in meaning
+
+00:02:47.767 --> 00:02:50.270
+between the query and document.
+
+00:02:50.503 --> 00:02:53.506
+The Cross-encoder will then directly output a relevance score
+
+00:02:54.007 --> 00:02:56.009
+which can be used to rank documents.
+
+00:02:56.509 --> 00:03:01.314
+Cross-encoders tend to produce very high quality results, but they scale horribly.
+
+00:03:01.714 --> 00:03:05.318
+Since they require the full document and query text to generate scores,
+
+00:03:05.518 --> 00:03:09.022
+no pre-computation is possible, and every document you score
+
+00:03:09.322 --> 00:03:13.526
+requires a computationally expensive forward pass through the neural network.
+
+00:03:13.927 --> 00:03:17.730
+As a result, Cross-encoders are only feasible to use when searching
+
+00:03:18.097 --> 00:03:21.034
+numbers of documents, usually 100 or fewer.
+
+00:03:21.501 --> 00:03:23.536
+The best use of a cross-encoder is
+
+00:03:23.536 --> 00:03:25.872
+to rerank the results retrieved by other techniques.
+
+00:03:26.105 --> 00:03:29.542
+Let's say you had 1 million documents to search through.
+
+00:03:29.776 --> 00:03:31.744
+You can use a bi-encoder to
+
+00:03:31.744 --> 00:03:34.013
+quickly find the 50 best matching documents,
+
+00:03:34.113 --> 00:03:36.916
+and then rerank those results with a cross-encoder
+
+00:03:37.183 --> 00:03:39.485
+to find the five absolute best matches.
+
+00:03:40.019 --> 00:03:44.824
+Ideally, you'd have a technique that enables pre-computation like a bi-encoder
+
+00:03:45.024 --> 00:03:47.760
+and deep token level interactions between the
+
+00:03:47.760 --> 00:03:50.530
+query and documents like with a cross-encoder.
+
+00:03:51.030 --> 00:03:54.033
+Multi-vector techniques were introduced to do just that.
+
+00:03:54.234 --> 00:03:56.236
+So let's have a look at how they work.
+
+00:03:56.536 --> 00:03:59.505
+The most common multi-vector technique for text is called ColBERT.
+
+00:03:59.973 --> 00:04:02.175
+Let's see how it works with a simple example.
+
+00:04:02.475 --> 00:04:04.444
+Let's say this is the text of your document.
+
+00:04:04.744 --> 00:04:07.347
+First of all, the text is split into tokens.
+
+00:04:07.880 --> 00:04:11.884
+Next, these tokens are each assigned their own embedding vector.
+
+00:04:12.585 --> 00:04:16.189
+These vectors not only reflect the meaning of that particular token,
+
+00:04:16.489 --> 00:04:19.559
+but also its meaning in the context of the whole document.
+
+00:04:20.026 --> 00:04:22.128
+If this were a bi-encoder,
+
+00:04:22.128 --> 00:04:24.731
+the next step would be to reduce all these vectors
+
+00:04:24.731 --> 00:04:27.133
+down to a single vector through a process called pooling.
+
+00:04:27.433 --> 00:04:30.937
+The most common pooling approach is to just average all these vectors,
+
+00:04:30.937 --> 00:04:33.940
+giving a single vector representation of the whole document.
+
+00:04:34.440 --> 00:04:37.810
+In ColBERT, however, you keep all of these vectors.
+
+00:04:38.211 --> 00:04:40.913
+The process of representing a query works identically.
+
+00:04:41.314 --> 00:04:43.416
+The query text is converted to tokens
+
+00:04:43.416 --> 00:04:46.419
+and each token is assigned a dense semantic vector.
+
+00:04:46.786 --> 00:04:49.789
+Now, let's score this query document pair.
+
+00:04:50.290 --> 00:04:53.493
+The approach is called maximum similarity or simply MaxSim.
+
+00:04:53.993 --> 00:04:56.296
+The idea is that each query token
+
+00:04:56.296 --> 00:04:58.298
+finds the most similar document token.
+
+00:04:58.731 --> 00:05:01.834
+This is what it look like for a token puppy.
+
+00:05:02.335 --> 00:05:04.304
+The vector for puppy is compared
+
+00:05:04.304 --> 00:05:06.639
+to the vectors of each document token
+
+00:05:06.639 --> 00:05:08.941
+using a typical vector distance measure
+
+00:05:08.941 --> 00:05:11.244
+like the dot product or cosine distance.
+
+00:05:11.611 --> 00:05:13.279
+Here you would expect it to
+
+00:05:13.279 --> 00:05:15.214
+match most closely with the token dog.
+
+00:05:15.715 --> 00:05:18.618
+This process is then repeated for every token in the query.
+
+00:05:18.918 --> 00:05:21.721
+The MaxSim score of this query document pair
+
+00:05:21.821 --> 00:05:25.124
+is then just the sum of the maximum similarities
+
+00:05:25.224 --> 00:05:27.226
+over all the query tokens.
+
+00:05:27.727 --> 00:05:32.298
+MaxSim is different from other distance measures in that it is asymmetrical.
+
+00:05:32.932 --> 00:05:35.101
+The distance between A and B is not
+
+00:05:35.101 --> 00:05:37.537
+the same as the distance between B and A.
+
+00:05:37.737 --> 00:05:40.640
+To convince yourself of that, imagine you just flipped
+
+00:05:40.640 --> 00:05:42.775
+the text used for the document and the
+
+00:05:42.775 --> 00:05:44.911
+query in the last example as shown here.
+
+00:05:45.311 --> 00:05:49.115
+Originally, the MaxSim was the sum of three dot products,
+
+00:05:49.115 --> 00:05:51.184
+but now it's a sum of five.
+
+00:05:51.784 --> 00:05:54.620
+As a result, you can't take advantage of the highly optimized
+
+00:05:54.620 --> 00:05:56.923
+approximate nearest neighbors algorithms
+
+00:05:57.123 --> 00:05:59.192
+that typically power vector search.
+
+00:05:59.459 --> 00:06:02.962
+The issue arises when you try to build the HNSW index
+
+00:06:03.229 --> 00:06:05.331
+that the algorithm uses for search.
+
+00:06:05.732 --> 00:06:08.234
+This graph relies of knowing the distances
+
+00:06:08.234 --> 00:06:11.637
+between each document and a few of its nearest neighbors.
+
+00:06:12.138 --> 00:06:13.940
+Since MaxSim is asymmetric,
+
+00:06:14.140 --> 00:06:16.442
+A might be a nearest neighbor of B,
+
+00:06:16.743 --> 00:06:20.246
+but B isn't necessarily a nearest neighbor of A.
+
+00:06:20.680 --> 00:06:23.983
+This inconsistency prevents building the graph at all.
+
+00:06:24.283 --> 00:06:26.686
+And so when you're using multi-vector search,
+
+00:06:26.886 --> 00:06:29.188
+the HNSW index is usually disabled.
+
+00:06:29.555 --> 00:06:31.891
+ColBERT ultimately delivers on its goals.
+
+00:06:32.225 --> 00:06:36.028
+It allows precomputation of vectors like a bi-encoder,
+
+00:06:36.129 --> 00:06:40.733
+while the late interactions between the query and document tokens emulate cross-encoders.
+
+00:06:41.134 --> 00:06:45.037
+Since HNSW cannot be used effectively for multi-vector retrieval,
+
+00:06:45.037 --> 00:06:48.841
+you rarely use them alone for search over bigger data sets.
+
+00:06:48.841 --> 00:06:50.910
+If you did, then you would need to perform
+
+00:06:50.910 --> 00:06:53.713
+a brute force full scan search over all the documents,
+
+00:06:53.713 --> 00:06:56.215
+which is too slow to use at scale.
+
+00:06:56.416 --> 00:06:58.351
+A more common way of using
+
+00:06:58.351 --> 00:07:00.620
+late interaction models is as a re-ranker
+
+00:07:00.620 --> 00:07:03.423
+of the results of faster techniques like a bi-encoder.
+
+00:07:03.856 --> 00:07:07.660
+Typically, a faster retriever is used with oversampling,
+
+00:07:07.760 --> 00:07:11.664
+meaning you retrieve more documents than you eventually want to return.
+
+00:07:12.064 --> 00:07:14.367
+You then use the multi-vectors as a reranking step.
+
+00:07:14.734 --> 00:07:18.337
+So the MaxSim is only calculated on a limited set of candidates.
+
+00:07:18.838 --> 00:07:22.942
+The biggest downside of ColBERT is the amount of memory it requires.
+
+00:07:23.242 --> 00:07:25.745
+With one vector stored per token,
+
+00:07:25.745 --> 00:07:28.047
+you can easily have hundreds or
+
+00:07:28.047 --> 00:07:30.750
+thousands of vectors stored for every document.
+
+00:07:31.250 --> 00:07:35.655
+These numbers add up quickly, especially if you have a million-scale setup,
+
+00:07:35.655 --> 00:07:37.757
+which isn't that uncommon nowadays.
+
+00:07:37.924 --> 00:07:40.126
+Imagine your document has a thousand tokens.
+
+00:07:40.126 --> 00:07:43.830
+Each of them gets a 128 dimensional embedding,
+
+00:07:44.130 --> 00:07:47.433
+and each number is represented by a 4 byte float.
+
+00:07:47.733 --> 00:07:50.403
+That's half a megabyte just for the vectors.
+
+00:07:50.803 --> 00:07:53.806
+A bi-encoder only stores a single vector per document.
+
+00:07:54.207 --> 00:07:56.809
+Even if your vectors are very high dimensional,
+
+00:07:57.109 --> 00:07:59.412
+you usually won't exceed even 10 kilobytes.
+
+00:07:59.479 --> 00:08:03.282
+for document, which makes the scale easier to manage.
+
+00:08:03.382 --> 00:08:05.685
+Late interaction models are a middle ground
+
+00:08:05.685 --> 00:08:08.187
+between single vector embedding models and cross-encoders.
+
+00:08:08.287 --> 00:08:10.690
+They need more memory and are more expensive to run
+
+00:08:10.690 --> 00:08:12.792
+than any other embedding models,
+
+00:08:12.992 --> 00:08:16.295
+yet they still allow to precompute the representations of the documents
+
+00:08:16.295 --> 00:08:18.698
+and do not require to pass them through
+
+00:08:18.698 --> 00:08:20.700
+the neural network for each query.
+
+00:08:21.067 --> 00:08:23.336
+More recently, we started to see much value
+
+00:08:23.336 --> 00:08:26.539
+in applying similar methods to other modalities than text.
+
+00:08:26.839 --> 00:08:29.742
+And they also seem to be working better than their predecessors.
+
+00:08:30.042 --> 00:08:32.845
+Before we discuss different modalities, let's explore
+
+00:08:32.845 --> 00:08:34.947
+how late interaction models are used in practice.
+
+00:08:35.448 --> 00:08:37.650
+We'll start by loading ColBERT V2,
+
+00:08:37.650 --> 00:08:40.219
+a late interaction model developed at Stanford.
+
+00:08:40.419 --> 00:08:43.222
+ColBERT encodes texts into a 128
+
+00:08:43.222 --> 00:08:45.224
+dimensional vectors for each token,
+
+00:08:45.324 --> 00:08:47.426
+enabling fine-grained semantic matching.
+
+00:08:47.727 --> 00:08:49.629
+Let's load the model into memory.
+
+00:08:49.862 --> 00:08:52.565
+and see its embedding dimensionality.
+
+00:08:53.065 --> 00:08:55.067
+It's 128.
+
+00:08:55.134 --> 00:08:58.871
+Before we create embeddings, let's understand how ColBERT processes text.
+
+00:08:59.372 --> 00:09:01.374
+Tokenization is a process of breaking text
+
+00:09:01.374 --> 00:09:03.643
+into smaller pieces that the model can process.
+
+00:09:04.043 --> 00:09:06.546
+ColBERT uses WordPiece tokenization and adds
+
+00:09:06.546 --> 00:09:09.448
+special tokens like CLS at the start,
+
+00:09:09.649 --> 00:09:11.951
+unused one for document encoding,
+
+00:09:12.051 --> 00:09:13.653
+and SEP at the end.
+
+00:09:14.253 --> 00:09:17.256
+Regular words are either represented as separate tokens
+
+00:09:17.557 --> 00:09:19.892
+or sometimes a word may be split
+
+00:09:19.892 --> 00:09:22.528
+into multiple tokens too. Let's define our document.
+
+00:09:22.862 --> 00:09:26.532
+We have a simple helper method to handle the tokenization process.
+
+00:09:26.832 --> 00:09:29.035
+If you are interested in the technical details,
+
+00:09:29.035 --> 00:09:32.538
+feel free to check the function definition in the helper.py file.
+
+00:09:32.972 --> 00:09:36.442
+Let's see how our sample document gets tokenized.
+
+00:09:37.944 --> 00:09:41.847
+Majority of words are represented as single tokens.
+
+00:09:42.548 --> 00:09:46.452
+However, decibels is split into three separate tokens
+
+00:09:46.452 --> 00:09:48.554
+which are on a subword level.
+
+00:09:48.721 --> 00:09:53.159
+Let's simply check how many tokens our document was divided into.
+
+00:09:53.526 --> 00:09:56.128
+Our document consists of 55 tokens.
+
+00:09:56.829 --> 00:10:00.866
+Now that you understand tokenization, let's create embeddings for your document.
+
+00:10:01.334 --> 00:10:05.204
+Unlike traditional dense models that produce a single vector,
+
+00:10:05.204 --> 00:10:07.840
+ColBERT generates one embedding vector for each token.
+
+00:10:08.107 --> 00:10:11.143
+And as you saw, our document has 55 tokens,
+
+00:10:11.410 --> 00:10:16.549
+so ColBERT should also create 55 separate 128-dimensional vectors.
+
+00:10:16.916 --> 00:10:20.019
+One for each token in the tokenized sequence.
+
+00:10:20.519 --> 00:10:24.824
+Notice the shape. This confirms we have 55 token embeddings,
+
+00:10:24.824 --> 00:10:27.526
+each represented by a 128 dimensional vector.
+
+00:10:27.827 --> 00:10:31.330
+In practice, when working with longer document or data chunks,
+
+00:10:31.330 --> 00:10:33.432
+you can expect hundreds of tokens per embedding.
+
+00:10:33.432 --> 00:10:35.334
+But the principle remains the same.
+
+00:10:35.434 --> 00:10:37.136
+One vector per token.
+
+00:10:37.570 --> 00:10:40.473
+Now let's define and encode your query,
+
+00:10:41.073 --> 00:10:43.476
+which is way shorter than the document.
+
+00:10:43.876 --> 00:10:46.946
+ColBERT encodes queries differently than documents.
+
+00:10:47.346 --> 00:10:50.850
+It pads queries to a fixed length of 32 tokens
+
+00:10:51.050 --> 00:10:53.152
+to ensure consistent comparison across.
+
+00:10:53.185 --> 00:10:57.390
+different queries, but it also assumes a query cannot be any longer.
+
+00:10:57.690 --> 00:11:00.192
+While your query has only a few words,
+
+00:11:00.192 --> 00:11:02.695
+ColBERT will generate 32 token embeddings
+
+00:11:02.695 --> 00:11:05.398
+with extra padding tokens to reach this length.
+
+00:11:05.698 --> 00:11:08.300
+If you make it longer, it may get cut off.
+
+00:11:08.801 --> 00:11:13.406
+As expected, we got 32, 128 dimensional embeddings,
+
+00:11:13.406 --> 00:11:15.408
+even though our query was relatively short.
+
+00:11:15.641 --> 00:11:18.611
+Let's see how the tokenization of the query looks like
+
+00:11:18.611 --> 00:11:21.313
+using the same helper method like we used for the document.
+
+00:11:21.814 --> 00:11:24.617
+It has an additional parameter to control
+
+00:11:24.617 --> 00:11:28.421
+whether we create tokenization for the document or a query.
+
+00:11:28.721 --> 00:11:31.323
+As you can see, majority of the tokens
+
+00:11:31.323 --> 00:11:33.325
+are just some padding tokens
+
+00:11:33.325 --> 00:11:36.028
+which are automatically added to the query.
+
+00:11:36.328 --> 00:11:38.831
+Nevertheless, each of the words of the original
+
+00:11:38.831 --> 00:11:41.300
+query was just converted into a single token.
+
+00:11:41.300 --> 00:11:44.637
+Now, let's see late interaction in action.
+
+00:11:45.237 --> 00:11:47.306
+We'll compute the similarity matrix
+
+00:11:47.406 --> 00:11:49.108
+by taking a dot product
+
+00:11:49.108 --> 00:11:51.310
+between every query token embedding
+
+00:11:51.510 --> 00:11:53.713
+and every document token embedding.
+
+00:11:53.979 --> 00:11:57.616
+This creates a 32 by 55 matrix
+
+00:11:57.983 --> 00:12:00.152
+where each cell represents a similarity
+
+00:12:00.453 --> 00:12:03.956
+between a specific query token and a specific document token.
+
+00:12:04.290 --> 00:12:07.393
+In the next step, you will only select the maximum similarity
+
+00:12:07.393 --> 00:12:09.595
+for each of the query tokens,
+
+00:12:09.595 --> 00:12:12.598
+and sum them up across all of them.
+
+00:12:13.099 --> 00:12:17.603
+maxsim_score of our document for the query is around 17.
+
+00:12:18.037 --> 00:12:21.140
+Let's visualize the similarity matrix as a heat map.
+
+00:12:21.640 --> 00:12:24.944
+We have another helper function that does exactly this.
+
+00:12:25.544 --> 00:12:28.848
+Each cell shows how similar a specific query token
+
+00:12:28.948 --> 00:12:31.550
+is to a specific document token.
+
+00:12:31.951 --> 00:12:34.153
+Lighter colors indicate lower similarity
+
+00:12:34.153 --> 00:12:37.857
+and the red border is used to highlight the highest score.
+
+00:12:38.290 --> 00:12:42.795
+You can see which query terms like advantages or cars
+
+00:12:42.795 --> 00:12:45.798
+match most strongly with which document terms
+
+00:12:45.798 --> 00:12:47.900
+like benefits and fleets.
+
+00:12:47.900 --> 00:12:50.302
+This visualization helps you to understand
+
+00:12:50.302 --> 00:12:53.806
+why ColBERT finds certain token pairs relevant.
+
+00:12:54.073 --> 00:12:57.176
+For clarity, all the mask tokens are removed from the query,
+
+00:12:57.176 --> 00:12:59.678
+but they also contribute to the final score.
+
+00:13:00.279 --> 00:13:02.681
+To appreciate the benefits of late interaction,
+
+00:13:02.681 --> 00:13:05.718
+let's compare ColBERT with a traditional dense embedding model.
+
+00:13:05.718 --> 00:13:08.721
+You will load one of the popular embedding models from fastembed
+
+00:13:09.221 --> 00:13:11.223
+and use it alongside ColBERT
+
+00:13:11.223 --> 00:13:13.526
+to see how their search results differ in practice.
+
+00:13:13.926 --> 00:13:15.928
+Now you will create a Qdrant collection
+
+00:13:15.928 --> 00:13:18.531
+that can store both dense and multi-vector embeddings.
+
+00:13:18.831 --> 00:13:22.234
+You will keep the collection name and vector names as variables.
+
+00:13:22.601 --> 00:13:25.571
+So you can easily refer to them later on.
+
+00:13:25.771 --> 00:13:27.773
+Now the real collection setup.
+
+00:13:27.873 --> 00:13:30.075
+Notice the special configuration for ColBERT.
+
+00:13:30.276 --> 00:13:33.679
+You enable multivector config with the MaxSim comparator,
+
+00:13:33.779 --> 00:13:37.783
+which tells Qdrant to use the MaxSim scoring that we discussed earlier.
+
+00:13:38.017 --> 00:13:40.820
+You also disable HNSW graph creation
+
+00:13:40.820 --> 00:13:43.222
+by setting the m parameter to zero.
+
+00:13:43.823 --> 00:13:47.026
+Since this data structure cannot be effectively used for multi-vector search.
+
+00:13:48.160 --> 00:13:50.262
+Let's create some example documents
+
+00:13:50.663 --> 00:13:52.965
+about Qdrant and SQL databases
+
+00:13:53.165 --> 00:13:55.367
+to test the search functionality.
+
+00:13:55.968 --> 00:13:58.070
+Now you will insert these documents
+
+00:13:58.170 --> 00:14:00.673
+into the collection you created earlier.
+
+00:14:01.073 --> 00:14:03.275
+you will create both dense embedding
+
+00:14:03.275 --> 00:14:05.878
+and multi-vector representation
+
+00:14:05.878 --> 00:14:07.580
+using the ColBERT model.
+
+00:14:07.880 --> 00:14:10.082
+Now, let's search using both approaches.
+
+00:14:10.583 --> 00:14:12.451
+We'll create a helper function.
+
+00:14:12.451 --> 00:14:15.654
+that will query the collection using ColBERT embeddings.
+
+00:14:16.255 --> 00:14:18.457
+We pass the query and the vector is generated
+
+00:14:18.457 --> 00:14:20.659
+using the model you defined earlier.
+
+00:14:21.260 --> 00:14:23.262
+Please mind that you are calling query_embed,
+
+00:14:23.262 --> 00:14:24.964
+not passage_embed anymore,
+
+00:14:25.264 --> 00:14:29.635
+because certain models may process queries differently than the documents.
+
+00:14:29.935 --> 00:14:33.339
+You can also specify the number of results you want to retrieve.
+
+00:14:33.839 --> 00:14:36.442
+Another helpful function will perform the same process
+
+00:14:36.742 --> 00:14:39.144
+but using the regular dense embedding model.
+
+00:14:39.645 --> 00:14:42.748
+You have both methods defined, so let's create a query.
+
+00:14:43.115 --> 00:14:46.418
+Feel free to play with different queries to see different outputs.
+
+00:14:46.418 --> 00:14:50.122
+You might be wondering why we specifically selected this particular query.
+
+00:14:50.422 --> 00:14:52.725
+Proper names, such as the names of companies,
+
+00:14:52.925 --> 00:14:55.027
+are quite often divided into multiple tokens,
+
+00:14:55.227 --> 00:14:57.429
+consisting of even single letters.
+
+00:14:57.730 --> 00:15:00.232
+Such a token cannot effectively represent
+
+00:15:00.332 --> 00:15:02.434
+what that particular company does,
+
+00:15:02.635 --> 00:15:04.236
+and it's more like a fallback.
+
+00:15:04.436 --> 00:15:06.171
+Even though we all know Qdrant is
+
+00:15:06.171 --> 00:15:07.940
+a vector search engine at this point,
+
+00:15:08.140 --> 00:15:11.944
+for our ColBERT model, it's nothing more than a sequence of letters.
+
+00:15:12.444 --> 00:15:16.615
+To confirm that our query is divided into that many tokens,
+
+00:15:16.615 --> 00:15:20.219
+let's use the same helper function like we used before.
+
+00:15:20.719 --> 00:15:23.422
+Indeed Qdrant was divided into three separate tokens,
+
+00:15:23.422 --> 00:15:26.425
+what proves that ColBERT was not exposed to
+
+00:15:26.926 --> 00:15:29.728
+the name of the company in this training data.
+
+00:15:29.962 --> 00:15:31.797
+In dense embedding models, this kind of
+
+00:15:31.797 --> 00:15:33.866
+tokens will contribute to the final pooled vector,
+
+00:15:35.067 --> 00:15:38.771
+but they will be most likely just some kind of a noise.
+
+00:15:39.071 --> 00:15:42.875
+With token level interactions, you can expect such multi-token sequences
+
+00:15:42.875 --> 00:15:45.778
+to be better matched between the documents and the queries.
+
+00:15:46.211 --> 00:15:50.716
+It's time to run search using both approaches to retrieve the results.
+
+00:15:51.116 --> 00:15:52.918
+Here you can see how long
+
+00:15:52.918 --> 00:15:55.020
+it took to generate ColBERT Dense vector,
+
+00:15:55.321 --> 00:15:58.223
+and also how long it takes to return the results.
+
+00:15:58.791 --> 00:16:01.293
+We have another helper function
+
+00:16:01.393 --> 00:16:05.597
+with a simple visual comparing the search results of both methods.
+
+00:16:06.298 --> 00:16:09.802
+One key advantage of ColBERT's token level matching
+
+00:16:09.902 --> 00:16:13.205
+is its ability to capture specific terms like proper names.
+
+00:16:13.505 --> 00:16:17.676
+In this case, Qdrant, better than pulled dense vectors,
+
+00:16:17.776 --> 00:16:23.082
+since individual tokens retain their semantic identity throughout the matching process.
+
+00:16:23.082 --> 00:16:26.952
+Notice there are differences between ColBERT and dense embedding results,
+
+00:16:27.186 --> 00:16:29.455
+but it's hard to say what was the winner.
+
+00:16:29.955 --> 00:16:32.925
+There is an overlap, but eyeballing is usually not enough.
+
+00:16:33.192 --> 00:16:36.562
+In real-world cases, we build reference ground truth datasets
+
+00:16:36.729 --> 00:16:39.164
+to ensure the returned results are of a high quality.
+
+00:16:39.565 --> 00:16:42.368
+What I'm noticing from this simple example
+
+00:16:42.368 --> 00:16:44.770
+is that all of the ColBERT results mention Qdrant,
+
+00:16:44.770 --> 00:16:47.272
+which is not true for the dense results.
+
+00:16:47.473 --> 00:16:51.176
+Which is kind of expected because our query has mentioned Qdrant.
+
+00:16:51.210 --> 00:16:54.713
+Let's check how each of the query tokens contributed to the score
+
+00:16:54.713 --> 00:16:57.316
+for the best result as retrieved by ColBERT.
+
+00:16:57.516 --> 00:17:00.319
+We can use the same heat map like you used before.
+
+00:17:00.819 --> 00:17:04.023
+For that, we need the tokenization of both the document and query
+
+00:17:04.023 --> 00:17:06.325
+as well as their ColBERT representations.
+
+00:17:06.592 --> 00:17:09.194
+A similarity matrix is the last missing piece.
+
+00:17:09.595 --> 00:17:13.399
+As all the components are ready, let's finally display the heat map.
+
+00:17:14.199 --> 00:17:18.203
+It's not surprising that perform and performance were the closest neighbors.
+
+00:17:18.404 --> 00:17:20.372
+However, Q
+
+00:17:20.372 --> 00:17:23.342
+dran, and t were also contributing
+
+00:17:23.375 --> 00:17:26.145
+to the final MaxSim scores quite significantly.
+
+00:17:26.545 --> 00:17:30.049
+So, even though ColBERT does not understand what Qdrant means,
+
+00:17:30.249 --> 00:17:32.851
+this token level interactions helped to implement
+
+00:17:32.885 --> 00:17:34.553
+keyword matching.
+
+00:17:34.953 --> 00:17:37.056
+That was just a very quick introduction
+
+00:17:37.056 --> 00:17:39.858
+to how multi-vector techniques work for text.
+
+00:17:40.259 --> 00:17:42.561
+Let's join me in the next lesson to see what
+
+00:17:42.561 --> 00:17:44.663
+those techniques look like for images.

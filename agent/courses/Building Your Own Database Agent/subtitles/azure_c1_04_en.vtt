@@ -1,0 +1,891 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.035 --> 00:00:05.038
+This is a natural
+evolution from the previous lesson.
+
+2
+00:00:05.772 --> 00:00:10.010
+You can implement LangChain agents
+to connect to a provided SQL database,
+
+3
+00:00:10.176 --> 00:00:11.711
+which is one of the scenarios
+
+4
+00:00:11.711 --> 00:00:14.714
+that you can leverage
+in your professional activities.
+
+5
+00:00:14.948 --> 00:00:17.951
+This lesson is all about SQL databases.
+
+6
+00:00:18.618 --> 00:00:20.887
+You will leverage SQL light
+
+7
+00:00:20.887 --> 00:00:23.890
+database and perform
+the RAG pattern against it.
+
+8
+00:00:24.090 --> 00:00:27.961
+The result will be a database agent
+in which generative
+
+9
+00:00:27.961 --> 00:00:31.998
+AI will help you translate
+natural language to SQL code.
+
+10
+00:00:32.699 --> 00:00:34.601
+Let's have some fun!
+
+11
+00:00:34.601 --> 00:00:37.170
+We are back for lesson three.
+
+12
+00:00:37.170 --> 00:00:40.273
+You have successfully deployed
+your instances of Azure
+
+13
+00:00:40.373 --> 00:00:43.510
+OpenAI and LangChain
+and connected to a CSV file.
+
+14
+00:00:44.811 --> 00:00:45.578
+What's next?
+
+15
+00:00:45.578 --> 00:00:49.082
+If our goal is to connect to a database an interact
+with this information?
+
+16
+00:00:50.150 --> 00:00:51.151
+Exactly.
+
+17
+00:00:51.151 --> 00:00:53.119
+We now create an agent to connect
+
+18
+00:00:53.119 --> 00:00:56.456
+directly to an SQL database
+instead of a CSV file.
+
+19
+00:00:56.890 --> 00:01:01.061
+This may sound complex, but
+I will guide you through it step by step.
+
+20
+00:01:01.728 --> 00:01:04.497
+First,
+let's check the illustrative architecture
+
+21
+00:01:04.497 --> 00:01:07.000
+for connecting to a SQL database.
+
+22
+00:01:07.000 --> 00:01:09.569
+In building, our AI agent it will rely
+
+23
+00:01:09.569 --> 00:01:12.605
+on the baseline
+GPT-4 model from Azure OpenAI.
+
+24
+00:01:12.872 --> 00:01:14.808
+and use the RAG system.
+
+25
+00:01:14.808 --> 00:01:17.911
+LangChain will orchestrate the knowledge,
+helping to find
+
+26
+00:01:17.911 --> 00:01:20.880
+information
+and explain each step in obtaining it.
+
+27
+00:01:22.015 --> 00:01:23.683
+Just like in lesson two, you
+
+28
+00:01:23.683 --> 00:01:27.620
+will see traces with detail information
+which is powerful and useful.
+
+29
+00:01:28.188 --> 00:01:30.790
+So we will keep this approach.
+
+30
+00:01:30.790 --> 00:01:34.127
+This time will use a SQLite database,
+
+31
+00:01:34.127 --> 00:01:37.831
+which is a local instance
+of an open source relational database.
+
+32
+00:01:38.765 --> 00:01:41.768
+You will find all the necessary
+information in the notebook.
+
+33
+00:01:42.469 --> 00:01:45.505
+And of course will access everything
+using APIs.
+
+34
+00:01:46.673 --> 00:01:49.442
+Although we are using notebooks
+for this course,
+
+35
+00:01:49.442 --> 00:01:52.712
+in a real world application,
+you could integrate the results
+
+36
+00:01:52.712 --> 00:01:56.282
+into a web app, mobile application,
+or any other platform.
+
+37
+00:01:56.783 --> 00:01:59.519
+The process remains the same.
+
+38
+00:01:59.519 --> 00:02:02.522
+Replacing the CSV file
+with a SQL database.
+
+39
+00:02:03.857 --> 00:02:05.725
+You could combine different data sources
+
+40
+00:02:05.725 --> 00:02:08.728
+such as images, data lakes, and databases.
+
+41
+00:02:09.095 --> 00:02:13.500
+The RAG mechanism will efficiently locate
+information from the appropriate source.
+
+42
+00:02:14.134 --> 00:02:17.103
+Let's head to our notebook
+and get started.
+
+43
+00:02:17.103 --> 00:02:20.106
+We are launching our environment again
+and this time
+
+44
+00:02:20.106 --> 00:02:22.175
+we are incorporating a SQL database.
+
+45
+00:02:23.143 --> 00:02:25.111
+The main difference is that we
+
+46
+00:02:25.111 --> 00:02:28.414
+don't need to communicate
+with a SQL database.
+
+47
+00:02:28.982 --> 00:02:33.019
+So you will see that this is the primary
+change compared to before.
+
+48
+00:02:33.052 --> 00:02:36.055
+While the rest remains very similar.
+
+49
+00:02:36.289 --> 00:02:39.859
+We will start by recovering the CSV data
+we used earlier.
+
+50
+00:02:40.527 --> 00:02:44.597
+The idea is to load
+this CSV file into a SQL database,
+
+51
+00:02:44.597 --> 00:02:47.567
+and then communicate with the database.
+
+52
+00:02:47.834 --> 00:02:49.736
+If you already have your information
+
+53
+00:02:49.736 --> 00:02:53.473
+in a SQL database, you will
+then need to load the CSV file.
+
+54
+00:02:53.873 --> 00:02:56.409
+This step is just for the lesson.
+
+55
+00:02:56.409 --> 00:02:59.712
+For simplicity,
+the data is available in your lesson
+
+56
+00:02:59.712 --> 00:03:03.816
+directory under data
+all the states history CSV.
+
+57
+00:03:04.784 --> 00:03:07.487
+wWe'll create the SQL Alchemy engine
+
+58
+00:03:07.487 --> 00:03:10.456
+to facilitate communication
+with this SQL database,
+
+59
+00:03:10.456 --> 00:03:13.459
+and will use pandas
+to handle the dataframes.
+
+60
+00:03:13.793 --> 00:03:17.597
+Let's get started with connecting
+to our SQL database and loading the data.
+
+61
+00:03:19.065 --> 00:03:21.601
+Basically what we are saying is
+
+62
+00:03:21.601 --> 00:03:24.604
+we have a folder, a local folder called DB
+
+63
+00:03:24.604 --> 00:03:29.209
+and there you have this test db file.
+
+64
+00:03:29.709 --> 00:03:34.709
+This is basically the SQLite database file
+that you will use right?
+
+65
+00:03:35.748 --> 00:03:38.284
+This is basically
+the template that you need to use.
+
+66
+00:03:38.284 --> 00:03:39.252
+You can put it there.
+
+67
+00:03:39.252 --> 00:03:42.455
+And then you had your local instance
+of that
+
+68
+00:03:42.455 --> 00:03:45.558
+SQL database. Is everything you need.
+
+69
+00:03:45.558 --> 00:03:48.695
+You can recover it
+from the website SQLite.
+
+70
+00:03:48.695 --> 00:03:51.130
+They have examples.
+You can create your own.
+
+71
+00:03:51.130 --> 00:03:54.267
+But this is good enough
+for what we want to do.
+
+72
+00:03:54.934 --> 00:03:59.572
+And now we are creating the engine
+to connect to the database.
+
+73
+00:03:59.906 --> 00:04:03.543
+And this is the interesting
+part. We'll be creating
+
+74
+00:04:03.543 --> 00:04:08.448
+the engine. We'll be recovering the CSV file
+that will be on your data folder.
+
+75
+00:04:08.548 --> 00:04:12.552
+Then we are creating
+the dataframe df dataframe with pandas.
+
+76
+00:04:12.585 --> 00:04:16.856
+We are reading the csv file
+and this is the key part here.
+
+77
+00:04:16.956 --> 00:04:20.059
+The delta compared to the second lesson,
+we are getting the dataframe
+
+78
+00:04:20.059 --> 00:04:23.029
+and we are using the two SQL function.
+
+79
+00:04:23.029 --> 00:04:26.532
+And basically what we're saying is yes,
+we are getting the all the states history.
+
+80
+00:04:26.566 --> 00:04:29.035
+We are getting the engine
+that we have mentioned already.
+
+81
+00:04:29.035 --> 00:04:33.840
+They say SQL engine if exist, imagine
+it's the first time we are doing it.
+
+82
+00:04:33.840 --> 00:04:34.807
+The second time, we'll
+
+83
+00:04:34.807 --> 00:04:37.543
+just replace it. No incremental,
+we are just replacing.
+
+84
+00:04:37.543 --> 00:04:38.611
+So that's good.
+
+85
+00:04:38.611 --> 00:04:41.180
+Let's run it. Let's see how this works.
+
+86
+00:04:41.180 --> 00:04:44.550
+Good basically is telling you
+there are so many records
+
+87
+00:04:44.550 --> 00:04:47.987
+and we have to load them
+into the SQL database.
+
+88
+00:04:48.221 --> 00:04:49.555
+As simple as that.
+
+89
+00:04:49.555 --> 00:04:52.558
+Let us go to the details of what will be
+
+90
+00:04:53.192 --> 00:04:56.195
+about printing a SQL engine.
+
+91
+00:04:56.596 --> 00:04:59.232
+So this will be our first
+
+92
+00:04:59.232 --> 00:05:02.068
+SQL agent will evolve
+
+93
+00:05:02.068 --> 00:05:05.905
+this kind of agent. We'll replace
+pieces later on the next lessons.
+
+94
+00:05:05.905 --> 00:05:10.310
+But this is the first time you will be
+interacting truly with a SQL database.
+
+95
+00:05:10.743 --> 00:05:12.612
+I hope you are excited, I'm very excited.
+
+96
+00:05:12.612 --> 00:05:13.379
+Let's see.
+
+97
+00:05:13.379 --> 00:05:16.382
+I'll be copying some information
+
+98
+00:05:16.449 --> 00:05:19.752
+I have created that
+you will have available on your notebook.
+
+99
+00:05:19.752 --> 00:05:21.954
+Don't worry, because a lot of information.
+
+100
+00:05:21.954 --> 00:05:24.190
+Then I'll put it here.
+
+101
+00:05:24.190 --> 00:05:25.391
+Let me show you.
+
+102
+00:05:25.391 --> 00:05:27.760
+So look at this.
+
+103
+00:05:27.760 --> 00:05:30.330
+You have the prefix.
+
+104
+00:05:30.330 --> 00:05:34.667
+This is before, we are creating
+something called like a SQL agent prefix.
+
+105
+00:05:35.234 --> 00:05:38.104
+We are explaining what we want to do.
+
+106
+00:05:38.104 --> 00:05:40.840
+You are an agent designed
+to deal with that SQL database.
+
+107
+00:05:40.840 --> 00:05:42.575
+So you are giving some context.
+
+108
+00:05:42.575 --> 00:05:45.111
+Additional context before it was a CSV file
+
+109
+00:05:45.111 --> 00:05:47.814
+Now we are saying hey you are,
+you are connecting to a SQL.
+
+110
+00:05:47.814 --> 00:05:51.918
+And you will be running SQL queries
+and you will be doing this and that.
+
+111
+00:05:51.918 --> 00:05:52.819
+You can change this.
+
+112
+00:05:52.819 --> 00:05:55.755
+But this is a good initial template
+that you can leverage.
+
+113
+00:05:55.755 --> 00:05:58.024
+And then you have the format instructions.
+
+114
+00:05:58.024 --> 00:06:01.627
+So you have the format
+of how you want the engine
+
+115
+00:06:01.627 --> 00:06:05.198
+to answer, like with an action
+the input, the situation,
+
+116
+00:06:05.198 --> 00:06:08.835
+so the final answer, you have seen
+that before are the explanation.
+
+117
+00:06:08.835 --> 00:06:12.839
+So what you are giving here,
+is an example for the model to understand
+
+118
+00:06:12.839 --> 00:06:14.674
+what you are expecting as a user.
+
+119
+00:06:14.674 --> 00:06:18.578
+The kind of answer you want, the format,
+the information you want to get,
+
+120
+00:06:18.911 --> 00:06:22.482
+and then the trace of the SQL query.
+
+121
+00:06:22.849 --> 00:06:23.649
+This powerful.
+
+122
+00:06:23.649 --> 00:06:26.152
+We will be able to communicate
+with the SQL database.
+
+123
+00:06:26.152 --> 00:06:27.920
+We will do it with natural language.
+
+124
+00:06:27.920 --> 00:06:30.523
+But still we get the information
+about the query, right?
+
+125
+00:06:30.523 --> 00:06:34.427
+This will be good for learning cases.
+
+126
+00:06:34.694 --> 00:06:35.628
+within your company.
+
+127
+00:06:35.628 --> 00:06:38.798
+Like people
+wanting to not only use the data,
+
+128
+00:06:38.798 --> 00:06:42.335
+but also to learn about how to perform
+SQL queries.
+
+129
+00:06:42.335 --> 00:06:43.469
+So that's good.
+
+130
+00:06:43.469 --> 00:06:46.139
+Let's just put it here.
+
+131
+00:06:46.139 --> 00:06:49.375
+Now let's put the second part of this,
+
+132
+00:06:49.776 --> 00:06:54.213
+which is very similar to the sequence
+of steps we have followed before.
+
+133
+00:06:54.547 --> 00:06:58.217
+So basically what you have here
+is the same.
+
+134
+00:06:58.217 --> 00:07:02.688
+We are creating the LLM, the actual
+chat, open the instance with the endpoint
+
+135
+00:07:02.688 --> 00:07:07.560
+with everything we have again
+database, the toolkit for the database.
+
+136
+00:07:07.560 --> 00:07:11.397
+So we can actually combine
+the LLM database.
+
+137
+00:07:11.397 --> 00:07:14.233
+And then we have again the question.
+
+138
+00:07:14.233 --> 00:07:19.233
+Remember we can have any kind of question
+here, I'm putting something different.
+
+139
+00:07:20.006 --> 00:07:23.009
+"How many patients were specialized
+during October
+
+140
+00:07:23.009 --> 00:07:27.046
+2020 in New York
+and nationwide as the total of the states".
+
+141
+00:07:28.047 --> 00:07:29.849
+here we are creating the agent
+
+142
+00:07:29.849 --> 00:07:33.719
+executer SQL,
+which is basically that agent, that LangChain
+
+143
+00:07:33.786 --> 00:07:38.157
+agent with specific format
+that is expecting to have the prefix
+
+144
+00:07:38.357 --> 00:07:41.527
+that we have sent, the format instructions
+that we have sent.
+
+145
+00:07:41.661 --> 00:07:45.631
+Of course, we need to know
+which LLM we are using, which is Azure OpenAI.
+
+146
+00:07:45.698 --> 00:07:48.768
+I do the version with that endpoint.
+
+147
+00:07:48.835 --> 00:07:52.538
+Then the toolkit that we are using,
+which is a SQL database toolkit,
+
+148
+00:07:52.538 --> 00:07:55.908
+and we will be retrieving information
+that okay, the
+
+149
+00:07:55.942 --> 00:08:00.179
+you can customize these kind of parameters
+we'll execute this and see what happens.
+
+150
+00:08:00.513 --> 00:08:03.749
+Like basically you execute this,
+there is no trace
+
+151
+00:08:03.749 --> 00:08:08.749
+because we haven't sent any message
+or prompt to the system yet.
+
+152
+00:08:10.423 --> 00:08:12.191
+This is the next step.
+
+153
+00:08:12.191 --> 00:08:15.261
+So imagine even if I don't tell you
+
+154
+00:08:15.261 --> 00:08:18.931
+what kind of function
+you need to send a prompt to the system.
+
+155
+00:08:18.931 --> 00:08:22.602
+Remember from lesson one and two.
+Exactly, I know you are thinking about
+
+156
+00:08:22.602 --> 00:08:26.539
+this is. The invoke function
+that we will put here.
+
+157
+00:08:26.539 --> 00:08:28.941
+So basically
+we have the agent executer the SQL.
+
+158
+00:08:28.941 --> 00:08:31.010
+This is different
+compared to previous lesson.
+
+159
+00:08:31.010 --> 00:08:33.679
+And then we invoke,
+and then we send the question.
+
+160
+00:08:33.679 --> 00:08:36.582
+So let's execute this. See how it goes.
+
+161
+00:08:38.618 --> 00:08:42.989
+Remember before, we had similar trace.
+
+162
+00:08:43.022 --> 00:08:48.022
+We are talking about an agent executer
+for this CSV file.
+
+163
+00:08:48.060 --> 00:08:50.429
+Now we are talking about a SQL.
+
+164
+00:08:50.429 --> 00:08:52.465
+This will take some time.
+
+165
+00:08:52.465 --> 00:08:56.068
+Just enjoy the magic of a LangChain
+
+166
+00:08:56.068 --> 00:09:00.106
+agent performing
+all these operations on your behalf.
+
+167
+00:09:01.307 --> 00:09:03.576
+You will get
+
+168
+00:09:03.576 --> 00:09:06.579
+a big lot of information here,
+all the traces.
+
+169
+00:09:06.779 --> 00:09:11.117
+You can take your time for sure
+to analyze what this is saying,
+
+170
+00:09:11.384 --> 00:09:14.420
+that basically, this is the part
+that will start to be interesting
+
+171
+00:09:14.420 --> 00:09:18.925
+because explaining the results, remember
+that here the the query is different.
+
+172
+00:09:18.925 --> 00:09:22.728
+We were talking about October 2020,
+New York
+
+173
+00:09:22.895 --> 00:09:25.398
+and I believe we were saying hospitalized.
+
+174
+00:09:25.398 --> 00:09:28.401
+So we have all the information
+the engine is finding
+
+175
+00:09:28.401 --> 00:09:31.404
+where to find information, which columns,
+which values.
+
+176
+00:09:31.404 --> 00:09:33.139
+You can see you already
+
+177
+00:09:33.139 --> 00:09:37.610
+the selects the from the like the where
+all the queries
+
+178
+00:09:37.610 --> 00:09:42.610
+that you will need to perform but
+that now are automatic with this agent.
+
+179
+00:09:42.915 --> 00:09:44.984
+So let's see the answer.
+
+180
+00:09:44.984 --> 00:09:48.821
+Remember the Phoenix chain
+is the clean version right of the question
+
+181
+00:09:48.821 --> 00:09:51.857
+and the answer the problem
+and the output, the compilation.
+
+182
+00:09:51.857 --> 00:09:55.261
+So basically here you have
+how many patients were hospitalized.
+
+183
+00:09:55.361 --> 00:09:58.397
+And then on the output in October 2020
+
+184
+00:09:58.397 --> 00:10:01.467
+there were no new hospitalizations
+in New York.
+
+185
+00:10:01.467 --> 00:10:05.838
+And there where like 53
+new hospitalizations nationwide.
+
+186
+00:10:05.972 --> 00:10:09.875
+Again, for whatever reason, you can get
+one another value depending on the state.
+
+187
+00:10:10.142 --> 00:10:11.177
+Just go.
+
+188
+00:10:11.177 --> 00:10:14.780
+You want to explore before
+this is the file and confirm
+
+189
+00:10:14.780 --> 00:10:17.450
+that the engine is providing you
+with a good answer.
+
+190
+00:10:17.450 --> 00:10:18.150
+I can confirm
+
+191
+00:10:18.150 --> 00:10:21.087
+this is a good answer because
+I have checked the information before.
+
+192
+00:10:21.087 --> 00:10:24.090
+So this is good. We'll continue
+with lesson 4.
+
+193
+00:10:24.323 --> 00:10:26.626
+I hope you are
+enjoying it. I'm enjoying it a lot.
+

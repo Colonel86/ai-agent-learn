@@ -1,0 +1,83 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:44533
+
+1
+00:00:00.000 --> 00:00:03.000
+Congratulations on completing this course.
+
+2
+00:00:03.000 --> 00:00:05.733
+In this course
+you implemented vector search.
+
+3
+00:00:05.733 --> 00:00:09.900
+You optimize RAG systems
+by using metadata and MongoDB
+
+4
+00:00:10.000 --> 00:00:14.500
+aggregation pipeline to improve system
+efficiency and output relevance.
+
+5
+00:00:15.000 --> 00:00:18.800
+And finally,
+you learned how to reduce LLM application
+
+6
+00:00:18.800 --> 00:00:22.133
+operational costs
+by using prompt compression.
+
+7
+00:00:22.900 --> 00:00:25.700
+I'm looking forward
+to seeing what you build on your own.
+
+8
+00:00:26.500 --> 00:00:29.500
+Here are some additional resources
+I recommend you to take a look
+
+9
+00:00:29.533 --> 00:00:31.533
+after completing this lesson.
+
+10
+00:00:31.533 --> 00:00:35.900
+The first resource is the MongoDB
+Developer Center, which contains
+
+11
+00:00:36.200 --> 00:00:39.000
+tutorials, articles, and video
+
+12
+00:00:39.000 --> 00:00:42.000
+covering a variety of topics
+related to AI.
+
+13
+00:00:42.233 --> 00:00:45.366
+Next, you have the GenAI Showcase repo.
+
+14
+00:00:45.966 --> 00:00:49.266
+This contains different code
+and is a repository
+
+15
+00:00:49.266 --> 00:00:53.766
+showcasing different
+use cases for RAG and agentic systems.
+
+16
+00:00:54.066 --> 00:00:58.033
+And finally, the DeepLearning.AI forum
+where you can ask questions
+
+17
+00:00:58.033 --> 00:00:59.533
+in regards to this course.
+

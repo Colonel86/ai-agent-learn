@@ -1,0 +1,185 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.702
+Welcome to Multi-vector Image Retrieval,
+
+00:00:02.869 --> 00:00:04.771
+built in partnership with Qdrant.
+
+00:00:05.171 --> 00:00:08.575
+In this course, you'll learn how multi-vector image retrieval works
+
+00:00:08.875 --> 00:00:12.779
+and best practices for using it in your AI applications.
+
+00:00:12.779 --> 00:00:14.948
+For a long time, it was easiest
+
+00:00:15.015 --> 00:00:17.550
+to give LLMs access to only text data,
+
+00:00:17.851 --> 00:00:20.754
+but that leaves a lot of useful information inaccessible
+
+00:00:20.820 --> 00:00:24.758
+because it's stored in images and other forms of multimodal data.
+
+00:00:25.091 --> 00:00:30.597
+This course focuses on a collection of image retrieval techniques called Multi-vector.
+
+00:00:31.064 --> 00:00:34.968
+In contrast, standard vector retrieval works by representing each document or image
+
+00:00:34.968 --> 00:00:37.670
+with a single large vector.
+
+00:00:38.138 --> 00:00:39.939
+An image is retrieved if their vector
+
+00:00:39.939 --> 00:00:41.775
+is a good match for a query.
+
+00:00:42.108 --> 00:00:44.944
+Multi-vector techniques use many smaller vectors
+
+00:00:45.245 --> 00:00:49.649
+to represent the meaning of, say, smaller patches of an image.
+
+00:00:50.216 --> 00:00:52.819
+storing this detailed vector information
+
+00:00:52.819 --> 00:00:55.121
+then allows for fine-grained matching
+
+00:00:55.221 --> 00:00:57.323
+between the tokens in the text query
+
+00:00:57.323 --> 00:01:01.027
+and the image patches that make up your image or document.
+
+00:01:01.428 --> 00:01:04.931
+This approach to provide high quality image search
+
+00:01:04.931 --> 00:01:09.836
+that works well even on complex documents that combine text, images, slides,
+
+00:01:10.236 --> 00:01:12.439
+and storing all this vector data
+
+00:01:12.639 --> 00:01:15.308
+does lead to challenges with memory usage and search.
+
+00:01:15.408 --> 00:01:18.411
+But some new techniques address these problems
+
+00:01:18.411 --> 00:01:21.414
+and you'll explore these solutions as well in this course.
+
+00:01:21.614 --> 00:01:24.818
+To help you to understand these Multi-vector image retrieval techniques,
+
+00:01:24.918 --> 00:01:27.620
+I'm delighted to introduce your instructor for this course,
+
+00:01:27.720 --> 00:01:31.224
+Kacper Łukawski, who is an experienced AI engineer
+
+00:01:31.324 --> 00:01:33.626
+and a developer advocate for the vector database
+
+00:01:33.726 --> 00:01:36.229
+company Qdrant. Thanks, Andrew.
+
+00:01:36.229 --> 00:01:39.432
+You will first learn the fundamentals of multi-vector retrieval
+
+00:01:39.432 --> 00:01:41.534
+by seeing how it works for text.
+
+00:01:41.734 --> 00:01:45.438
+Then, you will see how this approach is adapted for image retrieval
+
+00:01:45.438 --> 00:01:47.440
+by a model called ColPali,
+
+00:01:47.674 --> 00:01:50.477
+and some techniques for optimizing its performance.
+
+00:01:50.677 --> 00:01:54.481
+Finally, you will explore how an approach called MUVERA
+
+00:01:54.481 --> 00:01:59.185
+aims to combine the best qualities of multi-vector and single-vector image retrieval.
+
+00:01:59.285 --> 00:02:02.789
+You will learn the foundational concepts underlying each method.
+
+00:02:03.389 --> 00:02:07.694
+and then we'll implement them inside of a functioning multimodal RAG system.
+
+00:02:07.994 --> 00:02:10.430
+You can expect a nice blend of
+
+00:02:10.430 --> 00:02:12.899
+conceptual and practical topics throughout this course.
+
+00:02:13.199 --> 00:02:14.934
+There's been a lot of excitement
+
+00:02:14.934 --> 00:02:17.003
+around the industry about image retrieval broadly
+
+00:02:17.403 --> 00:02:19.706
+and specifically multi-vector techniques.
+
+00:02:20.106 --> 00:02:22.609
+Most of the LLMs that people are using today
+
+00:02:22.909 --> 00:02:25.879
+are actually VLMs or vision language models.
+
+00:02:26.279 --> 00:02:30.083
+They are just as capable of processing images as text.
+
+00:02:30.283 --> 00:02:33.086
+The challenge has been building system that can accurately
+
+00:02:33.486 --> 00:02:35.788
+and efficiently retrieve image data
+
+00:02:36.089 --> 00:02:38.091
+to take advantage of that capability.
+
+00:02:38.491 --> 00:02:42.095
+The techniques in this course, like ColPali or MUVERA,
+
+00:02:42.295 --> 00:02:44.797
+are finally doing that. I really think
+
+00:02:44.797 --> 00:02:47.333
+this is the future of this field.
+
+00:02:47.634 --> 00:02:49.469
+and that will see it powering
+
+00:02:49.469 --> 00:02:51.638
+many exciting applications in the coming years.
+
+00:02:51.938 --> 00:02:54.140
+Many people have worked to create this course.
+
+00:02:54.440 --> 00:02:58.645
+From DeepLearning.AI, GT Wrobel contributed to its development.
+
+00:02:59.145 --> 00:03:02.649
+In the first lesson, you get familiar with multi-vector retrieval
+
+00:03:02.649 --> 00:03:04.617
+by getting hands on with ColBERT,
+
+00:03:04.617 --> 00:03:08.621
+which is a widely used multi-vector approach for text retrieval.
+
+00:03:09.122 --> 00:03:12.325
+Join Kacper in the next video, and let's get started.

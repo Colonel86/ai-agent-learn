@@ -1,0 +1,942 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.334 --> 00:00:03.870
+In this
+lesson, you'll build a SQL agent.
+
+2
+00:00:03.870 --> 00:00:07.107
+You'll then observe situations
+where the model hallucinates.
+
+3
+00:00:07.574 --> 00:00:09.409
+Let's go take a look.
+
+4
+00:00:09.409 --> 00:00:13.346
+So, let's first take a look at the SQL
+workflow with Llama 3.
+
+5
+00:00:13.413 --> 00:00:15.715
+The user asks a question.
+
+6
+00:00:15.715 --> 00:00:19.152
+The model takes in that question
+and produces SQL,
+
+7
+00:00:19.152 --> 00:00:22.856
+that SQL is run against a database
+and then the user sees the response.
+
+8
+00:00:23.256 --> 00:00:27.193
+So, an example is asking
+who's the highest paid NBA player.
+
+9
+00:00:27.560 --> 00:00:30.964
+And the answer from Llama 3
+is to answer this question
+
+10
+00:00:30.964 --> 00:00:34.834
+and we can use the following SQLite
+query and produces a SQL query here.
+
+11
+00:00:35.802 --> 00:00:38.838
+And you always want to start
+with something easiest to iterate on
+
+12
+00:00:38.838 --> 00:00:40.173
+to improve the performance of the model.
+
+13
+00:00:40.173 --> 00:00:42.742
+So let's start with prompt engineering.
+
+14
+00:00:42.742 --> 00:00:46.112
+Iteration is key for this step,
+and probably every single step
+
+15
+00:00:46.112 --> 00:00:47.847
+you'll be working with today.
+
+16
+00:00:47.847 --> 00:00:50.750
+So for SQL, a one-pro tip is to include
+
+17
+00:00:50.750 --> 00:00:53.753
+the schema and include its formatting.
+
+18
+00:00:53.953 --> 00:00:57.023
+What I mean here is
+let's take a look at this prompt.
+
+19
+00:00:57.057 --> 00:00:58.925
+So who is the highest NBA player?
+
+20
+00:00:58.925 --> 00:01:00.260
+The user's question.
+
+21
+00:01:00.260 --> 00:01:03.963
+This is some prompt says you're an NBA
+analyst with 15 years of experience
+
+22
+00:01:03.963 --> 00:01:05.432
+running complex SQL queries.
+
+23
+00:01:05.432 --> 00:01:08.401
+So is this telling the model
+what kind of setting
+
+24
+00:01:08.401 --> 00:01:11.704
+they're in, who they are,
+and then adding an appropriate schema.
+
+25
+00:01:11.704 --> 00:01:13.540
+So you see the schema here.
+
+26
+00:01:13.540 --> 00:01:16.776
+It's showing,
+you know the different columns, the types,
+
+27
+00:01:17.010 --> 00:01:18.378
+and then it provides an example.
+
+28
+00:01:18.378 --> 00:01:19.879
+And why is this important?
+
+29
+00:01:19.879 --> 00:01:21.081
+Well let's just take a look at
+
+30
+00:01:21.081 --> 00:01:24.084
+you know here it says team name, jersey, age
+height, weight.
+
+31
+00:01:24.150 --> 00:01:25.652
+Let's take a look at height here.
+
+32
+00:01:25.652 --> 00:01:29.823
+If the height text actually
+didn't have the space for six foot
+
+33
+00:01:29.923 --> 00:01:33.493
+seven inches, then that's
+a completely different format, right.
+
+34
+00:01:33.493 --> 00:01:34.861
+So you would want the model
+
+35
+00:01:34.861 --> 00:01:38.865
+to be producing pretty different SQL
+so that it actually executes correctly.
+
+36
+00:01:38.865 --> 00:01:40.433
+So that's an example of why
+
+37
+00:01:40.433 --> 00:01:44.337
+adding the formatting here or an example
+is actually pretty critical.
+
+38
+00:01:44.370 --> 00:01:45.772
+And you can see it just iterating.
+
+39
+00:01:45.772 --> 00:01:48.775
+We're removing those examples
+and the model will do worse.
+
+40
+00:01:49.075 --> 00:01:50.243
+So start with prompt engineering.
+
+41
+00:01:50.243 --> 00:01:53.313
+Iterate here on on what
+you want to put in this system prompt.
+
+42
+00:01:54.180 --> 00:01:58.852
+So out of the box, the LLM as you can
+tell, produces a lot more than just SQL.
+
+43
+00:01:58.852 --> 00:01:59.552
+It produces
+
+44
+00:01:59.552 --> 00:02:01.855
+you know, to answer this question
+we can use the following SQL
+
+45
+00:02:01.855 --> 00:02:05.792
+like query produces the query
+and then explains the query a little bit.
+
+46
+00:02:05.792 --> 00:02:08.795
+It produces way
+more than that SQL statement.
+
+47
+00:02:08.795 --> 00:02:12.999
+And that makes it hard for you to then
+go take that SQL statement and execute it
+
+48
+00:02:12.999 --> 00:02:13.800
+against your database.
+
+49
+00:02:13.800 --> 00:02:16.903
+You need to go, you know, maybe
+do another model call, maybe do something
+
+50
+00:02:16.903 --> 00:02:21.241
+to extract and parse out that SQL query
+that you ultimately want.
+
+51
+00:02:21.474 --> 00:02:26.474
+So instead, you can apply structured
+output to ensure the model only outputs
+
+52
+00:02:26.579 --> 00:02:31.579
+SQL and instead outputs it, for example
+in a dictionary format or Json format.
+
+53
+00:02:32.552 --> 00:02:33.920
+So you have a SQLite query
+
+54
+00:02:33.920 --> 00:02:37.357
+here, is the key
+and only the SQL query coming out.
+
+55
+00:02:37.390 --> 00:02:40.960
+That way you can programmatically
+then use that SQL query to execute
+
+56
+00:02:41.127 --> 00:02:42.061
+against your database.
+
+57
+00:02:42.061 --> 00:02:45.064
+And in the lab
+you'll explore exactly how to enforce
+
+58
+00:02:45.064 --> 00:02:48.301
+a structured output
+with 100% format accuracy.
+
+59
+00:02:49.302 --> 00:02:52.372
+Next, is diagnosing
+these nasty little hallucinations.
+
+60
+00:02:52.372 --> 00:02:56.576
+So again, the SQL query
+can either be invalid or malformed.
+
+61
+00:02:56.609 --> 00:02:59.913
+For example,
+the salary format can be wrong.
+
+62
+00:02:59.946 --> 00:03:04.717
+So here again the salary is casted
+as a string which is malformed.
+
+63
+00:03:04.717 --> 00:03:07.921
+It is a valid SQL query,
+but when it runs it gets the wrong output.
+
+64
+00:03:07.921 --> 00:03:12.921
+It executes to Saddiq Bey, who makes about
+4.5 million in this database.
+
+65
+00:03:13.159 --> 00:03:15.962
+At least,
+I think he is earning a bit more now,
+
+66
+00:03:15.962 --> 00:03:17.964
+but instead
+it should actually be Steph Curry.
+
+67
+00:03:17.964 --> 00:03:21.434
+So when you cast it here
+instead as an integer, the salary,
+
+68
+00:03:21.734 --> 00:03:25.238
+you know, with a dollar sign, removing
+that as an integer, you're able to
+
+69
+00:03:25.238 --> 00:03:26.573
+then sort an order
+
+70
+00:03:26.573 --> 00:03:30.243
+by that number much more correctly
+than if you were ordering a string.
+
+71
+00:03:31.177 --> 00:03:33.246
+So diagnosing hallucinations
+
+72
+00:03:33.246 --> 00:03:36.749
+is a very iterative process,
+just like everything you'll see here.
+
+73
+00:03:37.116 --> 00:03:40.620
+As you improve
+the model, you'll continue to just dig
+
+74
+00:03:40.620 --> 00:03:42.488
+for what those hallucinations are
+
+75
+00:03:42.488 --> 00:03:46.426
+and what the boundary of correct
+and incorrect is for the model.
+
+76
+00:03:46.793 --> 00:03:49.495
+And this is a very important, skill
+
+77
+00:03:49.495 --> 00:03:52.999
+because it will actually help you point
+the LLM in the right direction.
+
+78
+00:03:52.999 --> 00:03:56.636
+Give the LLM a north star to climb
+to, to tell it,
+
+79
+00:03:56.636 --> 00:03:59.872
+you know, hey, you need to improve here
+and it will improve for you.
+
+80
+00:03:59.872 --> 00:04:01.441
+It's very good at optimizing.
+
+81
+00:04:01.441 --> 00:04:04.911
+It just needs your help
+on knowing what to optimize for.
+
+82
+00:04:05.278 --> 00:04:07.447
+So get good at this stuff.
+This is an important one.
+
+83
+00:04:07.447 --> 00:04:11.117
+It'll help you actually be able
+to create the best models,
+
+84
+00:04:11.117 --> 00:04:14.153
+because you have now tools
+to remove those hallucinations.
+
+85
+00:04:15.088 --> 00:04:17.323
+Great. So now let's move on to the lab.
+
+86
+00:04:18.391 --> 00:04:19.225
+So, now you
+
+87
+00:04:19.225 --> 00:04:22.595
+explore running all of this
+that you just saw in code.
+
+88
+00:04:22.996 --> 00:04:26.666
+And specifically we're going to load
+some environment variables
+
+89
+00:04:26.666 --> 00:04:28.635
+here, for an API key.
+
+90
+00:04:28.635 --> 00:04:30.436
+So we're going to load that up.
+
+91
+00:04:30.436 --> 00:04:32.805
+You're going to use this
+library called Lamini.
+
+92
+00:04:32.805 --> 00:04:37.610
+So, Lamini makes it easy
+to run these open models as well as fine
+
+93
+00:04:37.610 --> 00:04:40.613
+tune them and memory tune them
+to reduce hallucinations,
+
+94
+00:04:40.713 --> 00:04:42.482
+which you'll go over quite soon.
+
+95
+00:04:42.482 --> 00:04:45.885
+So import that library. Next.
+
+96
+00:04:46.119 --> 00:04:49.122
+I'm just going to put some,
+you know, imports here
+
+97
+00:04:49.222 --> 00:04:51.591
+to connect to the SQLite database.
+
+98
+00:04:51.591 --> 00:04:53.293
+See here. Cool.
+
+99
+00:04:53.293 --> 00:04:57.330
+So now time to instantiate your LLM here
+Llama 3.
+
+100
+00:04:57.530 --> 00:05:01.934
+Actually the model name here can be any,
+any open model from HuggingFace.
+
+101
+00:05:02.602 --> 00:05:05.471
+Next, lLlama 3 uses these
+
+102
+00:05:05.471 --> 00:05:08.341
+as you explore
+previously a prompt template.
+
+103
+00:05:08.341 --> 00:05:12.345
+So let's add that here function
+to handle that. Okay.
+
+104
+00:05:12.345 --> 00:05:15.748
+Next, we'll explore how to put the schema
+in first.
+
+105
+00:05:15.748 --> 00:05:17.850
+You can actually just you know
+put the schema in like this.
+
+106
+00:05:17.850 --> 00:05:19.786
+This is probably just all the columns.
+
+107
+00:05:19.786 --> 00:05:21.254
+No examples as you can see.
+
+108
+00:05:21.254 --> 00:05:24.257
+And we'll explore with that
+how that changes things.
+
+109
+00:05:24.324 --> 00:05:28.061
+Put in the user's question
+who's the highest paid NBA player.
+
+110
+00:05:28.561 --> 00:05:31.230
+And then let's
+add in that system prompts.
+
+111
+00:05:32.799 --> 00:05:34.000
+So that system prompt. You're
+
+112
+00:05:34.000 --> 00:05:37.937
+an NBA analyst with 15 years of experience
+writing complex SQL queries.
+
+113
+00:05:37.937 --> 00:05:42.241
+So giving the model an identity,
+consider the NBA roster table
+
+114
+00:05:42.241 --> 00:05:43.476
+with the following schema.
+
+115
+00:05:43.476 --> 00:05:46.479
+And then you would just put the schema
+here and write a SQLite query
+
+116
+00:05:46.512 --> 00:05:47.613
+for the following.
+
+117
+00:05:47.613 --> 00:05:51.818
+And I'm actually just going
+to print that out so you can see it fully.
+
+118
+00:05:53.019 --> 00:05:56.022
+See. So it looks like that. Perfect.
+
+119
+00:05:57.590 --> 00:05:59.559
+Let's make the prompts.
+
+120
+00:05:59.559 --> 00:06:04.430
+And then let's have the LLM generate
+
+121
+00:06:05.465 --> 00:06:06.766
+from that prompt.
+
+122
+00:06:06.766 --> 00:06:09.936
+Print out the output, see what it says.
+
+123
+00:06:11.971 --> 00:06:13.706
+Okay, so that's interesting.
+
+124
+00:06:13.706 --> 00:06:18.706
+But it actually doesn't really follow
+the formatting in our SQL table.
+
+125
+00:06:19.379 --> 00:06:23.549
+So let me add some formatting
+into the updated schema.
+
+126
+00:06:23.950 --> 00:06:25.017
+So update schema.
+
+127
+00:06:25.017 --> 00:06:28.020
+All I'm doing is adding these examples in.
+
+128
+00:06:28.321 --> 00:06:31.324
+So let's do that. Get updated schema.
+
+129
+00:06:31.724 --> 00:06:35.762
+And all we have to update
+now is that system prompt.
+
+130
+00:06:37.663 --> 00:06:39.532
+So get updated schema
+
+131
+00:06:39.532 --> 00:06:42.902
+and be able to have this updated prompt.
+
+132
+00:06:42.902 --> 00:06:44.036
+Here.
+
+133
+00:06:44.036 --> 00:06:47.039
+You can just print this out
+so you can see it.
+
+134
+00:06:48.274 --> 00:06:49.375
+Cool.
+
+135
+00:06:49.375 --> 00:06:52.378
+There it is with the updated schema.
+
+136
+00:06:52.812 --> 00:06:57.049
+And then let's ask the model
+to output updated response.
+
+137
+00:06:57.483 --> 00:06:58.418
+Great. Fantastic.
+
+138
+00:06:58.418 --> 00:07:01.120
+Now it's filtering out
+where the salary is
+
+139
+00:07:01.120 --> 00:07:05.324
+essentially you know what this database is
+storing as null. Right?
+
+140
+00:07:05.324 --> 00:07:07.560
+So null like this.
+
+141
+00:07:07.560 --> 00:07:09.328
+Perfect okay.
+
+142
+00:07:09.328 --> 00:07:13.065
+So there's a lot of information
+kind of being produced by the model
+
+143
+00:07:13.065 --> 00:07:14.767
+in addition to the SQL query.
+
+144
+00:07:14.767 --> 00:07:17.770
+What should we now
+do for structured output.
+
+145
+00:07:17.904 --> 00:07:22.904
+So instead of just saying LLM dot generate
+and you know max tokens,
+
+146
+00:07:22.975 --> 00:07:25.845
+then we're going to actually specify
+a certain output type.
+
+147
+00:07:25.845 --> 00:07:29.048
+And here I'm specifying,
+you know output type
+
+148
+00:07:29.048 --> 00:07:32.585
+SQLite query
+as the key and the type string.
+
+149
+00:07:32.819 --> 00:07:36.522
+So it should be a dictionary
+that comes back with SQLite query and
+
+150
+00:07:36.522 --> 00:07:37.757
+some string from it. And that's it.
+
+151
+00:07:39.258 --> 00:07:42.261
+So let's run this.
+
+152
+00:07:42.395 --> 00:07:45.398
+And then look at the results.
+
+153
+00:07:46.199 --> 00:07:46.466
+Great.
+
+154
+00:07:46.466 --> 00:07:49.335
+So SQLite query and just the SQL here.
+
+155
+00:07:49.335 --> 00:07:52.238
+And this is included
+into the prompt of the model.
+
+156
+00:07:52.238 --> 00:07:57.043
+And output type is restricting
+the model to only I'll put a string here.
+
+157
+00:07:57.410 --> 00:07:59.645
+So that's 100% enforced.
+
+158
+00:07:59.645 --> 00:08:02.582
+So now we can actually take this SQL query
+and be able to run it
+
+159
+00:08:02.582 --> 00:08:05.585
+against our database directly.
+
+160
+00:08:06.118 --> 00:08:06.519
+Okay.
+
+161
+00:08:06.519 --> 00:08:11.519
+So let's read that SQL in using the
+database engine.
+
+162
+00:08:11.557 --> 00:08:13.960
+Let's take a look at that data frame
+okay.
+
+163
+00:08:13.960 --> 00:08:16.496
+Cool. Saddiq Bey. Great.
+
+164
+00:08:16.496 --> 00:08:19.866
+However, that is actually incorrect.
+
+165
+00:08:20.199 --> 00:08:22.268
+So that's a hallucination.
+
+166
+00:08:22.268 --> 00:08:25.705
+And let's just take a look at what
+the right query looks like.
+
+167
+00:08:25.705 --> 00:08:29.542
+So first the wrong query just formatted
+well it looks like this.
+
+168
+00:08:29.542 --> 00:08:32.178
+It is casting the salary to a real.
+
+169
+00:08:32.178 --> 00:08:35.047
+So that is in a string in the database,
+
+170
+00:08:35.047 --> 00:08:37.383
+which you know,
+that's totally understandable.
+
+171
+00:08:37.383 --> 00:08:39.819
+If you look at the schema above,
+
+172
+00:08:40.953 --> 00:08:42.688
+you'll see that it is in fact a string.
+
+173
+00:08:42.688 --> 00:08:46.492
+However,
+if you want the highest paid person
+
+174
+00:08:46.492 --> 00:08:51.492
+you know salary, then you have to realize
+that when you order a string
+
+175
+00:08:51.797 --> 00:08:55.067
+this dollar sign and it's not actually
+ordering an integer, right?
+
+176
+00:08:55.067 --> 00:08:56.736
+So it's ordering at a very differently.
+
+177
+00:08:56.736 --> 00:08:59.071
+So that's why the response is wrong.
+
+178
+00:08:59.071 --> 00:09:02.174
+Even though it was able to execute
+against the database correctly.
+
+179
+00:09:02.508 --> 00:09:04.810
+So that's the wrong query.
+
+180
+00:09:04.810 --> 00:09:06.746
+But the correct query looks
+something like this.
+
+181
+00:09:06.746 --> 00:09:10.616
+So casting this into an integer
+and then being able to do that
+
+182
+00:09:10.616 --> 00:09:14.153
+order by removing that dollar sign. Cool.
+
+183
+00:09:14.287 --> 00:09:17.223
+So let's take a look at what
+that query does.
+
+184
+00:09:17.223 --> 00:09:20.092
+So we just run that query
+against the database.
+
+185
+00:09:20.092 --> 00:09:22.261
+We're going to get Steph Curry instead.
+
+186
+00:09:22.261 --> 00:09:23.596
+So that's a hallucination.
+
+187
+00:09:23.596 --> 00:09:27.433
+And you'll explore how to exactly remove
+these hallucinations when you find them.
+
+188
+00:09:27.433 --> 00:09:29.368
+But it's really important to dig deep in
+
+189
+00:09:29.368 --> 00:09:32.805
+and be able to see when the model
+is actually producing the wrong output.
+
+190
+00:09:33.406 --> 00:09:37.209
+Something I encourage you to do
+is ask even more questions, right?
+
+191
+00:09:37.209 --> 00:09:41.647
+This one was asking about
+who is the highest paid NBA player.
+
+192
+00:09:41.647 --> 00:09:43.282
+Ask more questions and discover more
+
+193
+00:09:43.282 --> 00:09:47.687
+hallucinate and understand what
+the boundary of what this LLM can do.
+
+194
+00:09:47.687 --> 00:09:48.220
+Or not.
+
+195
+00:09:48.220 --> 00:09:52.558
+On top of this schema, you can continue
+to iterate on the schema, improve
+
+196
+00:09:52.558 --> 00:09:55.561
+exactly what's in this entire prompt
+as you give it to the model.
+
+197
+00:09:55.828 --> 00:10:00.199
+And finally, in structured output,
+feel free to play with this key.
+
+198
+00:10:00.199 --> 00:10:03.202
+This key actually does
+go into the prompt of the model.
+
+199
+00:10:03.436 --> 00:10:07.373
+It's basically enforced
+as the initial output says force as this.
+
+200
+00:10:07.807 --> 00:10:08.741
+So it's enforced there.
+
+201
+00:10:08.741 --> 00:10:11.978
+So it does actually impact
+what kind of tokens come after it.
+
+202
+00:10:12.011 --> 00:10:15.047
+So these are fun different parameters
+to play with as you continue
+
+203
+00:10:15.047 --> 00:10:18.050
+to diagnose and find hallucinations.
+
+204
+00:10:18.451 --> 00:10:22.989
+In the next lesson, you'll learn
+about how to evaluate the model much more
+
+205
+00:10:22.989 --> 00:10:27.989
+rigorously to understand quantitatively
+what's going on with these hallucinations.
+

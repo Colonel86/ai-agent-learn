@@ -1,0 +1,401 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.800 --> 00:00:04.838
+Welcome to Improving Accuracy of LLM
+Applications.
+
+2
+00:00:04.838 --> 00:00:08.908
+Built in partnership with Lamini and Meta.
+AI applications
+
+3
+00:00:08.908 --> 00:00:12.412
+can now perform tasks that were previously
+very challenging for computers,
+
+4
+00:00:12.679 --> 00:00:16.249
+such as providing a natural language
+interface to a database.
+
+5
+00:00:16.783 --> 00:00:21.783
+But these applications often perform well
+in some areas and yet struggle in others.
+
+6
+00:00:22.856 --> 00:00:26.559
+In this course, you learn a framework
+for a set of development steps
+
+7
+00:00:26.793 --> 00:00:30.463
+to systematically improve
+your application's performance.
+
+8
+00:00:31.131 --> 00:00:35.635
+Specifically, you create an evaluation
+dataset to measure performance,
+
+9
+00:00:36.202 --> 00:00:40.206
+prompt engineer,
+and then finally fine-tune your model.
+
+10
+00:00:40.340 --> 00:00:43.343
+I'm delighted to introduce our instructors
+for this course.
+
+11
+00:00:43.510 --> 00:00:47.280
+Sharon Zhou is a returning instructor
+and CEO of Lamini,
+
+12
+00:00:47.514 --> 00:00:50.550
+which is a company
+that provides LLM serving and fine
+
+13
+00:00:50.550 --> 00:00:54.120
+tuning for their users,
+and in which I made a seed investment.
+
+14
+00:00:54.721 --> 00:00:57.724
+And another returning instructor,
+Amit Sangani,
+
+15
+00:00:57.957 --> 00:01:01.728
+is Director of partnerships
+of the wonderful Llama team at Meta.
+
+16
+00:01:01.728 --> 00:01:04.564
+Sharon and Amit. Welcome back.
+
+17
+00:01:04.564 --> 00:01:06.499
+Thanks so much.
+And you're excited to be back.
+
+18
+00:01:06.499 --> 00:01:07.734
+Thank you Andrew.
+
+19
+00:01:07.734 --> 00:01:10.537
+So Amit, the Llama family of open
+
+20
+00:01:10.537 --> 00:01:13.540
+source models has become a huge success.
+
+21
+00:01:13.807 --> 00:01:15.141
+Indeed Andrew.
+
+22
+00:01:15.141 --> 00:01:18.511
+The Llama models are widely used
+in numerous applications.
+
+23
+00:01:18.845 --> 00:01:20.280
+They have undergone
+
+24
+00:01:20.280 --> 00:01:24.551
+extensive training and rank highly
+in most foundation model benchmarks.
+
+25
+00:01:25.051 --> 00:01:27.954
+It's gratifying
+to see so many organizations
+
+26
+00:01:27.954 --> 00:01:31.191
+using our models,
+but it also presents challenges.
+
+27
+00:01:31.558 --> 00:01:34.561
+Since the models are trained on public
+data sets and tasks,
+
+28
+00:01:34.861 --> 00:01:38.765
+they may not perform as well
+on applications requiring proprietary data
+
+29
+00:01:39.499 --> 00:01:42.402
+or on tasks
+that weren't specifically trained for.
+
+30
+00:01:42.402 --> 00:01:45.472
+But Meta has released
+these models as open-source,
+
+31
+00:01:45.705 --> 00:01:50.705
+and this allows any developer to fine
+tune them for their specific applications.
+
+32
+00:01:50.977 --> 00:01:52.312
+Exactly, Andrew.
+
+33
+00:01:52.312 --> 00:01:55.582
+A crucial aspect of these models
+is their open-source nature.
+
+34
+00:01:56.216 --> 00:02:00.086
+This means users can fine-tune
+the models for their specific tasks.
+
+35
+00:02:00.587 --> 00:02:04.157
+We have seen many applications,
+especially with the smaller models
+
+36
+00:02:04.424 --> 00:02:08.528
+where users have fine
+tuned them for tasks like text to SQL
+
+37
+00:02:08.962 --> 00:02:13.233
+classification, question and answers,
+recommendation, and summarization.
+
+38
+00:02:13.867 --> 00:02:17.170
+They've have also been adapted to understand
+proprietary datasets
+
+39
+00:02:17.337 --> 00:02:20.607
+such as financial data, customer
+data, and legal information.
+
+40
+00:02:21.307 --> 00:02:25.979
+I really appreciate Meta's work
+releasing these models in an open way.
+
+41
+00:02:26.579 --> 00:02:30.583
+And yet, fine-tuning also isn't
+the very first step
+
+42
+00:02:30.583 --> 00:02:34.921
+we typically recommend to application
+builders is one of the options
+
+43
+00:02:34.921 --> 00:02:39.759
+that we might pursue only after exhausting
+other, simpler options.
+
+44
+00:02:40.160 --> 00:02:42.595
+That's right Andrew,
+and we'll go through exactly that.
+
+45
+00:02:42.595 --> 00:02:43.229
+At Lamini
+
+46
+00:02:43.229 --> 00:02:47.734
+we work with many enterprises
+to improve the accuracy of their LLM
+
+47
+00:02:47.734 --> 00:02:52.734
+applications, specifically to make
+LLMS factual and precise, and where users
+
+48
+00:02:53.640 --> 00:02:58.444
+can start talking about nines
+in their LLM accuracy, like 95%, 99%.
+
+49
+00:02:58.711 --> 00:03:00.980
+We've observed a successful pattern
+
+50
+00:03:00.980 --> 00:03:03.983
+that has inspired
+the outline of this course for you.
+
+51
+00:03:04.150 --> 00:03:07.053
+First
+you'll build your LLM application, hook it
+
+52
+00:03:07.053 --> 00:03:10.056
+all up, prompt engineer
+with some self-reflection.
+
+53
+00:03:10.190 --> 00:03:15.190
+Next, it's important to get rigorous
+in evaluating the model's performance
+
+54
+00:03:15.862 --> 00:03:20.099
+so you know whether it's ready
+for prime time and where you can tell it
+
+55
+00:03:20.099 --> 00:03:23.503
+to actually improve
+where the next frontier of accuracy is.
+
+56
+00:03:23.670 --> 00:03:26.206
+If this meets your needs, then great.
+
+57
+00:03:26.206 --> 00:03:29.475
+But if you find that even after
+a lot of prompt engineering work, it's
+
+58
+00:03:29.475 --> 00:03:31.844
+still not yet working accurately enough.
+
+59
+00:03:31.844 --> 00:03:36.115
+The next step is to use LLMs and create
+a dataset for fine-tuning your model.
+
+60
+00:03:36.516 --> 00:03:40.153
+One myth of this step is thinking
+you don't have enough data.
+
+61
+00:03:40.587 --> 00:03:44.691
+You'll actually learn that you probably do
+have enough data, and there are ways
+
+62
+00:03:44.691 --> 00:03:49.495
+to significantly amplify
+the data you do have with LLMs themselves.
+
+63
+00:03:50.163 --> 00:03:55.163
+Fine-tuning also used to be slow and
+costly, but by using parameter efficient
+
+64
+00:03:55.702 --> 00:03:59.672
+fine-tuning techniques like LoRA,
+which stands for Low Rank adaptation,
+
+65
+00:03:59.906 --> 00:04:02.875
+the time and costs have dropped
+dramatically.
+
+66
+00:04:02.875 --> 00:04:05.878
+What's more,
+Lamini memory tuning is a technique
+
+67
+00:04:05.878 --> 00:04:09.015
+that gives you a new frontier
+of factual accuracy,
+
+68
+00:04:09.182 --> 00:04:13.519
+reducing time and developer effort to get
+to the same level or higher accuracy.
+
+69
+00:04:13.953 --> 00:04:18.658
+Using optimized fine-tuning techniques,
+you can teach your LLM thousand new facts
+
+70
+00:04:18.825 --> 00:04:23.396
+in just minutes on a single A100
+or MI2 50 GPU.
+
+71
+00:04:23.596 --> 00:04:27.267
+In this course,
+we'll use an example of fine-tuning an LLM
+
+72
+00:04:27.267 --> 00:04:30.470
+to generate SQL queries
+for a specific schema.
+
+73
+00:04:30.803 --> 00:04:35.241
+Through fine-tuning, you'll see accuracy
+improved from something more like 30%,
+
+74
+00:04:35.241 --> 00:04:40.241
+all the way up to 95%, using
+just a small data set of 128 examples
+
+75
+00:04:40.613 --> 00:04:44.083
+in about 30 minutes,
+at a cost of just a few dollars.
+
+76
+00:04:44.417 --> 00:04:48.021
+What's more,
+that process can be further optimized down
+
+77
+00:04:48.021 --> 00:04:51.791
+to 6 or 7 seconds with even
+higher performance memory tuning.
+
+78
+00:04:52.325 --> 00:04:55.261
+Many people have contributed to
+this course.
+
+79
+00:04:55.261 --> 00:04:59.165
+I'd like to thank from Lamini, Johnny
+Li and Nina Wei.
+
+80
+00:04:59.465 --> 00:05:03.670
+And from DeepLearning.AI
+Geoff Ladwig and Esmaeil Gargari.
+
+81
+00:05:04.437 --> 00:05:07.040
+All right, let's dive into optimizing
+
+82
+00:05:07.040 --> 00:05:10.209
+applications
+by going on to the next video.
+

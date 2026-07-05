@@ -1,0 +1,631 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:05.000
+In this lesson, you will build upon what you have learned in previous lessons.
+
+2
+00:00:05.000 --> 00:00:10.000
+You will work with a sample dataset of news articles and build vector embeddings out of the article titles.
+
+3
+00:00:10.000 --> 00:00:16.000
+You will then build a recommender system that will search across all article titles and retrieve the titles that are most relevant.
+
+4
+00:00:16.000 --> 00:00:23.000
+You will then build upon that even further by building a recommender system based on the article content rather than the topic.
+
+5
+00:00:23.000 --> 00:00:25.000
+All right, let's go.
+
+6
+00:00:25.000 --> 00:00:30.000
+So we're going to build a simple recommender system, and it's going to look like this.
+
+7
+00:00:30.000 --> 00:00:32.000
+And we're going to do it in two parts.
+
+8
+00:00:32.000 --> 00:00:38.000
+First, we're going to take a series of news articles and build vector embeddings out of them and put them in the Pinecone.
+
+9
+00:00:38.000 --> 00:00:41.000
+And then we'll ask it about Obama, a very simple query.
+
+10
+00:00:41.000 --> 00:00:47.000
+And we'll get back some results from three different articles, and this will be a title-based search.
+
+11
+00:00:47.000 --> 00:00:50.000
+In other words, we're going to look for Obama in the title of the article.
+
+12
+00:00:50.000 --> 00:00:53.000
+Then we're going to check to see if we can do it slightly differently.
+
+13
+00:00:53.000 --> 00:00:57.000
+So what we'll do is we'll take the data that we uploaded in the Pinecone, we'll query Obama,
+
+14
+00:00:57.000 --> 00:01:02.000
+but this time we'll do it against the article content itself rather than the title.
+
+15
+00:01:02.000 --> 00:01:03.000
+So let's get started.
+
+16
+00:01:03.000 --> 00:01:09.000
+So what we'll do, we'll start off by cutting off the warnings, as we have in other lessons,
+
+17
+00:01:09.000 --> 00:01:13.000
+and then importing the packages that we depend on.
+
+18
+00:01:13.000 --> 00:01:17.000
+Note we have our Deep Learning AI Utils package once again.
+
+19
+00:01:17.000 --> 00:01:21.000
+So let's go ahead and run that and run our imports.
+
+20
+00:01:21.000 --> 00:01:22.000
+Okay, great.
+
+21
+00:01:22.000 --> 00:01:27.000
+And then we will set up the Pinecone, as we have in other lessons.
+
+22
+00:01:27.000 --> 00:01:35.000
+So we'll get a pointer to our Deep Learning AI Utils object, get our Pinecone and open the AI API keys,
+
+23
+00:01:35.000 --> 00:01:37.000
+and then start to prepare the data.
+
+24
+00:01:37.000 --> 00:01:42.000
+So once again, the data is not insignificant in size.
+
+25
+00:01:42.000 --> 00:01:49.000
+We have a file called allthenews-3.zip that is being downloaded here using wget.
+
+26
+00:01:49.000 --> 00:01:52.000
+Again, as a cooking show, we won't watch you do that,
+
+27
+00:01:52.000 --> 00:01:58.000
+or I won't force you to watch me download a series of data, and I'll comment that out.
+
+28
+00:01:58.000 --> 00:02:02.000
+And then the same thing to unzip the data as well.
+
+29
+00:02:02.000 --> 00:02:04.000
+So now let's look at the data.
+
+30
+00:02:04.000 --> 00:02:06.000
+So this is rather straightforward.
+
+31
+00:02:06.000 --> 00:02:16.000
+We'll say with open and then the name of the file that we want to look at, and we want to read it as F.
+
+32
+00:02:16.000 --> 00:02:22.000
+And then we will get the first line, and as in any CSV file, the first line is the headers of the file,
+
+33
+00:02:22.000 --> 00:02:27.000
+and so we'll just look at the header.
+
+34
+00:02:27.000 --> 00:02:30.000
+Okay, so we have date, year, month, day, author, etc.,
+
+35
+00:02:30.000 --> 00:02:34.000
+and we're interested in the title and we're interested in article.
+
+36
+00:02:34.000 --> 00:02:39.000
+So to make it a little bit more convenient to work with, let's use a data frame.
+
+37
+00:02:39.000 --> 00:02:49.000
+So we'll say data frame equals the pandas package, and we're going to read the CSV called allthenews-3.csv,
+
+38
+00:02:49.000 --> 00:02:55.000
+and let's just read 99 rows, okay, and then look at the data.
+
+39
+00:02:55.000 --> 00:02:57.000
+So we'll call head.
+
+40
+00:02:57.000 --> 00:02:59.000
+All right, so we have the data.
+
+41
+00:02:59.000 --> 00:03:02.000
+You can see the date, the year, the month, the day, etc.
+
+42
+00:03:02.000 --> 00:03:05.000
+Again, we're interested in title and article.
+
+43
+00:03:05.000 --> 00:03:09.000
+So let's prepare a Pinecone in the same way that we have previously,
+
+44
+00:03:09.000 --> 00:03:14.000
+but to do that, first we will get a pointer to OpenAI, and we'll use that later on,
+
+45
+00:03:14.000 --> 00:03:27.000
+and we'll prepare our utils package, okay, and then get our index name from the utils package.
+
+46
+00:03:27.000 --> 00:03:36.000
+Okay, and then get a pointer to our Pinecone object.
+
+47
+00:03:36.000 --> 00:03:40.000
+And then this is boilerplate at this point, so we'll just copy and paste this in,
+
+48
+00:03:40.000 --> 00:03:44.000
+but again, we check to see if the index name already exists.
+
+49
+00:03:44.000 --> 00:03:48.000
+If it does, we delete it, and then we create it because we just deleted it.
+
+50
+00:03:48.000 --> 00:03:56.000
+And then finally, we'll get a pointer to our Pinecone index.
+
+51
+00:03:56.000 --> 00:03:58.000
+And then run that.
+
+52
+00:03:58.000 --> 00:04:03.000
+You saw this function in an earlier lesson, but we have something called getEmbeddings,
+
+53
+00:04:03.000 --> 00:04:09.000
+and this is just a wrapper function for OpenAI to return embeddings from a list of text.
+
+54
+00:04:09.000 --> 00:04:12.000
+In this case, that text array is called articles, and so we'll declare that.
+
+55
+00:04:12.000 --> 00:04:14.000
+It's called getEmbeddings.
+
+56
+00:04:14.000 --> 00:04:16.000
+And then what we're going to do is prepare and insert the data.
+
+57
+00:04:16.000 --> 00:04:18.000
+So we'll iterate through the data frame.
+
+58
+00:04:18.000 --> 00:04:21.000
+We'll read it a number of rows at a time, build an embedding out of it,
+
+59
+00:04:21.000 --> 00:04:23.000
+and then upload it into Pinecone.
+
+60
+00:04:23.000 --> 00:04:25.000
+So this is a lot of code.
+
+61
+00:04:25.000 --> 00:04:30.000
+It's about, say, 12 to 15 lines of code, so I'll copy and paste it in, but walk you through it.
+
+62
+00:04:30.000 --> 00:04:34.000
+So we're going to read the CSV file called allthenews-3.
+
+63
+00:04:34.000 --> 00:04:36.000
+This is the one that we've been working with earlier,
+
+64
+00:04:36.000 --> 00:04:40.000
+but we're going to read it chunk-size rows at a time to make it manageable, okay,
+
+65
+00:04:40.000 --> 00:04:43.000
+and just make this a little bit easier to read by putting that there.
+
+66
+00:04:43.000 --> 00:04:46.000
+And we're going to read at most 20,000 rows, okay?
+
+67
+00:04:46.000 --> 00:04:49.000
+Then what we're going to do is iterate through the chunks one at a time.
+
+68
+00:04:49.000 --> 00:04:51.000
+And remember, a chunk size is 400.
+
+69
+00:04:51.000 --> 00:04:54.000
+So what we're going to do is get the titles out of that data frame chunk, right?
+
+70
+00:04:54.000 --> 00:04:57.000
+A chunk is just a subset of the larger data frame.
+
+71
+00:04:57.000 --> 00:05:01.000
+Okay, and then we're going to get the embeddings for all of the titles that was declared here
+
+72
+00:05:01.000 --> 00:05:07.000
+and then prepare a Pinecone embedding or an array of embeddings, as we have before.
+
+73
+00:05:07.000 --> 00:05:10.000
+And this is just, you know, simple Python syntax, right,
+
+74
+00:05:10.000 --> 00:05:15.000
+for I and range through the number of titles, create an embedding for each one of them, right?
+
+75
+00:05:15.000 --> 00:05:20.000
+Then we're going to increment chunk-num because that's what helps us get a unique identifier for the embedding.
+
+76
+00:05:20.000 --> 00:05:22.000
+And then we're going to upload it 300 at a time.
+
+77
+00:05:22.000 --> 00:05:27.000
+So if we get to 300 or exceed 300 number of vector embeddings inside the prepped array,
+
+78
+00:05:27.000 --> 00:05:32.000
+then we're just going to upstart it into Pinecone and then delete or clear out that prepped list
+
+79
+00:05:32.000 --> 00:05:36.000
+and then update the progress bar for TQDM, which we've declared up here.
+
+80
+00:05:36.000 --> 00:05:39.000
+So let's go ahead and run that.
+
+81
+00:05:39.000 --> 00:05:42.000
+This is going to take around three minutes on our machine, as you can see here,
+
+82
+00:05:42.000 --> 00:05:49.000
+but we'll speed this up in post for you so that you don't have to sit here for three minutes and watch it.
+
+83
+00:05:49.000 --> 00:05:51.000
+Okay, so that has completed.
+
+84
+00:05:51.000 --> 00:05:58.000
+We upstarted 20,000 vector embeddings in the Pinecone, and now we will look at what we uploaded.
+
+85
+00:05:58.000 --> 00:06:06.000
+So let's say index.describeIndexStats.
+
+86
+00:06:06.000 --> 00:06:10.000
+And, yes, we had 20,000, so that's perfect.
+
+87
+00:06:10.000 --> 00:06:16.000
+So let's declare our function again that gets embeddings from OpenAI.
+
+88
+00:06:16.000 --> 00:06:19.000
+We've seen that function before.
+
+89
+00:06:19.000 --> 00:06:21.000
+And let's actually get some recommendations.
+
+90
+00:06:21.000 --> 00:06:26.000
+So I will go ahead and paste in this helper function that we've created here called getRecommendations.
+
+91
+00:06:26.000 --> 00:06:31.000
+And what it does is takes a pointer to Pinecone, what you want to search for,
+
+92
+00:06:31.000 --> 00:06:36.000
+the number of elements that you want to return inside of top K, in this case we'll default to 10,
+
+93
+00:06:36.000 --> 00:06:42.000
+gets an embedding out of the search term that was passed in from that helper function declared above,
+
+94
+00:06:42.000 --> 00:06:45.000
+executes and returns the results from a Pinecone query.
+
+95
+00:06:45.000 --> 00:06:49.000
+And what we'll do here is look for data about Obama.
+
+96
+00:06:49.000 --> 00:06:51.000
+Okay, so we declared that function.
+
+97
+00:06:52.000 --> 00:07:02.000
+And so let's say recommendation equals getRecommendations, our Pinecone index, and something about Obama.
+
+98
+00:07:02.000 --> 00:07:10.000
+And for each result in the recommendations, which is returned inside of the matches element,
+
+99
+00:07:10.000 --> 00:07:17.000
+we'll say print the score, which is the similarity score coming back from Pinecone,
+
+100
+00:07:17.000 --> 00:07:22.000
+and the metadata that we stored inside of Pinecone next to that embedding.
+
+101
+00:07:30.000 --> 00:07:35.000
+All right, so we got back a bunch of information based on the titles of the articles about Obama.
+
+102
+00:07:35.000 --> 00:07:39.000
+Obama's been a much more effective communicator than he gives himself credit for.
+
+103
+00:07:39.000 --> 00:07:41.000
+That sounds pretty interesting.
+
+104
+00:07:41.000 --> 00:07:43.000
+Parting message is a warning for Donald Trump.
+
+105
+00:07:43.000 --> 00:07:46.000
+That sounds like something you want to read as well.
+
+106
+00:07:46.000 --> 00:07:49.000
+And so what we're going to do now is see if we can do it differently.
+
+107
+00:07:49.000 --> 00:07:53.000
+So you saw we just looked at, we searched for titles of the vector embedding.
+
+108
+00:07:53.000 --> 00:07:59.000
+Now we're going to look for elements that are vector embeddings where they're representing the actual article itself.
+
+109
+00:07:59.000 --> 00:08:03.000
+And so what we'll do before that is delete our index first.
+
+110
+00:08:03.000 --> 00:08:04.000
+So you saw this piece of code.
+
+111
+00:08:04.000 --> 00:08:06.000
+You're familiar with it at this point.
+
+112
+00:08:06.000 --> 00:08:08.000
+If the index is there, we're going to delete it.
+
+113
+00:08:08.000 --> 00:08:09.000
+Otherwise, create it.
+
+114
+00:08:09.000 --> 00:08:11.000
+Nothing different there.
+
+115
+00:08:11.000 --> 00:08:15.000
+And so what we're going to do is somewhat involved.
+
+116
+00:08:15.000 --> 00:08:17.000
+And I'm going to walk you through it.
+
+117
+00:08:17.000 --> 00:08:24.000
+So let's first declare a function called embed that takes an array of embeddings, a title,
+
+118
+00:08:24.000 --> 00:08:29.000
+an array that's going to store results into, and then a counter called embed number.
+
+119
+00:08:29.000 --> 00:08:31.000
+And I'll walk you through how this works in just a moment.
+
+120
+00:08:31.000 --> 00:08:38.000
+But before I do that, let me paste in the code that actually uses it.
+
+121
+00:08:38.000 --> 00:08:41.000
+So what we're going to do here, I'll jump down here to the bottom.
+
+122
+00:08:42.000 --> 00:08:47.000
+We're going to iterate through all of the articles list from our data frame that's declared here.
+
+123
+00:08:47.000 --> 00:08:52.000
+Then we'll grab an article and we'll grab the title that goes with the article.
+
+124
+00:08:52.000 --> 00:09:00.000
+If the article is not none or null, what we're going to do is use the recursive character text splitter from LangChain.
+
+125
+00:09:00.000 --> 00:09:10.000
+And we're going to use that to effectively chunk up the article of interest into 400 characters at a time and an overlap of 20.
+
+126
+00:09:10.000 --> 00:09:13.000
+And then what we're going to do is call this embed function that we declared up here.
+
+127
+00:09:13.000 --> 00:09:15.000
+So let's store that.
+
+128
+00:09:15.000 --> 00:09:22.000
+So as we split it up into smaller chunks, we're going to get the embeddings for each one of those chunks by calling get embeddings,
+
+129
+00:09:22.000 --> 00:09:24.000
+which is declared above.
+
+130
+00:09:24.000 --> 00:09:26.000
+And then we're going to call embed.
+
+131
+00:09:26.000 --> 00:09:35.000
+And so what embed does is it walks through this array and stores the vector embedding for each one of the chunks into the prepped element.
+
+132
+00:09:35.000 --> 00:09:41.000
+And if it hits, and you're used to this pattern at this point, if it hits 300 or more elements inside of the prepped array,
+
+133
+00:09:41.000 --> 00:09:47.000
+then we're going to go ahead and upsert that data into Pinecone and then clear it out so we can do it all over again.
+
+134
+00:09:47.000 --> 00:09:49.000
+So we ran this, I believe.
+
+135
+00:09:49.000 --> 00:09:52.000
+And let's go ahead and run this code.
+
+136
+00:09:52.000 --> 00:09:55.000
+So this is going to run and take quite a bit of time.
+
+137
+00:09:55.000 --> 00:09:57.000
+It's going to take around five minutes or so.
+
+138
+00:09:57.000 --> 00:10:00.000
+And we will fast forward that for you so you don't have to watch it upload.
+
+139
+00:10:00.000 --> 00:10:04.000
+And we'll be back in just a moment.
+
+140
+00:10:04.000 --> 00:10:06.000
+All right, so that finished uploading.
+
+141
+00:10:06.000 --> 00:10:13.000
+And now we're going to make sure that after we previously cleared out the index that our upload worked.
+
+142
+00:10:13.000 --> 00:10:18.000
+So, all right, 10,500 vectors were uploaded.
+
+143
+00:10:18.000 --> 00:10:19.000
+That's great.
+
+144
+00:10:19.000 --> 00:10:24.000
+So what we'll do is run the same exact code almost that we already ran,
+
+145
+00:10:24.000 --> 00:10:28.000
+except the main difference is that we're going to keep the small dictionary called scene.
+
+146
+00:10:28.000 --> 00:10:35.000
+And the reason we're going to do that is because, if you recall, we actually split up the article in the chunks using lang chain.
+
+147
+00:10:35.000 --> 00:10:42.000
+And what we want to do here is keep track of what we've already seen so that we don't get the same article being returned twice.
+
+148
+00:10:42.000 --> 00:10:50.000
+So we're going to say if title not in scene, then we will actually print out the score of the search,
+
+149
+00:10:50.000 --> 00:10:53.000
+as well as what we got back from our search.
+
+150
+00:10:53.000 --> 00:10:57.000
+And then we'll say, like, hey, we've already seen this article.
+
+151
+00:10:57.000 --> 00:10:58.000
+It's very simple.
+
+152
+00:10:58.000 --> 00:11:00.000
+Just put a dot in there to keep track.
+
+153
+00:11:00.000 --> 00:11:06.000
+And what we get back is, all right, and we get back a different set of articles.
+
+154
+00:11:06.000 --> 00:11:13.000
+This was based on the actual content inside the article, not the title of the article this time.
+
+155
+00:11:13.000 --> 00:11:16.000
+And you'll actually see the results are different this time, which is great.
+
+156
+00:11:16.000 --> 00:11:18.000
+All right, that's it for this lesson.
+
+157
+00:11:18.000 --> 00:11:22.000
+In the next lesson, we're going to build out something called hybrid search.
+

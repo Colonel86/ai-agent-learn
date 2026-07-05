@@ -1,0 +1,1069 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.135 --> 00:00:03.370
+In this lesson,
+
+2
+00:00:03.370 --> 00:00:07.040
+you will explore scenarios
+where vector search alone may fall short.
+
+3
+00:00:07.907 --> 00:00:12.145
+You will work on some of the most common
+challenges you might encounter,
+
+4
+00:00:12.512 --> 00:00:16.216
+and see how to effectively address them
+using vector databases.
+
+5
+00:00:16.683 --> 00:00:19.552
+All right. Let's get to coding.
+
+6
+00:00:19.552 --> 00:00:22.922
+Choosing the best possible
+embedding model is a crucial step
+
+7
+00:00:23.156 --> 00:00:26.092
+to build a reliable semantic
+search system.
+
+8
+00:00:26.092 --> 00:00:29.329
+However, no matter the model you choose,
+there are some relationships
+
+9
+00:00:29.329 --> 00:00:31.998
+which are not
+well captured by the vectors.
+
+10
+00:00:31.998 --> 00:00:35.702
+Sometimes these problematic relationships
+may be counterintuitive.
+
+11
+00:00:35.902 --> 00:00:38.338
+So let's review them in this lesson.
+
+12
+00:00:38.338 --> 00:00:42.509
+We already know that tokenization is an
+important step of creating the embeddings,
+
+13
+00:00:42.542 --> 00:00:46.646
+especially since it can chop our words
+into multiple pieces.
+
+14
+00:00:46.946 --> 00:00:50.450
+And this transform
+the actual input of the transformer.
+
+15
+00:00:50.617 --> 00:00:53.486
+Subword
+level tokens may have clear meaning
+
+16
+00:00:53.486 --> 00:00:56.856
+that will be captured already
+in the input token embeddings layer.
+
+17
+00:00:57.023 --> 00:01:01.895
+Shorter or rare tokens may, on the other
+hand, occur in various contexts,
+
+18
+00:01:01.928 --> 00:01:04.931
+what effectively limits
+the ability of the model
+
+19
+00:01:05.098 --> 00:01:07.934
+to learn proper input representations.
+
+20
+00:01:07.934 --> 00:01:10.703
+This is especially true for the prefixes
+
+21
+00:01:10.703 --> 00:01:14.407
+and suffixes
+which are parts of different words.
+
+22
+00:01:14.741 --> 00:01:19.345
+None of these tokens has a specific
+meaning, and the corresponding input
+
+23
+00:01:19.446 --> 00:01:22.982
+token embeddings will be rather covering
+different contexts.
+
+24
+00:01:23.149 --> 00:01:26.419
+It's certainly surprising, though,
+that the ability of the model
+
+25
+00:01:26.419 --> 00:01:30.323
+to capture the semantics of both words
+will be rather limited.
+
+26
+00:01:30.457 --> 00:01:34.828
+Also, some papers, such as: "Investigating
+the effectiveness of BPE,
+
+27
+00:01:35.228 --> 00:01:39.933
+the Power of Short Sequences",
+suggest that the fewer tokens an algorithm
+
+28
+00:01:39.933 --> 00:01:43.703
+needs to cover the test set, the better
+the results might be.
+
+29
+00:01:43.837 --> 00:01:48.074
+There are various other problems you may
+face while implementing semantic search.
+
+30
+00:01:48.174 --> 00:01:52.779
+Let's see what are the most common
+misconceptions and how to avoid them.
+
+31
+00:01:53.346 --> 00:01:57.183
+There are some myths about the magical
+capabilities of the semantic search.
+
+32
+00:01:57.217 --> 00:02:01.454
+Unfortunately, it fell short
+if the tokenizer cannot handle input data
+
+33
+00:02:01.454 --> 00:02:02.188
+properly.
+
+34
+00:02:02.188 --> 00:02:06.459
+Typically, you don't consider
+the embeddings assigned to each individual
+
+35
+00:02:06.459 --> 00:02:10.230
+token, but you just take a single vector
+per whole text.
+
+36
+00:02:10.497 --> 00:02:15.068
+In this lesson, you will use
+the same sentence transformer like before.
+
+37
+00:02:16.202 --> 00:02:17.170
+You will also need the
+
+38
+00:02:17.170 --> 00:02:20.607
+tokenizer
+to see how texts are split into tokens.
+
+39
+00:02:21.241 --> 00:02:24.244
+Let's access it.
+
+40
+00:02:25.111 --> 00:02:27.447
+You might be surprised to see that
+
+41
+00:02:27.447 --> 00:02:31.751
+some characters which are commonly used
+nowadays are not
+
+42
+00:02:31.751 --> 00:02:34.721
+That well capture by some of the embedding
+models.
+
+43
+00:02:34.721 --> 00:02:38.825
+The happy face emoji is not translated
+to any meaningful token,
+
+44
+00:02:39.259 --> 00:02:41.861
+and we should not expect it to capture
+
+45
+00:02:41.861 --> 00:02:44.864
+the real emotions
+of the person who wrote this text
+
+46
+00:02:44.931 --> 00:02:48.501
+if we use this particular model.
+Things may change
+
+47
+00:02:48.902 --> 00:02:51.905
+if we just describe them using text.
+
+48
+00:02:51.938 --> 00:02:54.941
+There seems to be a token
+corresponding to being happy,
+
+49
+00:02:55.408 --> 00:02:59.512
+but only if we use regular letters,
+not emojis.
+
+50
+00:03:00.180 --> 00:03:03.183
+How about different emotions?
+
+51
+00:03:03.917 --> 00:03:07.987
+Sad Face
+and happy face are both not recognized
+
+52
+00:03:08.388 --> 00:03:11.391
+and converted into the same unknown token.
+
+53
+00:03:11.925 --> 00:03:15.695
+If our documents only differ
+in that single word,
+
+54
+00:03:16.095 --> 00:03:19.799
+then the transformer input
+will be identical in both cases.
+
+55
+00:03:20.033 --> 00:03:23.102
+However, when we use regular letters,
+
+56
+00:03:24.437 --> 00:03:27.440
+there is a corresponding token found.
+
+57
+00:03:27.974 --> 00:03:30.810
+Again, our model struggles with emojis
+
+58
+00:03:30.810 --> 00:03:33.813
+and probably with
+some other sets of characters.
+
+59
+00:03:33.947 --> 00:03:37.283
+If you want to use it on social media
+data, you'd better check
+
+60
+00:03:37.483 --> 00:03:40.353
+how many unknown tokens there are.
+
+61
+00:03:40.353 --> 00:03:43.856
+Many businesses
+use specific domain terminology.
+
+62
+00:03:44.424 --> 00:03:47.393
+For example, Broadcom BCM2712
+
+63
+00:03:47.393 --> 00:03:52.098
+is a processor used in Raspberry Pi.
+
+64
+00:03:52.732 --> 00:03:55.201
+If someone asked for this device,
+
+65
+00:03:55.201 --> 00:03:58.705
+you would love to see this processor
+in the set of results.
+
+66
+00:04:00.273 --> 00:04:02.575
+Unfortunately, the name of
+
+67
+00:04:02.575 --> 00:04:06.312
+it is just cut into multiple subword
+level tokens.
+
+68
+00:04:07.380 --> 00:04:11.017
+You might also consider semantic search
+to handle synonyms as well.
+
+69
+00:04:11.484 --> 00:04:14.487
+But if you check how titles are tokenized,
+
+70
+00:04:15.054 --> 00:04:19.492
+you will see there are lots of subword
+level tokens and probably not
+
+71
+00:04:19.492 --> 00:04:22.929
+that much meaning of their corresponding
+input token embeddings.
+
+72
+00:04:23.563 --> 00:04:26.733
+If your users will just accidentally omit
+
+73
+00:04:26.733 --> 00:04:31.704
+the double "C" in the word accommodation,
+then the whole text
+
+74
+00:04:31.704 --> 00:04:35.541
+will be just transformed
+into a completely different set of tokens.
+
+75
+00:04:36.643 --> 00:04:39.112
+Many people
+also believe that vector embeddings
+
+76
+00:04:39.112 --> 00:04:42.382
+should capture the numbers and produce
+meaningful results.
+
+77
+00:04:42.782 --> 00:04:45.451
+For example, when two items
+
+78
+00:04:45.451 --> 00:04:48.021
+have similar prices.
+
+79
+00:04:48.021 --> 00:04:51.090
+There are various ways
+of how to define price.
+
+80
+00:04:51.724 --> 00:04:54.927
+However, the overlap of the tokens
+is the highest between
+
+81
+00:04:54.927 --> 00:04:57.930
+the first and the fourth example.
+
+82
+00:04:58.765 --> 00:05:01.768
+Even though the prices
+are completely different.
+
+83
+00:05:01.901 --> 00:05:05.972
+When it comes to dates, there are also
+various ways to describe the same day.
+
+84
+00:05:06.539 --> 00:05:09.609
+If you have multiple different formats
+in your system,
+
+85
+00:05:10.276 --> 00:05:12.779
+then the tokenization
+
+86
+00:05:12.779 --> 00:05:15.114
+will also be completely different.
+
+87
+00:05:15.114 --> 00:05:17.684
+That still doesn't mean
+the representations
+
+88
+00:05:17.684 --> 00:05:18.918
+will be far from each other.
+
+89
+00:05:18.918 --> 00:05:21.154
+That's something we need to verify.
+
+90
+00:05:21.154 --> 00:05:25.725
+The first two examples
+represent the same date, but they are
+
+91
+00:05:25.725 --> 00:05:30.725
+obviously the least similar in terms
+of how they're converted into tokens.
+
+92
+00:05:32.265 --> 00:05:34.300
+Practically, we never calculate
+
+93
+00:05:34.300 --> 00:05:39.105
+embeddings of single words,
+but rather sentences or paragraphs.
+
+94
+00:05:39.339 --> 00:05:42.175
+The impact of a single token
+is not that high,
+
+95
+00:05:42.175 --> 00:05:44.777
+but it might be significant in some cases.
+
+96
+00:05:44.777 --> 00:05:48.848
+Let's check the same examples like before,
+but this time the similarity
+
+97
+00:05:49.382 --> 00:05:52.352
+of the output text embeddings.
+
+98
+00:05:52.952 --> 00:05:56.222
+We will display the similarity
+as a heatmap.
+
+99
+00:05:58.458 --> 00:06:02.495
+Emojis do not have any token
+embeddings assigned,
+
+100
+00:06:03.429 --> 00:06:07.567
+and that results in a different emojis
+being encoded as unknown token.
+
+101
+00:06:08.167 --> 00:06:11.671
+Eventually, it won't make a difference
+if someone is happy
+
+102
+00:06:11.671 --> 00:06:14.974
+or sad,
+as long as they use emojis to describe it.
+
+103
+00:06:15.808 --> 00:06:18.811
+Let's also check how typos
+
+104
+00:06:18.911 --> 00:06:21.914
+may impact the overall similarity.
+
+105
+00:06:21.914 --> 00:06:24.917
+Similarity of both sentences
+is not that high.
+
+106
+00:06:24.917 --> 00:06:29.389
+Even though any human would see
+these sentences mean the same thing.
+
+107
+00:06:30.156 --> 00:06:33.292
+As a next example,
+you will check the numerical values.
+
+108
+00:06:35.762 --> 00:06:38.498
+The biggest overlap of the tokens
+
+109
+00:06:38.498 --> 00:06:41.501
+also results in the highest similarity.
+
+110
+00:06:42.301 --> 00:06:47.301
+Increasing the price from $55 to 559
+
+111
+00:06:48.074 --> 00:06:51.077
+does not change the meaning too much.
+
+112
+00:06:51.344 --> 00:06:54.013
+Another example you checked for the tokenization
+
+113
+00:06:54.013 --> 00:06:57.016
+was about the dates.
+
+114
+00:07:01.621 --> 00:07:03.523
+The same format of the date
+
+115
+00:07:03.523 --> 00:07:06.993
+seems to have highest impact
+on the similarity.
+
+116
+00:07:07.827 --> 00:07:12.165
+Even though the first two examples
+describe the same date,
+
+117
+00:07:12.932 --> 00:07:15.902
+their similarity score is the lowest.
+
+118
+00:07:18.371 --> 00:07:20.440
+The problems you just realized
+
+119
+00:07:20.440 --> 00:07:23.943
+might not hold true for all the embedding
+models available out there.
+
+120
+00:07:24.343 --> 00:07:27.079
+That's why
+this kind of evaluation is important.
+
+121
+00:07:27.079 --> 00:07:31.784
+Otherwise, you don't know what specific
+types of queries are just not supported.
+
+122
+00:07:32.485 --> 00:07:35.822
+Let's take another model
+and see how well it solves them.
+
+123
+00:07:35.855 --> 00:07:39.091
+OpenAI embeddings are commonly used,
+so we'll check them now.
+
+124
+00:07:39.525 --> 00:07:44.130
+The Tiktoken package is an OpenAI fast
+implementation of the byte-pair encoding.
+
+125
+00:07:44.430 --> 00:07:48.234
+Let's check the vocabulary size
+used in the model you will use.
+
+126
+00:07:48.401 --> 00:07:52.772
+The vocabulary is three times bigger than
+the sentence transformer we used so far.
+
+127
+00:07:52.872 --> 00:07:57.872
+Let's see how well it works
+for the same cases and start with emojis.
+
+128
+00:07:58.110 --> 00:08:02.982
+It seems that emoji is transformed
+to some tokens, but on the byte level.
+
+129
+00:08:03.616 --> 00:08:06.252
+Obviously it will be different
+if we just use words.
+
+130
+00:08:07.220 --> 00:08:08.754
+The first difference you can see
+
+131
+00:08:08.754 --> 00:08:12.992
+is that the OpenAI tokenizer was trained
+on some additional sets of Unicode.
+
+132
+00:08:13.159 --> 00:08:16.162
+Thus it should handle them better.
+
+133
+00:08:16.629 --> 00:08:20.032
+Let's
+see if the Raspberry Pi and its processor
+
+134
+00:08:20.032 --> 00:08:23.035
+was also commonly mentioned
+in the training data.
+
+135
+00:08:23.536 --> 00:08:26.539
+It seems the CPU wasn't mentioned too
+often.
+
+136
+00:08:27.240 --> 00:08:30.610
+Still, that doesn't mean
+the representation will be bad.
+
+137
+00:08:31.444 --> 00:08:34.447
+Let's now check how typos
+
+138
+00:08:34.580 --> 00:08:37.450
+impact the tokenization.
+
+139
+00:08:37.450 --> 00:08:40.553
+Different prices will also be encoded
+differently.
+
+140
+00:08:41.254 --> 00:08:44.257
+Let's check the tokenization out.
+
+141
+00:08:45.892 --> 00:08:48.895
+Last but not least,
+different date formats.
+
+142
+00:08:52.732 --> 00:08:55.801
+After checking the tokenization
+of the problematic cases,
+
+143
+00:08:55.801 --> 00:08:58.804
+let's check if these problems
+also impact the similarity.
+
+144
+00:08:59.038 --> 00:09:02.808
+First of all,
+we have to connect to the OpenAI services.
+
+145
+00:09:04.544 --> 00:09:06.846
+Now, if we pass the same
+
+146
+00:09:06.846 --> 00:09:10.016
+texts using both emojis and regular text,
+
+147
+00:09:10.349 --> 00:09:14.153
+we can calculate the cosine distance
+between all of these examples
+
+148
+00:09:15.254 --> 00:09:16.222
+and check
+
+149
+00:09:16.222 --> 00:09:19.292
+how the similarity of all the examples
+look like.
+
+150
+00:09:19.725 --> 00:09:24.725
+Emojis are supported by the model
+and the same emotion described with text
+
+151
+00:09:25.565 --> 00:09:28.501
+and graphical representation
+seem to keep the highest
+
+152
+00:09:28.501 --> 00:09:31.470
+similarity of the sentences.
+
+153
+00:09:31.571 --> 00:09:34.574
+Let's check the typos and their impact.
+
+154
+00:09:36.509 --> 00:09:37.410
+Similarities
+
+155
+00:09:37.410 --> 00:09:40.413
+are definitely higher
+than for the sentence transformer.
+
+156
+00:09:41.080 --> 00:09:44.283
+If you think using the OpenAI
+embeddings solves all the problems,
+
+157
+00:09:44.517 --> 00:09:47.453
+you'd better do some more evaluations.
+
+158
+00:09:47.453 --> 00:09:50.456
+Another example was about prices
+
+159
+00:09:50.456 --> 00:09:53.459
+and numbers in general.
+
+160
+00:09:54.427 --> 00:09:55.695
+Definitely,
+
+161
+00:09:55.695 --> 00:10:00.695
+OpenAI embeddings seem to handle
+the numbers better than the sentence
+
+162
+00:10:00.967 --> 00:10:02.702
+transformer
+
+163
+00:10:02.702 --> 00:10:06.739
+does not necessarily generalize
+to all the numbers, but
+
+164
+00:10:06.806 --> 00:10:09.075
+this is already promising.
+
+165
+00:10:09.075 --> 00:10:12.445
+When we perform the same process
+for the dates,
+
+166
+00:10:14.013 --> 00:10:15.615
+different formats
+
+167
+00:10:15.615 --> 00:10:18.985
+are still problematic
+and must be solved differently.
+
+168
+00:10:19.819 --> 00:10:24.390
+It's better to consider some normalization
+if that's the case for your data.
+
+169
+00:10:24.991 --> 00:10:27.960
+Semantic search is not all you need.
+
+170
+00:10:27.960 --> 00:10:31.430
+You should also pay more attention
+to the additional constraints
+
+171
+00:10:31.764 --> 00:10:33.366
+typical for the domain.
+
+172
+00:10:33.366 --> 00:10:38.337
+You will now connect to Qdrant
+and check an example of a real problem
+
+173
+00:10:38.337 --> 00:10:41.340
+you might encounter
+while working with semantic search.
+
+174
+00:10:41.440 --> 00:10:45.678
+A Qdrant server should be already running
+in the environment, and connecting to
+
+175
+00:10:45.678 --> 00:10:48.781
+it is as simple
+as creating a client instance.
+
+176
+00:10:49.048 --> 00:10:51.150
+Let's
+also check the list of the collections
+
+177
+00:10:51.150 --> 00:10:53.486
+we have to make sure
+the environment is fresh.
+
+178
+00:10:56.155 --> 00:10:59.158
+Your data
+will consist of textual descriptions
+
+179
+00:10:59.492 --> 00:11:02.328
+of different pieces of clothes
+and their prices.
+
+180
+00:11:02.328 --> 00:11:06.065
+Don't take it too seriously as it was
+generated by one of the GPT's.
+
+181
+00:11:07.500 --> 00:11:09.935
+You can now create a collection
+
+182
+00:11:09.935 --> 00:11:14.073
+that will keep the data encoded
+with the sentence transformer we use.
+
+183
+00:11:14.607 --> 00:11:19.512
+It produces vectors with 384 dimensions
+and that's the size you'll set.
+
+184
+00:11:20.012 --> 00:11:23.149
+Cosine distance is a metric
+you want to use to compare the vector
+
+185
+00:11:23.149 --> 00:11:24.750
+similarity.
+
+186
+00:11:24.750 --> 00:11:27.019
+The upsert methods of the client
+
+187
+00:11:27.019 --> 00:11:29.822
+helps to put the data in a collection.
+
+188
+00:11:29.822 --> 00:11:32.858
+Each point has an ID, a vector,
+
+189
+00:11:33.459 --> 00:11:36.896
+and some metadata that we call payload,
+
+190
+00:11:36.929 --> 00:11:41.929
+in Qdrant's terminology.
+Our points are ready to be searched over.
+
+191
+00:11:43.703 --> 00:11:46.706
+The query has to be encoded
+
+192
+00:11:46.739 --> 00:11:49.742
+with the same model
+as we used for the documents.
+
+193
+00:11:49.775 --> 00:11:54.775
+And now imagine you want to find a piece
+of cloth suitable for winter.
+
+194
+00:11:55.448 --> 00:11:57.717
+This is a use case
+in which semantic search
+
+195
+00:11:57.717 --> 00:12:01.020
+should shine over the lexical search,
+as none of the query
+
+196
+00:12:01.020 --> 00:12:04.023
+words has been ever used in the product
+descriptions.
+
+197
+00:12:04.290 --> 00:12:07.993
+Our results seem to be okay,
+but in some cases
+
+198
+00:12:08.461 --> 00:12:11.197
+we may have some additional requirements.
+
+199
+00:12:11.197 --> 00:12:15.367
+Imagine one of your users
+is looking for something below $40.
+
+200
+00:12:16.202 --> 00:12:20.139
+They would probably put this kind of query
+for cold weather under $40.
+
+201
+00:12:20.840 --> 00:12:24.744
+Unfortunately, the price requirement
+was not properly handled.
+
+202
+00:12:25.244 --> 00:12:28.247
+The semantic search does not guarantee
+that it will be captured.
+
+203
+00:12:28.981 --> 00:12:31.984
+The payload is a solution
+to this kind of problems.
+
+204
+00:12:32.451 --> 00:12:35.054
+Vector databases generally provide
+
+205
+00:12:35.054 --> 00:12:39.158
+additional mechanism to apply filters
+next to the semantic similarity.
+
+206
+00:12:39.191 --> 00:12:42.862
+If your vector database
+has a concept of metadata indexes,
+
+207
+00:12:43.229 --> 00:12:47.967
+it's always good to use them to keep
+this additional filtering efficient.
+
+208
+00:12:48.534 --> 00:12:52.938
+A good practice in Qdrant is creating
+a payload index on a filter fields we use.
+
+209
+00:12:53.272 --> 00:12:56.809
+In our case, an index on the price
+field makes a lot of sense.
+
+210
+00:12:57.843 --> 00:12:59.011
+From now on,
+
+211
+00:12:59.011 --> 00:13:02.014
+when we have strict
+price level requirements
+
+212
+00:13:02.748 --> 00:13:05.751
+which constrain
+the set of results using filters.
+
+213
+00:13:07.520 --> 00:13:09.321
+That's the only way to ensure
+
+214
+00:13:09.321 --> 00:13:12.892
+we always provide
+a relevant set of results
+
+215
+00:13:13.392 --> 00:13:17.863
+given a user query.
+All the results returned by our system,
+
+216
+00:13:17.863 --> 00:13:20.299
+fulfill our criteria.
+
+217
+00:13:20.299 --> 00:13:23.669
+You can also play with your own queries,
+but generally
+
+218
+00:13:23.903 --> 00:13:27.439
+semantic search should work
+even for some more sophisticated
+
+219
+00:13:27.439 --> 00:13:31.277
+ones without any overlap
+with the documents we have.
+
+220
+00:13:31.744 --> 00:13:35.581
+Still, there is a challenge in
+how to extract these additional filtres
+
+221
+00:13:35.581 --> 00:13:39.552
+from the query that will require
+changing the UI of the system
+
+222
+00:13:39.919 --> 00:13:42.922
+or applying some NLP techniques
+to detect them.
+
+223
+00:13:43.055 --> 00:13:46.392
+Eventually, the LLM's will also
+be really good at extracting
+
+224
+00:13:46.392 --> 00:13:49.395
+these constraints
+into a structured output.
+
+225
+00:13:49.562 --> 00:13:53.032
+Overall, that's another challenge
+we want to discuss in this course.
+
+226
+00:13:53.666 --> 00:13:54.633
+In the next lesson,
+
+227
+00:13:54.633 --> 00:13:59.305
+you will learn how to ensure
+your semantic search system works well.
+
+228
+00:14:00.272 --> 00:14:01.841
+Let's discuss quality.
+
+229
+00:14:01.841 --> 00:14:02.975
+See you in the next lesson.
+

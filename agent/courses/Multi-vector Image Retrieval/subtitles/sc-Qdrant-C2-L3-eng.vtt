@@ -1,0 +1,926 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.202
+One major shortcoming of ColPali
+
+00:00:02.202 --> 00:00:04.871
+is that it requires significantly more memory than other techniques
+
+00:00:04.871 --> 00:00:08.375
+in order to store all the vectors for each document.
+
+00:00:08.875 --> 00:00:11.177
+As a result, optimization techniques
+
+00:00:11.177 --> 00:00:13.780
+are used to reduce ColPali's memory footprint.
+
+00:00:14.214 --> 00:00:16.983
+Let's see what those approaches look like.
+
+00:00:17.384 --> 00:00:19.986
+The first is Scalar or Binary Quantization,
+
+00:00:19.986 --> 00:00:21.855
+which converts the floating point numbers
+
+00:00:21.855 --> 00:00:23.990
+in each vector to a condensed format,
+
+00:00:23.990 --> 00:00:26.993
+like a 4-bit integer or even 1 bit.
+
+00:00:27.494 --> 00:00:29.696
+The second approach is Row or Column Pooling.
+
+00:00:29.996 --> 00:00:33.400
+Patches are grouped together by rows or columns,
+
+00:00:33.400 --> 00:00:37.003
+and the vectors in each group are pooled, usually by averaging,
+
+00:00:37.003 --> 00:00:38.705
+to create a single vector.
+
+00:00:38.838 --> 00:00:41.341
+The final approach is Hierarchical Pooling,
+
+00:00:41.341 --> 00:00:44.644
+which is essentially more intelligent Row/Column Pooling.
+
+00:00:44.844 --> 00:00:48.548
+Patches are grouped with other patches that have similar embedding vectors.
+
+00:00:48.848 --> 00:00:51.651
+You will start by loading the document embeddings.
+
+00:00:52.152 --> 00:00:53.953
+In the previous lesson, you've learned
+
+00:00:53.953 --> 00:00:56.022
+how ColPali converts PDF pages to screenshots
+
+00:00:56.022 --> 00:00:58.124
+and generates multi-vector embeddings.
+
+00:00:58.625 --> 00:01:00.827
+Here, you will use a helper function
+
+00:01:00.827 --> 00:01:03.029
+that handles all of these steps internally.
+
+00:01:03.630 --> 00:01:06.833
+PDF conversion, image loading, and embedding generation.
+
+00:01:07.200 --> 00:01:10.070
+Since these details were covered in the previous lesson,
+
+00:01:10.070 --> 00:01:12.405
+you can focus on what matters for this one,
+
+00:01:12.405 --> 00:01:13.973
+optimization techniques.
+
+00:01:14.307 --> 00:01:18.078
+You will use pre-computed embeddings to keep this lesson moving smoothly.
+
+00:01:18.311 --> 00:01:21.114
+But you can also set LOAD_PRECOMPUTED to false
+
+00:01:21.114 --> 00:01:23.116
+to see the entire process.
+
+00:01:23.483 --> 00:01:25.585
+You will load the ColPali processor
+
+00:01:25.585 --> 00:01:28.188
+to demonstrate how ColPali structures
+
+00:01:28.188 --> 00:01:30.590
+document images as patch grids.
+
+00:01:30.890 --> 00:01:33.293
+This will help you understand the spatial pooling techniques
+
+00:01:33.293 --> 00:01:35.095
+we'll explore later on.
+
+00:01:35.395 --> 00:01:38.198
+Another helper function handles all the complexity,
+
+00:01:38.598 --> 00:01:42.302
+either loading precomputed embeddings from Parquet files,
+
+00:01:42.602 --> 00:01:45.405
+or generating them fresh by converting PDFs,
+
+00:01:45.705 --> 00:01:49.008
+loading the ColPali model and processing images in batches.
+
+00:01:49.342 --> 00:01:52.145
+load_or_compute_image_embeddings function
+
+00:01:52.145 --> 00:01:54.347
+returns a data frame with image paths
+
+00:01:54.347 --> 00:01:57.150
+and embeddings already converted to NumPy.
+
+00:01:57.851 --> 00:02:00.854
+Here is how some of the entries look like.
+
+00:02:01.354 --> 00:02:03.823
+Obviously, since you are working with images,
+
+00:02:03.823 --> 00:02:06.526
+we can also display them on the screen.
+
+00:02:08.828 --> 00:02:12.866
+This slides are coming from different Deeplearning AI courses.
+
+00:02:13.166 --> 00:02:15.535
+So if you have ever took any of them,
+
+00:02:15.635 --> 00:02:17.937
+after completing this one, you will be ready
+
+00:02:17.937 --> 00:02:20.240
+to just ask question directly to the slides.
+
+00:02:20.740 --> 00:02:24.577
+Each page generates around thousand token embeddings.
+
+00:02:24.911 --> 00:02:28.047
+That's a lot of vectors to store and search over,
+
+00:02:28.148 --> 00:02:31.951
+but let's see how the individual shapes of the embeddings look like.
+
+00:02:32.385 --> 00:02:36.289
+It's consistently 1031 vectors per image.
+
+00:02:36.890 --> 00:02:39.492
+You can now implement different optimization techniques,
+
+00:02:39.893 --> 00:02:43.897
+one by one, and eventually compare them on the same data set.
+
+00:02:43.897 --> 00:02:47.100
+Let's start with scalar and binary quantization.
+
+00:02:47.300 --> 00:02:50.503
+When we calculate the amount of memory needed to store the vectors,
+
+00:02:50.703 --> 00:02:54.274
+a common factor is the size of each individual dimension.
+
+00:02:54.707 --> 00:02:58.311
+Standard embeddings use 4-byte float32 values per dimension,
+
+00:02:58.711 --> 00:03:02.615
+but if you could reduce that size without sacrificing search quality,
+
+00:03:02.916 --> 00:03:07.020
+you would have an easy way to save significant RAM.
+
+00:03:07.520 --> 00:03:09.522
+Scalar and binary quantization techniques
+
+00:03:09.622 --> 00:03:12.392
+aim to represent vectors using either one byte
+
+00:03:12.392 --> 00:03:15.395
+integers or even just one bit per dimension,
+
+00:03:15.595 --> 00:03:19.899
+and they are widely used for regular dense embeddings from bi-encoders.
+
+00:03:20.300 --> 00:03:24.571
+Scalar quantization compresses float32 values, which are 4 bytes,
+
+00:03:24.771 --> 00:03:27.674
+down to int8 values, which are just 1 byte,
+
+00:03:27.874 --> 00:03:29.876
+achieving four times compression.
+
+00:03:30.076 --> 00:03:34.647
+Scalar quantization works by mapping the continuous float range
+
+00:03:34.847 --> 00:03:36.849
+to discrete integer buckets.
+
+00:03:37.050 --> 00:03:39.252
+For each dimension, the quantizer learns
+
+00:03:39.319 --> 00:03:42.155
+the minimum and maximum values across the entire data set
+
+00:03:42.255 --> 00:03:44.257
+and then linearly maps this range
+
+00:03:44.324 --> 00:03:47.560
+to the 0 to 255 integer space.
+
+00:03:47.961 --> 00:03:51.464
+For example, if dimension 5 ranges from
+
+00:03:51.564 --> 00:03:56.169
+negative 0.8 to 1.2 across all vectors,
+
+00:03:56.269 --> 00:04:01.574
+a value of 0.2 would map to approximately 128.
+
+00:04:01.774 --> 00:04:04.978
+This makes scalar quantization dataset aware.
+
+00:04:05.278 --> 00:04:07.780
+It requires analyzing all vectors,
+
+00:04:07.780 --> 00:04:11.284
+or at least a representative sample, to determine the optimal ranges.
+
+00:04:11.584 --> 00:04:15.788
+Fortunately, vector search engines like Qdrant handle this process internally.
+
+00:04:15.989 --> 00:04:19.792
+We simply configure a quantization at the collection level,
+
+00:04:19.792 --> 00:04:21.794
+send our original float embeddings,
+
+00:04:21.794 --> 00:04:25.298
+and the engine handles the compression and transformation automatically.
+
+00:04:25.531 --> 00:04:28.735
+Binary quantization takes compression even further,
+
+00:04:28.735 --> 00:04:32.305
+reducing each float32 dimension, which is 4 bytes,
+
+00:04:32.305 --> 00:04:34.307
+down to just one bit,
+
+00:04:34.307 --> 00:04:37.310
+achieving a dramatic 32 times compression ratio.
+
+00:04:37.310 --> 00:04:40.513
+The process is simple. Positive values become one,
+
+00:04:40.513 --> 00:04:43.516
+while negative or zero values become zero.
+
+00:04:44.050 --> 00:04:47.253
+This extreme compression transforms similarity calculations
+
+00:04:47.253 --> 00:04:49.922
+into efficient bitwise operations.
+
+00:04:50.523 --> 00:04:52.825
+Binary quantization works particularly well
+
+00:04:52.825 --> 00:04:55.028
+when embeddings are centered around zero
+
+00:04:55.028 --> 00:04:57.430
+with relatively symmetric distributions,
+
+00:04:57.430 --> 00:05:00.833
+which is common for normalized neural network outputs.
+
+00:05:00.867 --> 00:05:03.369
+However, this aggressive compression
+
+00:05:03.369 --> 00:05:05.471
+does come with trade-offs.
+
+00:05:05.872 --> 00:05:07.774
+Like scalar quantization,
+
+00:05:07.774 --> 00:05:10.343
+Qdrant handles binary quantization internally.
+
+00:05:10.643 --> 00:05:12.945
+We configure it at the collection level
+
+00:05:12.945 --> 00:05:15.448
+and set original float embeddings,
+
+00:05:15.448 --> 00:05:17.850
+letting the engine perform the binary conversion.
+
+00:05:18.184 --> 00:05:22.088
+A pooling approach can take advantage of ColPali's spatial structure.
+
+00:05:22.488 --> 00:05:25.992
+Remember from the previous lesson that ColPali processes document images
+
+00:05:26.092 --> 00:05:28.795
+as a 32 by 32 grid of patches.
+
+00:05:29.028 --> 00:05:33.132
+Row pooling averages embeddings along each row of this grid,
+
+00:05:33.132 --> 00:05:35.835
+while column pooling averages along each column.
+
+00:05:36.235 --> 00:05:38.438
+This preserves spatial relationships
+
+00:05:38.438 --> 00:05:40.840
+while dramatically reducing the number of vectors
+
+00:05:40.840 --> 00:05:42.542
+to just 32.
+
+00:05:42.909 --> 00:05:45.478
+Let's extract the image patch embeddings.
+
+00:05:45.878 --> 00:05:49.882
+The processor creates a sequence of a 1024 image patch tokens
+
+00:05:49.882 --> 00:05:52.485
+from a 32 by 32 grid,
+
+00:05:52.485 --> 00:05:55.388
+plus a few special tokens for the model's architecture.
+
+00:05:55.688 --> 00:05:59.592
+For the pooling methods, we don't need this additional tokens.
+
+00:05:59.992 --> 00:06:02.729
+So we can use the image mask from the processor
+
+00:06:02.929 --> 00:06:06.199
+to extract only the image related token positions.
+
+00:06:07.667 --> 00:06:11.371
+By filtering to just the image patch tokens using this mask,
+
+00:06:11.471 --> 00:06:15.375
+we can reshape the flat sequence of a 1024 embeddings
+
+00:06:15.475 --> 00:06:19.779
+into a 32 by 32 by 128 grid.
+
+00:06:20.113 --> 00:06:23.282
+Let's create a helper function that does exactly this.
+
+00:06:23.883 --> 00:06:26.285
+Each position in this 32 by 32 grid
+
+00:06:26.285 --> 00:06:29.088
+corresponds to a patch location in the original image,
+
+00:06:29.489 --> 00:06:32.692
+and each patch has a 128 dimensional embedding.
+
+00:06:33.226 --> 00:06:35.328
+Let's test your reshaping function
+
+00:06:35.328 --> 00:06:37.330
+on the first document's embedding.
+
+00:06:37.730 --> 00:06:40.133
+You've just applied the embeddings_grid function
+
+00:06:40.133 --> 00:06:43.336
+to verify it correctly transforms the mask embeddings.
+
+00:06:43.669 --> 00:06:47.173
+into the expected 32 by 32
+
+00:06:47.173 --> 00:06:50.476
+by 128 dimensional structure.
+
+00:06:50.676 --> 00:06:53.479
+Once our embeddings are in a grid form,
+
+00:06:53.479 --> 00:06:55.782
+you can implement row and column pooling
+
+00:06:55.782 --> 00:06:57.784
+as simple NumPy operations.
+
+00:06:57.917 --> 00:07:01.487
+Row pooling averages each of the 32 rows of the grid,
+
+00:07:01.788 --> 00:07:03.990
+resulting in 32 representative vectors
+
+00:07:03.990 --> 00:07:06.692
+that capture horizontal patterns across the document.
+
+00:07:06.692 --> 00:07:10.696
+And similarly, column pooling averages each of the 32 columns,
+
+00:07:10.696 --> 00:07:15.401
+capturing vertical patterns. Both methods reduce the total number of vectors
+
+00:07:15.401 --> 00:07:18.104
+from 1024 to just 32.
+
+00:07:18.704 --> 00:07:20.506
+It's not that easy to tell
+
+00:07:20.506 --> 00:07:22.575
+anything just by looking at these numbers.
+
+00:07:22.675 --> 00:07:24.777
+But just to confirm the shape is correct,
+
+00:07:25.178 --> 00:07:28.481
+you will run row_mean_pooling on the created grid,
+
+00:07:28.981 --> 00:07:31.984
+and it's truly 32 by 128 dimensions.
+
+00:07:32.618 --> 00:07:35.421
+The same goes for column_mean_pooling.
+
+00:07:35.421 --> 00:07:37.523
+After calling the method, we can see
+
+00:07:37.523 --> 00:07:39.625
+that the shape matches the expected size.
+
+00:07:39.625 --> 00:07:41.961
+Nevertheless, please do not spend much time
+
+00:07:41.961 --> 00:07:44.263
+looking at the numbers we can represent.
+
+00:07:44.263 --> 00:07:46.866
+Hierarchical token pooling uses clustering
+
+00:07:46.966 --> 00:07:49.268
+to intelligently group similar embeddings.
+
+00:07:49.569 --> 00:07:53.473
+The algorithm performs hierarchical clustering on the token embeddings,
+
+00:07:53.573 --> 00:07:55.775
+then averages each cluster
+
+00:07:55.775 --> 00:07:57.977
+into a single representative vector.
+
+00:07:58.044 --> 00:08:00.546
+Clusters are created from similar patches.
+
+00:08:00.847 --> 00:08:03.549
+So if you have a lot of background patches
+
+00:08:03.549 --> 00:08:05.852
+of the same color, they should be grouped together.
+
+00:08:06.052 --> 00:08:10.056
+The ColPali engine library has an implementation of that technique available.
+
+00:08:10.356 --> 00:08:13.059
+Let me show you a simple example of how it works.
+
+00:08:13.292 --> 00:08:16.562
+Assume you run Hierarchical Token Pooling on the image
+
+00:08:17.063 --> 00:08:20.066
+of nine patches. Each patch gets its own embedding,
+
+00:08:20.166 --> 00:08:23.469
+so our multivector representation is a sequence of nine vectors.
+
+00:08:24.070 --> 00:08:26.072
+If the pool factor is set to two,
+
+00:08:26.272 --> 00:08:28.341
+you create four clusters
+
+00:08:28.641 --> 00:08:32.712
+as 9 divided by 2 is 4.5, which rounds down to four.
+
+00:08:33.112 --> 00:08:35.548
+I'm making this up, but probably both patches
+
+00:08:35.848 --> 00:08:38.117
+containing ears would end up in the same cluster.
+
+00:08:38.518 --> 00:08:40.753
+Similarly, the patches with just fur
+
+00:08:41.053 --> 00:08:42.855
+are also quite similar to each other,
+
+00:08:43.055 --> 00:08:45.825
+so it's quite likely they would also be grouped together.
+
+00:08:46.092 --> 00:08:48.294
+A tile with eyes is quite unique,
+
+00:08:48.294 --> 00:08:50.863
+so it's likely to be a single patch cluster.
+
+00:08:51.264 --> 00:08:53.065
+And so on, and so forth.
+
+00:08:53.165 --> 00:08:56.269
+Patches don't have to be contiguous to form a cluster.
+
+00:08:56.869 --> 00:08:59.872
+Actually, the pooling technique gets a sequence of embeddings
+
+00:08:59.872 --> 00:09:02.475
+with no information about spatial relationships,
+
+00:09:02.475 --> 00:09:04.877
+so there is not even a way to do it.
+
+00:09:05.278 --> 00:09:07.780
+The ColPali engine library that you use
+
+00:09:07.780 --> 00:09:10.449
+has an implementation of this technique available.
+
+00:09:11.050 --> 00:09:13.753
+So you will just create a helper function
+
+00:09:13.753 --> 00:09:15.755
+called hierarchical_token_pooling
+
+00:09:15.755 --> 00:09:19.058
+to have a simpler way of using it on our original embeddings.
+
+00:09:19.358 --> 00:09:21.761
+Let's run it on one of the examples
+
+00:09:21.761 --> 00:09:23.763
+that you have in the data set
+
+00:09:23.763 --> 00:09:25.798
+to see how much memory we're
+
+00:09:25.798 --> 00:09:28.167
+able to save by using this method.
+
+00:09:28.568 --> 00:09:31.070
+With a pool factor of two, you've reduced the
+
+00:09:31.070 --> 00:09:35.074
+1031 vectors down to 515.
+
+00:09:35.174 --> 00:09:37.476
+Cutting memory usage nearly in half
+
+00:09:37.577 --> 00:09:40.780
+while preserving the semantic information through clustering.
+
+00:09:41.147 --> 00:09:43.249
+Now comes the crucial experiment,
+
+00:09:43.249 --> 00:09:45.952
+comparing all our optimization strategies
+
+00:09:45.952 --> 00:09:47.954
+in a real vector database.
+
+00:09:48.354 --> 00:09:51.757
+We'll create a single Qdrant collection with multiple named vectors,
+
+00:09:51.757 --> 00:09:54.760
+each representing a different optimization approach.
+
+00:09:55.161 --> 00:09:57.964
+This allows you to directly compare retrieval quality
+
+00:09:57.964 --> 00:10:00.666
+and memory usage across all strategies.
+
+00:10:00.967 --> 00:10:03.769
+Original embeddings, binary quantization,
+
+00:10:03.970 --> 00:10:07.974
+hierarchical pooling at different factors, and spatial pooling.
+
+00:10:08.140 --> 00:10:10.109
+You will answer the key question,
+
+00:10:10.109 --> 00:10:12.111
+how much memory can we save
+
+00:10:12.111 --> 00:10:14.914
+without sacrificing retrieval quality?
+
+00:10:14.914 --> 00:10:18.317
+First of all, let's make sure the collection does not exist.
+
+00:10:18.684 --> 00:10:22.188
+You will set up multiple named vectors in a single collection.
+
+00:10:22.788 --> 00:10:25.191
+Each vector will use multivector configuration
+
+00:10:25.491 --> 00:10:27.693
+with max sim comparison,
+
+00:10:27.893 --> 00:10:30.029
+but the number of vectors for
+
+00:10:30.029 --> 00:10:32.498
+pooling will vary depending on the strategy.
+
+00:10:32.898 --> 00:10:37.169
+For quantization methods, we'll enable them on the corresponding named vector.
+
+00:10:37.169 --> 00:10:39.972
+to compare against the original.
+
+00:10:40.673 --> 00:10:43.876
+Now, let's insert all our embeddings into the collection.
+
+00:10:44.410 --> 00:10:48.381
+Each document will have seven different vector representations,
+
+00:10:48.381 --> 00:10:52.685
+allowing us to compare the retrieval performance side by side.
+
+00:10:52.685 --> 00:10:56.088
+The helper method loads precomputed vector data
+
+00:10:56.088 --> 00:10:58.924
+and also limits which slide decks are used
+
+00:10:58.924 --> 00:11:01.127
+to a subset of the entire list.
+
+00:11:01.127 --> 00:11:04.263
+To avoid loading all the vectors into memory,
+
+00:11:04.263 --> 00:11:09.402
+the helper function yields the examples one by one.
+
+00:11:09.402 --> 00:11:12.471
+You will run the same queries across all the optimization techniques
+
+00:11:12.471 --> 00:11:15.174
+you implemented to compare retrieval quality.
+
+00:11:15.875 --> 00:11:18.277
+The helper function handles all the complexity.
+
+00:11:18.544 --> 00:11:22.248
+It will load precomputed query embeddings or compute them fresh
+
+00:11:22.248 --> 00:11:24.650
+depending on the load precomputed flag.
+
+00:11:24.850 --> 00:11:27.753
+The queries, the model, and the processor
+
+00:11:27.753 --> 00:11:31.057
+are just created internally in the helper function.
+
+00:11:31.824 --> 00:11:34.593
+Now let's search with each vector configuration
+
+00:11:34.593 --> 00:11:36.495
+and compare the results side by side.
+
+00:11:36.696 --> 00:11:38.898
+You will retrieve the top three documents
+
+00:11:38.898 --> 00:11:41.200
+for each query and optimization strategy.
+
+00:11:41.600 --> 00:11:44.303
+So, let's define the order of the optimizations
+
+00:11:44.303 --> 00:11:46.205
+so we can refer to them easily.
+
+00:11:46.706 --> 00:11:49.108
+You won't apply token pooling on queries,
+
+00:11:49.108 --> 00:11:52.511
+as they are already limited in terms of the sequence length.
+
+00:11:52.712 --> 00:11:55.514
+Row and column pooling for queries do not make sense
+
+00:11:55.514 --> 00:11:58.217
+as there are no spatial relationships in text.
+
+00:11:58.451 --> 00:12:01.554
+Moreover, Qdrant handles quantization internally.
+
+00:12:01.954 --> 00:12:05.357
+So in all the cases, the call to Qdrant API
+
+00:12:05.424 --> 00:12:07.827
+uses the query embeddings directly.
+
+00:12:08.127 --> 00:12:11.330
+Thus, we have a helper method that runs the same query
+
+00:12:11.430 --> 00:12:14.433
+on all the vectors and presents them as a matrix.
+
+00:12:14.900 --> 00:12:19.004
+Let's visualize the results with actual document images side by side.
+
+00:12:19.705 --> 00:12:23.008
+This comparison shows precision metrics with color coding
+
+00:12:23.008 --> 00:12:27.113
+to quickly identify which optimizations might maintain retrieval quality.
+
+00:12:28.914 --> 00:12:32.218
+Precision here measures what percentage of the retrieved documents
+
+00:12:32.218 --> 00:12:34.520
+match those returned by the baseline,
+
+00:12:34.520 --> 00:12:36.522
+which is original embeddings.
+
+00:12:37.022 --> 00:12:40.993
+That shows how well each optimization preserves retrieval accuracy.
+
+00:12:41.260 --> 00:12:44.063
+Our first query, coffee mug, returns
+
+00:12:44.063 --> 00:12:46.866
+this set of documents as the top three matches.
+
+00:12:47.266 --> 00:12:49.268
+Scalar quantization, binary quantization,
+
+00:12:49.268 --> 00:12:51.470
+and hierarchical token pooling were all able
+
+00:12:51.470 --> 00:12:54.774
+to return the same set of results.
+
+00:12:54.974 --> 00:12:57.276
+Sometimes the order was slightly different.
+
+00:12:57.276 --> 00:13:01.580
+Still, the precision does not measure the order of the documents.
+
+00:13:01.881 --> 00:13:05.684
+It focuses only on the fact of being relevant or not.
+
+00:13:05.985 --> 00:13:08.587
+However, for column_pooled and row_pooled,
+
+00:13:08.587 --> 00:13:11.190
+we are getting slightly different set of results,
+
+00:13:11.190 --> 00:13:14.193
+and we can clearly say that at least column_pooled
+
+00:13:14.193 --> 00:13:15.995
+didn't do this job really well.
+
+00:13:16.328 --> 00:13:17.997
+Since you only have three queries,
+
+00:13:17.997 --> 00:13:19.932
+you can run them one by one.
+
+00:13:20.833 --> 00:13:22.635
+It's time for the second one.
+
+00:13:23.135 --> 00:13:25.137
+Again, scalar quantization
+
+00:13:25.337 --> 00:13:27.840
+was able to return the same set of documents,
+
+00:13:28.040 --> 00:13:30.442
+but all the other methods struggled with that.
+
+00:13:30.943 --> 00:13:33.546
+Especially column pooling was not even able to pick
+
+00:13:33.646 --> 00:13:36.248
+one of the documents that were marked as relevant
+
+00:13:36.515 --> 00:13:38.517
+by the original ColPali embeddings.
+
+00:13:39.051 --> 00:13:41.554
+Last but not least, let's check the last query,
+
+00:13:42.555 --> 00:13:44.857
+which is one learning algorithm.
+
+00:13:45.858 --> 00:13:49.862
+Scalar quantization still provides exactly the same set of results
+
+00:13:49.862 --> 00:13:52.364
+like the original ColPali embeddings.
+
+00:13:52.865 --> 00:13:56.068
+Similarly, hierarchical token pooling was able to
+
+00:13:56.068 --> 00:13:58.871
+return the same set of results
+
+00:13:58.871 --> 00:14:00.873
+like the original baseline vectors.
+
+00:14:01.273 --> 00:14:04.043
+Unfortunately, row and column pooling both
+
+00:14:04.043 --> 00:14:06.545
+do not seem to be working that fine,
+
+00:14:06.545 --> 00:14:08.547
+at least not for our data set.
+
+00:14:08.814 --> 00:14:12.318
+However in practice, we don't look at the quality of retrieval
+
+00:14:12.318 --> 00:14:15.020
+for specific cases, but we calculate the metrics
+
+00:14:15.020 --> 00:14:17.990
+for all the test examples globally.
+
+00:14:18.591 --> 00:14:20.459
+The average precision at five for
+
+00:14:20.459 --> 00:14:22.595
+all the tested methods look like this.
+
+00:14:22.995 --> 00:14:25.297
+Column and Row Pooling didn't perform well
+
+00:14:25.297 --> 00:14:28.601
+as they were rarely able to select the most relevant document
+
+00:14:28.601 --> 00:14:31.604
+as you saw in the examples in our notebook.
+
+00:14:31.804 --> 00:14:35.007
+Hierarchical Token Pooling works significantly better,
+
+00:14:35.007 --> 00:14:36.542
+and the pool factor does not
+
+00:14:36.542 --> 00:14:38.310
+even seem to impact it too much.
+
+00:14:38.611 --> 00:14:41.013
+So we could possibly increase it even more.
+
+00:14:41.614 --> 00:14:44.316
+Surprisingly, a simple Scalar Quantization method
+
+00:14:44.316 --> 00:14:48.320
+was able to consistently return the same documents as the baseline,
+
+00:14:48.754 --> 00:14:52.625
+making it a promising approach that does not require any preprocessing
+
+00:14:53.325 --> 00:14:55.828
+as it can be configured at a collection level only.
+
+00:14:56.328 --> 00:14:58.964
+Binary Quantization wasn't the greatest method out there,
+
+00:14:59.331 --> 00:15:02.334
+but given its huge possible impact on the memory usage
+
+00:15:02.434 --> 00:15:05.537
+and processing speed, it might be considered in some cases.
+
+00:15:06.038 --> 00:15:09.241
+It's worth mentioning that you can combine multiple memory optimizations
+
+00:15:09.241 --> 00:15:10.843
+of a different kind.
+
+00:15:11.043 --> 00:15:14.847
+Scalar Quantization might be also enabled for the embeddings
+
+00:15:14.847 --> 00:15:16.949
+after applying Hierarchical Token Pooling
+
+00:15:17.049 --> 00:15:19.852
+if you see the quality is still acceptable.
+
+00:15:20.119 --> 00:15:24.723
+Nevertheless, a real benchmark should not focus on three handpicked examples
+
+00:15:24.924 --> 00:15:28.027
+but be broader. Still, evaluation is key
+
+00:15:28.127 --> 00:15:30.729
+and dependent on the datasets you are working on.
+
+00:15:30.930 --> 00:15:33.232
+Experiment with different techniques to see
+
+00:15:33.232 --> 00:15:35.935
+which combinations work best in your data.

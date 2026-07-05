@@ -1,0 +1,1666 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.066 --> 00:00:03.069
+You're now ready to define the first agent in your system,
+
+2
+00:00:03.269 --> 00:00:05.238
+the User Intent Agent.
+
+3
+00:00:05.438 --> 00:00:07.440
+Its main goal is to help you brainstorm ideas
+
+4
+00:00:07.540 --> 00:00:09.943
+for the type of Knowledge Graph you can construct
+
+5
+00:00:10.043 --> 00:00:13.046
+and what questions you'd like to answer from the graph.
+
+6
+00:00:13.446 --> 00:00:15.048
+Let's get coding.
+
+7
+00:00:15.081 --> 00:00:16.549
+If you think back to the
+
+8
+00:00:16.549 --> 00:00:18.251
+diagram that we'd seen in lesson two
+
+9
+00:00:18.251 --> 00:00:21.054
+that had the overall Knowledge Graph Agent architecture,
+
+10
+00:00:21.254 --> 00:00:24.557
+we're going to be working through the Structured Data Agent,
+
+11
+00:00:24.557 --> 00:00:27.060
+which is the sub-agent here that takes care of
+
+12
+00:00:27.060 --> 00:00:29.262
+taking information from CSV files,
+
+13
+00:00:29.562 --> 00:00:33.566
+taking that data and transforming that
+into a graph ultimately.
+
+14
+00:00:33.967 --> 00:00:35.869
+Now we're going to do that progressively,
+
+15
+00:00:35.869 --> 00:00:37.871
+we're going to do that in this elaborative way.
+
+16
+00:00:38.071 --> 00:00:39.672
+And the first step is to
+
+17
+00:00:39.672 --> 00:00:41.574
+actually understanding what is the user intent.
+
+18
+00:00:41.775 --> 00:00:43.977
+What happens here in this first phase
+
+19
+00:00:43.977 --> 00:00:46.579
+when we're establishing what is the user's goal
+
+20
+00:00:46.579 --> 00:00:48.782
+and a description of what they're trying to achieve
+
+21
+00:00:48.782 --> 00:00:50.984
+will influence everything else that the agents do.
+
+22
+00:00:50.984 --> 00:00:53.953
+This sets the direction overall
+for what we're trying to achieve
+
+23
+00:00:53.953 --> 00:00:56.256
+and all the agents will respond to that appropriately.
+
+24
+00:00:56.956 --> 00:01:00.560
+So, this particular agent has got one main job.
+
+25
+00:01:00.560 --> 00:01:02.962
+The output of it is saving to the memory
+
+26
+00:01:02.962 --> 00:01:04.964
+what is the approved user goal.
+
+27
+00:01:04.998 --> 00:01:08.001
+And to do that, it's got two tools to work with.
+
+28
+00:01:08.201 --> 00:01:09.702
+It has one tool where it
+
+29
+00:01:09.702 --> 00:01:11.504
+first perceives what is the user's goal
+
+30
+00:01:11.504 --> 00:01:15.975
+based on some interaction during
+the conversation it's having with the user.
+
+31
+00:01:16.276 --> 00:01:18.978
+And then based on what it understands
+the user wants,
+
+32
+00:01:19.279 --> 00:01:21.014
+it's only able to say, okay,
+
+33
+00:01:21.014 --> 00:01:22.982
+here's what I perceive that you want.
+
+34
+00:01:22.982 --> 00:01:25.985
+And so it's going to call a tool
+for actually capturing that.
+
+35
+00:01:26.486 --> 00:01:28.188
+And then it'll tell the user,
+
+36
+00:01:28.221 --> 00:01:29.756
+Here's what I think you want.
+
+37
+00:01:30.090 --> 00:01:32.425
+And then the user has the option of saying,
+yes, that's right
+
+38
+00:01:32.425 --> 00:01:34.761
+or no, that's not quite right,
+try again.
+
+39
+00:01:35.128 --> 00:01:37.664
+If you want to try again, then the agent's
+
+40
+00:01:37.664 --> 00:01:40.200
+going to have to continue to use
+this set_perceived_user_goal
+
+41
+00:01:40.200 --> 00:01:43.970
+until the user thinks,
+actually that's the correct thing. I approve that.
+
+42
+00:01:44.337 --> 00:01:46.873
+And only when the user has approved,
+
+43
+00:01:46.873 --> 00:01:49.375
+the agent should then call
+this approve_perceived_user_goal.
+
+44
+00:01:49.742 --> 00:01:51.411
+And we'll see how these tools work.
+
+45
+00:01:51.444 --> 00:01:53.646
+kind of in collaboration to update the memory
+
+46
+00:01:53.646 --> 00:01:56.249
+and actually capture this approved_user_goal.
+
+47
+00:01:56.649 --> 00:01:59.652
+So notice, I think critically,
+
+48
+00:01:59.652 --> 00:02:03.456
+set_perceived_user_goal cannot actually itself
+set the approved_user_goal.
+
+49
+00:02:03.656 --> 00:02:05.425
+It's only by calling this tool here.
+
+50
+00:02:05.625 --> 00:02:07.627
+This tool ends up being a guard
+
+51
+00:02:07.627 --> 00:02:09.629
+ensuring that we have a checkpoint with the user,
+
+52
+00:02:09.629 --> 00:02:12.232
+that the user is actually themselves explicitly said,
+
+53
+00:02:12.232 --> 00:02:14.234
+yes, this is good, let's go with it.
+
+54
+00:02:14.767 --> 00:02:16.870
+Okay, with the agent details in mind,
+
+55
+00:02:17.170 --> 00:02:18.805
+we'll go ahead and do the usual
+
+56
+00:02:18.805 --> 00:02:20.473
+setup and import libraries that we need.
+
+57
+00:02:23.176 --> 00:02:24.878
+And we'll set up the LLM
+
+58
+00:02:24.878 --> 00:02:26.446
+and a quick sanity check.
+
+59
+00:02:28.047 --> 00:02:31.851
+Let's see, how did it respond this time?
+Kind of consistently.
+
+60
+00:02:32.218 --> 00:02:34.154
+Yes, I'm ready. How can I assist you today?
+
+61
+00:02:36.956 --> 00:02:39.626
+So we can start to define the
+User Intent Agent itself.
+
+62
+00:02:40.126 --> 00:02:43.029
+And we're going to start by actually
+piece by piece describing
+
+63
+00:02:43.196 --> 00:02:44.964
+what is the prompt that we actually want to give,
+
+64
+00:02:44.964 --> 00:02:46.599
+what are the instructions for this agent.
+
+65
+00:02:47.133 --> 00:02:48.601
+The first part of the prompt
+
+66
+00:02:48.601 --> 00:02:50.336
+that you would want to define is
+
+67
+00:02:50.336 --> 00:02:51.938
+what is this agent's role
+
+68
+00:02:51.938 --> 00:02:53.940
+and also what is its goal.
+
+69
+00:02:53.940 --> 00:02:55.642
+So here we're going to say
+
+70
+00:02:55.642 --> 00:02:59.646
+this agent is an expert at
+knowledge graph use cases.
+
+71
+00:03:00.280 --> 00:03:02.749
+Your primary goal is to help the user
+
+72
+00:03:02.749 --> 00:03:04.450
+come up with a knowledge graph use case.
+
+73
+00:03:04.751 --> 00:03:07.153
+This is basically saying your job, dear agent,
+
+74
+00:03:07.253 --> 00:03:09.856
+is to help the user ideate on some ideas,
+
+75
+00:03:10.256 --> 00:03:11.791
+what is it trying to accomplish,
+
+76
+00:03:11.791 --> 00:03:13.560
+what is the user trying to accomplish.
+
+77
+00:03:13.860 --> 00:03:16.062
+The agent's goal is to help the user
+
+78
+00:03:16.062 --> 00:03:17.764
+figure out what their goal is.
+
+79
+00:03:18.031 --> 00:03:20.934
+The next part of the prompt we're going to add
+
+80
+00:03:20.934 --> 00:03:23.836
+is what I'm calling conversational hints.
+
+81
+00:03:23.836 --> 00:03:25.338
+This is helping the agent understand within
+
+82
+00:03:25.338 --> 00:03:27.040
+the context of the role that it has,
+
+83
+00:03:27.040 --> 00:03:28.841
+the goal that it's trying to achieve,
+
+84
+00:03:28.841 --> 00:03:30.643
+how should it go about its business.
+
+85
+00:03:31.244 --> 00:03:33.012
+So here, because we're in the context
+
+86
+00:03:33.012 --> 00:03:35.048
+of figuring out what the user's intent is,
+
+87
+00:03:35.048 --> 00:03:37.050
+trying to work with the user on ideation,
+
+88
+00:03:37.050 --> 00:03:38.952
+we have some basic ideas about
+
+89
+00:03:38.952 --> 00:03:40.687
+well, if the user isn't sure what
+
+90
+00:03:40.687 --> 00:03:42.455
+to do, you can make some suggestions,
+
+91
+00:03:42.655 --> 00:03:45.158
+particularly around classic use cases for knowledge graphs
+
+92
+00:03:45.158 --> 00:03:46.859
+because of course, this agent is
+
+93
+00:03:46.859 --> 00:03:48.861
+an expert at knowledge graph use cases.
+
+94
+00:03:49.629 --> 00:03:53.633
+Now, perhaps LLMs already know a lot about
+knowledge graph use cases,
+
+95
+00:03:53.933 --> 00:03:55.702
+but if you're doing this for your
+
+96
+00:03:55.702 --> 00:03:57.437
+own internal production system in some enterprise,
+
+97
+00:03:57.737 --> 00:03:59.839
+LLMs may not know anything about your business.
+
+98
+00:03:59.839 --> 00:04:01.474
+So this is a great opportunity
+
+99
+00:04:01.474 --> 00:04:03.343
+for you to explain to the agent
+
+100
+00:04:03.643 --> 00:04:05.078
+what it is that goes on in your
+
+101
+00:04:05.078 --> 00:04:06.646
+business and what matters to you and what doesn't.
+
+102
+00:04:07.046 --> 00:04:10.650
+So here, I explain a couple different use cases
+for knowledge graphs.
+
+103
+00:04:11.050 --> 00:04:13.152
+You can use them for social networks, logistics,
+
+104
+00:04:13.453 --> 00:04:15.355
+recommendation systems, fraud detection,
+
+105
+00:04:15.655 --> 00:04:17.657
+of course things like pop culture if you
+
+106
+00:04:17.657 --> 00:04:19.659
+want to keep track of movies, books, or music.
+
+107
+00:04:22.195 --> 00:04:23.863
+Because it's so important for setting
+
+108
+00:04:23.863 --> 00:04:25.765
+the overall direction of the multi-agent system,
+
+109
+00:04:26.266 --> 00:04:28.635
+I doubled down on like what is it
+
+110
+00:04:28.635 --> 00:04:31.004
+that a user goal actually is composed of.
+
+111
+00:04:31.604 --> 00:04:33.306
+And here I described within the prompt
+
+112
+00:04:33.306 --> 00:04:35.008
+that a user goal has two components.
+
+113
+00:04:35.675 --> 00:04:37.577
+One is the kind of graph.
+
+114
+00:04:38.278 --> 00:04:40.580
+So are you creating a social graph, are
+
+115
+00:04:40.580 --> 00:04:43.216
+you creating a logistics graph,
+what could it be?
+
+116
+00:04:43.883 --> 00:04:45.952
+So the kind of graph is here,
+
+117
+00:04:46.386 --> 00:04:48.688
+described to the agent as being
+
+118
+00:04:48.688 --> 00:04:50.890
+at most three words that describe
+
+119
+00:04:50.890 --> 00:04:52.458
+what is the graph that we're creating.
+
+120
+00:04:52.458 --> 00:04:55.361
+And in addition to the kind of graph
+that you're creating,
+
+121
+00:04:55.361 --> 00:04:58.364
+there's also the component
+of describe that graph.
+
+122
+00:04:58.364 --> 00:05:00.566
+So provide a few sentences
+
+123
+00:05:00.566 --> 00:05:03.670
+about the intention for that graph.
+So, for example,
+
+124
+00:05:04.070 --> 00:05:06.873
+If we had said "USA freight logistics",
+
+125
+00:05:07.073 --> 00:05:10.543
+the description could be a dynamic routing
+and delivery system
+
+126
+00:05:10.743 --> 00:05:15.743
+for cargo. This is by way of doing some few-shot learning,
+
+127
+00:05:15.948 --> 00:05:19.552
+really emphasizing to the agent
+and through the agent to an LLM
+
+128
+00:05:19.552 --> 00:05:21.554
+what it is you're trying to achieve.
+
+129
+00:05:21.854 --> 00:05:23.956
+Because this is so important, it's worth
+
+130
+00:05:23.956 --> 00:05:26.059
+repeating both here in the prompt itself
+
+131
+00:05:26.159 --> 00:05:28.361
+and then later in the tool descriptions that
+
+132
+00:05:28.361 --> 00:05:30.563
+are actually going to use the user goal,
+
+133
+00:05:30.763 --> 00:05:32.799
+both in defining what it is and
+
+134
+00:05:32.799 --> 00:05:34.867
+also then approving what has been understood.
+
+135
+00:05:35.234 --> 00:05:38.071
+The last part of the prompt
+that we're going to put together
+
+136
+00:05:38.071 --> 00:05:39.839
+is the chain of thought directions.
+
+137
+00:05:40.239 --> 00:05:43.042
+Now, chain of thought can be as simple as, hey,
+
+138
+00:05:43.042 --> 00:05:45.345
+think carefully, think step by step.
+
+139
+00:05:45.845 --> 00:05:47.714
+But here, we're going to be
+a bit more particular.
+
+140
+00:05:48.114 --> 00:05:50.216
+We have some steps that we want the
+
+141
+00:05:50.216 --> 00:05:52.318
+LLM to go through, so we're going to
+
+142
+00:05:52.352 --> 00:05:54.153
+say very specifically, here's what I want
+
+143
+00:05:54.153 --> 00:05:56.189
+you to do one step at a time.
+
+144
+00:05:56.289 --> 00:05:58.291
+And the agent might do variations of this,
+
+145
+00:05:58.491 --> 00:06:00.360
+but by being very specific here when we
+
+146
+00:06:00.360 --> 00:06:02.261
+know what we'd like the agent to do,
+
+147
+00:06:02.562 --> 00:06:04.664
+it very much helps focus the agent's attention
+
+148
+00:06:04.964 --> 00:06:06.766
+to figure out how it should proceed
+
+149
+00:06:06.966 --> 00:06:08.968
+given a user's initial interactions.
+
+150
+00:06:09.502 --> 00:06:12.805
+So, most importantly,
+it needs to understand the user's goal.
+
+151
+00:06:13.406 --> 00:06:17.310
+Again, we're going to reiterate,
+that's the kind_of_graph along with the description.
+
+152
+00:06:17.610 --> 00:06:19.312
+And if it's not sure,
+
+153
+00:06:19.312 --> 00:06:21.914
+that the agent should ask
+clarifying questions as needed.
+
+154
+00:06:22.315 --> 00:06:26.018
+And then only when the agent thinks it understands
+the user's goal,
+
+155
+00:06:26.018 --> 00:06:28.888
+should it call the set_perceived_user_goal tool.
+
+156
+00:06:29.288 --> 00:06:31.190
+That's what's actually going to record
+
+157
+00:06:31.190 --> 00:06:33.393
+into memory the user goal as understood
+
+158
+00:06:33.793 --> 00:06:36.996
+with the two components of kind_of_graph
+along with the description.
+
+159
+00:06:38.197 --> 00:06:41.334
+Finally, present that perceived
+user goal to the user,
+
+160
+00:06:41.334 --> 00:06:43.436
+asking them for confirmation.
+
+161
+00:06:43.436 --> 00:06:45.838
+Here's what I think you just said,
+am I right?
+
+162
+00:06:46.139 --> 00:06:48.641
+If the user agrees, only then
+
+163
+00:06:48.641 --> 00:06:51.544
+can the agent call the
+approve_perceived_user_goal tool.
+
+164
+00:06:52.044 --> 00:06:55.148
+Here we give lots of extra instructions
+about calling this tool,
+
+165
+00:06:55.148 --> 00:06:58.117
+so that the agent really understands
+what this tool is doing.
+
+166
+00:06:58.518 --> 00:07:00.520
+That upon calling this tool,
+
+167
+00:07:00.520 --> 00:07:03.322
+that the current perceived goal will be
+
+168
+00:07:03.322 --> 00:07:06.125
+saved into state under the approved_user_goal key.
+
+169
+00:07:06.793 --> 00:07:10.396
+Okay. All of these parts together will form the prompt
+
+170
+00:07:10.596 --> 00:07:12.598
+that we're going to give to the agent.
+
+171
+00:07:13.800 --> 00:07:16.803
+To combine this together,
+we'll use some Python string templates,
+
+172
+00:07:17.003 --> 00:07:18.905
+and we're just go ahead and actually
+
+173
+00:07:18.905 --> 00:07:20.807
+insert the variables that we defined earlier,
+
+174
+00:07:21.107 --> 00:07:23.810
+the agent_role_and_goal, the agent_conversational_hints,
+
+175
+00:07:24.010 --> 00:07:27.113
+the agent_output_definition,
+and then also the chain-of-thought directions.
+
+176
+00:07:27.547 --> 00:07:29.449
+We'll go ahead and print that to the screen
+
+177
+00:07:29.449 --> 00:07:31.150
+so you can see what the total thing looks like.
+
+178
+00:07:36.956 --> 00:07:38.858
+You can now go ahead and define those tools.
+
+179
+00:07:41.194 --> 00:07:43.830
+The first tool is to set_perceived_user_goal.
+
+180
+00:07:44.397 --> 00:07:45.998
+And you can see in the comments here,
+
+181
+00:07:45.998 --> 00:07:47.900
+this is to encourage collaboration with the user
+
+182
+00:07:48.234 --> 00:07:50.102
+by setting this up inside of a tool
+
+183
+00:07:50.102 --> 00:07:51.904
+and by having only through that tool
+
+184
+00:07:52.004 --> 00:07:55.208
+saving the values that it perceives into memory,
+
+185
+00:07:55.608 --> 00:07:57.310
+we really help the agent focus.
+
+186
+00:07:57.410 --> 00:08:00.179
+is on like what does it mean
+to understand the user's goal
+
+187
+00:08:00.179 --> 00:08:01.881
+because it has to call this tool,
+
+188
+00:08:01.881 --> 00:08:03.649
+it knows that it has these two
+
+189
+00:08:03.649 --> 00:08:05.384
+components. We said that in the prompt
+
+190
+00:08:05.384 --> 00:08:07.386
+and then here in the tool definition itself,
+
+191
+00:08:07.386 --> 00:08:09.188
+it can see that there's two arguments.
+
+192
+00:08:09.188 --> 00:08:10.890
+It has to pass in the kind
+
+193
+00:08:10.890 --> 00:08:12.592
+of graph and also a graph description.
+
+194
+00:08:12.592 --> 00:08:14.494
+And also, you'll notice
+
+195
+00:08:14.794 --> 00:08:17.997
+We have the tool_context passed in
+as the last parameter.
+
+196
+00:08:17.997 --> 00:08:19.765
+If you remember from the previous lesson,
+
+197
+00:08:19.765 --> 00:08:21.968
+when the last argument is a ToolContext,
+
+198
+00:08:21.968 --> 00:08:25.338
+ADK will automatically inject that
+when this tool is being called.
+
+199
+00:08:25.872 --> 00:08:29.742
+in the tool description,
+we reiterate what this is doing
+
+200
+00:08:29.742 --> 00:08:31.644
+that it's saving the perceived user's goal,
+
+201
+00:08:31.844 --> 00:08:34.847
+including the kind of graph along
+with a description of it.
+
+202
+00:08:35.348 --> 00:08:37.650
+And we also describe what the arguments are.
+
+203
+00:08:38.050 --> 00:08:40.653
+These should be exactly
+the same as what we said to
+
+204
+00:08:40.653 --> 00:08:42.355
+the agent inside of the instructions earlier
+
+205
+00:08:42.355 --> 00:08:44.056
+that will be part of the prompt.
+
+206
+00:08:44.657 --> 00:08:47.059
+Now the tool definition itself is going to say it again.
+
+207
+00:08:47.460 --> 00:08:48.761
+The more times you can say
+
+208
+00:08:48.761 --> 00:08:50.263
+it, the less likely that the LLM
+
+209
+00:08:50.429 --> 00:08:52.532
+it's going to do the wrong thing
+when calling the tool.
+
+210
+00:08:52.632 --> 00:08:54.634
+And inside of the tool, it's pretty simple.
+
+211
+00:08:54.734 --> 00:08:57.036
+All it's going to do is assemble
+
+212
+00:08:57.036 --> 00:08:59.338
+a small dictionary that is the user_goal_data
+
+213
+00:08:59.639 --> 00:09:02.441
+that is composed of those two components,
+the kind_of_graph
+
+214
+00:09:02.542 --> 00:09:05.645
+along with the graph_description,
+just as passed into the tool.
+
+215
+00:09:06.045 --> 00:09:08.247
+So this is really just a very simple
+
+216
+00:09:08.247 --> 00:09:10.449
+way of actually encapsulating
+how to access memory,
+
+217
+00:09:10.750 --> 00:09:12.852
+but also focusing the access to memory.
+
+218
+00:09:13.286 --> 00:09:16.088
+So the context state is updated
+with that dictionary
+
+219
+00:09:16.489 --> 00:09:18.090
+because this has been an update.
+
+220
+00:09:18.491 --> 00:09:21.294
+The ADK will see that
+there's been a change to state.
+
+221
+00:09:21.294 --> 00:09:24.797
+It'll propagate that delta to anybody else
+who needs to perceive it
+
+222
+00:09:25.097 --> 00:09:27.099
+I'm inside of the runtime environment.
+
+223
+00:09:30.069 --> 00:09:32.104
+You can then define the next tool, which
+
+224
+00:09:32.104 --> 00:09:34.173
+is used to approve that perceived user goal.
+
+225
+00:09:34.574 --> 00:09:36.809
+Now, this should only get triggered after
+
+226
+00:09:36.809 --> 00:09:39.078
+the perceived user goal has been set,
+
+227
+00:09:39.378 --> 00:09:42.081
+and then the user has also said, yes, I approve that.
+
+228
+00:09:42.381 --> 00:09:45.184
+If both of those things are true, this tool should be called.
+
+229
+00:09:46.385 --> 00:09:49.355
+Now, when you can, whenever it's possible and sensible,
+
+230
+00:09:49.455 --> 00:09:53.059
+inside of a tool, it's worth trusting
+but verifying that the LLM
+
+231
+00:09:53.559 --> 00:09:55.628
+is doing the right thing.
+
+232
+00:09:55.661 --> 00:09:57.063
+In this tool, it should only
+
+233
+00:09:57.063 --> 00:09:58.731
+be called upon approval from the user.
+
+234
+00:09:58.764 --> 00:10:01.534
+So we're going to iterate again with the LLM,
+
+235
+00:10:01.567 --> 00:10:04.637
+hey, only call this after the user has approved.
+
+236
+00:10:05.037 --> 00:10:07.540
+And then if the user has approved by calling this,
+
+237
+00:10:08.040 --> 00:10:09.875
+the tool will record the perceived
+
+238
+00:10:09.875 --> 00:10:12.044
+user goal as the approved user goal.
+
+239
+00:10:12.345 --> 00:10:14.347
+And again, we're going to say to the agent,
+
+240
+00:10:14.347 --> 00:10:16.182
+only call this tool if the user
+
+241
+00:10:16.182 --> 00:10:18.050
+has explicitly approved the perceived user goal.
+
+242
+00:10:18.517 --> 00:10:22.021
+inside of the tool to check a little bit.
+
+243
+00:10:22.321 --> 00:10:25.324
+Because we require that
+the perceived user goal has already been set,
+
+244
+00:10:25.324 --> 00:10:26.926
+we can go ahead and check that that
+
+245
+00:10:26.926 --> 00:10:28.527
+has been set before we do anything else.
+
+246
+00:10:29.228 --> 00:10:31.530
+Now, how we handle this setting is really important
+
+247
+00:10:32.031 --> 00:10:33.766
+because the call to the tool can
+
+248
+00:10:33.766 --> 00:10:35.534
+result either successfully or in an error.
+
+249
+00:10:36.035 --> 00:10:37.536
+So here we have a very
+
+250
+00:10:37.536 --> 00:10:39.338
+specific error that we might turn back.
+
+251
+00:10:39.572 --> 00:10:42.675
+If the PERCEIVED_USER_GOAL isn't in the current context.
+
+252
+00:10:42.675 --> 00:10:45.378
+If it's not in the tool_context.state,
+
+253
+00:10:45.378 --> 00:10:47.079
+so the agent's memory.
+
+254
+00:10:47.079 --> 00:10:49.081
+If the PERCEIVED_USER_GOAL is not there,
+
+255
+00:10:49.081 --> 00:10:51.384
+we're going to go ahead
+and return an error from this tool.
+
+256
+00:10:51.584 --> 00:10:54.387
+And the error message that we're going to supply
+
+257
+00:10:54.387 --> 00:10:56.389
+is meant to actually help the LLM understand,
+
+258
+00:10:56.389 --> 00:10:58.391
+here's what what went wrong,
+
+259
+00:10:58.391 --> 00:11:00.493
+here's what you should do to actually fix the problem.
+
+260
+00:11:00.693 --> 00:11:02.328
+So we're telling the LLM that the
+
+261
+00:11:02.328 --> 00:11:03.996
+perceived user goal has not been set
+
+262
+00:11:04.230 --> 00:11:07.033
+and that it should set the perceived user goal first
+
+263
+00:11:07.033 --> 00:11:09.235
+or ask clarifying questions if it's unsure
+
+264
+00:11:09.235 --> 00:11:11.737
+what the user's intentions are.
+
+265
+00:11:12.238 --> 00:11:14.240
+So this is really reiterating to the agent
+
+266
+00:11:14.240 --> 00:11:16.742
+in all these different places from the prompt,
+
+267
+00:11:16.742 --> 00:11:19.045
+to the definition of the tools,
+
+268
+00:11:19.045 --> 00:11:21.047
+to also the error messages that come back from the tools,
+
+269
+00:11:21.247 --> 00:11:23.249
+encouraging the LLM to do the right thing
+
+270
+00:11:23.249 --> 00:11:25.051
+based on what's happening.
+
+271
+00:11:25.584 --> 00:11:28.888
+If it was successful, all we do then is copy the state
+
+272
+00:11:28.888 --> 00:11:32.291
+from the perceived user goal into the approved user goal.
+
+273
+00:11:32.291 --> 00:11:34.794
+So notice the only way for this to happen,
+
+274
+00:11:34.794 --> 00:11:38.464
+since we're not passing an argument
+into the approve_perceived_user_goal,
+
+275
+00:11:38.764 --> 00:11:41.167
+The approved user goal only gets set if there
+
+276
+00:11:41.167 --> 00:11:43.569
+is a perceived user goal. It gets copied in,
+
+277
+00:11:43.569 --> 00:11:45.337
+and then both the perceived and approved
+
+278
+00:11:45.337 --> 00:11:47.373
+user goals should be available inside of state.
+
+279
+00:11:48.307 --> 00:11:51.243
+For convenience, we'll add both of those to a list
+
+280
+00:11:51.243 --> 00:11:52.812
+because we know we're going to pass in
+
+281
+00:11:52.812 --> 00:11:54.613
+a list when we create the actual agent itself.
+
+282
+00:11:55.481 --> 00:11:59.985
+So we've got our two tools,
+setting perceived_user_goal and approving the perceived_user_goal.
+
+283
+00:12:00.920 --> 00:12:03.289
+So, you can define the user intent agent.
+
+284
+00:12:03.723 --> 00:12:05.491
+You're going to give it a name with
+
+285
+00:12:05.491 --> 00:12:07.493
+a version that's going to be unique version name.
+
+286
+00:12:08.160 --> 00:12:10.596
+And we're just going to use the LLM that we defined earlier.
+
+287
+00:12:10.763 --> 00:12:12.765
+This will be the same LLM through all the notebooks,
+
+288
+00:12:12.898 --> 00:12:15.101
+so we can just skip right over this in the future.
+
+289
+00:12:15.401 --> 00:12:16.969
+And the description is really important.
+
+290
+00:12:17.369 --> 00:12:21.173
+The intent of this user intent agent is to help the user
+
+291
+00:12:21.173 --> 00:12:23.876
+ideate on knowledge graph use cases.
+
+292
+00:12:24.176 --> 00:12:27.179
+This is helping the overall multi-agent system know
+
+293
+00:12:27.179 --> 00:12:28.881
+when to use this agent itself.
+
+294
+00:12:29.081 --> 00:12:30.850
+If you recall from the diagram
+
+295
+00:12:30.850 --> 00:12:32.885
+earlier, this is part of a workflow
+
+296
+00:12:32.885 --> 00:12:35.488
+by having this description match the role this agent
+
+297
+00:12:35.688 --> 00:12:37.790
+plays within that workflow
+
+298
+00:12:37.790 --> 00:12:40.793
+that helps the coordinator
+that's going to be actually managing the workflow
+
+299
+00:12:40.793 --> 00:12:42.895
+know when to delegate to this agent.
+
+300
+00:12:43.896 --> 00:12:47.166
+Inside of the agent then,
+we have the complete agent instructions
+
+301
+00:12:47.166 --> 00:12:49.869
+that we assembled earlier. We're going to pass that in
+
+302
+00:12:49.869 --> 00:12:52.471
+and of course, we'll also pass in the tools that are available.
+
+303
+00:12:55.574 --> 00:12:57.676
+You now have a complete user agent
+
+304
+00:12:57.676 --> 00:12:59.779
+ready to go. Let's interact with it.
+
+305
+00:13:00.780 --> 00:13:03.282
+You can import your friend the make_agent_caller
+
+306
+00:13:03.783 --> 00:13:07.386
+and go ahead and create a caller for the user_intent_agent
+
+307
+00:13:07.653 --> 00:13:09.555
+that will call the user_intent_caller.
+
+308
+00:13:09.755 --> 00:13:12.658
+and you can pay attention to this note here, of course.
+
+309
+00:13:12.858 --> 00:13:14.727
+If you're going to run this a couple of times,
+
+310
+00:13:14.727 --> 00:13:16.729
+it's worth coming back here to re-initialize the state
+
+311
+00:13:16.729 --> 00:13:19.331
+if things have gotten kind of off the rails.
+
+312
+00:13:22.334 --> 00:13:23.869
+So let's set up a conversation
+
+313
+00:13:23.869 --> 00:13:25.638
+to interact with the user intent agent.
+
+314
+00:13:26.839 --> 00:13:28.874
+We'll get the session before we actually start interacting,
+
+315
+00:13:28.874 --> 00:13:31.043
+so we can see the current state of the session.
+
+316
+00:13:31.277 --> 00:13:33.546
+This should be empty initially as usual.
+
+317
+00:13:33.913 --> 00:13:37.183
+And then we're going to go ahead
+and create a scripted conversation
+
+318
+00:13:37.583 --> 00:13:40.186
+that really just has two calls here.
+
+319
+00:13:40.586 --> 00:13:43.589
+The first call is going to be the user declaring
+
+320
+00:13:43.589 --> 00:13:46.292
+that the user wants to have a bill of materials graph
+
+321
+00:13:46.592 --> 00:13:50.296
+or a BOM graph. And that it should include all levels
+
+322
+00:13:50.596 --> 00:13:52.698
+of the bill of materials from suppliers
+
+323
+00:13:52.998 --> 00:13:56.535
+to a finished product. And the user is also specifying
+
+324
+00:13:56.535 --> 00:13:59.038
+that they want this bill of materials graph
+
+325
+00:13:59.038 --> 00:14:01.240
+that can support root-cause analysis.
+
+326
+00:14:01.841 --> 00:14:03.342
+I'm going to go ahead and get
+
+327
+00:14:03.342 --> 00:14:04.844
+rid of the verbose output right here,
+
+328
+00:14:04.844 --> 00:14:06.445
+but you can leave that in if you'd like to.
+
+329
+00:14:06.879 --> 00:14:09.381
+Now, this is an important part of the conversation.
+
+330
+00:14:09.682 --> 00:14:13.686
+Sometimes when an agent actually receives
+that initial message from the user,
+
+331
+00:14:13.686 --> 00:14:16.889
+it might decide, well,
+I do need to ask a clarifying question.
+
+332
+00:14:17.489 --> 00:14:19.124
+And so in case it has,
+
+333
+00:14:19.124 --> 00:14:21.060
+then the PERCEIVED_USER_GOAL will not be set.
+
+334
+00:14:21.060 --> 00:14:23.729
+The agent probably has responded by saying,
+hey, tell
+
+335
+00:14:23.729 --> 00:14:26.365
+me some more about what you're trying to do.
+
+336
+00:14:26.899 --> 00:14:28.968
+We're going to make an assumption here.
+
+337
+00:14:28.968 --> 00:14:31.837
+If the PERCEIVED_USER_GOAL has not been set
+in the session state,
+
+338
+00:14:31.837 --> 00:14:34.807
+let's assume that the LLM has asked
+for a clarifying question.
+
+339
+00:14:34.807 --> 00:14:38.410
+Let's provide it with a clarifying answer
+
+340
+00:14:38.410 --> 00:14:40.980
+and say that as the user, I'm
+
+341
+00:14:40.980 --> 00:14:43.515
+concerned about possible manufacturing or supplier issues.
+
+342
+00:14:43.515 --> 00:14:46.719
+Hopefully that's enough detail to satisfy the agent.
+
+343
+00:14:46.952 --> 00:14:50.356
+and encourage it to actually call
+the perceived user goal tool.
+
+344
+00:14:51.423 --> 00:14:53.525
+Then optimistically, if we've gotten here,
+
+345
+00:14:53.525 --> 00:14:55.461
+then the perceived user goal has been set,
+
+346
+00:14:55.761 --> 00:14:57.763
+and we're going to go ahead and say,
+
+347
+00:14:57.763 --> 00:14:59.565
+well, that sounds great. I approve that goal.
+
+348
+00:15:00.032 --> 00:15:01.634
+You might run this multiple times
+
+349
+00:15:01.634 --> 00:15:03.435
+in case that the agent actually doesn't
+
+350
+00:15:03.435 --> 00:15:05.137
+set the perceived user goal.
+
+351
+00:15:05.137 --> 00:15:07.740
+It might decide on any given day
+
+352
+00:15:07.740 --> 00:15:10.442
+that it wants to have a more
+conversation with the user
+
+353
+00:15:10.442 --> 00:15:13.746
+before deciding that it knows
+what really the user goal is.
+
+354
+00:15:14.480 --> 00:15:16.649
+Okay.
+
+355
+00:15:16.649 --> 00:15:17.950
+I left debugging on for that
+
+356
+00:15:17.950 --> 00:15:19.451
+final call to approving the user goal,
+
+357
+00:15:19.618 --> 00:15:21.353
+but you can see as we went through the session here,
+
+358
+00:15:21.453 --> 00:15:25.658
+the session started with nothing in session state,
+so memory was empty.
+
+359
+00:15:26.292 --> 00:15:28.260
+The user sent their initial message
+
+360
+00:15:28.460 --> 00:15:30.462
+and the agent responded actually
+
+361
+00:15:30.629 --> 00:15:32.731
+for clarifying questions.
+
+362
+00:15:32.731 --> 00:15:34.066
+So it said, hey, are you trying
+
+363
+00:15:34.066 --> 00:15:35.434
+to trace the components of a product
+
+364
+00:15:35.434 --> 00:15:37.636
+from supplier through various stages of manufacturing.
+
+365
+00:15:37.836 --> 00:15:39.638
+on and on, this is quite a
+
+366
+00:15:39.638 --> 00:15:41.440
+long response from the agent, that's fine.
+
+367
+00:15:42.241 --> 00:15:44.143
+And because we had that check in place,
+
+368
+00:15:44.543 --> 00:15:46.612
+we go ahead and decide, okay,
+
+369
+00:15:46.779 --> 00:15:49.782
+we realized that the perceived user goal was not set.
+
+370
+00:15:49.982 --> 00:15:52.117
+We send this extra message, I'm
+
+371
+00:15:52.117 --> 00:15:54.586
+concerned about possible manufacturing
+or supplier issues.
+
+372
+00:15:54.987 --> 00:15:57.790
+With that, looks like the agent then responds
+
+373
+00:15:57.890 --> 00:16:01.593
+by deciding that, okay,
+that's enough information for it to continue.
+
+374
+00:16:01.794 --> 00:16:04.596
+and it then has an understanding of what our goal is.
+
+375
+00:16:04.897 --> 00:16:06.598
+And it tells us, okay,
+
+376
+00:16:07.199 --> 00:16:09.601
+here's the kind of graph I think you're trying to build,
+
+377
+00:16:09.902 --> 00:16:11.603
+and here's what I think the description
+
+378
+00:16:11.603 --> 00:16:13.572
+of what you want out of that graph.
+
+379
+00:16:13.973 --> 00:16:15.975
+Finally, it then says correctly,
+
+380
+00:16:16.175 --> 00:16:18.777
+hey, does this capture your intent, which is exactly
+
+381
+00:16:19.178 --> 00:16:21.780
+what we wanted to do. We wanted to say,
+
+382
+00:16:21.780 --> 00:16:24.683
+here's what I think you're asking for,
+is that correct?
+
+383
+00:16:24.984 --> 00:16:26.685
+And then as the user, we're going to
+
+384
+00:16:26.685 --> 00:16:28.387
+go ahead and assume to approve that goal.
+
+385
+00:16:28.387 --> 00:16:30.689
+That's part of the transcript that we decided earlier.
+
+386
+00:16:31.190 --> 00:16:33.592
+And you can see in approving that goal that
+
+387
+00:16:33.592 --> 00:16:35.995
+the user intent agent goes ahead and makes the
+
+388
+00:16:35.995 --> 00:16:38.364
+set_perceived_user_goal call.
+
+389
+00:16:38.364 --> 00:16:41.367
+So it actually didn't yet set the perceived user goal.
+
+390
+00:16:41.834 --> 00:16:44.737
+or it's calling it again it looks like actually to me.
+
+391
+00:16:45.237 --> 00:16:48.140
+And then as the next part of that,
+
+392
+00:16:48.140 --> 00:16:51.643
+having set the perceived user goal
+because the user has approved,
+
+393
+00:16:51.643 --> 00:16:54.146
+it's calling the approve_perceived_user_goal.
+
+394
+00:16:55.748 --> 00:16:58.317
+Okay, you can see the final response here at the bottom then
+
+395
+00:16:58.317 --> 00:17:01.920
+user goal has been successfully approved,
+and everything is all good.
+
+396
+00:17:02.221 --> 00:17:03.856
+The workflow now knows the overall direction
+
+397
+00:17:03.856 --> 00:17:05.724
+of what the user is trying to achieve
+
+398
+00:17:05.724 --> 00:17:08.827
+in building a Knowledge Graph in this multi-agent system.

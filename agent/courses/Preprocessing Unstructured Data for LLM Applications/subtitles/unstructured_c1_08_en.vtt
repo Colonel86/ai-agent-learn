@@ -1,0 +1,57 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:104453
+
+1
+00:00:00.240 --> 00:00:03.850
+In this course, you learned
+about ingesting and normalizing
+
+2
+00:00:03.850 --> 00:00:07.059
+content from a variety
+of diverse data sources,
+
+3
+00:00:07.059 --> 00:00:10.269
+enriching RAG applications with
+metadata extracted during preprocessing,
+
+4
+00:00:10.269 --> 00:00:14.679
+and advanced modeling techniques for
+unlocking content in PDFs and images.
+
+5
+00:00:15.039 --> 00:00:18.039
+You have also learned how
+to turn the outputs from
+
+6
+00:00:18.039 --> 00:00:19.839
+data preprocessing into
+a functioning RAGBOT.
+
+7
+00:00:14.550 --> 00:00:17.856
+You have also learned how
+to turn the outputs from
+
+8
+00:00:17.856 --> 00:00:19.839
+data preprocessing into
+a functioning RAGBOT.
+
+9
+00:00:20.519 --> 00:00:23.649
+You are now prepared to
+build a RAGBOT that is aware
+
+10
+00:00:23.649 --> 00:00:25.640
+of information about your
+project or organization.
+
+11
+00:00:26.059 --> 00:00:28.019
+I'm looking forward to seeing
+what you have to build on your end.

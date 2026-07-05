@@ -1,0 +1,963 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:04.000
+In this lesson, you will have fun with the age-old question of,
+
+2
+00:00:04.000 --> 00:00:07.000
+to which parent the child looks the most similar?
+
+3
+00:00:07.000 --> 00:00:10.000
+To do this, you'll answer the question by using vector embeddings.
+
+4
+00:00:10.000 --> 00:00:13.000
+You'll use a freely available image dataset,
+
+5
+00:00:13.000 --> 00:00:15.000
+in particular, one of the British royal family,
+
+6
+00:00:15.000 --> 00:00:21.000
+and use science to determine if Prince William looks more like King Charles or Princess Diana.
+
+7
+00:00:21.000 --> 00:00:25.000
+It's simple and extensible enough for you to try on your own family pictures.
+
+8
+00:00:25.000 --> 00:00:27.000
+Let's have some fun!
+
+9
+00:00:27.000 --> 00:00:31.000
+We're going to build a facial similarity search system
+
+10
+00:00:31.000 --> 00:00:34.000
+to compute which parent looks most like their child.
+
+11
+00:00:34.000 --> 00:00:38.000
+So we'll take a father, we'll take a mother, and we'll take one child
+
+12
+00:00:38.000 --> 00:00:43.000
+and see whether the child looks more like their father or more like their mother.
+
+13
+00:00:43.000 --> 00:00:45.000
+The person that looks the closest will be based upon
+
+14
+00:00:45.000 --> 00:00:49.000
+the highest average score between each parent and child.
+
+15
+00:00:49.000 --> 00:00:51.000
+We're going to use the DeepFace open-source library
+
+16
+00:00:51.000 --> 00:00:55.000
+with a FaceNet model inside of it that's 128 dimensions wide.
+
+17
+00:00:55.000 --> 00:00:59.000
+And the dataset that we're going to use came from the Families in the Wild dataset,
+
+18
+00:00:59.000 --> 00:01:02.000
+which I'll have a link to in the lesson here.
+
+19
+00:01:02.000 --> 00:01:06.000
+So the way that it's going to work is the user is going to run images
+
+20
+00:01:06.000 --> 00:01:09.000
+of King Charles, Princess Diana, and Prince William
+
+21
+00:01:09.000 --> 00:01:12.000
+through the DeepFace model that we're going to use,
+
+22
+00:01:12.000 --> 00:01:15.000
+and we're going to store those vector embeddings in PineCone.
+
+23
+00:01:15.000 --> 00:01:18.000
+The way that we're going to calculate similarity is we're going to run images
+
+24
+00:01:18.000 --> 00:01:22.000
+of King Charles and Princess Diana and Prince William through the DeepFace model
+
+25
+00:01:22.000 --> 00:01:24.000
+that we're going to use and store those values in PineCone.
+
+26
+00:01:24.000 --> 00:01:29.000
+Then we'll calculate similarity scores for the mother and the child
+
+27
+00:01:29.000 --> 00:01:31.000
+and the father and the child and see, based on an average,
+
+28
+00:01:31.000 --> 00:01:34.000
+who looks more like each other.
+
+29
+00:01:34.000 --> 00:01:35.000
+Okay, let's get started.
+
+30
+00:01:35.000 --> 00:01:39.000
+So to begin with, we'll do our standard of importing our warnings
+
+31
+00:01:39.000 --> 00:01:41.000
+to stop the warnings from showing up,
+
+32
+00:01:41.000 --> 00:01:47.000
+as well as a slightly longer list of imports into the notebook.
+
+33
+00:01:47.000 --> 00:01:52.000
+And then we will get our PineCone API key.
+
+34
+00:01:53.000 --> 00:01:57.000
+Now I've prepared a dataset for you ahead of time.
+
+35
+00:01:57.000 --> 00:02:01.000
+And as usual, I will not make you sit there and watch me download the data,
+
+36
+00:02:01.000 --> 00:02:05.000
+but similar parameters to wget, make it quiet, show the progress,
+
+37
+00:02:05.000 --> 00:02:07.000
+output the file name as family underscore photos dot zip,
+
+38
+00:02:07.000 --> 00:02:11.000
+and pull it off of the location that I've specified here.
+
+39
+00:02:11.000 --> 00:02:15.000
+And you run that, and then we will unzip the photos as well.
+
+40
+00:02:15.000 --> 00:02:16.000
+Okay, perfect.
+
+41
+00:02:16.000 --> 00:02:19.000
+Make sure that you run the query like this.
+
+42
+00:02:19.000 --> 00:02:21.000
+It'd be uncommented, right, but for this lesson,
+
+43
+00:02:21.000 --> 00:02:26.000
+we'll keep it common adult so that I don't accidentally run that for you.
+
+44
+00:02:26.000 --> 00:02:28.000
+The data has been already downloaded for you in your notebook.
+
+45
+00:02:28.000 --> 00:02:31.000
+This is how I ran it when I was at home before we prepared it,
+
+46
+00:02:31.000 --> 00:02:33.000
+but you already have it local on your disk.
+
+47
+00:02:33.000 --> 00:02:37.000
+And the family photos zip file has a structure of family as a top-level directory
+
+48
+00:02:37.000 --> 00:02:41.000
+with subdirectories of dad, mom, and child each.
+
+49
+00:02:41.000 --> 00:02:43.000
+So let's actually look at some of the pictures.
+
+50
+00:02:43.000 --> 00:02:46.000
+I've created a small helper function to help you see the photos
+
+51
+00:02:46.000 --> 00:02:48.000
+called show underscore image.
+
+52
+00:02:49.000 --> 00:02:51.000
+And we're going to resize the photos slightly here
+
+53
+00:02:51.000 --> 00:02:53.000
+and actually show the images locally.
+
+54
+00:02:53.000 --> 00:02:57.000
+So we're going to look at one random photo I thought that was particularly interesting,
+
+55
+00:02:57.000 --> 00:03:02.000
+family slash dad slash P06260 underscore face5 dot jpeg,
+
+56
+00:03:02.000 --> 00:03:03.000
+and see what we get.
+
+57
+00:03:03.000 --> 00:03:06.000
+So that's an image of King Charles.
+
+58
+00:03:06.000 --> 00:03:13.000
+Let's do the same thing for Princess Diana, right,
+
+59
+00:03:13.000 --> 00:03:17.000
+and same thing for Prince William.
+
+60
+00:03:17.000 --> 00:03:18.000
+All right.
+
+61
+00:03:18.000 --> 00:03:22.000
+So those are the folks that we're going to run the queries for.
+
+62
+00:03:22.000 --> 00:03:24.000
+And now we're going to set up Pinecone.
+
+63
+00:03:24.000 --> 00:03:31.000
+So same as before, okay, we're going to create our index name
+
+64
+00:03:31.000 --> 00:03:34.000
+using the deep learning AI utilities package,
+
+65
+00:03:34.000 --> 00:03:37.000
+get a pointer to our Pinecone instance and run that.
+
+66
+00:03:37.000 --> 00:03:42.000
+And now we're going to create our vector embeddings inside of Pinecone.
+
+67
+00:03:42.000 --> 00:03:45.000
+I'm going to go ahead and paste this in for you since it's a bit of code,
+
+68
+00:03:45.000 --> 00:03:47.000
+but I'll walk you through it.
+
+69
+00:03:47.000 --> 00:03:51.000
+So we're going to actually store a file called vectors.vec,
+
+70
+00:03:51.000 --> 00:03:54.000
+and we're going to use that and keep it around because we're going to iterate
+
+71
+00:03:54.000 --> 00:03:56.000
+through the data multiple times.
+
+72
+00:03:56.000 --> 00:04:00.000
+And we're going to suppress warnings in case, you know, the file doesn't exist,
+
+73
+00:04:00.000 --> 00:04:02.000
+and we're going to remove the file just to keep things clean.
+
+74
+00:04:02.000 --> 00:04:05.000
+So what we're going to do is open up the file.
+
+75
+00:04:05.000 --> 00:04:10.000
+We're going to glob all of the images of each of the people separately,
+
+76
+00:04:10.000 --> 00:04:13.000
+and then we're going to create embeddings out of each person's face
+
+77
+00:04:13.000 --> 00:04:14.000
+and write it to disk.
+
+78
+00:04:14.000 --> 00:04:17.000
+And the way we're going to write it to disk inside of that vectors.vec file is
+
+79
+00:04:17.000 --> 00:04:22.000
+person colon the image name and then the embedding value itself.
+
+80
+00:04:22.000 --> 00:04:29.000
+And then we'll go ahead and call generate vectors and store that.
+
+81
+00:04:29.000 --> 00:04:31.000
+All right, that happened pretty quickly, thankfully.
+
+82
+00:04:31.000 --> 00:04:35.000
+And now let's actually look at that file and see what it looks like.
+
+83
+00:04:35.000 --> 00:04:38.000
+So we'll just use head to look at the data.
+
+84
+00:04:38.000 --> 00:04:41.000
+And you can see it has the file format that we talked about earlier,
+
+85
+00:04:41.000 --> 00:04:46.000
+the person's name, in this case it's the mom, one of the images, P11, et cetera,
+
+86
+00:04:46.000 --> 00:04:51.000
+et cetera, dot JPEG, and then the vector embedding for that specific image.
+
+87
+00:04:51.000 --> 00:04:57.000
+So we'll scroll down since we have five lines of that file.
+
+88
+00:04:57.000 --> 00:05:01.000
+And now we're ready to calculate some scores and upload data into Pinecone.
+
+89
+00:05:01.000 --> 00:05:04.000
+Before we upload the data into Pinecone,
+
+90
+00:05:04.000 --> 00:05:07.000
+we're going to produce a t-SNE scatter plot based on PCA reduction that's going
+
+91
+00:05:08.000 --> 00:05:11.000
+to give us a really pretty scatter plot of the data so we can visualize it.
+
+92
+00:05:11.000 --> 00:05:16.000
+Principal component analysis, or PCA, reduces the dimensionality of data,
+
+93
+00:05:16.000 --> 00:05:17.000
+in this case embeddings,
+
+94
+00:05:17.000 --> 00:05:21.000
+and is often used to reduce the dimensionality of large data sets by transforming a
+
+95
+00:05:21.000 --> 00:05:25.000
+large set of variables into a smaller one that still contains most of the
+
+96
+00:05:25.000 --> 00:05:27.000
+information in the large set.
+
+97
+00:05:27.000 --> 00:05:31.000
+A t-SNE plot, or a t-distributed stochastic neighbor embedding plot,
+
+98
+00:05:31.000 --> 00:05:34.000
+is a type of data visualization used primarily to represent high-dimensional
+
+99
+00:05:34.000 --> 00:05:37.000
+data in a two- or three-dimensional space.
+
+100
+00:05:37.000 --> 00:05:41.000
+This technique is particularly useful for understanding complex data sets by
+
+101
+00:05:41.000 --> 00:05:42.000
+revealing patterns, clusters,
+
+102
+00:05:42.000 --> 00:05:45.000
+and relationships between data points that might not be apparent in higher
+
+103
+00:05:45.000 --> 00:05:47.000
+dimensions.
+
+104
+00:05:47.000 --> 00:05:50.000
+PCA is often used as a preliminary step to reduce the dimensionality of the
+
+105
+00:05:50.000 --> 00:05:51.000
+data.
+
+106
+00:05:51.000 --> 00:05:55.000
+This can be particularly important when working with very high-dimensional data
+
+107
+00:05:55.000 --> 00:05:59.000
+as it helps to mitigate the curse of dimensionality before applying t-SNE.
+
+108
+00:05:59.000 --> 00:06:02.000
+t-SNE can be computationally expensive and slow,
+
+109
+00:06:02.000 --> 00:06:03.000
+especially with large data sets.
+
+110
+00:06:03.000 --> 00:06:07.000
+And so by using PCA to reduce the data to a lower dimensional space first,
+
+111
+00:06:07.000 --> 00:06:10.000
+you get a significant speedup in the t-SNE process.
+
+112
+00:06:10.000 --> 00:06:11.000
+For the t-SNE algorithm,
+
+113
+00:06:11.000 --> 00:06:14.000
+perplexity is a very important hyperparameter that controls the number of
+
+114
+00:06:14.000 --> 00:06:17.000
+neighbors that each point considers during dimensionality reduction.
+
+115
+00:06:17.000 --> 00:06:20.000
+And you'll see I actually made it pluggable in the code below.
+
+116
+00:06:20.000 --> 00:06:22.000
+So let's go ahead and do that.
+
+117
+00:06:22.000 --> 00:06:26.000
+So I've created one helper function called gen t-SNE data frame,
+
+118
+00:06:26.000 --> 00:06:28.000
+or generate t-SNE data frame.
+
+119
+00:06:28.000 --> 00:06:31.000
+And what that does is it iterates through the vectors.vec file,
+
+120
+00:06:31.000 --> 00:06:36.000
+looking for a specific person and appending that to the vectors list.
+
+121
+00:06:36.000 --> 00:06:40.000
+And then what we do is actually do a PCA reduction against a specific person.
+
+122
+00:06:40.000 --> 00:06:43.000
+So what we're doing here is a PCA reduction for a specific person who's
+
+123
+00:06:43.000 --> 00:06:45.000
+passed into the function.
+
+124
+00:06:45.000 --> 00:06:48.000
+Then we do a t-SNE reduction as well against that
+
+125
+00:06:48.000 --> 00:06:52.000
+and return that as a data frame to the next function,
+
+126
+00:06:52.000 --> 00:06:54.000
+which we're going to call here called plot t-SNE.
+
+127
+00:06:54.000 --> 00:06:56.000
+And I'm going to go ahead and plug that in.
+
+128
+00:06:56.000 --> 00:07:00.000
+So plot t-SNE actually calls generate t-SNE data frame.
+
+129
+00:07:00.000 --> 00:07:02.000
+And you can see it down here below.
+
+130
+00:07:02.000 --> 00:07:06.000
+And most of this code is just setting up matplotlib.
+
+131
+00:07:06.000 --> 00:07:09.000
+And what we're going to do here, and this is the meat of it,
+
+132
+00:07:09.000 --> 00:07:15.000
+is for each person that we've defined here in this dictionary, dad, child,
+
+133
+00:07:15.000 --> 00:07:17.000
+and mom, these are just the colors for the legend.
+
+134
+00:07:17.000 --> 00:07:18.000
+Don't worry about that too much.
+
+135
+00:07:18.000 --> 00:07:22.000
+We're going to call generate t-SNE data frame and get back a data frame
+
+136
+00:07:22.000 --> 00:07:26.000
+and plot it against our scatter plot and then actually show the plot.
+
+137
+00:07:26.000 --> 00:07:27.000
+So let's go ahead and do that.
+
+138
+00:07:27.000 --> 00:07:29.000
+So make sure that we run that.
+
+139
+00:07:29.000 --> 00:07:31.000
+Make sure we run that.
+
+140
+00:07:31.000 --> 00:07:33.000
+And then let's actually call it.
+
+141
+00:07:33.000 --> 00:07:34.000
+So there's one last parameter.
+
+142
+00:07:34.000 --> 00:07:37.000
+Sorry, one last function call of plot t-SNE.
+
+143
+00:07:37.000 --> 00:07:39.000
+And this is the perplexity.
+
+144
+00:07:39.000 --> 00:07:44.000
+In this case, we're going to set it to 27.
+
+145
+00:07:44.000 --> 00:07:47.000
+Yeah, so it did exactly what I predicted that it would do.
+
+146
+00:07:47.000 --> 00:07:51.000
+So if you guys have ever done this before,
+
+147
+00:07:51.000 --> 00:07:53.000
+you have to run it a few times.
+
+148
+00:07:53.000 --> 00:07:57.000
+So we're going to call plot t-SNE with a perplexity of 44.
+
+149
+00:07:57.000 --> 00:07:59.000
+Definitely I encourage you to play with that at home
+
+150
+00:07:59.000 --> 00:08:01.000
+to see how it changes the scatter plot.
+
+151
+00:08:01.000 --> 00:08:04.000
+You can see here that the images of each of the dad, the child,
+
+152
+00:08:04.000 --> 00:08:07.000
+and the mom do cluster together well.
+
+153
+00:08:07.000 --> 00:08:10.000
+I would definitely discourage you from insinuating too much that the child
+
+154
+00:08:10.000 --> 00:08:12.000
+and the mom are close together in the scatter plot,
+
+155
+00:08:12.000 --> 00:08:14.000
+as that doesn't actually show much.
+
+156
+00:08:14.000 --> 00:08:17.000
+Really what you want to do is look at the fact that the images are clustering
+
+157
+00:08:17.000 --> 00:08:19.000
+within each person on their own.
+
+158
+00:08:19.000 --> 00:08:23.000
+So in other words, each one of these dots represents one image of a dad,
+
+159
+00:08:23.000 --> 00:08:25.000
+and they're all very closely clustered together, which is great,
+
+160
+00:08:25.000 --> 00:08:28.000
+because each of the pictures of the dad should look like the dad.
+
+161
+00:08:28.000 --> 00:08:31.000
+Same thing for the child and same thing for the mom.
+
+162
+00:08:31.000 --> 00:08:34.000
+Okay, now that we've visualized the data,
+
+163
+00:08:34.000 --> 00:08:37.000
+let's set up Pinecone so that we can store these values.
+
+164
+00:08:37.000 --> 00:08:40.000
+So what we're going to do is, same thing that we've always done,
+
+165
+00:08:40.000 --> 00:08:43.000
+delete the index if it's already there and then create the index again
+
+166
+00:08:43.000 --> 00:08:45.000
+so we have a clean slate.
+
+167
+00:08:45.000 --> 00:08:47.000
+So we'll go ahead and run that.
+
+168
+00:08:47.000 --> 00:08:49.000
+Now we're going to store the vectors,
+
+169
+00:08:49.000 --> 00:08:52.000
+and all we're going to do is run through that file that we created again
+
+170
+00:08:52.000 --> 00:08:53.000
+one more time.
+
+171
+00:08:53.000 --> 00:08:56.000
+So open up the file, iterate through one line at a time,
+
+172
+00:08:56.000 --> 00:08:59.000
+split it into the person and the file name,
+
+173
+00:08:59.000 --> 00:09:03.000
+eval the vector that was actually stored in that file,
+
+174
+00:09:03.000 --> 00:09:05.000
+and then upsort it into Pinecone.
+
+175
+00:09:05.000 --> 00:09:07.000
+So let's go ahead and do that.
+
+176
+00:09:07.000 --> 00:09:10.000
+Okay, let's see what we stored inside of Pinecone.
+
+177
+00:09:10.000 --> 00:09:15.000
+Let's do a describe index stats.
+
+178
+00:09:15.000 --> 00:09:18.000
+We have 241 elements, and that looks correct.
+
+179
+00:09:18.000 --> 00:09:21.000
+We had 241 iterations from TQDM before.
+
+180
+00:09:21.000 --> 00:09:24.000
+So now let's compute the scores.
+
+181
+00:09:24.000 --> 00:09:28.000
+And I'm going to paste this in because it's fairly large,
+
+182
+00:09:28.000 --> 00:09:31.000
+but we have a small routine called test.
+
+183
+00:09:31.000 --> 00:09:39.000
+And what this is going to do is return the top K similar images against the
+
+184
+00:09:39.000 --> 00:09:40.000
+child.
+
+185
+00:09:40.000 --> 00:09:42.000
+So it's going to take in one of the parents.
+
+186
+00:09:42.000 --> 00:09:45.000
+This is either going to be mom or dad each time around,
+
+187
+00:09:45.000 --> 00:09:47.000
+and it's going to return the top K.
+
+188
+00:09:47.000 --> 00:09:51.000
+And what we're going to do is actually calculate the average score from the
+
+189
+00:09:51.000 --> 00:09:53.000
+returned value from the query from Pinecone.
+
+190
+00:09:53.000 --> 00:09:56.000
+So for each vector inside Pinecone, we're going to get a score,
+
+191
+00:09:56.000 --> 00:10:00.000
+and we're going to take the average of the top K values that we got back.
+
+192
+00:10:00.000 --> 00:10:02.000
+So let's store that value,
+
+193
+00:10:02.000 --> 00:10:06.000
+and then we're going to call it for each relationship that we want to look
+
+194
+00:10:06.000 --> 00:10:07.000
+at.
+
+195
+00:10:07.000 --> 00:10:09.000
+So we're going to call compute scores.
+
+196
+00:10:09.000 --> 00:10:12.000
+And so what we're going to do is call test for the dad and the child,
+
+197
+00:10:12.000 --> 00:10:15.000
+and we're going to call test for the mom and the child.
+
+198
+00:10:15.000 --> 00:10:19.000
+And to do that, we're going to take a random vector or random image,
+
+199
+00:10:19.000 --> 00:10:24.000
+I should say, from the dad and the mom and use that to compute the score.
+
+200
+00:10:24.000 --> 00:10:28.000
+So let's go ahead and do that.
+
+201
+00:10:28.000 --> 00:10:29.000
+All right.
+
+202
+00:10:29.000 --> 00:10:32.000
+So the dad got an average score of 0.43,
+
+203
+00:10:32.000 --> 00:10:35.000
+closeness to Prince William, who's the child,
+
+204
+00:10:35.000 --> 00:10:37.000
+and the mom got an average score of 0.35,
+
+205
+00:10:37.000 --> 00:10:41.000
+closeness to the child that is Prince William.
+
+206
+00:10:41.000 --> 00:10:45.000
+And so what that means is that the dad is closer in similarity to Prince
+
+207
+00:10:45.000 --> 00:10:46.000
+William.
+
+208
+00:10:46.000 --> 00:10:51.000
+Now what we can do is use the fact that we know the dad is closer and find
+
+209
+00:10:51.000 --> 00:10:54.000
+which image is the closest between them.
+
+210
+00:10:54.000 --> 00:10:58.000
+So what we're going to do is take one base image of the child,
+
+211
+00:10:58.000 --> 00:11:01.000
+which I'll choose this because it's probably the most representative of
+
+212
+00:11:01.000 --> 00:11:03.000
+what he looks like, in my opinion.
+
+213
+00:11:04.000 --> 00:11:06.000
+This is what he looks like as a mature adult.
+
+214
+00:11:06.000 --> 00:11:11.000
+And what we're going to do is find a way to find which image in our data set
+
+215
+00:11:11.000 --> 00:11:14.000
+looks most like him from the dad.
+
+216
+00:11:14.000 --> 00:11:17.000
+So we're going to take that image,
+
+217
+00:11:17.000 --> 00:11:20.000
+we're going to build an embedding out of it, and we'll look at it.
+
+218
+00:11:20.000 --> 00:11:23.000
+That's the embedding version of that image above.
+
+219
+00:11:23.000 --> 00:11:27.000
+And we'll scroll down and then we'll query.
+
+220
+00:11:27.000 --> 00:11:28.000
+Okay.
+
+221
+00:11:28.000 --> 00:11:32.000
+We'll take the top three results that match it from the dad.
+
+222
+00:11:32.000 --> 00:11:34.000
+Okay.
+
+223
+00:11:34.000 --> 00:11:38.000
+And then let's look at the response.
+
+224
+00:11:38.000 --> 00:11:41.000
+This is a typical JSON blob that comes back from Pinecone.
+
+225
+00:11:41.000 --> 00:11:45.000
+You get the ID of the vector, you get the metadata, and you get the score.
+
+226
+00:11:45.000 --> 00:11:46.000
+Okay.
+
+227
+00:11:46.000 --> 00:11:54.000
+Now what we're going to do is look at the image in particular that matches.
+
+228
+00:11:54.000 --> 00:11:58.000
+So this is the image that is most similar to Prince William.
+
+229
+00:11:58.000 --> 00:12:03.000
+So in this example, we built a facial similarity system that matches King Charles
+
+230
+00:12:03.000 --> 00:12:05.000
+and Princess Diana to their offspring, Prince William,
+
+231
+00:12:05.000 --> 00:12:08.000
+to figure out which of those two looks most like Prince William.
+
+232
+00:12:08.000 --> 00:12:12.000
+The data showed that it's actually King Charles that looks the most like Prince William.
+
+233
+00:12:12.000 --> 00:12:16.000
+And at the end, we figured out which image in particular looks most like Prince William,
+
+234
+00:12:16.000 --> 00:12:19.000
+and we saw that this image here at the end looks most like Prince William,
+
+235
+00:12:19.000 --> 00:12:21.000
+which I would agree.
+
+236
+00:12:21.000 --> 00:12:23.000
+They very much look similar.
+
+237
+00:12:23.000 --> 00:12:26.000
+I encourage you to play with this code with your own family members
+
+238
+00:12:26.000 --> 00:12:29.000
+and see what results you get as well.
+
+239
+00:12:29.000 --> 00:12:32.000
+In the next lesson, we're going to build an anomaly detection system
+
+240
+00:12:32.000 --> 00:12:35.000
+using Cisco ASA log files in Pinecone.
+

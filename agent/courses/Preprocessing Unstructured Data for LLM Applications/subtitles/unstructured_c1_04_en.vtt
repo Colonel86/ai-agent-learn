@@ -1,0 +1,1650 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:104453
+
+1
+00:00:00.200 --> 00:00:04.330
+In this lesson, you'll learn how to
+enrich extracted content with metadata,
+
+2
+00:00:04.330 --> 00:00:07.759
+which helps improve downstream RAG
+results by supporting hybrid search,
+
+3
+00:00:07.759 --> 00:00:11.199
+allowing you to chunk content more
+meaningfully for semantic search.
+
+4
+00:00:11.800 --> 00:00:12.919
+All right, let's go.
+
+5
+00:00:14.039 --> 00:00:16.100
+First, you'll learn what even is metadata.
+
+6
+00:00:16.780 --> 00:00:19.600
+So metadata is additional
+information that we extract
+
+7
+00:00:19.600 --> 00:00:21.359
+while we're pre-processing the document.
+
+8
+00:00:22.120 --> 00:00:26.070
+Metadata can be at the
+document level or the element level,
+
+9
+00:00:26.070 --> 00:00:29.309
+and it could be
+something that we either extract
+
+10
+00:00:29.309 --> 00:00:31.100
+from the document information itself,
+
+11
+00:00:31.100 --> 00:00:34.340
+like the last modified
+date or the file name,
+
+12
+00:00:34.340 --> 00:00:38.649
+or something that we infer while we're
+pre-processing the document, for instance,
+
+13
+00:00:38.649 --> 00:00:41.520
+the category of element type
+or hierarchical relationships
+
+14
+00:00:41.520 --> 00:00:43.320
+between the different element types.
+
+15
+00:00:44.159 --> 00:00:50.170
+These metadata fields will come into play
+when you're creating your RAG application,
+
+16
+00:00:50.170 --> 00:00:52.939
+particularly for
+applications like hybrid search.
+
+17
+00:00:53.460 --> 00:00:59.570
+And so what metadata looks like in
+practice is as follows. You'll have your text,
+
+18
+00:00:59.570 --> 00:01:02.729
+that's the actual raw content that
+you extracted from the document,
+
+19
+00:01:02.729 --> 00:01:05.890
+and then you'll have all of
+this other information as well,
+
+20
+00:01:05.890 --> 00:01:10.200
+such as the page number, the language,
+the file name, the type of the element.
+
+21
+00:01:10.560 --> 00:01:13.640
+All this information will
+come into handy when you go to
+
+22
+00:01:13.640 --> 00:01:15.879
+build hybrid search systems
+for your RAG application.
+
+23
+00:01:16.079 --> 00:01:18.219
+Before you learn about
+hybrid search, however,
+
+24
+00:01:18.219 --> 00:01:21.879
+it's important to first understand some
+basics about semantic search for LLMs.
+
+25
+00:01:22.340 --> 00:01:25.739
+And so in a retrieval
+augmented generation system,
+
+26
+00:01:25.739 --> 00:01:30.420
+the first step is typically
+retrieving documents from a vector database.
+
+27
+00:01:31.219 --> 00:01:34.269
+The most basic way to do this
+is through semantic search,
+
+28
+00:01:34.269 --> 00:01:37.040
+so looking for content
+that is similar to a query.
+
+29
+00:01:37.500 --> 00:01:42.670
+And so after you've loaded your documents
+into a vector database, you run a query,
+
+30
+00:01:42.670 --> 00:01:46.459
+and then we search for documents
+based on their similarity score,
+
+31
+00:01:46.459 --> 00:01:52.790
+which is based on a measure of distance.
+And so in the example in the bottom right,
+
+32
+00:01:52.790 --> 00:01:55.980
+you can see that that is a tomato dog.
+
+33
+00:01:56.400 --> 00:02:01.079
+And so it is close in the
+vector space to both tomato and dog.
+
+34
+00:02:01.500 --> 00:02:04.599
+And then you can also
+see that the animals are
+
+35
+00:02:04.599 --> 00:02:06.459
+clustered all together
+because they're similar
+
+36
+00:02:06.459 --> 00:02:08.629
+conceptually and the
+animals are further apart
+
+37
+00:02:08.629 --> 00:02:10.800
+from tomato because tomato is a fruit.
+
+38
+00:02:11.280 --> 00:02:16.259
+And so the idea here is if you're
+searching over a corpus of documents,
+
+39
+00:02:16.259 --> 00:02:19.819
+you can ask the vector
+database to return information that
+
+40
+00:02:19.819 --> 00:02:23.740
+is of interest to your
+query to the LLM and you'll
+
+41
+00:02:23.740 --> 00:02:26.939
+get back similar documents
+that you're able to then
+
+42
+00:02:26.939 --> 00:02:30.500
+insert into a prompt that
+gets fed into your LLM.
+
+43
+00:02:30.979 --> 00:02:33.770
+And so that's typically
+what you're trying to do
+
+44
+00:02:33.770 --> 00:02:36.560
+in the semantic search
+part of a RAG application.
+
+45
+00:02:37.759 --> 00:02:41.939
+Okay, so now you've learned the basics of
+similarity search. So what's the problem?
+
+46
+00:02:42.319 --> 00:02:44.840
+There are some cases where
+similarity search isn't ideal
+
+47
+00:02:44.840 --> 00:02:46.800
+for returning
+information for your RAG system.
+
+48
+00:02:47.689 --> 00:02:49.340
+In some cases, there
+could be too many matches.
+
+49
+00:02:50.180 --> 00:02:53.759
+This occurs in a lot of cases when
+the document is about the same topic.
+
+50
+00:02:54.590 --> 00:02:56.979
+And so if you search on that topic,
+you're gonna get a lot of information back.
+
+51
+00:02:57.800 --> 00:03:01.800
+You may also want to bias your
+results based on some other information,
+
+52
+00:03:01.800 --> 00:03:03.340
+for instance, more recent information.
+
+53
+00:03:03.460 --> 00:03:07.120
+And so you might not want
+only the most similar content.
+
+54
+00:03:07.360 --> 00:03:10.740
+You might want the most similar content
+that occurred within a certain time frame.
+
+55
+00:03:11.259 --> 00:03:14.319
+Finally, you also lose some
+important information when
+
+56
+00:03:14.319 --> 00:03:17.000
+you only are searching
+on semantic similarity.
+
+57
+00:03:17.560 --> 00:03:20.050
+There's important information
+contained within the document,
+
+58
+00:03:20.050 --> 00:03:23.599
+such as section information that
+might inform your search results.
+
+59
+00:03:24.020 --> 00:03:26.759
+And so that's where
+hybrid search comes into play.
+
+60
+00:03:27.000 --> 00:03:30.610
+Hybrid search allows you to combine
+similarity search with structured
+
+61
+00:03:30.610 --> 00:03:33.860
+information that you extract
+from the document as metadata.
+
+62
+00:03:34.280 --> 00:03:37.639
+And so you can use
+metadata as filtering options.
+
+63
+00:03:38.020 --> 00:03:41.789
+And so if you want to limit your
+search to a particular section,
+
+64
+00:03:41.789 --> 00:03:43.819
+you can filter on that metadata field.
+
+65
+00:03:44.419 --> 00:03:50.210
+Or if you want to limit your
+results to more recent information,
+
+66
+00:03:50.210 --> 00:03:51.909
+you can structure your
+query so that you only
+
+67
+00:03:51.909 --> 00:03:53.050
+return documents after a particular date.
+
+68
+00:03:53.530 --> 00:03:58.139
+The first document here shows the
+results of the Super Bowl on February 12th,
+
+69
+00:03:58.139 --> 00:04:01.110
+whereas the second document
+is an article about who's
+
+70
+00:04:01.110 --> 00:04:04.069
+favored to win the Super
+Bowl on February 11th.
+
+71
+00:04:04.729 --> 00:04:08.129
+If you were to conduct a
+similarity search on these two documents,
+
+72
+00:04:08.129 --> 00:04:12.370
+if you were to say, tell me the most
+recent information about the Super Bowl,
+
+73
+00:04:12.370 --> 00:04:14.919
+you would get both of these
+documents potentially back.
+
+74
+00:04:15.659 --> 00:04:17.949
+However, if the Super
+Bowl already occurred,
+
+75
+00:04:17.949 --> 00:04:22.540
+you might not be as interested in the
+information from before the Super Bowl.
+
+76
+00:04:22.839 --> 00:04:27.490
+And so in this case, you can use
+hybrid search to limit your search results
+
+77
+00:04:27.490 --> 00:04:30.899
+to information that occurred after
+the completion of the Super Bowl.
+
+78
+00:04:31.079 --> 00:04:33.050
+So in this case, you would say,
+
+79
+00:04:33.050 --> 00:04:35.579
+only give me information that
+happened after February 12th.
+
+80
+00:04:36.300 --> 00:04:40.339
+And so by doing that, you'll get your
+relevant results, the results from the day,
+
+81
+00:04:40.339 --> 00:04:42.500
+and you'll filter out
+the results from earlier.
+
+82
+00:04:44.079 --> 00:04:46.779
+Okay, so now you learned
+about metadata and hybrid search.
+
+83
+00:04:47.240 --> 00:04:48.889
+Let's see what this
+looks like in practice.
+
+84
+00:04:50.120 --> 00:04:52.110
+Just like in the previous lesson,
+
+85
+00:04:52.110 --> 00:04:56.100
+you can start by importing some helper
+functions from the unstructured library.
+
+86
+00:04:56.779 --> 00:04:59.720
+You learned about these in the last
+lesson, so we won't cover them again now.
+
+87
+00:05:04.680 --> 00:05:07.709
+In this lesson, you do
+have one additional import
+
+88
+00:05:07.709 --> 00:05:09.399
+that's important to highlight, ChromaDB.
+
+89
+00:05:10.199 --> 00:05:14.339
+So ChromaDB is an in-memory
+vector database that in this
+
+90
+00:05:14.339 --> 00:05:17.660
+lesson you'll use to
+conduct your similarity search.
+
+91
+00:05:21.730 --> 00:05:25.199
+Okay, so now that you've learned about
+metadata, you can put that into practice.
+
+92
+00:05:25.920 --> 00:05:28.860
+In this example, you'll
+work with an e-publication
+
+93
+00:05:28.860 --> 00:05:30.699
+about winter sports in Switzerland.
+
+94
+00:05:31.000 --> 00:05:36.000
+The goal in this example is
+for you to be able to identify
+
+95
+00:05:36.000 --> 00:05:39.459
+the chapter for each
+section in the document and
+
+96
+00:05:39.459 --> 00:05:43.310
+then conduct a hybrid search
+where you'll ask a question
+
+97
+00:05:43.310 --> 00:05:46.000
+about a particular
+chapter within the document.
+
+98
+00:05:51.100 --> 00:05:52.579
+First, you can take a
+look at the document.
+
+99
+00:05:53.220 --> 00:05:54.540
+The cover looks like that.
+
+100
+00:05:58.000 --> 00:06:01.420
+And more importantly for this
+application, here's the table of contents.
+
+101
+00:06:02.420 --> 00:06:03.819
+In this application here,
+
+102
+00:06:03.819 --> 00:06:08.019
+you're going to look for the
+titles in the table of contents.
+
+103
+00:06:08.680 --> 00:06:10.509
+When we pre-process this document,
+
+104
+00:06:10.509 --> 00:06:16.009
+we'll get a metadata field called parent
+ID that attaches each element to a title,
+
+105
+00:06:16.009 --> 00:06:18.579
+which is the title of a section.
+
+106
+00:06:18.939 --> 00:06:23.790
+And then you'll use that metadata in
+order to construct a hybrid search where
+
+107
+00:06:23.790 --> 00:06:26.569
+you search for content
+within a particular section
+
+108
+00:06:26.569 --> 00:06:29.339
+or chapter in this
+case, within the document.
+
+109
+00:06:30.180 --> 00:06:32.560
+If you'd like to see the
+contents of this document,
+
+110
+00:06:32.560 --> 00:06:34.230
+we've provided a PDF version of the
+e-publication if you'd like to take a look.
+
+111
+00:06:36.800 --> 00:06:40.139
+The first step in the process is to run
+the document through the unstructured API.
+
+112
+00:06:41.079 --> 00:06:44.279
+In this case, you're
+going to use the unstructured
+
+113
+00:06:44.279 --> 00:06:46.769
+API instead of the open source library,
+
+114
+00:06:46.769 --> 00:06:50.319
+because in case, e-publications get
+converted to HTML before pre-processing.
+
+115
+00:06:50.759 --> 00:06:52.709
+And so that requires
+some extra dependencies.
+
+116
+00:06:52.930 --> 00:06:55.279
+So we'll rely on the
+API to help us with that.
+
+117
+00:06:56.199 --> 00:06:59.949
+Once you've made your request to the
+unstructured API, you get your response back.
+
+118
+00:07:00.569 --> 00:07:01.730
+This is a large document,
+
+119
+00:07:01.730 --> 00:07:04.290
+and so it may take the API a
+few seconds to pre-process it.
+
+120
+00:07:05.399 --> 00:07:06.779
+Once you've processed the document,
+
+121
+00:07:06.779 --> 00:07:09.519
+you can use the JSON
+display function that you learned
+
+122
+00:07:09.519 --> 00:07:12.000
+about in the previous
+lesson to explore the results.
+
+123
+00:07:12.339 --> 00:07:18.180
+And so you can see that the first element
+that it captured is the title of the book,
+
+124
+00:07:18.180 --> 00:07:20.779
+and it classified that element as a title.
+
+125
+00:07:21.519 --> 00:07:23.800
+And you can see some metadata down here.
+
+126
+00:07:45.620 --> 00:07:48.480
+In this case, we
+performed a filtering operation.
+
+127
+00:07:48.500 --> 00:07:53.800
+We filtered for elements that are title
+elements that contain the word hockey.
+
+128
+00:07:54.240 --> 00:07:57.629
+And so in this case, you
+were able to discover the
+
+129
+00:07:57.629 --> 00:08:00.089
+ice hockey title within
+the table of contents,
+
+130
+00:08:00.089 --> 00:08:04.089
+and then also the ice hockey title
+that begins the ice hockey chapter.
+
+131
+00:08:04.310 --> 00:08:08.310
+In this case, you'll look
+for elements that relate to
+
+132
+00:08:08.310 --> 00:08:11.920
+the ice hockey chapter
+title through the parent ID,
+
+133
+00:08:11.920 --> 00:08:17.120
+which will correspond to this element
+ID for the ice hockey title element.
+
+134
+00:08:17.540 --> 00:08:20.079
+Of note, this is a filtering
+operation, and in this case,
+
+135
+00:08:20.079 --> 00:08:21.240
+we filtered down to titles.
+
+136
+00:08:21.860 --> 00:08:26.560
+You can also try yourself filtering
+down to various other element types.
+
+137
+00:08:26.839 --> 00:08:29.360
+So you can try narrative
+text, and in this case,
+
+138
+00:08:29.360 --> 00:08:31.620
+you'll get back narrative
+texts that refer to hockey.
+
+139
+00:08:32.139 --> 00:08:35.679
+But for this use case here, we're
+interested in titles, so we'll switch that back.
+
+140
+00:08:36.279 --> 00:08:37.529
+In your free time though,
+
+141
+00:08:37.529 --> 00:08:39.779
+you may want to experiment with
+different filtering operations.
+
+142
+00:08:40.299 --> 00:08:43.960
+Now that we know how to filter, you
+can set up the names of the chapters.
+
+143
+00:08:44.120 --> 00:08:49.320
+And so you can take this from the list
+of chapters in the table of contents.
+
+144
+00:08:50.100 --> 00:08:52.620
+Now you have the chapter
+names from the table of contents.
+
+145
+00:08:53.360 --> 00:08:55.409
+Once you have those chapter names,
+
+146
+00:08:55.409 --> 00:08:59.519
+you can loop through all of the
+elements that you've extracted and
+
+147
+00:08:59.519 --> 00:09:03.279
+find the element IDs that are
+associated with those chapter titles.
+
+148
+00:09:03.940 --> 00:09:04.679
+Why is that important?
+
+149
+00:09:05.240 --> 00:09:09.789
+Well, the element ID for
+those titles will show up as a
+
+150
+00:09:09.789 --> 00:09:13.200
+parent ID for elements that
+fall within that chapter.
+
+151
+00:09:13.620 --> 00:09:18.389
+And so by doing that, you're able to
+identify elements within a chapter,
+
+152
+00:09:18.389 --> 00:09:22.059
+which enables you to conduct
+hybrid search on a chapter.
+
+153
+00:09:22.399 --> 00:09:24.049
+And so that will allow
+you to, for example,
+
+154
+00:09:24.049 --> 00:09:28.340
+search only for content that
+appears within the a hockey chapter.
+
+155
+00:09:28.340 --> 00:09:35.409
+So when you do that, what you
+wind up with is this mapping
+
+156
+00:09:35.409 --> 00:09:39.759
+that maps parent
+element IDs to chapter names.
+
+157
+00:09:40.460 --> 00:09:45.480
+Once you have that mapping, you can
+easily convert parent IDs to chapter names.
+
+158
+00:09:46.279 --> 00:09:52.139
+And so in this case, you're able to
+take a look at this parent ID here.
+
+159
+00:09:52.320 --> 00:09:56.519
+And so this is an example of an element
+that's within the ice hockey chapter.
+
+160
+00:09:57.139 --> 00:10:00.529
+And so it has a parent ID that corresponds
+
+161
+00:10:00.529 --> 00:10:03.919
+to the element ID for
+the ice hockey title.
+
+162
+00:10:04.299 --> 00:10:07.590
+And so we know that any
+element that has this parent
+
+163
+00:10:07.590 --> 00:10:09.980
+ID is an element
+within the hockey chapter.
+
+164
+00:10:10.879 --> 00:10:14.049
+Okay, now we've identified the
+elements in the document and
+
+165
+00:10:14.049 --> 00:10:16.580
+we've determined which
+chapter each element belongs to.
+
+166
+00:10:17.279 --> 00:10:21.470
+The next step is to load all of this
+content into your vector database,
+
+167
+00:10:21.470 --> 00:10:24.460
+which is what will allow us
+to perform hybrid search.
+
+168
+00:10:24.259 --> 00:10:28.458
+In this case, you're going to use
+Chroma as your vector database because
+
+169
+00:10:28.458 --> 00:10:32.334
+it runs in memory and is just
+generally a nice vector database.
+
+170
+00:10:32.334 --> 00:10:35.564
+You can also learn more
+about the Chroma vector database
+
+171
+00:10:35.564 --> 00:10:37.179
+in another deeplearning.ai short course.
+
+172
+00:10:37.740 --> 00:10:40.750
+So first, you set up your Chroma database.
+
+173
+00:10:42.539 --> 00:10:45.210
+And then in this case,
+you'll set up a collection.
+
+174
+00:10:46.980 --> 00:10:51.289
+You do pass a couple of pieces of
+information to the create_collection function.
+
+175
+00:10:52.659 --> 00:10:56.039
+One is the name, and then
+second is some metadata.
+
+176
+00:10:56.580 --> 00:10:57.480
+Don't get confused, though.
+
+177
+00:10:57.700 --> 00:10:59.879
+This isn't the metadata that
+we're extracting from the document.
+
+178
+00:11:00.220 --> 00:11:04.049
+This is metadata for the vector
+database itself. In this case,
+
+179
+00:11:04.049 --> 00:11:07.070
+we're just saying to use
+cosine similarity within this
+
+180
+00:11:07.070 --> 00:11:09.419
+particular vector space
+for the similarity search.
+
+181
+00:11:10.279 --> 00:11:14.909
+Once you've set that up, you can
+use your chapter mapping to insert
+
+182
+00:11:14.909 --> 00:11:17.759
+documents into the vector
+database with chapter metadata.
+
+183
+00:11:18.299 --> 00:11:20.580
+And so if you'll recall from earlier,
+
+184
+00:11:20.580 --> 00:11:23.840
+elements within a particular
+chapter have a parent ID that
+
+185
+00:11:23.840 --> 00:11:26.450
+correspond to the element
+ID for the chapter title,
+
+186
+00:11:52.840 --> 00:11:56.179
+Okay, now the elements are all
+loaded into the vector database.
+
+187
+00:11:57.000 --> 00:11:59.929
+You can use the
+collection.peek method to take a
+
+188
+00:11:59.929 --> 00:12:02.860
+look at what got loaded
+into the vector database.
+
+189
+00:12:03.299 --> 00:12:05.539
+And so here's what some of
+the documents look like here.
+
+190
+00:12:12.059 --> 00:12:16.320
+Now that the elements are loaded into
+the vector database with the metadata,
+
+191
+00:12:16.320 --> 00:12:20.580
+you're able to perform a hybrid search
+with metadata on that vector database.
+
+192
+00:12:21.259 --> 00:12:26.019
+And so let's take a look at what
+that looks like here in Chroma. First,
+
+193
+00:12:26.019 --> 00:12:30.090
+you'll set up a query that'll
+include query texts. In this case,
+
+194
+00:12:30.090 --> 00:12:35.230
+you'll ask how many players are on the
+team and you'll perform a hybrid search
+
+195
+00:12:35.230 --> 00:12:39.669
+by conditioning that search on content
+that occurs in the ice hockey chapter.
+
+196
+00:12:40.070 --> 00:12:44.419
+And so this is important
+because that will limit your results
+
+197
+00:12:44.419 --> 00:12:47.580
+only to information that
+appears within that chapter.
+
+198
+00:12:47.679 --> 00:12:51.129
+And so if there's another team sport
+that's available within the document,
+
+199
+00:12:51.129 --> 00:12:52.860
+you won't get information about that.
+
+200
+00:12:53.080 --> 00:12:55.360
+You will only get
+information about ice hockey.
+
+201
+00:12:55.919 --> 00:13:00.259
+And so you can run the result here and
+then see what the results look like.
+
+202
+00:13:00.960 --> 00:13:03.649
+And then if you take a
+look at the results,
+
+203
+00:13:03.649 --> 00:13:07.429
+you can see some information about
+how many players are on a hockey team.
+
+204
+00:13:08.789 --> 00:13:10.409
+You can try this for yourself as well.
+
+205
+00:13:10.830 --> 00:13:15.169
+Try querying the corpus with a
+different query or potentially
+
+206
+00:13:15.169 --> 00:13:19.080
+try filtering on another
+chapter or some other information.
+
+207
+00:13:19.940 --> 00:13:22.879
+Okay, now you've learned about
+extracting metadata while you're pre-processing
+
+208
+00:13:22.879 --> 00:13:26.399
+and also how you can use
+that as part of hybrid search.
+
+209
+00:13:27.080 --> 00:13:29.750
+It turns out metadata is
+useful not only for hybrid
+
+210
+00:13:29.750 --> 00:13:32.419
+search but for other
+operations as well, such as chunking.
+
+211
+00:13:33.360 --> 00:13:35.340
+What does chunking mean
+and why do you need it?
+
+212
+00:13:35.840 --> 00:13:38.450
+Chunking is taking a long piece
+of text, like a large document,
+
+213
+00:13:38.450 --> 00:13:40.840
+and breaking it down into
+smaller pieces so that you can
+
+214
+00:13:40.840 --> 00:13:42.570
+pass those smaller pieces
+into the vector database.
+
+215
+00:13:45.980 --> 00:13:50.320
+And then you can include those snippets
+into prompt templates to pass to an LLM.
+
+216
+00:13:51.080 --> 00:13:54.279
+So why do you need to do this?
+There's two primary reasons.
+
+217
+00:13:54.700 --> 00:13:56.690
+Some LLMs have a limited context window,
+
+218
+00:13:56.690 --> 00:14:00.100
+so there's only so much
+content you can pass to the LLM.
+
+219
+00:14:00.700 --> 00:14:03.100
+That means you can't pass
+the full document to the LLM,
+
+220
+00:14:03.100 --> 00:14:04.840
+and so you have to break it up.
+
+221
+00:14:05.600 --> 00:14:11.789
+Second, in a lot of cases, LLMs cost more
+if you're using a larger context window,
+
+222
+00:14:11.789 --> 00:14:14.500
+and so chunking
+documents into smaller pieces
+
+223
+00:14:14.500 --> 00:14:17.600
+allows you to save
+money on inference cost.
+
+224
+00:14:18.200 --> 00:14:22.000
+Your similarity search queries will
+change based on how you chunk your content.
+
+225
+00:14:22.559 --> 00:14:26.429
+And so if different content is
+split differently across the chunks,
+
+226
+00:14:26.429 --> 00:14:28.539
+you may get different chunks back.
+
+227
+00:14:28.879 --> 00:14:32.500
+And better chunks in
+general are going to result
+
+228
+00:14:32.500 --> 00:14:34.519
+in better similarity search outputs,
+
+229
+00:14:34.519 --> 00:14:40.559
+which in turn are going to improve
+your end result when you query your LLM.
+
+230
+00:14:41.159 --> 00:14:43.759
+The simplest way to
+chunk is even-sized chunks.
+
+231
+00:14:44.299 --> 00:14:45.879
+There are multiple
+different ways to do this.
+
+232
+00:14:46.399 --> 00:14:50.519
+One is chunking by characters,
+another is to chunk by tokens.
+
+233
+00:14:51.080 --> 00:14:55.100
+But the idea here is that you take a
+big document, you have your threshold,
+
+234
+00:14:55.100 --> 00:14:58.860
+and then whenever you hit your
+threshold, you split off into a new chunk.
+
+235
+00:14:59.659 --> 00:15:03.909
+However, by using the metadata that
+we extracted in the previous section,
+
+236
+00:15:03.909 --> 00:15:07.799
+you can chunk in a more
+intelligent way by using information
+
+237
+00:15:07.799 --> 00:15:10.279
+about the document
+elements within your document.
+
+238
+00:15:11.230 --> 00:15:12.940
+And so, what does this look like?
+
+239
+00:15:13.580 --> 00:15:16.279
+You first load your
+documents from your database,
+
+240
+00:15:16.279 --> 00:15:16.620
+you pre-process those documents using
+a tool like unstructured, you chunk,
+
+241
+00:15:31.320 --> 00:15:33.129
+So what does it mean to chunk by elements?
+
+242
+00:15:33.820 --> 00:15:35.779
+Conceptually, you're doing
+something different here
+
+243
+00:15:35.779 --> 00:15:38.059
+than you would with
+traditional chunking techniques.
+
+244
+00:15:38.539 --> 00:15:39.519
+With traditional chunking techniques,
+
+245
+00:15:39.519 --> 00:15:41.980
+you're taking a big document
+and you're splitting it up.
+
+246
+00:15:42.659 --> 00:15:44.240
+When you're chunking from elements,
+
+247
+00:15:44.240 --> 00:15:47.080
+you're first splitting the
+document into atomic document elements
+
+248
+00:15:47.080 --> 00:15:49.610
+and then you're combining
+those elements into chunks.
+
+249
+00:15:50.049 --> 00:15:51.269
+So what does this look like?
+
+250
+00:15:51.909 --> 00:15:54.490
+First, you partition the
+document like you've already learned.
+
+251
+00:15:55.230 --> 00:15:56.919
+Once you've partitioned the document,
+
+252
+00:15:56.919 --> 00:15:59.980
+you have individual document
+elements like titles, narrative text,
+
+253
+00:15:59.980 --> 00:16:04.379
+and lists that you can use as the
+basis for your chunking operations.
+
+254
+00:16:04.759 --> 00:16:08.799
+Once you have those atomic document
+elements, you can combine them into chunks.
+
+255
+00:16:09.500 --> 00:16:11.559
+When you combine those into chunks,
+
+256
+00:16:11.559 --> 00:16:14.659
+you can apply break
+conditions in order to group
+
+257
+00:16:14.659 --> 00:16:16.720
+content together that
+logically belongs together.
+
+258
+00:16:17.179 --> 00:16:19.820
+And so, for example, a
+break condition could be,
+
+259
+00:16:19.820 --> 00:16:22.460
+whenever you hit a
+title, create a new chunk.
+
+260
+00:16:23.100 --> 00:16:27.379
+Why is this important? Because titles
+often indicate the start of a new section.
+
+261
+00:16:27.840 --> 00:16:30.740
+And so when you apply a
+break condition such as title,
+
+262
+00:16:30.740 --> 00:16:32.850
+what you wind up doing is grouping content
+
+263
+00:16:32.850 --> 00:16:34.960
+from the same section into the same chunk.
+
+264
+00:16:35.159 --> 00:16:37.419
+By applying a break
+condition such as titles,
+
+265
+00:16:37.419 --> 00:16:41.100
+you're more likely to keep together
+content that belongs to the same section,
+
+266
+00:16:41.100 --> 00:16:43.360
+which allows you to
+construct more coherent chunks.
+
+267
+00:16:43.620 --> 00:16:46.259
+When you perform your similarity
+search in your vector database,
+
+268
+00:16:46.259 --> 00:16:48.899
+this means you're going to
+get more relevant content back.
+
+269
+00:16:49.480 --> 00:16:52.309
+In so doing, we take
+advantage of information that we
+
+270
+00:16:52.309 --> 00:16:54.570
+already have about the
+structure of the document,
+
+271
+00:16:54.570 --> 00:16:57.399
+which allows us to construct
+chunks in more intelligent ways.
+
+272
+00:16:57.799 --> 00:17:00.409
+You may also notice another piece of
+information about this chunking strategy,
+
+273
+00:17:00.409 --> 00:17:03.450
+which is that we apply the chunking to
+the list of standardized document elements.
+
+274
+00:17:07.700 --> 00:17:10.359
+Since we're applying
+the chunking strategy to
+
+275
+00:17:10.359 --> 00:17:12.630
+that standardized list
+of document elements,
+
+276
+00:17:12.630 --> 00:17:16.420
+you can apply different chunking
+strategies to that initial output,
+
+277
+00:17:16.420 --> 00:17:20.220
+which allows you to rapidly
+experiment with different chunking techniques
+
+278
+00:17:20.220 --> 00:17:25.150
+and see what the results look like
+in your LLM end user application.
+
+279
+00:17:25.730 --> 00:17:28.950
+And so let's take an example of
+what this looks like in practice.
+
+280
+00:17:29.690 --> 00:17:33.819
+In the top example you'll see
+what things look like when you
+
+281
+00:17:33.819 --> 00:17:36.230
+chunk using a traditional
+character splitting technique.
+
+282
+00:17:36.369 --> 00:17:40.430
+In this case we've applied a
+threshold and when we hit a
+
+283
+00:17:40.430 --> 00:17:43.809
+certain character count we'll
+split off into a new chunk.
+
+284
+00:17:44.349 --> 00:17:46.730
+And so you see in this case,
+
+285
+00:17:46.730 --> 00:17:51.150
+you get information from that first
+section bleeding over into the second chunk.
+
+286
+00:17:51.569 --> 00:17:55.130
+And so if you were to search on
+open domain question answering,
+
+287
+00:17:55.130 --> 00:17:58.980
+you would get information from that
+first chunk, which is all about that.
+
+288
+00:17:59.400 --> 00:18:01.710
+And you get information
+from that second chunk,
+
+289
+00:18:01.710 --> 00:18:03.730
+which includes information
+that you're interested in,
+
+290
+00:18:03.730 --> 00:18:06.329
+but also includes information
+about abstract of question answering,
+
+291
+00:18:06.329 --> 00:18:08.640
+which in this case
+you're not interested in.
+
+292
+00:18:08.980 --> 00:18:11.700
+Wouldn't it be better if you could
+just chunk based on these sections?
+
+293
+00:18:12.500 --> 00:18:14.779
+And so when you apply
+chunking with document elements,
+
+294
+00:18:14.779 --> 00:18:17.319
+you wind up with results
+that look more like this.
+
+295
+00:18:18.019 --> 00:18:22.200
+You find your titles, you split off
+into new chunks when you hit a new title.
+
+296
+00:18:22.660 --> 00:18:24.390
+And so when you're doing this,
+
+297
+00:18:24.390 --> 00:18:28.890
+you're able to keep content together that
+belongs to the same section. This time,
+
+298
+00:18:28.890 --> 00:18:32.130
+when you query for information
+about open domain question answering,
+
+299
+00:18:32.130 --> 00:18:35.039
+you only get content about
+open domain question answering.
+
+300
+00:18:35.200 --> 00:18:37.859
+You don't get any of the
+content that you're not
+
+301
+00:18:37.859 --> 00:18:39.460
+interested in about
+abstract question answering.
+
+302
+00:18:39.880 --> 00:18:43.430
+And so when you query your vector
+database, you get better results back,
+
+303
+00:18:43.430 --> 00:18:46.720
+which is going to result in a
+better prompt for your LLM,
+
+304
+00:18:46.720 --> 00:18:50.000
+which is going to result in a
+better answer from your LLM.
+
+305
+00:18:50.680 --> 00:18:53.339
+So now you've learned about
+chunking using document elements.
+
+306
+00:18:53.680 --> 00:18:56.420
+Now you can see what that
+looks like in practice using
+
+307
+00:18:56.420 --> 00:18:58.420
+the same document that
+you already worked with.
+
+308
+00:18:58.900 --> 00:19:03.500
+In this case, you can start by
+deserializing your serialized
+
+309
+00:19:03.500 --> 00:19:06.720
+JSON content with the
+document element information.
+
+310
+00:19:07.079 --> 00:19:09.130
+To do that, you can use the
+dict_to_elements function
+
+311
+00:19:12.119 --> 00:19:15.779
+Once you have that,
+it's easy to chunk this
+
+312
+00:19:15.779 --> 00:19:17.000
+content using the chunk_by_title function,
+
+313
+00:19:21.299 --> 00:19:24.779
+This operates on the
+elements that you deserialized.
+
+314
+00:19:25.259 --> 00:19:27.240
+You can also take a look at
+a few of the settings here.
+
+315
+00:19:27.849 --> 00:19:31.519
+So this first one instructs
+the chunking strategy to combine
+
+316
+00:19:31.519 --> 00:19:35.549
+chunks if an element has
+fewer than 100 characters in it.
+
+317
+00:19:35.730 --> 00:19:38.589
+That prevents having
+very, very small chunks.
+
+318
+00:19:39.150 --> 00:19:42.059
+It also places a character
+limit on the size of the chunks.
+
+319
+00:19:42.140 --> 00:19:46.400
+And so if a chunk exceeds that
+limit, we'll split off into a new chunk.
+
+320
+00:19:47.039 --> 00:19:51.759
+And so after you have set these
+parameters, you can chunk the content.
+
+321
+00:19:52.960 --> 00:19:58.299
+And you can see what this looks like
+here by using the JSON display function.
+
+322
+00:19:59.359 --> 00:20:03.819
+And so you can see here, if you
+remember from the beginning of the lesson,
+
+323
+00:20:03.819 --> 00:20:05.900
+this was the title of the book.
+
+324
+00:20:06.099 --> 00:20:11.900
+And then you can see information about
+the e-book got chunked in with that title.
+
+325
+00:20:12.779 --> 00:20:15.460
+You can experiment with
+different settings for combine under end
+
+326
+00:20:15.460 --> 00:20:18.400
+characters and max characters to
+see what the results look like.
+
+327
+00:20:19.039 --> 00:20:23.289
+You can also verify that
+the content indeed chunked
+
+328
+00:20:23.289 --> 00:20:27.539
+because we have 752
+elements in our chunked output,
+
+329
+00:20:27.539 --> 00:20:31.470
+but only 255 chunks. And so by doing that,
+
+330
+00:20:31.470 --> 00:20:35.650
+you're able to verify that the chunks
+indeed combined different elements,
+
+331
+00:20:35.650 --> 00:20:38.690
+and now we have fewer but larger chunks.
+
+332
+00:20:39.869 --> 00:20:42.490
+So now that you've learned
+about how to use these functions,
+
+333
+00:20:42.490 --> 00:20:44.160
+I'd encourage you to do two things.
+
+334
+00:20:45.039 --> 00:20:47.539
+One, partition a document
+of your own and try chunking
+
+335
+00:20:47.539 --> 00:20:49.539
+it and see what the outputs look like.
+
+336
+00:20:50.720 --> 00:20:53.400
+You can also try loading
+the chunk document into
+
+337
+00:20:53.400 --> 00:20:55.480
+the vector database
+and performing a query,
+
+338
+00:20:55.480 --> 00:20:57.859
+just like you learned
+earlier in this lesson.
+
+339
+00:20:58.500 --> 00:21:02.559
+In the next lesson, you'll learn
+more about complex preprocessing
+
+340
+00:21:02.559 --> 00:21:05.400
+techniques that run on PDFs and images.
+
+341
+00:21:06.259 --> 00:21:07.549
+All right, see you in the next lesson.

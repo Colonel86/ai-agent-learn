@@ -1,0 +1,1216 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.035 --> 00:00:03.303
+As a developer,
+
+2
+00:00:03.303 --> 00:00:06.573
+you want to understand and adopt
+all potential grounding methods.
+
+3
+00:00:07.407 --> 00:00:11.211
+Function calling will enable you
+to improve the design of your SQL agent.
+
+4
+00:00:12.479 --> 00:00:15.448
+In this lesson, you have the opportunity
+to work with Azure
+
+5
+00:00:15.448 --> 00:00:19.285
+OpenAI's Function Calling feature.
+Compared to the previous one,
+
+6
+00:00:19.519 --> 00:00:22.122
+the idea is to leverage
+the pre-built functions
+
+7
+00:00:22.122 --> 00:00:25.125
+to send the queries to databases,
+without the need
+
+8
+00:00:25.125 --> 00:00:28.628
+to expose the SQL queries
+during the translation process.
+
+9
+00:00:29.162 --> 00:00:31.698
+Okay, let's get to it.
+
+10
+00:00:31.698 --> 00:00:34.200
+We have already explored several
+interesting
+
+11
+00:00:34.200 --> 00:00:36.436
+aspects in the previous lessons.
+
+12
+00:00:36.436 --> 00:00:39.039
+We have to use LangChain
+to connect to CSV files
+
+13
+00:00:39.039 --> 00:00:42.042
+and two SQL databases with SQL Lite.
+
+14
+00:00:42.242 --> 00:00:44.644
+Now, what's next?
+
+15
+00:00:44.644 --> 00:00:47.280
+One of the new capabilities
+of the Azure
+
+16
+00:00:47.280 --> 00:00:50.283
+OpenAI
+models is the function calling feature.
+
+17
+00:00:50.617 --> 00:00:52.452
+You might wonder why we need this
+
+18
+00:00:52.452 --> 00:00:55.922
+if our agent is already working great
+and fetching the information correctly.
+
+19
+00:00:56.589 --> 00:01:00.326
+What's the additional value
+that this functionality brings?
+
+20
+00:01:00.627 --> 00:01:04.564
+The main point of using function
+calling is to provide our system
+
+21
+00:01:04.564 --> 00:01:08.301
+or agent with specific instructions
+for finding information
+
+22
+00:01:08.635 --> 00:01:10.603
+from any specific topic.
+
+23
+00:01:10.603 --> 00:01:11.571
+These include
+
+24
+00:01:11.571 --> 00:01:15.408
+suggesting the type of queries to
+prioritize, and to get the search results
+
+25
+00:01:15.408 --> 00:01:16.776
+and format that you need.
+
+26
+00:01:16.776 --> 00:01:21.014
+This approach adds a level
+of deterministic behavior to the agent,
+
+27
+00:01:21.181 --> 00:01:24.184
+allowing you to control the process
+more precisely.
+
+28
+00:01:24.551 --> 00:01:29.155
+Unlike the previous LangChain
+agent approach, function call encapsulates
+
+29
+00:01:29.155 --> 00:01:33.226
+queries within functions, providing
+more structure and predictability.
+
+30
+00:01:33.660 --> 00:01:35.829
+You might wonder why we need this
+
+31
+00:01:35.829 --> 00:01:40.433
+if our agent is already working great
+and fetching the information correctly.
+
+32
+00:01:41.067 --> 00:01:43.103
+Let's see how this works.
+
+33
+00:01:43.103 --> 00:01:45.538
+You have all the information
+in the notebook
+
+34
+00:01:45.538 --> 00:01:47.807
+and we will reuse the previous setup.
+
+35
+00:01:47.807 --> 00:01:49.542
+Here is what you need.
+
+36
+00:01:49.542 --> 00:01:53.646
+As before,
+we are using our Azure OpenAI endpoint
+
+37
+00:01:53.646 --> 00:01:55.949
+with the key
+and a preview version.
+
+38
+00:01:55.949 --> 00:01:57.417
+This version includes the
+
+39
+00:01:57.417 --> 00:02:00.854
+function calling features
+we will use in this and the next lesson.
+
+40
+00:02:01.187 --> 00:02:03.923
+Now, let's move to the second step.
+
+41
+00:02:03.923 --> 00:02:07.594
+Depending on your background, you may know
+how to create functions in Python.
+
+42
+00:02:08.528 --> 00:02:11.498
+I'll show you how to create a simple test function.
+
+43
+00:02:11.664 --> 00:02:12.632
+In this case,
+
+44
+00:02:12.632 --> 00:02:16.102
+you will ask a question
+regarding the weather in different cities.
+
+45
+00:02:16.202 --> 00:02:20.039
+Then the code includes the instructions
+to check if they are available.
+
+46
+00:02:20.240 --> 00:02:23.243
+Suitable predefined functions.
+
+47
+00:02:23.276 --> 00:02:27.147
+So let's continue with our development
+
+48
+00:02:27.347 --> 00:02:31.718
+to get you
+to create a second database agent.
+
+49
+00:02:31.951 --> 00:02:36.322
+So basically what we are saying
+is that we will be defining a message
+
+50
+00:02:36.789 --> 00:02:41.294
+right, from the user is like the human
+the message that we had before.
+
+51
+00:02:41.494 --> 00:02:44.197
+But basically a message
+that we are sending that is containing
+
+52
+00:02:44.197 --> 00:02:47.567
+what's the weather like in San Francisco,
+New York and Las Vegas?
+
+53
+00:02:47.834 --> 00:02:51.704
+And then we tell the system
+
+54
+00:02:51.704 --> 00:02:56.009
+that there is this get current
+weather function and how to use it,
+
+55
+00:02:56.042 --> 00:02:59.012
+and what's the kind of behavior
+right, of the function
+
+56
+00:02:59.112 --> 00:03:02.048
+and what is the required information
+that we need is the location.
+
+57
+00:03:02.048 --> 00:03:04.551
+So we are teaching the system
+how to use the function.
+
+58
+00:03:04.551 --> 00:03:06.586
+And having more pieces.
+
+59
+00:03:06.586 --> 00:03:10.590
+Here, we are saying is that we will have
+the same way
+
+60
+00:03:10.590 --> 00:03:14.160
+we have the message, we have the response,
+and the response is based on the chat
+
+61
+00:03:14.194 --> 00:03:16.763
+completion interaction. The model.
+
+62
+00:03:16.763 --> 00:03:20.033
+And the message is what we have here.
+
+63
+00:03:20.300 --> 00:03:21.467
+And the message is depending
+
+64
+00:03:21.467 --> 00:03:25.805
+on the notion of the tools
+the tools are just to explain to a chat completion
+
+65
+00:03:25.805 --> 00:03:30.805
+engine that we are using these tools
+and they will rely on existing functions.
+
+66
+00:03:31.444 --> 00:03:33.613
+Okay.
+So we are saying this is interaction.
+
+67
+00:03:33.613 --> 00:03:35.715
+These are the tools you can use. Perfect.
+
+68
+00:03:35.715 --> 00:03:38.685
+Right now we are playing with a function
+for the weather.
+
+69
+00:03:38.685 --> 00:03:42.355
+But after that, we will be applying this
+to our database.
+
+70
+00:03:42.655 --> 00:03:44.891
+And again
+you have all the content on the notebook
+
+71
+00:03:44.891 --> 00:03:46.726
+but you can modify stats,
+
+72
+00:03:46.726 --> 00:03:48.728
+you can change the prompts. same as before.
+
+73
+00:03:48.728 --> 00:03:51.531
+You can just do this.
+But now this part is important.
+
+74
+00:03:51.531 --> 00:03:54.534
+Now because we are saying okay,
+the response message
+
+75
+00:03:54.701 --> 00:03:58.838
+will be a based on the message
+that we had before.
+
+76
+00:03:58.972 --> 00:04:03.009
+And while the response that we have before
+that contains the message, the model,
+
+77
+00:04:03.009 --> 00:04:04.210
+the tools, etcetera.
+
+78
+00:04:04.210 --> 00:04:08.881
+And then we are saying tool calls,
+if we call this tool, basically
+
+79
+00:04:08.881 --> 00:04:12.151
+we need to say, hey,
+if you are using this kind of functions
+
+80
+00:04:12.151 --> 00:04:15.955
+for whatever purpose, you should know that
+there are available functions here.
+
+81
+00:04:15.955 --> 00:04:19.959
+They get current weather,
+and this is related to the one
+
+82
+00:04:19.959 --> 00:04:21.761
+that we have created before. Right?
+
+83
+00:04:21.761 --> 00:04:23.529
+So you are telling the system
+
+84
+00:04:23.529 --> 00:04:27.300
+you could use this. In this example
+because this is the first one.
+
+85
+00:04:27.300 --> 00:04:28.768
+You have only one function.
+
+86
+00:04:28.768 --> 00:04:33.139
+But the reality is the system
+is going to have like a I don't know, 10,20
+
+87
+00:04:33.139 --> 00:04:36.576
+different functions with different
+behaviors, different results.
+
+88
+00:04:36.576 --> 00:04:38.678
+And you will guide the system
+to choose one
+
+89
+00:04:38.678 --> 00:04:41.080
+or the other depending on the
+on the prompt that you will get.
+
+90
+00:04:41.080 --> 00:04:43.783
+So let's see what the result of these
+
+91
+00:04:44.751 --> 00:04:45.518
+interactions.
+
+92
+00:04:45.518 --> 00:04:48.488
+That we are calling the function.
+
+93
+00:04:48.488 --> 00:04:50.223
+Okay.
+
+94
+00:04:50.223 --> 00:04:54.560
+So basically here
+we are getting information
+
+95
+00:04:54.560 --> 00:04:57.597
+and I understand
+that here is difficult to read.
+
+96
+00:04:57.597 --> 00:04:59.732
+But you can check it
+from the actual notebook.
+
+97
+00:04:59.732 --> 00:05:03.536
+Basically, we are saying okay,
+we are looking for information
+
+98
+00:05:03.536 --> 00:05:06.873
+from San Francisco,
+from New York, from the other city.
+
+99
+00:05:07.173 --> 00:05:09.909
+And basically this information
+we are getting
+
+100
+00:05:09.909 --> 00:05:12.245
+and we are using the get current weather.
+
+101
+00:05:12.245 --> 00:05:16.149
+So this is good
+because we are understanding that
+
+102
+00:05:16.149 --> 00:05:20.553
+this system
+based on the prompt that we said before,
+
+103
+00:05:20.586 --> 00:05:24.190
+which is
+let me get to get the current weather
+
+104
+00:05:24.190 --> 00:05:27.627
+in different locations,
+will be performing different calls here.
+
+105
+00:05:27.760 --> 00:05:32.465
+So you may think, okay, we have already
+the result, what we are looking for.
+
+106
+00:05:32.498 --> 00:05:33.966
+We are interacting with function.
+
+107
+00:05:33.966 --> 00:05:34.600
+But no.
+
+108
+00:05:34.600 --> 00:05:38.338
+This process follows a two step
+kind of scenario.
+
+109
+00:05:38.371 --> 00:05:40.673
+The first one is what we just did,
+
+110
+00:05:40.673 --> 00:05:44.644
+which is just telling the system
+what we have available.
+
+111
+00:05:44.777 --> 00:05:48.614
+And this is the system
+based on the problem that we have said.
+
+112
+00:05:48.614 --> 00:05:53.086
+As we were asking for the information
+from three different locations,
+
+113
+00:05:53.252 --> 00:05:56.222
+we have called the function
+three different times
+
+114
+00:05:56.222 --> 00:05:59.625
+the same function because we have only one
+for different locations.
+
+115
+00:05:59.625 --> 00:06:02.028
+So at this point, the system knows
+
+116
+00:06:02.028 --> 00:06:06.099
+that you have to use this function
+and that you will use it three times.
+
+117
+00:06:06.232 --> 00:06:11.003
+And then based on this information,
+what we will do is to say, hey,
+
+118
+00:06:11.204 --> 00:06:15.775
+now go and actually retrieve the answer
+we are looking for.
+
+119
+00:06:15.908 --> 00:06:19.579
+So we are creating a second response
+kind of parameter.
+
+120
+00:06:19.579 --> 00:06:22.749
+And we are saying,
+okay, based on the information we have,
+
+121
+00:06:23.015 --> 00:06:26.786
+based on the messages
+that are explaining what we have to do
+
+122
+00:06:27.086 --> 00:06:31.391
+and the model that we have on Azure,
+OpenAI, let us create a chat completion.
+
+123
+00:06:31.391 --> 00:06:35.027
+So you are building the request,
+
+124
+00:06:35.194 --> 00:06:36.329
+the final request
+
+125
+00:06:36.329 --> 00:06:40.199
+based on the instructions
+that the system learned from the proper
+
+126
+00:06:40.199 --> 00:06:41.300
+functions to be used.
+
+127
+00:06:41.300 --> 00:06:44.604
+So basically now we are getting a chat
+completion kind of answer.
+
+128
+00:06:44.804 --> 00:06:48.141
+We are saying okay, we get information.
+
+129
+00:06:48.141 --> 00:06:50.109
+We have the finished result,
+which is a stop.
+
+130
+00:06:50.109 --> 00:06:53.613
+We say that we could be a stop
+because the request is complete,
+
+131
+00:06:53.613 --> 00:06:57.216
+or we could have a content safety
+kind of filter if there is something.
+
+132
+00:06:57.216 --> 00:07:01.220
+But you have more information here
+about these kind of content filters for
+
+133
+00:07:01.954 --> 00:07:03.756
+Yeah, for hate, for violence.
+
+134
+00:07:03.756 --> 00:07:07.160
+And we are calling three times
+and we are getting
+
+135
+00:07:07.160 --> 00:07:11.030
+the current weather in San
+Francisco is 50 degrees.
+
+136
+00:07:11.063 --> 00:07:12.632
+This was an interesting example.
+
+137
+00:07:12.632 --> 00:07:15.735
+Let's go now with the database.
+
+138
+00:07:15.968 --> 00:07:20.273
+Remember we are doing that on lesson
+three is basically here.
+
+139
+00:07:20.273 --> 00:07:23.142
+We are recording the information
+from the CSV file.
+
+140
+00:07:23.142 --> 00:07:26.279
+We are putting that in data frame.
+
+141
+00:07:26.979 --> 00:07:30.016
+Now we will have all our information.
+
+142
+00:07:30.016 --> 00:07:31.451
+So this is good.
+
+143
+00:07:31.451 --> 00:07:36.255
+We have reloaded again
+the information of the CSV file into
+
+144
+00:07:37.290 --> 00:07:39.292
+SQL Lite kind of instance.
+
+145
+00:07:39.292 --> 00:07:40.660
+We have it here. Good.
+
+146
+00:07:40.660 --> 00:07:43.496
+What are we doing
+now? Well, we'll be creating,
+
+147
+00:07:43.496 --> 00:07:45.064
+same as we create before,
+
+148
+00:07:45.064 --> 00:07:47.333
+a function for the weather.
+
+149
+00:07:47.333 --> 00:07:49.001
+That's not useful for this purpose.
+
+150
+00:07:49.001 --> 00:07:52.338
+We'll create here, is a couple of functions
+that are related
+
+151
+00:07:52.371 --> 00:07:56.142
+to the content
+that we have on the database.
+
+152
+00:07:56.476 --> 00:07:58.845
+Right. So we can educate the agent.
+
+153
+00:07:58.845 --> 00:08:02.915
+But basically we have get
+hospitalized increase for the state
+
+154
+00:08:02.915 --> 00:08:03.850
+and the specific date.
+
+155
+00:08:03.850 --> 00:08:06.018
+Very similar to what we did before.
+
+156
+00:08:06.018 --> 00:08:09.055
+But now we add in some of the structure,
+some parameters,
+
+157
+00:08:09.055 --> 00:08:12.825
+we can add here the state,
+we can add the specified date.
+
+158
+00:08:12.825 --> 00:08:14.894
+These are the expected
+kind of parameters. Right.
+
+159
+00:08:14.894 --> 00:08:17.897
+And we are saying okay
+for that kind of request,
+
+160
+00:08:18.297 --> 00:08:22.702
+is your natural language request
+is talking about getting hospitalizations.
+
+161
+00:08:22.702 --> 00:08:26.839
+Then we will need to teach the assistant
+to go to a right to this kind
+
+162
+00:08:26.873 --> 00:08:28.174
+of a function.
+
+163
+00:08:28.174 --> 00:08:32.011
+And this function will play
+or will run the query
+
+164
+00:08:32.278 --> 00:08:35.448
+this SQL query
+by using these kind of parameters.
+
+165
+00:08:35.648 --> 00:08:37.683
+So we are becoming more deterministic.
+
+166
+00:08:37.683 --> 00:08:39.852
+We are controlling
+the output of the system,
+
+167
+00:08:39.852 --> 00:08:42.655
+which in an implementation
+probably is what we are looking for.
+
+168
+00:08:42.655 --> 00:08:42.855
+Right?
+
+169
+00:08:42.855 --> 00:08:46.659
+To be more precise and more aligned
+with what we are expecting.
+
+170
+00:08:46.893 --> 00:08:50.863
+So basically here
+we are saying that we are reading the SQL,
+
+171
+00:08:50.863 --> 00:08:54.734
+we are connected to SQL,
+we are sending the query,
+
+172
+00:08:54.734 --> 00:08:57.837
+we are performing the query,
+and then we are returning the result.
+
+173
+00:08:58.170 --> 00:09:00.473
+The second one is for positive cases.
+
+174
+00:09:00.473 --> 00:09:02.408
+Why we are bringing a second function.
+
+175
+00:09:02.408 --> 00:09:03.209
+So you see that
+
+176
+00:09:03.209 --> 00:09:07.113
+we actually have several functions
+and these kind of implementations.
+
+177
+00:09:07.113 --> 00:09:09.782
+The previous example we were
+there was one function.
+
+178
+00:09:09.782 --> 00:09:10.950
+Here we are adding two.
+
+179
+00:09:10.950 --> 00:09:14.854
+And here we are
+talking about positive cases for a specific state,
+
+180
+00:09:14.854 --> 00:09:17.857
+so that the dynamic is very similar.
+
+181
+00:09:17.924 --> 00:09:21.460
+You can post here
+and take a look and check the details.
+
+182
+00:09:21.694 --> 00:09:25.298
+But basically we are saying we have
+two cases hospitalized and positive.
+
+183
+00:09:25.498 --> 00:09:27.867
+So, we have the function.
+
+184
+00:09:27.867 --> 00:09:32.305
+So let me just try to see that
+this is working. Perfect.
+
+185
+00:09:32.438 --> 00:09:33.239
+So this is working.
+
+186
+00:09:33.239 --> 00:09:35.474
+That means that
+all the previous steps are there.
+
+187
+00:09:35.474 --> 00:09:40.179
+So we are saying that for Alaska,
+for this specific date,
+
+188
+00:09:40.479 --> 00:09:44.116
+we have three hospitalized people.
+
+189
+00:09:44.116 --> 00:09:45.618
+But again there is no magic on this.
+
+190
+00:09:45.618 --> 00:09:48.254
+And just calling the
+the function directly.
+
+191
+00:09:48.254 --> 00:09:49.755
+We are not using natural language.
+
+192
+00:09:49.755 --> 00:09:54.755
+Now as we this is where we will
+be starting to define how to use this.
+
+193
+00:09:55.094 --> 00:09:59.599
+So we will follow the same kind
+of procedure. We'll create the user message.
+
+194
+00:09:59.899 --> 00:10:03.469
+I'll put here a look very familiar
+to what we have before.
+
+195
+00:10:03.469 --> 00:10:06.639
+So basically and now
+we will go more into detail than before.
+
+196
+00:10:06.639 --> 00:10:10.476
+We are saying like,
+if we have something that is related to
+
+197
+00:10:10.476 --> 00:10:15.476
+how many hospitalized people
+we had in Alaska in 2021,
+
+198
+00:10:15.548 --> 00:10:19.018
+what they were the month
+we should follow this pattern.
+
+199
+00:10:19.452 --> 00:10:23.356
+So this is once again
+giving an example to the system.
+
+200
+00:10:23.522 --> 00:10:27.193
+So the agent understands
+that when you are getting some question
+
+201
+00:10:27.193 --> 00:10:31.330
+that is similar to these hospitalized,
+or when you are saying like,
+
+202
+00:10:31.631 --> 00:10:34.800
+get positive cases, right,
+like this one retrieve,
+
+203
+00:10:35.134 --> 00:10:39.105
+you will be following these function
+and not the other one.
+
+204
+00:10:39.271 --> 00:10:39.538
+Right?
+
+205
+00:10:39.538 --> 00:10:42.041
+So we are just teaching the system
+
+206
+00:10:42.041 --> 00:10:45.344
+to leverage the function
+that we have previously created.
+
+207
+00:10:45.778 --> 00:10:47.246
+We will add the response.
+
+208
+00:10:47.246 --> 00:10:49.348
+Then in this case the response.
+
+209
+00:10:49.348 --> 00:10:51.851
+What we are saying is
+we are leveraging the model.
+
+210
+00:10:51.851 --> 00:10:54.654
+We are leveraging the messages inside
+
+211
+00:10:54.654 --> 00:10:57.690
+user message with a question
+about hospitalized people
+
+212
+00:10:57.690 --> 00:11:01.694
+in the specific location
+will use the tools that we have defined.
+
+213
+00:11:01.694 --> 00:11:04.764
+So hey, for one other purpose,
+you have this
+
+214
+00:11:05.197 --> 00:11:08.167
+function is available and that's all.
+
+215
+00:11:09.201 --> 00:11:12.071
+Now let's go into the
+
+216
+00:11:12.071 --> 00:11:15.641
+first part of the two step process
+that we mentioned.
+
+217
+00:11:15.875 --> 00:11:19.178
+This one is to say, hey, if we get a call,
+
+218
+00:11:19.979 --> 00:11:22.982
+if we are using these tools
+because we are recognizing the intent
+
+219
+00:11:22.982 --> 00:11:25.418
+of the user
+from the natural language request,
+
+220
+00:11:25.418 --> 00:11:29.455
+we need to consider that the available
+functions in this case is get
+
+221
+00:11:29.488 --> 00:11:33.225
+positive cases from the state, and date
+and get the hospitalized increase
+
+222
+00:11:33.459 --> 00:11:37.697
+and then the assistant should figure out.
+Okay? This is not like calling one
+
+223
+00:11:37.697 --> 00:11:39.432
+or the other is just asking the question
+
+224
+00:11:39.432 --> 00:11:42.468
+and the agent will work internally
+to decide one or the other.
+
+225
+00:11:42.635 --> 00:11:45.638
+And, okay, we have the same kind of,
+
+226
+00:11:45.971 --> 00:11:48.474
+of, specification. Here
+
+227
+00:11:48.474 --> 00:11:52.845
+we have the functional arguments
+that are the state and the date.
+
+228
+00:11:53.479 --> 00:11:55.514
+We prepare everything to work.
+
+229
+00:11:55.514 --> 00:11:57.083
+Let me play here.
+
+230
+00:11:58.184 --> 00:11:59.952
+Okay.
+
+231
+00:11:59.952 --> 00:12:04.023
+So if you remember from the previous one,
+what we are doing here
+
+232
+00:12:04.023 --> 00:12:07.893
+is to realize the necessary functions
+
+233
+00:12:07.893 --> 00:12:11.330
+that we need to call to find the results.
+
+234
+00:12:11.330 --> 00:12:12.164
+For what?
+
+235
+00:12:12.164 --> 00:12:16.268
+For the system
+to answer once again to this message.
+
+236
+00:12:16.435 --> 00:12:20.005
+And this message is about hospitalizations
+in Alaska.
+
+237
+00:12:20.272 --> 00:12:23.442
+And the 5th March 2021.
+
+238
+00:12:23.442 --> 00:12:27.780
+We are able to send the request
+and the system will choose the function
+
+239
+00:12:28.180 --> 00:12:29.348
+and prepare the arguments.
+
+240
+00:12:29.348 --> 00:12:32.151
+But once again,
+this doesn't mean that we have already
+
+241
+00:12:32.151 --> 00:12:36.222
+the answer to that query here is just
+the internal thought of the system.
+
+242
+00:12:36.222 --> 00:12:37.423
+Same as the LangChain.
+
+243
+00:12:37.423 --> 00:12:41.127
+Agents were explaining their thought
+and the thought process, right? Here,
+
+244
+00:12:41.127 --> 00:12:44.964
+in order to get the answer,
+will use the second response.
+
+245
+00:12:45.397 --> 00:12:50.136
+So you see the chat completion,
+the answer basically to our prompt
+
+246
+00:12:50.803 --> 00:12:54.340
+is containing an answer that says On March
+
+247
+00:12:54.340 --> 00:12:58.444
+5th in 2021, there were three
+
+248
+00:12:58.444 --> 00:13:02.982
+additional hospitalizations
+due to Covid 19 reported in Alaska.
+
+249
+00:13:03.249 --> 00:13:05.918
+And we are seeing
+that the reason is to stop.
+
+250
+00:13:05.918 --> 00:13:07.419
+So there is no filter.
+
+251
+00:13:07.419 --> 00:13:10.389
+We don't have any of the filters
+activated.
+
+252
+00:13:10.389 --> 00:13:12.291
+They are all false.
+
+253
+00:13:12.291 --> 00:13:14.426
+Remember the filters for content safety?
+
+254
+00:13:14.426 --> 00:13:17.730
+I'll give you seven seconds, review
+everything, review
+
+255
+00:13:17.730 --> 00:13:21.634
+the system and you can even try
+
+256
+00:13:21.801 --> 00:13:24.970
+you can even try with a different message
+and see the results.
+
+257
+00:13:24.970 --> 00:13:27.773
+And State of Alaska can be Arizona can be
+
+258
+00:13:27.773 --> 00:13:29.475
+Texas can be another date.
+
+259
+00:13:29.475 --> 00:13:32.478
+Or you could try obviously with,
+
+260
+00:13:32.945 --> 00:13:35.948
+something else related to the second
+function, which is the positive cases.
+
+261
+00:13:36.248 --> 00:13:37.116
+Just take your time.
+
+262
+00:13:37.116 --> 00:13:39.285
+I will go to the last lesson,
+
+263
+00:13:39.285 --> 00:13:43.622
+and create the last piece
+of our wonderful database agent.
+

@@ -1,0 +1,1042 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.003 --> 00:00:03.407
+In this lesson, we'll go through what a knowledge graph means
+
+2
+00:00:03.407 --> 00:00:06.810
+and how they help represent and retrieve relationships from your data.
+
+3
+00:00:07.307 --> 00:00:08.842
+You'll then explore the dataset you'll
+
+4
+00:00:08.842 --> 00:00:10.910
+work on to build a knowledge graph.
+
+5
+00:00:11.311 --> 00:00:14.114
+Let's dive in. So, what is a knowledge graph?
+
+6
+00:00:14.881 --> 00:00:16.883
+We're going to take a step back for a moment
+
+7
+00:00:17.117 --> 00:00:21.354
+and reflect on relational databases and what a relational schema looks like.
+
+8
+00:00:21.855 --> 00:00:24.691
+We all probably are familiar with some scenario like this,
+
+9
+00:00:24.958 --> 00:00:26.426
+where there'll be some table on the
+
+10
+00:00:26.426 --> 00:00:27.927
+left and some table on the right,
+
+11
+00:00:28.528 --> 00:00:29.896
+and this table in the middle that is
+
+12
+00:00:29.896 --> 00:00:32.832
+the join table that allows for multiple connections between
+
+13
+00:00:32.832 --> 00:00:35.769
+the persons and the products in this particular example.
+
+14
+00:00:36.469 --> 00:00:38.772
+So let's think about these two tables with the join table.
+
+15
+00:00:39.606 --> 00:00:43.043
+If you ask a question like, what products has this person purchased?
+
+16
+00:00:43.843 --> 00:00:45.712
+You'd first start with the person table and
+
+17
+00:00:45.712 --> 00:00:48.381
+select this person here, it's identified by abk.
+
+18
+00:00:49.416 --> 00:00:51.951
+And of course, you do a join over to the Person_Product table.
+
+19
+00:00:52.452 --> 00:00:56.089
+and you'd see that the Person_Product table has a join between
+
+20
+00:00:56.089 --> 00:00:57.657
+the abk and some chair, abk
+
+21
+00:00:57.657 --> 00:00:59.692
+and a lamp, abk and a desk.
+
+22
+00:00:59.893 --> 00:01:03.463
+Fantastic. One more join across from the Person
+
+23
+00:01:03.463 --> 00:01:05.765
+to the Person_Product to the Product table.
+
+24
+00:01:06.266 --> 00:01:08.334
+And now you've got a complete answer where from
+
+25
+00:01:08.334 --> 00:01:10.837
+abk, you can see that here's the products that
+
+26
+00:01:10.837 --> 00:01:13.440
+abk has purchased, this Chair, Lamp and a Desk,
+
+27
+00:01:13.440 --> 00:01:15.809
+and you can get the details about those purchases.
+
+28
+00:01:16.509 --> 00:01:19.179
+What if you extended that question? And you
+
+29
+00:01:19.179 --> 00:01:21.815
+asked who else bought products that ABK bought?
+
+30
+00:01:22.449 --> 00:01:23.483
+Well, you start with the same
+
+31
+00:01:23.483 --> 00:01:25.785
+joins going from ABK to the products,
+
+32
+00:01:26.052 --> 00:01:28.221
+and then you join back to the Person_Product table,
+
+33
+00:01:28.555 --> 00:01:30.824
+and from there, back to the Person table
+
+34
+00:01:31.291 --> 00:01:32.659
+and now you would get
+
+35
+00:01:32.659 --> 00:01:35.161
+this person ee who's bought some products
+
+36
+00:01:35.161 --> 00:01:36.963
+that abk also bought.
+
+37
+00:01:37.263 --> 00:01:40.633
+But notice that ee is also bought one extra product.
+
+38
+00:01:40.633 --> 00:01:42.402
+Hmm. That's interesting.
+
+39
+00:01:43.036 --> 00:01:47.307
+So, we could probably extend this one more step and ask, well,
+
+40
+00:01:47.307 --> 00:01:50.610
+what product should we recommend that abk buy next?
+
+41
+00:01:51.177 --> 00:01:53.880
+Now this is kind of the basics of doing a recommendation query.
+
+42
+00:01:54.514 --> 00:01:57.150
+If you've got some purchase pattern from abk
+
+43
+00:01:57.317 --> 00:01:59.686
+that matches a purchase pattern from some other
+
+44
+00:01:59.886 --> 00:02:01.821
+person or rather a group of people.
+
+45
+00:02:02.155 --> 00:02:04.324
+The thing you want to recommend to abk is what
+
+46
+00:02:04.324 --> 00:02:07.260
+that other group of people bought that abk has not.
+
+47
+00:02:07.727 --> 00:02:10.897
+So the same joins apply from abk through to the products,
+
+48
+00:02:11.297 --> 00:02:13.800
+back to the other people that have bought those products.
+
+49
+00:02:14.367 --> 00:02:17.070
+There's too many joins. It's getting a little confusing.
+
+50
+00:02:17.704 --> 00:02:18.738
+There is actually a nicer way to
+
+51
+00:02:18.738 --> 00:02:20.940
+actually think about this and to query this.
+
+52
+00:02:21.407 --> 00:02:24.944
+Let's turn this into a graph. The first step is to just
+
+53
+00:02:24.944 --> 00:02:26.846
+drop all the records that don't matter.
+
+54
+00:02:26.846 --> 00:02:29.015
+All those gray records that weren't part of the original query,
+
+55
+00:02:29.282 --> 00:02:30.650
+let's put those aside for the moment and
+
+56
+00:02:30.650 --> 00:02:32.819
+focus on the records that we know about,
+
+57
+00:02:32.819 --> 00:02:34.521
+that are part of the data set so far
+
+58
+00:02:34.521 --> 00:02:37.957
+that matters for this query about recommending something to abk.
+
+59
+00:02:38.825 --> 00:02:39.893
+Get rid of all the join table
+
+60
+00:02:39.893 --> 00:02:42.028
+records in the middle, turn those into arrows,
+
+61
+00:02:42.028 --> 00:02:45.365
+connecting abk directly over to the products that he's purchased.
+
+62
+00:02:45.765 --> 00:02:47.300
+And the same thing for ee
+
+63
+00:02:47.300 --> 00:02:49.102
+over to the products that they've purchased.
+
+64
+00:02:49.302 --> 00:02:51.337
+And now we'll just rearrange the records a little bit.
+
+65
+00:02:51.504 --> 00:02:54.607
+So you've got abk on one side, ee on the other side.
+
+66
+00:02:55.375 --> 00:02:56.843
+And now it looks much nicer, it's
+
+67
+00:02:56.843 --> 00:02:59.646
+much easier to understand what's going on. Both abk and ee
+
+68
+00:02:59.646 --> 00:03:02.215
+are connected to these products in the middle.
+
+69
+00:03:02.215 --> 00:03:05.952
+but then also this person ee is connected to another product
+
+70
+00:03:05.952 --> 00:03:07.620
+that has no connection to abk.
+
+71
+00:03:08.188 --> 00:03:10.256
+You can start to turn this into a query
+
+72
+00:03:10.456 --> 00:03:12.458
+by rephrasing it as a pattern match.
+
+73
+00:03:13.026 --> 00:03:15.061
+Starting with abk on the left side,
+
+74
+00:03:15.295 --> 00:03:18.998
+you can describe a query in a query language called Cypher
+
+75
+00:03:19.165 --> 00:03:20.733
+where it looks a little bit like
+
+76
+00:03:20.733 --> 00:03:23.736
+SQL, if SQL had pattern matching abilities.
+
+77
+00:03:23.736 --> 00:03:25.705
+So here we're going to describe a pattern
+
+78
+00:03:26.039 --> 00:03:28.708
+that describes the data records that you want to find.
+
+79
+00:03:29.008 --> 00:03:30.210
+We're going to match from a data
+
+80
+00:03:30.210 --> 00:03:32.445
+record that we're going to call abk
+
+81
+00:03:32.445 --> 00:03:34.447
+that has a label of person
+
+82
+00:03:34.681 --> 00:03:36.683
+and that has a property with the name
+
+83
+00:03:36.683 --> 00:03:38.785
+key where the value of it is abk.
+
+84
+00:03:39.052 --> 00:03:40.753
+So that's in round parentheses, we know
+
+85
+00:03:40.753 --> 00:03:42.422
+that that's a node in graph terms.
+
+86
+00:03:42.855 --> 00:03:44.924
+And then we kind of have this
+
+87
+00:03:44.924 --> 00:03:48.261
+right facing arrow with colon purchased in there.
+
+88
+00:03:48.261 --> 00:03:50.530
+That's a relationship type that is the purchased.
+
+89
+00:03:50.763 --> 00:03:53.700
+So match a pattern where abk purchased
+
+90
+00:03:53.700 --> 00:03:57.470
+over to some other parentheses, we're going to call abkProducts.
+
+91
+00:03:57.804 --> 00:03:59.672
+That's going to be a pattern match from abk
+
+92
+00:03:59.906 --> 00:04:01.874
+to the products that abk matched.
+
+93
+00:04:01.874 --> 00:04:04.277
+We can return those directly and that's going
+
+94
+00:04:04.277 --> 00:04:05.778
+to be the products in the middle there.
+
+95
+00:04:06.679 --> 00:04:08.881
+We can extend that pattern to include
+
+96
+00:04:08.881 --> 00:04:11.317
+the other people who bought those products.
+
+97
+00:04:11.651 --> 00:04:14.220
+Since we went from abk to the products that abk purchased,
+
+98
+00:04:14.721 --> 00:04:17.523
+we can also have relationships going in to those products,
+
+99
+00:04:18.024 --> 00:04:20.660
+and say, okay, there's some other people who bought those products.
+
+100
+00:04:21.027 --> 00:04:23.596
+This pattern will find all the products
+
+101
+00:04:23.596 --> 00:04:25.398
+that people have in common with abk.
+
+102
+00:04:25.832 --> 00:04:26.933
+We can extend it a little bit
+
+103
+00:04:26.933 --> 00:04:29.702
+more to ask that recommendation question problem.
+
+104
+00:04:29.936 --> 00:04:33.406
+where instead of saying we just want to find these other products,
+
+105
+00:04:33.840 --> 00:04:36.276
+the other products have a unique property where they're actually
+
+106
+00:04:36.743 --> 00:04:38.745
+something that abk does not have.
+
+107
+00:04:39.078 --> 00:04:40.513
+So we have the same pattern match from
+
+108
+00:04:40.513 --> 00:04:43.049
+ABK to some products, to some other people,
+
+109
+00:04:43.383 --> 00:04:45.218
+and then extend that to other
+
+110
+00:04:45.218 --> 00:04:47.620
+products. And now we include a predicate,
+
+111
+00:04:48.054 --> 00:04:50.623
+saying we actually want a negative pattern to be true,
+
+112
+00:04:50.957 --> 00:04:53.493
+that abk has not purchased those other products.
+
+113
+00:04:54.093 --> 00:04:56.796
+So, where not abk purchased those other products.
+
+114
+00:04:57.063 --> 00:04:59.999
+So down there on the bottom that dotted line from abk,
+
+115
+00:04:59.999 --> 00:05:02.335
+to the couch, we want that to not exist.
+
+116
+00:05:03.069 --> 00:05:05.438
+Now we're describing a pattern that both has
+
+117
+00:05:05.438 --> 00:05:07.940
+records that should exist, something that should not exist.
+
+118
+00:05:08.474 --> 00:05:10.510
+The other products now will be reduced
+
+119
+00:05:10.510 --> 00:05:12.845
+to only products that abk is not purchased.
+
+120
+00:05:13.279 --> 00:05:15.748
+That's what we're going to use as a recommendation that he buys.
+
+121
+00:05:16.482 --> 00:05:18.751
+So, what really is a knowledge graph?
+
+122
+00:05:19.319 --> 00:05:21.287
+It's a kind of database that represents information
+
+123
+00:05:21.287 --> 00:05:24.490
+as nodes representing things like people, products, blogs,
+
+124
+00:05:24.490 --> 00:05:25.892
+whatever you might want to have as
+
+125
+00:05:25.892 --> 00:05:28.227
+records in a database. But then also
+
+126
+00:05:28.227 --> 00:05:32.699
+relationships that aren't simply convention of using a join table,
+
+127
+00:05:32.699 --> 00:05:34.100
+but that are first-class citizen, they're
+
+128
+00:05:34.100 --> 00:05:36.436
+actually data records inside of the database
+
+129
+00:05:36.436 --> 00:05:38.137
+that have a semantic meaning that they
+
+130
+00:05:38.137 --> 00:05:39.806
+actually represent how two nodes are connected.
+
+131
+00:05:40.273 --> 00:05:42.875
+And they add information about those two nodes.
+
+132
+00:05:43.109 --> 00:05:44.877
+So both the nodes and relationships have key
+
+133
+00:05:44.877 --> 00:05:47.513
+value properties, they have multiple labels on nodes.
+
+134
+00:05:47.980 --> 00:05:51.417
+Relationships always have a direction, and they have a single type.
+
+135
+00:05:51.417 --> 00:05:52.952
+And the query language that you use
+
+136
+00:05:52.952 --> 00:05:55.154
+for doing pattern matching is called Cypher.
+
+137
+00:05:55.455 --> 00:05:56.489
+And it turns out that this is
+
+138
+00:05:56.489 --> 00:05:58.591
+super nice for mapping to natural language.
+
+139
+00:05:58.891 --> 00:06:01.828
+and really convenient for working with GenAI and LLMs
+
+140
+00:06:01.828 --> 00:06:03.996
+because LLMs are really good at natural language.
+
+141
+00:06:04.597 --> 00:06:06.299
+If we go back for a moment here,
+
+142
+00:06:06.566 --> 00:06:08.234
+and just look at that query at the top,
+
+143
+00:06:08.601 --> 00:06:10.737
+you can read that out loud and make sense of it.
+
+144
+00:06:11.371 --> 00:06:14.507
+Match abk who's a person whose name is abk
+
+145
+00:06:14.807 --> 00:06:16.743
+that bought some products that some other
+
+146
+00:06:16.743 --> 00:06:19.245
+people have bought, they've bought some other products
+
+147
+00:06:19.612 --> 00:06:22.115
+where abk has not purchased those other products.
+
+148
+00:06:22.582 --> 00:06:24.751
+The other thing that's interesting about knowledge graphs
+
+149
+00:06:24.751 --> 00:06:28.121
+is that they're really convenient for combining unstructured data along with that
+
+150
+00:06:28.121 --> 00:06:31.457
+structured data, whether that was some
+
+151
+00:06:31.457 --> 00:06:32.725
+products that we have or people,
+
+152
+00:06:32.725 --> 00:06:34.527
+whatever it might be in structured data,
+
+153
+00:06:34.527 --> 00:06:36.562
+you can then add any kind of chunked text,
+
+154
+00:06:36.562 --> 00:06:38.164
+do a vector representation of that,
+
+155
+00:06:38.164 --> 00:06:39.866
+store that in the database as well,
+
+156
+00:06:39.966 --> 00:06:43.703
+and combine both vector similarity search and pattern matching together
+
+157
+00:06:43.703 --> 00:06:46.205
+for all kinds of powerful access patterns.
+
+158
+00:06:46.439 --> 00:06:49.375
+So for example, if you want to do root-cause analysis
+
+159
+00:06:49.942 --> 00:06:52.078
+and you imagine that you're a furniture manufacturer
+
+160
+00:06:52.678 --> 00:06:55.348
+looking to understand customer complaints about your products.
+
+161
+00:06:55.715 --> 00:06:58.551
+So you turn to your team of experts, you know, data engineering,
+
+162
+00:06:58.551 --> 00:07:01.788
+analysis team and say, hey, could you do some root-cause analysis?
+
+163
+00:07:01.788 --> 00:07:04.424
+So I've heard a lot of complaints out on the internet
+
+164
+00:07:04.424 --> 00:07:07.260
+about our products. Let's try to figure out what's going on.
+
+165
+00:07:07.760 --> 00:07:09.962
+So the root-cause analysis would include questions like,
+
+166
+00:07:09.962 --> 00:07:13.566
+which products have the most issues? And then based on those products,
+
+167
+00:07:13.566 --> 00:07:15.768
+well, what part of the product is the actual problem?
+
+168
+00:07:16.169 --> 00:07:17.737
+And then you might want to ask a question like,
+
+169
+00:07:17.737 --> 00:07:19.472
+is there a problem with the part itself?
+
+170
+00:07:19.772 --> 00:07:20.773
+Perhaps there are other things that are
+
+171
+00:07:20.773 --> 00:07:22.675
+going on. People just don't like the product.
+
+172
+00:07:22.942 --> 00:07:24.811
+But if you can take corrective measures, it would
+
+173
+00:07:24.811 --> 00:07:26.245
+be because there's something either in
+
+174
+00:07:26.245 --> 00:07:28.448
+the manufacturing process, which you're looking for
+
+175
+00:07:28.448 --> 00:07:30.483
+here is for corrective measures that you can take.
+
+176
+00:07:30.483 --> 00:07:33.386
+do root-cause analysis for something that you can improve.
+
+177
+00:07:33.820 --> 00:07:35.154
+So if it's a design problem, you
+
+178
+00:07:35.154 --> 00:07:36.556
+could turn that over to the design team.
+
+179
+00:07:36.722 --> 00:07:39.091
+They could take a look at what people's complaints are about.
+
+180
+00:07:39.358 --> 00:07:41.194
+But if it's a manufacturing problem
+
+181
+00:07:41.194 --> 00:07:42.895
+or a problem with a part somewhere,
+
+182
+00:07:43.095 --> 00:07:46.199
+you can do some analysis on that, find the part problem
+
+183
+00:07:46.199 --> 00:07:48.301
+and either swap out the part for a new
+
+184
+00:07:48.301 --> 00:07:50.470
+one or figure out how to improve the process itself.
+
+185
+00:07:51.103 --> 00:07:53.673
+So as a data engineer, if you're handed this task,
+
+186
+00:07:53.673 --> 00:07:56.843
+you would start with the usual thing, ask some clarifying questions,
+
+187
+00:07:57.343 --> 00:07:59.111
+Why are we really doing this.
+
+188
+00:07:59.111 --> 00:08:00.513
+You want to be able to understand that
+
+189
+00:08:00.513 --> 00:08:04.050
+there's possible manufacturing problems in the supply chain. Cool. Okay.
+
+190
+00:08:04.784 --> 00:08:07.620
+Second question is or if that's what we want to find out,
+
+191
+00:08:07.720 --> 00:08:09.922
+what data is available that we can do this analysis with?
+
+192
+00:08:11.023 --> 00:08:11.891
+So it turns out in this
+
+193
+00:08:11.891 --> 00:08:13.626
+scenario, we've got a bill of materials,
+
+194
+00:08:13.926 --> 00:08:16.195
+some CSV files that connect the product
+
+195
+00:08:16.195 --> 00:08:18.431
+all the way to the suppliers from those products.
+
+196
+00:08:18.431 --> 00:08:21.067
+Maybe they came from some spreadsheets, maybe it came from some
+
+197
+00:08:21.400 --> 00:08:24.136
+relational database that isn't really suited for doing analysis.
+
+198
+00:08:24.370 --> 00:08:27.273
+That's okay too. And you also have some data from
+
+199
+00:08:27.273 --> 00:08:30.176
+user reviews that you scraped from some websites on the internet.
+
+200
+00:08:30.710 --> 00:08:32.445
+You want to be able to combine those into one
+
+201
+00:08:32.445 --> 00:08:34.780
+dataset that you can then do some analysis on.
+
+202
+00:08:35.081 --> 00:08:36.649
+So, to do that analysis, you're going to
+
+203
+00:08:36.649 --> 00:08:38.584
+build a knowledge graph that connects all the data.
+
+204
+00:08:39.218 --> 00:08:41.787
+So here's what the target data model is going to look like.
+
+205
+00:08:42.154 --> 00:08:44.323
+On the left, in the sort of beige boxes
+
+206
+00:08:44.323 --> 00:08:46.993
+over there, you see the CSV files that are available.
+
+207
+00:08:47.126 --> 00:08:48.561
+Each one of those is going to turn into
+
+208
+00:08:48.561 --> 00:08:51.397
+nodes in the graph or relationships in the graph.
+
+209
+00:08:52.231 --> 00:08:53.499
+That's going to be the kind of
+
+210
+00:08:53.499 --> 00:08:55.067
+what we're going to call the domain graph.
+
+211
+00:08:55.568 --> 00:08:57.270
+On the right hand side, on the bottom
+
+212
+00:08:57.270 --> 00:09:01.007
+there you'll also see some beige boxes that represents markdown files.
+
+213
+00:09:01.140 --> 00:09:03.075
+Those markdown files are going to be chunked up, they're
+
+214
+00:09:03.075 --> 00:09:05.511
+going to create some documents inside of the graph as well.
+
+215
+00:09:05.978 --> 00:09:08.014
+And then all of this is going to get connected.
+
+216
+00:09:08.247 --> 00:09:09.515
+We'll look at some of the details as we
+
+217
+00:09:09.515 --> 00:09:12.251
+actually go through doing the the agent descriptions themselves.
+
+218
+00:09:12.518 --> 00:09:14.887
+But what I want to call out here for you right now,
+
+219
+00:09:15.087 --> 00:09:17.490
+is that these are really very connected,
+
+220
+00:09:17.490 --> 00:09:19.725
+but also very distinct parts of the graph.
+
+221
+00:09:19.725 --> 00:09:21.561
+We've got the data sources, the
+
+222
+00:09:21.561 --> 00:09:23.563
+structured data on the one side there.
+
+223
+00:09:23.863 --> 00:09:26.566
+That's going to turn into what we call the domain graph.
+
+224
+00:09:26.566 --> 00:09:28.167
+So that's the structured data that we
+
+225
+00:09:28.167 --> 00:09:30.202
+know that we can query with pattern matching.
+
+226
+00:09:30.803 --> 00:09:33.172
+On the other side, the unstructured data sources
+
+227
+00:09:33.172 --> 00:09:34.974
+are not going to be queried in the same way,
+
+228
+00:09:35.241 --> 00:09:37.577
+and they're not going to be imported in the same way either.
+
+229
+00:09:37.577 --> 00:09:40.446
+So, they're going to turn into what we call the Lexical Graph,
+
+230
+00:09:40.446 --> 00:09:42.815
+which represents the original textual data,
+
+231
+00:09:42.815 --> 00:09:45.718
+plus also the structure around that textual data.
+
+232
+00:09:45.851 --> 00:09:47.286
+To connect those two pieces,
+
+233
+00:09:47.286 --> 00:09:49.388
+the unstructured data and the structured data,
+
+234
+00:09:49.855 --> 00:09:51.290
+we've got this part in the middle
+
+235
+00:09:51.290 --> 00:09:52.959
+that we're going to call the Subject Graph.
+
+236
+00:09:53.559 --> 00:09:55.661
+The subject graph is going to be subjects where
+
+237
+00:09:55.661 --> 00:09:57.930
+entities that we pull out of the chunks, so the
+
+238
+00:09:57.930 --> 00:10:00.366
+chunks will have some text that will be talking about products,
+
+239
+00:10:00.366 --> 00:10:02.535
+maybe they'll be user names and things.
+
+240
+00:10:02.535 --> 00:10:04.236
+All of those things might be entities.
+
+241
+00:10:04.637 --> 00:10:07.106
+We're going to find those, call those things subjects.
+
+242
+00:10:07.106 --> 00:10:08.507
+And those subjects are going to be connected
+
+243
+00:10:08.507 --> 00:10:10.843
+to objects, so the subjects talk about something.
+
+244
+00:10:10.843 --> 00:10:14.814
+So, some user, let's say that it's me, user abk,
+
+245
+00:10:14.814 --> 00:10:16.716
+loves this table.
+
+246
+00:10:16.716 --> 00:10:20.820
+And so there'll be a subject predicate object in the subject graph
+
+247
+00:10:20.820 --> 00:10:22.922
+that talks about abk loving some table.
+
+248
+00:10:23.489 --> 00:10:25.758
+That also, because abk loves the
+
+249
+00:10:25.758 --> 00:10:28.561
+table, the table can correspond with the product
+
+250
+00:10:28.561 --> 00:10:30.596
+that we have in the structured data.
+
+251
+00:10:30.596 --> 00:10:32.732
+If abk mentions is a table and the table
+
+252
+00:10:32.732 --> 00:10:34.834
+is a product that exists in the structured data,
+
+253
+00:10:35.368 --> 00:10:38.537
+we can then connect the entities that we've extracted from
+
+254
+00:10:38.537 --> 00:10:41.207
+the text all the way over to the structured data
+
+255
+00:10:41.207 --> 00:10:43.376
+that we've got in from the CSV files.
+
+256
+00:10:44.076 --> 00:10:46.312
+Don't worry. We're going to do this step-by-step.
+
+257
+00:10:46.912 --> 00:10:47.913
+On a high level, this is
+
+258
+00:10:47.913 --> 00:10:48.948
+what you're going to end up with.
+
+259
+00:10:49.382 --> 00:10:51.651
+A graph with sub graphs within it, a
+
+260
+00:10:51.651 --> 00:10:54.587
+domain graph, a subject graph, and a lexical graph.

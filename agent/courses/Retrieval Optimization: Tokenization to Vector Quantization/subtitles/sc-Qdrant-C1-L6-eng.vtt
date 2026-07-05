@@ -1,0 +1,1171 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.202 --> 00:00:05.472
+In this lesson, you will optimize
+an existing vector
+
+2
+00:00:05.472 --> 00:00:08.608
+search mechanism
+to reduce its memory usage.
+
+3
+00:00:09.809 --> 00:00:14.147
+You will explore different types
+of vector quantization that not only make
+
+4
+00:00:14.147 --> 00:00:18.918
+semantic search more affordable,
+but can also enhance its efficiency.
+
+5
+00:00:19.786 --> 00:00:22.789
+Let's code and innovate.
+
+6
+00:00:23.223 --> 00:00:26.760
+You might be surprised to see
+how effective the vectors may still be,
+
+7
+00:00:27.093 --> 00:00:30.096
+even if we compress them
+using various quantization techniques.
+
+8
+00:00:30.864 --> 00:00:32.165
+Let's discuss the basics.
+
+9
+00:00:32.165 --> 00:00:35.502
+Vector embeddings are usually represented
+by floating point numbers.
+
+10
+00:00:35.835 --> 00:00:39.506
+Float
+32 means that each individual dimension
+
+11
+00:00:39.506 --> 00:00:43.376
+needs 32 bits of memory,
+which is equivalent to four bytes.
+
+12
+00:00:43.510 --> 00:00:46.446
+For example,
+a popular OpenAI embedding model
+
+13
+00:00:46.446 --> 00:00:50.016
+will produce over 1500 numbers
+for each input text.
+
+14
+00:00:50.183 --> 00:00:55.183
+That's six kilobytes of memory
+for such an individual chunk in your RAG,
+
+15
+00:00:55.989 --> 00:01:00.093
+and there's still some overhead generated
+by the vector database structures.
+
+16
+00:01:00.360 --> 00:01:04.731
+This number has to be multiplied by
+the total number of documents you will store.
+
+17
+00:01:05.198 --> 00:01:06.833
+Even on a million scale,
+
+18
+00:01:06.833 --> 00:01:09.836
+there has to be a decent amount
+of memory available.
+
+19
+00:01:10.070 --> 00:01:14.908
+But if we go beyond that, the customer
+grade machine won't handle that load.
+
+20
+00:01:15.175 --> 00:01:18.945
+Putting the data on disk
+was the only solution for those hitting
+
+21
+00:01:18.945 --> 00:01:20.613
+their budget limits in the past.
+
+22
+00:01:20.613 --> 00:01:24.150
+Quantization techniques
+turned out to be much more powerful,
+
+23
+00:01:24.484 --> 00:01:27.987
+and offered a way to make semantic search
+more affordable,
+
+24
+00:01:28.321 --> 00:01:30.790
+with a little impact
+on the search quality.
+
+25
+00:01:30.790 --> 00:01:33.827
+Product quantization is the first method
+you will learn today.
+
+26
+00:01:34.527 --> 00:01:37.530
+Everything starts with the original float
+based embeddings.
+
+27
+00:01:38.131 --> 00:01:41.401
+Product quantization
+divides them into sub-vectors.
+
+28
+00:01:42.202 --> 00:01:45.371
+The number of sub-vectors
+depends on the selected compression rate.
+
+29
+00:01:45.638 --> 00:01:50.110
+For example, a compression rate of 16
+means each sub-vector will
+
+30
+00:01:50.110 --> 00:01:54.114
+have four dimensions, as the compression
+rate is defined in bytes.
+
+31
+00:01:55.081 --> 00:01:55.548
+Once the
+
+32
+00:01:55.548 --> 00:01:59.319
+vectors are split into pieces,
+we can start the compression.
+
+33
+00:01:59.719 --> 00:02:02.722
+In the next step,
+we start from the sub-vectors.
+
+34
+00:02:02.789 --> 00:02:06.092
+Each group of sub
+vectors is used as an input
+
+35
+00:02:06.092 --> 00:02:09.395
+to the clustering algorithm,
+such as k means.
+
+36
+00:02:09.462 --> 00:02:14.167
+Eventually, each sub-vector
+will get assigned to the closest centroid.
+
+37
+00:02:14.534 --> 00:02:18.004
+The number of centroids
+is not configurable as it is always
+
+38
+00:02:18.004 --> 00:02:21.374
+set to 256.
+
+39
+00:02:21.774 --> 00:02:26.446
+A total number of possible values
+we can represent with a single byte.
+
+40
+00:02:26.813 --> 00:02:30.350
+From now
+on, instead of storing the sub-vectors,
+
+41
+00:02:30.350 --> 00:02:33.520
+we keep the identifiers
+of the closest centroids.
+
+42
+00:02:34.254 --> 00:02:37.157
+In our case, each
+sub-vector had four bytes,
+
+43
+00:02:37.157 --> 00:02:40.360
+so it required 16 bytes overall.
+
+44
+00:02:40.927 --> 00:02:44.230
+After the product quantization,
+we just have to store
+
+45
+00:02:44.230 --> 00:02:47.700
+a single byte,
+which is the centroid identifier.
+
+46
+00:02:48.034 --> 00:02:51.271
+Sixteen bytes became just a single byte,
+
+47
+00:02:51.704 --> 00:02:54.707
+so the achieved compression
+rate is also 16.
+
+48
+00:02:54.841 --> 00:02:58.044
+Product quantization is called product
+because it divides
+
+49
+00:02:58.044 --> 00:03:02.749
+a high dimensional vector into smaller sub
+vectors, and quantize
+
+50
+00:03:02.749 --> 00:03:06.152
+each sub-vector
+separately using its own codebook.
+
+51
+00:03:06.886 --> 00:03:09.589
+The combination of this quantized sub
+vectors
+
+52
+00:03:09.589 --> 00:03:12.859
+forms a product of the individual code
+books,
+
+53
+00:03:13.126 --> 00:03:16.696
+creating a comprehensive product
+code for the entire space.
+
+54
+00:03:17.430 --> 00:03:21.167
+This approach leverages
+the Cartesian product of the subspaces
+
+55
+00:03:21.434 --> 00:03:24.804
+to efficiently approximate
+the original high dimensional data.
+
+56
+00:03:25.271 --> 00:03:27.941
+There are multiple possible
+configurations of the product
+
+57
+00:03:27.941 --> 00:03:32.512
+quantization and its impact vary
+depending on how you set it up.
+
+58
+00:03:33.179 --> 00:03:36.449
+If you are on a budget, then
+you can consider setting the compression
+
+59
+00:03:36.449 --> 00:03:41.449
+rate even up to 64 times,
+but it's rarely works precisely enough.
+
+60
+00:03:41.921 --> 00:03:46.921
+In our case, the most aggressive
+compression of 32 times decreased
+
+61
+00:03:46.960 --> 00:03:50.763
+the precision of search to around
+0.66.
+
+62
+00:03:51.197 --> 00:03:54.234
+Even though the search
+with original vectors
+
+63
+00:03:54.234 --> 00:03:57.270
+was able to get around 0.98,
+
+64
+00:03:58.338 --> 00:03:59.772
+that's a huge difference.
+
+65
+00:03:59.772 --> 00:04:03.843
+Product quantization will always result
+in reduced search precision,
+
+66
+00:04:04.077 --> 00:04:07.513
+but sometimes it may speed
+things up a little bit.
+
+67
+00:04:08.014 --> 00:04:10.650
+Inserting your points and building
+the collection
+
+68
+00:04:10.650 --> 00:04:14.087
+will always be slower,
+though, as it has to run
+
+69
+00:04:14.120 --> 00:04:15.922
+the K-means clustering.
+
+70
+00:04:15.922 --> 00:04:19.058
+The degraded quality of quantization
+may be improved back
+
+71
+00:04:19.058 --> 00:04:20.493
+with the help of free-scoring.
+
+72
+00:04:20.493 --> 00:04:21.628
+First of all,
+
+73
+00:04:21.628 --> 00:04:26.165
+the quantized representations encode
+very similar vectors in exactly
+
+74
+00:04:26.165 --> 00:04:30.069
+the same way as their sub-vectors
+get the same centroids
+
+75
+00:04:30.069 --> 00:04:34.407
+assigned. That makes it harder
+to always get the best results possible,
+
+76
+00:04:34.707 --> 00:04:38.845
+as many points might be now represented
+with the same coordinates.
+
+77
+00:04:39.212 --> 00:04:42.348
+The same coordinates
+also means the same scores.
+
+78
+00:04:42.682 --> 00:04:46.386
+For that reason, vector databases
+keep the original vectors on disk.
+
+79
+00:04:46.919 --> 00:04:50.390
+Once we have a set of results
+returned by quantized search,
+
+80
+00:04:51.224 --> 00:04:55.228
+we can load the original embeddings
+and compute the similarity using them.
+
+81
+00:04:55.795 --> 00:04:58.798
+That helps to differentiate the distances
+
+82
+00:04:58.965 --> 00:05:02.068
+between the points
+coming from the same neighborhood.
+
+83
+00:05:02.535 --> 00:05:05.104
+Restoring
+should improve the quality of search
+
+84
+00:05:05.104 --> 00:05:08.641
+and choosing to turn it off
+should be rather a conscious decision.
+
+85
+00:05:08.975 --> 00:05:12.979
+Let's see how product quantization
+works for our dataset.
+
+86
+00:05:13.279 --> 00:05:16.983
+In order to test the impact
+of quantization on the search quality,
+
+87
+00:05:17.550 --> 00:05:20.920
+you have to import the snapshot
+of the once collection again.
+
+88
+00:05:25.858 --> 00:05:29.362
+Let's also repeat the process
+of calculating query embeddings
+
+89
+00:05:29.362 --> 00:05:31.030
+with our selected model.
+
+90
+00:05:31.030 --> 00:05:36.030
+Whenever we speak about measuring
+quality, we have to random.
+
+91
+00:05:41.174 --> 00:05:44.544
+You already know we
+cannot improve the embedding model quality
+
+92
+00:05:44.544 --> 00:05:47.547
+by applying any technique
+to the created vectors.
+
+93
+00:05:47.613 --> 00:05:52.613
+Therefore, our baseline is defined by the
+outputs of the exact knn search,
+
+94
+00:05:53.920 --> 00:05:56.923
+similarly to the previous lesson.
+
+95
+00:06:00.993 --> 00:06:01.928
+You are now ready
+
+96
+00:06:01.928 --> 00:06:05.932
+to evaluate the impact of the product
+quantization on the search quality.
+
+97
+00:06:07.300 --> 00:06:10.403
+You have to modify the configuration
+of the collection
+
+98
+00:06:11.037 --> 00:06:14.040
+to enable the product
+quantization on its vectors.
+
+99
+00:06:14.273 --> 00:06:18.444
+This change of the configuration
+will fire the quantization process
+
+100
+00:06:18.878 --> 00:06:21.881
+and then the whole collection
+will be rebuilt.
+
+101
+00:06:22.215 --> 00:06:25.518
+There is no downtime,
+but during that changes been applied,
+
+102
+00:06:25.752 --> 00:06:29.422
+you might be still using
+the old structures or exact search.
+
+103
+00:06:29.989 --> 00:06:32.625
+From a user perspective, nothing changes.
+
+104
+00:06:32.625 --> 00:06:33.292
+Setting
+
+105
+00:06:33.292 --> 00:06:37.597
+always run property forces Qdrants
+to keep the quantized vectors
+
+106
+00:06:37.897 --> 00:06:39.832
+always in memory.
+
+107
+00:06:39.832 --> 00:06:44.137
+Again, let's wait for the optimizer
+to finish its job.
+
+108
+00:06:44.504 --> 00:06:47.573
+We want to measure the impact
+of product quantization.
+
+109
+00:06:47.573 --> 00:06:49.342
+So let's wait until it's ready.
+
+110
+00:06:56.682 --> 00:06:57.083
+You will
+
+111
+00:06:57.083 --> 00:07:00.520
+be now able to evaluate the quality
+of the collection again.
+
+112
+00:07:00.853 --> 00:07:04.490
+The process is not different
+from what we have done already.
+
+113
+00:07:04.490 --> 00:07:07.693
+When we did that for different actions
+HSNW configurations.
+
+114
+00:07:13.065 --> 00:07:16.769
+The only thing we add here is an operation
+that measures
+
+115
+00:07:16.936 --> 00:07:20.673
+how much time we spent
+on each search operation.
+
+116
+00:07:21.073 --> 00:07:26.073
+Eventually, you will display the average
+latency, as it is also an important factor
+
+117
+00:07:26.245 --> 00:07:29.549
+when choosing the right parameters
+for your semantic search.
+
+118
+00:07:33.186 --> 00:07:34.854
+In this initial test,
+
+119
+00:07:34.854 --> 00:07:39.826
+we disable the Rescoring mechanism
+for each quantization technique.
+
+120
+00:07:40.026 --> 00:07:44.764
+You will run evaluate twice,
+either with or without the rescoring.
+
+121
+00:07:45.565 --> 00:07:48.568
+Obviously rescoring comes
+with an additional cost,
+
+122
+00:07:48.568 --> 00:07:51.571
+so it's better to avoid it if possible.
+
+123
+00:07:51.971 --> 00:07:55.341
+Finally, we will store the latency
+
+124
+00:07:55.775 --> 00:08:00.146
+of the search requests
+and then build a dictionary.
+
+125
+00:08:00.146 --> 00:08:03.583
+Similarity to what we did
+for all the other tests so far.
+
+126
+00:08:04.917 --> 00:08:06.118
+This is the average
+
+127
+00:08:06.118 --> 00:08:09.222
+response time for product quantization
+
+128
+00:08:09.922 --> 00:08:12.725
+without the rescoring,
+
+129
+00:08:12.725 --> 00:08:15.661
+The product quantization
+results are also ready.
+
+130
+00:08:15.661 --> 00:08:20.566
+Let's evaluate their quality versus
+the exact search than on original float
+
+131
+00:08:20.566 --> 00:08:24.036
+based vectors. Again,
+using precision at 25.
+
+132
+00:08:24.270 --> 00:08:27.273
+But you can also experiment
+with different values.
+
+133
+00:08:30.142 --> 00:08:30.510
+Product
+
+134
+00:08:30.510 --> 00:08:35.147
+quantization reduced the search precision,
+but we got pretty aggressive
+
+135
+00:08:35.147 --> 00:08:38.351
+and requested the compression
+ratio of 64 times.
+
+136
+00:08:39.519 --> 00:08:41.988
+Let's repeat the process of evaluation,
+
+137
+00:08:41.988 --> 00:08:44.991
+but this time, with the rescoring enabled.
+
+138
+00:08:45.691 --> 00:08:48.761
+It will recompute the distances
+using original vectors,
+
+139
+00:08:48.761 --> 00:08:51.731
+and that should hopefully improve
+the quality.
+
+140
+00:08:53.499 --> 00:08:57.837
+There is just a single difference
+in how we evaluate the quality
+
+141
+00:08:57.837 --> 00:09:02.675
+in this case. We enable the rescoring
+for all the search queries we set,
+
+142
+00:09:03.476 --> 00:09:06.479
+but all the rest is kept identical.
+
+143
+00:09:09.048 --> 00:09:12.084
+Now let's run ranx evaluation again.
+
+144
+00:09:14.320 --> 00:09:17.089
+Rescoring improves the quality of search,
+
+145
+00:09:17.089 --> 00:09:20.192
+as different documents
+with the same representation
+
+146
+00:09:20.660 --> 00:09:24.564
+may have their scores computed properly
+with full precision.
+
+147
+00:09:25.765 --> 00:09:28.234
+Let's review
+the second quantization technique
+
+148
+00:09:28.234 --> 00:09:31.237
+available for vector search.
+
+149
+00:09:31.637 --> 00:09:33.773
+Scalar quantization is another technique
+
+150
+00:09:33.773 --> 00:09:37.276
+you may apply to make semantic search
+less memory intensive.
+
+151
+00:09:37.977 --> 00:09:42.715
+It is based on the very simple idea
+of converting floats into integers.
+
+152
+00:09:43.382 --> 00:09:47.353
+However, when we have the original vectors
+represented with floats,
+
+153
+00:09:47.920 --> 00:09:51.090
+the individual numbers
+come from a specific range,
+
+154
+00:09:51.290 --> 00:09:55.461
+which is just a subset of all the values
+that we may represent with floats.
+
+155
+00:09:55.661 --> 00:09:59.165
+When we then receive some new vectors,
+the range may change,
+
+156
+00:09:59.265 --> 00:10:01.968
+so we never know the minimum
+and maximum values.
+
+157
+00:10:01.968 --> 00:10:05.871
+That's why quantization is done
+separately on subsets of the data,
+
+158
+00:10:06.205 --> 00:10:08.574
+not globally for all the vectors.
+
+159
+00:10:08.574 --> 00:10:11.677
+Do you remember that
+HSNW graph is split into segments?
+
+160
+00:10:12.144 --> 00:10:15.181
+That also helps
+to implement Scalar quantization.
+
+161
+00:10:15.548 --> 00:10:19.151
+As the database assumes,
+each segment is immutable.
+
+162
+00:10:19.785 --> 00:10:22.221
+So we can measure the range of the numbers
+
+163
+00:10:22.221 --> 00:10:25.224
+and calculate minimum and maximum values.
+
+164
+00:10:25.391 --> 00:10:29.562
+Then the whole quantization process
+is about converting these numbers
+
+165
+00:10:29.829 --> 00:10:33.265
+from the range of integers between 0
+
+166
+00:10:33.265 --> 00:10:38.265
+to 255, or -128 to 127.
+
+167
+00:10:39.739 --> 00:10:43.109
+The compression
+rate of Scalar quantization is always
+
+168
+00:10:43.109 --> 00:10:46.545
+four. Four bytes are compressed
+to a single one.
+
+169
+00:10:46.879 --> 00:10:50.249
+The memory required to keep the vectors
+after applying
+
+170
+00:10:50.249 --> 00:10:53.619
+scalar
+quantization is slower by up to 75%.
+
+171
+00:10:54.220 --> 00:10:57.223
+That comes with a cost
+in terms of search precision,
+
+172
+00:10:57.690 --> 00:11:00.192
+but there are also speed benefits.
+
+173
+00:11:00.192 --> 00:11:04.030
+Overall, Scalar quantization
+is usually the first thing to consider
+
+174
+00:11:04.296 --> 00:11:07.833
+if you want to make your search faster
+and more affordable.
+
+175
+00:11:08.768 --> 00:11:11.837
+Let's consider scalar quantization
+on the collection we have
+
+176
+00:11:12.071 --> 00:11:15.174
+and test
+how it impacts the quality of retrieval.
+
+177
+00:11:15.675 --> 00:11:18.678
+You will now repeat
+the quality evaluation process.
+
+178
+00:11:19.211 --> 00:11:24.050
+But on the results provided by Scalar
+quantization. It has to be enabled first.
+
+179
+00:11:24.550 --> 00:11:26.752
+But all the other steps are similar.
+
+180
+00:11:31.323 --> 00:11:34.326
+Qdrant
+has to finish the rebuilding process.
+
+181
+00:11:34.393 --> 00:11:37.396
+So let's give it some time.
+
+182
+00:11:44.804 --> 00:11:46.906
+Our first attempt to evaluate Scalar
+
+183
+00:11:46.906 --> 00:11:49.909
+quantization will be performed
+without the rescoring.
+
+184
+00:11:54.046 --> 00:11:56.649
+Ranx
+require is to have a run object created.
+
+185
+00:11:56.649 --> 00:11:59.652
+Let's do it.
+
+186
+00:12:01.554 --> 00:12:04.323
+It will also evaluate
+the same metric on the collection
+
+187
+00:12:04.323 --> 00:12:07.727
+with Scalar quantization enabled,
+but this time
+
+188
+00:12:08.027 --> 00:12:11.030
+with rescoring.
+
+189
+00:12:14.033 --> 00:12:17.036
+Let's run the ranx evaluation again.
+
+190
+00:12:19.205 --> 00:12:21.874
+We've just calculated the precision at 25
+
+191
+00:12:21.874 --> 00:12:26.278
+for both rescoring disabled
+and enabled on the same collection.
+
+192
+00:12:27.146 --> 00:12:30.449
+We'll compare all the quantization
+methods at the very end.
+
+193
+00:12:31.016 --> 00:12:34.253
+Last but not least,
+Binary quantization takes
+
+194
+00:12:34.253 --> 00:12:37.690
+the idea of compressing
+individual dimensions even further.
+
+195
+00:12:38.090 --> 00:12:40.793
+It converts each floating point number
+
+196
+00:12:40.793 --> 00:12:43.796
+into a boolean, either 0 or 1.
+
+197
+00:12:44.463 --> 00:12:47.333
+32 bits of information
+
+198
+00:12:47.333 --> 00:12:50.202
+compressed to just a single bit.
+
+199
+00:12:50.202 --> 00:12:53.105
+The role is as simple as converting
+each positive value
+
+200
+00:12:53.105 --> 00:12:56.542
+to one, and each negative or 0 to 0.
+
+201
+00:12:57.009 --> 00:13:00.579
+One important thing in binary
+quantization is over-sampling.
+
+202
+00:13:01.180 --> 00:13:05.751
+Since many points will be represented
+in exactly the same way.
+
+203
+00:13:06.185 --> 00:13:09.455
+You want to extract more points
+that you really need,
+
+204
+00:13:09.889 --> 00:13:13.025
+and then calculate the distance
+between your query
+
+205
+00:13:13.325 --> 00:13:16.328
+and original vectors
+represented as floats.
+
+206
+00:13:16.562 --> 00:13:20.399
+Again, let's see the real-world
+impact of the binary quantization.
+
+207
+00:13:21.100 --> 00:13:25.237
+Your last attempt to quantize
+vectors will focus on binary quantization.
+
+208
+00:13:25.905 --> 00:13:30.576
+Enabling it is as simple as changing
+the collection configuration again
+
+209
+00:13:31.143 --> 00:13:33.846
+and setting the quantization
+config to binary.
+
+210
+00:13:38.350 --> 00:13:39.084
+Qdrant will
+
+211
+00:13:39.084 --> 00:13:41.620
+remove the scalar quantized vectors
+
+212
+00:13:41.620 --> 00:13:45.090
+and start the binary quantization
+on the original ones.
+
+213
+00:13:45.457 --> 00:13:48.460
+Let's give it some time
+to finish that operation.
+
+214
+00:13:54.099 --> 00:13:57.503
+At this point, you should already know
+what we will do next.
+
+215
+00:13:58.137 --> 00:14:01.407
+Let's run our benchmark on the collection
+
+216
+00:14:01.407 --> 00:14:06.378
+with binary quantization enabled
+and obviously do not rescore
+
+217
+00:14:06.679 --> 00:14:09.682
+in the first test.
+
+218
+00:14:11.450 --> 00:14:14.453
+Do you want to see the impact
+on our metric?
+
+219
+00:14:14.687 --> 00:14:17.690
+Let's calculate this.
+
+220
+00:14:17.957 --> 00:14:18.624
+Again.
+
+221
+00:14:18.624 --> 00:14:21.527
+Let's enable
+rescoring and run all the queries
+
+222
+00:14:21.527 --> 00:14:24.530
+against our collection.
+
+223
+00:14:26.465 --> 00:14:29.635
+Finally, the impact of the rescoring
+
+224
+00:14:30.202 --> 00:14:33.405
+on the binary quantization
+also has to be determined.
+
+225
+00:14:36.041 --> 00:14:37.543
+As a last step,
+
+226
+00:14:37.543 --> 00:14:40.279
+you will compare the search precision
+
+227
+00:14:40.279 --> 00:14:43.282
+achieved by all the tested methods.
+
+228
+00:14:43.315 --> 00:14:45.718
+As you may see, the highest results
+
+229
+00:14:45.718 --> 00:14:48.721
+were achieved by Scalar quantization.
+
+230
+00:14:49.154 --> 00:14:52.324
+Either
+a with or without rescoring enabled.
+
+231
+00:14:53.559 --> 00:14:55.261
+Binary quantization
+
+232
+00:14:55.261 --> 00:14:57.963
+with additional rescoring interface,
+
+233
+00:14:57.963 --> 00:15:00.966
+also did the job well.
+
+234
+00:15:01.133 --> 00:15:05.237
+However, choosing the right quantization
+model depends on the specific
+
+235
+00:15:05.237 --> 00:15:09.008
+requirements of your project
+and the models you use.
+
+236
+00:15:09.608 --> 00:15:14.213
+Quantization is usually the first method
+to consider when you want
+
+237
+00:15:14.213 --> 00:15:18.851
+to make your semantic search faster,
+without sacrificing quality too much.
+
+238
+00:15:19.618 --> 00:15:24.490
+Binary quantization offers reduced
+memory usage by even up to 32 times.
+
+239
+00:15:24.924 --> 00:15:29.161
+However, the performance benefits
+might be even higher,
+
+240
+00:15:29.261 --> 00:15:33.732
+as it can increase the speed of retrieval
+by up to 40 times. Overall,
+
+241
+00:15:33.866 --> 00:15:37.903
+choosing the right quantization technique
+depends on the specifics
+
+242
+00:15:38.137 --> 00:15:40.239
+of your applications.
+
+243
+00:15:40.239 --> 00:15:45.044
+From now on, you should know
+what are the options and testing them out
+
+244
+00:15:45.344 --> 00:15:47.646
+shouldn't be a big deal anymore.
+
+245
+00:15:47.646 --> 00:15:51.483
+In this lesson, you implemented
+all the major vector quantization
+
+246
+00:15:51.483 --> 00:15:54.620
+methods and measured their impact
+on the search quality.
+
+247
+00:15:55.254 --> 00:15:58.357
+The ability to test and optimize
+semantic search
+
+248
+00:15:58.657 --> 00:16:02.594
+will help
+you build more reliable AI applications.
+

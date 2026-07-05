@@ -1,0 +1,2311 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.333 --> 00:00:02.202
+To build a multi-agent system,
+
+2
+00:00:02.202 --> 00:00:05.372
+you'll use Google's ADK or agent development kit,
+
+3
+00:00:05.605 --> 00:00:08.108
+which is a framework for developing agents.
+
+4
+00:00:08.108 --> 00:00:10.977
+In this lesson, you'll learn how to create and run
+
+5
+00:00:10.977 --> 00:00:13.179
+one agent as well as a team of agents.
+
+6
+00:00:13.646 --> 00:00:16.316
+All right, let's go. In this lesson,
+
+7
+00:00:16.750 --> 00:00:20.020
+you'll familiarize yourself
+with Google's Agent Development Kit,
+
+8
+00:00:20.020 --> 00:00:23.390
+and you'll use that for building agents
+throughout this multi-agent system.
+
+9
+00:00:23.890 --> 00:00:25.792
+In this lesson, you'll learn how to
+
+10
+00:00:25.792 --> 00:00:27.694
+create and run an agent using ADK.
+
+11
+00:00:28.294 --> 00:00:29.796
+and the imports that we're doing here,
+
+12
+00:00:29.796 --> 00:00:31.297
+of course the standard OS and then
+
+13
+00:00:31.297 --> 00:00:33.366
+a bunch of stuff from Google ADK itself.
+
+14
+00:00:33.666 --> 00:00:35.869
+We're going to import this Agent,
+which is going to
+
+15
+00:00:35.869 --> 00:00:38.304
+be the key thing for actually
+describing what an agent is.
+
+16
+00:00:38.738 --> 00:00:40.206
+For interacting with an LLM, we're
+
+17
+00:00:40.206 --> 00:00:41.875
+going to be using the LiteLLM library.
+
+18
+00:00:41.875 --> 00:00:44.411
+So we're going to import that here and this is
+
+19
+00:00:44.411 --> 00:00:47.180
+a a little wrapper for letting Google ADK talk to OpenAI.
+
+20
+00:00:48.014 --> 00:00:50.183
+And then we're also going to need some memory for the agent.
+
+21
+00:00:50.517 --> 00:00:52.819
+For the memory, we're going to use InMemorySessionService,
+
+22
+00:00:53.153 --> 00:00:54.754
+and then finally the agent also needs a way
+
+23
+00:00:54.754 --> 00:00:56.356
+to run, so we're going to import a Runner.
+
+24
+00:00:56.790 --> 00:00:59.025
+We also have some typing stuff here that's not really
+
+25
+00:00:59.025 --> 00:01:00.794
+so important for how all this works.
+
+26
+00:01:01.161 --> 00:01:03.029
+Let's go ahead and make sure that all that imports.
+
+27
+00:01:03.563 --> 00:01:05.398
+Great. All the libraries are imported.
+
+28
+00:01:05.865 --> 00:01:07.400
+So the next part then is to start
+
+29
+00:01:07.400 --> 00:01:08.968
+defining the models that we're going to use.
+
+30
+00:01:10.236 --> 00:01:12.138
+We're going to be using OpenAI for this course.
+
+31
+00:01:12.539 --> 00:01:15.442
+So let's go ahead and import, we'll define what the
+
+32
+00:01:15.442 --> 00:01:18.378
+the model is going to be itself is OpenAI's GPT-4o.
+
+33
+00:01:18.878 --> 00:01:20.780
+Again, we're going to be using LiteLLM
+
+34
+00:01:20.780 --> 00:01:22.982
+for actually reaching out to the OpenAI API.
+
+35
+00:01:23.650 --> 00:01:26.086
+And we'll just going to go ahead and try
+
+36
+00:01:26.086 --> 00:01:28.521
+a sample execution of completing a chat with that.
+
+37
+00:01:28.521 --> 00:01:30.723
+So if you look at the chat here,
+
+38
+00:01:30.723 --> 00:01:32.525
+you'll notice that we're just setting up a
+
+39
+00:01:32.525 --> 00:01:34.327
+message that we're going to send to OpenAI
+
+40
+00:01:34.327 --> 00:01:36.529
+and we're going to ask it the question,
+
+41
+00:01:36.529 --> 00:01:38.231
+Are you ready?
+
+42
+00:01:38.832 --> 00:01:40.633
+So if that all works successfully,
+
+43
+00:01:40.633 --> 00:01:42.202
+we'll get a good message from
+
+44
+00:01:42.202 --> 00:01:44.037
+OpenAI letting us know that this works.
+
+45
+00:01:44.938 --> 00:01:48.341
+Looking at the ModelResponse, there's a lot of information here,
+
+46
+00:01:48.341 --> 00:01:50.176
+but the key part is that the
+
+47
+00:01:50.176 --> 00:01:52.011
+response includes a message from OpenAI saying,
+
+48
+00:01:52.011 --> 00:01:54.514
+Yes, I'm ready! How can I assist you today?
+
+49
+00:01:54.814 --> 00:01:58.184
+OpenAI is all set to go. We're also using Neo4J today.
+
+50
+00:01:58.184 --> 00:02:00.186
+so we're going to import a helper library that combines
+
+51
+00:02:00.186 --> 00:02:02.922
+Neo4J with Google ADK in a nice way.
+
+52
+00:02:03.623 --> 00:02:05.859
+And that library is something we can take a
+
+53
+00:02:05.859 --> 00:02:08.361
+look at to see the details of what's going on.
+
+54
+00:02:08.461 --> 00:02:11.030
+The import that we're going to use
+
+55
+00:02:11.030 --> 00:02:13.967
+is just from neo4j_for_adk import the graphdb library.
+
+56
+00:02:14.534 --> 00:02:16.102
+Let's take a look at those details.
+
+57
+00:02:16.803 --> 00:02:18.905
+Okay, now we're inside of Neo4J for ADK.
+
+58
+00:02:19.372 --> 00:02:21.107
+And you can see it starts off pretty simply.
+
+59
+00:02:21.107 --> 00:02:23.109
+We import some stuff from the operating system.
+
+60
+00:02:23.443 --> 00:02:25.044
+We of course load up the environment.
+
+61
+00:02:25.478 --> 00:02:27.113
+And then from Neo4J, the
+
+62
+00:02:27.113 --> 00:02:29.015
+Python package, we load up the GraphDatabase,
+
+63
+00:02:29.015 --> 00:02:31.718
+and you also get a Result class definition.
+
+64
+00:02:32.085 --> 00:02:34.454
+Now, a bunch of these functions that are in here are
+
+65
+00:02:34.454 --> 00:02:37.056
+just really nice for just wrapping up how you interact with Neo4J
+
+66
+00:02:37.056 --> 00:02:39.259
+and presenting the results from Neo4J in a
+
+67
+00:02:39.259 --> 00:02:41.461
+way that Google ADK likes to see things.
+
+68
+00:02:42.262 --> 00:02:45.331
+One of the key things is that results should come back
+
+69
+00:02:45.331 --> 00:02:48.434
+either as a dictionary with a status that is a success
+
+70
+00:02:48.902 --> 00:02:50.703
+or a status that is an error.
+
+71
+00:02:50.703 --> 00:02:52.505
+These two helper functions help do that.
+
+72
+00:02:52.572 --> 00:02:56.309
+You can call tool_success or tool_error along with some extra arguments
+
+73
+00:02:56.643 --> 00:02:59.546
+and actually get a nice formatted result from any kind of call.
+
+74
+00:02:59.546 --> 00:03:02.949
+To that, we then go ahead and also integrate a helper library.
+
+75
+00:03:03.917 --> 00:03:06.920
+results that are handled by Google ADK need to be easily persisted.
+
+76
+00:03:07.620 --> 00:03:09.222
+So this function called here to_python
+
+77
+00:03:09.756 --> 00:03:11.624
+basically goes through all the different kinds
+
+78
+00:03:11.624 --> 00:03:13.459
+of results you can get back from
+
+79
+00:03:13.459 --> 00:03:15.328
+Neo4J and makes them easily serializable in
+
+80
+00:03:15.328 --> 00:03:17.197
+a nice format for for Google ADK.
+
+81
+00:03:17.664 --> 00:03:18.698
+You can look at the details if
+
+82
+00:03:18.698 --> 00:03:19.866
+you want to see what's going on here.
+
+83
+00:03:20.767 --> 00:03:22.569
+The key part of course is this
+
+84
+00:03:22.569 --> 00:03:24.404
+function that takes the Neo4J result, you're
+
+85
+00:03:24.404 --> 00:03:26.372
+passing that in as just a Result.
+
+86
+00:03:26.606 --> 00:03:28.174
+Basically, calls to the Python package.
+
+87
+00:03:28.474 --> 00:03:30.310
+Packages all that up into a result
+
+88
+00:03:30.310 --> 00:03:32.145
+that is easily used by Google ADK.
+
+89
+00:03:32.745 --> 00:03:34.247
+Each of those helper functions
+
+90
+00:03:34.681 --> 00:03:38.284
+is then also used by this upper level class called Neo4jForADK.
+
+91
+00:03:38.952 --> 00:03:41.421
+And this is really a wrapper that combines
+
+92
+00:03:41.421 --> 00:03:44.190
+a Neo4J driver, initializes the environment variables used there,
+
+93
+00:03:44.424 --> 00:03:45.992
+allows access to the driver,
+
+94
+00:03:46.159 --> 00:03:48.728
+and then has a special function here for sending queries
+
+95
+00:03:49.095 --> 00:03:51.331
+and it'll send any kind of query you'd like to,
+
+96
+00:03:51.664 --> 00:03:53.700
+but then uses those helper functions to
+
+97
+00:03:53.700 --> 00:03:56.035
+actually reformatting those results into a nice Google
+
+98
+00:03:56.035 --> 00:03:59.672
+ADK result. At the end then, because we're just going to
+
+99
+00:03:59.672 --> 00:04:01.441
+have one driver and one connection that we're using,
+
+100
+00:04:01.808 --> 00:04:04.277
+we're going to have a singleton of this class that we're use.
+
+101
+00:04:04.377 --> 00:04:06.012
+This is the graph DB that we're
+
+102
+00:04:06.012 --> 00:04:07.614
+going to actually expose as a variable
+
+103
+00:04:07.814 --> 00:04:09.349
+and use that through all the notebooks.
+
+104
+00:04:10.149 --> 00:04:12.085
+Okay, we took a look at Neo4J for ADK.
+
+105
+00:04:12.318 --> 00:04:13.953
+Let's continue with the notebook. So
+
+106
+00:04:13.953 --> 00:04:15.855
+now we've got everything set up, and
+
+107
+00:04:15.855 --> 00:04:17.757
+we can start to define an agent itself.
+
+108
+00:04:18.191 --> 00:04:19.425
+Okay, with our Neo4J wrapper ready, let's
+
+109
+00:04:19.425 --> 00:04:20.660
+go ahead and give it a try.
+
+110
+00:04:20.960 --> 00:04:22.428
+You can just send in kind
+
+111
+00:04:22.428 --> 00:04:24.130
+of Neo4J query that you'd like to,
+
+112
+00:04:24.130 --> 00:04:26.799
+as long as it's valid Cypher.
+Here the cypher that we're sending
+
+113
+00:04:26.799 --> 00:04:28.601
+is a very simple cypher statement that
+
+114
+00:04:28.601 --> 00:04:30.403
+doesn't do any work other than directly
+
+115
+00:04:30.403 --> 00:04:32.305
+return a result. Here the result is a string,
+
+116
+00:04:32.305 --> 00:04:34.307
+Neo4J is Ready!
+
+117
+00:04:34.307 --> 00:04:37.443
+passing that back aliased as a message variable.
+
+118
+00:04:37.443 --> 00:04:39.912
+So if we run this and then print the results,
+
+119
+00:04:39.912 --> 00:04:42.715
+you'll see that it's been packaged up into
+
+120
+00:04:42.715 --> 00:04:45.518
+this nice little dictionary
+with a status success
+
+121
+00:04:45.518 --> 00:04:47.520
+and then the query result
+containing an array
+
+122
+00:04:47.520 --> 00:04:50.356
+of all the rows returned
+from the database.
+
+123
+00:04:51.758 --> 00:04:55.028
+Great, with OpenAI ready and Neo4J ready,
+we can start to define
+
+124
+00:04:55.028 --> 00:04:58.865
+find our tools our tools themselves
+and the agent eventually.
+
+125
+00:04:59.432 --> 00:05:02.235
+Tool definition is an important part
+in actually defining an agent.
+
+126
+00:05:02.635 --> 00:05:04.370
+Without tools, an agent can do a
+
+127
+00:05:04.370 --> 00:05:06.139
+lot of thinking,
+maybe have some chats,
+
+128
+00:05:06.139 --> 00:05:07.540
+but it can't really do any interactions with
+
+129
+00:05:07.540 --> 00:05:08.941
+the environment or with the world around it.
+
+130
+00:05:09.575 --> 00:05:11.844
+So we're going to define a very simple tool just to
+
+131
+00:05:11.844 --> 00:05:14.113
+kind of illustrate
+what kind of things an agent can do.
+
+132
+00:05:14.814 --> 00:05:16.549
+Hello world is the classic of course.
+
+133
+00:05:16.649 --> 00:05:18.451
+So we're going to develop the hello
+
+134
+00:05:18.451 --> 00:05:20.253
+world version of for an agent's tool.
+
+135
+00:05:20.253 --> 00:05:22.255
+and we're going to call it say hello.
+
+136
+00:05:22.722 --> 00:05:24.857
+So tools can be simply defined as functions.
+
+137
+00:05:25.591 --> 00:05:27.060
+Here the function is just to say hello.
+
+138
+00:05:27.060 --> 00:05:28.695
+It takes a single argument, person_name as a string,
+
+139
+00:05:28.695 --> 00:05:30.463
+and it returns a dictionary.
+
+140
+00:05:30.463 --> 00:05:32.498
+Of course, that dictionary is the Google ADK
+
+141
+00:05:32.498 --> 00:05:34.567
+dictionary that likes to see all results in.
+
+142
+00:05:35.268 --> 00:05:37.136
+And it also has a couple of important parts here.
+
+143
+00:05:37.637 --> 00:05:39.405
+There's a doc string that's here, which
+
+144
+00:05:39.405 --> 00:05:41.140
+is always nice when you're writing code.
+
+145
+00:05:41.140 --> 00:05:44.544
+It's also especially critical
+when you're developing tools for Google ADK.
+
+146
+00:05:45.111 --> 00:05:47.380
+This doc string is what lets Google
+
+147
+00:05:47.380 --> 00:05:49.615
+ADK understand what actually this tool does.
+
+148
+00:05:50.083 --> 00:05:51.918
+This gets passed along to the LLM
+
+149
+00:05:51.918 --> 00:05:54.053
+when the LLM is told,
+here's all the
+
+150
+00:05:54.053 --> 00:05:56.155
+all the tools
+that are available and also
+
+151
+00:05:56.155 --> 00:05:58.224
+here's what those tools are described as doing.
+
+152
+00:05:58.725 --> 00:06:00.860
+So, this is a couple of
+important parts that we
+
+153
+00:06:00.860 --> 00:06:02.995
+should go through here.
+You describe what the tool does.
+
+154
+00:06:02.995 --> 00:06:06.065
+Here, it just formats a welcome message
+to a named person.
+
+155
+00:06:06.065 --> 00:06:07.967
+Of course, passed in as person_name.
+
+156
+00:06:08.167 --> 00:06:09.602
+You describe the arguments that are
+
+157
+00:06:09.602 --> 00:06:11.237
+being passed in and also the result.
+
+158
+00:06:11.571 --> 00:06:14.107
+The result here is consistent
+through all the tools because
+
+159
+00:06:14.107 --> 00:06:16.909
+the result is a dictionary
+that Google ADK likes to see.
+
+160
+00:06:17.410 --> 00:06:18.711
+But you can add a little
+
+161
+00:06:18.711 --> 00:06:20.213
+extra detail if you want to here.
+
+162
+00:06:20.213 --> 00:06:21.214
+For instance, if you know the
+
+163
+00:06:21.214 --> 00:06:22.348
+kinds of errors that might come back,
+
+164
+00:06:22.648 --> 00:06:24.684
+you could explain that here as well.
+
+165
+00:06:24.684 --> 00:06:26.919
+Inside, the function is incredibly simple.
+
+166
+00:06:26.919 --> 00:06:29.055
+All we're doing is using Neo4J
+
+167
+00:06:29.055 --> 00:06:31.491
+again to actually do a hello world.
+
+168
+00:06:31.791 --> 00:06:34.460
+We're going to call out to Neo4J,
+sending a query
+
+169
+00:06:34.460 --> 00:06:37.163
+where we're still going
+to return a hello to you,
+
+170
+00:06:37.697 --> 00:06:40.533
+but then we're also going
+to concatenate that with this person_name,
+
+171
+00:06:40.600 --> 00:06:43.369
+which is passed in as
+an argument to the function.
+
+172
+00:06:43.636 --> 00:06:45.204
+That's going to get passed in
+
+173
+00:06:45.204 --> 00:06:47.039
+as a query parameter to this query.
+
+174
+00:06:47.540 --> 00:06:50.443
+Whenever you see that dollar sign
+in a Neo4J Cypher statement,
+
+175
+00:06:50.443 --> 00:06:52.478
+that means here's a query parameter.
+
+176
+00:06:53.045 --> 00:06:54.480
+So, here in this array,
+
+177
+00:06:54.480 --> 00:06:55.915
+in this dictionary that's being passed in.
+
+178
+00:06:55.915 --> 00:06:58.951
+you'll see the person_name is being
+passed in as person_name.
+
+179
+00:06:59.318 --> 00:07:01.954
+That'll get substituted in as
+this variable here, not as
+
+180
+00:07:01.954 --> 00:07:04.590
+a template substitution,
+but as the value gets passed in.
+
+181
+00:07:04.924 --> 00:07:06.826
+and then this
+whole query will get executed.
+
+182
+00:07:07.260 --> 00:07:08.761
+So let's define that function. And
+
+183
+00:07:08.761 --> 00:07:10.496
+of course, because this function is just
+
+184
+00:07:10.496 --> 00:07:12.398
+a normal function, we can try to run it.
+
+185
+00:07:12.732 --> 00:07:15.134
+So we can print saying hello to ABK
+
+186
+00:07:15.601 --> 00:07:20.273
+and expect to see a very nice
+Google ADK formatted result
+
+187
+00:07:20.273 --> 00:07:22.542
+that was successful
+where the career result that was
+
+188
+00:07:22.542 --> 00:07:26.212
+sent to Neo4J has the reply,
+Hello to you, ABK.
+
+189
+00:07:26.679 --> 00:07:28.481
+doing that concatenation. Fantastic.
+
+190
+00:07:29.048 --> 00:07:30.683
+Now just a side note here about
+
+191
+00:07:30.683 --> 00:07:32.552
+query parameters, part of why we're doing that,
+
+192
+00:07:32.552 --> 00:07:35.288
+this is good discipline
+for any kind of query language that
+
+193
+00:07:35.288 --> 00:07:38.291
+you're using. Most query languages have the ability
+to have query parameters.
+
+194
+00:07:38.891 --> 00:07:40.193
+And one of the reasons you do
+
+195
+00:07:40.193 --> 00:07:41.461
+that is to avoid injection attacks, right?
+
+196
+00:07:42.061 --> 00:07:44.197
+So that people can't pass in values
+
+197
+00:07:44.197 --> 00:07:46.666
+that look like SQL statements
+or Cypher statements
+
+198
+00:07:47.200 --> 00:07:49.502
+or any other query language statement as a
+
+199
+00:07:49.502 --> 00:07:51.804
+value and have that
+concatenated into a string.
+
+200
+00:07:52.038 --> 00:07:53.806
+that can cause all kinds of mayhem.
+
+201
+00:07:53.806 --> 00:07:55.775
+So instead you pass in a query parameter,
+
+202
+00:07:56.175 --> 00:07:58.845
+and here for instance if I pass in the name and
+
+203
+00:07:58.845 --> 00:08:01.781
+say, actually the name's going to be,
+hey, return some string here,
+
+204
+00:08:01.981 --> 00:08:03.850
+this could be some malicious code instead
+
+205
+00:08:03.850 --> 00:08:05.985
+that gets passed in as the person's name.
+
+206
+00:08:06.285 --> 00:08:08.087
+If you just concatenated that as a string,
+
+207
+00:08:08.254 --> 00:08:09.889
+all kinds of bad things can happen.
+
+208
+00:08:10.323 --> 00:08:11.958
+Instead because it's a query parameter,
+
+209
+00:08:12.425 --> 00:08:13.993
+that still just behaves as a variable.
+
+210
+00:08:14.494 --> 00:08:16.195
+It gets passed in, it gets concatenated
+
+211
+00:08:16.195 --> 00:08:17.897
+as a string with the other string,
+
+212
+00:08:18.264 --> 00:08:21.567
+and the result is simply hello to the somewhat
+
+213
+00:08:21.567 --> 00:08:23.769
+friendly malicious injection attack.
+
+214
+00:08:23.769 --> 00:08:25.638
+and of course, it's been avoided now.
+
+215
+00:08:26.806 --> 00:08:28.875
+We have a basic tool available, now we can
+
+216
+00:08:28.875 --> 00:08:30.943
+define an agent that's going to use that tool.
+
+217
+00:08:31.577 --> 00:08:33.446
+Now there are a couple of components of
+
+218
+00:08:33.446 --> 00:08:35.348
+defining an agent, it's common across all frameworks.
+
+219
+00:08:35.548 --> 00:08:37.650
+They'll do some variations of the same idea.
+
+220
+00:08:37.650 --> 00:08:39.452
+Let's take a look at what's happening
+
+221
+00:08:39.452 --> 00:08:41.521
+inside of Google ADK to define an agent.
+
+222
+00:08:44.123 --> 00:08:45.992
+Now if you recall earlier, we had
+
+223
+00:08:45.992 --> 00:08:47.860
+imported this Agent class from Google ADK.
+
+224
+00:08:48.394 --> 00:08:49.829
+So we're going to make an instance of
+
+225
+00:08:49.829 --> 00:08:51.264
+that class and it takes a bunch of
+
+226
+00:08:51.264 --> 00:08:53.933
+parameters. So the first thing that's important is
+
+227
+00:08:53.933 --> 00:08:55.968
+that every agent is given a name.
+
+228
+00:08:55.968 --> 00:08:58.004
+Here we're going to call it hello_agent_v1.
+
+229
+00:08:58.471 --> 00:09:00.740
+This is in case you have multiple versions of the
+
+230
+00:09:00.740 --> 00:09:03.009
+agent that you want to have at the same time,
+
+231
+00:09:03.342 --> 00:09:05.945
+or if you want to actually have
+different version instructions as well.
+
+232
+00:09:06.612 --> 00:09:08.548
+Having an idea of what the version of this
+
+233
+00:09:08.548 --> 00:09:10.516
+agent is is very helpful for debugging later on.
+
+234
+00:09:11.350 --> 00:09:13.352
+You also pass in the model that you want to use.
+
+235
+00:09:13.886 --> 00:09:15.888
+If you recall, we defined LLM before
+
+236
+00:09:15.888 --> 00:09:17.857
+is being a call through LightLLM
+
+237
+00:09:18.724 --> 00:09:20.560
+out to open AI. So we're going to use that
+
+238
+00:09:20.560 --> 00:09:21.994
+here. and these next two are pretty
+
+239
+00:09:21.994 --> 00:09:23.396
+critical for how the Google ADK actually
+
+240
+00:09:23.396 --> 00:09:27.400
+orchestrates and executes agents.
+
+241
+00:09:28.401 --> 00:09:30.469
+The first part is this description of the agent.
+
+242
+00:09:30.603 --> 00:09:32.939
+This is a little bit like the doc string
+
+243
+00:09:32.939 --> 00:09:35.575
+of the tool, what describes what does this agent do.
+
+244
+00:09:35.908 --> 00:09:38.044
+This lets Google ADK and also the other
+
+245
+00:09:38.044 --> 00:09:40.413
+agents understand what is the purpose of this agent
+
+246
+00:09:40.413 --> 00:09:42.648
+and is there occasions when I should
+
+247
+00:09:42.648 --> 00:09:45.217
+call this agent rather than doing something myself.
+
+248
+00:09:45.618 --> 00:09:47.553
+What's called agent delegation.
+
+249
+00:09:48.387 --> 00:09:49.622
+So that's for other agents to know what
+
+250
+00:09:49.622 --> 00:09:50.823
+to do with the agent here.
+
+251
+00:09:50.823 --> 00:09:53.793
+Then for the agent itself,
+you provide some instruction.
+
+252
+00:09:53.793 --> 00:09:55.895
+And the instruction is basically
+the same kind of thing
+
+253
+00:09:55.895 --> 00:09:58.230
+you would have done with uh
+when you're doing prompt engineering
+
+254
+00:09:58.230 --> 00:10:02.034
+and you're defining
+the system prompt for uh the LLM.
+
+255
+00:10:02.034 --> 00:10:04.637
+This is the same kind of thing
+that you would do there.
+
+256
+00:10:05.171 --> 00:10:06.606
+This is a hello world agent,
+
+257
+00:10:06.606 --> 00:10:08.307
+so it is, of course, very helpful.
+
+258
+00:10:08.307 --> 00:10:11.177
+It's a helpful assistant that's going to chat with the user
+
+259
+00:10:11.177 --> 00:10:13.679
+and it really only has one tool
+that it wants to use.
+
+260
+00:10:13.679 --> 00:10:16.282
+So you describe that tool here
+so that the agent understands,
+
+261
+00:10:16.282 --> 00:10:19.552
+not just from the tool definition,
+but also from your
+
+262
+00:10:19.552 --> 00:10:21.187
+instructions that you're giving it,
+how to think
+
+263
+00:10:21.187 --> 00:10:22.989
+about that tool and
+when to use that tool.
+
+264
+00:10:23.689 --> 00:10:25.625
+So here if the user provides their
+
+265
+00:10:25.625 --> 00:10:27.560
+name, you know, use the say_hello tool
+
+266
+00:10:29.328 --> 00:10:31.030
+to give them a custom greeting.
+
+267
+00:10:34.066 --> 00:10:35.134
+And then the final part, of course,
+
+268
+00:10:35.134 --> 00:10:36.335
+is we have to make those tools available.
+
+269
+00:10:36.702 --> 00:10:38.571
+The tools get passed in as an
+
+270
+00:10:38.571 --> 00:10:40.439
+array of just the function names
+themselves.
+
+271
+00:10:40.439 --> 00:10:41.974
+So we're going to pass in say_hello,
+
+272
+00:10:42.508 --> 00:10:44.610
+and then the agent
+then has access to that tool.
+
+273
+00:10:44.877 --> 00:10:46.979
+It knows what to do
+with that tool because
+
+274
+00:10:46.979 --> 00:10:49.081
+we gave it instructions
+and other agents if there are
+
+275
+00:10:49.081 --> 00:10:52.184
+other agents know
+what this agent's role is.
+
+276
+00:10:53.185 --> 00:10:55.121
+Now that we have an agent
+and the agent has the
+
+277
+00:10:55.121 --> 00:10:57.023
+tool and it has instructions
+about how to use
+
+278
+00:10:57.023 --> 00:10:58.924
+that tool,
+now we need to run the agent.
+
+279
+00:10:59.358 --> 00:11:02.862
+This is the final part
+in creating a very basic agentic system.
+
+280
+00:11:03.763 --> 00:11:05.965
+An agent has to have an execution environment.
+
+281
+00:11:06.265 --> 00:11:07.900
+So if you look at this diagram
+
+282
+00:11:07.900 --> 00:11:09.535
+here, you'll see that inner box here.
+
+283
+00:11:10.403 --> 00:11:12.104
+This is the execution environment that happens.
+
+284
+00:11:12.171 --> 00:11:15.408
+There's a Runner class that actually
+manages all the event
+
+285
+00:11:15.408 --> 00:11:18.644
+loops basically for calling out to the LLM, passing results.
+
+286
+00:11:18.644 --> 00:11:21.047
+from the LLM to particular agents and coordinating
+
+287
+00:11:21.047 --> 00:11:23.449
+all the agents themselves
+and how they execute.
+
+288
+00:11:23.949 --> 00:11:26.786
+Each of those Runners also has access
+to various Services,
+
+289
+00:11:27.086 --> 00:11:30.423
+whether that is in memory services
+for like doing actual memory,
+
+290
+00:11:30.423 --> 00:11:32.725
+memory could be in memory or
+it could be, you
+
+291
+00:11:32.725 --> 00:11:35.061
+could use a database
+like Neo4J for memory as well.
+
+292
+00:11:35.294 --> 00:11:37.396
+that gets you access to Storage.
+
+293
+00:11:37.396 --> 00:11:40.433
+Then there's the Execution Logic
+that inside of the execution loop, here
+
+294
+00:11:40.433 --> 00:11:43.469
+are the steps of for actually running things
+and coordinating the agent,
+
+295
+00:11:43.469 --> 00:11:44.970
+whether agents are running in parallel
+
+296
+00:11:44.970 --> 00:11:48.340
+or in sequence or in a loop. This all together
+
+297
+00:11:48.340 --> 00:11:50.576
+that are actually is the execution environment for the agent.
+
+298
+00:11:51.210 --> 00:11:53.646
+Okay. We're going to do this
+by hand first and then
+
+299
+00:11:53.646 --> 00:11:56.282
+show how we can wrap this up
+to a little convenience method.
+
+300
+00:11:56.816 --> 00:11:58.517
+When you're doing your own development
+with Google ADK,
+
+301
+00:11:59.285 --> 00:12:02.354
+Google ADK has really great tooling
+for just defining an agent
+
+302
+00:12:02.621 --> 00:12:04.657
+and then using the tooling for actually
+just running that agent,
+
+303
+00:12:04.657 --> 00:12:07.593
+providing it the full execution environment
+that it needs.
+
+304
+00:12:07.860 --> 00:12:10.029
+We're going to be doing that
+by hand inside of the notebook.
+
+305
+00:12:10.429 --> 00:12:11.964
+So let's do that one step at a time
+
+306
+00:12:11.964 --> 00:12:13.499
+and then wrap it up into a little helper.
+
+307
+00:12:15.101 --> 00:12:16.235
+So there are a couple things you're
+
+308
+00:12:16.235 --> 00:12:17.570
+going to need to actually set up the
+
+309
+00:12:17.570 --> 00:12:21.474
+execution environment.
+Every runtime actually runs within a session.
+
+310
+00:12:21.807 --> 00:12:23.576
+You could of course have multiple sessions
+
+311
+00:12:23.576 --> 00:12:25.177
+that are running in some production environment.
+
+312
+00:12:25.177 --> 00:12:27.012
+Here we're going to have a single session.
+
+313
+00:12:27.246 --> 00:12:29.181
+we're going to go ahead and just set
+
+314
+00:12:29.181 --> 00:12:31.150
+up the in memory service which provides context
+
+315
+00:12:31.350 --> 00:12:33.252
+and state for the agent as it's running.
+
+316
+00:12:34.053 --> 00:12:37.022
+We're going to create the session service
+based on that memory
+
+317
+00:12:37.389 --> 00:12:39.458
+and also for the particular agent
+that we're writing.
+
+318
+00:12:39.625 --> 00:12:41.160
+And also assuming
+that we have a user, we're
+
+319
+00:12:41.160 --> 00:12:42.661
+going to assume that we have a single user,
+
+320
+00:12:43.028 --> 00:12:45.831
+a single application
+that we're running and a single session.
+
+321
+00:12:46.699 --> 00:12:48.968
+All that is going to be used here in the create_session
+
+322
+00:12:48.968 --> 00:12:51.670
+to actually create a single executable state
+
+323
+00:12:51.670 --> 00:12:53.873
+to actually be run and then the runner
+
+324
+00:12:53.873 --> 00:12:57.777
+is going to run that state given
+the agent that it has.
+
+325
+00:12:57.777 --> 00:12:59.678
+So here the runner combines the agent that
+
+326
+00:12:59.678 --> 00:13:01.580
+we want to run, our hello world agent.
+
+327
+00:13:01.580 --> 00:13:03.115
+The app_name is going to be the
+
+328
+00:13:03.115 --> 00:13:04.884
+same as we passed into the session here.
+
+329
+00:13:04.884 --> 00:13:06.819
+And also the session_service is going to
+
+330
+00:13:06.819 --> 00:13:09.088
+be the session within which this agent runs.
+
+331
+00:13:09.088 --> 00:13:10.956
+Again in a production environment,
+
+332
+00:13:10.956 --> 00:13:12.892
+there might be multiple sessions,
+there might
+
+333
+00:13:12.892 --> 00:13:15.060
+be multiple applications
+that are using this agent.
+
+334
+00:13:15.060 --> 00:13:17.396
+That's why these are all different
+from arguments to run.
+
+335
+00:13:19.031 --> 00:13:21.100
+Okay, now there's a lot to walk through to
+
+336
+00:13:21.100 --> 00:13:23.369
+just actually do the running of the agent as well.
+
+337
+00:13:23.369 --> 00:13:25.371
+So let's go through this step by step
+and take our time.
+
+338
+00:13:26.005 --> 00:13:27.072
+We know that we just have
+
+339
+00:13:27.072 --> 00:13:28.340
+this runner available that we just defined.
+
+340
+00:13:28.707 --> 00:13:30.509
+And we're going to do just a
+
+341
+00:13:30.509 --> 00:13:32.545
+single loop through with a single user message
+
+342
+00:13:32.545 --> 00:13:34.647
+and allow the runner to execute the
+
+343
+00:13:34.647 --> 00:13:37.049
+agent reacting to that message from the user.
+
+344
+00:13:37.750 --> 00:13:39.518
+So we're going to define an user message
+
+345
+00:13:39.518 --> 00:13:41.520
+and I'm simply going to say,
+hello, I'm ABK.
+
+346
+00:13:42.288 --> 00:13:44.089
+And we'll go ahead and
+print that message out
+
+347
+00:13:44.089 --> 00:13:45.791
+in a friendly way so we ourselves can
+
+348
+00:13:45.791 --> 00:13:47.526
+see as this is running what's going on.
+
+349
+00:13:48.060 --> 00:13:50.896
+That message that is just
+a string has to get packed up
+
+350
+00:13:50.896 --> 00:13:54.633
+into a data structure that Google ADK
+the runtime environment expects.
+
+351
+00:13:54.967 --> 00:13:56.435
+Usually this is handled
+behind the scenes for you
+
+352
+00:13:56.435 --> 00:13:58.037
+of course, but we're going
+to do this by hand.
+
+353
+00:13:58.270 --> 00:14:00.940
+So we're going to create
+this content class here.
+
+354
+00:14:01.907 --> 00:14:04.143
+and the role of the content
+that we're creating
+
+355
+00:14:04.143 --> 00:14:06.712
+is from the user, this is a user message.
+
+356
+00:14:06.979 --> 00:14:08.914
+content can have multiple parts.
+
+357
+00:14:08.914 --> 00:14:10.783
+So we're going to create an array of parts
+
+358
+00:14:10.783 --> 00:14:12.618
+where one of the parts is has some text
+
+359
+00:14:12.618 --> 00:14:15.154
+where the text is a user message.
+
+360
+00:14:15.654 --> 00:14:18.157
+This is all bundled up to do more complex things.
+
+361
+00:14:18.157 --> 00:14:19.625
+Here we're just trying to run
+
+362
+00:14:19.625 --> 00:14:21.327
+a single message from a single user,
+
+363
+00:14:21.327 --> 00:14:23.929
+but this gives you lots of flexibility when
+
+364
+00:14:23.929 --> 00:14:26.565
+you have lots of extra things going on.
+
+365
+00:14:26.565 --> 00:14:28.934
+and this is basically creating a content event, but
+
+366
+00:14:28.934 --> 00:14:31.570
+then has to get processed
+by the agent runtime system.
+
+367
+00:14:31.570 --> 00:14:33.806
+Also, we're going to go ahead and set up
+
+368
+00:14:33.806 --> 00:14:35.941
+a response from the agent system,
+
+369
+00:14:35.941 --> 00:14:38.143
+in case it doesn't do anything.
+
+370
+00:14:38.143 --> 00:14:40.212
+So after you pass in a message,
+
+371
+00:14:40.212 --> 00:14:42.748
+we're going to actually go through
+running that message and
+
+372
+00:14:42.748 --> 00:14:45.284
+letting the agent get a chance to respond,
+but it's
+
+373
+00:14:45.284 --> 00:14:46.785
+possible that the agent doesn't respond.
+
+374
+00:14:47.319 --> 00:14:49.588
+There's this notion of having a final response,
+
+375
+00:14:50.256 --> 00:14:53.959
+which is a flag that an agent can set
+in different ways
+
+376
+00:14:53.959 --> 00:14:55.527
+to actually indicate, okay, I'm done thinking
+
+377
+00:14:55.527 --> 00:14:57.096
+about this or I'm done processing this.
+
+378
+00:14:57.263 --> 00:14:59.265
+So you can go on and go back to the user.
+
+379
+00:14:59.765 --> 00:15:01.300
+In case the agent does nothing,
+
+380
+00:15:01.300 --> 00:15:03.102
+a final response may not get set.
+
+381
+00:15:03.369 --> 00:15:05.537
+So we preset it here with a default
+
+382
+00:15:05.537 --> 00:15:07.973
+value to let us know that nothing has happened.
+
+383
+00:15:08.374 --> 00:15:11.477
+We're going to run through
+without any verbose output right now,
+
+384
+00:15:11.777 --> 00:15:13.245
+and you can see in a second
+
+385
+00:15:13.245 --> 00:15:14.747
+what the verbose output might look like.
+
+386
+00:15:14.747 --> 00:15:16.815
+This is the event loop itself.
+
+387
+00:15:17.349 --> 00:15:20.686
+well, one step I should say of the event,
+you know, for
+
+388
+00:15:20.686 --> 00:15:23.989
+this one message where given the user message,
+we're going to asynchronously
+
+389
+00:15:24.456 --> 00:15:26.825
+use the runner and call out to the
+
+390
+00:15:26.825 --> 00:15:29.495
+LLM using the message that was passed in, the
+
+391
+00:15:29.495 --> 00:15:31.897
+agent that was defined to use that model
+
+392
+00:15:31.897 --> 00:15:34.566
+and all the instructions that we had given it.
+
+393
+00:15:35.067 --> 00:15:36.535
+So the first thing that you'll notice
+
+394
+00:15:36.535 --> 00:15:37.970
+is that when we call this async,
+
+395
+00:15:37.970 --> 00:15:39.438
+we also pass in all the same
+
+396
+00:15:39.438 --> 00:15:40.906
+information we had for creating the session.
+
+397
+00:15:41.140 --> 00:15:42.508
+This is because you can run
+
+398
+00:15:42.508 --> 00:15:44.076
+things again, there can be multiple sessions.
+
+399
+00:15:44.076 --> 00:15:46.545
+is going on. So you have multiple event loops running around.
+
+400
+00:15:47.046 --> 00:15:48.948
+And asynchronously, you pass in here's
+
+401
+00:15:48.948 --> 00:15:51.116
+the context that I'm currently operating in.
+
+402
+00:15:51.116 --> 00:15:53.852
+It's for this user in this session
+
+403
+00:15:54.219 --> 00:15:57.122
+and here's the content that's getting passed in,
+go ahead and
+
+404
+00:15:57.122 --> 00:16:00.025
+execute this once
+with the LLM do some work on this.
+
+405
+00:16:00.693 --> 00:16:02.661
+This is inside of a for
+
+406
+00:16:02.661 --> 00:16:04.964
+loop because this is an agentic system.
+
+407
+00:16:04.964 --> 00:16:07.666
+So once the agent is given this message, it might
+
+408
+00:16:07.666 --> 00:16:10.636
+do a bunch of things before actually
+having that final response.
+
+409
+00:16:11.203 --> 00:16:13.772
+So the event loop here pulls out events
+
+410
+00:16:13.772 --> 00:16:16.141
+from the asynchronous running of the agent,
+
+411
+00:16:17.109 --> 00:16:20.045
+every event is some update from the agent itself.
+
+412
+00:16:20.813 --> 00:16:23.382
+As the events come in, if the verbose mode is turned on,
+
+413
+00:16:23.582 --> 00:16:25.351
+we'll print out, here's an event that happened,
+
+414
+00:16:25.918 --> 00:16:29.722
+here's who created that event.
+The initial event, of course, should be
+
+415
+00:16:29.722 --> 00:16:32.091
+that the user message was passed in, so we
+
+416
+00:16:32.091 --> 00:16:34.493
+should see the event author was the user themselves,
+
+417
+00:16:35.194 --> 00:16:37.062
+and you'll see the content of the event as well.
+
+418
+00:16:37.463 --> 00:16:39.631
+You can take a look what's happening here
+in the debug statement.
+
+419
+00:16:39.999 --> 00:16:41.567
+bunch of things get printed out which
+
+420
+00:16:41.567 --> 00:16:43.168
+are helpful to understand what's going on.
+
+421
+00:16:43.902 --> 00:16:44.970
+And then this is the key
+
+422
+00:16:44.970 --> 00:16:46.205
+concept for keeping the event loop running
+
+423
+00:16:46.705 --> 00:16:48.674
+for as long as you'd like it to run.
+
+424
+00:16:48.741 --> 00:16:51.844
+Hopefully the agent will run only
+as much as it needs to.
+
+425
+00:16:52.478 --> 00:16:55.447
+But as each event comes in,
+there's a flag that says, okay,
+
+426
+00:16:55.848 --> 00:16:57.916
+this is the final event, I'm done
+
+427
+00:16:57.916 --> 00:17:00.019
+processing this, the agent is done processing.
+
+428
+00:17:00.119 --> 00:17:01.754
+If it has set this, then you
+
+429
+00:17:01.754 --> 00:17:03.422
+know that okay, the processing is over.
+
+430
+00:17:03.522 --> 00:17:05.724
+You can take a look at the content
+
+431
+00:17:05.724 --> 00:17:07.960
+and decide what the final response might be.
+
+432
+00:17:08.260 --> 00:17:10.329
+Here we're taking a look at the content
+
+433
+00:17:10.329 --> 00:17:12.364
+if they have some multiple parts.
+
+434
+00:17:12.598 --> 00:17:15.367
+if it's a non-zero array of text that come back,
+
+435
+00:17:15.834 --> 00:17:17.269
+we're going to take the first
+
+436
+00:17:17.269 --> 00:17:18.971
+message back from the parts zero here,
+
+437
+00:17:19.138 --> 00:17:22.541
+grab the text from that.
+And here we're making some assumptions
+
+438
+00:17:22.541 --> 00:17:24.076
+that the first text response in
+the first part
+
+439
+00:17:24.076 --> 00:17:25.744
+is actually the right one.
+
+440
+00:17:25.744 --> 00:17:27.780
+Turn that into the final response text.
+
+441
+00:17:28.247 --> 00:17:30.749
+Alternatively, the agent could have decided this is
+
+442
+00:17:30.749 --> 00:17:33.285
+my final response and by the way, I
+
+443
+00:17:33.285 --> 00:17:35.788
+don't have actually a response,
+what I've asked
+
+444
+00:17:35.788 --> 00:17:38.624
+the runtime system to do is actually to escalate.
+
+445
+00:17:38.891 --> 00:17:40.959
+Now here escalation ends up meaning
+
+446
+00:17:40.959 --> 00:17:43.095
+the agent is running, knows that it's a sub agent
+
+447
+00:17:43.095 --> 00:17:44.930
+and it can't handle or it can't
+
+448
+00:17:44.930 --> 00:17:46.999
+do any more work with what's currently available.
+
+449
+00:17:47.399 --> 00:17:50.169
+So it's basically saying,
+hey, escalate this to somebody else,
+
+450
+00:17:50.169 --> 00:17:52.838
+either my parent or
+to some other agent that might be appropriate.
+
+451
+00:17:53.539 --> 00:17:55.507
+In that case, the final response text that
+
+452
+00:17:55.507 --> 00:17:57.476
+we're going to set is based on that.
+
+453
+00:17:57.476 --> 00:17:59.344
+We're going to say that the agent has
+
+454
+00:17:59.344 --> 00:18:01.413
+decided to escalate the current handling of the message
+
+455
+00:18:01.580 --> 00:18:03.282
+and then we don't have any
+
+456
+00:18:03.282 --> 00:18:05.250
+specific message or there's an error message
+
+457
+00:18:05.484 --> 00:18:08.654
+if there is one there and return that as the final message.
+
+458
+00:18:08.821 --> 00:18:11.223
+all that is to continue to run through
+
+459
+00:18:11.223 --> 00:18:13.692
+one round through the event loop,
+
+460
+00:18:13.692 --> 00:18:16.562
+instigated by a single user message, and then at the end
+
+461
+00:18:16.562 --> 00:18:19.131
+we'll go ahead and print out the final agent response.
+
+462
+00:18:19.465 --> 00:18:20.532
+That's kind of a lot to go
+
+463
+00:18:20.532 --> 00:18:21.600
+through, but keep that in your heads
+
+464
+00:18:21.600 --> 00:18:23.802
+a little bit as you're going through all the notebooks.
+
+465
+00:18:23.936 --> 00:18:26.004
+Internally, this is really what's happening to
+
+466
+00:18:26.004 --> 00:18:28.040
+actually make all the the machinery run.
+
+467
+00:18:29.108 --> 00:18:31.577
+For all that work, there we go. Simple chat.
+
+468
+00:18:31.877 --> 00:18:34.580
+Hello, I'm ABK. Hello to you, ABK.
+
+469
+00:18:35.514 --> 00:18:36.882
+Of course, because we're going to be
+
+470
+00:18:36.882 --> 00:18:38.217
+doing a lot of calling to agents,
+
+471
+00:18:38.217 --> 00:18:41.386
+manually. We're going to set up the helper class to
+
+472
+00:18:41.386 --> 00:18:43.655
+actually let us do that a little bit more easily.
+
+473
+00:18:44.556 --> 00:18:47.025
+And I'm going to call that helper class AgentCaller.
+
+474
+00:18:47.025 --> 00:18:49.795
+This AgentCaller basically wraps up those functions that
+
+475
+00:18:49.795 --> 00:18:52.931
+we went through each one at a time here,
+
+476
+00:18:53.899 --> 00:18:56.268
+and also the event loop itself
+
+477
+00:18:57.536 --> 00:19:01.006
+into one class. And if you look through the details,
+
+478
+00:19:01.607 --> 00:19:04.076
+it is doing all the things that we'd seen above.
+
+479
+00:19:04.476 --> 00:19:07.746
+It's saving the single user ID, the
+
+480
+00:19:07.746 --> 00:19:09.915
+single session ID, the current agent
+that we're going to be running
+
+481
+00:19:09.915 --> 00:19:11.884
+and also the runner that's been set up.
+
+482
+00:19:12.851 --> 00:19:14.786
+It has access to getting the session
+
+483
+00:19:14.786 --> 00:19:16.989
+that it uses internally for actually managing stuff.
+
+484
+00:19:18.457 --> 00:19:21.627
+And this call function here is
+what actually instigates one round trip
+
+485
+00:19:21.627 --> 00:19:24.329
+through the event loop based on a user message.
+
+486
+00:19:25.564 --> 00:19:27.099
+So it does just what we saw
+
+487
+00:19:27.099 --> 00:19:28.800
+above, takes the user message, packages it up
+
+488
+00:19:28.800 --> 00:19:30.569
+so that it's available as a Content
+
+489
+00:19:30.569 --> 00:19:32.838
+to be processed by the agent.
+
+490
+00:19:33.405 --> 00:19:35.274
+And then it runs through the event loop.
+
+491
+00:19:36.041 --> 00:19:38.844
+Same kind of debug options available, as well.
+
+492
+00:19:39.978 --> 00:19:41.613
+And this is really a stylistic choice.
+
+493
+00:19:41.613 --> 00:19:43.448
+I'm not a native Python developer and so
+
+494
+00:19:43.448 --> 00:19:45.317
+this is the way I like to do things.
+
+495
+00:19:45.317 --> 00:19:47.085
+I prefer having factory methods for things
+
+496
+00:19:47.085 --> 00:19:49.121
+that are a little bit complex to construct.
+
+497
+00:19:49.421 --> 00:19:52.324
+So rather than having a complex constructor
+inside of that class,
+
+498
+00:19:52.591 --> 00:19:55.494
+I created a separate class
+that actually does the construction.
+
+499
+00:19:57.963 --> 00:20:00.065
+And this here, this utility function
+
+500
+00:20:00.065 --> 00:20:03.402
+make_agent_caller is what we'll create
+an instance of the AgentCaller.
+
+501
+00:20:03.769 --> 00:20:06.738
+You will be passing into it all the necessary information.
+
+502
+00:20:06.738 --> 00:20:07.306
+mention that it has, what's the
+
+503
+00:20:07.306 --> 00:20:07.973
+agent that you want to be running?
+
+504
+00:20:07.973 --> 00:20:09.841
+And also, what is the initial state of that
+
+505
+00:20:09.841 --> 00:20:11.710
+agent where the state is the agent's internal memory.
+
+506
+00:20:11.710 --> 00:20:15.380
+All of this should look just like what we had run
+
+507
+00:20:15.380 --> 00:20:19.051
+through before, but now packaged up into, here's the different elements,
+
+508
+00:20:19.051 --> 00:20:23.655
+the major components that should be combined into the agent caller.
+
+509
+00:20:23.655 --> 00:20:26.592
+What is the current app, the user, the session ID,
+
+510
+00:20:26.592 --> 00:20:29.161
+create a session service for both memory
+
+511
+00:20:29.161 --> 00:20:31.697
+and also for managing the session itself.
+
+512
+00:20:31.697 --> 00:20:33.966
+And then finally, also create a runner,
+
+513
+00:20:33.966 --> 00:20:36.235
+then having constructed all of those things,
+
+514
+00:20:36.235 --> 00:20:38.437
+pass those into the agent caller which
+
+515
+00:20:38.437 --> 00:20:40.973
+wraps those all up into an execution loop.
+
+516
+00:20:42.541 --> 00:20:45.143
+Okay, now that we have some utility functions
+for running an agent,
+
+517
+00:20:45.844 --> 00:20:48.413
+we can run a conversation with the say hello
+
+518
+00:20:48.413 --> 00:20:50.983
+uh agent that we said that we created earlier.
+
+519
+00:20:51.850 --> 00:20:54.453
+So to create a new agent caller
+for our hello_agent,
+
+520
+00:20:54.453 --> 00:20:57.389
+we're going to actually call out the helper
+
+521
+00:20:57.389 --> 00:21:00.359
+function, the make_agent_caller,
+passing in the hello_agent itself.
+
+522
+00:21:00.359 --> 00:21:02.894
+And we'll just call that the hello_agent_caller.
+
+523
+00:21:03.762 --> 00:21:05.731
+Then to run a conversation, we're going to have an
+
+524
+00:21:05.731 --> 00:21:06.999
+asynchronous function that has multiple user
+
+525
+00:21:06.999 --> 00:21:08.500
+messages that we're going to pass in
+
+526
+00:21:08.500 --> 00:21:12.504
+to the agent caller using the call method.
+
+527
+00:21:12.804 --> 00:21:14.506
+First I'll say hello, I'm ABK.
+
+528
+00:21:14.773 --> 00:21:16.341
+and then I'll say I am excited.
+
+529
+00:21:16.942 --> 00:21:18.210
+We'll go ahead and run that
+
+530
+00:21:18.210 --> 00:21:19.645
+conversation and see what that looks like.
+
+531
+00:21:20.612 --> 00:21:23.582
+Awesome. We have created a friendly chat agent.
+
+532
+00:21:23.982 --> 00:21:27.586
+Good work. So, now that you've gotten this far, you
+
+533
+00:21:27.586 --> 00:21:29.888
+know the basics of about using Google ADK,
+
+534
+00:21:30.122 --> 00:21:31.757
+how to create an agent, how to
+
+535
+00:21:31.757 --> 00:21:33.625
+give that agent tools that it can use.
+
+536
+00:21:34.059 --> 00:21:36.995
+Then also how to create an execution
+environment for that agent.
+
+537
+00:21:36.995 --> 00:21:38.964
+Finally, with all that in hand, you can script
+
+538
+00:21:39.965 --> 00:21:41.700
+interactions with the agents here in the notebook,
+
+539
+00:21:42.000 --> 00:21:43.602
+passing in user messages
+
+540
+00:21:43.602 --> 00:21:47.072
+that let you then test out
+how the agent's going to work.
+
+541
+00:21:47.639 --> 00:21:50.475
+So, this fantastic agent caller class that we created
+
+542
+00:21:50.475 --> 00:21:54.146
+and then this construction method,
+the factory method called make agent caller,
+
+543
+00:21:54.146 --> 00:21:55.881
+we're going to be using that through all
+
+544
+00:21:55.881 --> 00:21:57.616
+the other notebooks to make it easy for
+
+545
+00:21:57.616 --> 00:21:59.351
+once we've defined an agent, we can
+
+546
+00:21:59.351 --> 00:22:01.353
+easily create a runtime environment using that function.
+
+547
+00:22:01.353 --> 00:22:03.822
+So, you'll get a lot of use with that.

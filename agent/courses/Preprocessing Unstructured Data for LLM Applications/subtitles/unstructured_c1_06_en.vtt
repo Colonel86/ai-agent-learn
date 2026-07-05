@@ -1,0 +1,539 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:104453
+
+1
+00:00:00.140 --> 00:00:02.600
+Tables are an important
+element of many documents.
+
+2
+00:00:03.100 --> 00:00:05.919
+In this lesson, you will
+learn how to extract tables
+
+3
+00:00:05.919 --> 00:00:07.620
+from documents and infer their structure.
+
+4
+00:00:08.220 --> 00:00:08.929
+Let's have some fun.
+
+5
+00:00:10.099 --> 00:00:13.210
+Now that you've learned
+how to extract information
+
+6
+00:00:13.210 --> 00:00:15.929
+from PDFs and images using visual cues,
+
+7
+00:00:15.929 --> 00:00:19.050
+in this lesson, you will learn
+more advanced pre-processing
+
+8
+00:00:34.520 --> 00:00:38.770
+In the bottom right, you can see some
+financial information that's contained
+
+9
+00:00:38.770 --> 00:00:41.960
+within a table that exists
+within an unstructured document.
+
+10
+00:00:42.159 --> 00:00:46.450
+Table extraction enables RAG
+applications to extract information
+
+11
+00:00:46.450 --> 00:00:50.200
+that's contained within
+tables in unstructured documents.
+
+12
+00:00:51.039 --> 00:00:55.009
+Some document types, such
+as HTML and Word documents,
+
+13
+00:00:55.009 --> 00:00:58.539
+contain table structure
+information within the document itself.
+
+14
+00:00:59.140 --> 00:01:01.700
+For example, in the table tag in HTML.
+
+15
+00:01:02.500 --> 00:01:03.979
+For these document types,
+
+16
+00:01:03.979 --> 00:01:07.299
+you can use rules-based parsers
+to extract table information.
+
+17
+00:01:07.760 --> 00:01:10.870
+For other document types,
+however, such as PDFs and images,
+
+18
+00:01:10.870 --> 00:01:14.900
+you need to use visual cues to
+first identify the table within the
+
+19
+00:01:14.900 --> 00:01:18.319
+document and then process it to
+extract information from the table.
+
+20
+00:01:18.560 --> 00:01:22.750
+There are a few techniques you
+will learn about to accomplish this,
+
+21
+00:01:22.750 --> 00:01:24.849
+table transformers, vision
+transformers, and OCR pre-processing.
+
+22
+00:01:35.760 --> 00:01:38.239
+First, you'll learn
+about table transformers.
+
+23
+00:01:39.040 --> 00:01:42.060
+A table transformer is a model
+that identifies bounding box
+
+24
+00:01:42.060 --> 00:01:45.079
+for table cells and then
+converts the output to HTML.
+
+25
+00:01:45.379 --> 00:01:46.799
+There are two steps in this process.
+
+26
+00:01:47.439 --> 00:01:49.939
+First, identify tables using
+the document layout detection
+
+27
+00:01:49.939 --> 00:01:52.760
+model that you learned
+about in the previous lesson.
+
+28
+00:01:53.500 --> 00:01:55.120
+Then, once you've identified tables,
+
+29
+00:01:55.120 --> 00:01:58.040
+you can route the tables
+to the table transformer.
+
+30
+00:01:58.359 --> 00:02:00.420
+There are some
+advantages to this technique,
+
+31
+00:02:00.420 --> 00:02:03.959
+including the ability to trace cells
+back to the original bounding boxes.
+
+32
+00:02:04.260 --> 00:02:08.639
+You have bounding box information about
+each individual cell within the table.
+
+33
+00:02:09.659 --> 00:02:13.800
+The disadvantages that includes
+multiple expensive model calls,
+
+34
+00:02:13.800 --> 00:02:19.500
+including multiple document layout
+detection calls, and then multiple OCR calls.
+
+35
+00:02:19.759 --> 00:02:24.120
+You can see below what the architecture
+looks like for the table transformer model.
+
+36
+00:02:24.780 --> 00:02:28.159
+And if you're interested, check
+out the archive paper linked below.
+
+37
+00:02:28.599 --> 00:02:32.460
+You can also extract table content
+from PDFs and images using vision
+
+38
+00:02:32.460 --> 00:02:36.000
+transformers like the ones you
+learned about in the previous lesson.
+
+39
+00:02:36.560 --> 00:02:41.419
+However, unlike in the previous
+lesson, when the target output was JSON,
+
+40
+00:02:41.419 --> 00:02:45.060
+in this case, the
+target output will be HTML.
+
+41
+00:02:45.479 --> 00:02:49.919
+An advantage of this method is that it
+allows for prompting, is more flexible,
+
+42
+00:02:49.919 --> 00:02:54.439
+and only involves a single model call.
+The disadvantage is that it's generative,
+
+43
+00:02:54.439 --> 00:02:58.240
+prone to hallucination, and you don't
+retain any bounding box information.
+
+44
+00:02:58.620 --> 00:03:01.919
+For an example of what this looks like,
+you can take a look at the example below.
+
+45
+00:03:02.580 --> 00:03:07.250
+You start with the image of a document,
+you run it through the Vision Transformer,
+
+46
+00:03:07.250 --> 00:03:11.599
+and then on the other side, you get
+the text representation of the HTML.
+
+47
+00:03:12.199 --> 00:03:15.360
+A final technique that you can
+use for pre-processing documents
+
+48
+00:03:30.819 --> 00:03:36.280
+You'll OCR the table and then process
+the table using rules-based methods.
+
+49
+00:03:36.900 --> 00:03:39.770
+An advantage is that it's
+fast, and for well-behaved tables,
+
+50
+00:04:00.789 --> 00:04:03.030
+And you can process this
+OCR output for a table that
+
+51
+00:04:03.030 --> 00:04:04.659
+you detect using a
+document layout detection model.
+
+52
+00:04:05.620 --> 00:04:10.030
+And you can post-process
+this OCR output to construct
+
+53
+00:04:10.030 --> 00:04:13.460
+an HTML representation of the same table.
+
+54
+00:04:14.520 --> 00:04:17.779
+Okay, now that you've learned a
+few techniques for extracting
+
+55
+00:04:17.779 --> 00:04:20.709
+tables from unstructured
+documents such as PDFs and images,
+
+56
+00:04:20.709 --> 00:04:23.490
+you can put that into practice. First,
+
+57
+00:04:23.490 --> 00:04:26.629
+you can import a few
+of the helper functions
+
+58
+00:04:26.629 --> 00:04:29.079
+that we've used in the previous lessons.
+
+59
+00:04:30.040 --> 00:04:31.939
+Since table extraction
+is model-driven, again,
+
+60
+00:04:31.939 --> 00:04:34.459
+you'll use the
+unstructured API because that takes
+
+61
+00:04:34.459 --> 00:04:37.620
+care of all of the models set up for you.
+
+62
+00:04:38.939 --> 00:04:43.379
+In the previous lesson, you saw
+an example of fairly simple PDFs.
+
+63
+00:04:44.079 --> 00:04:44.980
+Now you'll pre-process a more complex
+document that includes tables and images.
+
+64
+00:04:50.079 --> 00:04:52.379
+You can see what this
+document looks like below.
+
+65
+00:04:53.819 --> 00:04:56.730
+In particular, you'll be
+extracting the content
+
+66
+00:04:56.730 --> 00:05:00.459
+from table one within
+this page of the document.
+
+67
+00:05:01.220 --> 00:05:03.379
+Now that you checked out the
+document, you can pre-process it.
+
+68
+00:05:04.769 --> 00:05:09.350
+To pre-process it, you can pass the
+document to the unstructured API. In this case,
+
+69
+00:05:09.350 --> 00:05:12.709
+you should take note of a few
+parameters that we're using.
+
+70
+00:05:13.490 --> 00:05:16.170
+This parameter, infer
+table structure equals true,
+
+71
+00:05:16.170 --> 00:05:19.990
+tells the API that we want
+to extract table information.
+
+72
+00:05:20.550 --> 00:05:24.189
+The skip infer table types
+parameter instructs the API that we
+
+73
+00:05:24.189 --> 00:05:27.500
+don't want to skip table
+extraction for any document types.
+
+74
+00:05:28.060 --> 00:05:30.160
+In this case, we're
+interested in the tables.
+
+75
+00:05:30.759 --> 00:05:32.920
+Now you're ready to run your API call.
+
+76
+00:05:34.160 --> 00:05:38.680
+Remember, this process requires multiple
+model calls and may take a few minutes.
+
+77
+00:05:39.980 --> 00:05:41.370
+Once the API has completed your request,
+
+78
+00:05:41.370 --> 00:05:44.129
+you can filter down to just the
+tables in the document using a similar
+
+79
+00:05:44.129 --> 00:05:48.879
+filter operation to what
+you've seen earlier in the course.
+
+80
+00:05:53.100 --> 00:05:53.240
+In this case, we're going to look for
+elements that have the category table.
+
+81
+00:05:55.339 --> 00:05:57.189
+Now that you have your table element,
+
+82
+00:05:57.189 --> 00:06:00.089
+you can see the text of
+the table in the document
+
+83
+00:06:00.089 --> 00:06:01.939
+using the text attribute on the element.
+
+84
+00:06:04.540 --> 00:06:05.949
+As you learned earlier, however,
+
+85
+00:06:05.949 --> 00:06:09.910
+it's also helpful to have an HTML
+representation of the table so that you
+
+86
+00:06:09.910 --> 00:06:13.310
+can pass the information to an LLM
+while maintaining the table structure.
+
+87
+00:06:13.870 --> 00:06:18.620
+This information is
+available in the text as HTML
+
+88
+00:06:18.620 --> 00:06:22.310
+field within the
+element metadata for tables.
+
+89
+00:06:22.740 --> 00:06:27.579
+You can use this code block to view what
+the HTML in the metadata field looks like.
+
+90
+00:06:28.980 --> 00:06:33.379
+As you can see, this is an HTML
+representation of the table in the document.
+
+91
+00:06:38.939 --> 00:06:41.740
+If you're interested in
+displaying this table,
+
+92
+00:06:41.740 --> 00:06:46.540
+you can also do that using the
+HTML display function within IPython.
+
+93
+00:06:54.620 --> 00:06:57.269
+Once you've extracted
+the table content from the
+
+94
+00:06:57.269 --> 00:06:59.920
+document and converted
+the table content to HTML,
+
+95
+00:06:59.920 --> 00:07:04.889
+it can be helpful to summarize these
+tables so that you can search on these
+
+96
+00:07:04.889 --> 00:07:08.199
+tables when you perform similarity
+search within a RAG architecture.
+
+97
+00:07:08.459 --> 00:07:12.149
+To do this, we will use a
+few utilities from LangChain,
+
+98
+00:07:15.360 --> 00:07:17.310
+You can also learn more
+about LangChain through
+
+99
+00:07:29.699 --> 00:07:32.439
+Once you have imported
+these helper functions,
+
+100
+00:07:32.439 --> 00:07:34.800
+you can instantiate
+the summarization chain
+
+101
+00:07:34.800 --> 00:07:37.540
+and then summarize the table HTML content.
+
+102
+00:07:39.920 --> 00:07:44.100
+As you can see, the model
+successfully summarized the table.
+
+103
+00:07:44.720 --> 00:07:49.420
+There is an HTML representation of the
+table as well as a summary that you can
+
+104
+00:07:49.420 --> 00:07:53.240
+use to search over when you perform
+similarity search within your RAG system.
+
+105
+00:07:53.819 --> 00:07:57.139
+Now that you know how to extract
+table content from PDFs and images,
+
+106
+00:07:57.139 --> 00:07:59.439
+try it on a few of your own files.
+
+107
+00:08:00.199 --> 00:08:03.459
+If you're interested in playing
+around with a few parameters,
+
+108
+00:08:03.459 --> 00:08:07.699
+also try changing the Hi-Res Model
+Name parameter to Chipper so that you
+
+109
+00:08:07.699 --> 00:08:10.639
+can compare vision transformer
+outputs to table transformer outputs.
+
+110
+00:08:11.600 --> 00:08:14.639
+In the next lesson, we'll put all
+of your skills together to build
+
+111
+00:08:14.639 --> 00:08:14.879
+a Rag bot of your own that
+works on a variety of data types.

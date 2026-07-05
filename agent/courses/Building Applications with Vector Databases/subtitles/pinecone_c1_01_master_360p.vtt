@@ -1,0 +1,371 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:05.000
+Welcome to this short course, Building Applications with Vector Databases,
+
+2
+00:00:06.000 --> 00:00:07.000
+built in partnership with Pinecone.
+
+3
+00:00:08.000 --> 00:00:12.000
+Vector databases have become a key part of the infrastructure stack
+
+4
+00:00:13.000 --> 00:00:15.000
+for building applications with large language models,
+
+5
+00:00:16.000 --> 00:00:18.000
+specifically RAG or Retrieval Augmented Generation.
+
+6
+00:00:19.000 --> 00:00:22.000
+But it turns out that they're useful for even more applications
+
+7
+00:00:23.000 --> 00:00:24.000
+than is widely appreciated.
+
+8
+00:00:25.000 --> 00:00:28.000
+In this course, you'll learn how to use vector DBs
+
+9
+00:00:28.000 --> 00:00:31.000
+to quickly build applications in text similarity search,
+
+10
+00:00:32.000 --> 00:00:35.000
+RAG, image similarity search, anomaly detection,
+
+11
+00:00:36.000 --> 00:00:38.000
+recommended systems, and hybrid search,
+
+12
+00:00:39.000 --> 00:00:43.000
+which refers to using simultaneously sparse and dense vectors.
+
+13
+00:00:44.000 --> 00:00:45.000
+I know that's a lot of stuff,
+
+14
+00:00:46.000 --> 00:00:48.000
+but that's why I hope you find this course useful.
+
+15
+00:00:49.000 --> 00:00:50.000
+We'll cover a huge space of applications
+
+16
+00:00:51.000 --> 00:00:53.000
+that you'll be able to build using vector DBs.
+
+17
+00:00:54.000 --> 00:00:56.000
+I'm thrilled that the instructor for this course is Tim Tully,
+
+18
+00:00:56.000 --> 00:00:58.000
+a board member at Pinecone.
+
+19
+00:00:59.000 --> 00:01:02.000
+For over a decade, Tim had led teams of thousands of engineers
+
+20
+00:01:03.000 --> 00:01:07.000
+as Spunk's CTO and then Yahoo's Vice President of Engineering.
+
+21
+00:01:08.000 --> 00:01:10.000
+Tim had also developed the Pinecone vector databases
+
+22
+00:01:11.000 --> 00:01:12.000
+combined line interface,
+
+23
+00:01:13.000 --> 00:01:14.000
+and I look forward to him sharing with us
+
+24
+00:01:15.000 --> 00:01:17.000
+what he's been seeing from working with many people
+
+25
+00:01:18.000 --> 00:01:20.000
+building on top of Pinecone's vector DBs.
+
+26
+00:01:21.000 --> 00:01:22.000
+Thanks, Andrew. I'm excited to be here.
+
+27
+00:01:23.000 --> 00:01:25.000
+I know I gave a long list of applications just now,
+
+28
+00:01:26.000 --> 00:01:28.000
+but let me unpack briefly some of the key topics.
+
+29
+00:01:29.000 --> 00:01:32.000
+Vector DBs lets you input a collection of vectors,
+
+30
+00:01:33.000 --> 00:01:35.000
+say embeddings of documents if you're implementing RAG,
+
+31
+00:01:36.000 --> 00:01:37.000
+and then send queries to it,
+
+32
+00:01:38.000 --> 00:01:39.000
+such as an embedding of a new text query
+
+33
+00:01:40.000 --> 00:01:42.000
+to retrieve documents relevant to your query.
+
+34
+00:01:43.000 --> 00:01:46.000
+That's what made vector DBs a key component of RAG
+
+35
+00:01:47.000 --> 00:01:49.000
+where you fetch additional context for an LM
+
+36
+00:01:50.000 --> 00:01:51.000
+to generate this response.
+
+37
+00:01:52.000 --> 00:01:54.000
+But it turns out that this ability to fetch similar vectors
+
+38
+00:01:55.000 --> 00:01:58.000
+makes it very useful for many other applications as well.
+
+39
+00:01:59.000 --> 00:02:01.000
+For example, in image similarity search,
+
+40
+00:02:02.000 --> 00:02:03.000
+you can compute embeddings of images,
+
+41
+00:02:04.000 --> 00:02:07.000
+and then use the vector DB to quickly find similar images.
+
+42
+00:02:08.000 --> 00:02:10.000
+Or you can carry out anomaly detection
+
+43
+00:02:11.000 --> 00:02:13.000
+by checking if a new item has anything similar to it,
+
+44
+00:02:14.000 --> 00:02:16.000
+and if it doesn't, then maybe it's an anomaly.
+
+45
+00:02:17.000 --> 00:02:19.000
+There are a lot of details on how to implement these effectively,
+
+46
+00:02:20.000 --> 00:02:22.000
+and Tim will dive into the specific mental frameworks
+
+47
+00:02:22.000 --> 00:02:25.000
+and tips for building these applications.
+
+48
+00:02:26.000 --> 00:02:27.000
+Yes, as Andrew said,
+
+49
+00:02:28.000 --> 00:02:30.000
+there are a lot of potential applications for vector databases.
+
+50
+00:02:31.000 --> 00:02:33.000
+You'll learn about six of them in this course.
+
+51
+00:02:34.000 --> 00:02:36.000
+First, you'll start by building a basic semantic search
+
+52
+00:02:37.000 --> 00:02:38.000
+for text documents.
+
+53
+00:02:39.000 --> 00:02:40.000
+Then, you'll move into building a RAG app.
+
+54
+00:02:41.000 --> 00:02:43.000
+In the next step, you'll build a recommender system.
+
+55
+00:02:44.000 --> 00:02:46.000
+Next, you will implement a hybrid search app
+
+56
+00:02:47.000 --> 00:02:48.000
+for product recommendation.
+
+57
+00:02:48.000 --> 00:02:51.000
+Then, you will build a child-parent image similarity app.
+
+58
+00:02:52.000 --> 00:02:54.000
+And finally, you will work on an anomaly detection app
+
+59
+00:02:55.000 --> 00:02:56.000
+based on a dataset of server logs.
+
+60
+00:02:57.000 --> 00:02:58.000
+Through these examples,
+
+61
+00:02:59.000 --> 00:03:00.000
+you'll learn how to use a vector database
+
+62
+00:03:01.000 --> 00:03:03.000
+to store and help you manipulate lots of different datasets.
+
+63
+00:03:04.000 --> 00:03:05.000
+We'll draw from examples from Wikipedia text,
+
+64
+00:03:06.000 --> 00:03:07.000
+pictures of faces, Quora text,
+
+65
+00:03:08.000 --> 00:03:09.000
+structured data in the form of network logs,
+
+66
+00:03:10.000 --> 00:03:12.000
+and a fashion dataset with paired images and text.
+
+67
+00:03:13.000 --> 00:03:15.000
+One of the cool techniques that you'll learn about,
+
+68
+00:03:15.000 --> 00:03:16.000
+as well, is hybrid search,
+
+69
+00:03:17.000 --> 00:03:18.000
+in which you can use a vector database
+
+70
+00:03:19.000 --> 00:03:22.000
+to manipulate vectors with both a sparse and a dense component.
+
+71
+00:03:23.000 --> 00:03:25.000
+For example, in the product recommendation setting,
+
+72
+00:03:26.000 --> 00:03:28.000
+you'll see how to use a dense embedding of images of clothing
+
+73
+00:03:29.000 --> 00:03:31.000
+alongside a sparse embedding of a text description
+
+74
+00:03:32.000 --> 00:03:34.000
+and how to dial a knob controlling the relative weighting
+
+75
+00:03:35.000 --> 00:03:37.000
+between the sparse and dense parts of the vector.
+
+76
+00:03:38.000 --> 00:03:40.000
+By learning the foundations of vector databases
+
+77
+00:03:41.000 --> 00:03:42.000
+and working on the applications you'll learn in this course,
+
+78
+00:03:42.000 --> 00:03:44.000
+I'm sure you'll find even more possibilities to explore.
+
+79
+00:03:45.000 --> 00:03:47.000
+Many people have worked to create this course.
+
+80
+00:03:48.000 --> 00:03:50.000
+I'd like to thank, on the Pinecone side,
+
+81
+00:03:51.000 --> 00:03:54.000
+James Briggs, Ram Sriharsha, and Bear Douglas.
+
+82
+00:03:55.000 --> 00:03:56.000
+From DeepLearning.ai,
+
+83
+00:03:57.000 --> 00:03:59.000
+Diala Ezzeddine and Esmaeil Gargari
+
+84
+00:04:00.000 --> 00:04:01.000
+have also contributed to this course.
+
+85
+00:04:02.000 --> 00:04:03.000
+In the first lesson,
+
+86
+00:04:04.000 --> 00:04:05.000
+you will explore the essentials of semantic search,
+
+87
+00:04:06.000 --> 00:04:08.000
+which will be used throughout the other lessons in this course.
+
+88
+00:04:09.000 --> 00:04:10.000
+That sounds great,
+
+89
+00:04:10.000 --> 00:04:12.000
+and a lot of materials in this one short course.
+
+90
+00:04:13.000 --> 00:04:15.000
+So, let's go add a new dimension
+
+91
+00:04:16.000 --> 00:04:18.000
+to what we can do using vector DBs.
+
+92
+00:04:19.000 --> 00:04:21.000
+Let's go on to the next video and get started.
+

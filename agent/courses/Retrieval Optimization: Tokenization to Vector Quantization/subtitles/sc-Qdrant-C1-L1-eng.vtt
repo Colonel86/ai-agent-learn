@@ -1,0 +1,1267 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.100 --> 00:00:03.300
+In this lesson, you will
+
+2
+00:00:03.300 --> 00:00:06.300
+learn about the internals
+of the embedding models.
+
+3
+00:00:06.400 --> 00:00:09.133
+You will see how your texts are converted
+
+4
+00:00:09.133 --> 00:00:12.700
+into vectors through multiple layers
+of an embedding model.
+
+5
+00:00:12.900 --> 00:00:15.000
+Let's have some fun.
+
+6
+00:00:15.000 --> 00:00:17.133
+Vector search applications like Retrieval
+
+7
+00:00:17.133 --> 00:00:18.300
+Augmented Generation,
+
+8
+00:00:18.300 --> 00:00:20.600
+hinge on embedding models.
+
+9
+00:00:20.600 --> 00:00:22.933
+Choosing a suitable
+one is a pivotal decision
+
+10
+00:00:22.933 --> 00:00:24.700
+when implementing such projects.
+
+11
+00:00:24.700 --> 00:00:27.500
+If you select the model
+trained on academic papers,
+
+12
+00:00:27.500 --> 00:00:29.800
+but all your data
+will be coming from Twitter,
+
+13
+00:00:29.800 --> 00:00:33.100
+there is a high chance
+that the search quality will be impacted.
+
+14
+00:00:33.200 --> 00:00:36.900
+Surprisingly, not that many people perform
+the evaluations,
+
+15
+00:00:37.000 --> 00:00:38.900
+which should be one of the first steps.
+
+16
+00:00:38.900 --> 00:00:41.633
+We will consider
+the optimizations of vector search
+
+17
+00:00:41.633 --> 00:00:45.600
+that everything starts with choosing
+the proper embeddings for your data.
+
+18
+00:00:45.900 --> 00:00:50.900
+The embedding model should take any text
+and convert it into a single vector
+
+19
+00:00:51.133 --> 00:00:54.500
+of fixed dimensionality,
+so we can compare the distance
+
+20
+00:00:54.500 --> 00:00:57.933
+between any two documents
+to determine their similarity.
+
+21
+00:00:58.200 --> 00:01:01.500
+However, embedding
+models do not operate on text directly.
+
+22
+00:01:01.900 --> 00:01:06.000
+Instead, they require
+an additional process that splits them
+
+23
+00:01:06.000 --> 00:01:07.400
+into smaller pieces.
+
+24
+00:01:07.400 --> 00:01:10.400
+This translation
+layer is called a tokenizer.
+
+25
+00:01:10.800 --> 00:01:11.800
+We will have a closer
+
+26
+00:01:11.800 --> 00:01:16.300
+look at the role of the tokenizers
+in the whole process of creating the text
+
+27
+00:01:16.300 --> 00:01:17.300
+embeddings.
+
+28
+00:01:17.300 --> 00:01:20.400
+This image shows a standard
+transformer architecture
+
+29
+00:01:20.400 --> 00:01:23.400
+and comes from
+the attention is all you need paper.
+
+30
+00:01:23.700 --> 00:01:26.733
+It presents a full encoder-decoder model.
+
+31
+00:01:27.133 --> 00:01:31.200
+However, embedding models
+are usually encoder-only transformers.
+
+32
+00:01:31.700 --> 00:01:34.533
+Let's see how the input is transformed
+
+33
+00:01:34.533 --> 00:01:38.033
+step by step. These models take an input
+
+34
+00:01:38.600 --> 00:01:41.233
+and convert it into input embeddings.
+
+35
+00:01:41.233 --> 00:01:44.233
+These embeddings are learned
+during the training process.
+
+36
+00:01:44.300 --> 00:01:47.400
+Each possible
+value of the input has its own embedding.
+
+37
+00:01:47.800 --> 00:01:50.700
+That means transformers are able to digest
+
+38
+00:01:50.700 --> 00:01:53.700
+only the input symbols
+they were trained on.
+
+39
+00:01:53.733 --> 00:01:57.233
+In case of the embedding models,
+they can only work
+
+40
+00:01:57.233 --> 00:02:00.700
+with the text units
+they encountered in the training data.
+
+41
+00:02:00.900 --> 00:02:03.500
+If your model was solely trained
+on English,
+
+42
+00:02:03.500 --> 00:02:06.900
+it won't be able to work with Japanese
+texts and vice versa.
+
+43
+00:02:07.033 --> 00:02:11.633
+There are, however, no strict requirements
+on how this text units should look like.
+
+44
+00:02:12.200 --> 00:02:15.100
+There are usually on a word
+or subword level.
+
+45
+00:02:15.100 --> 00:02:20.100
+The inputs are integer identifiers,
+so they can be mapped to a certain input
+
+46
+00:02:20.700 --> 00:02:25.400
+embedding by the model tokenizer expected
+to produce a sequence of numerical
+
+47
+00:02:25.500 --> 00:02:29.433
+IDs corresponding to the tokens
+seen in a given text.
+
+48
+00:02:29.700 --> 00:02:33.400
+This IDs defines some sort of a contract
+between the tokenizer
+
+49
+00:02:33.700 --> 00:02:35.933
+and then voting model itself.
+
+50
+00:02:35.933 --> 00:02:38.933
+Thus,
+we cannot swap the components easily.
+
+51
+00:02:39.100 --> 00:02:42.500
+Once the training is finished,
+as ID matter.
+
+52
+00:02:43.033 --> 00:02:45.600
+The most straightforward idea to handle
+the inputs
+
+53
+00:02:45.600 --> 00:02:49.433
+would be to treat each individual letter
+as a separate entity.
+
+54
+00:02:49.600 --> 00:02:54.000
+Theoretically, an embedding model
+should be able to work on letters or bytes
+
+55
+00:02:54.600 --> 00:02:57.600
+that would result in a very small number
+of tokens.
+
+56
+00:02:57.600 --> 00:03:01.900
+The size of the vocabulary will also
+impact the number of input embeddings
+
+57
+00:03:02.000 --> 00:03:03.400
+learned by the model.
+
+58
+00:03:03.400 --> 00:03:04.900
+However, each character
+
+59
+00:03:04.900 --> 00:03:08.900
+may occur in various contexts,
+so the embedding won't be meaningful.
+
+60
+00:03:09.300 --> 00:03:12.900
+The network parameters will need to learn
+the relationship
+
+61
+00:03:12.900 --> 00:03:16.900
+between the letters and derive
+what the sequences mean.
+
+62
+00:03:17.533 --> 00:03:20.000
+In practice,
+we want more meaningful pieces,
+
+63
+00:03:20.000 --> 00:03:23.800
+so the transformer inputs are initialized
+with some meaning already.
+
+64
+00:03:24.200 --> 00:03:28.400
+Contrary to character-based tokenization,
+we could use words tokens.
+
+65
+00:03:28.633 --> 00:03:31.600
+Each word would get its own identifier
+
+66
+00:03:31.600 --> 00:03:35.400
+and the model would have to learn
+more embeddings to cover them all.
+
+67
+00:03:35.600 --> 00:03:39.233
+That means more training data and time
+spent on training.
+
+68
+00:03:39.333 --> 00:03:42.600
+Moreover, we would not be able
+to represent any unseen word
+
+69
+00:03:42.600 --> 00:03:46.400
+as a sequence of tokens
+as we would only cover full words
+
+70
+00:03:46.700 --> 00:03:50.400
+that would never happen with the character
+or byte-level tokenization.
+
+71
+00:03:50.600 --> 00:03:55.600
+This idea ignores the fact that language
+has a structure, and certain words
+
+72
+00:03:55.933 --> 00:03:59.300
+may have some common parts
+carrying the meaning.
+
+73
+00:03:59.700 --> 00:04:03.700
+Subword level tokenization
+seems as a compromise between these two
+
+74
+00:04:03.700 --> 00:04:05.000
+basic approaches.
+
+75
+00:04:05.000 --> 00:04:09.300
+There are some existing NLP methods,
+such as stemming or lemmatization,
+
+76
+00:04:09.300 --> 00:04:13.700
+that incorporate linguistic knowledge
+to find the root forms of the words.
+
+77
+00:04:13.833 --> 00:04:17.500
+That may sound appealing,
+but they won't work for any other language
+
+78
+00:04:17.900 --> 00:04:20.300
+as they differ in terms of syntax.
+
+79
+00:04:20.300 --> 00:04:24.200
+However, various algorithms
+try to find a way to split the words
+
+80
+00:04:24.200 --> 00:04:27.133
+based on the statistics
+of the training data,
+
+81
+00:04:27.133 --> 00:04:30.300
+and they are commonly used in embedding
+models and LLM's.
+
+82
+00:04:30.600 --> 00:04:33.600
+We will review the alternatives
+in the second lesson,
+
+83
+00:04:33.600 --> 00:04:38.300
+but ideally, the tokenization algorithm
+should find the root forms of the words
+
+84
+00:04:38.800 --> 00:04:41.800
+and assign them separate tokens.
+
+85
+00:04:41.800 --> 00:04:44.633
+Let's track the process of converting text
+
+86
+00:04:44.633 --> 00:04:47.700
+into the input embeddings step by step.
+
+87
+00:04:47.900 --> 00:04:52.233
+First of all, we split into tokens
+using the selected tokenizer.
+
+88
+00:04:52.500 --> 00:04:57.500
+Then, the tokenizer produces a sequence of
+token IDs and sends them to the model.
+
+89
+00:04:58.200 --> 00:05:02.700
+Model maps each of the token IDs
+into the learned input embedding.
+
+90
+00:05:03.600 --> 00:05:06.733
+The first step of the transformer
+is actually a lookup table.
+
+91
+00:05:06.900 --> 00:05:10.033
+It is a pretty interesting exercise
+to see how this input
+
+92
+00:05:10.033 --> 00:05:13.300
+embeddings will look like for different
+input texts.
+
+93
+00:05:13.433 --> 00:05:17.000
+Let's check one of the pre-trained
+sentence transformers.
+
+94
+00:05:17.500 --> 00:05:20.200
+You will use one of the existing
+pre-trained models.
+
+95
+00:05:20.200 --> 00:05:22.033
+It isn't the benchmark-winning one,
+
+96
+00:05:22.033 --> 00:05:25.633
+but its open-source nature helps
+to deconstruct it into pieces.
+
+97
+00:05:25.900 --> 00:05:30.300
+Sentence Transformers is a Python library
+providing many embedding models,
+
+98
+00:05:30.733 --> 00:05:35.433
+and you will use all
+all-MiniLM-L6-v2 in the whole course.
+
+99
+00:05:35.633 --> 00:05:40.633
+However, changing it to a different one
+is as simple as passing a different name.
+
+100
+00:05:41.633 --> 00:05:44.033
+This model consists of a transformer,
+
+101
+00:05:44.033 --> 00:05:47.200
+a meaning pooling
+layer, and normalization.
+
+102
+00:05:47.433 --> 00:05:51.333
+This output hides the tokenizer component,
+which is also important.
+
+103
+00:05:51.400 --> 00:05:56.400
+You can tokenize the text
+using a tokenized method of the model.
+
+104
+00:05:57.100 --> 00:06:01.900
+It accepts multiple text at a time
+and requires passing a list of strings.
+
+105
+00:06:03.600 --> 00:06:05.900
+A list of input IDs
+
+106
+00:06:05.900 --> 00:06:08.700
+it's not the most straightforward
+or human friendly
+
+107
+00:06:08.700 --> 00:06:11.900
+way of inspecting
+how the input text was cut into pieces.
+
+108
+00:06:11.933 --> 00:06:15.733
+You can see a list of tokens
+by passing a list
+
+109
+00:06:15.733 --> 00:06:19.900
+of corresponding IDs
+to the convert IDs to tokens
+
+110
+00:06:19.900 --> 00:06:22.900
+method of the model's tokenizer.
+
+111
+00:06:24.733 --> 00:06:28.033
+Each word of our example
+has a corresponding token
+
+112
+00:06:28.400 --> 00:06:30.633
+learned by the tokenizer.
+
+113
+00:06:30.633 --> 00:06:34.433
+There are also some technical tokens
+marked with square brackets.
+
+114
+00:06:34.800 --> 00:06:38.233
+CLS and SEP start and end each sequence.
+
+115
+00:06:38.633 --> 00:06:42.200
+Let's forget about the pooling and
+normalization layers for the time being.
+
+116
+00:06:42.233 --> 00:06:45.700
+Accessing the first module helps
+to investigate the inputs
+
+117
+00:06:45.700 --> 00:06:48.700
+a little bit more.
+
+118
+00:06:49.633 --> 00:06:50.400
+This transformer
+
+119
+00:06:50.400 --> 00:06:53.400
+model has an embedding layer
+at the very beginning.
+
+120
+00:06:53.633 --> 00:06:58.033
+It is responsible for transforming the raw
+input tokens into the embeddings.
+
+121
+00:06:58.633 --> 00:07:02.333
+This embeddings are then transformed
+by multiple stacked layers.
+
+122
+00:07:03.333 --> 00:07:03.700
+But for
+
+123
+00:07:03.700 --> 00:07:07.100
+now you will mainly focus on the input
+token embeddings.
+
+124
+00:07:07.600 --> 00:07:09.000
+Let's access them.
+
+125
+00:07:09.000 --> 00:07:12.733
+The input layer has different
+kinds of embeddings, including word
+
+126
+00:07:12.733 --> 00:07:16.933
+embeddings, position
+embeddings, and token-type embeddings.
+
+127
+00:07:18.000 --> 00:07:20.800
+The word
+embeddings are the most important ones
+
+128
+00:07:20.800 --> 00:07:23.800
+as they capture the meaning of each token.
+
+129
+00:07:23.800 --> 00:07:27.000
+You can access them
+by coding the word embeddings method
+
+130
+00:07:27.600 --> 00:07:30.600
+on the embeddings layer.
+
+131
+00:07:31.700 --> 00:07:32.600
+The input token
+
+132
+00:07:32.600 --> 00:07:35.600
+embeddings for both texts
+have been calculated.
+
+133
+00:07:35.833 --> 00:07:39.700
+These embeddings are calculated
+separately for each token in a sequence,
+
+134
+00:07:40.133 --> 00:07:43.233
+and we can calculate the dissimilarity
+between the tokens
+
+135
+00:07:43.233 --> 00:07:46.233
+based on them.
+
+136
+00:07:52.000 --> 00:07:54.000
+You can see the input token
+
+137
+00:07:54.000 --> 00:07:59.000
+embedding does not change, no matter
+the context or order of the words.
+
+138
+00:08:00.233 --> 00:08:03.600
+You can experiment
+with passing different text,
+
+139
+00:08:03.800 --> 00:08:08.333
+different sentences to see how similar
+the input token embeddings are.
+
+140
+00:08:09.200 --> 00:08:11.533
+However, the same token
+
+141
+00:08:11.533 --> 00:08:14.400
+will always get the same vector.
+
+142
+00:08:14.400 --> 00:08:18.100
+Now let's recap the whole process done
+in an embedding model.
+
+143
+00:08:18.433 --> 00:08:20.800
+You have just reviewed
+the input token embeddings.
+
+144
+00:08:20.800 --> 00:08:24.633
+But we mostly care about the output
+embeddings as they are supposed to
+
+145
+00:08:24.633 --> 00:08:26.100
+capture the meaning of text.
+
+146
+00:08:27.233 --> 00:08:29.400
+The sequence of input embeddings
+
+147
+00:08:29.400 --> 00:08:32.433
+do not contain any positional information.
+
+148
+00:08:33.033 --> 00:08:35.000
+We want to enrich the token embeddings
+
+149
+00:08:35.000 --> 00:08:38.133
+so the model can also capture
+the positional information.
+
+150
+00:08:38.833 --> 00:08:41.833
+They might be also some additional
+embeddings depending on the model.
+
+151
+00:08:42.100 --> 00:08:45.100
+This is done
+by adding the positional encodings.
+
+152
+00:08:45.400 --> 00:08:50.400
+As a result, we get a slightly modified
+set of token embeddings, which
+
+153
+00:08:50.433 --> 00:08:54.533
+should also capture the relationships
+between the tokens in the whole text.
+
+154
+00:08:55.400 --> 00:08:58.800
+Positional encodings are usually generated
+with a sine function.
+
+155
+00:08:59.900 --> 00:09:02.433
+Once both input token embeddings
+
+156
+00:09:02.433 --> 00:09:05.433
+and positional encoding are added,
+
+157
+00:09:05.633 --> 00:09:10.133
+we pass them through a set of stacked
+layers, each of them taken by the input
+
+158
+00:09:10.133 --> 00:09:14.500
+embeddings and producing some output
+embeddings. Internally,
+
+159
+00:09:14.600 --> 00:09:17.533
+each of these modules uses
+an attention mechanism
+
+160
+00:09:17.533 --> 00:09:20.533
+to determine the relationships
+between input embeddings,
+
+161
+00:09:20.833 --> 00:09:24.300
+so here is where all the cross
+token information is captured.
+
+162
+00:09:25.100 --> 00:09:29.333
+Please note that each model can only take
+a certain number of tokens simultaneously.
+
+163
+00:09:29.733 --> 00:09:32.800
+That's also related
+to the positional encodings as they are
+
+164
+00:09:32.800 --> 00:09:35.800
+kept in a matrix of fixed dimensionality.
+
+165
+00:09:35.800 --> 00:09:40.800
+If your model was trained to support,
+let's say, a maximum of 256 tokens,
+
+166
+00:09:41.700 --> 00:09:45.200
+then there are no guarantees
+it will work for longer sequences.
+
+167
+00:09:45.733 --> 00:09:49.300
+Usually the tokenizer
+will drop the trailing tokens
+
+168
+00:09:49.600 --> 00:09:51.800
+if the maximum length is exceeded.
+
+169
+00:09:51.800 --> 00:09:55.900
+Let's visualize the input token embeddings
+to get some intuition
+
+170
+00:09:55.900 --> 00:09:59.333
+on how this mechanism captures
+the meaning of tokens.
+
+171
+00:10:00.033 --> 00:10:02.600
+Input token embeddings are context-free,
+
+172
+00:10:02.600 --> 00:10:05.700
+and they are also the parameters
+of the transformer model.
+
+173
+00:10:06.100 --> 00:10:09.000
+The model learns them
+during the training phase.
+
+174
+00:10:09.000 --> 00:10:13.033
+To represent the meaning of each token
+in the best way possible.
+
+175
+00:10:13.500 --> 00:10:15.400
+We can access them as a matrix.
+
+176
+00:10:21.300 --> 00:10:23.900
+Since
+the token embeddings are context-free,
+
+177
+00:10:23.900 --> 00:10:27.433
+we can map each of the vectors
+with the corresponding token.
+
+178
+00:10:27.933 --> 00:10:32.233
+Our matrix has 30,522 inputs.
+
+179
+00:10:32.600 --> 00:10:35.600
+What is equal
+to the size of the vocabulary.
+
+180
+00:10:35.900 --> 00:10:38.900
+You will now get it from the tokenizer
+and then sort
+
+181
+00:10:38.900 --> 00:10:41.900
+by this index.
+
+182
+00:10:46.800 --> 00:10:48.900
+This is how some randomly selected
+
+183
+00:10:48.900 --> 00:10:51.900
+tokens of our model would look like.
+
+184
+00:10:52.500 --> 00:10:55.600
+The mapping between tokens
+and the vectors is now easy.
+
+185
+00:10:56.000 --> 00:10:58.633
+Visualization is a bit harder
+as each vector
+
+186
+00:10:58.633 --> 00:11:01.500
+has 384 dimensions.
+
+187
+00:11:01.500 --> 00:11:04.500
+This is a dimensionality
+reduction algorithm
+
+188
+00:11:04.500 --> 00:11:07.800
+you will apply now to compress each vector
+to two
+
+189
+00:11:07.800 --> 00:11:10.800
+dimensional space.
+
+190
+00:11:10.933 --> 00:11:12.600
+This may take some time.
+
+191
+00:11:12.600 --> 00:11:14.700
+We have the results.
+
+192
+00:11:14.700 --> 00:11:17.800
+There are three main groups of tokens
+in our vocabulary.
+
+193
+00:11:18.233 --> 00:11:20.800
+The first group consists
+of the technical tokens
+
+194
+00:11:20.800 --> 00:11:23.800
+specific to the model,
+and its training procedure.
+
+195
+00:11:24.500 --> 00:11:27.800
+Then the subword tokens
+with the double hash prefix,
+
+196
+00:11:28.333 --> 00:11:32.533
+are the suffix tokens particular
+to the tokenizer used in our model
+
+197
+00:11:33.200 --> 00:11:36.100
+Finally, the last group is prefixes
+
+198
+00:11:36.100 --> 00:11:39.900
+and whole words starting with anything
+except the double hash.
+
+199
+00:11:40.600 --> 00:11:44.233
+You will now assign different colors
+depending on the group
+
+200
+00:11:44.633 --> 00:11:46.500
+a particular token belongs to.
+
+201
+00:11:48.600 --> 00:11:49.500
+Scatterplot,
+
+202
+00:11:49.500 --> 00:11:53.100
+using plotly, helps
+you interactively visualize them.
+
+203
+00:11:53.633 --> 00:11:57.200
+When we visualize the inputs
+token embeddings we can use it to inspect
+
+204
+00:11:57.200 --> 00:11:58.200
+the input.
+
+205
+00:11:58.200 --> 00:12:00.800
+Eyeballing is the only technique
+we'll apply here.
+
+206
+00:12:00.800 --> 00:12:04.400
+But when you check the clusters
+you can clearly see that numbers
+
+207
+00:12:04.833 --> 00:12:07.400
+are put close together.
+
+208
+00:12:07.400 --> 00:12:10.700
+However, years
+form a subgroup of the numbers.
+
+209
+00:12:11.600 --> 00:12:14.800
+The Cromwell token is closest
+to the tokens
+
+210
+00:12:14.800 --> 00:12:17.800
+representing years from the 16th century.
+
+211
+00:12:18.200 --> 00:12:21.400
+If you wonder why,
+try to google for this English politician.
+
+212
+00:12:22.400 --> 00:12:26.500
+Subword tokens
+occupy some subareas of this space,
+
+213
+00:12:27.533 --> 00:12:31.000
+but some are just closer to full words.
+
+214
+00:12:31.500 --> 00:12:35.500
+And used tokens are mixed
+with some non-English characters.
+
+215
+00:12:37.633 --> 00:12:40.633
+Generally, non-English
+characters are grouped together.
+
+216
+00:12:41.700 --> 00:12:44.700
+The names are close to each other.
+
+217
+00:12:45.100 --> 00:12:48.500
+And actually,
+each subarea of the semantic space
+
+218
+00:12:49.100 --> 00:12:53.400
+holds
+tokens with similar meaning or function.
+
+219
+00:12:57.333 --> 00:13:00.300
+This is
+where our embedding model will start.
+
+220
+00:13:00.300 --> 00:13:02.900
+You can inspect this semantic space
+even more
+
+221
+00:13:02.900 --> 00:13:05.433
+if you want to get some more intuition.
+
+222
+00:13:05.433 --> 00:13:09.033
+Let's now discuss
+all the other steps involved in converting
+
+223
+00:13:09.033 --> 00:13:13.600
+a sequence of tokens to a vector,
+capturing the meaning of the whole text.
+
+224
+00:13:14.133 --> 00:13:17.333
+We already know that the encoder
+only embedding model
+
+225
+00:13:17.333 --> 00:13:20.333
+starts
+with context-independent embeddings.
+
+226
+00:13:20.500 --> 00:13:24.200
+Attention mechanism captures
+the relationships between tokens
+
+227
+00:13:24.200 --> 00:13:24.933
+and incorporates
+
+228
+00:13:24.933 --> 00:13:28.733
+that information into the output
+embeddings of each stacked module.
+
+229
+00:13:29.500 --> 00:13:33.300
+Thanks to that, our initial context
+independent embeddings
+
+230
+00:13:33.300 --> 00:13:38.133
+become context-aware, and the embedding
+model can produce a sequence of embeddings
+
+231
+00:13:38.400 --> 00:13:41.633
+with a length equal
+to the length of the input sequence.
+
+232
+00:13:42.533 --> 00:13:46.133
+Pooling helps to create a single vector
+of embeddings for a whole text.
+
+233
+00:13:46.600 --> 00:13:51.500
+It usually averages all the individual
+vectors assigned to the input tokens.
+
+234
+00:13:52.600 --> 00:13:53.333
+Let's verify
+
+235
+00:13:53.333 --> 00:13:56.433
+whether the output token
+embeddings are really context-aware.
+
+236
+00:13:57.300 --> 00:14:00.000
+When we use the encode
+method of the model,
+
+237
+00:14:00.000 --> 00:14:03.000
+it produces just a single vector.
+
+238
+00:14:04.233 --> 00:14:06.333
+However, we can also generate a vector
+
+239
+00:14:06.333 --> 00:14:10.200
+for each individual token,
+and those should be context-dependent
+
+240
+00:14:10.200 --> 00:14:12.633
+already.
+
+241
+00:14:12.633 --> 00:14:15.333
+We can achieve that
+by setting output value
+
+242
+00:14:15.333 --> 00:14:18.333
+to token embeddings.
+
+243
+00:14:19.233 --> 00:14:20.633
+If we now check
+
+244
+00:14:20.633 --> 00:14:24.200
+the output token
+embeddings of different sequences,
+
+245
+00:14:24.633 --> 00:14:27.633
+they should not be identical anymore.
+
+246
+00:14:28.033 --> 00:14:31.733
+Our embedding model captured
+the meaning of each tokens in a sequence,
+
+247
+00:14:32.300 --> 00:14:35.400
+so they will be encoded differently
+depending on the context.
+
+248
+00:14:35.900 --> 00:14:39.200
+It's not a basic word
+to vet like mapping anymore.
+
+249
+00:14:39.800 --> 00:14:42.800
+We will use the same examples like before,
+
+250
+00:14:43.000 --> 00:14:47.000
+but you can play and experiment
+with different examples if you want.
+
+251
+00:14:47.600 --> 00:14:50.900
+Then we will tokenize both sentences
+
+252
+00:14:51.233 --> 00:14:54.233
+using the tokenized method of our model,
+
+253
+00:14:54.433 --> 00:14:59.133
+and finally, calculate
+the embeddings of both sentences.
+
+254
+00:14:59.500 --> 00:15:02.333
+We are going to specifically retrieve
+
+255
+00:15:02.333 --> 00:15:06.300
+the token embeddings
+produced for each token in both sequences.
+
+256
+00:15:06.633 --> 00:15:09.733
+Finally, cosine similarity calculated
+
+257
+00:15:10.200 --> 00:15:12.800
+between each tokens
+
+258
+00:15:12.800 --> 00:15:17.200
+coming from the first sentence
+and each token from the second one.
+
+259
+00:15:18.300 --> 00:15:19.000
+These distances
+
+260
+00:15:19.000 --> 00:15:23.733
+will help us to visualize how similar
+are different tokens
+
+261
+00:15:23.900 --> 00:15:26.900
+in both sequences.
+
+262
+00:15:29.100 --> 00:15:32.800
+The output token embeddings of vector
+search
+
+263
+00:15:32.800 --> 00:15:36.033
+and optimization are not identical
+anymore.
+
+264
+00:15:36.800 --> 00:15:40.600
+You can test different sentences
+and see how the output token
+
+265
+00:15:40.600 --> 00:15:43.600
+embeddings
+will vary in terms of their similarity.
+
+266
+00:15:44.800 --> 00:15:48.433
+Tokenization is an important yet
+often ignored step.
+
+267
+00:15:49.300 --> 00:15:53.100
+It defines how our model sees the world
+and how much meaning
+
+268
+00:15:53.100 --> 00:15:56.500
+each individual
+token can initially get in the model.
+
+269
+00:15:56.900 --> 00:16:01.033
+You will learn about different ways
+of tokenization in the next lesson.
+
+270
+00:16:02.200 --> 00:16:03.133
+All right. See you there.
+

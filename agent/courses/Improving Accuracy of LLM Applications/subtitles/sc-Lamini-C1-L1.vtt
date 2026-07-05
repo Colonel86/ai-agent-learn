@@ -1,0 +1,1517 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.667 --> 00:00:03.903
+In this first lesson,
+you'll look at the prompt format of Llama 3
+
+2
+00:00:03.903 --> 00:00:07.240
+as well as some built
+in capabilities of the model.
+
+3
+00:00:07.774 --> 00:00:10.076
+I should also mention
+that the set of notebooks
+
+4
+00:00:10.076 --> 00:00:14.314
+you are going to implement in this course
+is part of Meta's Llama recipes.
+
+5
+00:00:15.148 --> 00:00:17.684
+This lesson
+is also an overview of the steps
+
+6
+00:00:17.684 --> 00:00:20.553
+you'll take to get your application ready
+for production.
+
+7
+00:00:20.553 --> 00:00:22.822
+Let's dive right in.
+
+8
+00:00:22.822 --> 00:00:25.992
+So in lifting accuracy in LLMs,
+
+9
+00:00:25.992 --> 00:00:30.063
+we're going to step back
+and think about LLM apps, on their own.
+
+10
+00:00:30.063 --> 00:00:32.298
+And they are really their own animal.
+
+11
+00:00:32.298 --> 00:00:37.070
+ideally Llamas, these cute Llamas
+because of LLMs, but they're their own
+
+12
+00:00:37.070 --> 00:00:37.504
+animal,
+
+13
+00:00:37.504 --> 00:00:40.807
+their own beast,
+because they are highly probabilistic.
+
+14
+00:00:40.807 --> 00:00:41.241
+Right?
+
+15
+00:00:41.241 --> 00:00:43.977
+They're sampling
+from a probability distribution.
+
+16
+00:00:43.977 --> 00:00:47.447
+And that's why it can be a little bit
+unpredictable what they're producing
+
+17
+00:00:47.447 --> 00:00:51.184
+versus a deterministic system
+where you're guaranteed a fixed output.
+
+18
+00:00:51.718 --> 00:00:56.189
+And as a result, it's important to be
+very iterative, in improving these models.
+
+19
+00:00:56.289 --> 00:00:58.258
+You're not going to get it right
+the first time with
+
+20
+00:00:58.258 --> 00:01:02.462
+putting all the best practices together
+like you do for a deterministic system.
+
+21
+00:01:02.796 --> 00:01:07.367
+So deeply understanding and internalizing
+even this iterative process
+
+22
+00:01:07.400 --> 00:01:10.403
+is extremely important
+if you want to be able to lift accuracy
+
+23
+00:01:10.637 --> 00:01:13.773
+to something like 95%,
+and you'll actually get to do that
+
+24
+00:01:14.007 --> 00:01:18.178
+in this course, which is really exciting,
+on your own, for a specific application.
+
+25
+00:01:18.178 --> 00:01:22.715
+Text to SQL, but also, one
+that generalizes to your other LLM apps.
+
+26
+00:01:23.550 --> 00:01:26.052
+And now I'm going to hand it over
+to Amit,
+
+27
+00:01:26.052 --> 00:01:29.055
+who will give you an overview of Llama 3.
+
+28
+00:01:29.422 --> 00:01:33.093
+Llama models
+built by Meta's research teams are large
+
+29
+00:01:33.093 --> 00:01:36.096
+language models
+based on transformer architecture.
+
+30
+00:01:36.429 --> 00:01:39.432
+There are currently two Llama 3
+models.
+
+31
+00:01:39.699 --> 00:01:42.502
+There's a small 8 billion parameter model
+
+32
+00:01:42.502 --> 00:01:45.271
+and a large 70 billion parameter model.
+
+33
+00:01:45.271 --> 00:01:47.740
+In general, the larger the model is,
+
+34
+00:01:47.740 --> 00:01:51.044
+the more capacity
+it has to learn from its training data.
+
+35
+00:01:51.778 --> 00:01:54.314
+However, larger models are also more
+
+36
+00:01:54.314 --> 00:01:57.884
+computationally expensive to train
+and deploy than the smaller models.
+
+37
+00:01:58.518 --> 00:02:01.588
+Each of these models can be used
+for different application scenarios
+
+38
+00:02:01.588 --> 00:02:03.022
+and purposes.
+
+39
+00:02:03.022 --> 00:02:06.626
+The instruction tune models are created
+by taking the base models
+
+40
+00:02:06.793 --> 00:02:10.029
+and running them through additional
+training called instruction tuning.
+
+41
+00:02:10.830 --> 00:02:13.833
+This enables instruction
+tuned models to better follow
+
+42
+00:02:13.833 --> 00:02:18.833
+human language instructions
+such as summarize this or tell me a joke.
+
+43
+00:02:19.772 --> 00:02:23.076
+These instruction tune models are called
+Llama instruct models.
+
+44
+00:02:23.543 --> 00:02:25.178
+Depending on your use case,
+
+45
+00:02:25.178 --> 00:02:27.080
+you can take any of these models
+
+46
+00:02:27.080 --> 00:02:30.083
+and further fine
+tune them for your application needs.
+
+47
+00:02:30.316 --> 00:02:31.551
+In this course,
+
+48
+00:02:31.551 --> 00:02:35.488
+you will be using the Llama 3
+8 billion parameter instruct model.
+
+49
+00:02:36.990 --> 00:02:37.457
+The Llama 3
+
+50
+00:02:37.457 --> 00:02:40.460
+family of models have industry
+leading performance.
+
+51
+00:02:40.527 --> 00:02:43.163
+Importantly, the family is open source.
+
+52
+00:02:43.163 --> 00:02:46.166
+So you can modify these models
+for your own applications.
+
+53
+00:02:46.666 --> 00:02:50.503
+The Llama 3 8 billion parameter
+model is used in many applications.
+
+54
+00:02:51.104 --> 00:02:54.107
+It's small enough
+that it can run on your laptop.
+
+55
+00:02:54.507 --> 00:02:57.844
+It can have low latency,
+making it useful in many tasks.
+
+56
+00:02:58.478 --> 00:03:01.214
+In this course,
+you will fine-tune this model to improve
+
+57
+00:03:01.214 --> 00:03:04.217
+its performance
+on generating database queries.
+
+58
+00:03:04.817 --> 00:03:05.218
+All right.
+
+59
+00:03:05.218 --> 00:03:07.453
+Let's start by importing our packages.
+
+60
+00:03:07.453 --> 00:03:10.456
+We'll import the Lamini package.
+
+61
+00:03:10.623 --> 00:03:13.626
+Then let's instantiate an LLM.
+
+62
+00:03:15.295 --> 00:03:18.264
+We use the Llama 3,
+
+63
+00:03:18.264 --> 00:03:21.267
+the 8 million parameter instruct model.
+
+64
+00:03:21.534 --> 00:03:24.537
+Now let's create a prompt.
+
+65
+00:03:24.938 --> 00:03:28.541
+Here's the beginning of text tag
+and then the system header.
+
+66
+00:03:29.442 --> 00:03:31.744
+And then the system message.
+
+67
+00:03:31.744 --> 00:03:34.414
+You are a helpful assistant. Followed
+
+68
+00:03:34.414 --> 00:03:39.118
+by the end of turn tag
+and then the beginning of new header.
+
+69
+00:03:39.118 --> 00:03:39.919
+The user header.
+
+70
+00:03:41.054 --> 00:03:41.988
+Please write a birthday
+
+71
+00:03:41.988 --> 00:03:44.958
+card for my good friend Andrew.
+
+72
+00:03:45.959 --> 00:03:47.260
+End of turn.
+
+73
+00:03:47.260 --> 00:03:52.260
+And a header for the assistant
+which lets the LLM know its time
+
+74
+00:03:52.899 --> 00:03:54.067
+to reply.
+
+75
+00:03:54.067 --> 00:03:57.070
+Now let's call the LLM with that prompt.
+
+76
+00:03:59.973 --> 00:04:00.306
+Here's
+
+77
+00:04:00.306 --> 00:04:03.343
+a very nice birthday card
+message for my friend Andrew.
+
+78
+00:04:04.477 --> 00:04:07.113
+Happy birthday to an amazing friend
+like you, Andrew.
+
+79
+00:04:07.113 --> 00:04:09.182
+And so on.
+
+80
+00:04:09.182 --> 00:04:12.185
+We have all been writing
+long prompts for LLMs lately,
+
+81
+00:04:12.552 --> 00:04:15.555
+and those are long strings in Python.
+
+82
+00:04:15.755 --> 00:04:19.926
+Python's pep or Python enhancement
+proposals
+
+83
+00:04:20.560 --> 00:04:23.563
+PEP 8, gives you a style guide for Python,
+
+84
+00:04:23.563 --> 00:04:26.733
+and it suggests that for long lines,
+
+85
+00:04:27.233 --> 00:04:32.233
+they can be broken over multiple lines
+by wrapping expressions in parentheses.
+
+86
+00:04:32.939 --> 00:04:35.875
+Let's see how that's done.
+
+87
+00:04:35.875 --> 00:04:38.411
+So here,
+these strings are wrapped in parentheses
+
+88
+00:04:38.411 --> 00:04:42.815
+and all of the individual
+strings are concatenated together.
+
+89
+00:04:43.149 --> 00:04:45.285
+And this makes a little easier to read.
+
+90
+00:04:45.285 --> 00:04:50.285
+But a big advantage of this is the fact
+that you can add comments to your strings.
+
+91
+00:04:50.723 --> 00:04:51.791
+Let's try this out.
+
+92
+00:04:53.926 --> 00:04:56.129
+You can see this looks similar
+to our last one.
+
+93
+00:04:56.129 --> 00:04:59.065
+Let's check to make sure that's true.
+
+94
+00:04:59.065 --> 00:05:02.001
+Yeah, even though that looks nicer,
+
+95
+00:05:02.001 --> 00:05:05.004
+we don't want to be writing those prompts
+throughout the course.
+
+96
+00:05:05.405 --> 00:05:08.541
+So let's create
+a subroutine to do this for us.
+
+97
+00:05:09.008 --> 00:05:12.011
+And we'll use this through
+the rest of the course.
+
+98
+00:05:12.011 --> 00:05:16.449
+This will be make Llama 3 prompt
+and it will take in a user prompt
+
+99
+00:05:16.449 --> 00:05:21.449
+and if you would like, a system prompt.
+Let's build the system prompt. First,
+
+100
+00:05:22.455 --> 00:05:24.991
+set it to an empty string.
+
+101
+00:05:24.991 --> 00:05:28.828
+If the input which is a system
+input, is not blank,
+
+102
+00:05:29.629 --> 00:05:32.632
+then we will add this header.
+
+103
+00:05:32.965 --> 00:05:36.836
+The start header system,
+and then the system message
+
+104
+00:05:36.836 --> 00:05:40.073
+you're passing
+in, followed by the end of turn tag.
+
+105
+00:05:42.075 --> 00:05:44.243
+Then we can write the rest of the prompt.
+
+106
+00:05:44.243 --> 00:05:47.980
+So we have the beginning of the text
+tag followed by the system prompt
+
+107
+00:05:48.448 --> 00:05:49.549
+that we just created.
+
+108
+00:05:50.683 --> 00:05:53.686
+The user
+header, followed by the user message.
+
+109
+00:05:53.953 --> 00:05:56.989
+And I've done tag
+and then the assistant tag.
+
+110
+00:05:58.558 --> 00:06:00.326
+And then we return the prompt.
+
+111
+00:06:00.326 --> 00:06:02.161
+Let's try this out.
+
+112
+00:06:02.161 --> 00:06:05.031
+That looks like the same prompt as before.
+
+113
+00:06:05.031 --> 00:06:08.034
+But let's check it.
+
+114
+00:06:08.801 --> 00:06:09.302
+Sure.
+
+115
+00:06:09.302 --> 00:06:10.837
+Okay.
+
+116
+00:06:10.837 --> 00:06:13.639
+Let's try this on a new example.
+
+117
+00:06:13.639 --> 00:06:16.476
+Tell me a joke about birthday cakes.
+
+118
+00:06:16.476 --> 00:06:18.778
+Notice that this one does
+not have a system prompt,
+
+119
+00:06:18.778 --> 00:06:21.781
+just a user prompt.
+
+120
+00:06:21.881 --> 00:06:24.317
+Why was the birthday cake in a bad mood?
+
+121
+00:06:24.317 --> 00:06:26.352
+Because it was feeling crumby.
+
+122
+00:06:26.352 --> 00:06:29.856
+Now's a good time to pause
+and try a few prompts on your own.
+
+123
+00:06:31.491 --> 00:06:34.494
+The Llama family was trained
+on a huge amount of data.
+
+124
+00:06:34.861 --> 00:06:38.197
+As a result,
+the model is able to generate SQL.
+
+125
+00:06:38.564 --> 00:06:43.564
+We can use this capability to ask the
+model questions about how to generate SQL.
+
+126
+00:06:44.670 --> 00:06:45.505
+Let's try it out.
+
+127
+00:06:47.640 --> 00:06:48.241
+We can ask the
+
+128
+00:06:48.241 --> 00:06:51.677
+question given an arbitrary table
+named SQL table
+
+129
+00:06:52.211 --> 00:06:55.581
+right a query, to return
+how many rows are in the table.
+
+130
+00:06:55.915 --> 00:06:59.218
+Let's print out the result
+of calling the LLM with that prompt.
+
+131
+00:07:01.120 --> 00:07:04.857
+So, the model returns a description
+of what it's returning,
+
+132
+00:07:04.924 --> 00:07:08.027
+returns
+the prompt and a little explanation
+
+133
+00:07:08.027 --> 00:07:11.030
+of why it chose that response.
+
+134
+00:07:11.431 --> 00:07:13.666
+We can ask more complicated questions.
+
+135
+00:07:13.666 --> 00:07:16.636
+Let's try a few of these.
+
+136
+00:07:16.636 --> 00:07:19.605
+Given an arbitrary table named SQL table,
+
+137
+00:07:19.605 --> 00:07:23.209
+help me calculate the average height
+where age is above 20.
+
+138
+00:07:26.245 --> 00:07:28.181
+Great.
+
+139
+00:07:28.181 --> 00:07:32.418
+Here we can see it's now selecting entries
+where the age is greater than 20.
+
+140
+00:07:33.219 --> 00:07:36.222
+We are not going to be executing these
+in this lab.
+
+141
+00:07:36.289 --> 00:07:40.827
+We are just exploring what the model is
+able to generate. In the following labs,
+
+142
+00:07:41.060 --> 00:07:44.564
+you will be generating these commands
+and then executing them on a database.
+
+143
+00:07:46.766 --> 00:07:47.366
+Let's try an
+
+144
+00:07:47.366 --> 00:07:50.369
+even more complicated
+example. Given that table,
+
+145
+00:07:50.470 --> 00:07:54.807
+can you calculate the 95th percentile
+height
+
+146
+00:07:55.208 --> 00:07:58.211
+where the age is above 20?
+
+147
+00:07:58.978 --> 00:07:59.846
+Perfect.
+
+148
+00:07:59.846 --> 00:08:03.115
+So here's the SQL command to generate that.
+
+149
+00:08:05.117 --> 00:08:08.054
+What if you are using SQLite.
+
+150
+00:08:08.054 --> 00:08:10.523
+Let's try that same query.
+
+151
+00:08:10.523 --> 00:08:14.026
+But this time we'll add use "SQLite".
+
+152
+00:08:16.829 --> 00:08:18.097
+It returns the queries
+
+153
+00:08:18.097 --> 00:08:21.100
+along with some hints
+about how to use these.
+
+154
+00:08:21.367 --> 00:08:25.104
+This is a good time to pause the video
+and try a few queries of your own.
+
+155
+00:08:26.939 --> 00:08:28.341
+Thank you. Amit.
+
+156
+00:08:28.341 --> 00:08:32.311
+And next, we're going to go over, errors
+we might see in the model.
+
+157
+00:08:32.311 --> 00:08:35.448
+For example,
+one common one is hallucinations.
+
+158
+00:08:35.848 --> 00:08:40.848
+And, this is incorrect or made up
+information that the model has generated.
+
+159
+00:08:41.320 --> 00:08:44.857
+And it arises from the LLM thinking,
+you know, something that's
+
+160
+00:08:44.857 --> 00:08:47.927
+slightly right
+is the same as it being right.
+
+161
+00:08:48.060 --> 00:08:49.896
+Which in some cases is totally okay.
+
+162
+00:08:49.896 --> 00:08:53.299
+So you might say hi or hello
+and then that's totally
+
+163
+00:08:53.299 --> 00:08:56.636
+okay if it interpreted those
+or said one or the other to you,
+
+164
+00:08:56.769 --> 00:09:01.374
+when you said hi back.
+But for, let's say, your birthday,
+
+165
+00:09:01.407 --> 00:09:05.444
+that is not okay to get wrong
+or, specific fact, a revenue
+
+166
+00:09:05.444 --> 00:09:08.814
+number, for example, in an earnings
+report, these are not things
+
+167
+00:09:08.814 --> 00:09:13.586
+where the slightly right answer
+is the same as right for these facts.
+
+168
+00:09:13.819 --> 00:09:17.990
+And this can be especially detrimental
+for not just critical facts,
+
+169
+00:09:17.990 --> 00:09:19.692
+but also when you just need precision.
+
+170
+00:09:19.692 --> 00:09:23.329
+So when you're connecting to
+a downstream system, like hitting an API,
+
+171
+00:09:23.462 --> 00:09:27.733
+or you're connecting to certain IDs,
+this is, this is especially important.
+
+172
+00:09:27.733 --> 00:09:30.503
+And so as an example, Llama 3
+might produce
+
+173
+00:09:30.503 --> 00:09:34.840
+this beautiful SQL statement
+and you're hitting a SQLite database.
+
+174
+00:09:35.107 --> 00:09:38.277
+But the hallucination here
+is that while this might run,
+
+175
+00:09:38.277 --> 00:09:41.414
+this might execute in an MySQL, database.
+
+176
+00:09:41.480 --> 00:09:45.184
+It won't actually run in SQL
+lite because percentile_cont
+
+177
+00:09:45.184 --> 00:09:47.720
+is actually not available in SQLite.
+
+178
+00:09:47.720 --> 00:09:49.689
+So this will fail.
+This is an invalid query.
+
+179
+00:09:50.823 --> 00:09:51.090
+Okay.
+
+180
+00:09:51.090 --> 00:09:52.425
+So how would you tackle this?
+
+181
+00:09:52.425 --> 00:09:55.761
+Well, the most common approach
+is obviously just prompt engineering.
+
+182
+00:09:55.761 --> 00:09:58.164
+It's the easiest, lightest lift
+that you can do.
+
+183
+00:09:58.164 --> 00:10:01.000
+For a case like this though,
+prompt engineering
+
+184
+00:10:01.000 --> 00:10:04.837
+we found, often gets to something
+like 20 to 30%.
+
+185
+00:10:05.237 --> 00:10:09.275
+Adding some self-reflection can sometimes
+help the model, lift it up to maybe 40%.
+
+186
+00:10:09.609 --> 00:10:13.212
+And then retrieval augmented generation
+or RAG, get it up to 50%.
+
+187
+00:10:13.479 --> 00:10:15.815
+and instruction
+fine-tuning, you know, mixed results
+
+188
+00:10:15.815 --> 00:10:19.018
+from, you know, something that's under RAG
+or a little bit over RAG.
+
+189
+00:10:19.018 --> 00:10:20.586
+It can be pretty difficult
+to get the model
+
+190
+00:10:20.586 --> 00:10:23.923
+to commit to sampling
+or producing the right results.
+
+191
+00:10:24.423 --> 00:10:25.358
+And why is that?
+
+192
+00:10:25.358 --> 00:10:28.594
+So let's actually look into technically
+what's going on in this model.
+
+193
+00:10:28.961 --> 00:10:30.096
+So you might ask,
+
+194
+00:10:30.096 --> 00:10:33.599
+you know, what year did Dave Aguilar climb
+the Golden Gate Bridge.
+
+195
+00:10:33.866 --> 00:10:37.703
+And you might RAG up a Wikipedia article
+about the Golden Gate Bridge.
+
+196
+00:10:38.137 --> 00:10:40.940
+And, the model is prepared
+to answer the question.
+
+197
+00:10:40.940 --> 00:10:44.010
+It says he climbed it in
+and it's going to say a date.
+
+198
+00:10:44.176 --> 00:10:47.647
+And, this often might work
+because I might say 1981,
+
+199
+00:10:47.647 --> 00:10:50.650
+which is the correct answer,
+but it sometimes fails.
+
+200
+00:10:50.816 --> 00:10:52.018
+And what's going on here?
+
+201
+00:10:52.018 --> 00:10:55.021
+Well, let's take a look
+at this probability distribution here.
+
+202
+00:10:55.021 --> 00:10:57.256
+It's sampling in this probability
+space.
+
+203
+00:10:57.256 --> 00:10:59.525
+It's not going to sample
+cat here on the edge. Right.
+
+204
+00:10:59.525 --> 00:11:00.626
+Not very likely.
+
+205
+00:11:00.626 --> 00:11:02.094
+But among the dates among things
+
+206
+00:11:02.094 --> 00:11:06.132
+that are similar,
+it is going to consider sampling there.
+
+207
+00:11:06.132 --> 00:11:07.299
+And that's why it fails.
+
+208
+00:11:07.299 --> 00:11:09.769
+It's because it's
+considering, things that are close.
+
+209
+00:11:09.769 --> 00:11:12.772
+and as a result, it's not going to say
+he climbed it in cat.
+
+210
+00:11:13.139 --> 00:11:16.509
+But it will say, you know,
+he climbed it in 1970,
+
+211
+00:11:16.709 --> 00:11:19.979
+which is, hallucination
+and in some ways more detrimental
+
+212
+00:11:19.979 --> 00:11:23.916
+than even saying cat because,
+you know, it, it you don't know.
+
+213
+00:11:23.916 --> 00:11:25.418
+It doesn't know.
+
+214
+00:11:25.418 --> 00:11:28.654
+So the question is then, given
+all those techniques that,
+
+215
+00:11:28.688 --> 00:11:32.291
+that don't fully work
+and reducing all these hallucinations,
+
+216
+00:11:32.591 --> 00:11:35.127
+how can fine-tuning actually help?
+
+217
+00:11:35.127 --> 00:11:36.295
+one way it can help
+
+218
+00:11:36.295 --> 00:11:40.199
+is that there is a method of fine-tuning
+where you can embed facts into the model.
+
+219
+00:11:40.199 --> 00:11:42.835
+but instruction fine-tuning,
+which is the most common form of fine
+
+220
+00:11:42.835 --> 00:11:46.305
+tuning, isn't actually that tool
+to remove those hallucinations.
+
+221
+00:11:46.305 --> 00:11:49.075
+And it can be kind of costly as well.
+
+222
+00:11:49.075 --> 00:11:52.311
+There's a technique called memory
+tuning invented by Lamini,
+
+223
+00:11:52.445 --> 00:11:55.781
+which lets the model
+actually recall these facts precisely
+
+224
+00:11:55.781 --> 00:11:58.517
+by embedding the facts
+directly into the weights of the model,
+
+225
+00:11:58.517 --> 00:12:01.520
+and actually inject
+a little bit of determinism into this,
+
+226
+00:12:01.754 --> 00:12:03.456
+very probabilistic process.
+
+227
+00:12:03.456 --> 00:12:07.193
+And one important thing about this is,
+you might ask,
+
+228
+00:12:07.193 --> 00:12:10.396
+okay, well, are you just going to overfit
+the model on everything?
+
+229
+00:12:10.396 --> 00:12:13.499
+One important thing is we're not right,
+because otherwise you lose
+
+230
+00:12:13.499 --> 00:12:16.669
+the magic of
+why we're using LLMs in the first place.
+
+231
+00:12:16.936 --> 00:12:20.973
+So the goal is to be extremely precise
+on those facts
+
+232
+00:12:20.973 --> 00:12:24.143
+without compromising the generalization
+and instruction
+
+233
+00:12:24.143 --> 00:12:26.345
+following that, we absolutely love.
+
+234
+00:12:26.345 --> 00:12:29.982
+And memory tuning
+is able to lift us up to 95% accuracy.
+
+235
+00:12:30.149 --> 00:12:33.953
+And the reason why is because
+when we ask this question again,
+
+236
+00:12:33.953 --> 00:12:37.857
+the model is, sampling from a distribution
+that looks more like
+
+237
+00:12:37.890 --> 00:12:42.890
+this, essentially sampling from only 1981
+being the only possible response.
+
+238
+00:12:43.696 --> 00:12:46.532
+And the way this happens,
+which we'll go over in greater detail,
+
+239
+00:12:46.532 --> 00:12:50.269
+is to bring the what we call loss
+to zero on these facts.
+
+240
+00:12:50.669 --> 00:12:50.970
+Okay.
+
+241
+00:12:50.970 --> 00:12:53.639
+So now moving on to an actual, example.
+
+242
+00:12:53.639 --> 00:12:57.209
+So an example of a SQL agent,
+LLMs are quite incredible.
+
+243
+00:12:57.209 --> 00:13:00.880
+they can generate SQL and often
+pretty complex SQL that you already saw
+
+244
+00:13:01.213 --> 00:13:04.049
+from Amit, but they don't reliably
+
+245
+00:13:04.049 --> 00:13:07.353
+generate SQL that matches your schema,
+your complex schema.
+
+246
+00:13:07.353 --> 00:13:09.088
+And these are those hallucinations.
+
+247
+00:13:09.088 --> 00:13:11.924
+So, in this course, you'll fine-tune Llama-3
+
+248
+00:13:11.924 --> 00:13:15.828
+Eight billion, to generate SQL
+specifically for your schema.
+
+249
+00:13:16.262 --> 00:13:19.765
+And what that process looks like is,
+you know, user asks a question,
+
+250
+00:13:19.765 --> 00:13:21.634
+the model generates SQL query,
+
+251
+00:13:21.634 --> 00:13:24.937
+it executes against a database,
+and then the user sees that response.
+
+252
+00:13:25.805 --> 00:13:29.175
+Stepping back, you know,
+why is this application even useful?
+
+253
+00:13:29.708 --> 00:13:32.578
+Well,
+I've actually talked to a lot of amazing
+
+254
+00:13:32.578 --> 00:13:34.847
+folks about this
+and asked the same question.
+
+255
+00:13:34.847 --> 00:13:37.850
+And here are some of the top few answers.
+
+256
+00:13:37.883 --> 00:13:41.287
+Number one is around
+finding a better user experience,
+
+257
+00:13:41.353 --> 00:13:45.457
+for business users, analysts
+who are trying to look around data,
+
+258
+00:13:45.691 --> 00:13:48.861
+to get faster answers, directly,
+without going through
+
+259
+00:13:48.861 --> 00:13:51.864
+necessarily another team,
+to be able to run those SQL queries.
+
+260
+00:13:51.964 --> 00:13:53.966
+There's also operation efficiency here.
+
+261
+00:13:53.966 --> 00:13:57.036
+So, this is less time
+the data team need to spend on
+
+262
+00:13:57.036 --> 00:13:59.872
+answering simple questions
+for, for their business users.
+
+263
+00:13:59.872 --> 00:14:02.875
+And they're often a bottleneck
+within an organization
+
+264
+00:14:03.008 --> 00:14:06.745
+and feel overloaded
+while also having to juggle other tasks.
+
+265
+00:14:07.179 --> 00:14:09.081
+And finally around reliability.
+
+266
+00:14:09.081 --> 00:14:10.649
+This is actually an approach
+
+267
+00:14:10.649 --> 00:14:14.353
+if you can tune the model
+to high accuracy, to be more reliable
+
+268
+00:14:14.353 --> 00:14:17.590
+in breadth than in business users
+who write their own queries
+
+269
+00:14:17.590 --> 00:14:21.260
+and who do not necessarily understand
+all the data models, in there.
+
+270
+00:14:21.927 --> 00:14:26.265
+So, let's dive specifically
+into hallucinations in the SQL agent.
+
+271
+00:14:26.932 --> 00:14:30.903
+There are a couple types,
+that I would kind of categorize them into.
+
+272
+00:14:30.936 --> 00:14:33.038
+So you'll see invalid SQL.
+
+273
+00:14:33.038 --> 00:14:36.642
+So the model will generate SQL
+that's completely invalid.
+
+274
+00:14:36.642 --> 00:14:37.843
+It doesn't run ,right.
+
+275
+00:14:37.843 --> 00:14:40.246
+So exactly, like the one you saw before.
+
+276
+00:14:40.246 --> 00:14:44.350
+and that percentile can't it just
+it doesn't run the SQLite query
+
+277
+00:14:44.350 --> 00:14:44.884
+right.
+
+278
+00:14:44.884 --> 00:14:49.884
+Other forms are missed column
+names, missed IDs, missed formats.
+
+279
+00:14:50.522 --> 00:14:52.358
+The functions here being wrong. Right.
+
+280
+00:14:52.358 --> 00:14:54.393
+So that's invalid SQL.
+
+281
+00:14:54.393 --> 00:14:55.861
+There's also malformed SQL.
+
+282
+00:14:55.861 --> 00:15:00.332
+You can generate valid SQL,
+but it is semantically completely wrong.
+
+283
+00:15:00.466 --> 00:15:04.703
+So it's not answering your question
+or it even outputs something null.
+
+284
+00:15:04.703 --> 00:15:04.970
+Right.
+
+285
+00:15:04.970 --> 00:15:07.973
+And it's trying
+to get around that invalid SQL.
+
+286
+00:15:08.274 --> 00:15:12.077
+So that's an example here, which you'll
+explore and in greater detail.
+
+287
+00:15:12.211 --> 00:15:15.180
+But essentially, this is trying to get
+
+288
+00:15:15.180 --> 00:15:19.285
+the highest paid person
+in this database of the NBA.
+
+289
+00:15:19.285 --> 00:15:22.655
+And specifically what's going on is,
+you know, it's
+
+290
+00:15:23.055 --> 00:15:26.592
+trying to get salary information
+from this database.
+
+291
+00:15:26.759 --> 00:15:30.429
+And the salary information is stored
+as text format with a dollar sign,
+
+292
+00:15:30.629 --> 00:15:32.698
+which is all fine
+and good for a person to look at.
+
+293
+00:15:32.698 --> 00:15:37.002
+But in SQL, if you're actually
+going to sort by salary,
+
+294
+00:15:37.202 --> 00:15:40.439
+you can't actually sort that string
+because it's going to include the dollar
+
+295
+00:15:40.439 --> 00:15:42.574
+sign.
+The string doesn't sort like an integer.
+
+296
+00:15:42.574 --> 00:15:46.845
+So there's something wrong here
+when we cast it as, salary as a real
+
+297
+00:15:46.845 --> 00:15:50.282
+or essentially text, and,
+and try to do an order by operation on it.
+
+298
+00:15:51.083 --> 00:15:55.287
+So how do we address this
+and how do we quickly improve accuracy?
+
+299
+00:15:55.621 --> 00:15:59.191
+Embedding facts about the database
+into Llama 3
+
+300
+00:15:59.191 --> 00:16:01.393
+very efficiently is the approach
+we're going to take.
+
+301
+00:16:01.393 --> 00:16:05.130
+So that when you do ask
+who's a highest paid member of the NBA,
+
+302
+00:16:05.464 --> 00:16:09.201
+it goes through the fine tuned model
+that actually has that SQL,
+
+303
+00:16:09.234 --> 00:16:12.237
+you know, schema information
+inside of the weights of the model.
+
+304
+00:16:12.304 --> 00:16:17.209
+And is then able to produce the correct,
+SQL query, as you can see here, casting
+
+305
+00:16:17.443 --> 00:16:21.246
+salary as an integer and removing
+that dollar sign in order to do the order
+
+306
+00:16:21.246 --> 00:16:22.481
+by statement correctly.
+
+307
+00:16:23.682 --> 00:16:26.685
+Now you've
+heard it before, and you'll hear it again,
+
+308
+00:16:26.785 --> 00:16:31.190
+especially for me, iteration
+is the most important thing
+
+309
+00:16:31.190 --> 00:16:34.526
+to deeply understand and internalize.
+
+310
+00:16:34.593 --> 00:16:37.830
+So iterating many times
+on all these different steps,
+
+311
+00:16:37.830 --> 00:16:41.367
+including evaluation, data
+generation and, and fine-tuning,
+
+312
+00:16:41.367 --> 00:16:45.037
+so starting with your original evaluation
+set, which will explore building,
+
+313
+00:16:45.237 --> 00:16:50.237
+tuning your, LLM your Llama 3 model
+to be able to produce better SQL,
+
+314
+00:16:50.542 --> 00:16:54.480
+having another set of LLMs evaluate
+that LLM
+
+315
+00:16:54.880 --> 00:16:58.350
+diagnosis hallucinations,
+generate more data.
+
+316
+00:16:58.350 --> 00:17:01.387
+So, generate more data
+to actually tune the model better
+
+317
+00:17:01.387 --> 00:17:04.957
+with, again, another LLM
+call or multiple LLM calls
+
+318
+00:17:05.257 --> 00:17:09.261
+and appropriately
+expand your evaluation set or improve it.
+
+319
+00:17:09.261 --> 00:17:11.363
+So It's a better gold standard.
+
+320
+00:17:11.363 --> 00:17:12.231
+You make it harder.
+
+321
+00:17:12.231 --> 00:17:15.234
+And those three steps are,
+pretty critical, to getting it right.
+
+322
+00:17:15.267 --> 00:17:19.071
+And all of them call the model
+so that you can do it, do all of these
+
+323
+00:17:19.071 --> 00:17:19.872
+very scalably.
+
+324
+00:17:20.906 --> 00:17:21.206
+In the
+
+325
+00:17:21.206 --> 00:17:24.676
+next lesson,
+is about creating your own SQL agent.
+
+326
+00:17:24.977 --> 00:17:25.978
+See you there.
+

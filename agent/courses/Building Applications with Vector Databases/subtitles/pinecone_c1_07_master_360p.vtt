@@ -1,0 +1,31 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:04.880
+In this course, you learned about the essentials of building applications using vector databases.
+
+2
+00:00:05.440 --> 00:00:10.479
+You built simple search and recommendation systems, retrieval augmented generation, or RAG,
+
+3
+00:00:11.119 --> 00:00:15.279
+explored hybrid search, looked for facial similarities in the royal family,
+
+4
+00:00:15.279 --> 00:00:19.520
+and finally found anomalous log entries in Cisco ASA log files.
+
+5
+00:00:20.319 --> 00:00:23.520
+We only scratched the surface of what's possible with vector databases,
+
+6
+00:00:23.520 --> 00:00:27.360
+and I encourage you to explore far beyond the material we covered today.
+
+7
+00:00:27.360 --> 00:00:31.120
+I'm looking forward to seeing what you've built on your own.
+

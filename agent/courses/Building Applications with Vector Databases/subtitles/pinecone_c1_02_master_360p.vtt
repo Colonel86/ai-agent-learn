@@ -1,0 +1,931 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:07.000
+In this lesson, you will build a RAG system, or Retrieval Augmented Generation System using Pinecone.
+
+2
+00:00:07.000 --> 00:00:13.000
+You will work with a sample dataset of Wikipedia articles and build vector embeddings out of the articles.
+
+3
+00:00:13.000 --> 00:00:18.000
+Then you will look at what search results look like by doing a simple document retrieval from Pinecone.
+
+4
+00:00:18.000 --> 00:00:23.000
+Then while working with OpenAI, you will build a nicely summarized article out of these results.
+
+5
+00:00:23.000 --> 00:00:26.000
+All right, let's dive into the code.
+
+6
+00:00:26.000 --> 00:00:33.000
+Now we're going to build a classic Retrieval Augmented Generation, or RAG system, using Pinecone with OpenAI.
+
+7
+00:00:33.000 --> 00:00:35.000
+And it's going to look something like this.
+
+8
+00:00:35.000 --> 00:00:40.000
+So we have our happy-faced user that we had in previous lessons here on the left.
+
+9
+00:00:40.000 --> 00:00:46.000
+And what he's going to do is ask a question against a dataset that we will have prepared and stored in Pinecone.
+
+10
+00:00:46.000 --> 00:00:49.000
+And in this case, we'll ask, what was the Berlin Wall?
+
+11
+00:00:49.000 --> 00:00:54.000
+And similar to other lessons, we got back long responses or documents from Pinecone.
+
+12
+00:00:54.000 --> 00:00:59.000
+But it would be really nice if we could take some of those long responses and get a summarized version of them.
+
+13
+00:00:59.000 --> 00:01:06.000
+And what we'll do is show how to build and do a little bit of prompt engineering out of the responses from Pinecone,
+
+14
+00:01:06.000 --> 00:01:12.000
+send those back into the prompt of OpenAI, and get back a beautifully written response from OpenAI.
+
+15
+00:01:12.000 --> 00:01:14.000
+And this is really just RAG in a nutshell.
+
+16
+00:01:14.000 --> 00:01:18.000
+And I definitely encourage you to try different versions of doing prompt engineering.
+
+17
+00:01:18.000 --> 00:01:22.000
+Ours is just a fairly simple example to show you what it might look like.
+
+18
+00:01:22.000 --> 00:01:24.000
+So let's get started.
+
+19
+00:01:24.000 --> 00:01:27.000
+So what we're going to do is first clear out warnings.
+
+20
+00:01:27.000 --> 00:01:32.000
+So we've seen this previously before where we import warnings and filter out the warnings.
+
+21
+00:01:32.000 --> 00:01:34.000
+And this is just to keep things clean for us.
+
+22
+00:01:34.000 --> 00:01:38.000
+So then we're going to pull in the packages that we rely on.
+
+23
+00:01:38.000 --> 00:01:44.000
+And, again, we have our deep learning AI tools package that manages keys from OpenAI and Pinecone for us.
+
+24
+00:01:44.000 --> 00:01:48.000
+And then we're going to set up Pinecone similar to how we have before.
+
+25
+00:01:48.000 --> 00:01:53.000
+So we're going to get the API key as so.
+
+26
+00:01:53.000 --> 00:01:54.000
+Okay.
+
+27
+00:01:54.000 --> 00:02:00.000
+Now that we have our Pinecone API key, we're going to, as usual, connect to Pinecone.
+
+28
+00:02:00.000 --> 00:02:03.000
+So first connect to Pinecone.
+
+29
+00:02:03.000 --> 00:02:08.000
+Then get the index name using our utils package.
+
+30
+00:02:08.000 --> 00:02:14.000
+And then delete our index if it already exists.
+
+31
+00:02:14.000 --> 00:02:16.000
+And then create the index.
+
+32
+00:02:17.000 --> 00:02:22.000
+And then finally get a pointer to the index that we just created.
+
+33
+00:02:22.000 --> 00:02:26.000
+Let's look at our index name just for fun.
+
+34
+00:02:26.000 --> 00:02:27.000
+All right.
+
+35
+00:02:27.000 --> 00:02:29.000
+Something long and unintelligible, but that's okay.
+
+36
+00:02:29.000 --> 00:02:31.000
+It works great nonetheless.
+
+37
+00:02:31.000 --> 00:02:34.000
+So now we're going to download our data.
+
+38
+00:02:34.000 --> 00:02:38.000
+And we prepared that ahead of time so that you don't have to watch us download data.
+
+39
+00:02:38.000 --> 00:02:40.000
+It's sort of like a cooking show in that sense.
+
+40
+00:02:41.000 --> 00:02:46.000
+And then the output file will be called lesson2wiki.csv.zip.
+
+41
+00:02:46.000 --> 00:02:52.000
+And it's a file sitting on Dropbox somewhere with a long, long URL.
+
+42
+00:02:52.000 --> 00:02:56.000
+And then after it gets downloaded, we unzip that file.
+
+43
+00:02:56.000 --> 00:02:59.000
+And you'll have a CSV file locally in your notebook.
+
+44
+00:02:59.000 --> 00:03:03.000
+So once we do that, then we're going to create a data frame out of it.
+
+45
+00:03:03.000 --> 00:03:08.000
+And so this is a data frame using DFS shorthand for data frame.
+
+46
+00:03:08.000 --> 00:03:10.000
+And we're using Pandas to read the CSV file.
+
+47
+00:03:10.000 --> 00:03:14.000
+So that's reads underscore CSV, and we're reading the file that we just unzipped.
+
+48
+00:03:14.000 --> 00:03:18.000
+And then let's just take a quick look at the data that we have.
+
+49
+00:03:18.000 --> 00:03:20.000
+Okay, so we used DataFrame.head to look at the data.
+
+50
+00:03:20.000 --> 00:03:22.000
+And so there's a few columns of interest.
+
+51
+00:03:22.000 --> 00:03:25.000
+One is the unique identifier for the data.
+
+52
+00:03:25.000 --> 00:03:29.000
+There's the metadata that has the source of the articles and the content.
+
+53
+00:03:29.000 --> 00:03:32.000
+And then there's the vector embeddings themselves under values.
+
+54
+00:03:32.000 --> 00:03:35.000
+And these are good examples of what a vector embedding looks like.
+
+55
+00:03:35.000 --> 00:03:38.000
+It's really just a list of floating point numbers.
+
+56
+00:03:38.000 --> 00:03:44.000
+And now we'll prepare the embeddings and upload them into Pinecone.
+
+57
+00:03:44.000 --> 00:03:46.000
+So we'll create an array called prepped.
+
+58
+00:03:46.000 --> 00:03:49.000
+That's going to save what we store into Pinecone.
+
+59
+00:03:49.000 --> 00:03:53.000
+And then we will iterate through the data frame.
+
+60
+00:03:53.000 --> 00:03:54.000
+So we'll iterate through the data frame.
+
+61
+00:03:54.000 --> 00:03:58.000
+We'll use QDM again to get a progress bar.
+
+62
+00:03:58.000 --> 00:04:03.000
+And then we will get the metadata from it.
+
+63
+00:04:03.000 --> 00:04:07.000
+Because that's a string, we're going to use literal eval from the AST package
+
+64
+00:04:07.000 --> 00:04:11.000
+to get a dictionary back.
+
+65
+00:04:11.000 --> 00:04:15.000
+And then we're going to append it to what we just created.
+
+66
+00:04:15.000 --> 00:04:20.000
+And this is how you create a vector embedding in Pinecone,
+
+67
+00:04:20.000 --> 00:04:23.000
+is this long dictionary of values that I cut and pasted here
+
+68
+00:04:23.000 --> 00:04:26.000
+because it's a long value expended to.
+
+69
+00:04:26.000 --> 00:04:28.000
+So what we have here is really a tuple again.
+
+70
+00:04:28.000 --> 00:04:31.000
+You have an ID that's a unique identifier for the embedding.
+
+71
+00:04:31.000 --> 00:04:36.000
+You have the values, which is really the vector embedding itself.
+
+72
+00:04:36.000 --> 00:04:37.000
+And then you have metadata.
+
+73
+00:04:37.000 --> 00:04:40.000
+And we just took the metadata we had from the line above.
+
+74
+00:04:40.000 --> 00:04:42.000
+And this is the article information.
+
+75
+00:04:42.000 --> 00:04:46.000
+Now what we're going to do is upload that data into Pinecone.
+
+76
+00:04:46.000 --> 00:04:50.000
+So what we want to do is do it in batches.
+
+77
+00:04:50.000 --> 00:04:55.000
+So if the length of that prepared array is greater than 200,
+
+78
+00:04:55.000 --> 00:04:58.000
+we're going to do it in batches of 200.
+
+79
+00:04:58.000 --> 00:05:02.000
+And then we're going to insert it into Pinecone.
+
+80
+00:05:02.000 --> 00:05:05.000
+And then once it's inserted, we're going to clear that out
+
+81
+00:05:05.000 --> 00:05:07.000
+so that we can do it all over again.
+
+82
+00:05:07.000 --> 00:05:10.000
+So, again, a Pinecone embedding is really three things.
+
+83
+00:05:10.000 --> 00:05:12.000
+There's the ID that's a unique identifier for it.
+
+84
+00:05:12.000 --> 00:05:15.000
+There's the values that's the vector embedding.
+
+85
+00:05:15.000 --> 00:05:18.000
+And then there's metadata that goes with the vector embedding.
+
+86
+00:05:18.000 --> 00:05:21.000
+In this case, it's the article metadata.
+
+87
+00:05:21.000 --> 00:05:23.000
+And now what we're going to do is upload data
+
+88
+00:05:23.000 --> 00:05:26.000
+in batches of 200 vectors at a time into Pinecone.
+
+89
+00:05:26.000 --> 00:05:30.000
+So we'll check to see if we've stored 200 elements into this prepped array.
+
+90
+00:05:30.000 --> 00:05:33.000
+And if so, then we upsort the data, and then we clear it out again.
+
+91
+00:05:33.000 --> 00:05:35.000
+And so we'll run that.
+
+92
+00:05:35.000 --> 00:05:39.000
+And so we'll see tqdm do its thing while we upload data into Pinecone.
+
+93
+00:05:46.000 --> 00:05:49.000
+So we finished uploading our data into Pinecone,
+
+94
+00:05:49.000 --> 00:05:53.000
+and let's verify what was uploaded.
+
+95
+00:05:53.000 --> 00:05:58.000
+So we will use index.describeIndexStats and look at it.
+
+96
+00:05:58.000 --> 00:06:02.000
+All right, we have 10,000 elements, just as we had hoped.
+
+97
+00:06:02.000 --> 00:06:05.000
+Now we're going to use OpenAI.
+
+98
+00:06:05.000 --> 00:06:10.000
+So what we're going to do is get our OpenAI API key.
+
+99
+00:06:10.000 --> 00:06:15.000
+And that is utilizing this package that we created that we keep mentioning
+
+100
+00:06:15.000 --> 00:06:20.000
+called dlai-utils, and we're going to get our API key.
+
+101
+00:06:20.000 --> 00:06:25.000
+And we're going to get a pointer to the OpenAI client.
+
+102
+00:06:30.000 --> 00:06:34.000
+And then I have a small helper routine that I've defined
+
+103
+00:06:34.000 --> 00:06:38.000
+to help you get back a vector embedding from OpenAI.
+
+104
+00:06:38.000 --> 00:06:40.000
+So this is called getEmbeddings, and what this does is
+
+105
+00:06:40.000 --> 00:06:42.000
+it's basically taking an array of text,
+
+106
+00:06:42.000 --> 00:06:45.000
+and it's going to use the Ada embedding model
+
+107
+00:06:45.000 --> 00:06:51.000
+and return to you vector embeddings for the text in the array of articles.
+
+108
+00:06:51.000 --> 00:06:55.000
+And it just basically just returns it sort of blindly.
+
+109
+00:06:55.000 --> 00:06:58.000
+By the way, you'll notice that we had that batch of 200
+
+110
+00:06:58.000 --> 00:07:00.000
+that I talked about earlier before.
+
+111
+00:07:00.000 --> 00:07:03.000
+Feel free to try and play with that number and see what you can get.
+
+112
+00:07:03.000 --> 00:07:06.000
+I found that, for me personally, it worked great at 200.
+
+113
+00:07:06.000 --> 00:07:09.000
+Pinecone recommends that you do something between 100 and 500,
+
+114
+00:07:09.000 --> 00:07:12.000
+but I personally found that 200 was the fastest for me.
+
+115
+00:07:12.000 --> 00:07:14.000
+I'd love to hear from all of you out there
+
+116
+00:07:14.000 --> 00:07:17.000
+taking the lesson what was fastest for you.
+
+117
+00:07:17.000 --> 00:07:19.000
+And now we're all set up.
+
+118
+00:07:19.000 --> 00:07:21.000
+We have our data sitting in Pinecone.
+
+119
+00:07:21.000 --> 00:07:24.000
+We've connected to OpenAI, or we've prepared OpenAI,
+
+120
+00:07:24.000 --> 00:07:26.000
+and we're ready to execute some queries.
+
+121
+00:07:26.000 --> 00:07:29.000
+So let's talk about the Berlin Wall for just a moment,
+
+122
+00:07:29.000 --> 00:07:35.000
+and we will ask, what is the Berlin Wall?
+
+123
+00:07:35.000 --> 00:07:41.000
+And then we will build an embedding out of that query.
+
+124
+00:07:41.000 --> 00:07:45.000
+And then we will run a query against Pinecone.
+
+125
+00:07:45.000 --> 00:07:47.000
+And this is how we query Pinecone again.
+
+126
+00:07:47.000 --> 00:07:51.000
+It takes a pointer to the embedding that we just got above.
+
+127
+00:07:51.000 --> 00:07:53.000
+We're going to return the top three results.
+
+128
+00:07:53.000 --> 00:07:54.000
+Again, feel free to play with that.
+
+129
+00:07:54.000 --> 00:07:56.000
+You can change it to 5 or 10 or whatever you want to look at.
+
+130
+00:07:56.000 --> 00:07:59.000
+In this case, I only want to see 3 for demo purposes.
+
+131
+00:07:59.000 --> 00:08:01.000
+And then we want the article data itself,
+
+132
+00:08:01.000 --> 00:08:03.000
+and that's going to be sitting in the metadata section,
+
+133
+00:08:03.000 --> 00:08:05.000
+and we want to have that setting set to true
+
+134
+00:08:05.000 --> 00:08:08.000
+so that we get the metadata back.
+
+135
+00:08:09.000 --> 00:08:12.000
+And then what we'll do is parse the response out.
+
+136
+00:08:12.000 --> 00:08:15.000
+So we get back an object from Pinecone,
+
+137
+00:08:15.000 --> 00:08:18.000
+and we're going to extract out from the matches object
+
+138
+00:08:18.000 --> 00:08:20.000
+the text inside the metadata.
+
+139
+00:08:20.000 --> 00:08:22.000
+So that's what this comprehension does.
+
+140
+00:08:22.000 --> 00:08:25.000
+And then what we're going to do is look at it
+
+141
+00:08:25.000 --> 00:08:29.000
+by joining it to the newline character.
+
+142
+00:08:29.000 --> 00:08:32.000
+Now we're done with the setup,
+
+143
+00:08:32.000 --> 00:08:35.000
+and we're going to query Pinecone and see the results come back.
+
+144
+00:08:35.000 --> 00:08:36.000
+And so here we go.
+
+145
+00:08:36.000 --> 00:08:37.000
+We've got three articles.
+
+146
+00:08:37.000 --> 00:08:40.000
+We asked for three because we set top K to three
+
+147
+00:08:40.000 --> 00:08:42.000
+that have information about the Berlin Wall.
+
+148
+00:08:42.000 --> 00:08:45.000
+So this is a lot of text, and it's disconnected
+
+149
+00:08:45.000 --> 00:08:47.000
+because we have three discrete articles.
+
+150
+00:08:47.000 --> 00:08:49.000
+But it would be really nice to get that summarized
+
+151
+00:08:49.000 --> 00:08:51.000
+in something that's readable for folks
+
+152
+00:08:51.000 --> 00:08:53.000
+in case we want to use it for our homework assignment
+
+153
+00:08:53.000 --> 00:08:56.000
+or preparing a memo for work.
+
+154
+00:08:56.000 --> 00:08:57.000
+That's definitely what I would do,
+
+155
+00:08:57.000 --> 00:08:59.000
+and that's what we're going to do next.
+
+156
+00:08:59.000 --> 00:09:01.000
+And so we're going to prepare
+
+157
+00:09:01.000 --> 00:09:04.000
+through what's called prompt engineering.
+
+158
+00:09:04.000 --> 00:09:06.000
+We're going to build a small prompt
+
+159
+00:09:06.000 --> 00:09:09.000
+out of those articles that we just saw in Pinecone,
+
+160
+00:09:09.000 --> 00:09:11.000
+and it's going to take the following format.
+
+161
+00:09:11.000 --> 00:09:13.000
+We're going to say, write an article titled,
+
+162
+00:09:13.000 --> 00:09:15.000
+colon, what is the Berlin Wall?
+
+163
+00:09:15.000 --> 00:09:17.000
+We're basically instructing OpenAI to write an article for us
+
+164
+00:09:17.000 --> 00:09:19.000
+based on the Berlin Wall.
+
+165
+00:09:19.000 --> 00:09:22.000
+And what we're going to do is, again,
+
+166
+00:09:22.000 --> 00:09:24.000
+get our embeddings using the get embeddings helper function
+
+167
+00:09:24.000 --> 00:09:26.000
+that we just asked for.
+
+168
+00:09:26.000 --> 00:09:27.000
+We'll run this all over again.
+
+169
+00:09:27.000 --> 00:09:28.000
+We just did this, but that's okay.
+
+170
+00:09:28.000 --> 00:09:30.000
+It's fast.
+
+171
+00:09:30.000 --> 00:09:31.000
+We're going to run the query.
+
+172
+00:09:31.000 --> 00:09:34.000
+And now we're actually going to build our prompt,
+
+173
+00:09:34.000 --> 00:09:36.000
+and this is going to be fairly sophisticated
+
+174
+00:09:36.000 --> 00:09:38.000
+compared to just asking it a simple question.
+
+175
+00:09:38.000 --> 00:09:42.000
+So what we're going to do is iterate through the matches object
+
+176
+00:09:42.000 --> 00:09:44.000
+that we just got back from Pinecone
+
+177
+00:09:44.000 --> 00:09:46.000
+and get back that text,
+
+178
+00:09:46.000 --> 00:09:50.000
+and that's what we're going to store in the contexts array.
+
+179
+00:09:50.000 --> 00:09:53.000
+And then we're going to have a prompt start and a prompt end.
+
+180
+00:09:53.000 --> 00:09:56.000
+And prompt start is going to say,
+
+181
+00:09:56.000 --> 00:09:59.000
+answer the question based on the context below.
+
+182
+00:09:59.000 --> 00:10:01.000
+Note that it has a slash end, slash end at the end.
+
+183
+00:10:01.000 --> 00:10:03.000
+That's fairly important.
+
+184
+00:10:03.000 --> 00:10:04.000
+And then context.
+
+185
+00:10:04.000 --> 00:10:06.000
+And what's going to be inside the context
+
+186
+00:10:06.000 --> 00:10:09.000
+is those three articles that we just got back.
+
+187
+00:10:09.000 --> 00:10:12.000
+But before we do that, we're going to define the end,
+
+188
+00:10:12.000 --> 00:10:17.000
+and then what we'll do is join the start to our context to our end.
+
+189
+00:10:17.000 --> 00:10:20.000
+And our end is basically the question, right,
+
+190
+00:10:20.000 --> 00:10:22.000
+that we have above here,
+
+191
+00:10:22.000 --> 00:10:26.000
+and then we want to ask OpenAI to give us back an answer.
+
+192
+00:10:26.000 --> 00:10:30.000
+And so what we're going to do is define a tuple called prompt,
+
+193
+00:10:30.000 --> 00:10:39.000
+and prompt is going to have prompt start
+
+194
+00:10:39.000 --> 00:10:42.000
+plus some key newline characters and dashes.
+
+195
+00:10:42.000 --> 00:10:44.000
+That's just helping OpenAI recognize
+
+196
+00:10:44.000 --> 00:10:48.000
+that we're doing some prompt engineering here.
+
+197
+00:10:48.000 --> 00:10:51.000
+And then we have prompt end that we just declared above.
+
+198
+00:10:51.000 --> 00:10:53.000
+So we have prompt start,
+
+199
+00:10:53.000 --> 00:10:55.000
+answer the question based on the context below.
+
+200
+00:10:55.000 --> 00:10:59.000
+We have context, which is the result we got back from Pinecone,
+
+201
+00:10:59.000 --> 00:11:01.000
+and then we have the end, which is question colon,
+
+202
+00:11:01.000 --> 00:11:03.000
+and it was the question we're asking.
+
+203
+00:11:03.000 --> 00:11:05.000
+In this case, it's what's the Berlin Wall,
+
+204
+00:11:05.000 --> 00:11:06.000
+and then we're asking it for an answer,
+
+205
+00:11:06.000 --> 00:11:10.000
+and that will be stored in the tuple named prompt.
+
+206
+00:11:10.000 --> 00:11:14.000
+And let's take a look at what we have.
+
+207
+00:11:14.000 --> 00:11:15.000
+All right.
+
+208
+00:11:15.000 --> 00:11:17.000
+Answer the question based on the context below,
+
+209
+00:11:17.000 --> 00:11:21.000
+the context, which is the summary of each of our responses from Pinecone,
+
+210
+00:11:21.000 --> 00:11:25.000
+and then write an article titled what is the Berlin Wall answer.
+
+211
+00:11:25.000 --> 00:11:26.000
+All right.
+
+212
+00:11:26.000 --> 00:11:28.000
+Now we're ready to send that to OpenAI.
+
+213
+00:11:28.000 --> 00:11:34.000
+And so what we're going to do is talk to OpenAI in a very typical fashion.
+
+214
+00:11:34.000 --> 00:11:36.000
+We're going to use the completions API.
+
+215
+00:11:36.000 --> 00:11:41.000
+We're going to use GPT 3.5 turbo, and we're going to ask for 1,500 tokens max.
+
+216
+00:11:41.000 --> 00:11:44.000
+And, again, all of this is things that you can tune and play with yourself.
+
+217
+00:11:44.000 --> 00:11:48.000
+Feel free to change max tokens or temperature.
+
+218
+00:11:48.000 --> 00:11:51.000
+And then we're going to do one of my favorite things,
+
+219
+00:11:51.000 --> 00:11:57.000
+which is this little toy function to print out a delimiter to keep everything clean,
+
+220
+00:11:57.000 --> 00:12:02.000
+and then we're going to print out a response from OpenAI.
+
+221
+00:12:02.000 --> 00:12:04.000
+All right.
+
+222
+00:12:04.000 --> 00:12:06.000
+And there we have it.
+
+223
+00:12:06.000 --> 00:12:09.000
+We have a nicely written article about the Berlin Wall, right?
+
+224
+00:12:09.000 --> 00:12:12.000
+The Berlin Wall, known as the Iron Curtain, was a physical and ideological barrier.
+
+225
+00:12:12.000 --> 00:12:15.000
+Okay, that's not so great, but the article is well written,
+
+226
+00:12:15.000 --> 00:12:18.000
+and it's using the information that we got back from Pinecone.
+
+227
+00:12:18.000 --> 00:12:21.000
+So in this lesson, we looked at data that came back from Pinecone.
+
+228
+00:12:21.000 --> 00:12:24.000
+We got three discrete documents back from it.
+
+229
+00:12:24.000 --> 00:12:28.000
+We took that, built a prompt-engineered query into OpenAI,
+
+230
+00:12:28.000 --> 00:12:32.000
+and got back a nicely summarized response from OpenAI that's well written
+
+231
+00:12:32.000 --> 00:12:34.000
+and probably usable for your homework assignment even.
+
+232
+00:12:34.000 --> 00:12:37.000
+In the next lesson, we're going to build a basic recommendation system.
+

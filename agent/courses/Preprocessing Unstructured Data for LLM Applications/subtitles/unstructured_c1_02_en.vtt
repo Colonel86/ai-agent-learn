@@ -1,0 +1,324 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:104453
+
+1
+00:00:00.160 --> 00:00:03.710
+In this lesson, you will learn all the
+foundations of LLM Data pre-processing,
+
+2
+00:00:14.939 --> 00:00:15.599
+Let's dive in.
+
+3
+00:00:16.550 --> 00:00:18.039
+Before you learn how to
+pre-process specific data types,
+
+4
+00:00:23.440 --> 00:00:27.192
+First, it's important to understand
+retrieval augmented generation or RAG.
+
+5
+00:00:27.192 --> 00:00:31.695
+This is a technique for grounding LLM
+responses on validated external information,
+
+6
+00:00:31.695 --> 00:00:33.571
+such as your corporate information.
+
+7
+00:00:33.571 --> 00:00:36.572
+This information can be
+contained in various document
+
+8
+00:00:36.572 --> 00:00:39.950
+types such as emails or
+PDFs or PowerPoint slides.
+
+9
+00:00:40.369 --> 00:00:42.929
+Conceptually, RAG
+applications load this external context
+
+10
+00:00:42.929 --> 00:00:45.850
+into a database and then
+retrieve that content,
+
+11
+00:00:45.850 --> 00:00:50.600
+insert it into a prompt, and
+then pass that prompt to an LLM.
+
+12
+00:00:51.829 --> 00:00:57.506
+That way, by the time a
+question or a prompt gets to the LLM,
+
+13
+00:00:57.506 --> 00:01:02.777
+it contains external information that
+the LLM can use to construct its response.
+
+14
+00:01:02.777 --> 00:01:03.993
+Within industry applications,
+
+15
+00:01:03.993 --> 00:01:06.426
+this is extremely
+relevant because organizational
+
+16
+00:01:06.426 --> 00:01:09.670
+data exists in a wide variety of formats.
+
+17
+00:01:10.250 --> 00:01:12.790
+Pre-processing
+documents includes a few steps.
+
+18
+00:01:13.650 --> 00:01:16.069
+First, you need to
+extract the document content.
+
+19
+00:01:16.510 --> 00:01:18.620
+This is the text
+content from the documents
+
+20
+00:01:18.620 --> 00:01:20.730
+that can be used to
+construct your prompts.
+
+21
+00:01:21.129 --> 00:01:24.840
+There's other information
+that's important to extract as well,
+
+22
+00:01:24.840 --> 00:01:26.069
+including document elements.
+
+23
+00:01:26.769 --> 00:01:29.859
+These are the basic
+building blocks of a document,
+
+24
+00:01:29.859 --> 00:01:32.609
+such as titles, narrative
+text, lists, and tables.
+
+25
+00:01:32.670 --> 00:01:35.683
+You can use these
+document elements for a variety
+
+26
+00:01:35.683 --> 00:01:38.362
+of tasks that are
+important to RAG applications,
+
+27
+00:01:38.362 --> 00:01:40.036
+such as chunking and filtering.
+
+28
+00:01:40.036 --> 00:01:43.719
+You will learn more about these
+operations later in the course.
+
+29
+00:01:44.299 --> 00:01:47.629
+In addition, it is important
+to extract element metadata,
+
+30
+00:01:47.629 --> 00:01:50.219
+such as page number or file type.
+
+31
+00:01:50.799 --> 00:01:54.530
+Later in the course,
+you will learn how to use
+
+32
+00:01:54.530 --> 00:01:56.780
+this information when
+performing hybrid search,
+
+33
+00:01:56.780 --> 00:02:00.510
+which allows you to filter the
+information that you extract
+
+34
+00:02:00.510 --> 00:02:03.500
+from a vector database when
+constructing your prompt.
+
+35
+00:02:04.200 --> 00:02:08.349
+So why is data pre-processing hard?
+Well, there are a few reasons. First,
+
+36
+00:02:08.349 --> 00:02:10.840
+different document types
+have different content cues.
+
+37
+00:02:11.479 --> 00:02:13.379
+So an HTML file, for example,
+
+38
+00:02:13.379 --> 00:02:16.539
+may use tag names to
+give an indication as to
+
+39
+00:02:16.539 --> 00:02:20.030
+whether a piece of text
+is a title or a list.
+
+40
+00:02:20.870 --> 00:02:24.270
+PDFs will have visual cues,
+so an entirely different cue.
+
+41
+00:02:24.770 --> 00:02:28.280
+And so being able to
+pre-process all of these different
+
+42
+00:02:28.280 --> 00:02:31.099
+document types in a
+common manner requires you
+
+43
+00:02:31.099 --> 00:02:33.560
+to understand how
+different document types indicate
+
+44
+00:02:33.560 --> 00:02:36.719
+what a different element
+is in that document type.
+
+45
+00:02:37.620 --> 00:02:39.960
+Second, documents come
+in a variety of formats,
+
+46
+00:02:39.960 --> 00:02:42.580
+and you need to
+standardize these so that your
+
+47
+00:02:42.580 --> 00:02:44.919
+application can process
+them in the same way.
+
+48
+00:02:50.379 --> 00:02:50.599
+So ideally, your application just needs
+to know what the external information is.
+
+49
+00:02:54.620 --> 00:02:55.120
+It doesn't necessarily care whether
+the source document is an HTML or a PDF.
+
+50
+00:03:00.900 --> 00:03:01.020
+By standardizing these documents,
+
+51
+00:03:01.020 --> 00:03:01.479
+you can treat all of these documents in
+the same way in your end user application.
+
+52
+00:03:07.000 --> 00:03:07.740
+However, standardizing
+is hard because, again,
+
+53
+00:03:07.740 --> 00:03:08.610
+these documents have
+different formats and different
+
+54
+00:03:08.610 --> 00:03:09.599
+cues as to what the element types are.
+
+55
+00:03:09.599 --> 00:03:13.750
+Additionally, different documents have
+different formats. And so, for example,
+
+56
+00:03:13.750 --> 00:03:15.900
+a journal article and
+a form are different.
+
+57
+00:03:16.620 --> 00:03:17.560
+And so data pre-processing techniques need
+
+58
+00:03:22.120 --> 00:03:24.530
+Finally, you need to
+understand information
+
+59
+00:03:24.530 --> 00:03:27.330
+about document
+structure in order to extract
+
+60
+00:03:27.330 --> 00:03:32.150
+meaningful metadata that you can use for
+various operations in RAG applications,
+
+61
+00:03:32.150 --> 00:03:36.560
+such as filtering, that you'll
+learn about later in this course.
+
+62
+00:03:35.770 --> 00:03:40.340
+All in all, there are a lot of moving
+parts when it comes to data preprocessing.
+
+63
+00:03:40.919 --> 00:03:42.210
+And it's not very simple,
+
+64
+00:03:42.210 --> 00:03:45.800
+but it's an important part of getting
+up and running with a RAG application.
+
+65
+00:03:46.479 --> 00:03:50.110
+In the next lesson, we'll
+jump in and we'll learn
+
+66
+00:03:50.110 --> 00:03:53.009
+how to pre-process a few
+different document types,
+
+67
+00:03:53.009 --> 00:03:54.819
+including PowerPoints, HTML, and PDFs.

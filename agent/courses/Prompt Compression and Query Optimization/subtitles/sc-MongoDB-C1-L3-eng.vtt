@@ -1,0 +1,812 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.068 --> 00:00:04.771
+In this
+lesson, you'll learn how to streamline
+
+2
+00:00:04.771 --> 00:00:09.209
+the outputs from database operation
+by incorporating a projection stage
+
+3
+00:00:09.309 --> 00:00:12.312
+into the MongoDB aggregation pipeline.
+
+4
+00:00:12.479 --> 00:00:15.448
+This will effectively reduce
+the amount of data returned,
+
+5
+00:00:15.448 --> 00:00:18.418
+optimizing performance and data handling.
+
+6
+00:00:18.885 --> 00:00:21.688
+All right, let's get on with it.
+
+7
+00:00:21.688 --> 00:00:25.492
+In the previous lesson,
+you modified the fields within the documents
+
+8
+00:00:25.492 --> 00:00:30.463
+returned after vector such and other stage
+operations by using pydantic
+
+9
+00:00:30.463 --> 00:00:34.734
+and specifying the attributes
+that you wanted in the pydantic model.
+
+10
+00:00:34.901 --> 00:00:36.036
+In this scenario,
+
+11
+00:00:36.036 --> 00:00:39.806
+you're not using the entire fields
+in the documents returned by results
+
+12
+00:00:39.806 --> 00:00:43.610
+of the aggregation pipeline,
+but you are leaving it to the application
+
+13
+00:00:43.610 --> 00:00:47.914
+layer to handle the removal
+of unwanted attributes or fields.
+
+14
+00:00:48.681 --> 00:00:53.053
+This can have disadvantages
+such as increased network traffic
+
+15
+00:00:53.053 --> 00:00:57.424
+and processing time, as unwanted
+data must still be transmitted
+
+16
+00:00:57.424 --> 00:01:00.693
+and then filtered out at the application
+layer.
+
+17
+00:01:00.927 --> 00:01:02.762
+With a MongoDB database,
+
+18
+00:01:02.762 --> 00:01:07.033
+the inclusion or exclusion of specific
+fields can be handled
+
+19
+00:01:07.200 --> 00:01:10.837
+as another stage to add to the aggregation
+pipeline.
+
+20
+00:01:11.137 --> 00:01:14.574
+This is done through a technique
+known as projection,
+
+21
+00:01:14.841 --> 00:01:19.746
+which outputs the same number of documents
+as the previous stage before it,
+
+22
+00:01:20.113 --> 00:01:24.584
+but reduces
+the fields return in each document.
+
+23
+00:01:24.918 --> 00:01:29.255
+The projection technique
+within MongoDB works by specifying fields
+
+24
+00:01:29.255 --> 00:01:32.959
+to include or exclude
+from the final documents.
+
+25
+00:01:33.460 --> 00:01:37.597
+For example, the document
+representation of the Mona Lisa painting
+
+26
+00:01:37.597 --> 00:01:42.597
+we used in previous lesson, can be reduced
+to a select few fields
+
+27
+00:01:42.735 --> 00:01:45.839
+using the project operator in MongoDB,
+
+28
+00:01:45.905 --> 00:01:48.908
+which you will get to implement
+in the code section soon.
+
+29
+00:01:49.476 --> 00:01:54.347
+There are several advantages to projection
+with the inclusion of projection,
+
+30
+00:01:54.414 --> 00:01:58.551
+the overall memory usage
+at the application layer reduces
+
+31
+00:01:58.818 --> 00:02:03.556
+as less data is passed as results
+from database operations.
+
+32
+00:02:03.723 --> 00:02:06.726
+This can also contribute
+to reduce query execution time.
+
+33
+00:02:06.860 --> 00:02:09.529
+And there is the case of security
+and privacy.
+
+34
+00:02:09.529 --> 00:02:12.665
+Take for example,
+a finance application where personal
+
+35
+00:02:12.665 --> 00:02:15.869
+information and sensitive
+data are stored in documents.
+
+36
+00:02:16.202 --> 00:02:20.140
+It can be useful to have the database
+handle the logic of removing
+
+37
+00:02:20.140 --> 00:02:23.977
+sensitive information
+before being sent to downstream processes.
+
+38
+00:02:24.577 --> 00:02:27.180
+This provides an overall improved sense
+
+39
+00:02:27.180 --> 00:02:30.183
+of security in the application.
+
+40
+00:02:30.183 --> 00:02:31.751
+In the coding section,
+
+41
+00:02:31.751 --> 00:02:35.889
+you will go through familiar steps
+to implement a RAG system,
+
+42
+00:02:36.156 --> 00:02:40.260
+add a filter stage, but then add
+an additional projection stage,
+
+43
+00:02:40.593 --> 00:02:43.196
+and then you will proceed
+to handle the user query.
+
+44
+00:02:44.164 --> 00:02:45.899
+Let's code.
+
+45
+00:02:45.899 --> 00:02:47.901
+You will start by importing
+
+46
+00:02:47.901 --> 00:02:50.904
+the custom
+utils as you did in the previous lesson.
+
+47
+00:02:51.371 --> 00:02:54.974
+Then move on to downloading the dataset
+from HuggingFace
+
+48
+00:02:55.275 --> 00:02:58.278
+as you also did in the previous lesson.
+
+49
+00:02:58.311 --> 00:03:00.813
+You also load up the listings dataset
+
+50
+00:03:00.813 --> 00:03:05.251
+by conforming to the pydantic model
+defined in the customer utils,
+
+51
+00:03:05.451 --> 00:03:10.451
+just like you did in previous lesson,
+and move on to connect to your database
+
+52
+00:03:11.357 --> 00:03:14.360
+and delete records in the collection
+
+53
+00:03:15.094 --> 00:03:18.198
+and you observe the number of collections
+deleted.
+
+54
+00:03:19.299 --> 00:03:24.299
+Just like the previous lesson,
+you will insert a new batch of records.
+
+55
+00:03:24.671 --> 00:03:27.674
+Here, you're using a vector search index
+or a filter
+
+56
+00:03:27.674 --> 00:03:30.677
+similar
+to the one you created in the last lesson.
+
+57
+00:03:30.977 --> 00:03:34.781
+This code is moved into the custom
+utils module
+
+58
+00:03:35.181 --> 00:03:37.917
+and you will load it by calling the set up
+vector search
+
+59
+00:03:37.917 --> 00:03:41.654
+index of filter function
+and passing in the collection object.
+
+60
+00:03:41.988 --> 00:03:44.724
+This will create a vector search index
+
+61
+00:03:44.724 --> 00:03:47.727
+that is optimized to retrieve data
+
+62
+00:03:48.161 --> 00:03:52.265
+with the accommodates
+and bedroom attributes.
+
+63
+00:03:52.498 --> 00:03:56.336
+You will start by defining a search result
+
+64
+00:03:56.469 --> 00:03:59.472
+model similar to what you've done
+in the previous lesson,
+
+65
+00:03:59.739 --> 00:04:04.739
+this time with some new attributes
+such as score and notes.
+
+66
+00:04:05.445 --> 00:04:10.445
+In the next cell, you implement
+the handle user query function.
+
+67
+00:04:11.084 --> 00:04:16.084
+This is similar to the function
+that you've created in previous lesson.
+
+68
+00:04:17.023 --> 00:04:21.628
+The main difference for this function
+is that were printing out
+
+69
+00:04:21.995 --> 00:04:25.298
+the list of fields in the first document.
+
+70
+00:04:25.665 --> 00:04:29.168
+You're doing this
+by accessing the first element
+
+71
+00:04:29.769 --> 00:04:34.240
+returned from get knowledge
+and iterating through the keys.
+
+72
+00:04:34.641 --> 00:04:35.341
+You are doing
+
+73
+00:04:35.341 --> 00:04:40.341
+this to observe the fields of documents
+that are allowed through the projection
+
+74
+00:04:40.680 --> 00:04:43.683
+stage before being done limited,
+
+75
+00:04:43.716 --> 00:04:47.453
+and pass into the search
+result item model.
+
+76
+00:04:47.920 --> 00:04:50.690
+Now, you're going to implement a projection
+
+77
+00:04:50.690 --> 00:04:53.693
+stage and add it to the additional stages
+
+78
+00:04:53.826 --> 00:04:57.497
+that will be passed into the vector
+search query function.
+
+79
+00:04:58.131 --> 00:05:01.934
+You're going to define a variable
+called projection stage
+
+80
+00:05:02.168 --> 00:05:05.705
+and assign it to a projection document.
+
+81
+00:05:06.539 --> 00:05:10.276
+A projection stage is executed
+on a database operation
+
+82
+00:05:10.643 --> 00:05:13.646
+and indicated by the dollar operator
+
+83
+00:05:13.680 --> 00:05:15.281
+and the word project.
+
+84
+00:05:15.281 --> 00:05:17.116
+This command takes in a document
+
+85
+00:05:17.116 --> 00:05:20.119
+that represents the field
+that are to be projected.
+
+86
+00:05:20.453 --> 00:05:24.424
+One thing to note is
+every document returned by the aggregation
+
+87
+00:05:24.424 --> 00:05:28.895
+pipeline, will include an underscore
+ID field.
+
+88
+00:05:29.195 --> 00:05:32.031
+This is returned automatically.
+
+89
+00:05:32.031 --> 00:05:34.867
+You can exclude it by indicating
+
+90
+00:05:34.867 --> 00:05:37.904
+the number zero
+as the value for the field.
+
+91
+00:05:38.538 --> 00:05:40.340
+This is an exclusion.
+
+92
+00:05:40.340 --> 00:05:43.343
+To include a field in a projection,
+
+93
+00:05:43.643 --> 00:05:46.713
+you would mention the name of the field
+
+94
+00:05:47.714 --> 00:05:48.281
+such as
+
+95
+00:05:48.281 --> 00:05:51.884
+accommodates and assign it to value
+one to include.
+
+96
+00:05:52.318 --> 00:05:54.687
+This is an inclusion pattern.
+
+97
+00:05:54.687 --> 00:05:58.791
+As you can observe
+we follow the same pattern for the fields
+
+98
+00:05:59.058 --> 00:06:02.061
+we want to project.
+
+99
+00:06:02.161 --> 00:06:05.064
+By including fields to project,
+
+100
+00:06:05.064 --> 00:06:10.064
+you are automatically excluding fields
+that are not mentioned.
+
+101
+00:06:10.703 --> 00:06:13.973
+Now that is all you need to do
+for the projection stage.
+
+102
+00:06:14.140 --> 00:06:18.745
+But also notice
+you are adding a score field
+
+103
+00:06:18.911 --> 00:06:23.911
+and assigning the value of the vector
+such score to that field.
+
+104
+00:06:24.751 --> 00:06:27.754
+This is a way to get the similarity score
+
+105
+00:06:27.987 --> 00:06:31.457
+of the vector
+search operation into the document
+
+106
+00:06:32.058 --> 00:06:34.694
+return from the database operation.
+
+107
+00:06:34.694 --> 00:06:39.332
+Now, placing the projection stage
+into a Python list
+
+108
+00:06:39.532 --> 00:06:43.436
+and assign that to the additional stage
+variable.
+
+109
+00:06:44.570 --> 00:06:46.072
+One more thing,
+
+110
+00:06:46.072 --> 00:06:50.977
+these are all the fields and attributes
+we want in our pydantic model,
+
+111
+00:06:51.310 --> 00:06:55.314
+which should be included
+in any of your projection documents.
+
+112
+00:06:55.848 --> 00:06:59.452
+This cell will look familiar
+as you've used it in a previous lesson.
+
+113
+00:07:00.119 --> 00:07:04.257
+Here, you have the user query to look
+for places
+
+114
+00:07:04.257 --> 00:07:06.659
+warm friendly. And here are the
+
+115
+00:07:06.659 --> 00:07:09.529
+main changes. In the handle user query,
+
+116
+00:07:09.529 --> 00:07:13.032
+you'll pass in the additional stage
+that contains the list,
+
+117
+00:07:13.032 --> 00:07:16.836
+which includes the projection
+stage. The handle user query
+
+118
+00:07:16.836 --> 00:07:20.106
+will also print
+fields of the first document
+
+119
+00:07:20.373 --> 00:07:25.373
+before the documents are processed
+by the pydantic model.
+
+120
+00:07:25.745 --> 00:07:29.715
+Also,
+you're using the vector index with filter
+
+121
+00:07:30.016 --> 00:07:32.685
+for this vector the search operation.
+
+122
+00:07:34.320 --> 00:07:35.721
+After running
+
+123
+00:07:35.721 --> 00:07:39.826
+this cell, you'll observe
+that the database vector
+
+124
+00:07:39.826 --> 00:07:43.029
+search operation was executed
+in a fraction of a millisecond.
+
+125
+00:07:43.963 --> 00:07:48.734
+You'll also observe the fields
+that are included in the document
+
+126
+00:07:49.135 --> 00:07:53.239
+are the ones
+we included in the projection.
+
+127
+00:07:53.606 --> 00:07:57.477
+We have the name, summary space
+and other fields
+
+128
+00:07:57.710 --> 00:08:01.681
+that we wanted to be projected
+and included in the documents.
+
+129
+00:08:02.415 --> 00:08:04.684
+The results are still the same,
+
+130
+00:08:04.684 --> 00:08:07.520
+and we're still getting
+the same documents.
+
+131
+00:08:07.520 --> 00:08:09.355
+I want to show you one thing.
+
+132
+00:08:09.355 --> 00:08:13.426
+When conducting a projection,
+it's important you maintain the pattern
+
+133
+00:08:13.659 --> 00:08:16.662
+throughout for every field indicated.
+
+134
+00:08:16.729 --> 00:08:20.933
+Meaning, if you're conducting an
+inclusion, use the one pattern throughout.
+
+135
+00:08:21.367 --> 00:08:25.505
+If you're conducting an exclusion, use
+a zero pattern throughout.
+
+136
+00:08:25.905 --> 00:08:29.709
+The only exception to this rule
+is the underscore ID field.
+
+137
+00:08:30.510 --> 00:08:32.011
+Let me show you an example.
+
+138
+00:08:32.011 --> 00:08:36.115
+You can change this number
+to zero to represent an exclusion.
+
+139
+00:08:36.883 --> 00:08:41.153
+What will happen
+is a database operation failure.
+
+140
+00:08:42.321 --> 00:08:43.589
+As you can access,
+
+141
+00:08:43.589 --> 00:08:48.027
+you got an operation failure,
+but scrolling
+
+142
+00:08:48.027 --> 00:08:51.397
+further down
+you will see the reason for this.
+
+143
+00:08:52.031 --> 00:08:57.031
+The reason for this failure
+is because of an invalid project document.
+
+144
+00:08:57.403 --> 00:09:00.406
+And this was caused
+because you can't exclude
+
+145
+00:09:00.606 --> 00:09:03.442
+on an inclusion projection.
+
+146
+00:09:03.442 --> 00:09:05.511
+To fix the operation failure error,
+
+147
+00:09:05.511 --> 00:09:08.381
+simply place the value one
+
+148
+00:09:08.381 --> 00:09:11.384
+to follow the inclusion pattern.
+
+149
+00:09:14.921 --> 00:09:17.924
+Now, your results are back.
+
+150
+00:09:18.858 --> 00:09:22.495
+One thing to note
+is because we've included a score field
+
+151
+00:09:22.728 --> 00:09:26.465
+that shows the vector similarity
+search score.
+
+152
+00:09:26.666 --> 00:09:29.669
+We can see that in the results as well.
+
+153
+00:09:29.936 --> 00:09:32.939
+Let's have a look.
+
+154
+00:09:33.005 --> 00:09:35.875
+Here, you can see the field score
+
+155
+00:09:35.875 --> 00:09:38.811
+and the attributed vector
+
+156
+00:09:38.811 --> 00:09:41.480
+search similarity score.
+
+157
+00:09:41.480 --> 00:09:44.584
+The vector search similarity scores
+between a value 0.1
+
+158
+00:09:44.984 --> 00:09:49.422
+with one being a very close
+similarity measure.
+
+159
+00:09:49.922 --> 00:09:52.792
+You can pause the video here
+to observe the scores
+
+160
+00:09:52.792 --> 00:09:55.895
+of the documents
+that are returned from database operation.
+
+161
+00:09:57.763 --> 00:09:59.365
+That concludes it for this lesson.
+
+162
+00:09:59.365 --> 00:10:02.602
+In this lesson, you went through
+the typical pattern of setting up
+
+163
+00:10:02.602 --> 00:10:06.405
+a RAG pipeline
+with the vector search indexes
+
+164
+00:10:06.772 --> 00:10:11.344
+and you also ingested data
+into a database collection.
+
+165
+00:10:11.744 --> 00:10:15.681
+And the new thing you've learned in
+this lesson is you've created
+
+166
+00:10:15.681 --> 00:10:19.986
+and added a projection
+stage to the aggregation pipeline to limit
+
+167
+00:10:19.986 --> 00:10:23.689
+the fields returned from the aggregation
+pipeline
+
+168
+00:10:24.023 --> 00:10:25.057
+query.
+
+169
+00:10:25.057 --> 00:10:29.495
+In the next lesson,
+you will see how you can add, boosting,
+
+170
+00:10:30.062 --> 00:10:33.799
+and improve the relevance of the vector
+search operation
+
+171
+00:10:34.000 --> 00:10:37.236
+by looking at qualitative
+and quantitative data
+
+172
+00:10:37.503 --> 00:10:40.840
+and using it to affect
+the ranking of documents
+
+173
+00:10:40.840 --> 00:10:43.843
+returned from the aggregation pipeline.
+
+174
+00:10:44.477 --> 00:10:45.611
+See you in the next lesson.
+

@@ -1,0 +1,314 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:104453
+
+1
+00:00:00.080 --> 00:00:02.730
+Welcome to pre-processing
+unstructured data for LLM applications both
+
+2
+00:00:08.980 --> 00:00:13.640
+Retrieval Augmented Generation or RAG has
+been widely adopted in many enterprises.
+
+3
+00:00:14.240 --> 00:00:19.469
+The typical RAG pipeline has key
+components like data loading, chunking, embedding,
+
+4
+00:00:19.469 --> 00:00:22.960
+storing in the vector
+database, and then retrieval.
+
+5
+00:00:23.940 --> 00:00:26.620
+In this course, you'll
+learn techniques for
+
+6
+00:00:26.620 --> 00:00:28.910
+representing all sorts
+of unstructured data,
+
+7
+00:00:28.910 --> 00:00:32.350
+like text, images, and tables
+from many different sources,
+
+8
+00:00:32.350 --> 00:00:34.649
+like PDF and PowerPoint and Word,
+
+9
+00:00:34.649 --> 00:00:40.000
+in a way that lets your LLM RAG
+pipeline access all of this information.
+
+10
+00:00:40.240 --> 00:00:45.109
+A particularly challenging task in
+RAG is data loading and chunking due
+
+11
+00:00:45.109 --> 00:00:49.990
+to data being stored in many
+different file types and data formats.
+
+12
+00:00:40.869 --> 00:00:45.429
+A particularly challenging task in
+RAG is data loading and chunking due
+
+13
+00:00:45.429 --> 00:00:49.990
+to data being stored in many
+different file types and data formats.
+
+14
+00:00:50.509 --> 00:00:54.130
+For example, you may have
+numeric data in Excel spreadsheets,
+
+15
+00:00:54.130 --> 00:00:56.670
+or text reports in PDF or Markdown,
+
+16
+00:00:56.670 --> 00:00:59.570
+or presentations in
+PowerPoint or Slides or Keynotes,
+
+17
+00:00:59.570 --> 00:01:03.549
+or communications in Outlook
+or Slack or Teams and so on.
+
+18
+00:01:03.979 --> 00:01:07.569
+Each of these file types
+also in turn might support
+
+19
+00:01:07.569 --> 00:01:10.079
+data stored inside them
+in different formats.
+
+20
+00:01:10.719 --> 00:01:14.200
+A PDF or PowerPoint file,
+for example, may itself
+
+21
+00:01:14.200 --> 00:01:16.519
+contain tables, images, or bulleted lists.
+
+22
+00:01:17.420 --> 00:01:22.379
+So a data loader must first be able
+to parse many different file formats.
+
+23
+00:01:22.959 --> 00:01:25.719
+But once it's parsed that data, then what?
+
+24
+00:01:26.379 --> 00:01:29.310
+It turns out that it's
+very useful to normalize
+
+25
+00:01:29.310 --> 00:01:31.269
+the data from these different sources.
+
+26
+00:01:31.870 --> 00:01:34.000
+So when you normalize tables from, say,
+
+27
+00:01:34.000 --> 00:01:36.750
+within a PDF or a
+PowerPoint or other format,
+
+28
+00:01:36.750 --> 00:01:39.489
+it can all be
+represented in a similar way.
+
+29
+00:01:40.079 --> 00:01:41.590
+Or maybe a bulleted list,
+
+30
+00:01:41.590 --> 00:01:43.400
+whether from a PDF or from email can
+also be represented in a similar way.
+
+31
+00:01:46.730 --> 00:01:52.853
+It is also useful in addition to
+maintain some sort of structure of the original
+
+32
+00:01:52.853 --> 00:01:56.119
+documents by preserving that
+structured information in metadata.
+
+33
+00:01:56.739 --> 00:02:00.269
+For example, maybe recording
+that a paragraph has a parent,
+
+34
+00:02:00.269 --> 00:02:02.739
+which is the title of the chapter.
+
+35
+00:02:03.079 --> 00:02:09.139
+A query that matches that chapter can
+be expanded to return child text as well
+
+36
+00:02:09.139 --> 00:02:14.400
+with your data organized in this
+example in say a tree hierarchical structure.
+
+37
+00:02:14.800 --> 00:02:18.400
+With us to explain how all
+this is done is Matt Robinson,
+
+38
+00:02:18.400 --> 00:02:20.199
+who's head of product at Unstructured.
+
+39
+00:02:20.800 --> 00:02:23.560
+Matt's team has been
+responsible for Un unstructured
+
+40
+00:02:23.560 --> 00:02:26.310
+tools for ingesting data for LLMs to use,
+
+41
+00:02:26.310 --> 00:02:29.060
+and he's helped many
+developers build LLM applications
+
+42
+00:02:29.060 --> 00:02:31.819
+that use and combine
+data from diverse sources.
+
+43
+00:02:31.990 --> 00:02:32.780
+Thanks, Andrew.
+
+44
+00:02:33.560 --> 00:02:36.099
+I'm excited to work with
+you and your team on this.
+
+45
+00:02:36.800 --> 00:02:40.009
+This course tackles the
+critical yet often overlooked
+
+46
+00:02:40.009 --> 00:02:42.819
+aspect of LLM app
+development, data pre-processing.
+
+47
+00:02:43.360 --> 00:02:46.580
+You'll learn how to
+extract and normalize content
+
+48
+00:02:46.580 --> 00:02:49.389
+from a wide variety of document types,
+
+49
+00:02:49.389 --> 00:02:51.800
+including PDFs,
+PowerPoints, Word, and HTML,
+
+50
+00:02:51.800 --> 00:02:55.819
+enabling your LLM to access a
+broad range of information.
+
+51
+00:02:56.400 --> 00:03:01.699
+You'll also learn how to enrich this
+content with metadata, enhancing RAG results,
+
+52
+00:03:01.699 --> 00:03:03.740
+and supporting nuanced
+search capabilities.
+
+53
+00:03:04.419 --> 00:03:07.030
+This course covers document
+image analysis techniques like,
+
+54
+00:03:13.620 --> 00:03:16.669
+Finally, you'll apply these techniques to
+build a RAGbot using documents like PDFs,
+
+55
+00:03:22.879 --> 00:03:26.699
+Many people have worked to create
+this course. I'd like to thank,
+
+56
+00:03:26.699 --> 00:03:28.479
+from Unstructured, Brian
+Raymond and Ronny Hoesada there,
+
+57
+00:03:37.699 --> 00:03:41.469
+In the first lesson, you'll
+learn how you can extract and
+
+58
+00:03:41.469 --> 00:03:44.550
+normalize content from a
+diverse range of document types,
+
+59
+00:03:44.550 --> 00:03:47.969
+so your LLM can reference
+information from PDFs, PowerPoints, Word
+
+60
+00:03:47.969 --> 00:03:49.340
+docs, HTML, and more.
+
+61
+00:03:49.800 --> 00:03:53.189
+Data engineering is a key
+aspect of getting the context you
+
+62
+00:03:53.189 --> 00:03:56.879
+need to your LLM to let them
+do well on your application.
+
+63
+00:03:57.719 --> 00:04:00.550
+I hope you enjoy learning
+these leading-edge techniques,
+
+64
+00:04:00.550 --> 00:04:04.080
+which I think you'll find useful
+for building many applications.
+
+65
+00:04:04.560 --> 00:04:06.550
+Let's go on to the next
+video and get started.

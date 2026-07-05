@@ -1,0 +1,2847 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.103
+You now have the goal defined
+and the file specified.
+
+2
+00:00:03.603 --> 00:00:05.171
+The next step is to decide on
+
+3
+00:00:05.171 --> 00:00:06.773
+the graph model for your structured data,
+
+4
+00:00:07.173 --> 00:00:11.678
+meaning what types of nodes
+and edges will constitute the domain graph.
+
+5
+00:00:11.978 --> 00:00:14.981
+You'll set up a loop of sub-agents
+that will refine the model.
+
+6
+00:00:15.348 --> 00:00:17.450
+Let's dive in.
+
+7
+00:00:17.450 --> 00:00:19.786
+You're working through the Structured Data Agent, through
+
+8
+00:00:19.786 --> 00:00:22.155
+the workflow that started with the user intent,
+
+9
+00:00:22.155 --> 00:00:24.858
+and then file suggestions,
+and finally we're ready to make a proposal
+
+10
+00:00:24.858 --> 00:00:28.161
+for what the graph schema might look like.
+
+11
+00:00:28.561 --> 00:00:30.563
+That's the job of this agent.
+
+12
+00:00:30.563 --> 00:00:32.465
+Now this agent also introduces some new ideas
+
+13
+00:00:32.465 --> 00:00:34.334
+in terms of how you compose an agent.
+
+14
+00:00:34.667 --> 00:00:37.470
+This agent actually has multiple agents inside of it
+
+15
+00:00:38.171 --> 00:00:41.474
+where particularly, there's one agent that makes a proposal.
+
+16
+00:00:42.175 --> 00:00:43.410
+So it says here's what I
+
+17
+00:00:43.410 --> 00:00:44.878
+think we can make for a graph.
+
+18
+00:00:45.378 --> 00:00:48.081
+And then another agent takes a look at that and criticizes it.
+
+19
+00:00:48.481 --> 00:00:52.485
+So this is a critic pattern,
+very common through many multi-agent systems.
+
+20
+00:00:52.819 --> 00:00:54.954
+So in the top level coordinator, it has only
+
+21
+00:00:54.954 --> 00:00:57.123
+a couple of tools that it's working with here.
+
+22
+00:00:57.524 --> 00:01:00.427
+It has one tool that we're calling the refinement_loop_as_tool.
+
+23
+00:01:00.727 --> 00:01:04.230
+And then two kind of normal tools,
+the get_proposed_construction_plan
+
+24
+00:01:04.330 --> 00:01:06.433
+and also approve_the_proposed_construction_plan.
+
+25
+00:01:06.933 --> 00:01:09.002
+Those are similar to the file suggestion
+
+26
+00:01:09.002 --> 00:01:11.104
+and file approval tools we saw before.
+
+27
+00:01:11.704 --> 00:01:14.107
+But this refinement_loop_as_tool is interesting.
+
+28
+00:01:14.607 --> 00:01:16.209
+That actually is an agent itself,
+
+29
+00:01:16.709 --> 00:01:18.511
+or actually a couple of agents
+
+30
+00:01:18.511 --> 00:01:20.613
+working together. Let's look inside of that.
+
+31
+00:01:20.814 --> 00:01:25.118
+So the refinement loop is actually an agent
+that helps coordinate sub-agents.
+
+32
+00:01:25.418 --> 00:01:28.421
+The LoopAgent here has three sub-agents:
+
+33
+00:01:28.721 --> 00:01:31.591
+schema_proposal_agent, schema_critic_agent,
+
+34
+00:01:31.591 --> 00:01:35.395
+and then something that we're calling the
+CheckStatusAndEscalate agent.
+
+35
+00:01:35.795 --> 00:01:38.798
+These work together looping over and over time
+
+36
+00:01:38.798 --> 00:01:40.900
+until they get to a final result.
+
+37
+00:01:41.134 --> 00:01:43.636
+The schema_proposal_agent makes the proposal,
+
+38
+00:01:43.636 --> 00:01:45.939
+the schema_critic_agent criticizes it,
+
+39
+00:01:45.939 --> 00:01:49.309
+and then the CheckStatusAndEscalate agent is responsible for
+
+40
+00:01:49.309 --> 00:01:51.911
+looking at the output from the critic and deciding,
+
+41
+00:01:51.911 --> 00:01:54.314
+is the critic satisfied or do we have to try again?
+
+42
+00:01:54.314 --> 00:01:56.549
+And if the critic is satisfied, it's
+
+43
+00:01:56.549 --> 00:01:59.119
+this agent that actually makes the escalation happen
+
+44
+00:01:59.119 --> 00:02:03.223
+so that this LoopAgent terminates.
+Now, this could go on forever,
+
+45
+00:02:03.723 --> 00:02:05.725
+so that when you call the LoopAgent,
+
+46
+00:02:05.725 --> 00:02:07.060
+we can also set a limit to
+
+47
+00:02:07.060 --> 00:02:08.628
+how many iterations through the loop we'll try.
+
+48
+00:02:08.928 --> 00:02:11.030
+If we fail to get to some kind of consensus,
+
+49
+00:02:11.231 --> 00:02:12.932
+then we're going to kick back to the user
+
+50
+00:02:12.932 --> 00:02:14.634
+saying, hey, we're not sure what to do here.
+
+51
+00:02:14.934 --> 00:02:17.237
+The top-level coordinator will then be responsible
+
+52
+00:02:17.237 --> 00:02:19.305
+for actually getting some more input from the user.
+
+53
+00:02:19.706 --> 00:02:21.908
+You'll start with the usual imports.
+
+54
+00:02:22.208 --> 00:02:24.210
+When those are ready, you can define
+
+55
+00:02:24.210 --> 00:02:26.212
+the LLM that we're going to use
+
+56
+00:02:26.513 --> 00:02:29.215
+and check it out. Great.
+
+57
+00:02:29.516 --> 00:02:30.917
+With all that ready, we can
+
+58
+00:02:30.917 --> 00:02:32.519
+go ahead and start our tool definitions.
+
+59
+00:02:32.919 --> 00:02:35.522
+You can start with the agent instructions.
+
+60
+00:02:35.889 --> 00:02:39.058
+Now the agents we're going to be looking
+at more closely here
+
+61
+00:02:39.058 --> 00:02:41.361
+are the Schema Proposal Agent and then the critic.
+
+62
+00:02:41.661 --> 00:02:43.029
+So let's take a look at the
+
+63
+00:02:43.029 --> 00:02:44.364
+instructions we're going to give to those.
+
+64
+00:02:45.064 --> 00:02:48.368
+So for the proposal agent, for its role and its goal,
+
+65
+00:02:48.668 --> 00:02:50.870
+we're going to tell it that it's an expert
+
+66
+00:02:50.870 --> 00:02:52.672
+at graph data modeling with property graphs.
+
+67
+00:02:53.239 --> 00:02:54.941
+And you can look at the detail
+
+68
+00:02:54.941 --> 00:02:56.643
+here about where it's describing to it.
+
+69
+00:02:57.043 --> 00:03:00.713
+But the novel part here really in this part of the prompt
+
+70
+00:03:00.914 --> 00:03:03.316
+is that we're going to be injecting
+here some feedback.
+
+71
+00:03:03.716 --> 00:03:06.085
+Now the feedback initially will be empty,
+
+72
+00:03:06.186 --> 00:03:08.254
+and so we're telling the agent that
+
+73
+00:03:08.254 --> 00:03:10.623
+consider the feedback only if it is available.
+
+74
+00:03:10.924 --> 00:03:12.759
+But because it can be empty, we don't want to
+
+75
+00:03:12.759 --> 00:03:14.627
+be confused about the rest of the prompt being part
+
+76
+00:03:15.094 --> 00:03:17.330
+for the feedback. So we enclose it
+
+77
+00:03:17.330 --> 00:03:19.599
+in some XML here, some pseudo XML,
+
+78
+00:03:19.899 --> 00:03:22.235
+saying here's the feedback and then here's the
+
+79
+00:03:22.235 --> 00:03:24.871
+closing feedback
+because most LLMs understand that pretty well
+
+80
+00:03:24.871 --> 00:03:28.575
+like this is a a delimiter. So we have a delimiter here
+
+81
+00:03:28.875 --> 00:03:33.079
+and then this curly braces feedback ends up being a template
+
+82
+00:03:33.079 --> 00:03:36.983
+variable that gets injected by Google ADK.
+
+83
+00:03:37.050 --> 00:03:39.052
+Google ADK when it's assembling the prompt,
+
+84
+00:03:39.052 --> 00:03:41.054
+we'll look for these kinds of parts of the text
+
+85
+00:03:41.054 --> 00:03:43.823
+and replace this with context,
+
+86
+00:03:43.823 --> 00:03:47.026
+a context variable. So if in the tool context state,
+
+87
+00:03:47.527 --> 00:03:50.830
+if the state has a feedback variable
+that's defined in the dictionary,
+
+88
+00:03:51.231 --> 00:03:53.233
+the value of that will get injected here.
+
+89
+00:03:53.833 --> 00:03:55.835
+So if there's feedback in the context,
+
+90
+00:03:55.835 --> 00:03:58.238
+that'll get passed into this part of the prompt.
+
+91
+00:03:59.005 --> 00:04:01.808
+Okay. You've given the agent a goal
+
+92
+00:04:01.808 --> 00:04:03.776
+and also a role.
+
+93
+00:04:03.876 --> 00:04:05.478
+And now we're going to give it some
+
+94
+00:04:05.478 --> 00:04:07.080
+hints about how to go about its job.
+
+95
+00:04:07.480 --> 00:04:11.084
+Now, the hints here are lengthier
+than anything you've done so far.
+
+96
+00:04:11.584 --> 00:04:14.487
+The reason for that is that most LLMs
+
+97
+00:04:14.520 --> 00:04:16.623
+and OpenAI's included
+
+98
+00:04:16.623 --> 00:04:19.325
+are pretty good at doing graph data modeling,
+
+99
+00:04:19.325 --> 00:04:21.327
+but they're not exceptional at it.
+
+100
+00:04:21.327 --> 00:04:23.730
+And so we're going to give it
+some extra guidance here
+
+101
+00:04:23.730 --> 00:04:27.133
+about thinking how to work with
+the data files that are available
+
+102
+00:04:27.133 --> 00:04:29.736
+and what those data files might look like as a graph.
+
+103
+00:04:30.036 --> 00:04:32.839
+You can look through all the guidance here
+and notice that
+
+104
+00:04:32.839 --> 00:04:35.341
+we've got best practices for knowledge graph
+
+105
+00:04:35.341 --> 00:04:37.844
+construction really encoded inside of this prompt.
+
+106
+00:04:38.144 --> 00:04:40.947
+So overall, every file in the approved file list
+
+107
+00:04:40.947 --> 00:04:43.249
+should somehow become part of the graph.
+
+108
+00:04:43.850 --> 00:04:46.853
+And within those files, these are CSV files,
+
+109
+00:04:46.853 --> 00:04:48.655
+often you'll see unique identifiers.
+
+110
+00:04:48.655 --> 00:04:51.557
+We tell it to take a look for those unique identifiers,
+
+111
+00:04:51.557 --> 00:04:53.860
+try to identify what those identifiers are,
+
+112
+00:04:54.160 --> 00:04:56.562
+and use those for actually understanding
+
+113
+00:04:56.562 --> 00:04:59.232
+the role of that particular file
+in constructing the graph.
+
+114
+00:04:59.666 --> 00:05:01.668
+Then we give it some guidance,
+
+115
+00:05:01.668 --> 00:05:04.170
+basically some design rules for how to think about
+
+116
+00:05:04.170 --> 00:05:07.173
+whether a particular file might represent a node
+
+117
+00:05:07.173 --> 00:05:10.476
+or might represent a relationship.
+And you can look through the particulars,
+
+118
+00:05:10.476 --> 00:05:12.378
+but there's like often some semantic hints
+
+119
+00:05:12.378 --> 00:05:14.280
+in the naming of the file itself,
+
+120
+00:05:14.280 --> 00:05:16.482
+the number of identifiers that appear,
+
+121
+00:05:16.482 --> 00:05:19.686
+whether those identifiers are actually unique to the file
+
+122
+00:05:19.686 --> 00:05:21.587
+or that they're unique to some other file.
+
+123
+00:05:22.155 --> 00:05:24.657
+all these kinds of things are what you or I might do
+
+124
+00:05:24.657 --> 00:05:26.626
+when we're just performing as data engineers
+
+125
+00:05:26.626 --> 00:05:28.928
+and we've been handed a bunch of data files.
+
+126
+00:05:28.928 --> 00:05:30.630
+We basically do this with grep, with cat,
+
+127
+00:05:30.630 --> 00:05:32.398
+maybe we throw it into an editor
+
+128
+00:05:32.398 --> 00:05:34.133
+and take a look at the files.
+
+129
+00:05:34.133 --> 00:05:36.135
+This is the same kind of thing we would do.
+
+130
+00:05:36.135 --> 00:05:38.938
+Now actually articulated here inside of the prompt
+
+131
+00:05:38.938 --> 00:05:41.341
+so helping the agent figure out how to go about doing
+
+132
+00:05:41.341 --> 00:05:44.143
+the same kind of data modeling that we already know.
+
+133
+00:05:44.610 --> 00:05:48.014
+So breaking it down whether
+this is node or a relationship,
+
+134
+00:05:48.114 --> 00:05:50.416
+particular, you know, design rules for nodes,
+
+135
+00:05:50.516 --> 00:05:54.120
+often have a single identifier, not multiple identifiers,
+
+136
+00:05:54.220 --> 00:05:56.422
+but if the file does have multiple identifiers,
+
+137
+00:05:56.522 --> 00:05:59.625
+the extra identifiers might be reference relationships.
+
+138
+00:06:00.226 --> 00:06:02.362
+So this is what happens when in a
+
+139
+00:06:02.362 --> 00:06:04.497
+relational database you might have foreign key relationships.
+
+140
+00:06:04.597 --> 00:06:07.100
+In a graph, those will turn into relationships.
+
+141
+00:06:07.500 --> 00:06:11.704
+Then for relationships themselves,
+there's two ways that they really show up.
+
+142
+00:06:12.004 --> 00:06:14.173
+There's either what we're calling here
+
+143
+00:06:14.173 --> 00:06:16.709
+a full relationship and a reference relationship.
+
+144
+00:06:17.210 --> 00:06:19.011
+And then we break that down even further.
+
+145
+00:06:19.011 --> 00:06:20.713
+We describe to the LLM what
+
+146
+00:06:20.713 --> 00:06:22.715
+do we mean by a full relationship
+
+147
+00:06:22.715 --> 00:06:25.118
+and what do we mean by a reference relationship.
+
+148
+00:06:25.618 --> 00:06:29.522
+There's two components here we're describing
+how to identify what they are,
+
+149
+00:06:29.522 --> 00:06:31.257
+but then also having identified them,
+
+150
+00:06:31.257 --> 00:06:33.292
+how to turn those into a graph.
+
+151
+00:06:33.826 --> 00:06:37.630
+Finally, after we've given it all kinds of design guidance,
+
+152
+00:06:37.630 --> 00:06:41.868
+we recommend that the resulting schema should be
+a properly connected graph.
+
+153
+00:06:41.868 --> 00:06:43.503
+This is important because it's so
+
+154
+00:06:43.503 --> 00:06:45.371
+obviously entirely possible that you can import
+
+155
+00:06:45.371 --> 00:06:48.074
+all kinds of data and not have it be connected.
+
+156
+00:06:48.074 --> 00:06:49.575
+It's not really much of a graph,
+
+157
+00:06:49.575 --> 00:06:51.077
+it's not very useful at that point.
+
+158
+00:06:51.077 --> 00:06:52.678
+So it should be totally connected.
+
+159
+00:06:52.678 --> 00:06:54.881
+If there are any isolated components,
+
+160
+00:06:54.881 --> 00:06:57.683
+that's probably a problem and something that should be considered.
+
+161
+00:06:58.184 --> 00:07:00.987
+You can then give the agent some chain of thought directions.
+
+162
+00:07:01.287 --> 00:07:03.990
+This is also a bit more elaborate than we've done before.
+
+163
+00:07:04.390 --> 00:07:06.492
+You can look through this one step at a time.
+
+164
+00:07:06.893 --> 00:07:08.494
+You'll start with actually getting the
+
+165
+00:07:08.494 --> 00:07:10.396
+agent to prepare for the task ahead.
+
+166
+00:07:10.797 --> 00:07:12.532
+We know that this task is based
+
+167
+00:07:12.532 --> 00:07:14.300
+on what the established user goal is,
+
+168
+00:07:14.700 --> 00:07:16.402
+the list of approved files,
+
+169
+00:07:16.502 --> 00:07:18.171
+and also whether or not there's an
+
+170
+00:07:18.171 --> 00:07:19.839
+approved construction plan or a current one.
+
+171
+00:07:19.839 --> 00:07:22.241
+construction plan. So even proposing it,
+
+172
+00:07:22.241 --> 00:07:24.043
+this might not be the first time
+
+173
+00:07:24.043 --> 00:07:27.647
+that this agent has actually proposed a construction plan.
+
+174
+00:07:27.647 --> 00:07:29.849
+And so if one already exists, it's possible for it
+
+175
+00:07:29.849 --> 00:07:32.351
+to actually get that current construction plan
+
+176
+00:07:32.351 --> 00:07:34.854
+and then decide whether it needs to make any changes to it.
+
+177
+00:07:35.421 --> 00:07:37.523
+The actual chain of thought then
+
+178
+00:07:37.523 --> 00:07:41.327
+is as usual, encouraging it to think carefully,
+perform step-by-step
+
+179
+00:07:41.327 --> 00:07:44.130
+using tools that are available for any actions.
+
+180
+00:07:44.597 --> 00:07:46.399
+It has to go through each approved file,
+
+181
+00:07:46.399 --> 00:07:48.801
+considering whether it is a node or a relationship.
+
+182
+00:07:48.801 --> 00:07:51.103
+This is echoing our design guidance from earlier.
+
+183
+00:07:51.904 --> 00:07:53.606
+And then every time it finds an identifier
+
+184
+00:07:53.639 --> 00:07:56.542
+or it thinks that it's found an identifier,
+
+185
+00:07:56.642 --> 00:07:59.745
+it should verify that it has found an unique identifier
+
+186
+00:07:59.846 --> 00:08:02.048
+by using a tool called the search_file tool.
+
+187
+00:08:02.148 --> 00:08:04.750
+This is basically a Python-based version of grep
+
+188
+00:08:04.851 --> 00:08:07.053
+where the things that it has found an identifier,
+
+189
+00:08:07.153 --> 00:08:09.555
+it can try to verify that that thing is actually unique
+
+190
+00:08:09.655 --> 00:08:11.924
+by looking for whether there are multiple
+occurrences of it.
+
+191
+00:08:12.458 --> 00:08:14.460
+in the same file.
+
+192
+00:08:14.560 --> 00:08:16.529
+We then encourage it to actually take into
+
+193
+00:08:16.529 --> 00:08:18.464
+account the guidance that we gave it earlier
+
+194
+00:08:18.464 --> 00:08:20.867
+for deciding whether that is in fact a node
+or a relationship.
+
+195
+00:08:21.167 --> 00:08:24.770
+Then for a node file, it has a special tool for proposing
+
+196
+00:08:24.770 --> 00:08:26.772
+how to take that node file and
+
+197
+00:08:26.772 --> 00:08:28.774
+perform what we're calling here a construction.
+
+198
+00:08:29.775 --> 00:08:32.612
+special tool where it can record for a given file
+
+199
+00:08:32.879 --> 00:08:34.647
+the construction of how to take that file
+
+200
+00:08:34.647 --> 00:08:36.649
+and turn it into a node within the graph.
+
+201
+00:08:37.383 --> 00:08:39.785
+Similarly, if it thinks it's found a relationship,
+
+202
+00:08:39.785 --> 00:08:42.588
+there's another tool that it can call called
+
+203
+00:08:42.588 --> 00:08:44.590
+the proposed relationship construction tool
+
+204
+00:08:44.790 --> 00:08:47.293
+that can be used for proposing a relationship construction.
+
+205
+00:08:47.593 --> 00:08:50.696
+using those two tools, it'll go through every file
+
+206
+00:08:51.097 --> 00:08:52.532
+and whether it's a node or a
+
+207
+00:08:52.532 --> 00:08:54.000
+relationship, it'll call one of those tools
+
+208
+00:08:54.100 --> 00:08:55.801
+to create a construction rule for turning
+
+209
+00:08:55.801 --> 00:08:57.503
+that file into part of the graph.
+
+210
+00:08:58.204 --> 00:09:01.340
+And if needed, it can also remove any construction rules.
+
+211
+00:09:02.074 --> 00:09:05.077
+Once it's done, it'll use
+the get_proposed_construction_plan
+
+212
+00:09:05.077 --> 00:09:07.680
+tool to present the final plan to the user.
+
+213
+00:09:08.080 --> 00:09:10.182
+This get_proposed_construction_plan tool
+
+214
+00:09:10.283 --> 00:09:12.184
+will have the full list of all
+
+215
+00:09:12.184 --> 00:09:14.086
+the individual construction rules in one set.
+
+216
+00:09:15.621 --> 00:09:17.356
+You can then combine all this together
+
+217
+00:09:17.356 --> 00:09:19.725
+to the final instructions
+we're going to give to the agent.
+
+218
+00:09:25.364 --> 00:09:27.466
+You can now move on to tool definitions.
+
+219
+00:09:27.767 --> 00:09:30.970
+There are many common tools
+that we've defined in previous notebooks,
+
+220
+00:09:30.970 --> 00:09:33.072
+so we'll just go ahead and import those,
+
+221
+00:09:33.372 --> 00:09:37.877
+like the get_approved_user_goal,
+get_approved_files, and also the sample_file utility.
+
+222
+00:09:38.311 --> 00:09:41.914
+The agent's instructions also talked about a search file tool.
+
+223
+00:09:42.515 --> 00:09:45.117
+That search file tool is basically
+a grep-like function
+
+224
+00:09:45.318 --> 00:09:47.086
+that can read a file, look through
+
+225
+00:09:47.086 --> 00:09:49.088
+a couple of the lines of the file
+
+226
+00:09:49.488 --> 00:09:51.390
+and look for patterns. It's not a
+
+227
+00:09:51.390 --> 00:09:53.292
+very sophisticated query the way grep is,
+
+228
+00:09:53.492 --> 00:09:55.094
+but it's enough to allow the LLM to actually
+
+229
+00:09:55.127 --> 00:09:57.463
+look for things that might occur. For instance,
+
+230
+00:09:57.463 --> 00:09:59.231
+looking for unique identifiers.
+
+231
+00:09:59.532 --> 00:10:01.334
+You could pass that in as a constant here,
+
+232
+00:10:01.334 --> 00:10:04.036
+and then look through the file to see if that constant occurs.
+
+233
+00:10:04.337 --> 00:10:06.939
+The result of this tool will actually be the number of lines
+
+234
+00:10:06.939 --> 00:10:09.942
+and also which lines have that content.
+
+235
+00:10:13.779 --> 00:10:17.183
+The next tool you'll define is the Propose Node Construction.
+
+236
+00:10:17.783 --> 00:10:21.087
+Now, this proposes how to take a source data file,
+
+237
+00:10:21.387 --> 00:10:23.990
+so we're passing in an approved file, the file path.
+
+238
+00:10:24.590 --> 00:10:26.525
+And then based on that file path, we want to
+
+239
+00:10:26.525 --> 00:10:28.494
+be able to create a node inside of the graph.
+
+240
+00:10:29.095 --> 00:10:31.597
+So we describe what the node should look like.
+
+241
+00:10:32.398 --> 00:10:35.501
+You describe what the node looks like
+with a few different things.
+
+242
+00:10:35.701 --> 00:10:36.936
+One is what is the label
+
+243
+00:10:36.936 --> 00:10:38.404
+that we should apply to that node?
+
+244
+00:10:38.704 --> 00:10:40.806
+Labels generally apply to nodes
+
+245
+00:10:40.906 --> 00:10:42.274
+in ways that describe whether it's
+
+246
+00:10:42.274 --> 00:10:43.909
+a person, a place, or a thing.
+
+247
+00:10:44.010 --> 00:10:46.512
+It describes the kind of thing that the node represents.
+
+248
+00:10:46.946 --> 00:10:49.248
+In addition to that, we identify what the
+
+249
+00:10:49.248 --> 00:10:52.752
+unique_column_name is so that on the import CSV file,
+
+250
+00:10:52.752 --> 00:10:54.954
+one of the columns should be a unique column.
+
+251
+00:10:54.954 --> 00:10:57.757
+If we have identified that, that'll get passed in here.
+
+252
+00:10:57.757 --> 00:11:00.760
+And then finally, you may not accept all of the columns
+
+253
+00:11:00.760 --> 00:11:03.262
+as being valid for actually constructing the node.
+
+254
+00:11:03.262 --> 00:11:05.965
+So the proposed_properties actually describes
+
+255
+00:11:05.965 --> 00:11:07.867
+from the CSV file, which of the
+
+256
+00:11:07.867 --> 00:11:09.769
+columns that we actually want to import
+
+257
+00:11:09.769 --> 00:11:11.671
+and create as properties on the node.
+
+258
+00:11:12.772 --> 00:11:14.473
+If you look at the actual
+
+259
+00:11:14.473 --> 00:11:16.475
+implementation of this function,
+it's pretty straightforward.
+
+260
+00:11:16.876 --> 00:11:18.778
+It does some sanity checking as usual.
+
+261
+00:11:19.278 --> 00:11:21.180
+If we made it through that sanity check,
+
+262
+00:11:21.580 --> 00:11:23.616
+we then go ahead and describe the
+
+263
+00:11:23.616 --> 00:11:25.651
+construction rule or construct
+the construction rule
+
+264
+00:11:25.951 --> 00:11:29.155
+based on the input arguments.
+This is really just
+
+265
+00:11:29.288 --> 00:11:32.158
+like a factory function for describing a data object.
+
+266
+00:11:32.558 --> 00:11:35.161
+So the data object here will be a construction rule
+
+267
+00:11:35.361 --> 00:11:37.463
+with the type of construction is a node.
+
+268
+00:11:37.863 --> 00:11:40.032
+It's being derived from a source file that
+
+269
+00:11:40.032 --> 00:11:42.468
+has been passed in. It's being given a label.
+
+270
+00:11:42.868 --> 00:11:45.671
+It has a unique_column_name and
+also a set of properties.
+
+271
+00:11:45.871 --> 00:11:47.973
+With that all created,
+
+272
+00:11:47.973 --> 00:11:50.976
+we then add that to the list of construction rules that exist.
+
+273
+00:11:51.677 --> 00:11:55.681
+And to be clear, we've just before grabbed
+the current construction plan
+
+274
+00:11:55.681 --> 00:11:58.684
+from the memory. And if it doesn't exist,
+
+275
+00:11:58.684 --> 00:12:00.686
+this will just be an empty dictionary.
+
+276
+00:12:01.087 --> 00:12:03.389
+But if it does exist, what do we add
+
+277
+00:12:03.556 --> 00:12:06.358
+it here. We're going to add it using the label,
+
+278
+00:12:06.358 --> 00:12:07.526
+cuz all the labels should be
+
+279
+00:12:07.526 --> 00:12:08.861
+unique, using the label as a key.
+
+280
+00:12:08.861 --> 00:12:11.063
+We're going to go ahead and add that construction rule.
+
+281
+00:12:11.063 --> 00:12:12.765
+So that the overall construction plan
+
+282
+00:12:12.765 --> 00:12:14.767
+will be a set of unique keys,
+
+283
+00:12:14.767 --> 00:12:17.369
+where each of those keys will be a rule
+
+284
+00:12:17.369 --> 00:12:20.372
+that is either a node or relationship construction
+with the needed information.
+
+285
+00:12:21.240 --> 00:12:25.845
+You can define a similar tool
+for creating relationship construction rules.
+
+286
+00:12:26.746 --> 00:12:28.314
+Now, if you take a look
+
+287
+00:12:28.314 --> 00:12:30.149
+at the arguments being passed in here,
+
+288
+00:12:30.149 --> 00:12:33.018
+they're unique to relationships.
+Similar to a node,
+
+289
+00:12:33.018 --> 00:12:35.221
+it starts with a file name that is
+
+290
+00:12:35.221 --> 00:12:37.423
+where the relationship is going to be pulled from.
+
+291
+00:12:37.790 --> 00:12:40.292
+relationships instead of having labels, they have types.
+
+292
+00:12:40.693 --> 00:12:43.095
+It's going to pass in a proposed relationship type.
+
+293
+00:12:43.696 --> 00:12:46.198
+And because relationships connect to other nodes,
+
+294
+00:12:46.599 --> 00:12:48.601
+you want to know what is the label of the node
+
+295
+00:12:48.701 --> 00:12:50.803
+that this relationship is going to be from
+
+296
+00:12:51.303 --> 00:12:54.006
+and what is it connecting to. So you get a label
+
+297
+00:12:54.573 --> 00:12:57.176
+for the from node and a label for the two node.
+
+298
+00:12:57.576 --> 00:12:59.745
+And then for the from node and the two node,
+
+299
+00:12:59.845 --> 00:13:02.047
+you also want to know what's unique about that.
+
+300
+00:13:02.248 --> 00:13:03.649
+So in the CSV file that
+
+301
+00:13:03.649 --> 00:13:05.251
+is being used to create the construction
+
+302
+00:13:05.851 --> 00:13:07.453
+for the relationship.
+
+303
+00:13:07.653 --> 00:13:10.556
+There should be a column that identifies for the from node
+
+304
+00:13:10.656 --> 00:13:14.160
+what is the unique identifier for that.
+So the from_node_column.
+
+305
+00:13:14.260 --> 00:13:17.563
+There's also a to_node_column
+that should have the unique identifiers
+
+306
+00:13:17.663 --> 00:13:19.832
+for the nodes that the relationship is connecting to.
+
+307
+00:13:20.232 --> 00:13:22.434
+With all that information,
+
+308
+00:13:22.434 --> 00:13:24.036
+you can then construct a relationship.
+
+309
+00:13:25.037 --> 00:13:27.039
+As with the node implementation,
+
+310
+00:13:27.239 --> 00:13:29.742
+if both the from and the two nodes exist,
+
+311
+00:13:30.042 --> 00:13:32.244
+then we can go ahead and create the construction rule itself.
+
+312
+00:13:33.045 --> 00:13:35.347
+And this construction rule will again be a dictionary.
+
+313
+00:13:35.648 --> 00:13:38.450
+The type of the dictionary will be that it's a relationship,
+
+314
+00:13:38.450 --> 00:13:40.619
+so this is a relationship construction rule.
+
+315
+00:13:40.920 --> 00:13:43.022
+It has a source file, relationship type,
+
+316
+00:13:43.422 --> 00:13:45.224
+a from node, a two node,
+
+317
+00:13:45.224 --> 00:13:46.725
+and then a set of properties that
+
+318
+00:13:46.725 --> 00:13:48.227
+might be applied to the relationship itself.
+
+319
+00:13:48.694 --> 00:13:51.697
+All that also gets added
+to the relationship construction plan
+
+320
+00:13:52.097 --> 00:13:55.701
+based on the relationship type.
+Like the node labels,
+
+321
+00:13:55.701 --> 00:13:57.336
+we expect the relationship types to be
+
+322
+00:13:57.336 --> 00:13:59.004
+unique as we're doing this data import.
+
+323
+00:13:59.438 --> 00:14:02.908
+Because this agent will be acting inside of a refinement loop,
+
+324
+00:14:03.242 --> 00:14:05.444
+it might be necessary for it to actually
+
+325
+00:14:05.444 --> 00:14:07.913
+remove a construction rule that it had done previously.
+
+326
+00:14:08.214 --> 00:14:10.816
+So we're going to provide it a tool to do that
+
+327
+00:14:10.850 --> 00:14:13.519
+both for the node construction and
+also for relationship construction.
+
+328
+00:14:13.719 --> 00:14:15.721
+This is the node version of it.
+
+329
+00:14:16.188 --> 00:14:19.692
+You can define a similar tool
+for removing relationship constructions as well.
+
+330
+00:14:19.992 --> 00:14:21.861
+This will be based on the
+
+331
+00:14:21.861 --> 00:14:23.996
+relationship type instead of the node label.
+
+332
+00:14:24.997 --> 00:14:27.700
+The result of the agent's interacting with those tools
+
+333
+00:14:27.700 --> 00:14:31.003
+for proposing construction rules and
+then removing those construction rules
+
+334
+00:14:31.003 --> 00:14:32.805
+is a complete construction plan.
+
+335
+00:14:33.072 --> 00:14:35.574
+for taking some source data files of CSV files
+
+336
+00:14:35.574 --> 00:14:37.977
+and creating a knowledge graph.
+
+337
+00:14:37.977 --> 00:14:40.079
+So, if you let the LLM know
+
+338
+00:14:40.079 --> 00:14:42.681
+what is the overall plan that it actually built,
+
+339
+00:14:42.681 --> 00:14:44.383
+we have a tool for that as well.
+
+340
+00:14:44.383 --> 00:14:46.986
+This get proposed construction plan tool
+
+341
+00:14:46.986 --> 00:14:49.488
+will get the current construction plan
+from the state.
+
+342
+00:14:49.955 --> 00:14:52.157
+Here it's going to go ahead and use the same key
+
+343
+00:14:52.157 --> 00:14:54.059
+that's been used for constructing the plan before.
+
+344
+00:14:54.660 --> 00:14:56.629
+and it has a default value of empty
+
+345
+00:14:56.629 --> 00:14:58.631
+in case nothing has been done yet.
+
+346
+00:14:58.631 --> 00:15:01.233
+The current construction plan might be where there is no plan.
+
+347
+00:15:03.068 --> 00:15:04.803
+as you have done before with the
+
+348
+00:15:04.803 --> 00:15:06.572
+user intent and then the file suggestions
+
+349
+00:15:07.039 --> 00:15:09.675
+for the schema proposal, you also have a tool
+
+350
+00:15:09.775 --> 00:15:12.878
+that specifically takes the proposed or suggested schema
+
+351
+00:15:13.612 --> 00:15:16.582
+based on the construction plan and then approves that.
+
+352
+00:15:19.118 --> 00:15:21.420
+You can then add all those tools to a list,
+
+353
+00:15:21.420 --> 00:15:24.723
+and this is the list you'll use when defining the agent
+
+354
+00:15:24.723 --> 00:15:26.725
+to actually provide it with all the tools
+it's going to use.
+
+355
+00:15:26.725 --> 00:15:28.327
+You can see the tool collection here is
+
+356
+00:15:28.327 --> 00:15:30.095
+growing over time as we go through the workflow,
+
+357
+00:15:30.696 --> 00:15:33.899
+because it's a combination of getting
+what we've agreed upon previously
+
+358
+00:15:33.899 --> 00:15:35.901
+in previous phases of our workflow
+
+359
+00:15:35.901 --> 00:15:37.903
+with what the current agent is meant to do
+
+360
+00:15:37.903 --> 00:15:39.905
+for the current stage of the workflow.
+
+361
+00:15:40.205 --> 00:15:43.709
+Here, its intention, of course, is to create a graph schema.
+
+362
+00:15:44.276 --> 00:15:46.478
+You're now ready to define the agent itself
+
+363
+00:15:46.478 --> 00:15:48.781
+that's going to do this schema proposal.
+
+364
+00:15:49.882 --> 00:15:52.084
+You're going to add a new utility function here
+
+365
+00:15:52.084 --> 00:15:54.286
+that we're going to use when we create the agent.
+
+366
+00:15:54.787 --> 00:15:58.057
+This utility function just logs
+that the agent is being called
+
+367
+00:15:58.457 --> 00:16:00.259
+and it'll print to the screen
+
+368
+00:16:00.259 --> 00:16:02.761
+that this agent based on the agent name,
+
+369
+00:16:02.761 --> 00:16:05.764
+here's what's currently going to be handling
+the current conversation.
+
+370
+00:16:06.065 --> 00:16:07.466
+You'll see where we add this when
+
+371
+00:16:07.466 --> 00:16:09.068
+we create the agent in just a moment.
+
+372
+00:16:10.869 --> 00:16:13.138
+You can now define the schema proposal agent.
+
+373
+00:16:13.539 --> 00:16:15.874
+If you just say agent here, that is an
+
+374
+00:16:15.874 --> 00:16:18.177
+agent for an LLMAgent. That means a reasoning agent
+
+375
+00:16:18.177 --> 00:16:19.778
+that can make some decisions based
+
+376
+00:16:19.778 --> 00:16:21.580
+on some tools that it has available.
+
+377
+00:16:22.147 --> 00:16:24.249
+Now, just as before,
+
+378
+00:16:24.249 --> 00:16:26.051
+we're going to give it a name, give it a description,
+
+379
+00:16:26.051 --> 00:16:27.853
+we're going to pass in the instructions.
+
+380
+00:16:28.354 --> 00:16:30.556
+But what's unique about this particular call
+
+381
+00:16:30.856 --> 00:16:33.225
+is that before the agent is actually called,
+
+382
+00:16:33.625 --> 00:16:35.627
+there's a callback before it's called.
+
+383
+00:16:36.128 --> 00:16:38.163
+And we want the callback to be actually
+
+384
+00:16:38.163 --> 00:16:40.432
+out to this log_agent function
+that we just defined.
+
+385
+00:16:40.933 --> 00:16:42.634
+That's going to be what lets us
+
+386
+00:16:42.634 --> 00:16:44.536
+see when this agent is actually being invoked.
+
+387
+00:16:46.472 --> 00:16:48.107
+One more step, you need to
+
+388
+00:16:48.107 --> 00:16:49.975
+go ahead and create the execution environment
+
+389
+00:16:49.975 --> 00:16:52.211
+using our good friend the make_agent_caller.
+
+390
+00:16:53.579 --> 00:16:56.181
+And as we have in the previous parts of the workflow,
+
+391
+00:16:56.482 --> 00:16:58.884
+we want to set up the initial state of this agent
+
+392
+00:16:58.884 --> 00:17:00.853
+as if the previous parts of the workflow had
+
+393
+00:17:00.853 --> 00:17:03.756
+already happened.
+So we need to get the approved user goal,
+
+394
+00:17:03.756 --> 00:17:05.657
+we need the approved files.
+
+395
+00:17:05.657 --> 00:17:09.361
+And because this agent is going to happen within a feedback loop,
+
+396
+00:17:09.361 --> 00:17:12.464
+we're going to initialize the feedback also as being blank.
+
+397
+00:17:12.464 --> 00:17:15.634
+This will let this agent run without having any kind of issues.
+
+398
+00:17:16.101 --> 00:17:18.037
+You can now call this agent
+
+399
+00:17:18.037 --> 00:17:20.305
+prompting it with a user message asking,
+
+400
+00:17:20.606 --> 00:17:23.909
+How can these files be imported to construct a knowledge graph?
+
+401
+00:17:24.610 --> 00:17:26.311
+We're going to take a look at the session when it's done
+
+402
+00:17:26.311 --> 00:17:27.913
+and print out the session state.
+
+403
+00:17:28.981 --> 00:17:31.383
+We expect to see a proposed construction plan.
+
+404
+00:17:32.651 --> 00:17:34.853
+And here it's given us the final result.
+
+405
+00:17:34.853 --> 00:17:36.221
+You can see again, we've got
+
+406
+00:17:36.221 --> 00:17:37.856
+this event with a final is true.
+
+407
+00:17:38.657 --> 00:17:40.659
+And let's take a look at what it's decided.
+
+408
+00:17:41.260 --> 00:17:43.262
+It wants to create some nodes for the Assembly,
+
+409
+00:17:43.262 --> 00:17:47.066
+based on the assemblies.csv, Part nodes for the parts,
+
+410
+00:17:47.066 --> 00:17:49.835
+Product for the products, Supplier for the suppliers.
+
+411
+00:17:50.069 --> 00:17:52.871
+pretty straightforward, it's done a really good job with that.
+
+412
+00:17:53.272 --> 00:17:54.940
+Now it gets very creative with
+
+413
+00:17:54.940 --> 00:17:56.875
+relationships. Let's see what it's decided there.
+
+414
+00:17:57.876 --> 00:18:00.579
+It thinks that from the assemblies.csv
+
+415
+00:18:00.779 --> 00:18:02.881
+has from an Assembly to a Product,
+
+416
+00:18:03.282 --> 00:18:06.885
+it can say that the assembly is INCLUDED_IN some product.
+
+417
+00:18:07.086 --> 00:18:11.590
+So it's going to create some relationships
+from assemblies to products
+
+418
+00:18:11.690 --> 00:18:14.293
+and it's going to call those relationships INCLUDED_IN
+
+419
+00:18:14.393 --> 00:18:16.095
+and the properties are going to
+
+420
+00:18:16.095 --> 00:18:18.097
+be the assembly_name and also the quantity.
+
+421
+00:18:18.564 --> 00:18:20.766
+The products that we're working with here are furniture.
+
+422
+00:18:20.766 --> 00:18:23.068
+It could be like table legs, I guess that
+
+423
+00:18:23.068 --> 00:18:24.470
+could be an assembly and there could be
+
+424
+00:18:24.470 --> 00:18:26.071
+four of them so that it has the quantity.
+
+425
+00:18:26.071 --> 00:18:28.040
+That looks good.
+
+426
+00:18:28.040 --> 00:18:30.342
+It made a similar decision for the parts,
+
+427
+00:18:30.342 --> 00:18:34.346
+that the parts CSV seems to refer to the assemblies,
+
+428
+00:18:34.346 --> 00:18:37.049
+so that the part is a part of some assembly.
+
+429
+00:18:37.049 --> 00:18:38.684
+Again, it includes the part name
+
+430
+00:18:38.684 --> 00:18:40.552
+and the quantity, and that looks good.
+
+431
+00:18:41.186 --> 00:18:44.690
+and it's also figured out
+how to do the mapping to suppliers.
+
+432
+00:18:45.390 --> 00:18:47.392
+Now notice in these relationships,
+these are
+
+433
+00:18:47.392 --> 00:18:49.394
+actually two different kinds of relationships here.
+
+434
+00:18:49.695 --> 00:18:53.966
+These first two are source files
+that fundamentally define nodes,
+
+435
+00:18:54.066 --> 00:18:56.969
+but because those nodes have foreign key relationships,
+
+436
+00:18:57.169 --> 00:18:59.671
+it's realized that,
+thanks to our brilliant prompting,
+
+437
+00:18:59.972 --> 00:19:01.874
+and then it's decided, okay, great,
+
+438
+00:19:01.974 --> 00:19:04.977
+I'm going to define some construction rules
+for creating relationships from these.
+
+439
+00:19:05.244 --> 00:19:08.013
+this one supplied by is a little bit different
+
+440
+00:19:08.313 --> 00:19:11.984
+because this part_supplier_mapping.csv is just a mapping
+
+441
+00:19:11.984 --> 00:19:13.785
+from Part to the Suppliers.
+
+442
+00:19:14.419 --> 00:19:17.222
+This is like having a join table in a relational database
+
+443
+00:19:17.589 --> 00:19:20.192
+where the Part table and the Supplier table
+
+444
+00:19:20.692 --> 00:19:23.795
+and this part supplier is the join table between them.
+
+445
+00:19:23.896 --> 00:19:26.098
+Here that turns into a relationship rather
+
+446
+00:19:26.098 --> 00:19:28.300
+than a join table. This is perfect.
+
+447
+00:19:28.834 --> 00:19:31.837
+It also gives us an explanation of all that.
+
+448
+00:19:32.337 --> 00:19:34.473
+It feels very happy with itself. So this
+
+449
+00:19:34.473 --> 00:19:36.642
+is good. The session state is pretty thick.
+
+450
+00:19:36.842 --> 00:19:38.243
+You can take a look through it if
+
+451
+00:19:38.243 --> 00:19:39.645
+you'd like to just see all the details,
+
+452
+00:19:39.745 --> 00:19:41.680
+but it was expressed pretty well in
+
+453
+00:19:41.680 --> 00:19:43.649
+this markdown output from the agent itself.
+
+454
+00:19:45.651 --> 00:19:49.755
+Okay. One agent down that proposes the schema.
+
+455
+00:19:51.490 --> 00:19:53.525
+Now, we're going to turn to the critic, which is
+
+456
+00:19:53.525 --> 00:19:55.594
+going to be the second part of the refinement loop.
+
+457
+00:19:55.994 --> 00:19:58.597
+The Schema Critic is similar to the proposal agent
+
+458
+00:19:58.597 --> 00:20:01.300
+inasmuch as it is an expert
+in knowledge graph modeling,
+
+459
+00:20:01.600 --> 00:20:03.468
+but its job is not to create the
+
+460
+00:20:03.468 --> 00:20:05.604
+model, but to criticize the model that was created.
+
+461
+00:20:05.938 --> 00:20:08.540
+So the critic has a special role and goal.
+
+462
+00:20:08.941 --> 00:20:10.842
+It's of course going to be a critic.
+
+463
+00:20:10.943 --> 00:20:12.311
+We're going to say that its
+
+464
+00:20:12.311 --> 00:20:13.946
+role is that it's also an expert
+
+465
+00:20:13.946 --> 00:20:15.681
+at knowledge graph modeling with property
+
+466
+00:20:15.681 --> 00:20:17.749
+graphs, just like the proposal agent was.
+
+467
+00:20:18.250 --> 00:20:22.554
+But instead of proposing,
+its job is to criticize what was proposed.
+
+468
+00:20:22.754 --> 00:20:24.723
+So here, that's the goal that it's got.
+
+469
+00:20:24.823 --> 00:20:27.025
+ahead and criticize the proposed schema.
+
+470
+00:20:27.192 --> 00:20:28.927
+making sure that it's relevant to
+
+471
+00:20:28.927 --> 00:20:30.996
+the user's goal and the available files.
+
+472
+00:20:32.097 --> 00:20:33.732
+You'll give this agent also some hints
+
+473
+00:20:33.732 --> 00:20:35.367
+about how to go about its job.
+
+474
+00:20:35.968 --> 00:20:38.070
+when it's being critical
+about the proposed schema,
+
+475
+00:20:38.170 --> 00:20:39.972
+what are the things that it should look at?
+
+476
+00:20:40.672 --> 00:20:42.708
+This is really an extension of like how
+
+477
+00:20:42.708 --> 00:20:44.977
+to do knowledge graph modeling in a good way.
+
+478
+00:20:45.377 --> 00:20:47.679
+but now with the particular angle of like
+
+479
+00:20:47.679 --> 00:20:49.147
+if you're going to criticize somebody else's
+
+480
+00:20:49.147 --> 00:20:50.582
+model, what would you say about it?
+
+481
+00:20:50.582 --> 00:20:52.184
+What are the things you would look for?
+
+482
+00:20:52.384 --> 00:20:54.686
+So, are the unique identifiers actually unique?
+
+483
+00:20:54.987 --> 00:20:56.355
+You've got a search tool that can
+
+484
+00:20:56.355 --> 00:20:57.889
+be used to actually check that that's true.
+
+485
+00:20:58.190 --> 00:20:59.625
+Could any of the nodes that
+
+486
+00:20:59.625 --> 00:21:01.293
+have been defined actually be relationships instead?
+
+487
+00:21:01.793 --> 00:21:03.962
+Double check that that's true. And if this
+
+488
+00:21:03.962 --> 00:21:06.398
+is a connected graph, you should be able to
+
+489
+00:21:06.398 --> 00:21:07.766
+manually trace from the source data
+
+490
+00:21:07.766 --> 00:21:09.401
+all the way to the constructed graph
+
+491
+00:21:09.401 --> 00:21:11.603
+to make sure that all of the source
+
+492
+00:21:11.603 --> 00:21:13.605
+CSV files were created in the graph
+
+493
+00:21:13.605 --> 00:21:15.574
+and that the graph itself is fully connected.
+
+494
+00:21:15.974 --> 00:21:18.076
+There are some other hints here of course
+
+495
+00:21:18.110 --> 00:21:20.579
+about whether there is hierarchical container relationships,
+
+496
+00:21:20.879 --> 00:21:23.181
+and if there's any relationships that are redundant.
+
+497
+00:21:23.782 --> 00:21:26.285
+Often the schema proposal might be a bit too enthusiastic
+
+498
+00:21:26.785 --> 00:21:28.987
+and create more relationships than are necessary
+
+499
+00:21:29.288 --> 00:21:32.190
+or that are logically required for actually achieving the result.
+
+500
+00:21:32.491 --> 00:21:35.394
+So check that as well. The next part
+
+501
+00:21:35.394 --> 00:21:38.630
+of the prompt is the chain of thought directions.
+
+502
+00:21:39.031 --> 00:21:40.932
+As before, we're going to explain to the critic
+
+503
+00:21:40.932 --> 00:21:42.834
+how to prepare for the task that it's got.
+
+504
+00:21:43.035 --> 00:21:44.569
+What are the tools that it uses
+
+505
+00:21:44.569 --> 00:21:46.338
+to actually get ready for doing its job?
+
+506
+00:21:46.538 --> 00:21:48.640
+And then how should it go about doing the job?
+
+507
+00:21:48.840 --> 00:21:50.575
+As always, it should think carefully and
+
+508
+00:21:50.575 --> 00:21:52.344
+it should use tools to perform actions.
+
+509
+00:21:52.644 --> 00:21:54.079
+The first thing it should do is
+
+510
+00:21:54.079 --> 00:21:55.547
+take a look at each construction rule,
+
+511
+00:21:55.947 --> 00:21:59.251
+both the node construction rules
+and the relationship construction rules.
+
+512
+00:21:59.551 --> 00:22:02.454
+It should then use its tools to validate
+that the construction rules
+
+513
+00:22:02.754 --> 00:22:05.090
+are relevant and correct. And then if
+
+514
+00:22:05.090 --> 00:22:07.426
+that's all passes and all looks good,
+
+515
+00:22:07.726 --> 00:22:10.629
+you can respond with a single word valid.
+
+516
+00:22:10.962 --> 00:22:13.098
+If the schema has any problems,
+
+517
+00:22:13.398 --> 00:22:16.001
+respond with a retry and provide some feedback.
+
+518
+00:22:16.501 --> 00:22:20.038
+And the feedback here is asked as a concise bullet list.
+
+519
+00:22:20.539 --> 00:22:23.842
+So, if the critic has any concerns
+about what's been proposed,
+
+520
+00:22:23.842 --> 00:22:25.177
+we should see this nice bullet
+
+521
+00:22:25.177 --> 00:22:26.745
+list explaining what changes should be made.
+
+522
+00:22:27.112 --> 00:22:29.915
+That feedback will eventually be put into the loop
+
+523
+00:22:30.015 --> 00:22:32.084
+and passed back to the proposal agent
+
+524
+00:22:32.184 --> 00:22:34.119
+to change what it's done and try
+
+525
+00:22:34.119 --> 00:22:36.288
+to take into account any of the feedback.
+
+526
+00:22:38.023 --> 00:22:40.559
+You can then go ahead and combine
+all those prompt parts
+
+527
+00:22:40.559 --> 00:22:43.161
+into a single prompt that will be the critic agent instruction
+
+528
+00:22:43.161 --> 00:22:45.664
+that we'll use for defining the agent in just a moment.
+
+529
+00:22:48.667 --> 00:22:50.669
+Now, the schema critic also needs tools,
+
+530
+00:22:50.936 --> 00:22:53.638
+but there aren't any tools
+that are novel to the schema critic.
+
+531
+00:22:53.638 --> 00:22:56.641
+It can use the same tools that the proposal agent used,
+
+532
+00:22:56.942 --> 00:22:59.144
+and we're just going to include them here into a list.
+
+533
+00:22:59.644 --> 00:23:01.947
+It's getting the approved user goal, the approved files,
+
+534
+00:23:02.147 --> 00:23:05.650
+and then the utility tools like
+sampling the file or searching files.
+
+535
+00:23:07.686 --> 00:23:10.689
+You've got all the components necessary
+for the critic agent,
+
+536
+00:23:10.689 --> 00:23:12.424
+so you can go ahead and create the
+
+537
+00:23:12.424 --> 00:23:14.159
+agent. It's going to be an LLM agent.
+
+538
+00:23:14.159 --> 00:23:17.062
+Its name is going to be the schema_critic_agent_v1.
+
+539
+00:23:17.662 --> 00:23:19.364
+And here's one thing that's novel about
+
+540
+00:23:19.364 --> 00:23:21.066
+this agent that we haven't seen before.
+
+541
+00:23:21.666 --> 00:23:24.169
+Unlike other agents that simply do their work and
+
+542
+00:23:24.169 --> 00:23:26.671
+then use tools for, you know, having some output,
+
+543
+00:23:26.872 --> 00:23:29.674
+this agent is simply going to respond with some text,
+
+544
+00:23:29.875 --> 00:23:33.378
+and that text is going to be captured into state using this
+
+545
+00:23:33.879 --> 00:23:35.981
+output key. So this output key,
+
+546
+00:23:35.981 --> 00:23:38.083
+here we're calling it feedback, means that
+
+547
+00:23:38.083 --> 00:23:40.385
+when this agent is done, when the final message
+
+548
+00:23:40.385 --> 00:23:42.254
+from this agent has been received,
+
+549
+00:23:42.254 --> 00:23:45.657
+that final message will be stored into state
+
+550
+00:23:45.657 --> 00:23:47.259
+using the key feedback.
+
+551
+00:23:47.259 --> 00:23:49.661
+so that state dictionary that we've got
+
+552
+00:23:49.661 --> 00:23:52.464
+will have this value generated by the critic.
+
+553
+00:23:52.464 --> 00:23:54.666
+Because that's there, later on,
+
+554
+00:23:54.666 --> 00:23:56.568
+if you loop back to the proposer,
+
+555
+00:23:56.568 --> 00:23:58.870
+the proposal will be able to get that information
+
+556
+00:23:58.870 --> 00:24:03.742
+back from the state.
+You've defined the two critical components,
+
+557
+00:24:03.742 --> 00:24:06.945
+the two critical sub-agents within this refinement loop.
+
+558
+00:24:07.345 --> 00:24:09.347
+Now we have to define the refinement loop itself.
+
+559
+00:24:10.081 --> 00:24:11.149
+And just before we do that,
+
+560
+00:24:11.149 --> 00:24:12.384
+there's going to be one more agent
+
+561
+00:24:12.384 --> 00:24:14.486
+that's going to be a custom agent that we define.
+
+562
+00:24:15.120 --> 00:24:16.721
+If we go back to the architectural diagram,
+
+563
+00:24:16.922 --> 00:24:19.124
+we've got the proposal agent, the critic agent,
+
+564
+00:24:19.524 --> 00:24:22.427
+and now we're going to add
+this CheckStatusAndEscalate agent.
+
+565
+00:24:23.028 --> 00:24:25.130
+This agent has one job,
+
+566
+00:24:25.130 --> 00:24:26.231
+and its job is to decide
+
+567
+00:24:26.231 --> 00:24:27.532
+whether or not the loop is done.
+
+568
+00:24:28.233 --> 00:24:29.835
+Let's take a look at how this works.
+
+569
+00:24:30.535 --> 00:24:32.237
+So this is a base class
+
+570
+00:24:32.237 --> 00:24:34.206
+called BaseAgent that we're going to extend,
+
+571
+00:24:34.206 --> 00:24:37.509
+and we're just going to call it
+the CheckStatusAndEscalate class.
+
+572
+00:24:38.009 --> 00:24:39.678
+This is going to be a custom
+
+573
+00:24:39.678 --> 00:24:41.313
+agent with a custom run function here.
+
+574
+00:24:41.813 --> 00:24:43.515
+This run function will get invoked.
+
+575
+00:24:43.515 --> 00:24:46.818
+It'll get the current context in which it was being invoked,
+
+576
+00:24:46.818 --> 00:24:49.020
+and we're not going to take too much concern about that,
+
+577
+00:24:49.020 --> 00:24:51.323
+except for looking at the current session state.
+
+578
+00:24:51.623 --> 00:24:53.325
+So from that context, we're going to look
+
+579
+00:24:53.325 --> 00:24:55.026
+for the current session, look at the state,
+
+580
+00:24:55.026 --> 00:24:58.930
+and we're going to get the feedback.
+If there is any feedback,
+
+581
+00:24:58.930 --> 00:25:01.333
+and if not, we're going to assume that the feedback is valid.
+
+582
+00:25:01.333 --> 00:25:03.702
+So if there's no feedback from the critic agent,
+
+583
+00:25:03.702 --> 00:25:05.370
+we're going to assume that it's valid. Or
+
+584
+00:25:05.370 --> 00:25:07.005
+if the agent has said that it's valid,
+
+585
+00:25:07.005 --> 00:25:09.007
+the result of this will be that the feedback is valid.
+
+586
+00:25:09.007 --> 00:25:11.009
+And so this should_stop flag will be
+
+587
+00:25:11.009 --> 00:25:13.311
+set based on whether or not the feedback
+
+588
+00:25:13.311 --> 00:25:15.413
+has the content valid.
+
+589
+00:25:15.413 --> 00:25:18.316
+It's a very simple check.
+We could be more sophisticated about this,
+
+590
+00:25:18.316 --> 00:25:20.619
+but this works, you know, just fine for most of the agents.
+
+591
+00:25:20.619 --> 00:25:23.622
+If this is all true, we're going to yield a new event
+
+592
+00:25:23.622 --> 00:25:25.690
+authored by, of course, this special
+
+593
+00:25:25.690 --> 00:25:27.659
+agent that we've constructed here
+
+594
+00:25:27.859 --> 00:25:29.861
+and it's going to take a very specific action.
+
+595
+00:25:30.061 --> 00:25:32.664
+We're going to add an action to this event called escalate.
+
+596
+00:25:33.064 --> 00:25:36.868
+And the value of escalate is going
+to be based on should_stop.
+
+597
+00:25:36.968 --> 00:25:38.770
+So should_stop will be true if
+
+598
+00:25:38.770 --> 00:25:40.872
+the current feedback is valid or empty.
+
+599
+00:25:41.273 --> 00:25:44.075
+If it's not empty, then escalate will be false,
+
+600
+00:25:44.276 --> 00:25:46.278
+which means we'll still emit this event,
+
+601
+00:25:46.478 --> 00:25:49.881
+but the escalation won't happen
+because we said escalate equals false.
+
+602
+00:25:50.181 --> 00:25:51.883
+That's enough to either break out
+
+603
+00:25:51.883 --> 00:25:53.885
+of the loop or continue the loop.
+
+604
+00:25:54.519 --> 00:25:56.821
+You can finally create the LoopAgent.
+
+605
+00:25:56.821 --> 00:26:01.326
+The LoopAgent is a special workflow agent
+that takes a list of sub_agents,
+
+606
+00:26:01.326 --> 00:26:06.326
+here the schema_proposal_agent, the schema_critic_agent,
+and that custom CheckStatusAndEscalate agent,
+
+607
+00:26:06.531 --> 00:26:08.333
+and puts them inside of a loop.
+
+608
+00:26:08.333 --> 00:26:10.535
+All this that does is no reasoning whatsoever,
+
+609
+00:26:10.535 --> 00:26:13.338
+all it does is coordinate the execution of these other agents.
+
+610
+00:26:13.338 --> 00:26:15.373
+And you can see there's one interesting thing
+
+611
+00:26:15.373 --> 00:26:17.442
+here, it has a new parameter called max_iterations.
+
+612
+00:26:17.676 --> 00:26:19.811
+and we're setting that to two,
+
+613
+00:26:19.811 --> 00:26:21.813
+which means the loop will happen at most twice.
+
+614
+00:26:22.314 --> 00:26:24.182
+So either we've gotten to a consensus
+
+615
+00:26:24.182 --> 00:26:26.885
+and the critic has agreed that a proposal is good,
+
+616
+00:26:26.885 --> 00:26:28.753
+or if not, we'll still exit this
+
+617
+00:26:28.753 --> 00:26:30.589
+loop, we're not going to continue forever.
+
+618
+00:26:31.089 --> 00:26:33.191
+And when this is done, the result will either be
+
+619
+00:26:33.191 --> 00:26:35.093
+that we have a confirmed schema,
+
+620
+00:26:35.493 --> 00:26:36.962
+or if not, that perhaps you
+
+621
+00:26:36.962 --> 00:26:38.697
+need some more input from the user
+
+622
+00:26:38.697 --> 00:26:40.498
+about how to actually approach the schema.
+
+623
+00:26:40.865 --> 00:26:43.368
+So you can go ahead and create that agent too.
+
+624
+00:26:44.869 --> 00:26:48.073
+You can finally create
+an execution environment for this agent
+
+625
+00:26:48.073 --> 00:26:50.075
+and then call it, passing it the
+
+626
+00:26:50.075 --> 00:26:52.344
+user message, How can these files be imported?
+
+627
+00:26:52.544 --> 00:26:56.047
+Now, as before, when we create this execution environment,
+
+628
+00:26:56.047 --> 00:26:58.750
+we're going to initialize the state
+with some feedback that is blank,
+
+629
+00:26:58.750 --> 00:27:00.952
+the user goal, and the approved files.
+
+630
+00:27:01.486 --> 00:27:03.588
+The agent that we're going to be running here though
+
+631
+00:27:03.588 --> 00:27:05.290
+is the schema_refinement_loop.
+
+632
+00:27:05.690 --> 00:27:08.259
+Into the refinement_loop_caller,
+we'll pass in the user message,
+
+633
+00:27:08.660 --> 00:27:10.328
+we'll wait for it to finish, get the
+
+634
+00:27:10.328 --> 00:27:11.963
+session state and take a look at it.
+
+635
+00:27:13.898 --> 00:27:16.201
+So you can see that this takes a little while
+
+636
+00:27:16.201 --> 00:27:17.502
+because we're actually going to be both
+
+637
+00:27:17.502 --> 00:27:18.803
+iterating on the loop at most twice,
+
+638
+00:27:18.803 --> 00:27:21.506
+but also in order to do this evaluation,
+
+639
+00:27:21.506 --> 00:27:22.874
+there's two agents that are going to
+
+640
+00:27:22.874 --> 00:27:24.209
+be taking a look at the files.
+
+641
+00:27:24.209 --> 00:27:26.511
+The first one, of course, the proposal agent
+
+642
+00:27:26.511 --> 00:27:27.812
+is going to be looking at each
+
+643
+00:27:27.812 --> 00:27:29.080
+of these files and deciding how to
+
+644
+00:27:29.114 --> 00:27:31.116
+create a knowledge graph out of that.
+
+645
+00:27:31.116 --> 00:27:32.751
+but then the critic is basically going
+
+646
+00:27:32.751 --> 00:27:34.619
+to look at the same set of files
+
+647
+00:27:34.619 --> 00:27:37.288
+and decide whether or not the proposal is valid or not.
+
+648
+00:27:37.288 --> 00:27:39.891
+So you can see we started with the refinement loop,
+
+649
+00:27:39.891 --> 00:27:42.293
+went on to proposal agent v1,
+
+650
+00:27:42.293 --> 00:27:44.896
+then the critic finally got started.
+
+651
+00:27:45.296 --> 00:27:47.599
+back to the proposal agent,
+
+652
+00:27:47.599 --> 00:27:49.601
+back to the critic agent again.
+
+653
+00:27:50.101 --> 00:27:52.003
+Oh, the critic is still not satisfied.
+
+654
+00:27:52.604 --> 00:27:54.506
+Here the final response was that the
+
+655
+00:27:54.506 --> 00:27:56.408
+critic says, no, you've got to retry.
+
+656
+00:27:56.708 --> 00:28:00.311
+It's unhappy with something about what the proposal is.
+
+657
+00:28:00.612 --> 00:28:03.214
+It thinks there's some overlap in relationships,
+
+658
+00:28:03.515 --> 00:28:05.316
+the data maybe is not complete.
+
+659
+00:28:05.717 --> 00:28:07.819
+I won't read through all the feedback here,
+
+660
+00:28:07.919 --> 00:28:09.554
+but this feedback is exactly what should
+
+661
+00:28:09.554 --> 00:28:11.222
+be passed back to the proposal agent
+
+662
+00:28:11.222 --> 00:28:13.124
+to actually improve its results.
+
+663
+00:28:13.525 --> 00:28:17.328
+So in this invocation,
+even though we went through two iterations
+
+664
+00:28:17.328 --> 00:28:20.331
+through the refinement loop,
+the critic has not been satisfied.
+
+665
+00:28:20.532 --> 00:28:23.034
+This is when in the overall architecture,
+
+666
+00:28:23.334 --> 00:28:25.437
+this loop would have terminated
+
+667
+00:28:25.537 --> 00:28:28.406
+and actually the overall control flow would have been passed back
+
+668
+00:28:28.406 --> 00:28:30.408
+to the Schema Proposal Coordinator.
+
+669
+00:28:30.875 --> 00:28:33.078
+This is the agent that actually involves a human.
+
+670
+00:28:33.078 --> 00:28:36.381
+So this is where the coordinator could say to the human,
+
+671
+00:28:36.381 --> 00:28:39.684
+hey, not sure about what schema to produce.
+Here's what I've got.
+
+672
+00:28:39.684 --> 00:28:41.586
+What do you think we should do next? Should
+
+673
+00:28:41.586 --> 00:28:43.488
+we keep trying or do you have some suggestions?
+
+674
+00:28:43.988 --> 00:28:44.989
+Without the human in the loop here,
+
+675
+00:28:44.989 --> 00:28:45.990
+you could try to run this again.
+
+676
+00:28:45.990 --> 00:28:47.992
+You could go into the notebook.
+
+677
+00:28:48.259 --> 00:28:50.762
+reset these cells and try to run this again.
+
+678
+00:28:50.862 --> 00:28:54.065
+You could try to refine the message that's passed in here,
+
+679
+00:28:54.165 --> 00:28:55.533
+the kinds of things you would
+
+680
+00:28:55.533 --> 00:28:57.168
+do if you're directly interacting with this.
+
+681
+00:28:57.635 --> 00:28:59.337
+There will be an optional version of this
+
+682
+00:28:59.337 --> 00:29:01.039
+where we will actually go ahead and incorporate
+
+683
+00:29:01.139 --> 00:29:02.841
+this top-level coordinator
+
+684
+00:29:02.941 --> 00:29:05.410
+that you'll be able to interact with and actually see how
+
+685
+00:29:05.510 --> 00:29:07.278
+either through a single refinement or
+
+686
+00:29:07.278 --> 00:29:09.314
+multiple refinements or some suggestions from you,
+
+687
+00:29:09.414 --> 00:29:11.716
+you can get to a schema proposal
+
+688
+00:29:11.816 --> 00:29:13.718
+that the critic likes, that you like,
+
+689
+00:29:13.818 --> 00:29:15.086
+and that you can move forward
+
+690
+00:29:15.086 --> 00:29:16.521
+with to actually construct a knowledge graph.

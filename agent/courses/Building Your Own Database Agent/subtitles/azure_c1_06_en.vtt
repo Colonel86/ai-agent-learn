@@ -1,0 +1,807 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:02.102 --> 00:00:04.270
+As a developer, you want to leverage
+
+2
+00:00:04.270 --> 00:00:08.408
+the latest model features,
+and the assistants API is one of them.
+
+3
+00:00:08.875 --> 00:00:12.979
+Concretely, this API is a stateful
+evolution of the previous one,
+
+4
+00:00:13.413 --> 00:00:16.483
+facilitating the creation of your new
+AI agents.
+
+5
+00:00:17.584 --> 00:00:20.253
+This will add deepness to your very own.
+
+6
+00:00:20.253 --> 00:00:22.322
+You need this AI toolkit and knowledge.
+
+7
+00:00:22.322 --> 00:00:26.559
+This lesson will give you the opportunity
+to work with the new assistants API
+
+8
+00:00:26.893 --> 00:00:31.264
+and test it with both function calling
+and the code to interpreter their features.
+
+9
+00:00:31.564 --> 00:00:35.568
+It completes the variety
+of implementation patterns that will help
+
+10
+00:00:35.568 --> 00:00:40.306
+you connect to SQL databases
+and create your own database agents.
+
+11
+00:00:41.775 --> 00:00:43.243
+Okay, let's go and
+
+12
+00:00:43.243 --> 00:00:45.078
+innovate.
+
+13
+00:00:45.078 --> 00:00:47.881
+In lesson
+five we'll focus on the final part
+
+14
+00:00:47.881 --> 00:00:50.850
+of this course and explore
+additional capabilities.
+
+15
+00:00:51.084 --> 00:00:54.754
+We have deployed our instances of Azure,
+OpenAI, and LangChain,
+
+16
+00:00:55.422 --> 00:00:58.425
+created agents for CSV and SQL
+
+17
+00:00:58.958 --> 00:01:03.163
+and switched to using the function
+calling feature of Azure OpenAI
+
+18
+00:01:03.163 --> 00:01:04.531
+in lesson four.
+
+19
+00:01:04.531 --> 00:01:08.001
+We saw the function calling works well,
+allowing the system to leverage
+
+20
+00:01:08.001 --> 00:01:09.202
+multiple functions.
+
+21
+00:01:09.202 --> 00:01:13.273
+Now let's take a look
+at another functionality of Azure OpenAI.
+
+22
+00:01:13.573 --> 00:01:18.573
+The assistants API. Previously,
+we use GPT-four with chat completions.
+
+23
+00:01:19.379 --> 00:01:22.916
+The assistants API is different
+because it maintains the context
+
+24
+00:01:22.916 --> 00:01:24.484
+of the discussion dynamically.
+
+25
+00:01:24.484 --> 00:01:27.420
+Unlike chat completions,
+which are stateless.
+
+26
+00:01:27.420 --> 00:01:32.192
+The assistants API is a stateful, meaning
+that it keeps track of the conversation.
+
+27
+00:01:32.792 --> 00:01:35.228
+This is useful for scenarios
+like e-commerce,
+
+28
+00:01:35.228 --> 00:01:38.231
+where maintaining context
+across interaction is important.
+
+29
+00:01:38.832 --> 00:01:41.301
+Within the assistants API, we can also
+
+30
+00:01:41.301 --> 00:01:44.471
+use function calling,
+similar to what we did in lesson four.
+
+31
+00:01:45.438 --> 00:01:46.573
+Additionally, we will
+
+32
+00:01:46.573 --> 00:01:49.576
+explore the code interpreter feature.
+
+33
+00:01:49.976 --> 00:01:51.711
+The code interpreter feature
+
+34
+00:01:51.711 --> 00:01:54.714
+allows the assistants
+API to handle Python code.
+
+35
+00:01:55.115 --> 00:01:59.052
+It can run code iteratively, modifying it
+
+36
+00:01:59.052 --> 00:02:03.323
+until the execution succeeds,
+which is very useful for complex tasks.
+
+37
+00:02:03.890 --> 00:02:05.525
+The code interpreter feature
+
+38
+00:02:05.525 --> 00:02:08.528
+is like an environment
+within your current environment,
+
+39
+00:02:08.528 --> 00:02:12.165
+enabling the agent to modify its own code
+to find solutions.
+
+40
+00:02:12.699 --> 00:02:17.036
+This lesson will help you explore the
+stateful capabilities of the assistants
+
+41
+00:02:17.036 --> 00:02:20.874
+API and the code interpreter
+for dynamic and complex interactions.
+
+42
+00:02:21.541 --> 00:02:24.611
+Let's head to our last notebook
+and get started.
+
+43
+00:02:24.878 --> 00:02:28.681
+This time we'll keep it brief
+by combining previous configurations.
+
+44
+00:02:29.849 --> 00:02:32.018
+We will execute everything together.
+
+45
+00:02:32.018 --> 00:02:34.020
+We are recording the endpoint,
+
+46
+00:02:34.020 --> 00:02:38.224
+loading the CSV data,
+and importing it into the SQL database.
+
+47
+00:02:38.458 --> 00:02:43.062
+Similar to what we have done before.
+We will start by importing the helper
+
+48
+00:02:43.062 --> 00:02:46.633
+function that contains some variables
+and functions used in lesson four.
+
+49
+00:02:47.667 --> 00:02:49.836
+This is mainly to bring the tools
+
+50
+00:02:49.836 --> 00:02:53.473
+SQL and the functions for hospitalization
+and positive cases
+
+51
+00:02:53.506 --> 00:02:55.175
+defined in lesson four.
+
+52
+00:02:55.175 --> 00:02:57.510
+What we are having here is the key.
+
+53
+00:02:57.510 --> 00:03:00.847
+The endpoint and the version of the API.
+
+54
+00:03:00.847 --> 00:03:02.182
+In this case, because we are using
+
+55
+00:03:02.182 --> 00:03:05.285
+all the new functionalities,
+we are taking the latest one.
+
+56
+00:03:05.285 --> 00:03:07.320
+And with this one,
+
+57
+00:03:07.320 --> 00:03:11.024
+we are saying this okay, we have client
+which is the actual been the AI object.
+
+58
+00:03:11.257 --> 00:03:14.727
+And we are creating an assistant
+an API assistant.
+
+59
+00:03:15.028 --> 00:03:18.364
+And we are giving instruction
+which is your assistant
+
+60
+00:03:18.364 --> 00:03:21.501
+in saying questions
+about for Covid dataset.
+
+61
+00:03:21.534 --> 00:03:23.269
+We are talking about the model,
+
+62
+00:03:23.269 --> 00:03:26.706
+and we are explaining the tools
+that are available for this assistant
+
+63
+00:03:26.706 --> 00:03:29.943
+to play with, which are these tools
+that we have created before
+
+64
+00:03:30.343 --> 00:03:31.978
+based on the function that we defined.
+
+65
+00:03:31.978 --> 00:03:33.513
+And then
+
+66
+00:03:33.513 --> 00:03:37.717
+and this is the second step already,
+because this is just a few lines of code.
+
+67
+00:03:38.084 --> 00:03:40.453
+We have created a system.
+Then we create the thread.
+
+68
+00:03:40.453 --> 00:03:45.425
+And these will create like the let's say
+like trace of the discussion.
+
+69
+00:03:45.425 --> 00:03:49.395
+So we can correlate
+like we can connect the different messages
+
+70
+00:03:49.395 --> 00:03:51.664
+and a user machine discussion.
+
+71
+00:03:51.664 --> 00:03:55.101
+And the answer that we are
+getting is okay, we have an identifier
+
+72
+00:03:55.602 --> 00:03:57.537
+for that thread that will be unique.
+
+73
+00:03:57.537 --> 00:04:00.406
+It has been created this
+and this metadata.
+
+74
+00:04:00.406 --> 00:04:04.077
+And this object is thread which once again
+
+75
+00:04:04.477 --> 00:04:07.313
+is a specific to the assistants API.
+
+76
+00:04:07.313 --> 00:04:08.915
+Now what do we do?
+
+77
+00:04:08.915 --> 00:04:11.117
+You have an assistant, you have a discussion.
+
+78
+00:04:11.117 --> 00:04:13.319
+I'll be adding a message.
+
+79
+00:04:13.319 --> 00:04:16.689
+And this message will be from the user,
+right?
+
+80
+00:04:17.056 --> 00:04:20.727
+From the user's perspective,
+they will be how many hospitalizations
+
+81
+00:04:20.727 --> 00:04:25.198
+they were in Alaska for this
+and this and this. Very similar question
+
+82
+00:04:25.198 --> 00:04:28.401
+to what we did before,
+but different way to implement it.
+
+83
+00:04:28.635 --> 00:04:30.603
+We are identifying the thread.
+
+84
+00:04:30.603 --> 00:04:32.839
+You see we have the identification
+
+85
+00:04:32.839 --> 00:04:34.107
+here is part
+
+86
+00:04:34.107 --> 00:04:37.076
+the discussion is a message
+within a thread.
+
+87
+00:04:37.143 --> 00:04:39.279
+This message is from an user.
+
+88
+00:04:39.279 --> 00:04:44.279
+With the value how many which the content
+how many hospitalizations we have here.
+
+89
+00:04:44.617 --> 00:04:46.552
+We have printed the message.
+
+90
+00:04:46.552 --> 00:04:50.056
+You want to see it in a proper way.
+
+91
+00:04:50.056 --> 00:04:51.457
+And you can see the same.
+
+92
+00:04:51.457 --> 00:04:56.062
+But we can see it like a json kind of dump
+and you can see all the information,
+
+93
+00:04:56.062 --> 00:04:57.363
+but it is basically the same, right?
+
+94
+00:04:57.363 --> 00:05:00.466
+We are saying data system
+that we have identification.
+
+95
+00:05:00.733 --> 00:05:04.137
+We have this value.
+This is a text question.
+
+96
+00:05:04.137 --> 00:05:06.306
+The city received some metadata.
+
+97
+00:05:06.306 --> 00:05:07.407
+So that's good.
+
+98
+00:05:07.407 --> 00:05:08.441
+Let's run
+
+99
+00:05:08.441 --> 00:05:10.076
+the assistant on the thread.
+
+100
+00:05:10.076 --> 00:05:10.410
+Right.
+
+101
+00:05:10.410 --> 00:05:13.413
+We have already that preparation.
+
+102
+00:05:13.413 --> 00:05:16.149
+We have told the system
+that we have some messages
+
+103
+00:05:16.149 --> 00:05:18.184
+and some discussion going on. Let's run.
+
+104
+00:05:18.184 --> 00:05:18.851
+This is done.
+
+105
+00:05:18.851 --> 00:05:22.322
+This is like the way
+to set up your assistants API
+
+106
+00:05:23.323 --> 00:05:25.391
+with the
+four steps that we have mentioned.
+
+107
+00:05:25.391 --> 00:05:29.062
+Always the same,
+depending on the kind of functions
+
+108
+00:05:29.062 --> 00:05:31.964
+and stuff that you have some
+the kind of questions, that's very fine.
+
+109
+00:05:31.964 --> 00:05:36.964
+And now we will replicate what we did in
+listen four for the function calling.
+
+110
+00:05:37.837 --> 00:05:40.707
+So basically
+we will be using function calling.
+
+111
+00:05:40.707 --> 00:05:43.409
+But this time
+we will use it with the assistants API.
+
+112
+00:05:43.409 --> 00:05:46.045
+And after that
+I will use the code interpreter okay.
+
+113
+00:05:46.045 --> 00:05:48.581
+But let's focus first on the function
+calling.
+
+114
+00:05:48.581 --> 00:05:50.450
+If we use the function calling.
+
+115
+00:05:50.450 --> 00:05:53.720
+The dynamics is very similar
+to what we did before.
+
+116
+00:05:53.753 --> 00:05:55.321
+We have already the function.
+
+117
+00:05:55.321 --> 00:05:59.759
+We are explaining in this case
+that there is a thread that we are running
+
+118
+00:05:59.759 --> 00:06:03.996
+something under ongoing discussion,
+because we launch it before this,
+
+119
+00:06:03.996 --> 00:06:05.398
+the run that we had before
+
+120
+00:06:05.398 --> 00:06:09.402
+waited to see standard to the thread
+and then once again the same.
+
+121
+00:06:09.769 --> 00:06:12.405
+We are saying
+we have these available functions
+
+122
+00:06:12.405 --> 00:06:17.076
+with this, this format,
+this arguments we need these kind of
+
+123
+00:06:18.111 --> 00:06:20.580
+parameters, very similar to listen four.
+
+124
+00:06:20.580 --> 00:06:21.013
+Right.
+
+125
+00:06:21.013 --> 00:06:24.350
+And then we are running these
+on the thread
+
+126
+00:06:25.084 --> 00:06:28.087
+and assistant
+and with the tools that we have.
+
+127
+00:06:28.187 --> 00:06:29.822
+So let's run these.
+
+128
+00:06:29.822 --> 00:06:33.926
+So you see for the test question
+that we have before because we pass it
+
+129
+00:06:34.394 --> 00:06:37.263
+before
+like how many hospitalizations we have in
+
+130
+00:06:37.263 --> 00:06:41.067
+Alaska is running the message
+under discussion and assistants.
+
+131
+00:06:41.067 --> 00:06:45.238
+And is getting that answer is getting
+the answer that is saying there were three
+
+132
+00:06:45.238 --> 00:06:48.574
+hospitalizations
+for Alaska on a specified date.
+
+133
+00:06:49.142 --> 00:06:54.142
+You could print the json dump if you want to
+have like a better format of these.
+
+134
+00:06:55.047 --> 00:07:00.047
+Now, the part is new
+is the use of the code interpreter.
+
+135
+00:07:00.686 --> 00:07:03.656
+Remember,
+this code interpreter is like a sandbox
+
+136
+00:07:03.756 --> 00:07:06.492
+within this kind of sandbox
+that you are using is a
+
+137
+00:07:06.492 --> 00:07:10.596
+a code sandbox
+available on OpenAI and Azure OpenAI
+
+138
+00:07:10.630 --> 00:07:14.667
+that will allow this system
+to run in an intelligent way
+
+139
+00:07:14.667 --> 00:07:19.667
+the code for complex task, even
+allowing it to find a way to make it work.
+
+140
+00:07:20.706 --> 00:07:25.378
+If the code is not good, it will iterate
+and find the way to make it work.
+
+141
+00:07:25.611 --> 00:07:27.213
+And once again, this is incremental.
+
+142
+00:07:27.213 --> 00:07:29.248
+This is on top of the things we have done
+before.
+
+143
+00:07:29.248 --> 00:07:33.052
+We have already the assistants.
+We are creating
+
+144
+00:07:33.119 --> 00:07:36.289
+basically a system
+with our model,
+
+145
+00:07:36.389 --> 00:07:39.525
+which is the same one.
+And here you have tools.
+
+146
+00:07:40.159 --> 00:07:43.162
+We are saying
+the type is called interpreter.
+
+147
+00:07:43.463 --> 00:07:47.400
+So yes, we are using a system API, but
+then we are using specific kind of tool
+
+148
+00:07:47.767 --> 00:07:50.303
+which is a code interpreter.
+Okay. That's good.
+
+149
+00:07:50.303 --> 00:07:53.539
+And we are using our question
+
+150
+00:07:53.539 --> 00:07:56.609
+hospitalizations in Alaska in 2021.
+
+151
+00:07:57.009 --> 00:07:59.846
+So we will run the thread
+for the discussion.
+
+152
+00:07:59.846 --> 00:08:01.047
+Same as before.
+
+153
+00:08:01.047 --> 00:08:04.283
+But the incorporating the the tools, right.
+
+154
+00:08:04.283 --> 00:08:06.419
+Incorporating the code interpreter.
+
+155
+00:08:06.419 --> 00:08:08.788
+They are related to assistant
+and assistant to the run.
+
+156
+00:08:08.788 --> 00:08:13.526
+What we are saying is
+we are still working on this.
+
+157
+00:08:13.526 --> 00:08:16.295
+If the way I say literate in the system,
+this is still working,
+
+158
+00:08:16.295 --> 00:08:20.233
+it hasn't been complete,
+cancel, expire or fail will be running
+
+159
+00:08:20.666 --> 00:08:23.169
+these discussions on the thread.
+
+160
+00:08:23.169 --> 00:08:26.272
+So you see the run,
+you see the threads, etcetera, etcetera,
+
+161
+00:08:26.272 --> 00:08:29.709
+which is everything
+related to our assistant.
+
+162
+00:08:29.909 --> 00:08:34.614
+We can print you want the json dumb
+
+163
+00:08:34.914 --> 00:08:39.914
+with the result of the messages parameter,
+which is basically saying
+
+164
+00:08:40.486 --> 00:08:45.024
+okay for these assistant ID on this thread
+discussion.
+
+165
+00:08:45.024 --> 00:08:49.829
+Basically
+we are getting that on March 2021.
+
+166
+00:08:49.829 --> 00:08:54.267
+There were like so many people hospitalized
+in Alaska due to Covid19.
+
+167
+00:08:54.267 --> 00:08:56.068
+So, again very similar.
+
+168
+00:08:56.068 --> 00:08:57.370
+We are getting the answer.
+
+169
+00:08:57.370 --> 00:09:02.041
+In this case, what we are doing
+is to add the code interpreter,
+
+170
+00:09:02.508 --> 00:09:05.044
+but the format of the answer
+is very similar.
+
+171
+00:09:05.044 --> 00:09:09.949
+Just take some seconds, just analyze
+it is something that you will understand.
+
+172
+00:09:09.949 --> 00:09:13.286
+It is some specific parameter
+that you understand.
+
+173
+00:09:13.452 --> 00:09:18.090
+You can just copy it, check it on the
+official documentation of Azure OpenAI.
+
+174
+00:09:18.090 --> 00:09:20.359
+And now let's conclude the class.
+

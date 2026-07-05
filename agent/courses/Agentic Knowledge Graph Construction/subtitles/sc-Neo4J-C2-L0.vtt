@@ -1,0 +1,267 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.103
+Welcome to Agentic Knowledge Graph Construction
+
+2
+00:00:03.303 --> 00:00:04.904
+built in partnership with Neo4J.
+
+3
+00:00:05.138 --> 00:00:07.941
+In this course, you'll design a multi-agent system
+
+4
+00:00:07.941 --> 00:00:11.611
+that transforms your structured and unstructured data into a knowledge graph.
+
+5
+00:00:12.145 --> 00:00:15.648
+I've found knowledge graphs really useful for high stakes applications
+
+6
+00:00:15.749 --> 00:00:19.886
+where accuracy of the information we store and retrieve is important.
+
+7
+00:00:20.286 --> 00:00:21.688
+This course will teach you why, and
+
+8
+00:00:21.688 --> 00:00:23.289
+also give you a great set of tools
+
+9
+00:00:23.289 --> 00:00:27.093
+to building these knowledge graphs. I'm delighted that the instructor
+
+10
+00:00:27.093 --> 00:00:29.462
+for this course is Andreas Kollegger,
+
+11
+00:00:29.462 --> 00:00:33.600
+who is a developer evangelist for generative AI at Neo4J.
+
+12
+00:00:34.334 --> 00:00:37.203
+Thanks, Andrew. I'm excited to be back here and
+
+13
+00:00:37.203 --> 00:00:40.273
+to work with you on this course. Similar to RAG,
+
+14
+00:00:40.273 --> 00:00:42.242
+a knowledge graph system
+
+15
+00:00:42.242 --> 00:00:44.377
+splits your text documents into chunks
+
+16
+00:00:44.377 --> 00:00:46.546
+and stores them in a vector database.
+
+17
+00:00:47.047 --> 00:00:48.681
+But in addition to that,
+
+18
+00:00:48.681 --> 00:00:51.051
+it places the chunks into a graph structure,
+
+19
+00:00:51.051 --> 00:00:53.253
+where each chunk is linked to entities
+
+20
+00:00:53.253 --> 00:00:55.422
+extracted from it from the chunks.
+
+21
+00:00:55.789 --> 00:00:58.491
+For example, a text chunk from a product review
+
+22
+00:00:58.491 --> 00:01:01.394
+can contain entities such as product orders
+
+23
+00:01:01.394 --> 00:01:03.463
+or delivery issues or product defects.
+
+24
+00:01:03.797 --> 00:01:05.398
+To build a knowledge graph, you
+
+25
+00:01:05.398 --> 00:01:07.267
+extract the relevant entities from the chunks,
+
+26
+00:01:07.267 --> 00:01:11.237
+then connect the chunks and the entities in a graph through edges.
+
+27
+00:01:11.471 --> 00:01:14.140
+Here, each edge represents a relationship.
+
+28
+00:01:14.140 --> 00:01:17.944
+For example, maybe it represents that this chunk mentioned a certain product
+
+29
+00:01:17.944 --> 00:01:21.548
+or that that product has an issue. The entities
+
+30
+00:01:21.548 --> 00:01:24.250
+are retrieved alongside the relevant chunks
+
+31
+00:01:24.651 --> 00:01:27.253
+to provide more relevant context to the LLM
+
+32
+00:01:27.253 --> 00:01:31.157
+to generate more precise and accurate answers.
+
+33
+00:01:31.858 --> 00:01:34.294
+You can also connect this type of
+
+34
+00:01:34.294 --> 00:01:36.763
+graph to another graph containing additional information
+
+35
+00:01:36.763 --> 00:01:40.467
+extracted from structured data such as CSV files.
+
+36
+00:01:41.668 --> 00:01:43.470
+In this course, Andreas will walk you through
+
+37
+00:01:43.770 --> 00:01:45.472
+how to build a multi-agent system that
+
+38
+00:01:45.472 --> 00:01:46.940
+helps you do all this work
+
+39
+00:01:46.940 --> 00:01:48.641
+of constructing this type of knowledge graph.
+
+40
+00:01:48.808 --> 00:01:52.779
+To transform your structured and unstructured data into a knowledge graph,
+
+41
+00:01:53.313 --> 00:01:55.381
+you first need to decide on the graph schema,
+
+42
+00:01:55.949 --> 00:01:57.650
+meaning what types of entities or
+
+43
+00:01:57.650 --> 00:01:59.652
+nodes you can extract from the data
+
+44
+00:02:00.086 --> 00:02:02.188
+and what relationships exist between them.
+
+45
+00:02:03.189 --> 00:02:06.559
+Once you have the schema defined, you can construct the actual graph
+
+46
+00:02:06.559 --> 00:02:08.228
+and store it in a graph database.
+
+47
+00:02:08.895 --> 00:02:11.397
+Instead of mainly looking at your data to find the graph schema,
+
+48
+00:02:11.865 --> 00:02:15.802
+you will design a multi-agent system for doing that using Google's ADK
+
+49
+00:02:15.802 --> 00:02:20.607
+or Agent Development Kit. After you learn the basic syntax with ADK,
+
+50
+00:02:20.707 --> 00:02:23.209
+you'll design your system one agent at a time.
+
+51
+00:02:23.710 --> 00:02:25.879
+The first agent will converse with you to extract the
+
+52
+00:02:25.879 --> 00:02:28.014
+goal and the type of graph you want to build.
+
+53
+00:02:28.715 --> 00:02:30.617
+Then given that goal,
+
+54
+00:02:30.717 --> 00:02:33.219
+a group of agents will specialize in extracting
+
+55
+00:02:33.219 --> 00:02:35.722
+the entities and relationships from your structured data,
+
+56
+00:02:35.822 --> 00:02:38.925
+and another group of agents will handle your unstructured data.
+
+57
+00:02:39.626 --> 00:02:42.996
+Finally, the final set of agents will connect the two models and
+
+58
+00:02:42.996 --> 00:02:47.133
+construct a graph accordingly. Many people have worked to create this course.
+
+59
+00:02:47.200 --> 00:02:48.835
+I'd like to thank from Neo4J,
+
+60
+00:02:49.669 --> 00:02:52.505
+Martin O'Hanlon and Adam Cowley. and from DeepLearning.AI,
+
+61
+00:02:52.505 --> 00:02:53.907
+From DeepLearning.AI,
+
+62
+00:02:53.907 --> 00:02:58.044
+Christopher Policastro and Hawraa Salami
+also contributed to this course.
+
+63
+00:02:58.311 --> 00:03:00.146
+In the first lesson, you learn more
+
+64
+00:03:00.146 --> 00:03:02.248
+about the underlying structure of knowledge graphs and
+
+65
+00:03:02.248 --> 00:03:05.251
+how you can build one and use it to identify root causes
+
+66
+00:03:05.251 --> 00:03:09.656
+of product issues. Sounds great. Let's get started.
