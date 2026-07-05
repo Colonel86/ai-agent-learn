@@ -321,6 +321,6 @@ A:MCP 给端、云**同一套工具契约**:端侧(本地文件/设备/本地模
 - **护栏 / 安全深入**(MCP 攻击面的护栏侧):`../../skills/agent-selection/7-safety-guardrails.md`。
 - **五层心智模型**(协议正交横切带 A):`../1.md` «正交横切带 A · 协议»。
 - **本系列同目录 02 章(工具调用网关与契约)**:通用工具契约设计、鉴权机制、token 预算/越权拦截——本章的 Gateway 鉴权/契约细节在那里展开,本章只讲 MCP 协议侧与聚合治理。
-- **课程回溯**:`../../courses/10-MCP`、`../../courses/00-.../L13-跨Agent标准与ACP.md`(注:该 L13 的 "ACP" 指 Agent Client Protocol / Zed,非已并入 A2A 的 IBM ACP)。
+- **课程回溯**:`../../courses/protocols/10-MCP`、`../../courses/00-.../L13-跨Agent标准与ACP.md`(注:该 L13 的 "ACP" 指 Agent Client Protocol / Zed,非已并入 A2A 的 IBM ACP)。
 
 > 最后核对:2026-06 · ⚠️ MCP spec revision(2025-11-25 为本快照下最新稳定版,前序 2025-06-18 / 2025-03-26 / 2024-11-05)、传输层、OAuth/RFC、Gateway 产品归属均**易变**,以官网 `modelcontextprotocol.io` 为准。

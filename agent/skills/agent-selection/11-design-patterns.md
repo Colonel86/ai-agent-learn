@@ -94,16 +94,16 @@ flowchart TB
 两种用法:**sectioning**(独立子任务并行再聚合)与 **voting**(同一任务多视角跑 N 次投票/裁决)。**甜区**:批量处理、评审类任务(多个 judge 视角)、降延迟。**反模式**:子任务有依赖还硬并行;聚合只做简单拼接没人裁冲突。
 
 ### 4. orchestrator-workers(编排者-工人,≈Planning)
-中心 LLM 现场分解任务、分派给 worker、汇总结果。与 parallelization 的区别:**子任务不可预先枚举**。**甜区**:多文件代码修改、多源研究综合。**反模式**:任务其实可枚举却用它(该用 chaining/parallelization);orchestrator 与 worker 用同档贵模型(worker 常可降档)。课程回溯:`courses/08.../5-Patterns.../L1-规划工作流.md`、`L3-用代码做规划.md`。
+中心 LLM 现场分解任务、分派给 worker、汇总结果。与 parallelization 的区别:**子任务不可预先枚举**。**甜区**:多文件代码修改、多源研究综合。**反模式**:任务其实可枚举却用它(该用 chaining/parallelization);orchestrator 与 worker 用同档贵模型(worker 常可降档)。课程回溯:`courses/foundations/08.../5-Patterns.../L1-规划工作流.md`、`L3-用代码做规划.md`。
 
 ### 5. evaluator-optimizer(评估-优化循环,≈Reflection)
-生成者产出 → 评估者批评 → 生成者修订,循环到过标准或到轮数上限。**甜区**:有清晰 rubric 的写作/代码(能跑测试 = 最好的评估者)。**要点**(课程 08 W2):**外部确定性反馈(运行代码、查引用)> LLM 自评**;自评容易"自我表扬"。**反模式**:评价标准说不清就上循环——先把 rubric 写出来,写不出来说明不适合这档。课程回溯:`courses/08.../2-Reflection Design Pattern/notes/`。
+生成者产出 → 评估者批评 → 生成者修订,循环到过标准或到轮数上限。**甜区**:有清晰 rubric 的写作/代码(能跑测试 = 最好的评估者)。**要点**(课程 08 W2):**外部确定性反馈(运行代码、查引用)> LLM 自评**;自评容易"自我表扬"。**反模式**:评价标准说不清就上循环——先把 rubric 写出来,写不出来说明不适合这档。课程回溯:`courses/foundations/08.../2-Reflection Design Pattern/notes/`。
 
 ### 6. autonomous agent(自主 agent)
-模型在循环里自定步骤:观察→决策→动作→观察,直到完成或触发停止条件。**前提三件套**:有环境反馈可自纠、有预算/轮数闸、有 trace(出错能定位)。**甜区**:SWE agent(测试就是反馈)、开放式研究。**反模式**:流程本可确定却上 agent(可预测性/成本双输,见 `pydantic-ai-agent` skill「何时不要用 Agent」)。课程回溯:`courses/11-.../L09-高级Agent架构.md`。
+模型在循环里自定步骤:观察→决策→动作→观察,直到完成或触发停止条件。**前提三件套**:有环境反馈可自纠、有预算/轮数闸、有 trace(出错能定位)。**甜区**:SWE agent(测试就是反馈)、开放式研究。**反模式**:流程本可确定却上 agent(可预测性/成本双输,见 `pydantic-ai-agent` skill「何时不要用 Agent」)。课程回溯:`courses/frameworks/11-.../L09-高级Agent架构.md`。
 
 ### +Multi-Agent(叠加维度)
-拓扑三型见 §二表。设计三问:分解谁定、结果怎么聚、**谁拥有对话主权**。通信模式(共享消息列表 vs 移交 handoff)见 `courses/08.../5-Patterns.../L4-多智能体工作流.md`、`L5-通信模式.md`。框架:crewAI(角色协作最顺)、LangGraph(supervisor/自定义拓扑)——对照 [`2-framework/03-framework-profiles.md`](2-framework/03-framework-profiles.md)。
+拓扑三型见 §二表。设计三问:分解谁定、结果怎么聚、**谁拥有对话主权**。通信模式(共享消息列表 vs 移交 handoff)见 `courses/foundations/08.../5-Patterns.../L4-多智能体工作流.md`、`L5-通信模式.md`。框架:crewAI(角色协作最顺)、LangGraph(supervisor/自定义拓扑)——对照 [`2-framework/03-framework-profiles.md`](2-framework/03-framework-profiles.md)。
 
 ---
 
@@ -158,7 +158,7 @@ flowchart LR
 
 ## 八、课程回溯 + 相关资产
 
-- 回溯:`courses/08-Agentic AI（Andrew Ng）/1-*/notes/W1-L8-智能体设计模式.md`(四大模式总纲)、`2-Reflection Design Pattern/notes/`(反思)、`5-Patterns for Highly Autonomous Agents/notes/`(规划/多智能体/通信模式)、`courses/11-AI Agents in LangGraph/notes/L09-高级Agent架构.md`;Anthropic《Building Effective Agents》(workflow 谱原始出处)。
+- 回溯:`courses/foundations/08-Agentic AI（Andrew Ng）/1-*/notes/W1-L8-智能体设计模式.md`(四大模式总纲)、`2-Reflection Design Pattern/notes/`(反思)、`5-Patterns for Highly Autonomous Agents/notes/`(规划/多智能体/通信模式)、`courses/frameworks/11-AI Agents in LangGraph/notes/L09-高级Agent架构.md`;Anthropic《Building Effective Agents》(workflow 谱原始出处)。
 - 心智模型:`agent/interview/1.md`(Orchestrator-Workers、多 agent 15× token 成本、通信模式)。
 - 上游:[`0-action-paradigm.md`](0-action-paradigm.md)(动作原语,先于本包)。下游:[`2-framework/01-decision-tree.md`](2-framework/01-decision-tree.md)(形态 → 框架)。
 - 相邻:[`1-model.md`](1-model.md)(chaining/routing 配模型级联路由)、[`8-cost-economics.md`](8-cost-economics.md)(Multi-Agent/agent 的成本闸)、[`7-safety-guardrails.md`](7-safety-guardrails.md)(autonomous agent 必配护栏)。

@@ -146,7 +146,7 @@
 - **权威心智模型**:`/Users/ming/Documents/ai-agent-learn/agent/interview/1.md` «正交横切带 A · 协议»(本页与之对齐:协议正交、加分项、各锚不同层)。
 - **同目录**:`./01-decision-tree.md`(前置闸门「协议层 vs 框架层」,本页是其展开)、`./03-framework-profiles.md`（MCP 框架画像,第 12 节)、`./README.md`（编排框架层总览)。
 - **上级层文件**:`../4-tools.md`（工具检索 / RAG-over-tools,与 MCP defer loading 同问题)、`../0-action-paradigm.md`（动作范式,MCP 锚 L1 的上游)、`../7-safety-guardrails.md`（护栏/安全,MCP 攻击面深入)、`../10-agent-ux.md`（AG-UI 呈现层)、`../README.md`（选型矩阵总览)。
-- **课程回溯**:`courses/10-MCP`、`courses/00-.../L13-跨Agent标准与ACP.md`(注:该 L13 的 "ACP" 指 **Agent Client Protocol / Zed**,非已并入 A2A 的 IBM ACP)。
+- **课程回溯**:`courses/protocols/10-MCP`、`courses/00-.../L13-跨Agent标准与ACP.md`(注:该 L13 的 "ACP" 指 **Agent Client Protocol / Zed**,非已并入 A2A 的 IBM ACP)。
 - 沉淀:定下「用/不用某协议」后,用 `agent/skills/sdd/adr-writer` 记一句即可(协议通常不必单独 ADR)。
 
 > 最后核对:2026-06

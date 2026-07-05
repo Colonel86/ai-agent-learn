@@ -149,7 +149,7 @@ flowchart TB
 
 ## 九、课程回溯 + 相关资产
 
-- 回溯:`courses/02-Building Systems with the ChatGPT API/notes/ep02-language-models.md`;`courses/专业名词解释/`。
+- 回溯:`courses/foundations/02-Building Systems with the ChatGPT API/notes/ep02-language-models.md`;`courses/专业名词解释/`。
 - 具体型号/定价:`skills/claude-api`(Claude 系)/ 厂商官网。
 - 相关层:`agent/skills/agent-selection/2-framework/`(编排框架)、`agent/skills/agent-selection/3-retrieval.md`(嵌入/重排模型在那边)、`agent/skills/agent-selection/8-cost-economics.md`(路由/网关的降本账)、`agent/skills/agent-selection/5-observability-eval.md`(成本 + 质量度量,路由是否值得用它量化)。
 - 总览:`agent/skills/agent-selection/README.md`。

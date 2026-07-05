@@ -162,7 +162,7 @@ flowchart LR
 
 ## 八、课程回溯 + 相关资产
 
-- 回溯:`courses/09`、`courses/10`(function calling / 工具使用);`courses/08-Agentic AI（Andrew Ng）/3-Tool use/notes/`。
+- 回溯:`courses/frameworks/09`、`courses/protocols/10`(function calling / 工具使用);`courses/foundations/08-Agentic AI（Andrew Ng）/3-Tool use/notes/`。
 - 相邻层:[`0-action-paradigm.md`](0-action-paradigm.md)(动作范式,CodeAct 档用 `import` 缓解工具爆炸、弱化路由)、[`2-framework/06-protocols.md`](2-framework/06-protocols.md)(MCP 接入,与本篇正交)、[`3-retrieval.md`](3-retrieval.md)(检索文档 vs 检索工具的分界)、[`1-model.md`](1-model.md)(Router 用什么档位模型)。
 - 总览:[`README.md`](README.md)。沉淀:`agent/skills/sdd/adr-writer`。
 

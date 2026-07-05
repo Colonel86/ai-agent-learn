@@ -91,7 +91,7 @@
 | --- | --- | --- | --- | --- |
 | 13 | Multi AI Agent Systems with crewAI | 多 Agent 协作**心智模型**(管理者思维、6 要素)⭐ | #11 | ✅ 已学 |
 | 14 | AI Agentic Design Patterns with AutoGen | Agent **设计模式**总览 ⭐ | #12 | ✅ 已学 |
-| 15 | Design, Develop, and Deploy Multi-Agent Systems with CrewAI | 生产级 crewAI(只在真用 crewAI 时再看)。2025-11 新课,取代旧课 Practical Multi AI Agents(2024-10) | — | 🔄 学习中(Module 1 已有笔记,`../courses/Design, Develop, and Deploy Multi-Agent Systems with CrewAI/`) |
+| 15 | Design, Develop, and Deploy Multi-Agent Systems with CrewAI | 生产级 crewAI(只在真用 crewAI 时再看)。2025-11 新课,取代旧课 Practical Multi AI Agents(2024-10) | — | 🔄 学习中(Module 1 已有笔记,`../courses/frameworks/Design, Develop, and Deploy Multi-Agent Systems with CrewAI/`) |
 
 ### 🅱 协议与扩展能力
 
@@ -185,7 +185,9 @@ flowchart TB
 | --- | --- | --- |
 | [Retrieval Augmented Generation (RAG)](https://www.deeplearning.ai/courses/retrieval-augmented-generation) | DeepLearning.AI | 2025 新版 RAG 生产级总览(架构/部署/评测全流程)。🔄 学习中:Module 1/共5 已有笔记 |
 
-### ⏸️ 可选(18 门,时间充裕再学)
+### ⏸️ 可选(7 门,时间充裕再学)
+
+> 2026-07:原 18 门中的 11 门已完成笔记并移入上方「✅ 已学笔记速查」(Document AI、Preprocessing、Building Applications with Vector Databases、Multi-vector Image Retrieval、Retrieval Optimization、Agentic Knowledge Graph Construction、Building and Evaluating Data Agents、Improving Accuracy、Prompt Compression、Building Your Own Database Agent、Build Interactive Agents with Generative UI)。剩余为语音/图像视频/浏览器等垂类方向。
 
 | 课程 | 合作方 | 备注 |
 | --- | --- | --- |
@@ -193,58 +195,58 @@ flowchart TB
 | [Building Live Voice Agents with Google's ADK](https://www.deeplearning.ai/courses/building-live-voice-agents-with-googles-adk) | Google | 语音 Agent 三部曲之二 |
 | [Building AI Voice Agents for Production](https://www.deeplearning.ai/courses/building-ai-voice-agents-for-production) | LiveKit,RealAvatar | 语音 Agent 三部曲之三 |
 | [AI Agents for Image and Video Generation](https://www.deeplearning.ai/courses/ai-agents-for-image-and-video-generation) | Google | 图像/视频生成 Agent,垂类 demo |
-| [Build Interactive Agents with Generative UI](https://www.deeplearning.ai/courses/build-interactive-agents-with-generative-ui) | CopilotKit | Agent 生成式 UI,对口选型矩阵 `10-agent-ux` |
-| [Document AI: From OCR to Agentic Doc Extraction](https://www.deeplearning.ai/courses/document-ai-from-ocr-to-agentic-doc-extraction) | LandingAI | 文档抽取 Agent,垂类 demo |
-| [Building and Evaluating Data Agents](https://www.deeplearning.ai/courses/building-and-evaluating-data-agents) | Snowflake | 多 Agent 规划 + 评测一体,与已学 #21 有重叠 |
 | [Build AI Apps with MCP Server: Working with Box Files](https://www.deeplearning.ai/courses/build-ai-apps-with-mcp-server-working-with-box-files) | Box | MCP 实战 demo,与已学 MCP 课(#10)重叠 |
-| [Agentic Knowledge Graph Construction](https://www.deeplearning.ai/courses/agentic-knowledge-graph-construction) | Neo4j | 多 Agent 构建知识图谱,偏垂类 |
 | [Building Code Agents with Hugging Face smolagents](https://www.deeplearning.ai/courses/building-code-agents-with-hugging-face-smolagents) | Hugging Face | CodeAct 范式,可与 #28 对照 |
 | [Building AI Browser Agents](https://www.deeplearning.ai/courses/building-ai-browser-agents) | AGI Inc | 浏览器操作 Agent,偏垂类 |
-| [Building Your Own Database Agent](https://www.deeplearning.ai/courses/building-your-own-database-agent) | Microsoft | 自然语言查数据库,偏垂类 |
-| [Multi-vector Image Retrieval](https://www.deeplearning.ai/courses/multi-vector-image-retrieval) | Qdrant | 多向量图像检索,检索层细分方向 |
-| [Retrieval Optimization: Tokenization to Vector Quantization](https://www.deeplearning.ai/courses/retrieval-optimization-from-tokenization-to-vector-quantization) | Qdrant | 检索基础设施优化,偏工程底层 |
-| [Improving Accuracy of LLM Applications](https://www.deeplearning.ai/courses/improving-accuracy-of-llm-applications) | AMD/Lamini,Meta | 评测/提示/记忆调优,与已学评测课重叠 |
-| [Prompt Compression and Query Optimization](https://www.deeplearning.ai/courses/prompt-compression-and-query-optimization) | MongoDB | RAG 成本/延迟优化,与语义缓存(需要清单)有交集 |
-| [Preprocessing Unstructured Data for LLM Applications](https://www.deeplearning.ai/courses/preprocessing-unstructured-data-for-llm-applications) | Unstructured | RAG 数据预处理,偏工程细节 |
-| [Building Applications with Vector Databases](https://www.deeplearning.ai/courses/building-applications-vector-databases) | Pinecone | 向量数据库应用六例,检索层基础 |
 
 ---
 
-## ✅ 已学笔记速查(34 门,对应 `agent/courses/`)
+## ✅ 已学笔记速查(46 门,对应 `agent/courses/`)
 
 | 课程 | 笔记路径 |
 | --- | --- |
-| ChatGPT Prompt Engineering for Developers | `../courses/01-ChatGPT Prompt Engineering for Developers/` |
-| Building Systems with the ChatGPT API | `../courses/02-Building Systems with the ChatGPT API/` |
-| LangChain for LLM Application Development | `../courses/03-LangChain for LLM Application Development/` |
+| ChatGPT Prompt Engineering for Developers | `../courses/foundations/01-ChatGPT Prompt Engineering for Developers/` |
+| Building Systems with the ChatGPT API | `../courses/foundations/02-Building Systems with the ChatGPT API/` |
+| LangChain for LLM Application Development | `../courses/foundations/03-LangChain for LLM Application Development/` |
 | LangChain: Chat with Your Data | `../courses/RAG/04-LangChain: Chat with Your Data/` |
 | Building and Evaluating Advanced RAG | `../courses/RAG/05-Building and Evaluating Advanced RAG/` |
 | Advanced Retrieval for AI with Chroma | `../courses/RAG/06-Advanced Retrieval for AI with Chroma/` |
-| Pydantic for LLM Workflows | `../courses/07-Pydantic for LLM Workflows/` |
-| Getting Structured LLM Output | `../courses/07a-Getting Structured LLM Output/` |
-| Function-calling and data extraction with LLMs | `../courses/07b-Function-calling and data extraction with LLMs/` |
-| Agentic AI(Andrew Ng) | `../courses/08-Agentic AI（Andrew Ng）/` |
-| Functions, Tools and Agents with LangChain | `../courses/09-Functions, Tools and Agents with LangChain/` |
-| MCP: Build Rich-Context AI Apps with Anthropic | `../courses/10-MCP: Build Rich-Context AI Apps with Anthropic/` |
-| AI Agents in LangGraph | `../courses/11-AI Agents in LangGraph/` |
+| Pydantic for LLM Workflows | `../courses/structured-output/07-Pydantic for LLM Workflows/` |
+| Getting Structured LLM Output | `../courses/structured-output/07a-Getting Structured LLM Output/` |
+| Function-calling and data extraction with LLMs | `../courses/structured-output/07b-Function-calling and data extraction with LLMs/` |
+| Agentic AI(Andrew Ng) | `../courses/foundations/08-Agentic AI（Andrew Ng）/` |
+| Functions, Tools and Agents with LangChain | `../courses/frameworks/09-Functions, Tools and Agents with LangChain/` |
+| MCP: Build Rich-Context AI Apps with Anthropic | `../courses/protocols/10-MCP: Build Rich-Context AI Apps with Anthropic/` |
+| AI Agents in LangGraph | `../courses/frameworks/11-AI Agents in LangGraph/` |
 | Long-Term Agentic Memory With LangGraph | `../courses/memory/12-Long-Term Agentic Memory With LangGraph/` |
 | Agent Memory: Building Memory-Aware Agents(Oracle) | `../courses/memory/12a-Agent Memory Building Memory-Aware Agents/` |
 | LLMs as Operating Systems: Agent Memory(Letta / MemGPT) | `../courses/memory/12b-LLMs as Operating Systems Agent Memory/` |
-| Multi AI Agent Systems with crewAI | `../courses/13-Multi AI Agent Systems with crewAI/` |
-| Agent Skills with Anthropic | `../courses/16-Agent Skills with Anthropic/` |
+| Multi AI Agent Systems with crewAI | `../courses/frameworks/13-Multi AI Agent Systems with crewAI/` |
+| Agent Skills with Anthropic | `../courses/protocols/16-Agent Skills with Anthropic/` |
 | Building Agentic RAG with LlamaIndex | `../courses/RAG/18-Building Agentic RAG with LlamaIndex/` |
-| Event-Driven Agentic Document Workflows with LlamaIndex | `../courses/19-Event-Driven Agentic Document Workflows with LlamaIndex/` |
+| Event-Driven Agentic Document Workflows with LlamaIndex | `../courses/frameworks/19-Event-Driven Agentic Document Workflows with LlamaIndex/` |
 | Evaluating AI Agents | `../courses/eval/21-Evaluating AI Agents/` |
 | Automated Testing for LLMOps | `../courses/eval/24-Automated Testing for LLMOps/` |
-| Building AI Applications with Haystack | `../courses/25-Building AI Applications with Haystack/` |
-| Knowledge Graphs for AI Agent API Discovery(SAP) | `../courses/Knowledge Graphs for AI Agent API Discovery/` |
-| AI Agentic Design Patterns with AutoGen(Microsoft) | `../courses/AI Agentic Design Patterns with AutoGen/` |
-| A2A: The Agent2Agent Protocol(Google Cloud,IBM) | `../courses/A2A: The Agent2Agent Protocol/` |
-| Building Coding Agents with Tool Execution(E2B) | `../courses/Building Coding Agents with Tool Execution/` |
+| Building AI Applications with Haystack | `../courses/frameworks/25-Building AI Applications with Haystack/` |
+| Knowledge Graphs for AI Agent API Discovery(SAP) | `../courses/RAG/Knowledge Graphs for AI Agent API Discovery/` |
+| AI Agentic Design Patterns with AutoGen(Microsoft) | `../courses/frameworks/AI Agentic Design Patterns with AutoGen/` |
+| A2A: The Agent2Agent Protocol(Google Cloud,IBM) | `../courses/protocols/A2A: The Agent2Agent Protocol/` |
+| Building Coding Agents with Tool Execution(E2B) | `../courses/coding-agents/Building Coding Agents with Tool Execution/` |
 | Knowledge Graphs for RAG(Neo4j) | `../courses/RAG/Knowledge Graphs for RAG/` |
-| DSPy: Build and Optimize Agentic Apps(Databricks) | `../courses/DSPy: Build and Optimize Agentic Apps/` |
-| Nvidia's NeMo Agent Toolkit: Making Agents Reliable(Nvidia) | `../courses/Nvidia's NeMo Agent Toolkit: Making Agents Reliable/` |
-| Semantic Caching for AI Agents(Redis) | `../courses/Semantic Caching for AI Agents/` |
-| Governing AI Agents(Databricks) | `../courses/Governing AI Agents/` |
-| Safe and reliable AI via guardrails(GuardrailsAI) | `../courses/Safe and reliable AI via guardrails/` |
-| Red Teaming LLM Applications(Giskard) | `../courses/Red Teaming LLM Applications/` |
+| DSPy: Build and Optimize Agentic Apps(Databricks) | `../courses/optimization/DSPy: Build and Optimize Agentic Apps/` |
+| Nvidia's NeMo Agent Toolkit: Making Agents Reliable(Nvidia) | `../courses/eval/Nvidia's NeMo Agent Toolkit: Making Agents Reliable/` |
+| Semantic Caching for AI Agents(Redis) | `../courses/optimization/Semantic Caching for AI Agents/` |
+| Governing AI Agents(Databricks) | `../courses/safety/Governing AI Agents/` |
+| Safe and reliable AI via guardrails(GuardrailsAI) | `../courses/safety/Safe and reliable AI via guardrails/` |
+| Red Teaming LLM Applications(Giskard) | `../courses/safety/Red Teaming LLM Applications/` |
+| Agentic Knowledge Graph Construction(Neo4j) | `../courses/RAG/Agentic Knowledge Graph Construction/` |
+| Document AI: From OCR to Agentic Doc Extraction(LandingAI) | `../courses/RAG/Document AI: From OCR to Agentic Doc Extraction/` |
+| Preprocessing Unstructured Data for LLM Applications(Unstructured) | `../courses/RAG/Preprocessing Unstructured Data for LLM Applications/` |
+| Building Applications with Vector Databases(Pinecone) | `../courses/RAG/Building Applications with Vector Databases/` |
+| Multi-vector Image Retrieval(Qdrant) | `../courses/RAG/Multi-vector Image Retrieval/` |
+| Retrieval Optimization: Tokenization to Vector Quantization(Qdrant) | `../courses/RAG/Retrieval Optimization: Tokenization to Vector Quantization/` |
+| Building and Evaluating Data Agents(Snowflake) | `../courses/eval/Building and Evaluating Data Agents/` |
+| Improving Accuracy of LLM Applications(Lamini) | `../courses/eval/Improving Accuracy of LLM Applications/` |
+| Prompt Compression and Query Optimization(MongoDB) | `../courses/optimization/Prompt Compression and Query Optimization/` |
+| Building Your Own Database Agent(Microsoft) | `../courses/coding-agents/Building Your Own Database Agent/` |
+| Build Interactive Agents with Generative UI(CopilotKit) | `../courses/coding-agents/Build Interactive Agents with Generative UI/` |
