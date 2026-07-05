@@ -1,0 +1,2125 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.134 --> 00:00:03.336
+In this lesson, you'll implement
+your data agent
+
+2
+00:00:03.336 --> 00:00:06.339
+as a multi agent workflow
+using line graph.
+
+3
+00:00:06.473 --> 00:00:10.210
+The data agent will be able to conduct
+web research to answer users query
+
+4
+00:00:10.643 --> 00:00:14.114
+and then visualize the findings
+or synthesize a summary of the results.
+
+5
+00:00:14.581 --> 00:00:16.750
+All right. Let's go have some fun.
+
+6
+00:00:16.750 --> 00:00:20.887
+In this lesson, the data agent will build
+will be hierarchical in nature.
+
+7
+00:00:21.021 --> 00:00:23.957
+We'll start with the planner
+that will take the user's query
+
+8
+00:00:23.957 --> 00:00:28.261
+and break it down into subgoals,
+ready for the agent to take action on.
+
+9
+00:00:28.361 --> 00:00:31.898
+Then we'll pass to the executor
+to execute on each step,
+
+10
+00:00:31.998 --> 00:00:35.301
+using the sub agents
+to accomplish each step in the plan.
+
+11
+00:00:35.502 --> 00:00:39.506
+The sub agents in this example
+will have access to the web researcher,
+
+12
+00:00:39.672 --> 00:00:43.043
+the chart generator, the chart summarizer
+and the synthesizer.
+
+13
+00:00:43.109 --> 00:00:46.112
+Let's walk through an example
+of what a flow here might look like.
+
+14
+00:00:46.179 --> 00:00:47.080
+add any flow.
+
+15
+00:00:47.080 --> 00:00:50.517
+The planner will take the user query
+and break it down into its subgoals.
+
+16
+00:00:50.617 --> 00:00:53.853
+First do x,
+then do y based on the user's query.
+
+17
+00:00:54.020 --> 00:00:57.991
+Then it'll pass to the executor
+to take actions against that plan
+
+18
+00:00:58.158 --> 00:00:59.292
+based on the goal.
+
+19
+00:00:59.292 --> 00:01:01.594
+Then the executor will pass off
+
+20
+00:01:01.594 --> 00:01:04.998
+to different agents
+to accomplish each of these steps.
+
+21
+00:01:05.198 --> 00:01:09.602
+For example, it could pass off to the web
+researcher to gather and retrieve data
+
+22
+00:01:09.636 --> 00:01:10.970
+to help answer the question.
+
+23
+00:01:10.970 --> 00:01:14.974
+Then, after executing the web researcher,
+we'll go back to the executor
+
+24
+00:01:15.041 --> 00:01:17.577
+to choose the next action
+according to the plan.
+
+25
+00:01:17.577 --> 00:01:20.580
+In this example,
+we might then go to the chart generator
+
+26
+00:01:20.580 --> 00:01:24.384
+to build a chart based off of the data
+gathered from the web researcher.
+
+27
+00:01:24.484 --> 00:01:28.021
+We might summarize from that chart
+to provide a textual answer
+
+28
+00:01:28.021 --> 00:01:31.057
+for the user, and then pass that back
+to the user at the end.
+
+29
+00:01:31.191 --> 00:01:35.361
+in some cases, the data agent
+might also choose to do a replay.
+
+30
+00:01:35.428 --> 00:01:37.030
+Let's take a look at that flow as well.
+
+31
+00:01:37.030 --> 00:01:37.931
+Just like before,
+
+32
+00:01:37.931 --> 00:01:41.835
+we'll start with the planner, where
+the planner will write its initial plan
+
+33
+00:01:41.935 --> 00:01:43.236
+based on the user's query.
+
+34
+00:01:43.236 --> 00:01:46.906
+Then again, it'll pass to the Executer
+to choose which agents
+
+35
+00:01:46.906 --> 00:01:49.209
+it should use
+to accomplish the goals in the plan.
+
+36
+00:01:49.209 --> 00:01:52.712
+We can use the web researcher
+to accomplish the first step in the plan.
+
+37
+00:01:52.846 --> 00:01:54.414
+Pass it back to the executor.
+
+38
+00:01:54.414 --> 00:01:57.550
+The executor might notice
+that it's gotten additional information
+
+39
+00:01:57.550 --> 00:02:00.553
+from the web researcher that indicates
+it should replan.
+
+40
+00:02:00.587 --> 00:02:01.354
+In this case,
+
+41
+00:02:01.354 --> 00:02:04.691
+the planner can adjust the plan
+it needs to accomplish the goal.
+
+42
+00:02:04.691 --> 00:02:05.258
+From here.
+
+43
+00:02:05.258 --> 00:02:08.528
+Our new plan will be
+then provided back to the executor,
+
+44
+00:02:08.661 --> 00:02:11.030
+which may go back to the web
+researcher again
+
+45
+00:02:11.030 --> 00:02:15.101
+for a different set of information
+needed to accomplish the user's goal.
+
+46
+00:02:15.235 --> 00:02:18.605
+Then we can proceed just as we did
+before, back to the executor,
+
+47
+00:02:18.738 --> 00:02:22.876
+which will then pass to the task generator
+which will then pass to The chart
+
+48
+00:02:22.876 --> 00:02:26.813
+summarizer and pass our textual response
+back to the user.
+
+49
+00:02:26.880 --> 00:02:30.016
+Now let's take a look at how to build this
+agent in action.
+
+50
+00:02:30.617 --> 00:02:33.586
+Now, we've landed in the notebook, ready
+to build our agent.
+
+51
+00:02:33.586 --> 00:02:35.989
+The first thing we'll do is load
+our environment.
+
+52
+00:02:35.989 --> 00:02:37.857
+This will give us access
+to all of the keys.
+
+53
+00:02:37.857 --> 00:02:42.857
+We need to call a LMS, web search
+and other services that we need later on.
+
+54
+00:02:43.029 --> 00:02:45.765
+Then we'll go about initializing
+the agent state.
+
+55
+00:02:45.765 --> 00:02:47.000
+The agent state is what?
+
+56
+00:02:47.000 --> 00:02:48.668
+Get the agent memory here.
+
+57
+00:02:48.668 --> 00:02:50.870
+We'll initialize a custom state class
+
+58
+00:02:50.870 --> 00:02:54.607
+that subclasses link graphs message
+statement by subclassing message state.
+
+59
+00:02:54.707 --> 00:02:57.777
+We automatically get a messages key
+that will keep
+
+60
+00:02:57.777 --> 00:03:00.847
+track of the conversation history
+between the different agents.
+
+61
+00:03:00.914 --> 00:03:04.450
+In addition to these messages,
+we'll also include the user query,
+
+62
+00:03:04.517 --> 00:03:08.855
+a set of enabled agents that be a planner
+and orchestrator will have access to.
+
+63
+00:03:09.022 --> 00:03:13.259
+We'll also store the current step
+in the flow along with the agent query,
+
+64
+00:03:13.259 --> 00:03:16.629
+which is the exact query
+that a particular sub agent will use.
+
+65
+00:03:16.696 --> 00:03:20.900
+And we'll store the last reason why
+that sub agent was chosen by the executor.
+
+66
+00:03:21.034 --> 00:03:24.604
+Last, we'll store some information
+to keep track of any Re plans
+
+67
+00:03:24.671 --> 00:03:26.773
+to make sure we don't replan
+too many times.
+
+68
+00:03:26.773 --> 00:03:28.541
+Next we'll create our planner.
+
+69
+00:03:28.541 --> 00:03:31.978
+We can start by examining the prompts
+for the planner,
+
+70
+00:03:31.978 --> 00:03:34.981
+so we can really understand
+how the planner will operate.
+
+71
+00:03:35.515 --> 00:03:39.419
+to access the prompts you can go to props
+Dot Pi in your lesson folder.
+
+72
+00:03:39.619 --> 00:03:43.890
+these prompts are provided to
+you and will help us plan and orchestrate
+
+73
+00:03:43.890 --> 00:03:47.994
+our agents and call different agents as
+we use them to find the planning prompt.
+
+74
+00:03:48.061 --> 00:03:48.995
+We'll scroll down.
+
+75
+00:03:50.063 --> 00:03:52.665
+To the method called Plan Prompt,
+
+76
+00:03:52.665 --> 00:03:56.302
+and we can read exactly the prompt
+that we're providing to the planner.
+
+77
+00:03:56.502 --> 00:03:59.973
+We tell it that it's the planner
+in a multi-agent system.
+
+78
+00:04:00.073 --> 00:04:01.841
+It's told to break the user's request
+
+79
+00:04:01.841 --> 00:04:05.712
+into numbered steps
+and decompose that query into subqueries.
+
+80
+00:04:05.778 --> 00:04:08.648
+These upgrades
+should be the smallest possible
+
+81
+00:04:08.648 --> 00:04:11.517
+so that each subqueries answerable
+with a single data source.
+
+82
+00:04:11.517 --> 00:04:13.019
+We'll give it an example as well.
+
+83
+00:04:13.019 --> 00:04:16.923
+For example, if we asked what were the key
+action items in the last quarter
+
+84
+00:04:17.156 --> 00:04:19.525
+and what was a recent news story
+for each of them?
+
+85
+00:04:19.525 --> 00:04:23.796
+We'll give an example that it can break
+the BigQuery into smaller steps.
+
+86
+00:04:23.863 --> 00:04:27.166
+You can first fetch the key action items
+in the last quarter,
+
+87
+00:04:27.333 --> 00:04:29.902
+It can then fetch recent news stories
+for each of them.
+
+88
+00:04:29.902 --> 00:04:33.206
+Then we'll provided the list of agents
+that it can call
+
+89
+00:04:33.206 --> 00:04:34.974
+and incorporate into its plan,
+
+90
+00:04:34.974 --> 00:04:39.012
+and we'll provide the final format
+that we expect the plan to be in.
+
+91
+00:04:39.112 --> 00:04:42.649
+The final format of the plan
+will be a Json with enumerated
+
+92
+00:04:42.649 --> 00:04:45.652
+steps, Where each step includes
+a name of an agent,
+
+93
+00:04:45.718 --> 00:04:49.122
+along with a description of the action
+that that agent should take.
+
+94
+00:04:49.522 --> 00:04:52.392
+The last important piece
+here is the replanning.
+
+95
+00:04:52.392 --> 00:04:56.162
+If we are in a replan,
+then we'll ask the plan to provide
+
+96
+00:04:56.162 --> 00:04:58.298
+a reason that the replan is needed,
+
+97
+00:04:58.298 --> 00:05:02.268
+and we'll also give it some guidance
+to really focus on unblocking the workflow
+
+98
+00:05:02.635 --> 00:05:06.239
+rather than finding the perfect path
+and to prefer a simpler, more
+
+99
+00:05:06.239 --> 00:05:10.176
+achievable alternatives over
+really complex rewrites of the plan.
+
+100
+00:05:10.276 --> 00:05:13.680
+Let's go back to the notebook to build
+this prompt into our planning node.
+
+101
+00:05:14.213 --> 00:05:17.116
+As we go about building our planner,
+we'll first import
+
+102
+00:05:17.116 --> 00:05:20.186
+the plan prompt
+that we just covered in the prompts.py.
+
+103
+00:05:20.386 --> 00:05:23.456
+Then we'll import some things from line
+graph and link chain.
+
+104
+00:05:23.456 --> 00:05:27.593
+We'll use to build our agents
+such as command human message and chat.
+
+105
+00:05:27.593 --> 00:05:30.096
+Open AI to call LMS. For our planner.
+
+106
+00:05:30.096 --> 00:05:31.531
+We'll use a reasoning LM.
+
+107
+00:05:31.531 --> 00:05:35.201
+In particular we'll use O3
+and we'll ask it using the model
+
+108
+00:05:35.368 --> 00:05:37.203
+keyword arguments to respond.
+
+109
+00:05:37.203 --> 00:05:39.405
+And the response format of a Json.
+
+110
+00:05:39.405 --> 00:05:41.174
+Now we can build our planning node.
+
+111
+00:05:42.542 --> 00:05:45.845
+So our planner node will take in the state
+and then respond
+
+112
+00:05:45.845 --> 00:05:49.082
+by writing to the executor
+to take action on that plan.
+
+113
+00:05:49.182 --> 00:05:52.752
+The first thing we'll do here
+is we'll call our reasoning model
+
+114
+00:05:52.852 --> 00:05:54.153
+with our planning prompt.
+
+115
+00:05:54.153 --> 00:05:57.623
+This planning prompt will be filled in
+by the state with the user's query.
+
+116
+00:05:57.690 --> 00:06:01.594
+and then we'll receive an alarm reply
+right here that will contain our plan.
+
+117
+00:06:01.728 --> 00:06:05.431
+We'll validate
+that the plan is the Json that we expect.
+
+118
+00:06:06.265 --> 00:06:07.166
+Right here.
+
+119
+00:06:07.166 --> 00:06:10.036
+And then you'll store as the current plan.
+
+120
+00:06:10.036 --> 00:06:13.039
+From the reply we'll validate the Json
+
+121
+00:06:13.072 --> 00:06:16.743
+and extract the plan
+using LM reply dot content right here.
+
+122
+00:06:16.943 --> 00:06:21.943
+Then we can store as the current plan
+and set the replaying flag to false.
+
+123
+00:06:22.415 --> 00:06:24.083
+In case we in a replan.
+
+124
+00:06:24.083 --> 00:06:28.087
+In every node will return a command
+with two key pieces.
+
+125
+00:06:28.254 --> 00:06:29.689
+The first is update.
+
+126
+00:06:29.689 --> 00:06:33.559
+Update will update the plan messages
+containing the message history
+
+127
+00:06:33.559 --> 00:06:36.662
+between the sub agents
+will continue to retain the user query.
+
+128
+00:06:36.763 --> 00:06:40.700
+Will retain the current step in the plan,
+along with the last reason,
+
+129
+00:06:40.767 --> 00:06:41.467
+we'll continue
+
+130
+00:06:41.467 --> 00:06:46.339
+with the same list of enabled agents,
+and we'll also keep a replan flag.
+
+131
+00:06:46.472 --> 00:06:50.109
+When we write update into the command
+this is updating the state.
+
+132
+00:06:50.143 --> 00:06:51.210
+So you'll notice a lot
+
+133
+00:06:51.210 --> 00:06:54.714
+of the same keys in the state that we had
+when we defined it.
+
+134
+00:06:54.947 --> 00:06:58.885
+To start with you'll see the plan,
+the messages, the users query
+
+135
+00:06:59.152 --> 00:07:02.555
+and more that we all started with
+in our initial state.
+
+136
+00:07:02.655 --> 00:07:04.424
+And we're just updating it here.
+
+137
+00:07:04.424 --> 00:07:08.194
+The second piece in the command
+is to go to the go to tells us
+
+138
+00:07:08.294 --> 00:07:10.196
+what sub agent should be called next.
+
+139
+00:07:10.196 --> 00:07:11.664
+And because we're in the planner,
+
+140
+00:07:11.664 --> 00:07:15.735
+we'll move from the planner to
+the executor indicated here in the go to.
+
+141
+00:07:16.369 --> 00:07:18.004
+Now we'll create the executor.
+
+142
+00:07:18.004 --> 00:07:21.207
+We can best understand
+the executor, just like the planner,
+
+143
+00:07:21.340 --> 00:07:24.177
+by first looking at its prompt.
+let's take a look at the prompt. Now.
+
+144
+00:07:25.178 --> 00:07:27.180
+We're turning back to prompts dot pi.
+
+145
+00:07:27.180 --> 00:07:30.349
+We can find the executor prompt
+right below the planner prompt.
+
+146
+00:07:30.516 --> 00:07:32.251
+We'll just scroll down.
+
+147
+00:07:32.251 --> 00:07:33.619
+Into the executor prompt.
+
+148
+00:07:33.619 --> 00:07:34.520
+The first thing we tell
+
+149
+00:07:34.520 --> 00:07:38.624
+the agent is that it's an executor
+and a multi-agent system.
+
+150
+00:07:38.791 --> 00:07:40.126
+With the following agents.
+
+151
+00:07:40.126 --> 00:07:44.897
+And we'll extract the list of agents
+from the enabled agents list in our state.
+
+152
+00:07:45.031 --> 00:07:47.033
+We'll then provided a series of tasks.
+
+153
+00:07:47.033 --> 00:07:50.303
+First it needs to decide
+if the current plan needs a revision.
+
+154
+00:07:50.470 --> 00:07:53.606
+It needs to decide
+which agent to run next and why.
+
+155
+00:07:53.739 --> 00:07:56.742
+And then it needs to write
+the exact question that the chosen agent
+
+156
+00:07:56.742 --> 00:07:57.477
+should answer.
+
+157
+00:07:57.477 --> 00:08:00.213
+This is the sub question
+that we've been talking about.
+
+158
+00:08:00.213 --> 00:08:03.216
+We'll also give it some guidelines
+on how to handle plans
+
+159
+00:08:03.316 --> 00:08:04.584
+and we'll tell it to respond.
+
+160
+00:08:04.584 --> 00:08:08.454
+Invalid Json,
+including the keys such as replan.
+
+161
+00:08:08.855 --> 00:08:11.858
+Go to the reason and the query.
+
+162
+00:08:12.391 --> 00:08:16.362
+Then we'll give it some guidance
+to prioritize forward progress.
+
+163
+00:08:16.729 --> 00:08:19.265
+We'll tell it how to choose the go to.
+
+164
+00:08:19.265 --> 00:08:22.668
+in this step we'll ask
+if the agent has made reasonable progress,
+
+165
+00:08:22.869 --> 00:08:25.771
+and if so it can move
+to the next steps agent and then an.
+
+166
+00:08:25.771 --> 00:08:28.774
+Otherwise it should execute
+the current steps assigned agent.
+
+167
+00:08:29.141 --> 00:08:32.011
+Then we'll give it instructions
+on how to build the query.
+
+168
+00:08:32.011 --> 00:08:35.715
+We'll tell it to write a clear standalone
+instruction for the chosen agent.
+
+169
+00:08:35.781 --> 00:08:40.219
+That standalone question should be written
+in plain English and answerable
+
+170
+00:08:40.219 --> 00:08:40.987
+by the agent.
+
+171
+00:08:40.987 --> 00:08:44.624
+Last, we'll tell that the context
+that has to make these decisions.
+
+172
+00:08:44.724 --> 00:08:48.761
+We'll give it the user query, the current
+step index and current plan step.
+
+173
+00:08:48.794 --> 00:08:52.598
+We'll tell it if it's just preplanned
+and we'll give it the message history.
+
+174
+00:08:52.665 --> 00:08:54.834
+Then it's ready to make its decision.
+
+175
+00:08:54.834 --> 00:08:57.470
+Let's
+go back to the executer in the notebook
+
+176
+00:08:57.470 --> 00:09:00.406
+so we can see how we use this
+prompt in action.
+
+177
+00:09:00.406 --> 00:09:03.709
+So the first thing we'll do as we create
+the executor is will import
+
+178
+00:09:03.709 --> 00:09:06.812
+the executor prompt
+that we just defined in prompts dot pi.
+
+179
+00:09:06.946 --> 00:09:09.815
+And then we'll also import
+the and type from Lin graph.
+
+180
+00:09:09.815 --> 00:09:13.286
+Now, I'll set the number of max
+three plans for my agent.
+
+181
+00:09:13.586 --> 00:09:15.588
+I chose the maximum
+where he plans of three
+
+182
+00:09:15.588 --> 00:09:18.624
+so that the agent doesn't
+get carried away in its replanning.
+
+183
+00:09:19.091 --> 00:09:21.827
+Then we can start to define
+our executor node.
+
+184
+00:09:21.827 --> 00:09:22.695
+Our executor node
+
+185
+00:09:22.695 --> 00:09:25.698
+is going to take in the state
+which contains all of the information
+
+186
+00:09:26.065 --> 00:09:27.199
+that we just talked about.
+
+187
+00:09:27.199 --> 00:09:30.870
+And it's going to return a command
+that routes to the next step agent.
+
+188
+00:09:31.037 --> 00:09:34.774
+This could be the web researcher chart
+generator, synthesizer,
+
+189
+00:09:34.941 --> 00:09:36.008
+or even the planner.
+
+190
+00:09:36.008 --> 00:09:39.612
+Then we'll extract the plan
+and the step from this state.
+
+191
+00:09:40.112 --> 00:09:42.715
+The first thing we'll do here is
+we'll then build
+
+192
+00:09:42.715 --> 00:09:45.851
+our executor prompt,
+just like we did in the planning node.
+
+193
+00:09:45.918 --> 00:09:49.155
+And we'll call the reasoning Elm
+with this executor prompt.
+
+194
+00:09:49.355 --> 00:09:54.355
+Once we've received the response we'll
+extract the execution in the content.
+
+195
+00:09:54.727 --> 00:09:57.229
+And then we'll pass it
+to get out the plan.
+
+196
+00:09:57.229 --> 00:09:59.632
+The go to the reason and the query.
+
+197
+00:09:59.632 --> 00:10:02.969
+Once we've done that, we can update
+the state with this information.
+
+198
+00:10:03.402 --> 00:10:06.405
+If we've chosen to replan,
+we need to account for that here.
+
+199
+00:10:06.839 --> 00:10:10.309
+Here we'll retrieve
+the replan attempts from the state.
+
+200
+00:10:10.376 --> 00:10:13.379
+If we've done some replanning,
+we need to account for that here.
+
+201
+00:10:13.379 --> 00:10:17.717
+We'll get the replan attempts from
+the state and we'll set the step, replan.
+
+202
+00:10:17.850 --> 00:10:20.353
+And then we'll decide if we have replan.
+
+203
+00:10:20.353 --> 00:10:24.357
+We'll make sure that we haven't exceeded
+the number of max allowable plans.
+
+204
+00:10:24.423 --> 00:10:26.959
+We'll iterate the Re plans
+by adding one two.
+
+205
+00:10:26.959 --> 00:10:27.927
+Step three plans.
+
+206
+00:10:27.927 --> 00:10:30.630
+And we'll update the state again
+right here.
+
+207
+00:10:30.630 --> 00:10:35.067
+If we are doing a Re plan and the step
+three plans is below the max number of Re
+
+208
+00:10:35.067 --> 00:10:39.038
+plans, we'll return command
+and go to the planner with these updates.
+
+209
+00:10:39.538 --> 00:10:43.209
+And then otherwise we'll go to
+the synthesizer or the next planned agent.
+
+210
+00:10:43.643 --> 00:10:44.677
+Last.
+
+211
+00:10:44.677 --> 00:10:47.480
+If we're not re planning
+will activate the next plan
+
+212
+00:10:47.480 --> 00:10:50.516
+agent by getting the agent
+from the current step.
+
+213
+00:10:50.616 --> 00:10:52.318
+We'll set the updates.
+
+214
+00:10:52.318 --> 00:10:53.919
+Current step. Add one.
+
+215
+00:10:53.919 --> 00:10:56.656
+And then we'll set the re
+plan flag equal to false.
+
+216
+00:10:56.656 --> 00:11:00.159
+And we'll return the command with any of
+the updates we've made to the state.
+
+217
+00:11:00.359 --> 00:11:02.962
+And the chosen agent in the go to.
+
+218
+00:11:02.962 --> 00:11:06.132
+We've missed one piece
+is that if we have just re planned,
+
+219
+00:11:06.298 --> 00:11:09.368
+we need to run the planned agent once
+before you consider.
+
+220
+00:11:09.802 --> 00:11:10.636
+Let's add that now.
+
+221
+00:11:12.438 --> 00:11:13.539
+So how will determine.
+
+222
+00:11:13.539 --> 00:11:17.710
+This is we'll look at the state and
+get the re plan flag at the re plan flag.
+
+223
+00:11:17.710 --> 00:11:18.344
+It's true.
+
+224
+00:11:18.344 --> 00:11:21.614
+Then we'll discover the plan agent
+and get that agent.
+
+225
+00:11:21.781 --> 00:11:25.418
+And we'll run that plan
+to agent by routing in the go to.
+
+226
+00:11:25.551 --> 00:11:29.689
+We'll also iterate the current step
+and set the re plan flag to false.
+
+227
+00:11:29.689 --> 00:11:32.692
+In this case.
+
+228
+00:11:32.825 --> 00:11:34.360
+now that we've created the planner
+
+229
+00:11:34.360 --> 00:11:37.530
+and the executor,
+we can go about creating our sub agents.
+
+230
+00:11:37.663 --> 00:11:40.366
+These sub agents
+will be used by the executor.
+
+231
+00:11:40.366 --> 00:11:43.502
+If you take actions against the plan
+and reach the user's goal,
+
+232
+00:11:43.602 --> 00:11:46.572
+the first sub agent will define
+is the web researcher.
+
+233
+00:11:46.572 --> 00:11:50.676
+This is going to do the bulk of our data
+tasks, getting information from the web
+
+234
+00:11:50.843 --> 00:11:55.681
+ready to generate charts and synthesize
+and respond to the user with an answer.
+
+235
+00:11:55.848 --> 00:11:58.784
+Let's take a look
+at how we create that web researcher.
+
+236
+00:11:58.784 --> 00:12:00.553
+To start building our web search agent.
+
+237
+00:12:00.553 --> 00:12:03.122
+We're going to use a react agent
+from link graph.
+
+238
+00:12:03.122 --> 00:12:06.125
+A link graph react agent will use a tool
+
+239
+00:12:06.425 --> 00:12:09.261
+along with an Elm to accomplish its task.
+
+240
+00:12:09.261 --> 00:12:12.131
+This will be the basis of our SAP agents
+here.
+
+241
+00:12:12.131 --> 00:12:13.666
+The tool we'll use for the web search
+
+242
+00:12:13.666 --> 00:12:17.436
+agent is Tadley will import search
+from link chain to heavily.
+
+243
+00:12:17.536 --> 00:12:22.208
+And then we'll define our tool
+and we'll pass in a max results to five.
+
+244
+00:12:22.541 --> 00:12:25.444
+This is the number of results
+we'll get from the open web.
+
+245
+00:12:25.444 --> 00:12:28.047
+To see what this does in the tool
+call alone
+
+246
+00:12:28.047 --> 00:12:31.050
+we can invoke the tool call directly
+just like so.
+
+247
+00:12:31.083 --> 00:12:34.887
+Here we'll ask what JPMorgan's current
+stock price and return the results.
+
+248
+00:12:35.354 --> 00:12:38.991
+And the results
+we can see a list of URLs, titles
+
+249
+00:12:39.358 --> 00:12:42.828
+and the content, along with
+some other information for each result.
+
+250
+00:12:42.928 --> 00:12:46.031
+this is what the react agent
+will use to answer the question.
+
+251
+00:12:46.132 --> 00:12:50.770
+This would be a lot of information to pass
+back to our master multi-agent system.
+
+252
+00:12:50.903 --> 00:12:52.738
+So by using a react agent,
+
+253
+00:12:52.738 --> 00:12:56.809
+we get to actually provide
+only the information that the agent system
+
+254
+00:12:56.809 --> 00:13:00.146
+needs to answer the sub question
+provided to that sub agent.
+
+255
+00:13:00.346 --> 00:13:03.349
+Now let's build
+our react agent using this tool.
+
+256
+00:13:03.549 --> 00:13:04.583
+to build our react agent.
+
+257
+00:13:04.583 --> 00:13:07.686
+Here we'll import the agent system
+prompt from the helper module
+
+258
+00:13:07.787 --> 00:13:10.790
+and set the LM to GPT for our.
+
+259
+00:13:10.790 --> 00:13:15.327
+Then we'll create the web search agent
+by calling Create React Agent,
+
+260
+00:13:15.494 --> 00:13:19.131
+passing in our chosen lamp
+and tool, the tablet tool,
+
+261
+00:13:19.231 --> 00:13:21.333
+and then providing
+a prompt in this prompt,
+
+262
+00:13:21.333 --> 00:13:25.571
+we tell it that it's the researcher
+and that it can only perform research
+
+263
+00:13:25.704 --> 00:13:27.740
+using the provided search tool.
+
+264
+00:13:27.740 --> 00:13:30.843
+Tablet tool When it's found
+all of the needed information,
+
+265
+00:13:30.943 --> 00:13:33.946
+it should end its output
+and not take further actions.
+
+266
+00:13:33.946 --> 00:13:35.147
+Executing the cell,
+
+267
+00:13:35.147 --> 00:13:38.184
+we'll initialize our web search agent
+and then we can try it out.
+
+268
+00:13:38.717 --> 00:13:41.587
+Now we can execute our web
+search sub agent
+
+269
+00:13:41.587 --> 00:13:45.491
+with the same query we did before,
+and ask JPMorgan's current market cap.
+
+270
+00:13:45.658 --> 00:13:50.095
+By using a web search agent armed
+with the tool, rather than the tool alone,
+
+271
+00:13:50.162 --> 00:13:53.899
+we could provide only the needed
+information back to our agenda system.
+
+272
+00:13:54.400 --> 00:13:58.604
+Now we get a nice, clean answer
+containing exactly what JPMorgan's
+
+273
+00:13:58.737 --> 00:14:02.708
+current market cap is without
+any extra information that we don't need.
+
+274
+00:14:03.142 --> 00:14:04.243
+The last thing we'll do
+
+275
+00:14:04.243 --> 00:14:07.880
+when we define our web search agent
+is to wrap it in a line graph node.
+
+276
+00:14:07.980 --> 00:14:10.216
+This allows us to build it into a graph.
+
+277
+00:14:11.450 --> 00:14:12.885
+The web search node will take
+
+278
+00:14:12.885 --> 00:14:16.655
+in the state just like every node,
+and it will also route the executor.
+
+279
+00:14:16.822 --> 00:14:20.526
+That way, the executor
+can choose the next action in the plan.
+
+280
+00:14:20.659 --> 00:14:21.927
+After the web search node.
+
+281
+00:14:21.927 --> 00:14:25.064
+Then we'll retrieve the agent query
+from the state.
+
+282
+00:14:25.197 --> 00:14:29.735
+This is the exact sub question that's
+being passed to the web search agent.
+
+283
+00:14:29.869 --> 00:14:33.505
+Then we'll invoke our web search agent,
+just like we did before,
+
+284
+00:14:33.672 --> 00:14:36.842
+using this message
+as key and passing in the agent query.
+
+285
+00:14:37.009 --> 00:14:40.613
+Last, we'll wrap this response
+in a human message.
+
+286
+00:14:40.713 --> 00:14:44.850
+This is the type that will allow us
+to wrap this response
+
+287
+00:14:44.917 --> 00:14:48.621
+in a humored message type from Link
+Chain, And we'll go back to the Executer
+
+288
+00:14:48.921 --> 00:14:51.690
+using the command
+along with updating the state.
+
+289
+00:14:51.690 --> 00:14:52.124
+here.
+
+290
+00:14:52.124 --> 00:14:55.060
+We'll return command
+containing an update to the state
+
+291
+00:14:55.060 --> 00:14:58.397
+and the next action
+agent to take in the update to the state.
+
+292
+00:14:58.464 --> 00:15:01.767
+We'll update the messages
+which tracks our conversation history
+
+293
+00:15:02.167 --> 00:15:06.672
+between our different sub agents,
+with the result from our web search agent.
+
+294
+00:15:06.839 --> 00:15:10.242
+The resulting messages from the web search
+agent get appended
+
+295
+00:15:10.476 --> 00:15:13.479
+onto the conversation history
+in the messages key.
+
+296
+00:15:13.512 --> 00:15:14.346
+In our state.
+
+297
+00:15:14.346 --> 00:15:16.415
+Now we've created our web search agent.
+
+298
+00:15:16.415 --> 00:15:18.817
+Next we'll go to the chart node.
+
+299
+00:15:18.817 --> 00:15:19.285
+All right.
+
+300
+00:15:19.285 --> 00:15:21.754
+We just finished
+creating our web search agent.
+
+301
+00:15:21.754 --> 00:15:25.090
+This is going to do
+our data tasks for this agent system.
+
+302
+00:15:25.224 --> 00:15:29.561
+Now we can create our charting agent,
+the next sub agent in our architecture.
+
+303
+00:15:30.129 --> 00:15:33.966
+our target agent, just like the web search
+agent will be a react style agent.
+
+304
+00:15:34.099 --> 00:15:37.503
+That means we're binding the LM to a tool.
+
+305
+00:15:37.703 --> 00:15:41.607
+But in this case, rather than a web search
+tool, we'll use a Python rappel tool.
+
+306
+00:15:41.740 --> 00:15:45.311
+This is gonna allow the LM
+to execute Python particularly.
+
+307
+00:15:45.511 --> 00:15:49.515
+It's going to allow the LM to execute
+Python in order to generate a chart.
+
+308
+00:15:49.581 --> 00:15:50.849
+We'll give it the prompt
+
+309
+00:15:50.849 --> 00:15:54.553
+that it's tasked with generating charts
+and working with a researcher colleague.
+
+310
+00:15:54.687 --> 00:15:57.756
+We tell it to print the chart first
+and to save it to our current
+
+311
+00:15:57.756 --> 00:16:00.993
+working directory,
+and then to tell the chart summarizer
+
+312
+00:16:01.260 --> 00:16:05.798
+exactly where the path is, and some notes
+summarizing the main insights.
+
+313
+00:16:06.265 --> 00:16:09.268
+We'll also wrap this agent in a line
+graph node.
+
+314
+00:16:09.335 --> 00:16:12.338
+This agent again
+is going to take in this state, tracking
+
+315
+00:16:12.338 --> 00:16:15.341
+all of the same information
+in the agent's memory.
+
+316
+00:16:15.407 --> 00:16:17.943
+And it's going to route into the chart.
+Summarizer.
+
+317
+00:16:17.943 --> 00:16:21.947
+The first thing we'll do is we'll invoke
+the chart agent using the state.
+
+318
+00:16:22.114 --> 00:16:26.118
+And then we'll take out the content
+and wrap it in a human message.
+
+319
+00:16:26.218 --> 00:16:29.822
+These messages are going to be passed
+into the state and appended
+
+320
+00:16:30.155 --> 00:16:33.792
+to our conversation
+history tracked between the sub agents.
+
+321
+00:16:33.959 --> 00:16:35.928
+As we mentioned in the tip end.
+
+322
+00:16:35.928 --> 00:16:38.931
+We'll also go to the chart summarizer
+using the command.
+
+323
+00:16:39.331 --> 00:16:41.533
+Following from the chart generation agent.
+
+324
+00:16:41.533 --> 00:16:43.469
+We'll create our chart summary agent.
+
+325
+00:16:43.469 --> 00:16:47.272
+The chart summary agent
+will take the image, the chart itself,
+
+326
+00:16:47.406 --> 00:16:50.876
+and provide a nice textual response
+back to the user.
+
+327
+00:16:51.343 --> 00:16:52.945
+similar to the last sub agents.
+
+328
+00:16:52.945 --> 00:16:57.182
+We'll also create a react agent here,
+but this time we won't use any tools.
+
+329
+00:16:57.282 --> 00:17:01.220
+We'll also provide a prompt
+that tells us to generate image captions.
+
+330
+00:17:01.253 --> 00:17:02.654
+And it's tasked with generating
+
+331
+00:17:02.654 --> 00:17:05.791
+a standalone, concise
+summary of the provided chart.
+
+332
+00:17:05.958 --> 00:17:07.659
+Save data local path.
+
+333
+00:17:07.659 --> 00:17:12.197
+Then we can wrap our react
+agent in a chart summary node.
+
+334
+00:17:12.264 --> 00:17:17.264
+The chart summary node is going to invoke
+our react agent and then pass to the end.
+
+335
+00:17:18.604 --> 00:17:19.071
+The last
+
+336
+00:17:19.071 --> 00:17:22.074
+subject we need to create
+is that the synthesizer agent.
+
+337
+00:17:22.141 --> 00:17:26.345
+This helps with the case that the agent
+is not tasked with generating a chart,
+
+338
+00:17:26.512 --> 00:17:29.515
+and instead just needs to respond
+with a textual response.
+
+339
+00:17:30.315 --> 00:17:31.116
+the next agent.
+
+340
+00:17:31.116 --> 00:17:33.619
+We'll create his art synthesizer agent.
+
+341
+00:17:33.619 --> 00:17:36.755
+This synthesizer agent
+is going to directly invoke our alarm
+
+342
+00:17:36.922 --> 00:17:39.158
+with a provided prompt,
+so that we can take
+
+343
+00:17:39.158 --> 00:17:42.161
+in the entire information
+that the agent has already gathered
+
+344
+00:17:42.528 --> 00:17:44.329
+and provide a response back to the user.
+
+345
+00:17:44.329 --> 00:17:47.433
+Well, first, start
+by extracting the relevant messages
+
+346
+00:17:47.433 --> 00:17:51.570
+from the conversation history, by sorting
+through the messages and pulling out any
+
+347
+00:17:51.737 --> 00:17:55.074
+from the web searcher, the chart
+generator, or the chart summarizer.
+
+348
+00:17:55.574 --> 00:17:59.311
+For a synthesizer, we'll again
+use GPT four zero as our alarm.
+
+349
+00:17:59.545 --> 00:18:01.947
+And then we can create
+our synthesizer node.
+
+350
+00:18:01.947 --> 00:18:04.650
+Our synthesizer node is going to gather
+
+351
+00:18:04.650 --> 00:18:07.653
+the informative messages
+that it needs for the final synthesis.
+
+352
+00:18:07.753 --> 00:18:11.123
+We'll do that by extracting
+the message history from the state,
+
+353
+00:18:11.290 --> 00:18:14.593
+and then finding any messages
+from the important agents
+
+354
+00:18:14.693 --> 00:18:17.696
+the web researcher, the charge generator,
+the target summarizer.
+
+355
+00:18:17.830 --> 00:18:20.866
+Notice that this doesn't
+include the planner or the executor.
+
+356
+00:18:21.300 --> 00:18:24.536
+Then we'll fetch the user question
+from the state as well.
+
+357
+00:18:24.703 --> 00:18:29.541
+That way the synthesizer is armed with
+the exact user query it needs to answer.
+
+358
+00:18:29.708 --> 00:18:33.645
+Once we have this information, then
+we can create our synthesis instructions.
+
+359
+00:18:34.079 --> 00:18:36.815
+This is the exact prompt
+we'll pass to the Elm
+
+360
+00:18:36.815 --> 00:18:38.584
+to tell it how to answer the question.
+
+361
+00:18:38.584 --> 00:18:40.152
+This is very stylistic.
+
+362
+00:18:40.152 --> 00:18:44.156
+We tell it to perform
+any lightweight comparisons or infinitives
+
+363
+00:18:44.156 --> 00:18:48.026
+as required, but not to invent any facts
+not supported by the context.
+
+364
+00:18:48.093 --> 00:18:51.597
+We'll tell it to provide a concise
+response that fully answers the question,
+
+365
+00:18:51.763 --> 00:18:53.532
+and to start with a direct answer.
+
+366
+00:18:53.532 --> 00:18:55.968
+And including any citations if it needs.
+
+367
+00:18:55.968 --> 00:18:57.302
+And to keep the output crisp.
+
+368
+00:18:57.302 --> 00:18:59.538
+Now that we have our relevant messages,
+
+369
+00:18:59.538 --> 00:19:03.175
+the user question and the synthesis
+instructions, we can build our prompt
+
+370
+00:19:03.475 --> 00:19:06.345
+containing each of these key
+pieces of information.
+
+371
+00:19:06.345 --> 00:19:09.648
+Our summary prompt is going to be
+a human message with the content
+
+372
+00:19:09.815 --> 00:19:12.951
+of the user question,
+followed by the synthesis instructions,
+
+373
+00:19:13.085 --> 00:19:17.623
+and then last followed up with the content
+from all of the relevant messages
+
+374
+00:19:17.923 --> 00:19:21.793
+in that conversation history
+that we've been tracking in the state.
+
+375
+00:19:21.994 --> 00:19:25.464
+Once we've built, our prompt
+will invoke our alarm with this prompt.
+
+376
+00:19:25.497 --> 00:19:28.000
+Exactly. When we received the LLM reply.
+
+377
+00:19:28.000 --> 00:19:29.601
+We'll extract out the content
+
+378
+00:19:29.601 --> 00:19:32.638
+and then we'll print the synthesize
+our answer just so we can see it.
+
+379
+00:19:32.771 --> 00:19:33.839
+And we'll finish off.
+
+380
+00:19:33.839 --> 00:19:37.576
+By routing to the end and
+updating the state with the final answer.
+
+381
+00:19:37.743 --> 00:19:39.478
+And our last set of messages.
+
+382
+00:19:39.478 --> 00:19:40.445
+Now that we've created
+
+383
+00:19:40.445 --> 00:19:44.816
+each sub agent in our graph,
+we can start to build the agent graph.
+
+384
+00:19:44.950 --> 00:19:47.953
+Let's remind ourselves of the architecture
+we've been building.
+
+385
+00:19:48.353 --> 00:19:52.457
+So now we've created all of the nodes
+we need to finally build out
+
+386
+00:19:52.457 --> 00:19:53.325
+this workflow.
+
+387
+00:19:53.325 --> 00:19:55.861
+We started with the planner
+and then the Executer,
+
+388
+00:19:55.861 --> 00:19:59.865
+and then we built out each of the sub
+agents needed to accomplish goals
+
+389
+00:19:59.998 --> 00:20:01.266
+according to the plan.
+
+390
+00:20:01.266 --> 00:20:05.270
+We created the web researcher,
+the chart generator, the chart summarizer,
+
+391
+00:20:05.470 --> 00:20:06.605
+and the synthesizer.
+
+392
+00:20:06.605 --> 00:20:08.707
+Now we can build the graph.
+
+393
+00:20:08.707 --> 00:20:11.843
+To do that we're going to import
+state graph from line graph.
+
+394
+00:20:11.977 --> 00:20:14.580
+And we're going to instantiate it
+with our custom state.
+
+395
+00:20:14.580 --> 00:20:18.817
+Then we'll add each of the nodes
+to our workflow that we've been creating.
+
+396
+00:20:18.817 --> 00:20:19.585
+In this lesson.
+
+397
+00:20:19.585 --> 00:20:23.388
+Last we'll add a single edge
+from the start to the planner
+
+398
+00:20:23.722 --> 00:20:26.491
+so that we always start with a plan.
+
+399
+00:20:26.491 --> 00:20:30.262
+Now we can compile our workflow
+into the variable named graph.
+
+400
+00:20:30.662 --> 00:20:33.165
+To verify that we have created the graph
+we attend.
+
+401
+00:20:33.165 --> 00:20:37.936
+We can draw a mermaid chart from this
+graph using a provided link chain utility.
+
+402
+00:20:38.604 --> 00:20:41.173
+This gives us exactly the architecture
+we intended.
+
+403
+00:20:41.173 --> 00:20:43.909
+It looks a lot like the slide
+we saw before, doesn't it?
+
+404
+00:20:43.909 --> 00:20:45.444
+Now that we've created our graph,
+
+405
+00:20:45.444 --> 00:20:48.447
+we're ready to go and ready
+to start using our agent.
+
+406
+00:20:49.281 --> 00:20:52.017
+So the first question we'll ask
+the agent is to chart
+
+407
+00:20:52.017 --> 00:20:55.921
+the current market capitalization
+of the top five banks in the US.
+
+408
+00:20:56.088 --> 00:20:56.989
+We expect this
+
+409
+00:20:56.989 --> 00:21:00.993
+to rely on web search to capture
+the current market cap of these banks,
+
+410
+00:21:01.159 --> 00:21:04.062
+and then go to the chart node
+to generate a chart,
+
+411
+00:21:04.062 --> 00:21:07.899
+and then last the chart summarizer provide
+a textual companion response,
+
+412
+00:21:08.033 --> 00:21:11.603
+we'll invoke that graph with the state,
+including the user query.
+
+413
+00:21:12.070 --> 00:21:16.341
+We'll start off our messages history with
+that user query right at the beginning.
+
+414
+00:21:16.475 --> 00:21:19.111
+And then we'll also provide
+a list of enabled agents.
+
+415
+00:21:19.111 --> 00:21:22.114
+These enabled agents are slotted
+into the planning prompt
+
+416
+00:21:22.381 --> 00:21:25.817
+so that the planner only writes a plan
+with the available agents
+
+417
+00:21:25.984 --> 00:21:28.820
+and the Executer prompt,
+so that the executer
+
+418
+00:21:28.820 --> 00:21:32.124
+only chooses
+agents available and ready to use.
+
+419
+00:21:33.425 --> 00:21:35.560
+So our agent has responded with an answer.
+
+420
+00:21:35.560 --> 00:21:40.198
+It's provided us a nice chart with the top
+five market caps of U.S.
+
+421
+00:21:40.198 --> 00:21:42.301
+banks with JPMorgan in the lead.
+
+422
+00:21:42.301 --> 00:21:42.768
+the charts.
+
+423
+00:21:42.768 --> 00:21:45.470
+Firm riser,
+however, did not do as good of a job.
+
+424
+00:21:45.470 --> 00:21:48.240
+It just provided us with the chart path,
+but didn't
+
+425
+00:21:48.240 --> 00:21:50.876
+actually give us the textual response
+we're looking for.
+
+426
+00:21:50.876 --> 00:21:54.846
+In other cases, the alum will actually
+give the full textual response,
+
+427
+00:21:55.013 --> 00:21:56.715
+and you might see that in your notebook.
+
+428
+00:21:56.715 --> 00:21:59.785
+But either way, we'll observe
+exactly how well
+
+429
+00:21:59.785 --> 00:22:03.255
+this agent is doing
+when we get into evaluations later.
+
+430
+00:22:03.422 --> 00:22:05.190
+Let's try a second query.
+
+431
+00:22:05.190 --> 00:22:08.393
+In this query,
+we asked to identify regulatory
+
+432
+00:22:08.393 --> 00:22:11.596
+changes for the financial services
+industry in the US.
+
+433
+00:22:11.730 --> 00:22:15.300
+Compared to the last example
+where we were looking to generate a chart.
+
+434
+00:22:15.534 --> 00:22:18.637
+And the chart Summarizer here
+we're taking the synthesizer route.
+
+435
+00:22:18.770 --> 00:22:21.740
+We're looking to only respond
+with the text response.
+
+436
+00:22:21.740 --> 00:22:24.743
+Just like before,
+we're going to invoke the graph
+
+437
+00:22:24.810 --> 00:22:28.847
+with our user query
+and initialize messages with that query.
+
+438
+00:22:29.014 --> 00:22:32.017
+And then the list of enabled agents
+that we have to work with.
+
+439
+00:22:32.117 --> 00:22:35.120
+Let's wait for the agent
+to return a results for us.
+
+440
+00:22:35.620 --> 00:22:40.492
+So our agent has responded with a nice,
+detailed answer to answer our question.
+
+441
+00:22:40.625 --> 00:22:43.595
+It gives us key details
+about regulatory changes
+
+442
+00:22:43.595 --> 00:22:46.965
+in Congress, the SEC,
+the Federal Reserve, and more.
+
+443
+00:22:47.132 --> 00:22:50.669
+And it even provides some citations
+about where it got this information from.
+
+444
+00:22:50.836 --> 00:22:51.903
+in the next lesson.
+
+445
+00:22:51.903 --> 00:22:56.308
+We'll go on to expand our agents
+capabilities and allow it to reason over
+
+446
+00:22:56.308 --> 00:22:59.945
+internal data as well
+using text, SQL and document search.
+
+447
+00:23:00.145 --> 00:23:04.549
+These will be additional sub agents
+provided into our system so that we can
+
+448
+00:23:04.549 --> 00:23:09.121
+reason and answer even harder questions
+and provide more value to our end user.
+
+449
+00:23:09.254 --> 00:23:10.255
+Let's get to the next one.

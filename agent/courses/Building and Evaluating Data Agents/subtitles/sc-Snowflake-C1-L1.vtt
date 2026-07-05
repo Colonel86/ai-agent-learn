@@ -1,0 +1,963 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.301 --> 00:00:03.603
+In this lesson, you will learn
+
+2
+00:00:03.603 --> 00:00:06.606
+what data agents are, how they work,
+
+3
+00:00:06.606 --> 00:00:09.609
+and when they are considered trustworthy.
+
+4
+00:00:10.076 --> 00:00:11.611
+Let's dive in.
+
+5
+00:00:11.611 --> 00:00:15.648
+Let's begin with the definition of what
+a data agent is.
+
+6
+00:00:15.715 --> 00:00:20.020
+A data agent is an autonomous
+or semi autonomous system
+
+7
+00:00:20.186 --> 00:00:24.324
+powered by large language models
+that connects to data sources.
+
+8
+00:00:24.357 --> 00:00:27.560
+These could be databases, APIs, files,
+
+9
+00:00:27.560 --> 00:00:31.398
+streams, sensors, web APIs, etc.
+
+10
+00:00:31.431 --> 00:00:35.535
+it understands queries
+expressed in natural language or code
+
+11
+00:00:36.069 --> 00:00:39.806
+lands and performs actions
+such as query decomposition,
+
+12
+00:00:39.806 --> 00:00:43.610
+data retrieval, analysis,
+or visualization.
+
+13
+00:00:43.676 --> 00:00:48.676
+And finally, it provides insights
+or takes decisions based on this data.
+
+14
+00:00:48.882 --> 00:00:52.919
+For example,
+it could send out an email with a report
+
+15
+00:00:53.286 --> 00:00:56.056
+that summarizes the results of its work.
+
+16
+00:00:56.056 --> 00:00:59.526
+Data agents are starting to gain
+widespread adoption.
+
+17
+00:00:59.692 --> 00:01:03.163
+For example,
+many of you might be quite familiar
+
+18
+00:01:03.463 --> 00:01:06.599
+with ChatGPT deep research system.
+
+19
+00:01:06.833 --> 00:01:10.270
+According to our abstraction
+of what a data agent is,
+
+20
+00:01:10.403 --> 00:01:13.406
+deep research
+would be considered a data agent.
+
+21
+00:01:13.506 --> 00:01:16.509
+It only makes use of data
+
+22
+00:01:16.743 --> 00:01:21.381
+that's available on the web
+and its internal parametrized knowledge
+
+23
+00:01:21.648 --> 00:01:25.418
+to answer
+open ended questions on various topics.
+
+24
+00:01:25.585 --> 00:01:30.585
+In many enterprise settings,
+it's useful to rely not just on web data,
+
+25
+00:01:31.057 --> 00:01:34.461
+but in addition on data
+that is available internally,
+
+26
+00:01:34.794 --> 00:01:37.730
+either in the form of structured data
+
+27
+00:01:37.730 --> 00:01:40.733
+in database tables or unstructured data,
+
+28
+00:01:41.101 --> 00:01:44.838
+which could be in documents
+and other multimodal formats.
+
+29
+00:01:45.004 --> 00:01:48.908
+Snowflake intelligence
+is one example of a data agent
+
+30
+00:01:49.075 --> 00:01:53.146
+that covers
+this broader class of data sources.
+
+31
+00:01:53.279 --> 00:01:56.249
+Let's now look at a very concrete example
+
+32
+00:01:56.349 --> 00:02:00.019
+to understand
+the scope of work for a data agent.
+
+33
+00:02:00.186 --> 00:02:04.891
+Here's a very simple example
+where a data agent is being asked
+
+34
+00:02:05.058 --> 00:02:09.762
+to identify regulatory changes
+in the financial services industry,
+
+35
+00:02:09.929 --> 00:02:14.929
+and then an agent could, in this case,
+find general trends in regulatory changes
+
+36
+00:02:15.635 --> 00:02:19.572
+by examining data
+that is available on the web.
+
+37
+00:02:19.706 --> 00:02:24.706
+So such an agent could be a web search
+agent that performs this task.
+
+38
+00:02:25.211 --> 00:02:28.882
+Now let's make the query
+a little more detailed.
+
+39
+00:02:29.048 --> 00:02:34.048
+Now we are asking our data agent
+to identify pending deals in industries
+
+40
+00:02:35.021 --> 00:02:38.491
+that are currently experiencing
+regulatory changes.
+
+41
+00:02:38.658 --> 00:02:42.362
+Notice
+that there are two parts to this question.
+
+42
+00:02:42.495 --> 00:02:46.866
+First, identifying pending deals,
+which is highlighted here in green,
+
+43
+00:02:47.033 --> 00:02:52.033
+requires access to internal proprietary
+data, which could be in tables
+
+44
+00:02:52.305 --> 00:02:57.305
+inside of an enterprise,
+and a sub agent could examine or answer
+
+45
+00:02:58.111 --> 00:03:01.948
+this part of the question
+by making use of an agent
+
+46
+00:03:02.081 --> 00:03:06.586
+that can take natural language text
+and translate it into sequel.
+
+47
+00:03:06.753 --> 00:03:10.790
+Run it over the database
+and retrieve this information.
+
+48
+00:03:10.957 --> 00:03:14.227
+The second part of the query,
+which is highlighted here in blue,
+
+49
+00:03:14.360 --> 00:03:18.131
+is very similar to the first query
+that we had on the previous slide.
+
+50
+00:03:18.298 --> 00:03:21.401
+It's looking at asking for information
+about industries
+
+51
+00:03:21.401 --> 00:03:24.404
+that are currently experiencing
+regulatory changes.
+
+52
+00:03:24.504 --> 00:03:28.942
+So in this context,
+the overall top level agent,
+
+53
+00:03:29.075 --> 00:03:33.112
+once it collects these pending deals
+by making use of the text
+
+54
+00:03:33.112 --> 00:03:36.983
+to SQL sub agent,
+can then make use of the web search sub
+
+55
+00:03:36.983 --> 00:03:41.621
+agent to figure out which of these deals
+are in industries that are currently
+
+56
+00:03:41.621 --> 00:03:45.725
+experiencing regulatory changes,
+and then synthesize a response
+
+57
+00:03:45.892 --> 00:03:50.530
+that combines the results of calls
+to these two sub agents.
+
+58
+00:03:50.697 --> 00:03:54.567
+So now you can see the data
+agent is starting to respond
+
+59
+00:03:54.567 --> 00:03:58.037
+to more sophisticated queries that require
+
+60
+00:03:58.204 --> 00:04:01.207
+making use of more than one data source.
+
+61
+00:04:01.207 --> 00:04:04.210
+Finally, let's augment that query
+some more.
+
+62
+00:04:04.510 --> 00:04:09.449
+The first part up till here is the same
+as the query we had on the previous slide.
+
+63
+00:04:09.616 --> 00:04:14.020
+But now we are also asking the data agent
+to help reposition
+
+64
+00:04:14.187 --> 00:04:16.856
+our value proposition for each other.
+
+65
+00:04:16.856 --> 00:04:20.493
+In the context of these deals,
+given the regulatory changes.
+
+66
+00:04:20.660 --> 00:04:24.797
+So for that final part of the query,
+once we have gotten the response
+
+67
+00:04:24.964 --> 00:04:28.034
+from the agent that addresses
+these first two parts,
+
+68
+00:04:28.201 --> 00:04:31.804
+that the top level agent
+can make use of another sub agent
+
+69
+00:04:31.938 --> 00:04:36.938
+that does internal search over documents
+available within the enterprise
+
+70
+00:04:38.278 --> 00:04:41.781
+to read the meeting notes
+associated with these deals,
+
+71
+00:04:41.948 --> 00:04:45.518
+and then synthesize a value proposition
+
+72
+00:04:45.518 --> 00:04:50.156
+for each of these pending deals,
+which takes into account
+
+73
+00:04:50.323 --> 00:04:53.559
+the regulatory changes
+in the corresponding industry.
+
+74
+00:04:53.726 --> 00:04:57.664
+So we are finally at this point
+where data agent makes
+
+75
+00:04:57.664 --> 00:05:02.664
+use of three different sub
+agents to answer a fairly complex query
+
+76
+00:05:03.703 --> 00:05:07.974
+that addresses
+all elements of this of this task.
+
+77
+00:05:08.441 --> 00:05:13.079
+Now, let me give you a top level
+overview of
+
+78
+00:05:13.246 --> 00:05:17.016
+How would a data agent work
+in order to accomplish a goal,
+
+79
+00:05:17.016 --> 00:05:20.086
+such as answering the kind of query
+we had on the previous slide?
+
+80
+00:05:20.219 --> 00:05:24.424
+Agents will have associated goals
+that they are trying to accomplish.
+
+81
+00:05:24.590 --> 00:05:26.459
+In the case of data agents,
+
+82
+00:05:26.459 --> 00:05:30.530
+it could be responding to a query
+like the one on the previous slide.
+
+83
+00:05:30.697 --> 00:05:33.900
+It then creates a plan
+to accomplish its goal,
+
+84
+00:05:34.067 --> 00:05:38.237
+and then executes a set of actions
+that are prescribed by the plan
+
+85
+00:05:38.404 --> 00:05:42.642
+to achieve various subgoals
+in the path of achieving the full goal.
+
+86
+00:05:42.809 --> 00:05:46.245
+And here there can be iteration
+between planning and action, where,
+
+87
+00:05:46.379 --> 00:05:51.217
+depending on the results of the actions,
+the agent might update its plan
+
+88
+00:05:51.384 --> 00:05:55.555
+and then execute some more actions
+and continue on this iterative process
+
+89
+00:05:55.722 --> 00:05:58.725
+until it is satisfied
+that the goal is reached.
+
+90
+00:05:58.725 --> 00:05:59.392
+Well.
+
+91
+00:05:59.392 --> 00:06:02.028
+So if we return back
+to our running example,
+
+92
+00:06:02.028 --> 00:06:05.465
+and this is also the example
+that we will look at in
+
+93
+00:06:05.465 --> 00:06:09.602
+some detail in subsequent lessons,
+the goal is to answer this question.
+
+94
+00:06:09.769 --> 00:06:14.769
+The planning step involves decomposing
+this complex query into three queries.
+
+95
+00:06:15.274 --> 00:06:18.177
+One on identifying pending deals,
+
+96
+00:06:18.177 --> 00:06:21.180
+which involves calling the text
+a SQL sub agent.
+
+97
+00:06:21.180 --> 00:06:25.218
+One on understanding
+which of these pending deals are in
+
+98
+00:06:25.218 --> 00:06:28.221
+what industries,
+what kind of regulatory changes
+
+99
+00:06:28.254 --> 00:06:33.126
+are being experienced in those industries
+which makes use of the web search agent.
+
+100
+00:06:33.292 --> 00:06:37.196
+And finally,
+making use of the internal search agent
+
+101
+00:06:37.330 --> 00:06:42.330
+to help reposition the value proposition
+for each given that changes.
+
+102
+00:06:42.602 --> 00:06:45.471
+So this is the form of planning.
+
+103
+00:06:45.471 --> 00:06:48.574
+The first step of planning involves
+this query decomposition.
+
+104
+00:06:48.741 --> 00:06:53.741
+Then the execution or action
+steps involves calling out to the text
+
+105
+00:06:54.280 --> 00:06:58.851
+the SQL agent, the web search agent,
+and the internal search agent
+
+106
+00:06:58.851 --> 00:07:03.851
+in that order to finally get to a point
+where all the information is available
+
+107
+00:07:04.190 --> 00:07:08.895
+for the agent to synthesize
+a good response that achieve its goals.
+
+108
+00:07:09.395 --> 00:07:13.800
+Let's now get into what it means
+for agents to work well.
+
+109
+00:07:13.966 --> 00:07:17.170
+Given the structure
+that I have just shared about how agents
+
+110
+00:07:17.170 --> 00:07:22.170
+work involving this combination of setting
+goals, planning and action to achieve
+
+111
+00:07:23.309 --> 00:07:26.512
+those goals, trustworthy agents execute
+
+112
+00:07:26.679 --> 00:07:30.183
+with goals, plans, and actions aligned.
+
+113
+00:07:30.349 --> 00:07:33.352
+In other words, we want agents
+
+114
+00:07:33.453 --> 00:07:37.957
+to have high GPA, our goal
+planner, and action alignment.
+
+115
+00:07:38.090 --> 00:07:40.893
+Let me elaborate on that
+a little bit more.
+
+116
+00:07:40.893 --> 00:07:43.563
+How do we measure an agent's GPA?
+
+117
+00:07:43.563 --> 00:07:46.799
+The first step is to set goals
+
+118
+00:07:46.799 --> 00:07:49.836
+for the agent in our setting with the data
+agents.
+
+119
+00:07:50.002 --> 00:07:53.005
+These goals
+will often refer to the quality
+
+120
+00:07:53.005 --> 00:07:56.075
+of the final response,
+such as is that relevant?
+
+121
+00:07:56.242 --> 00:08:00.046
+Is that grounded in retrieve results
+as well as subgoals
+
+122
+00:08:00.046 --> 00:08:03.816
+that the agent might be expected
+to achieve along the way?
+
+123
+00:08:03.850 --> 00:08:06.586
+In terms of retrieving relevant results?
+
+124
+00:08:06.586 --> 00:08:08.087
+To answer the final query.
+
+125
+00:08:08.087 --> 00:08:11.891
+Once we have the goals specified,
+the next steps involve
+
+126
+00:08:12.158 --> 00:08:15.495
+ensuring a good amount of alignment
+between goals
+
+127
+00:08:15.495 --> 00:08:19.499
+and plans, lands
+and actions, and actions goals.
+
+128
+00:08:19.665 --> 00:08:21.801
+And we have a collection of evaluations
+
+129
+00:08:21.801 --> 00:08:26.801
+that make use of judges
+to check the agent's GPA.
+
+130
+00:08:27.240 --> 00:08:30.409
+The first evaluation is called
+plan quality.
+
+131
+00:08:30.576 --> 00:08:34.747
+Plan quality
+sits at the interface of goal and plan,
+
+132
+00:08:34.881 --> 00:08:39.881
+and it checks whether the agent's plan
+is a good plan for achieving its goals.
+
+133
+00:08:40.786 --> 00:08:43.155
+The plan need not be static.
+
+134
+00:08:43.155 --> 00:08:47.426
+It might evolve over time
+as new information becomes available
+
+135
+00:08:47.426 --> 00:08:52.131
+to the agent, but the replanning steps
+also need to be well justified
+
+136
+00:08:52.265 --> 00:08:57.265
+given the information and observations
+that the agent has access to.
+
+137
+00:08:57.603 --> 00:09:02.575
+Next up is plan adherence, which sits
+at the interface of planning and actions.
+
+138
+00:09:02.742 --> 00:09:06.479
+Plan adherence checks
+whether the agent's actions
+
+139
+00:09:06.646 --> 00:09:11.183
+are in conformance
+with are adhering to its plan.
+
+140
+00:09:11.317 --> 00:09:15.488
+In other words, is the agent actually
+acting in the way that it has planned
+
+141
+00:09:15.488 --> 00:09:16.255
+to act?
+
+142
+00:09:16.255 --> 00:09:21.255
+Deviations from the plan can be indicative
+of failure modes as well,
+
+143
+00:09:21.994 --> 00:09:25.298
+which are helpful for the developer
+to be aware of
+
+144
+00:09:25.464 --> 00:09:28.568
+and address
+as the developer is building data agents.
+
+145
+00:09:28.734 --> 00:09:31.604
+The third evaluation, also implemented
+
+146
+00:09:31.604 --> 00:09:34.707
+with an alarm judge, is execution
+efficiency.
+
+147
+00:09:34.874 --> 00:09:39.712
+Execution efficiency sits at the interface
+between goal and action
+
+148
+00:09:40.046 --> 00:09:43.449
+sets in this portion of the Venn diagram,
+and it checks
+
+149
+00:09:43.716 --> 00:09:47.987
+whether the execution path
+that the agent took,
+
+150
+00:09:48.387 --> 00:09:51.057
+the sequence of actions
+that it executed, was
+
+151
+00:09:51.057 --> 00:09:54.193
+not the most efficient part
+for achieving the goal.
+
+152
+00:09:54.360 --> 00:09:58.831
+It can help identify redundancies
+in the agent's planning process,
+
+153
+00:09:58.998 --> 00:10:02.702
+which are sources for improvement.
+
+154
+00:10:03.002 --> 00:10:07.506
+As we go through an iterative process
+for developing data agents.
+
+155
+00:10:07.673 --> 00:10:11.510
+Finally, logical consistency
+sits at the intersection
+
+156
+00:10:11.510 --> 00:10:14.680
+of all three of our GPA pillars,
+
+157
+00:10:14.847 --> 00:10:19.752
+and it checks for inconsistencies
+between the plan and the goal.
+
+158
+00:10:19.852 --> 00:10:23.189
+For example, is the plan incorporating
+
+159
+00:10:23.189 --> 00:10:26.626
+or suggesting steps that are inconsistent
+with achieving the goal?
+
+160
+00:10:26.993 --> 00:10:31.993
+Our sub goals, as well as inconsistencies
+between planning and replanning steps,
+
+161
+00:10:32.098 --> 00:10:37.098
+are between planning and action steps,
+all of which sources of, incorrectness
+
+162
+00:10:38.037 --> 00:10:41.974
+and opportunities
+for improvement of the data agent.
+
+163
+00:10:42.141 --> 00:10:44.410
+With that brief introduction,
+
+164
+00:10:44.410 --> 00:10:48.214
+let me lay out the lesson plan
+for the rest of the course.
+
+165
+00:10:48.381 --> 00:10:51.450
+In lesson two, we will build a data agent
+
+166
+00:10:51.584 --> 00:10:56.355
+that makes use of a web search sub
+agent as a building block.
+
+167
+00:10:56.522 --> 00:10:57.957
+In lesson three.
+
+168
+00:10:57.957 --> 00:11:02.957
+We will expand that data agent
+with capabilities for text to sequel
+
+169
+00:11:04.096 --> 00:11:07.967
+as well as internal unstructured
+data search.
+
+170
+00:11:08.134 --> 00:11:12.872
+So the combination of lesson two
+and less than three will help you build up
+
+171
+00:11:13.039 --> 00:11:17.309
+in a notebook
+a full agent that can answer the kinds
+
+172
+00:11:17.309 --> 00:11:21.447
+of example queries
+that we saw earlier in this lesson.
+
+173
+00:11:21.580 --> 00:11:25.718
+And you will be introduced to,
+the different steps
+
+174
+00:11:25.718 --> 00:11:29.522
+that are involved in building
+such an agent from scratch.
+
+175
+00:11:29.689 --> 00:11:33.125
+We will make use of the line
+graph open source framework
+
+176
+00:11:33.292 --> 00:11:35.394
+for the purpose of building these agents.
+
+177
+00:11:35.394 --> 00:11:38.264
+The general concepts, however, carry over
+
+178
+00:11:38.264 --> 00:11:41.067
+to other frameworks
+for building agents as well.
+
+179
+00:11:41.067 --> 00:11:45.571
+In lesson four,
+we will add support for tracing
+
+180
+00:11:45.738 --> 00:11:49.475
+for instrumentation
+and tracing of the data agent,
+
+181
+00:11:49.642 --> 00:11:52.545
+as well as set up the evaluation
+
+182
+00:11:52.545 --> 00:11:55.548
+for the goals associated with this agent.
+
+183
+00:11:55.614 --> 00:12:00.614
+For this purpose, we will make use of True
+Lens, which is an open source library
+
+184
+00:12:01.087 --> 00:12:05.925
+for tracing and evaluation of agents
+and apps in general.
+
+185
+00:12:06.092 --> 00:12:10.329
+You will see specifically
+how we can make use of open
+
+186
+00:12:10.329 --> 00:12:15.000
+telemetry compatible tracing,
+as well as specific kinds of goals
+
+187
+00:12:15.334 --> 00:12:19.305
+that can be specified
+well for data agents.
+
+188
+00:12:19.305 --> 00:12:20.406
+But then through lens.
+
+189
+00:12:20.406 --> 00:12:23.876
+In less than five,
+we will expand the evaluation
+
+190
+00:12:24.043 --> 00:12:27.313
+to measure the agent's GPA.
+
+191
+00:12:27.480 --> 00:12:32.480
+This is where we will add evaluations
+for plan quality, land adherence,
+
+192
+00:12:32.718 --> 00:12:36.455
+logical consistency
+and execution efficiency
+
+193
+00:12:36.622 --> 00:12:40.126
+to the previously created evaluation
+metrics.
+
+194
+00:12:40.292 --> 00:12:41.427
+From lesson four.
+
+195
+00:12:41.427 --> 00:12:45.498
+In less than five,
+we will also show how agents can fail,
+
+196
+00:12:45.898 --> 00:12:49.034
+what kinds of failure modes
+these evaluations catch,
+
+197
+00:12:49.201 --> 00:12:54.201
+and this will provide a basis
+for developers
+
+198
+00:12:54.507 --> 00:12:59.507
+to introduce improvements to the agent,
+which will be the topic of lesson six,
+
+199
+00:13:00.312 --> 00:13:04.950
+where we will look at specific mechanisms
+that are informed by the evaluations.
+
+200
+00:13:04.950 --> 00:13:08.154
+And lesson
+five to improve the agent's GPA.
+
+201
+00:13:08.320 --> 00:13:13.320
+Finally, we will summarize and conclude
+the course with some key takeaways.

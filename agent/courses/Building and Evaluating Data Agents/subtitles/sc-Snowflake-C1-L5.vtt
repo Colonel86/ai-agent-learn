@@ -1,0 +1,2224 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.700 --> 00:00:05.038
+You will now learn how to evaluate
+whether your agent's GPA,
+
+2
+00:00:05.472 --> 00:00:09.275
+goal, plan, and actions are all aligned.
+
+3
+00:00:09.809 --> 00:00:11.177
+Let's get started.
+
+4
+00:00:11.177 --> 00:00:16.177
+Let's quickly recap from the introduction
+how to measure your agent's GPA.
+
+5
+00:00:16.850 --> 00:00:19.652
+Our goal plan action alignment.
+
+6
+00:00:19.652 --> 00:00:23.156
+You'll recall
+that that'll make use of four
+
+7
+00:00:23.323 --> 00:00:26.960
+evaluations
+that we will get into in this lesson.
+
+8
+00:00:27.127 --> 00:00:30.897
+First, we have plan quality,
+which sits at the intersection of goal
+
+9
+00:00:30.897 --> 00:00:34.834
+and plan, and measures
+how well the plan achieves the goal.
+
+10
+00:00:35.001 --> 00:00:39.539
+Next we have plan adherence,
+which measures how well the actions
+
+11
+00:00:39.539 --> 00:00:43.943
+that the agent executed aligns
+with the plan that it had created.
+
+12
+00:00:44.110 --> 00:00:48.181
+Execution efficiency sits at the
+intersection between goal and action,
+
+13
+00:00:48.348 --> 00:00:52.986
+and measures whether the execution trace
+is an efficient one,
+
+14
+00:00:53.153 --> 00:00:57.924
+that is, that it's an optimal path
+for achieving the agent's goal.
+
+15
+00:00:58.091 --> 00:01:03.091
+And finally, logical consistency sits
+at the intersection of all three of goal
+
+16
+00:01:03.596 --> 00:01:08.596
+planning action looks for inconsistencies
+between plans, planning steps,
+
+17
+00:01:09.536 --> 00:01:14.536
+or between planning steps and action steps
+within action steps as well.
+
+18
+00:01:15.275 --> 00:01:20.275
+Now let's get into the notebook
+and see how we can augment the data agent
+
+19
+00:01:21.014 --> 00:01:24.017
+and evaluation steps from lesson four
+
+20
+00:01:24.150 --> 00:01:27.153
+with support to measure the agent's GPA.
+
+21
+00:01:27.887 --> 00:01:31.091
+As a first step,
+we will load up the environment,
+
+22
+00:01:31.257 --> 00:01:34.427
+In the next step we set the GPA
+
+23
+00:01:34.427 --> 00:01:37.497
+invalid provider model to be the open AI.
+
+24
+00:01:37.664 --> 00:01:39.666
+GPT 4.1 model.
+
+25
+00:01:39.666 --> 00:01:44.666
+And one reason for that is that GPT 4.1
+as support for long contexts,
+
+26
+00:01:45.905 --> 00:01:50.110
+and the execution traces
+that will be fed as input in computing
+
+27
+00:01:50.110 --> 00:01:54.214
+our GPA values do require that,
+because the traces can be quite long.
+
+28
+00:01:54.380 --> 00:01:57.851
+Now that we have the environment
+set up as well as,
+
+29
+00:01:58.017 --> 00:02:01.588
+we have picked the model provider,
+we will go over
+
+30
+00:02:01.754 --> 00:02:06.754
+each of the four evals
+to compute an agent's GPA one by one.
+
+31
+00:02:07.060 --> 00:02:07.927
+For each eval.
+
+32
+00:02:07.927 --> 00:02:11.798
+I will also show you a simple example
+to illustrate
+
+33
+00:02:11.931 --> 00:02:16.436
+the kinds of failure modes
+the agent can fall into,
+
+34
+00:02:16.603 --> 00:02:19.873
+and how these evals can catch
+these failure modes.
+
+35
+00:02:20.039 --> 00:02:23.977
+Later in the lecture,
+I will run the evaluations
+
+36
+00:02:24.110 --> 00:02:27.013
+for the full data agent,
+and we will see how
+
+37
+00:02:27.013 --> 00:02:30.483
+well it does
+with respect to these evaluations.
+
+38
+00:02:30.650 --> 00:02:32.852
+Let me begin with the first.
+
+39
+00:02:32.852 --> 00:02:35.855
+Evaluation, which is land quality.
+
+40
+00:02:36.156 --> 00:02:39.626
+To get going we will set a specific user
+
+41
+00:02:39.626 --> 00:02:43.730
+query, which in this case is
+which sales leads should we prioritize.
+
+42
+00:02:43.730 --> 00:02:46.833
+This week and what specific action items
+should we take for each?
+
+43
+00:02:47.000 --> 00:02:51.571
+As well as a plan that an agent
+could have come up with to achieve
+
+44
+00:02:51.571 --> 00:02:56.142
+this goal or answer this query
+and these are the four steps in this plan.
+
+45
+00:02:56.276 --> 00:03:00.380
+it involves pulling all the sales leads
+from the past 12 months from the CRM.
+
+46
+00:03:00.380 --> 00:03:03.349
+That's step one. Step
+two is for the largest.
+
+47
+00:03:03.349 --> 00:03:07.453
+Many leads compile any notes, call logs,
+and related tasks from the CRM.
+
+48
+00:03:07.620 --> 00:03:11.758
+Step three is to summarize
+each leads current stage in the pipeline
+
+49
+00:03:11.891 --> 00:03:16.196
+and finally to present the summary
+and recommendation in a single table.
+
+50
+00:03:16.696 --> 00:03:21.367
+Now let's define the plan quality feedback
+function.
+
+51
+00:03:21.534 --> 00:03:23.503
+Give it the name plan quality.
+
+52
+00:03:23.503 --> 00:03:26.806
+We will set the valid model provider
+
+53
+00:03:26.940 --> 00:03:30.176
+to make use of the GPD 4.1 model.
+
+54
+00:03:30.343 --> 00:03:34.547
+And by specifying that we want the plan
+quality, the chain of reasons
+
+55
+00:03:34.681 --> 00:03:39.085
+we are setting it up
+so that in addition to a score,
+
+56
+00:03:39.252 --> 00:03:42.455
+it also gives a reason for why
+
+57
+00:03:42.622 --> 00:03:45.625
+it came up with that score for plan
+quality.
+
+58
+00:03:45.625 --> 00:03:48.595
+And finally, we will provide
+
+59
+00:03:48.595 --> 00:03:52.599
+as input to this Land
+Quality Evaluator or L11.
+
+60
+00:03:52.599 --> 00:03:56.836
+Judge the full trace,
+the full execution trace to examine
+
+61
+00:03:57.003 --> 00:04:00.039
+so that it can come up
+with its evaluation.
+
+62
+00:04:00.540 --> 00:04:03.109
+Now let's run the evaluation.
+
+63
+00:04:03.109 --> 00:04:07.247
+The plan quality evaluation
+with the example goal and plan
+
+64
+00:04:07.413 --> 00:04:10.416
+that I had set up earlier over here.
+
+65
+00:04:10.516 --> 00:04:14.554
+The output of this will be a score
+between 0 and 1,
+
+66
+00:04:14.687 --> 00:04:17.690
+where zero means a particularly poor plan.
+
+67
+00:04:17.824 --> 00:04:20.426
+And one would be a perfect plan.
+
+68
+00:04:20.426 --> 00:04:25.231
+And the reason is the rationale
+or chain of thought, reason
+
+69
+00:04:25.498 --> 00:04:29.836
+for why the plan quality
+judge came up with that score.
+
+70
+00:04:29.969 --> 00:04:33.273
+Let's run
+it now and see what it comes back with.
+
+71
+00:04:34.207 --> 00:04:38.111
+So the judge came up with a score of 0.66.
+
+72
+00:04:38.278 --> 00:04:39.279
+Two thirds.
+
+73
+00:04:39.279 --> 00:04:43.216
+That's about 66% of the way
+towards an ideal plan.
+
+74
+00:04:43.383 --> 00:04:45.351
+And you can see two things.
+
+75
+00:04:45.351 --> 00:04:50.351
+One is the criteria that the judge
+used to grade the plan quality.
+
+76
+00:04:51.424 --> 00:04:55.028
+And secondly, down here
+you can see the supporting evidence
+
+77
+00:04:55.194 --> 00:04:59.932
+or the chain of thought reason
+for why it gave the plan
+
+78
+00:05:00.099 --> 00:05:04.337
+with respect to the goal or query
+the specific score.
+
+79
+00:05:04.504 --> 00:05:08.741
+The criteria for evaluation
+is that the plan should be generally
+
+80
+00:05:08.741 --> 00:05:12.745
+well structured, that it addresses
+the query with clear steps.
+
+81
+00:05:12.912 --> 00:05:17.850
+And includes
+justifications for most actions.
+
+82
+00:05:18.017 --> 00:05:23.017
+However, it lacks explicit rationale
+for selecting the largest 20 leads
+
+83
+00:05:23.823 --> 00:05:27.627
+and does not detail
+the method for prioritization
+
+84
+00:05:27.794 --> 00:05:32.565
+or generating specific action items,
+so no replanning is present.
+
+85
+00:05:32.732 --> 00:05:36.502
+So you can see that
+the explanation highlights
+
+86
+00:05:36.669 --> 00:05:39.439
+where the gaps are in this plan.
+
+87
+00:05:39.439 --> 00:05:42.642
+What it's doing well, as well as where
+the gaps are in this plan.
+
+88
+00:05:42.809 --> 00:05:46.779
+And then it goes on to provide
+supporting evidence, which spells this out
+
+89
+00:05:46.913 --> 00:05:51.384
+much more clearly in a way
+that's aligned with the steps of the plan.
+
+90
+00:05:51.551 --> 00:05:55.521
+So, for example,
+it says that step one establishes the data
+
+91
+00:05:55.521 --> 00:06:00.293
+set clearly that step two prioritizes
+large leads, but does not justify
+
+92
+00:06:00.593 --> 00:06:05.031
+the number or metric
+where it had come up with 20, for example.
+
+93
+00:06:05.164 --> 00:06:09.435
+Step three summarize this pipeline stages
+supporting prioritization.
+
+94
+00:06:09.602 --> 00:06:11.537
+So that's been done well.
+
+95
+00:06:11.537 --> 00:06:13.773
+Step four provides actionable output.
+
+96
+00:06:13.773 --> 00:06:17.443
+However, the plan
+omits explicit prioritization criteria
+
+97
+00:06:17.577 --> 00:06:21.280
+and recommendation methodology,
+and no replanning occurs.
+
+98
+00:06:21.414 --> 00:06:26.319
+So in this way,
+the Plan Quality judge is showcasing areas
+
+99
+00:06:26.319 --> 00:06:30.223
+where the plan has done
+well and where it exhibits
+
+100
+00:06:30.356 --> 00:06:33.359
+weaknesses
+and opportunities for improvement.
+
+101
+00:06:33.459 --> 00:06:37.163
+I will note that when we run the full data
+
+102
+00:06:37.163 --> 00:06:41.501
+agent, the plan and the, execution trace,
+
+103
+00:06:41.667 --> 00:06:46.506
+will be under the control of the agent
+not created by us.
+
+104
+00:06:46.672 --> 00:06:50.276
+So we will not be able to directly edit
+the plan to address
+
+105
+00:06:50.276 --> 00:06:51.878
+these kinds of weaknesses.
+
+106
+00:06:51.878 --> 00:06:55.047
+However, we will see in the next lesson
+system,
+
+107
+00:06:55.047 --> 00:06:59.719
+attic ways of addressing
+these kinds of weaknesses in planning
+
+108
+00:06:59.886 --> 00:07:04.290
+through the use of updated prompts
+and in line evaluations.
+
+109
+00:07:04.390 --> 00:07:08.361
+If I were to summarize
+some of the weaknesses in this plan,
+
+110
+00:07:08.528 --> 00:07:12.965
+I would say that there are three areas
+where the plan could have done better.
+
+111
+00:07:13.132 --> 00:07:17.136
+One is the selection criteria was, vague.
+
+112
+00:07:17.270 --> 00:07:20.573
+It said all sales leads from the past
+12 months,
+
+113
+00:07:20.740 --> 00:07:23.576
+which lacks urgency constraints
+tied to the goal.
+
+114
+00:07:23.576 --> 00:07:27.079
+Second,
+the prioritization approach was weak.
+
+115
+00:07:27.246 --> 00:07:32.246
+The largest 20 ignores the lead score,
+stage urgency or upcoming deadlines.
+
+116
+00:07:33.152 --> 00:07:37.857
+There were missing action, ability
+related challenges as well,
+
+117
+00:07:38.024 --> 00:07:43.024
+where no instructions to create specific
+next actions or owners were laid out.
+
+118
+00:07:43.763 --> 00:07:45.832
+And finally, the output was not specific
+
+119
+00:07:45.832 --> 00:07:49.902
+a single table without required fields
+that were tied to the goal.
+
+120
+00:07:50.069 --> 00:07:53.439
+These are the kinds of issues
+that we have seen and
+
+121
+00:07:53.573 --> 00:07:58.573
+and now we want to construct a better plan
+that will close these gaps.
+
+122
+00:07:59.278 --> 00:08:04.150
+And here is a proposal
+where we keep the user query the same.
+
+123
+00:08:04.283 --> 00:08:07.620
+But now if you look
+at the various steps of the plan.
+
+124
+00:08:07.787 --> 00:08:11.257
+We are trying to close
+the known weaknesses that were surfaced
+
+125
+00:08:11.424 --> 00:08:13.659
+by the previous round of evaluation.
+
+126
+00:08:13.659 --> 00:08:16.329
+For example, here in step one.
+
+127
+00:08:16.329 --> 00:08:19.765
+We are talking about a next action date
+within 14 days
+
+128
+00:08:19.932 --> 00:08:24.003
+as a criteria for pulling leads
+with open opportunities
+
+129
+00:08:24.003 --> 00:08:27.573
+from the CRM, we are filtering to leads
+with the deal value.
+
+130
+00:08:27.573 --> 00:08:30.610
+That's greater than ten K
+or has a high lead score,
+
+131
+00:08:30.776 --> 00:08:35.776
+meaning that these deals are important
+either from a revenue standpoint
+
+132
+00:08:36.516 --> 00:08:41.287
+being sufficiently high
+or the probability of conversion is high.
+
+133
+00:08:41.454 --> 00:08:45.258
+We are going to be sorting
+by the deal stage urgency, for example,
+
+134
+00:08:45.258 --> 00:08:50.258
+by close date approaching at risk of
+going called potential revenue impact,
+
+135
+00:08:50.429 --> 00:08:54.100
+getting more specific
+to close that particular kind of gap.
+
+136
+00:08:54.267 --> 00:08:56.702
+And finally,
+for each of the prioritized leads,
+
+137
+00:08:56.702 --> 00:09:00.206
+we are now, in this plan
+specifying that we will retrieve
+
+138
+00:09:00.206 --> 00:09:04.610
+the latest interaction notes, key
+decision maker info, and current blockers,
+
+139
+00:09:04.777 --> 00:09:09.777
+identify overdue or missing action items,
+propose specific high impact next steps
+
+140
+00:09:10.216 --> 00:09:14.353
+such as scheduling a product demo,
+sending a proposal revision,
+
+141
+00:09:14.520 --> 00:09:16.656
+escalating to the sales manager.
+
+142
+00:09:16.656 --> 00:09:18.057
+And finally, the group.
+
+143
+00:09:18.057 --> 00:09:21.227
+These recommendations into this week's
+priority list
+
+144
+00:09:21.394 --> 00:09:25.765
+with on our assignments and deadlines
+present results in a table with columns,
+
+145
+00:09:25.932 --> 00:09:30.932
+such as lead name, value stage, urgency,
+score, next action, due date, and owner.
+
+146
+00:09:31.571 --> 00:09:36.509
+Presenting the results in a much
+more organized and actionable manner.
+
+147
+00:09:36.976 --> 00:09:41.247
+Now let's rerun the evaluation
+with this better plan.
+
+148
+00:09:41.614 --> 00:09:46.586
+And see what we get in terms
+of the quality of this improved plan.
+
+149
+00:09:46.752 --> 00:09:49.722
+Now the evaluation comes back
+with a score of one.
+
+150
+00:09:49.722 --> 00:09:52.725
+And the explanation here is,
+
+151
+00:09:52.725 --> 00:09:56.195
+essentially saying that the plan is
+well structured.
+
+152
+00:09:56.195 --> 00:09:57.096
+It's optimal.
+
+153
+00:09:57.096 --> 00:10:00.633
+It directly addresses the users query,
+and then all the steps
+
+154
+00:10:00.633 --> 00:10:03.803
+are clear and logically ordered
+and so forth.
+
+155
+00:10:04.103 --> 00:10:07.773
+I will leave it to you
+to read this in greater detail.
+
+156
+00:10:07.873 --> 00:10:12.873
+But the key takeaway here is that number
+one, plan quality evaluation
+
+157
+00:10:13.579 --> 00:10:17.516
+can be very helpful in identifying areas
+
+158
+00:10:17.516 --> 00:10:21.554
+where a plan generated by an agent is good
+
+159
+00:10:21.554 --> 00:10:26.554
+and has strengths and areas
+where it has gaps and could improve.
+
+160
+00:10:26.759 --> 00:10:29.795
+And this information can then be leveraged
+
+161
+00:10:29.895 --> 00:10:34.895
+to help the agent plan
+better and achieve better outcomes.
+
+162
+00:10:35.134 --> 00:10:39.372
+Now that we have finished
+the section on plan quality,
+
+163
+00:10:39.505 --> 00:10:43.209
+let's look at evaluations
+for plan adherence.
+
+164
+00:10:43.376 --> 00:10:46.212
+So there on the second evaluation.
+
+165
+00:10:46.212 --> 00:10:49.081
+Metric for our agents GPA
+
+166
+00:10:49.081 --> 00:10:52.418
+plan adherence to remind
+you is going to check
+
+167
+00:10:52.585 --> 00:10:56.689
+how well the actions
+executed by the agent adheres
+
+168
+00:10:56.689 --> 00:11:00.893
+to or follows or conforms
+with its articulated plan.
+
+169
+00:11:01.360 --> 00:11:05.631
+For this purpose illustrative purpose,
+I will consider,
+
+170
+00:11:05.765 --> 00:11:09.068
+simple sequence of actions
+that an agent could have executed.
+
+171
+00:11:09.235 --> 00:11:13.639
+And here are six steps where it pulled
+all open opportunities from the CRM,
+
+172
+00:11:13.773 --> 00:11:18.773
+but without applying a next action date
+filter, it applied the deal value filter
+
+173
+00:11:19.011 --> 00:11:24.011
+only, but skip the lead score filter
+it sorted leads solely by deep value.
+
+174
+00:11:24.583 --> 00:11:29.583
+So in based on the revenue impact, notice
+that the good plan was asking it
+
+175
+00:11:30.189 --> 00:11:34.727
+to also consider other factors
+such as urgency around the deal
+
+176
+00:11:34.894 --> 00:11:38.564
+or potential to close,
+or for the deal to grow cold.
+
+177
+00:11:38.664 --> 00:11:43.664
+Step four looks at retrieve latest notes
+and contact names that skipped blockers.
+
+178
+00:11:43.903 --> 00:11:48.903
+Step five listed the CRM as existing next
+action field without review or update.
+
+179
+00:11:49.742 --> 00:11:54.742
+And finally, step six output a table with
+lead name, value stage and next action.
+
+180
+00:11:55.881 --> 00:12:00.881
+So you can see that I have set up
+this sequence of agent actions
+
+181
+00:12:01.087 --> 00:12:06.087
+intentionally to have some gaps that you
+or I can look at eyeball
+
+182
+00:12:06.759 --> 00:12:11.697
+and tell that
+it's not an ideal sequence of actions,
+
+183
+00:12:11.864 --> 00:12:15.434
+given good plan that we just looked
+at in the previous section.
+
+184
+00:12:15.568 --> 00:12:18.971
+So next I'm going to define the plan.
+
+185
+00:12:18.971 --> 00:12:21.874
+And here in this function
+and then run it on.
+
+186
+00:12:21.874 --> 00:12:26.746
+This sequence of agent actions along with
+the good plan from the previous section.
+
+187
+00:12:26.912 --> 00:12:28.547
+The plan adherence function,
+
+188
+00:12:28.547 --> 00:12:32.218
+it's structure very much follows
+the structure of plan quality.
+
+189
+00:12:32.384 --> 00:12:36.622
+The GPA value provider is again set to run
+
+190
+00:12:36.622 --> 00:12:39.692
+plan adherence
+with reducing chain of thought reasons
+
+191
+00:12:39.692 --> 00:12:44.563
+so that we don't just provide a score,
+but also give a reason for why that score.
+
+192
+00:12:44.730 --> 00:12:47.767
+And as input to this evaluation function
+
+193
+00:12:47.933 --> 00:12:51.270
+or alum judge,
+we are providing the full trace.
+
+194
+00:12:51.437 --> 00:12:56.342
+So the plan adherence function
+is looking at the full trace and checking
+
+195
+00:12:56.342 --> 00:13:00.012
+how well the actions of the agent
+on the trace correspond
+
+196
+00:13:00.179 --> 00:13:04.216
+to or adhere to the plans
+that are also on that trace.
+
+197
+00:13:04.717 --> 00:13:06.719
+So we have the function
+definition in hand.
+
+198
+00:13:06.719 --> 00:13:10.189
+Now let's run it with our running example.
+
+199
+00:13:10.689 --> 00:13:15.327
+And as before, it's set up to output
+a score as well as provide a reason.
+
+200
+00:13:15.494 --> 00:13:20.494
+And we will now run and examine
+the results of the evaluation.
+
+201
+00:13:21.333 --> 00:13:25.437
+And surprise, surprise
+that comes back with a score of zero.
+
+202
+00:13:25.604 --> 00:13:30.604
+This should not be particularly unexpected
+given that I had intentionally planted,
+
+203
+00:13:32.111 --> 00:13:36.348
+bunch of adherence issues
+in the execution trace.
+
+204
+00:13:36.515 --> 00:13:39.018
+We can check here. If those were caught.
+
+205
+00:13:39.018 --> 00:13:42.354
+So you can see a summary of the issues
+in under this criteria.
+
+206
+00:13:42.521 --> 00:13:46.692
+And then more detailed description
+of the issues in the supporting evidence
+
+207
+00:13:46.692 --> 00:13:47.359
+section.
+
+208
+00:13:47.359 --> 00:13:50.129
+Let's actually
+look at the supporting evidence section.
+
+209
+00:13:50.129 --> 00:13:50.696
+First.
+
+210
+00:13:50.696 --> 00:13:53.699
+Step one the judge got that
+
+211
+00:13:53.766 --> 00:13:57.069
+the agent did not filter
+by the next action date.
+
+212
+00:13:57.236 --> 00:14:00.239
+Or what's missing
+the next action date as required.
+
+213
+00:14:00.239 --> 00:14:03.242
+It pulled all open opportunities instead.
+
+214
+00:14:03.309 --> 00:14:07.813
+So this absence of filtering, which was
+there in step one here in the trace.
+
+215
+00:14:07.947 --> 00:14:08.914
+Was detected.
+
+216
+00:14:08.914 --> 00:14:12.918
+This was an example of failure
+of adherence with the plan
+
+217
+00:14:13.085 --> 00:14:17.056
+which if I scroll up to the plan
+you can see that
+
+218
+00:14:17.156 --> 00:14:21.393
+the plan was saying not that you pull
+all the open opportunities,
+
+219
+00:14:21.560 --> 00:14:25.331
+but only the ones that have a next action
+need within the next
+
+220
+00:14:25.331 --> 00:14:28.334
+14 days, or no next action assigned.
+
+221
+00:14:28.500 --> 00:14:32.204
+this filtering criteria
+was missed by the actions.
+
+222
+00:14:32.338 --> 00:14:35.574
+And that's why in this step
+there is a violation.
+
+223
+00:14:36.075 --> 00:14:40.145
+You can yourself go
+step by step over the other steps,
+
+224
+00:14:40.312 --> 00:14:44.884
+and you will see other missing pieces
+in a number of these steps,
+
+225
+00:14:45.050 --> 00:14:48.354
+which the judge was able to catch
+and highlight.
+
+226
+00:14:48.520 --> 00:14:53.520
+The criteria section, if we return to it
+now summarizes the higher level issues.
+
+227
+00:14:54.426 --> 00:14:56.395
+Multiple plan steps were omitted.
+
+228
+00:14:56.395 --> 00:15:01.333
+Sometimes they are performed out of order,
+are replaced with unplanned actions.
+
+229
+00:15:01.467 --> 00:15:05.938
+No meaningful attempt was made to explain,
+justify or document plan changes.
+
+230
+00:15:06.105 --> 00:15:07.506
+Our new actions.
+
+231
+00:15:07.506 --> 00:15:11.377
+The plan was largely ignored
+or disregarded in execution.
+
+232
+00:15:11.510 --> 00:15:14.780
+Our steps were not completed as intended.
+
+233
+00:15:14.947 --> 00:15:19.251
+If replanning was necessary,
+the revised plan was not followed.
+
+234
+00:15:19.418 --> 00:15:24.089
+So this is, a pretty significant
+and consistent deviation
+
+235
+00:15:24.223 --> 00:15:27.159
+of the agent's actions from its plans.
+
+236
+00:15:27.159 --> 00:15:30.062
+It might as well
+not have come up with a plan,
+
+237
+00:15:30.062 --> 00:15:33.399
+because it decided to ignore
+almost everything that was in it.
+
+238
+00:15:33.532 --> 00:15:37.803
+And so it correctly gets a very low grade
+A score of zero.
+
+239
+00:15:37.903 --> 00:15:40.906
+It's not going to do so well. On his GPA.
+
+240
+00:15:40.973 --> 00:15:43.742
+Now let's look at a better set of
+
+241
+00:15:43.742 --> 00:15:48.380
+agent actions
+that adhere more closely to the plan
+
+242
+00:15:48.547 --> 00:15:51.650
+and for which we expect the grading
+from the plan.
+
+243
+00:15:51.650 --> 00:15:54.420
+Adherence. Judge
+to give us a higher number.
+
+244
+00:15:54.420 --> 00:15:56.822
+So you'll see that
+if you look through these steps,
+
+245
+00:15:56.822 --> 00:16:00.025
+there are additional details
+that are added in
+
+246
+00:16:00.025 --> 00:16:04.129
+which were not available
+in the previous sequence of agent actions.
+
+247
+00:16:04.263 --> 00:16:08.167
+For example, in step one,
+when in the agent,
+
+248
+00:16:08.334 --> 00:16:12.938
+all the all the leads with open
+opportunities, it also only focused on
+
+249
+00:16:12.938 --> 00:16:17.343
+the ones that are have a next action date
+within 14 days are known
+
+250
+00:16:17.343 --> 00:16:20.412
+next action assigned similarly is grouping
+
+251
+00:16:20.412 --> 00:16:23.549
+of recommendations
+into this week's priority list.
+
+252
+00:16:23.682 --> 00:16:25.818
+Now let's. Set up the.
+
+253
+00:16:25.818 --> 00:16:27.987
+Line and. Along with.
+
+254
+00:16:27.987 --> 00:16:29.555
+This sequence of actions.
+
+255
+00:16:29.555 --> 00:16:34.555
+And run the a little, judge feedback
+function for plan adherence given.
+
+256
+00:16:35.427 --> 00:16:39.965
+Better plan from before
+and the sequence of agent actions.
+
+257
+00:16:40.799 --> 00:16:43.902
+And the judge comes back with the score.
+
+258
+00:16:44.069 --> 00:16:45.637
+A perfect score of one.
+
+259
+00:16:45.637 --> 00:16:49.908
+And if you go in and look at the details
+of the criteria and the supporting
+
+260
+00:16:49.908 --> 00:16:53.979
+evidence, you will notice that all planned
+steps are well accounted for.
+
+261
+00:16:53.979 --> 00:16:56.215
+There are no omissions or reordering.
+
+262
+00:16:56.215 --> 00:17:00.552
+So a number of those failure modes,
+which were flagged by the judge
+
+263
+00:17:00.686 --> 00:17:04.289
+for the previous sequence of actions,
+all are addressed
+
+264
+00:17:04.590 --> 00:17:06.325
+with this sequence of actions.
+
+265
+00:17:06.325 --> 00:17:10.062
+Remember we are illustrating the power
+
+266
+00:17:10.062 --> 00:17:13.065
+of our plan quality and plan adherence.
+
+267
+00:17:13.165 --> 00:17:16.902
+Judges the GPA values in general
+through this process
+
+268
+00:17:16.902 --> 00:17:21.607
+of looking for alignment
+between goals and plans and actions.
+
+269
+00:17:21.740 --> 00:17:24.743
+In practice, the you, the developer,
+
+270
+00:17:24.910 --> 00:17:28.914
+will not be directly editing either
+the plans or the sequence of actions.
+
+271
+00:17:29.048 --> 00:17:30.082
+You will be.
+
+272
+00:17:30.082 --> 00:17:33.185
+However, updating the agents
+
+273
+00:17:33.352 --> 00:17:37.322
+either through its problems
+or through other techniques
+
+274
+00:17:37.489 --> 00:17:41.660
+that we will discuss in the next lesson
+to address these kinds of failure modes.
+
+275
+00:17:42.127 --> 00:17:42.694
+Great.
+
+276
+00:17:42.694 --> 00:17:43.796
+So now.
+
+277
+00:17:43.796 --> 00:17:46.799
+Let's look at.
+Another sequence of actions.
+
+278
+00:17:46.799 --> 00:17:50.335
+And we will now use that
+as an illustrative example
+
+279
+00:17:50.502 --> 00:17:53.906
+to introduce the concept of execution
+efficiency.
+
+280
+00:17:54.073 --> 00:17:56.041
+Execution efficiency.
+
+281
+00:17:56.041 --> 00:17:59.344
+If you remember, is capturing how
+
+282
+00:17:59.344 --> 00:18:02.514
+well the sequence of actions in the trace.
+
+283
+00:18:02.681 --> 00:18:05.217
+How efficiently does it achieve the goal.
+
+284
+00:18:05.217 --> 00:18:09.188
+And in particular,
+it will flag actions that are redundant
+
+285
+00:18:09.354 --> 00:18:14.354
+or unnecessary steps in the execution
+trace that introduce inefficiencies
+
+286
+00:18:15.194 --> 00:18:19.398
+and could have been avoided
+if the agent had planned better
+
+287
+00:18:19.565 --> 00:18:23.635
+and acted in conformance
+with a better, more optimal plan.
+
+288
+00:18:24.136 --> 00:18:28.073
+Let's go back to the notebook
+and look at an execution trace.
+
+289
+00:18:28.240 --> 00:18:31.043
+To illustrate this evaluation metric.
+
+290
+00:18:31.043 --> 00:18:36.043
+The execution trace is similar to the ones
+that we have seen before in structure.
+
+291
+00:18:36.715 --> 00:18:41.587
+The only point of difference
+is that we are also summarizing results,
+
+292
+00:18:41.720 --> 00:18:45.424
+such as from step one,
+the number of retrieve leads, or 96.
+
+293
+00:18:45.591 --> 00:18:50.591
+Then in step two you applied the filter
+yielding 54 leads and so forth.
+
+294
+00:18:50.796 --> 00:18:52.364
+Now let's define the.
+
+295
+00:18:52.364 --> 00:18:54.867
+Execution efficiency feedback function.
+
+296
+00:18:54.867 --> 00:18:59.071
+It has a very similar structure
+to plan quality and plan adherence.
+
+297
+00:18:59.238 --> 00:19:02.841
+As before, we are asking the judge
+
+298
+00:19:02.841 --> 00:19:06.345
+to output the chain of thought results
+in addition to the score.
+
+299
+00:19:06.478 --> 00:19:09.781
+And it's given the full trace
+as input in order
+
+300
+00:19:09.781 --> 00:19:12.818
+to grade it for execution efficiency.
+
+301
+00:19:12.985 --> 00:19:16.855
+Let's go ahead and run this evaluation
+function
+
+302
+00:19:17.022 --> 00:19:21.627
+on the action sequence that we just saw,
+and see how well it does.
+
+303
+00:19:22.294 --> 00:19:24.429
+It gets a score of 66%.
+
+304
+00:19:24.429 --> 00:19:27.065
+It's about two thirds
+of the way to an ideal score.
+
+305
+00:19:27.065 --> 00:19:30.969
+And if you look at the, criteria
+and the supporting evidence, it's
+
+306
+00:19:30.969 --> 00:19:35.007
+pointing out
+that there were some redundant retrievals.
+
+307
+00:19:35.107 --> 00:19:36.508
+There was duplicate work
+
+308
+00:19:36.508 --> 00:19:40.579
+where the agent reapplied the same filter,
+a couple of times.
+
+309
+00:19:40.746 --> 00:19:44.983
+Step six
+export it to both, XLA and CSV format.
+
+310
+00:19:45.150 --> 00:19:47.119
+The only one was needed.
+
+311
+00:19:47.119 --> 00:19:50.923
+Other steps for logical
+but there were a couple of these
+
+312
+00:19:51.089 --> 00:19:54.993
+redundant steps
+that the judge was able to figure out.
+
+313
+00:19:55.060 --> 00:19:56.495
+And identify.
+
+314
+00:19:56.495 --> 00:19:59.565
+So this is the kind of information
+you will find.
+
+315
+00:19:59.731 --> 00:20:04.731
+And let them judge for execution,
+efficiency, highlighting on traces
+
+316
+00:20:04.736 --> 00:20:08.073
+which don't represent
+an efficient execution path.
+
+317
+00:20:08.240 --> 00:20:09.841
+Finally, the fourth.
+
+318
+00:20:09.841 --> 00:20:13.145
+Evaluation,
+will consist of logical consistency.
+
+319
+00:20:13.278 --> 00:20:15.080
+And logical consistency.
+
+320
+00:20:15.080 --> 00:20:19.818
+Looks for contradictions
+during an agent's execution.
+
+321
+00:20:19.985 --> 00:20:23.021
+It could surface
+logical flaws in its reasoning.
+
+322
+00:20:23.188 --> 00:20:26.959
+It could surface
+inconsistent planning steps
+
+323
+00:20:27.125 --> 00:20:31.363
+where an agent might make an assertion
+at one point and then contradict
+
+324
+00:20:31.363 --> 00:20:35.434
+itself later on without justifying
+the reason for the change.
+
+325
+00:20:35.601 --> 00:20:39.805
+Or it could even highlight
+ungrounded assumptions where the agent
+
+326
+00:20:39.805 --> 00:20:43.442
+might be making an assumption
+based on its parametric knowledge,
+
+327
+00:20:43.575 --> 00:20:48.575
+but not one that is traceable back
+to, retrieved pieces of information.
+
+328
+00:20:49.548 --> 00:20:52.451
+let's look at a sequence of actions,
+
+329
+00:20:52.451 --> 00:20:57.389
+another sequence of agent actions,
+and see how it does when we run.
+
+330
+00:20:57.522 --> 00:21:00.459
+An evaluation
+for a logical consistency on it.
+
+331
+00:21:00.459 --> 00:21:04.563
+Let's now define the logical consistency
+feedback function.
+
+332
+00:21:04.730 --> 00:21:08.166
+The structure of this function
+is exactly the same as the one
+
+333
+00:21:08.166 --> 00:21:12.671
+for the previous functions that we are
+requiring at the chain of thought reasons,
+
+334
+00:21:12.838 --> 00:21:16.308
+and the only input to
+it is the full execution trace.
+
+335
+00:21:16.441 --> 00:21:20.846
+Now that we have defined this function,
+let's run it On the previously defined
+
+336
+00:21:21.013 --> 00:21:22.381
+sequence of actions.
+
+337
+00:21:23.348 --> 00:21:26.918
+And it comes back with a score of 33%.
+
+338
+00:21:27.052 --> 00:21:32.052
+So it has identified some inconsistencies
+in the execution trace.
+
+339
+00:21:32.324 --> 00:21:36.261
+For example, between step one and step two
+their contradictory lead counts.
+
+340
+00:21:36.495 --> 00:21:39.931
+One step says the number of leads is 96.
+
+341
+00:21:39.931 --> 00:21:43.635
+In other steps, says that it's hundred
+and 13 without an explanation.
+
+342
+00:21:43.802 --> 00:21:46.238
+In step three, there's a ranking logic
+
+343
+00:21:46.238 --> 00:21:49.808
+for minimal engagement
+that's used that's not fully justified.
+
+344
+00:21:49.975 --> 00:21:54.975
+Step four has a DVD decision maker with
+active next steps which are not explained.
+
+345
+00:21:55.681 --> 00:21:57.282
+Five and six are fine,
+
+346
+00:21:57.282 --> 00:22:01.086
+but you can see a number
+of these inconsistent and C's that the.
+
+347
+00:22:01.553 --> 00:22:04.556
+Judge for logical consistency has flagged.
+
+348
+00:22:04.589 --> 00:22:08.694
+These are all opportunities,
+for improvement for the agent.
+
+349
+00:22:08.860 --> 00:22:12.597
+But as it currently stands,
+these forms of inconsistencies
+
+350
+00:22:12.597 --> 00:22:17.597
+can impact the accuracy and correctness
+of the final response from the agent.
+
+351
+00:22:18.070 --> 00:22:23.070
+With that,
+we are wrapping up the section introducing
+
+352
+00:22:23.241 --> 00:22:26.111
+the four more evaluations
+
+353
+00:22:26.111 --> 00:22:29.081
+that are helpful
+for grading an agent's GPA.
+
+354
+00:22:29.081 --> 00:22:34.081
+Now that we have introduced
+the concept of GPA vowels,
+
+355
+00:22:34.486 --> 00:22:37.923
+the four L11 judges for plan quality
+
+356
+00:22:37.923 --> 00:22:42.923
+plan adherence, execution
+efficiency and logical consistency
+
+357
+00:22:43.295 --> 00:22:48.295
+using some simple running examples,
+let's go back to running the same set
+
+358
+00:22:48.900 --> 00:22:52.137
+of evaluation words over the data agent
+
+359
+00:22:52.437 --> 00:22:55.173
+that we created in less than four.
+
+360
+00:22:55.173 --> 00:22:59.478
+Let's set up a true and session
+for logging the execution
+
+361
+00:22:59.478 --> 00:23:03.181
+traces
+and evaluation results into this database.
+
+362
+00:23:03.348 --> 00:23:05.951
+This is a step that we have seen before.
+
+363
+00:23:05.951 --> 00:23:08.186
+Next, let's build the graph.
+
+364
+00:23:08.186 --> 00:23:13.186
+In the agent, this is again identical to
+what you have seen in the previous lesson.
+
+365
+00:23:14.659 --> 00:23:15.460
+Next we
+
+366
+00:23:15.460 --> 00:23:18.463
+will register the agent with true length.
+
+367
+00:23:18.630 --> 00:23:22.434
+This step is also very similar
+to what you did in less than four.
+
+368
+00:23:22.601 --> 00:23:27.601
+The only additions are that in addition
+to the rag triad of goal completion evals,
+
+369
+00:23:28.473 --> 00:23:32.210
+we have now added these four evaluations
+
+370
+00:23:32.377 --> 00:23:35.380
+to measure the agent's GPA.
+
+371
+00:23:36.214 --> 00:23:39.217
+And now we are ready to.
+
+372
+00:23:39.251 --> 00:23:41.019
+Run and record.
+
+373
+00:23:41.019 --> 00:23:46.019
+The agent's execution and the associated
+evaluations on a set of queries.
+
+374
+00:23:46.892 --> 00:23:49.461
+Let's begin with the first query.
+
+375
+00:23:49.461 --> 00:23:52.931
+Where we are asking,
+what are our top three client deals?
+
+376
+00:23:53.098 --> 00:23:55.700
+Chart the deal value for each.
+
+377
+00:23:55.700 --> 00:24:00.071
+This should be a relatively simple query
+for the agent that should
+
+378
+00:24:00.071 --> 00:24:03.775
+primarily
+make use of the text to SQL capabilities.
+
+379
+00:24:04.376 --> 00:24:07.379
+So the data agent has come back
+with the response.
+
+380
+00:24:07.379 --> 00:24:12.379
+Let me quickly run
+through a couple more examples of queries.
+
+381
+00:24:12.417 --> 00:24:16.621
+And then we will spend time on the tool
+and dashboard
+
+382
+00:24:16.788 --> 00:24:21.626
+to understand the tracing
+and evaluation pieces for these queries.
+
+383
+00:24:21.793 --> 00:24:26.064
+The second query is on identifying
+or pending deals research.
+
+384
+00:24:26.064 --> 00:24:29.334
+If they may be experiencing
+regulatory changes.
+
+385
+00:24:29.334 --> 00:24:32.637
+I'm using the meeting notes
+for each customer to provide
+
+386
+00:24:32.637 --> 00:24:36.775
+a new value proposition for each given
+the regulatory changes.
+
+387
+00:24:36.775 --> 00:24:40.111
+So this query,
+if you recall, is similar to what we saw
+
+388
+00:24:40.178 --> 00:24:43.582
+right in the introduction
+and in the previous.
+
+389
+00:24:43.682 --> 00:24:47.018
+Lesson And this is the third query.
+
+390
+00:24:47.185 --> 00:24:52.185
+And we'll now run the agent
+and the evaluations on this query as well.
+
+391
+00:24:52.657 --> 00:24:56.828
+Now we have the results
+from all the queries, and we can
+
+392
+00:24:56.995 --> 00:25:00.599
+look at them on the true lens dashboard.
+
+393
+00:25:01.600 --> 00:25:03.301
+Let's run this short
+
+394
+00:25:03.301 --> 00:25:07.005
+code snippet to set up
+the True Lengths dashboard.
+
+395
+00:25:07.506 --> 00:25:11.610
+And then this link will now
+take us to the true lens dashboard.
+
+396
+00:25:12.143 --> 00:25:16.882
+Let's now examine the results
+of our evaluation using the True Lens
+
+397
+00:25:16.882 --> 00:25:17.949
+leaderboard.
+
+398
+00:25:17.949 --> 00:25:21.887
+Over here
+you can see the result of the evaluations
+
+399
+00:25:22.153 --> 00:25:25.824
+for the data agent
+that we ran through in this lesson.
+
+400
+00:25:25.957 --> 00:25:29.561
+The goal completion events
+related to the rag dried
+
+401
+00:25:29.728 --> 00:25:32.163
+I have some room here for improvement.
+
+402
+00:25:32.163 --> 00:25:35.333
+Context relevance and groundedness
+for example, are not that high.
+
+403
+00:25:35.500 --> 00:25:39.037
+And if we look at the GPA vowels.
+
+404
+00:25:39.204 --> 00:25:41.206
+Land quality is generally good.
+
+405
+00:25:41.206 --> 00:25:43.174
+So it's logical consistency.
+
+406
+00:25:43.174 --> 00:25:46.177
+But plan adherence and execution
+efficiency
+
+407
+00:25:46.311 --> 00:25:50.248
+show room for improvement on this screen.
+
+408
+00:25:50.415 --> 00:25:54.819
+The numbers that you're seeing
+for these metrics represents the average
+
+409
+00:25:55.086 --> 00:25:59.024
+across the three queries
+that we ran from our notebook.
+
+410
+00:25:59.190 --> 00:26:02.127
+We can click on the Examine Records tab
+
+411
+00:26:02.127 --> 00:26:06.865
+to look at the record level view,
+where we can examine in greater
+
+412
+00:26:06.865 --> 00:26:10.902
+detail for each query
+what evaluations we got.
+
+413
+00:26:11.069 --> 00:26:13.071
+So you can see here each row here
+
+414
+00:26:13.071 --> 00:26:16.908
+in this table represents a query
+which is the input.
+
+415
+00:26:17.042 --> 00:26:20.979
+The output response,
+as well as the results
+
+416
+00:26:20.979 --> 00:26:23.982
+of the evaluation on all of these metrics.
+
+417
+00:26:24.249 --> 00:26:26.985
+Let's pick one example query
+
+418
+00:26:26.985 --> 00:26:30.555
+for which the GPA levels
+are doing quite well.
+
+419
+00:26:30.722 --> 00:26:35.560
+So if I scroll to that section
+it looks like for query
+
+420
+00:26:35.727 --> 00:26:39.564
+this second query
+the GPA values are doing well.
+
+421
+00:26:39.731 --> 00:26:41.132
+Let's select this.
+
+422
+00:26:41.132 --> 00:26:44.836
+And now down here
+we can examine this in greater detail.
+
+423
+00:26:44.970 --> 00:26:49.808
+This was the question where we asked the
+data agent to identify our pending deals.
+
+424
+00:26:49.975 --> 00:26:54.346
+Research if they may be experiencing
+regulatory changes, and use meeting
+
+425
+00:26:54.346 --> 00:26:58.583
+notes for each customer to provide
+a new value proposition for each.
+
+426
+00:26:58.750 --> 00:27:03.750
+Given the regulatory changes and down here
+you can see the output of this process
+
+427
+00:27:03.989 --> 00:27:08.960
+where the final output looks identifies
+these five, deals.
+
+428
+00:27:08.960 --> 00:27:10.695
+And then for each it
+
+429
+00:27:10.695 --> 00:27:14.799
+identifies for the first one,
+there's no specific regulatory changes.
+
+430
+00:27:14.966 --> 00:27:19.204
+For the second one, it's affected
+by shifts and trade policies and so on.
+
+431
+00:27:19.337 --> 00:27:23.475
+We can scroll down here
+to look at the feedback results.
+
+432
+00:27:23.608 --> 00:27:26.544
+And in particular we can see that
+
+433
+00:27:26.544 --> 00:27:31.449
+the GPA values are quite strong
+for this particular query.
+
+434
+00:27:31.616 --> 00:27:34.753
+Plan adherence, plan quality,
+logical consistency
+
+435
+00:27:34.753 --> 00:27:38.089
+and execution efficiency
+are all, perfectly graded.
+
+436
+00:27:38.256 --> 00:27:41.960
+Context, relevance and groundedness,
+on the other hand, are not that high,
+
+437
+00:27:42.127 --> 00:27:45.397
+indicating
+that there is still room for improvement
+
+438
+00:27:45.563 --> 00:27:49.234
+in the retrieval steps
+that this agent went through.
+
+439
+00:27:49.734 --> 00:27:54.606
+Let's look at another row
+where the GPA values are not as high.
+
+440
+00:27:54.773 --> 00:27:57.642
+The first row falls into this category.
+
+441
+00:27:57.642 --> 00:28:01.179
+While it does well on plan
+quality and logical consistency,
+
+442
+00:28:01.312 --> 00:28:04.582
+the agent does not adhere well to the plan
+
+443
+00:28:04.716 --> 00:28:07.719
+and the execution efficiency is also,
+quite poor.
+
+444
+00:28:07.719 --> 00:28:11.389
+So I can select that row
+and look at it in some more detail.
+
+445
+00:28:11.523 --> 00:28:15.527
+So here you can see, the query
+this was about identifying
+
+446
+00:28:15.527 --> 00:28:19.764
+the largest land deal
+and some additional qualifiers around it.
+
+447
+00:28:19.931 --> 00:28:22.400
+And this is what the output looks like.
+
+448
+00:28:22.400 --> 00:28:26.004
+Let's look at the plan
+adherence evaluation results.
+
+449
+00:28:26.171 --> 00:28:28.440
+You can see that the score here is zero.
+
+450
+00:28:28.440 --> 00:28:31.509
+And the explanation provides a detailed
+
+451
+00:28:31.509 --> 00:28:34.779
+summary of why the score is so low.
+
+452
+00:28:34.946 --> 00:28:36.548
+It mentions that multiple planned
+
+453
+00:28:36.548 --> 00:28:40.185
+stance steps were omitted
+are not completed as intended.
+
+454
+00:28:40.351 --> 00:28:45.351
+No meaningful attempt was made to explain
+or justify planned changes beyond stating
+
+455
+00:28:45.724 --> 00:28:50.724
+a capability limitation, and that the plan
+largely was disregarded after step one.
+
+456
+00:28:51.596 --> 00:28:55.600
+Then it goes on to show more specific
+supporting evidence.
+
+457
+00:28:56.101 --> 00:28:59.070
+If you want to manually check the work
+
+458
+00:28:59.070 --> 00:29:02.574
+of the judge
+you can click on the planner node
+
+459
+00:29:02.707 --> 00:29:07.011
+and look at the details of the plan
+that it had come up with.
+
+460
+00:29:07.178 --> 00:29:10.415
+And here you can see
+the various steps are laid out.
+
+461
+00:29:10.415 --> 00:29:13.384
+Step number one, step
+number two, and so forth.
+
+462
+00:29:13.418 --> 00:29:16.621
+And then you can look at the execution
+trace and check
+
+463
+00:29:16.788 --> 00:29:20.391
+how closely the execution actions
+followed.
+
+464
+00:29:20.391 --> 00:29:21.593
+This plan.
+
+465
+00:29:21.593 --> 00:29:26.593
+So this particular trace suggests
+that there is room for improvement
+
+466
+00:29:26.931 --> 00:29:31.169
+for how this agent
+is adhering to its plan.
+
+467
+00:29:31.336 --> 00:29:35.073
+There's also room for improvement
+in the completion properties
+
+468
+00:29:35.073 --> 00:29:38.977
+and the completion goals
+related to on the relevance.
+
+469
+00:29:39.144 --> 00:29:41.980
+In particular, as well as groundedness.
+
+470
+00:29:41.980 --> 00:29:46.417
+With that, let me wrap up lesson five,
+and in the next lesson
+
+471
+00:29:46.584 --> 00:29:51.584
+we will see systematic techniques
+to improve the agent's GPA
+
+472
+00:29:52.323 --> 00:29:57.061
+that will address these shortcomings
+that we are observing and its execution.

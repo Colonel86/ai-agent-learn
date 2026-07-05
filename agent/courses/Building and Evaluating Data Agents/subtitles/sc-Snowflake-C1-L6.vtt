@@ -1,0 +1,854 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.301 --> 00:00:04.004
+You've discovered your agent's GPA is low.
+
+2
+00:00:04.004 --> 00:00:06.573
+Let's see if you can get its grades up.
+
+3
+00:00:06.573 --> 00:00:09.609
+So now that Anupam walked us through
+how to identify
+
+4
+00:00:09.776 --> 00:00:12.779
+clear failure modes in our data agent's
+performance.
+
+5
+00:00:12.946 --> 00:00:16.716
+Let's consider some common ways
+to improve our agent's GPA.
+
+6
+00:00:16.850 --> 00:00:21.221
+One common way to improve your agent's
+performance is by adjusting prompts.
+
+7
+00:00:21.388 --> 00:00:26.159
+For example, you can consider adjusting
+the planning prompt to include explicit
+
+8
+00:00:26.326 --> 00:00:30.830
+subgoals with pre and post conditions,
+so that the agent's plan
+
+9
+00:00:30.997 --> 00:00:34.734
+is very explicit on what it needs
+to accomplish at each step.
+
+10
+00:00:34.901 --> 00:00:37.103
+Another way to improve an agent's
+
+11
+00:00:37.103 --> 00:00:40.807
+call plan action
+alignment is through inline evaluation.
+
+12
+00:00:40.940 --> 00:00:43.910
+Inline evaluation provides
+real time feedback
+
+13
+00:00:43.910 --> 00:00:47.380
+so that the agent can actually understand
+how well it's performing.
+
+14
+00:00:47.547 --> 00:00:50.050
+For example, when it does a research step.
+
+15
+00:00:50.050 --> 00:00:54.888
+The agent executer Can be provided
+with an evaluation score and explanation
+
+16
+00:00:54.988 --> 00:00:58.925
+to see if the research is missing
+key details before it can move on.
+
+17
+00:00:59.092 --> 00:01:02.695
+The agent can then use that information
+to better choose its next action.
+
+18
+00:01:02.862 --> 00:01:05.732
+You might also choose
+to improve your agent's performance
+
+19
+00:01:05.732 --> 00:01:09.069
+by doing things like tuning the retriever
+or trying different models.
+
+20
+00:01:09.235 --> 00:01:13.506
+Last, you should always validate your
+improvements through offline evaluations.
+
+21
+00:01:13.673 --> 00:01:16.810
+Now that we've walked through the
+general process for improving your agent's
+
+22
+00:01:16.810 --> 00:01:20.680
+GPA, let's get back into the notebook
+so we can apply this in action.
+
+23
+00:01:21.181 --> 00:01:23.716
+In the last
+lesson, Anupam walked us through
+
+24
+00:01:23.716 --> 00:01:28.488
+exactly how the agent was performing
+and identified a key failure node.
+
+25
+00:01:28.655 --> 00:01:30.056
+Lack of plan adherence.
+
+26
+00:01:30.056 --> 00:01:32.926
+The agent was not adhering to the plan,
+meaning
+
+27
+00:01:32.926 --> 00:01:36.196
+that its actions did not follow
+what the planner had laid out.
+
+28
+00:01:36.329 --> 00:01:39.833
+Let's walk through in this notebook
+how we can take targeted changes
+
+29
+00:01:39.999 --> 00:01:41.734
+to improve the agent's GPA.
+
+30
+00:01:41.734 --> 00:01:43.336
+The first thing we'll do in the notebook.
+
+31
+00:01:43.336 --> 00:01:46.473
+Is to import the environment
+and turn on tree land tracing.
+
+32
+00:01:46.739 --> 00:01:48.441
+Just like we've done before.
+
+33
+00:01:48.441 --> 00:01:52.011
+Then we'll make our first targeted change
+in line evaluations.
+
+34
+00:01:52.178 --> 00:01:56.049
+As we get set up to add in line
+evaluations, we're going to import the
+
+35
+00:01:56.049 --> 00:02:00.286
+cortex agent, the state and our context
+relevance feedback from helper.
+
+36
+00:02:00.453 --> 00:02:02.889
+And these are all things
+we've set up previously.
+
+37
+00:02:02.889 --> 00:02:05.391
+We'll also import some things
+from True Lens,
+
+38
+00:02:05.391 --> 00:02:08.828
+such as the instrumentation
+along with some typing from lane Graph.
+
+39
+00:02:08.995 --> 00:02:10.530
+The new thing that we're going to import
+
+40
+00:02:10.530 --> 00:02:14.467
+here is we're going to import the inline
+evaluation decorator from tree lens.
+
+41
+00:02:14.634 --> 00:02:17.403
+Here we're using a lane
+graph specific decorator
+
+42
+00:02:17.403 --> 00:02:21.641
+because the inline evaluation
+will interact with the lane graph state.
+
+43
+00:02:21.808 --> 00:02:23.676
+But the concept here is general.
+
+44
+00:02:23.676 --> 00:02:28.676
+We can think about inline evaluations
+as a way to evaluate a step
+
+45
+00:02:28.948 --> 00:02:32.986
+or action of the agent, and provide
+feedback into the agent's memory
+
+46
+00:02:33.086 --> 00:02:37.824
+so that the agent can improve its
+next action and replan when necessary.
+
+47
+00:02:38.057 --> 00:02:39.659
+to add inline evaluation.
+
+48
+00:02:39.659 --> 00:02:43.229
+We can simply decorate
+a previously instrumented node here.
+
+49
+00:02:43.263 --> 00:02:45.532
+We'll start with the cortex agents
+research node.
+
+50
+00:02:45.532 --> 00:02:48.034
+This is the same node
+that we've already created.
+
+51
+00:02:48.034 --> 00:02:51.004
+Just copy it again here
+along with the same instrumentation.
+
+52
+00:02:51.070 --> 00:02:53.506
+Now we'll add a simple decorator on top.
+
+53
+00:02:53.506 --> 00:02:56.943
+our inline evaluation
+decorator will accept the feedback
+
+54
+00:02:56.943 --> 00:03:00.046
+function or evaluator
+that we want to run against.
+
+55
+00:03:00.046 --> 00:03:01.047
+The research node.
+
+56
+00:03:01.047 --> 00:03:05.852
+This evaluation will execute directly
+after the research node is executed.
+
+57
+00:03:05.985 --> 00:03:09.789
+It'll run against the span attributes
+specified in the feedback
+
+58
+00:03:09.789 --> 00:03:10.857
+function definition.
+
+59
+00:03:10.857 --> 00:03:15.161
+Then once the evaluation
+has run, the results including a score
+
+60
+00:03:15.328 --> 00:03:20.266
+and explanation will be added back to the
+agent state so that the agent can use it.
+
+61
+00:03:20.433 --> 00:03:23.503
+This will happen
+by updating the messages in the state.
+
+62
+00:03:23.670 --> 00:03:27.340
+Now that we've added inline evaluation
+to the Cortex Agents research node,
+
+63
+00:03:27.640 --> 00:03:30.643
+we want to do the same for the web
+search down.
+
+64
+00:03:30.643 --> 00:03:32.579
+The process here, it's exactly the same.
+
+65
+00:03:32.579 --> 00:03:35.582
+We're taking an already instrumented
+web research node
+
+66
+00:03:35.682 --> 00:03:38.885
+and simply adding this inline
+evaluation decorator to it.
+
+67
+00:03:41.688 --> 00:03:42.222
+The second
+
+68
+00:03:42.222 --> 00:03:46.025
+targeted change we want to make here is
+we want to update the planning prompt.
+
+69
+00:03:46.192 --> 00:03:50.129
+Specifically,
+we want to instruct the planning Elm
+
+70
+00:03:50.230 --> 00:03:53.466
+to add
+explicit preconditions, post conditions
+
+71
+00:03:53.633 --> 00:03:57.303
+and gold descriptions
+to each step in the agent's plan.
+
+72
+00:03:57.470 --> 00:04:01.207
+Adding this explicit detail helps
+the executer to understand
+
+73
+00:04:01.207 --> 00:04:05.478
+the goal of each step, which improves
+both to calling and agent decisions.
+
+74
+00:04:05.645 --> 00:04:08.815
+To make this change,
+we're going to patch the plan prompt.
+
+75
+00:04:08.982 --> 00:04:12.752
+We'll do that by inserting
+this additional precondition post
+
+76
+00:04:12.752 --> 00:04:17.023
+condition and goal, and we'll replace it
+in the prompt content.
+
+77
+00:04:17.190 --> 00:04:18.524
+So what we're doing here
+
+78
+00:04:18.524 --> 00:04:22.462
+is that we're expanding the output
+template given to the planning Elm.
+
+79
+00:04:22.595 --> 00:04:27.033
+We're adding in addition to the name
+of the agent and the action for each step.
+
+80
+00:04:27.200 --> 00:04:30.536
+We'll ask the planning Elm
+to include an explicit
+
+81
+00:04:30.536 --> 00:04:33.806
+precondition, post condition
+and description of the goal.
+
+82
+00:04:33.973 --> 00:04:38.611
+Then this template will be filled in
+and populated at runtime.
+
+83
+00:04:38.611 --> 00:04:40.046
+When the planning node is run.
+
+84
+00:04:40.046 --> 00:04:43.883
+Now that we've made our two targeted
+changes, let's rebuild the graph
+
+85
+00:04:44.183 --> 00:04:47.453
+with our added inline
+evals and update to the plan.
+
+86
+00:04:48.988 --> 00:04:50.189
+Will rebuild the graph
+
+87
+00:04:50.189 --> 00:04:54.027
+just as we have before,
+using the recreated web researcher
+
+88
+00:04:54.027 --> 00:04:57.764
+and cortex researcher, and then pulling
+the other nodes from the helper.
+
+89
+00:04:57.897 --> 00:05:00.900
+Then we'll connect
+back to our logging database.
+
+90
+00:05:01.467 --> 00:05:04.971
+So the database we're connecting to here
+already has our results
+
+91
+00:05:05.138 --> 00:05:06.406
+from the prior lesson.
+
+92
+00:05:06.406 --> 00:05:10.743
+So what we're going to do here is once
+we've run our agent with our new version,
+
+93
+00:05:10.910 --> 00:05:12.412
+we're going to be able to compare
+
+94
+00:05:12.412 --> 00:05:16.149
+directly the results from this new version
+of the agent to the old version.
+
+95
+00:05:16.316 --> 00:05:19.485
+Then we can use that to validate
+if these target
+
+96
+00:05:19.485 --> 00:05:22.488
+improvements really worked.
+
+97
+00:05:22.588 --> 00:05:25.792
+To do that, I next need to register
+the new version of the agent.
+
+98
+00:05:27.393 --> 00:05:29.529
+I'll do that by using the same application
+
+99
+00:05:29.529 --> 00:05:32.532
+name but iterating on the application
+version.
+
+100
+00:05:32.665 --> 00:05:36.102
+So now in app version
+I have a new version name
+
+101
+00:05:36.235 --> 00:05:40.606
+where I descriptively say exactly
+which changes I'm making in this version.
+
+102
+00:05:40.773 --> 00:05:41.941
+This will allow me to better
+
+103
+00:05:41.941 --> 00:05:45.378
+remember exactly what changes
+I made when I compare. One.
+
+104
+00:05:46.212 --> 00:05:49.749
+Now that I've registered my new version,
+I can retest my agent.
+
+105
+00:05:49.916 --> 00:05:52.352
+These are the same queries
+that you've seen before.
+
+106
+00:05:52.352 --> 00:05:54.721
+So I'll just copy all three and run.
+
+107
+00:05:54.721 --> 00:05:56.756
+And then we can check out the
+results when they're done.
+
+108
+00:06:03.896 --> 00:06:06.899
+So now our agent
+has finished running the three queries.
+
+109
+00:06:06.999 --> 00:06:10.069
+We can quickly take a look here
+by looking at the Sal output.
+
+110
+00:06:11.137 --> 00:06:13.606
+But to really understand
+the agent performance
+
+111
+00:06:13.606 --> 00:06:15.441
+we want to open the tree lens dashboard.
+
+112
+00:06:15.441 --> 00:06:17.076
+Let's do that now.
+
+113
+00:06:17.076 --> 00:06:19.779
+We'll run the dashboard
+exactly as we have before.
+
+114
+00:06:19.779 --> 00:06:23.182
+And to open it you'll click
+on the second link for deep learning. I.
+
+115
+00:06:23.683 --> 00:06:26.219
+Now we've opened up the challenge
+leaderboard.
+
+116
+00:06:26.219 --> 00:06:29.288
+We'll click in the top left
+so we can see a larger window.
+
+117
+00:06:29.455 --> 00:06:32.392
+The leaderboard allows us to compare
+the aggregate metrics
+
+118
+00:06:32.392 --> 00:06:34.627
+across our different versions
+of the agent.
+
+119
+00:06:34.627 --> 00:06:36.629
+Here we can see that answer relevance.
+
+120
+00:06:36.629 --> 00:06:37.463
+Improved.
+
+121
+00:06:37.463 --> 00:06:40.333
+Contact relevant
+stayed the same Crowdedness improved
+
+122
+00:06:40.333 --> 00:06:44.203
+by a good amount and plan
+adherence improved while we saw smaller
+
+123
+00:06:44.203 --> 00:06:48.007
+decreases in execution efficiency
+and logical consistency.
+
+124
+00:06:48.174 --> 00:06:51.344
+From here
+we can compare directly these versions
+
+125
+00:06:51.644 --> 00:06:55.114
+so we can look at the records side by side
+and see exactly what changed.
+
+126
+00:06:55.281 --> 00:06:58.418
+We'll do that by selecting the checkbox
+next to each agent version
+
+127
+00:06:58.551 --> 00:06:59.886
+and then choosing Compare.
+
+128
+00:06:59.886 --> 00:07:01.154
+Now the comparison view.
+
+129
+00:07:01.154 --> 00:07:01.554
+It's going
+
+130
+00:07:01.554 --> 00:07:05.291
+to show us the base version on the left
+and the improved version on the right.
+
+131
+00:07:05.458 --> 00:07:07.160
+Now we'll choose apply.
+
+132
+00:07:07.160 --> 00:07:10.263
+we can again see the aggregated comparison
+in this bar chart.
+
+133
+00:07:10.263 --> 00:07:10.663
+Here.
+
+134
+00:07:10.663 --> 00:07:14.300
+but it gets most interesting
+when we look at the same record across
+
+135
+00:07:14.300 --> 00:07:16.302
+different versions of the agent.
+
+136
+00:07:16.302 --> 00:07:19.305
+When we look at the shared record stats,
+these are sorted
+
+137
+00:07:19.405 --> 00:07:22.308
+by the largest difference
+between the different versions.
+
+138
+00:07:22.308 --> 00:07:24.610
+Let's click on the one
+with the largest difference.
+
+139
+00:07:24.610 --> 00:07:27.780
+Then when we scroll down,
+we can see the two traces
+
+140
+00:07:28.014 --> 00:07:30.983
+side by side to directly compare exactly
+
+141
+00:07:30.983 --> 00:07:33.986
+what's changing between
+the two different agent traces.
+
+142
+00:07:34.587 --> 00:07:39.325
+To more easily compare again, we'll
+minimize some of the hierarchical nodes.
+
+143
+00:07:39.859 --> 00:07:43.463
+Comparing the two traces,
+we can see a longer trace on the right.
+
+144
+00:07:43.629 --> 00:07:46.966
+Here on the right
+we have additional both web
+
+145
+00:07:46.966 --> 00:07:49.969
+research and cortex agents research calls.
+
+146
+00:07:50.002 --> 00:07:52.905
+And these are providing
+additional research and filling in
+
+147
+00:07:52.905 --> 00:07:57.176
+gaps identified by the inline evaluation
+and also comparing
+
+148
+00:07:57.176 --> 00:08:00.780
+against the agents subgoals
+now listed in the plan.
+
+149
+00:08:01.247 --> 00:08:03.349
+In addition
+to comparing the trace directly,
+
+150
+00:08:03.349 --> 00:08:06.018
+we can also compare
+the evaluation metrics.
+
+151
+00:08:06.018 --> 00:08:07.954
+let's take a look at plan adherence.
+
+152
+00:08:07.954 --> 00:08:10.923
+So on the left are plan
+adherence scored really low.
+
+153
+00:08:10.990 --> 00:08:12.792
+This is the base version of the agent
+
+154
+00:08:12.792 --> 00:08:15.261
+where we see a score of zero
+for adherence.
+
+155
+00:08:15.261 --> 00:08:15.862
+Here.
+
+156
+00:08:15.862 --> 00:08:17.530
+In this base version of the agent,
+
+157
+00:08:17.530 --> 00:08:20.533
+a number of steps were omitted
+from the original agent's plan.
+
+158
+00:08:20.666 --> 00:08:23.803
+in the improved version on the right,
+we see a score of one
+
+159
+00:08:23.803 --> 00:08:26.806
+for plan adherence,
+and we can open up the explanation.
+
+160
+00:08:26.806 --> 00:08:29.942
+And what we see here is that each step in
+the plan
+
+161
+00:08:29.942 --> 00:08:33.412
+was executed and completed for each step
+in the Re plan,
+
+162
+00:08:33.679 --> 00:08:38.651
+and any deviations were explicit justified
+in the external data access limitations.
+
+163
+00:08:38.818 --> 00:08:40.520
+No steps were skipped or ignored.
+
+164
+00:08:40.520 --> 00:08:44.957
+And all deviations were justified, says
+the plan as closely followed as possible.
+
+165
+00:08:45.091 --> 00:08:47.960
+By understanding both
+how the agent performing,
+
+166
+00:08:47.960 --> 00:08:52.465
+by looking at the trace and comparing
+evaluations, we can easily observe
+
+167
+00:08:52.465 --> 00:08:56.469
+differences in agents performance
+as we iterate and make changes.
+
+168
+00:08:57.036 --> 00:09:01.674
+So one reason we see this difference
+in comparing the traces is that our inline
+
+169
+00:09:01.674 --> 00:09:05.711
+evaluations added in the improved version
+of the agent on the right.
+
+170
+00:09:05.878 --> 00:09:09.448
+Are helping steer
+the agent to a successful completion here.
+
+171
+00:09:09.448 --> 00:09:10.650
+Are we making a trade off?
+
+172
+00:09:10.650 --> 00:09:14.720
+We're sacrificing some execution
+efficiency for higher goal completion.
+
+173
+00:09:14.854 --> 00:09:18.724
+We're directly making the choice
+to do additional research
+
+174
+00:09:18.958 --> 00:09:22.428
+based on the evaluations,
+and we can even see the evaluations
+
+175
+00:09:22.428 --> 00:09:25.531
+happening directly in our trace
+by expanding the research node.
+
+176
+00:09:26.032 --> 00:09:29.235
+in practice,
+we've seen exactly the kind of techniques
+
+177
+00:09:29.402 --> 00:09:32.505
+that we've discovered in this course
+around evaluation.
+
+178
+00:09:32.638 --> 00:09:36.642
+Tracing and careful iteration
+can help make agents more reliable.
+
+179
+00:09:37.143 --> 00:09:39.478
+Thank you so much for taking
+this course. And well done.

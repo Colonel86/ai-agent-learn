@@ -1,0 +1,344 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.434 --> 00:00:04.471
+Welcome to Building and Evaluating Data
+agents
+
+2
+00:00:04.471 --> 00:00:06.873
+built in partnership with snowflake.
+
+3
+00:00:06.873 --> 00:00:09.342
+In this course, you implement a data agent
+
+4
+00:00:09.342 --> 00:00:12.345
+to perform web searches
+and collect the data sources.
+
+5
+00:00:12.612 --> 00:00:16.683
+So collect data, analyze it and visualize
+results and provide insights.
+
+6
+00:00:17.484 --> 00:00:21.788
+Even more importantly, you apply offline
+evaluations offline evals
+
+7
+00:00:21.921 --> 00:00:26.626
+to improve and iterate on your agents
+design as well as real time.
+
+8
+00:00:26.826 --> 00:00:30.397
+Also called inline evals
+that the agent can use.
+
+9
+00:00:30.397 --> 00:00:32.966
+Adjust its strategy
+even while it's running.
+
+10
+00:00:32.966 --> 00:00:36.503
+I'm delighted the instructors for this
+course are only about data
+
+11
+00:00:36.503 --> 00:00:41.503
+with AI research lead, as was Josh Brady,
+who is developer advocate at Snowflake
+
+12
+00:00:42.042 --> 00:00:45.712
+and was formerly a professor
+at Carnegie Mellon University
+
+13
+00:00:45.712 --> 00:00:49.082
+and founder of AI observability
+startup True ERA.
+
+14
+00:00:49.349 --> 00:00:50.817
+Those acquired by snowflake.
+
+15
+00:00:50.817 --> 00:00:54.721
+Josh also previously worked at Torreira
+and continues to build and maintain
+
+16
+00:00:54.721 --> 00:00:59.025
+True Lens, which is an open source library
+for agent tracing and evaluation.
+
+17
+00:01:00.126 --> 00:01:01.394
+Thanks, Andrew.
+
+18
+00:01:01.394 --> 00:01:04.230
+We are excited to work with you
+on this course.
+
+19
+00:01:04.230 --> 00:01:08.268
+Building evals is a really important skill
+for building HNC workflows.
+
+20
+00:01:08.635 --> 00:01:11.738
+This course will show you
+some important best practices.
+
+21
+00:01:12.305 --> 00:01:15.642
+In fact, I learned quite a bit
+from Anupama natural close of us,
+
+22
+00:01:15.642 --> 00:01:18.645
+and I think you learn a lot
+from this one as well.
+
+23
+00:01:18.745 --> 00:01:22.982
+And specifically you start by assessing
+your agent's answer quality.
+
+24
+00:01:23.283 --> 00:01:25.185
+So you use an error message
+
+25
+00:01:25.185 --> 00:01:28.154
+to measure the end
+to end performance of the agent,
+
+26
+00:01:28.154 --> 00:01:31.524
+and evaluate that the final answer
+is relevant to the user's query,
+
+27
+00:01:31.691 --> 00:01:34.461
+as well as whether the data retrieved for
+the analysis
+
+28
+00:01:34.461 --> 00:01:36.262
+is relevant to the user's query.
+
+29
+00:01:36.262 --> 00:01:40.366
+And finally,
+if the final answer is rounded in the list
+
+30
+00:01:40.366 --> 00:01:42.702
+of all the retrieved data,
+
+31
+00:01:42.702 --> 00:01:46.072
+you can use these offline
+evaluation metrics to improve your agent's
+
+32
+00:01:46.072 --> 00:01:50.143
+logic or update its prompts,
+or maybe try out different models.
+
+33
+00:01:50.410 --> 00:01:54.514
+Additionally, you also use elements Judge
+to evaluate the process
+
+34
+00:01:54.514 --> 00:01:57.517
+by which the agent use arrive
+at that final answer.
+
+35
+00:01:57.617 --> 00:02:02.021
+This technique can also increasingly
+be used not offline, but instead
+
+36
+00:02:02.021 --> 00:02:06.392
+at runtime to give feedback to the agent,
+even as is running to help the agent.
+
+37
+00:02:06.392 --> 00:02:09.395
+The Justice data Retrieval and Analysis
+strategy.
+
+38
+00:02:09.796 --> 00:02:13.299
+will implement your agent
+using a multi-agent workflow
+
+39
+00:02:13.533 --> 00:02:18.533
+that consists of a planner,
+a plan, executer, and specialized agents
+
+40
+00:02:18.872 --> 00:02:21.741
+such as web and data researchers,
+
+41
+00:02:21.741 --> 00:02:25.411
+a data visualizer,
+and response synthesizers.
+
+42
+00:02:26.379 --> 00:02:27.447
+The planner
+
+43
+00:02:27.447 --> 00:02:30.517
+takes the user's query and generates
+a plan,
+
+44
+00:02:31.084 --> 00:02:35.822
+and the plan Executer directs
+the plan's execution and determines
+
+45
+00:02:36.156 --> 00:02:40.460
+which specialized agent
+should proceed based on the plan.
+
+46
+00:02:41.528 --> 00:02:44.697
+Each agent shares
+the output of its execution step
+
+47
+00:02:45.131 --> 00:02:48.568
+and the plan executed
+through the agent state.
+
+48
+00:02:48.935 --> 00:02:50.870
+After each retrieval step.
+
+49
+00:02:50.870 --> 00:02:55.341
+The plan execute A reflects on the plan
+and decides whether to update it.
+
+50
+00:02:55.708 --> 00:03:00.547
+You will evaluate both the quality
+of retrievals and the quality of the plan.
+
+51
+00:03:01.147 --> 00:03:04.150
+Was the plan
+aligned with the user's request?
+
+52
+00:03:04.284 --> 00:03:07.287
+The agent's actions aligned with the plan
+
+53
+00:03:07.453 --> 00:03:10.223
+and executed efficiently and logically.
+
+54
+00:03:10.223 --> 00:03:14.127
+You will then improve this agent
+by adjusting its problems
+
+55
+00:03:14.460 --> 00:03:18.698
+and implementing in line
+or runtime evaluations.
+
+56
+00:03:18.965 --> 00:03:23.069
+The inline evaluations will provide
+the plan executer with real time
+
+57
+00:03:23.069 --> 00:03:26.873
+scores for context relevance immediately
+after any retrieval step.
+
+58
+00:03:27.607 --> 00:03:31.778
+This will inform the plan Executer
+whether the retrieval step
+
+59
+00:03:32.412 --> 00:03:35.915
+lacked context relevance,
+and if so, the plan Executer
+
+60
+00:03:36.115 --> 00:03:38.484
+will ask the planner to adjust
+
+61
+00:03:38.484 --> 00:03:41.487
+after you implement these improvements
+to the agent's design,
+
+62
+00:03:41.788 --> 00:03:46.125
+you will compare the offline
+evaluation metrics, and both offline
+
+63
+00:03:46.125 --> 00:03:51.097
+and real time evaluations rely on tracing
+the agent that you will also learn about.
+
+64
+00:03:51.097 --> 00:03:51.631
+In this course.
+
+65
+00:03:52.665 --> 00:03:55.101
+Many people have worked to create this
+course.
+
+66
+00:03:55.101 --> 00:03:58.871
+I'd like to thank from snowflake,
+Allison Chia, David
+
+67
+00:03:58.905 --> 00:04:02.442
+Kurokawa, Daniel Huang, Nicole Victoria
+
+68
+00:04:02.809 --> 00:04:06.312
+and Jackson from deep in the eye are out.
+
+69
+00:04:06.312 --> 00:04:08.881
+Salameh also contributed to this cause
+
+70
+00:04:08.881 --> 00:04:11.918
+in the next video,
+you learn about the three dimensions
+
+71
+00:04:11.918 --> 00:04:16.623
+of evaluation for an agent
+is go, plan and action or GPA.
+
+72
+00:04:17.156 --> 00:04:18.625
+Let's go on to the next video.
