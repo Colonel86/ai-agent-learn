@@ -1,0 +1,314 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:01.735
+When you move your agent from
+
+2
+00:00:01.735 --> 00:00:03.770
+a notebook prototype to a production environment,
+
+3
+00:00:03.970 --> 00:00:06.773
+you need to address some critical day-two operations.
+
+4
+00:00:07.173 --> 00:00:10.176
+Security, extensibility, and observability.
+
+5
+00:00:10.643 --> 00:00:14.647
+In this lesson, you will explore how A2A handles authentication,
+
+6
+00:00:14.848 --> 00:00:17.550
+how to extend the protocol for custom needs,
+
+7
+00:00:17.650 --> 00:00:20.253
+and how to debug complex agent chains.
+
+8
+00:00:20.754 --> 00:00:24.557
+Let's dive in. First, let's talk about security.
+
+9
+00:00:25.258 --> 00:00:28.161
+In our previous examples, you run agents locally
+
+10
+00:00:28.261 --> 00:00:30.263
+without strict authentication.
+
+11
+00:00:30.563 --> 00:00:34.567
+However, in the real world, you don't want unauthorized agents
+
+12
+00:00:34.768 --> 00:00:37.270
+querying your healthcare provider database
+
+13
+00:00:37.570 --> 00:00:39.773
+or racking up bills on your LLM.
+
+14
+00:00:39.939 --> 00:00:42.042
+A2A is built on top of standard
+
+15
+00:00:42.075 --> 00:00:46.579
+web protocols. Transport Layer Security, TLS, or HTTPS
+
+16
+00:00:46.579 --> 00:00:48.982
+is mandatory for production A2A agents
+
+17
+00:00:48.982 --> 00:00:50.984
+to encrypt data in transit.
+
+18
+00:00:51.284 --> 00:00:54.154
+Authentication is the second critical component as well.
+
+19
+00:00:54.354 --> 00:00:56.956
+The AgentCard we discussed in lesson two
+
+20
+00:00:56.956 --> 00:00:58.958
+includes a security schema.
+
+21
+00:00:59.225 --> 00:01:01.428
+This tells the client how to authenticate.
+
+22
+00:01:02.128 --> 00:01:05.031
+A2A supports standard methods like API keys,
+
+23
+00:01:05.231 --> 00:01:09.736
+OAuth 2.0, and OpenID Connect, OIDC.
+
+24
+00:01:10.203 --> 00:01:14.140
+When the client agent, Agent A, discovers the remote agent, Agent B,
+
+25
+00:01:14.607 --> 00:01:18.244
+it checks the AgentCard. If Agent B requires a token,
+
+26
+00:01:18.511 --> 00:01:21.581
+Agent A must obtain that token from an identity provider
+
+27
+00:01:21.915 --> 00:01:25.118
+and include it in the authorization header for its requests,
+
+28
+00:01:25.585 --> 00:01:27.187
+usually as a Bearer token.
+
+29
+00:01:27.287 --> 00:01:30.590
+This ensures that Agent B knows exactly who is calling.
+
+30
+00:01:31.057 --> 00:01:33.860
+and can decide whenever to answer
+
+31
+00:01:33.860 --> 00:01:36.262
+or return a 403 Forbidden error.
+
+32
+00:01:36.763 --> 00:01:38.865
+Notice that you don't manually set headers.
+
+33
+00:01:38.965 --> 00:01:40.967
+You load them from the credential store.
+
+34
+00:01:40.967 --> 00:01:45.071
+And the AuthInterceptor automatically reads the server's agent card.
+
+35
+00:01:45.238 --> 00:01:50.238
+find the required scheme, my_auth_scheme, and injects the correct header.
+
+36
+00:01:50.643 --> 00:01:52.846
+Next, let's look at the extensions.
+
+37
+00:01:52.946 --> 00:01:56.149
+The Agent2Agent protocol defines a strict schema
+
+38
+00:01:56.149 --> 00:01:58.451
+for messages and tasks to ensure compatibility.
+
+39
+00:01:59.018 --> 00:02:00.687
+But what if you have a
+
+40
+00:02:00.687 --> 00:02:02.622
+specific requirement that isn't in the standard?
+
+41
+00:02:03.256 --> 00:02:05.258
+Maybe you need to pass billing codes,
+
+42
+00:02:05.692 --> 00:02:08.962
+latency requirements, or experimental feature flags.
+
+43
+00:02:09.262 --> 00:02:11.264
+You shouldn't override the standard fields.
+
+44
+00:02:12.265 --> 00:02:15.268
+Instead, it provides a dedicated extension field
+
+45
+00:02:15.668 --> 00:02:17.971
+in almost every major object.
+
+46
+00:02:18.872 --> 00:02:21.274
+Agent cards, messages, and tasks.
+
+47
+00:02:21.574 --> 00:02:25.979
+Extensions allows you to pass arbitrary data dictionaries between agents.
+
+48
+00:02:26.346 --> 00:02:29.616
+For example, if the insurance agent needs
+
+49
+00:02:29.616 --> 00:02:32.218
+to charge a query fee to the research agent,
+
+50
+00:02:32.218 --> 00:02:35.555
+it could include a custom extension like x-billing-cost.
+
+51
+00:02:36.156 --> 00:02:39.325
+Notice that the protocol dictates that agents
+
+52
+00:02:39.325 --> 00:02:41.828
+must simply ignore extensions they don't understand.
+
+53
+00:02:42.295 --> 00:02:46.065
+rather than crashing. This maintains backward compatibility.
+
+54
+00:02:46.065 --> 00:02:50.170
+Crucially, anyone may define, publish, and implement an extension.
+
+55
+00:02:50.470 --> 00:02:53.173
+This ensures A2A flexibility and adaptability,
+
+56
+00:02:53.273 --> 00:02:57.377
+and will allow you to engineer for more specialized multi-agent systems.
+
+57
+00:02:57.544 --> 00:03:00.446
+Finally, how do you debug a system
+
+58
+00:03:00.647 --> 00:03:03.049
+like the one you build in lesson 10?
+
+59
+00:03:03.550 --> 00:03:06.753
+where a concierge agent calls a research agent,
+
+60
+00:03:06.953 --> 00:03:09.055
+which might call a search agent.
+
+61
+00:03:09.656 --> 00:03:11.958
+If something breaks, where did it happen?
+
+62
+00:03:12.358 --> 00:03:15.562
+Because A2A is the communication protocol for agents,
+
+63
+00:03:15.862 --> 00:03:19.966
+it plays nicely with distributed tracing standards like OpenTelemetry.
+
+64
+00:03:20.266 --> 00:03:22.969
+You can pass a trace ID in the request headers.
+
+65
+00:03:23.203 --> 00:03:27.073
+As the request hops from the concierge to the research agent
+
+66
+00:03:27.106 --> 00:03:30.777
+to the policy agent, the ID travels with it.
+
+67
+00:03:30.877 --> 00:03:33.980
+You can then use tools like Jaeger, Zipkin,
+
+68
+00:03:33.980 --> 00:03:36.683
+or Google Cloud Trace to visualize
+
+69
+00:03:36.683 --> 00:03:38.985
+the entire lifecycle of the request.
+
+70
+00:03:38.985 --> 00:03:41.487
+across different organizations and network.
+
+71
+00:03:42.188 --> 00:03:44.190
+Here is an example with the Arize platform.
+
+72
+00:03:44.290 --> 00:03:47.493
+By combining standard web security, flexible extensions,
+
+73
+00:03:47.894 --> 00:03:51.764
+and distributed tracing, A2A allows you to build a resilient,
+
+74
+00:03:52.065 --> 00:03:55.568
+secure, and scalable distributed agentic systems.
+
+75
+00:03:56.002 --> 00:03:59.772
+That wraps up the technical concepts of this course.
+
+76
+00:04:00.173 --> 00:04:02.976
+We've gone from the basic why of A2A
+
+77
+00:04:03.176 --> 00:04:06.579
+through the architecture, code implementation, and finally
+
+78
+00:04:06.679 --> 00:04:09.182
+to advanced enterprise considerations.

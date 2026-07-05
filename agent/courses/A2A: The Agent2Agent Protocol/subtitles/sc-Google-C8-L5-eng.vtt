@@ -1,0 +1,278 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.602
+Now that you have exposed your agent as an A2A server,
+
+2
+00:00:02.769 --> 00:00:05.271
+you'll need an A2A client to send it requests.
+
+3
+00:00:05.472 --> 00:00:07.474
+And that's what you'll build in this lesson.
+
+4
+00:00:07.674 --> 00:00:10.977
+An A2A client that communicates with your A2A policy agent.
+
+5
+00:00:11.177 --> 00:00:14.981
+Let's have some fun. Let's start by importing the libraries.
+
+6
+00:00:15.648 --> 00:00:17.851
+In this case, we're going to
+
+7
+00:00:17.851 --> 00:00:20.453
+be adding in the A2A client objects
+
+8
+00:00:20.754 --> 00:00:22.956
+and some of the ones that we've used before.
+
+9
+00:00:23.256 --> 00:00:25.125
+Next, I'll run the same block from
+
+10
+00:00:25.125 --> 00:00:27.260
+the last lesson to open up terminal one.
+
+11
+00:00:27.560 --> 00:00:31.431
+You might need to rerun uv run a2a_policy_agent
+
+12
+00:00:31.431 --> 00:00:33.033
+to restart the A2A server if it
+
+13
+00:00:33.033 --> 00:00:34.634
+timed out since you last ran it.
+
+14
+00:00:34.934 --> 00:00:37.237
+The lab environment will reset after two hours.
+
+15
+00:00:37.737 --> 00:00:39.439
+So in my case, the agent is still running.
+
+16
+00:00:39.939 --> 00:00:41.941
+I'll load in the environment variables
+
+17
+00:00:42.042 --> 00:00:45.045
+and save the host and port of the agent I'm connecting to.
+
+18
+00:00:45.211 --> 00:00:47.280
+Note, you'll be reusing this same client to
+
+19
+00:00:47.280 --> 00:00:49.315
+connect to another agent in a later lesson.
+
+20
+00:00:49.916 --> 00:00:51.217
+So, in your copy of the
+
+21
+00:00:51.217 --> 00:00:52.719
+notebook, you'll see some commented out code.
+
+22
+00:00:52.919 --> 00:00:54.921
+Ignore it for now. We'll use it later.
+
+23
+00:00:55.121 --> 00:00:57.424
+Next, I'll load up the user prompt that we had before.
+
+24
+00:00:57.957 --> 00:01:01.561
+For this lesson, I've created a display_agent_card function
+
+25
+00:01:01.561 --> 00:01:03.396
+to make it easier to see
+
+26
+00:01:03.396 --> 00:01:05.565
+the agent card data in a notebook.
+
+27
+00:01:08.468 --> 00:01:10.737
+Now, to create the A2A client.
+
+28
+00:01:11.704 --> 00:01:14.374
+I'll define an httpx.AsyncClient
+
+29
+00:01:14.374 --> 00:01:16.076
+which will host the connection.
+
+30
+00:01:16.376 --> 00:01:19.079
+Then I'll use ClientFactory.connect
+
+31
+00:01:19.079 --> 00:01:21.081
+to create the A2A client.
+
+32
+00:01:22.115 --> 00:01:24.417
+I'll pass in the host, port,
+
+33
+00:01:24.417 --> 00:01:27.087
+and the httpx_client that we created earlier.
+
+34
+00:01:27.587 --> 00:01:31.091
+For this lesson, I'll get the agent_card directly and print it out.
+
+35
+00:01:31.091 --> 00:01:33.393
+But you likely wouldn't do this in a production system.
+
+36
+00:01:33.593 --> 00:01:35.595
+If you were building out a multi-agent system
+
+37
+00:01:35.595 --> 00:01:37.797
+and needed to decide which agent to use,
+
+38
+00:01:38.098 --> 00:01:40.400
+you would use a supervisor or coordinator agent
+
+39
+00:01:40.400 --> 00:01:42.402
+to get all the agent cards with the names and
+
+40
+00:01:42.435 --> 00:01:44.537
+descriptions and decide which to use.
+
+41
+00:01:44.537 --> 00:01:46.439
+We'll do that in a later lesson.
+
+42
+00:01:46.439 --> 00:01:49.709
+Now, I'll wrap up the user prompt in an A2A message object,
+
+43
+00:01:49.709 --> 00:01:54.709
+and I'll send it to the A2A remote agent with client.send_message.
+
+44
+00:01:59.919 --> 00:02:02.021
+Next, I'll handle the responses.
+
+45
+00:02:02.622 --> 00:02:06.493
+For this policy agent, you only need to handle message responses.
+
+46
+00:02:06.993 --> 00:02:08.628
+So I'll check for the type,
+
+47
+00:02:08.628 --> 00:02:10.497
+print out the message ID as confirmation,
+
+48
+00:02:10.597 --> 00:02:14.000
+then I'll get the text content of the message with get_message_text.
+
+49
+00:02:14.300 --> 00:02:17.504
+I'll also write an elif statement to handle tasks and artifacts,
+
+50
+00:02:17.604 --> 00:02:19.606
+which you'll need for a later agent.
+
+51
+00:02:19.706 --> 00:02:23.510
+In the A2A SDK, when the agent server responds to the task,
+
+52
+00:02:23.610 --> 00:02:26.713
+it actually sends a tuple with the task itself
+
+53
+00:02:27.347 --> 00:02:30.850
+and the update event. Since I'm not handling server-sent events
+
+54
+00:02:31.050 --> 00:02:33.820
+in these code samples, I'll ignore the update event
+
+55
+00:02:34.020 --> 00:02:36.823
+and extract the artifact from the task.
+
+56
+00:02:37.223 --> 00:02:39.225
+Finally, I'll do some error checking.
+
+57
+00:02:39.225 --> 00:02:41.427
+and print out the response. Let's run it.
+
+58
+00:02:42.028 --> 00:02:43.796
+Okay, we've run the cell and now
+
+59
+00:02:43.796 --> 00:02:45.832
+we can see everything that was printed out.
+
+60
+00:02:46.032 --> 00:02:48.368
+Here we have the Agent Card details, which includes
+
+61
+00:02:48.368 --> 00:02:50.703
+all the information that is within the Agent Card,
+
+62
+00:02:50.703 --> 00:02:52.338
+such as the name, description of
+
+63
+00:02:52.338 --> 00:02:54.207
+the agent, the version of the agent,
+
+64
+00:02:54.207 --> 00:02:56.709
+the URL it's at, the protocol version.
+
+65
+00:02:56.843 --> 00:02:58.945
+and all the skills.
+
+66
+00:02:58.945 --> 00:03:00.947
+We can then see which prompt was sent to it.
+
+67
+00:03:00.947 --> 00:03:02.682
+We can see the message ID
+
+68
+00:03:02.682 --> 00:03:04.717
+printed out, and the final agent response,
+
+69
+00:03:04.717 --> 00:03:07.320
+which looks pretty similar to what we had before.

@@ -1,0 +1,374 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:01.501
+In this lesson, you're going to
+
+2
+00:00:01.501 --> 00:00:03.269
+learn about the importance of open standards,
+
+3
+00:00:03.770 --> 00:00:06.773
+how the Agent2Agent or A2A protocol is helping to fill a gap
+
+4
+00:00:06.873 --> 00:00:09.275
+in the evolving agent landscape,
+
+5
+00:00:09.776 --> 00:00:11.544
+and about the types of use
+
+6
+00:00:11.544 --> 00:00:13.580
+cases it enables. Let's jump right in.
+
+7
+00:00:13.980 --> 00:00:18.084
+AI applications are rapidly evolving from basic conversational chatbots
+
+8
+00:00:18.084 --> 00:00:20.987
+to agentic systems capable of reasoning, planning,
+
+9
+00:00:21.287 --> 00:00:24.090
+executing tools, and managing multi-step workflows.
+
+10
+00:00:24.691 --> 00:00:26.893
+Complex agentic systems rely on collaboration
+
+11
+00:00:27.060 --> 00:00:29.262
+among agents to achieve shared goals.
+
+12
+00:00:29.863 --> 00:00:31.664
+Imagine building a trip planning agent.
+
+13
+00:00:31.865 --> 00:00:33.967
+You might want different agents to handle flights,
+
+14
+00:00:34.067 --> 00:00:35.869
+hotels, and activities
+
+15
+00:00:36.169 --> 00:00:38.671
+and they need to coordinate to make sure
+
+16
+00:00:38.671 --> 00:00:41.074
+that they're planning the best possible experience for travelers.
+
+17
+00:00:41.174 --> 00:00:43.977
+There are a ton of frameworks for building agents.
+
+18
+00:00:44.077 --> 00:00:46.679
+LangGraph, Microsoft agent framework,
+
+19
+00:00:46.780 --> 00:00:49.582
+Google ADK, CrewAI, BeeAI just to name a few.
+
+20
+00:00:49.682 --> 00:00:51.751
+But they each work in slightly different ways,
+
+21
+00:00:51.851 --> 00:00:53.720
+and they aren't compatible with each other out of
+
+22
+00:00:53.720 --> 00:00:55.755
+the box. This is why we need a shared protocol
+
+23
+00:00:55.789 --> 00:00:58.091
+for agents to communicate and collaborate
+
+24
+00:00:58.091 --> 00:01:00.894
+regardless of the model or framework being used.
+
+25
+00:01:00.894 --> 00:01:03.396
+This way, you can build out multi-agent systems
+
+26
+00:01:03.396 --> 00:01:05.799
+even across teams or organizations.
+
+27
+00:01:06.599 --> 00:01:10.703
+In 1989, Tim Berners-Lee proposed the World Wide Web at CERN
+
+28
+00:01:10.703 --> 00:01:15.008
+to enable raw data transfer across the web, he developed HTTP.
+
+29
+00:01:15.408 --> 00:01:17.911
+Before HTTP, there were multiple protocols
+
+30
+00:01:17.911 --> 00:01:20.213
+like FTP, Telnet, and Gopher,
+
+31
+00:01:20.213 --> 00:01:22.215
+each serving specific needs.
+
+32
+00:01:22.215 --> 00:01:24.918
+But HTTP soon overtook in popularity
+
+33
+00:01:24.918 --> 00:01:27.420
+because it was simple and openly governed,
+
+34
+00:01:27.420 --> 00:01:29.722
+which fueled the web's explosive growth.
+
+35
+00:01:30.090 --> 00:01:33.860
+Similarly, A2A acts as the HTTP for agents,
+
+36
+00:01:34.060 --> 00:01:38.064
+enabling agents from any model, language, or framework
+
+37
+00:01:38.264 --> 00:01:41.267
+to communicate using standardized structures and methods.
+
+38
+00:01:41.668 --> 00:01:45.271
+Google introduced the A2A protocol in April 2025
+
+39
+00:01:45.572 --> 00:01:48.875
+and donated it to the Linux Foundation in June 2025,
+
+40
+00:01:49.075 --> 00:01:52.579
+ensuring it is open source and community governed.
+
+41
+00:01:52.879 --> 00:01:57.183
+Agent communication protocol, or ACP, created by IBM was also
+
+42
+00:01:57.217 --> 00:02:00.019
+merged into A2A. All key decisions
+
+43
+00:02:00.019 --> 00:02:03.223
+regarding the protocol are made by a technical steering committee, TSC,
+
+44
+00:02:03.223 --> 00:02:07.427
+with representatives from eight key tech enterprises, including Google.
+
+45
+00:02:07.427 --> 00:02:10.396
+The Linux Foundation provides a vendor neutral home,
+
+46
+00:02:10.396 --> 00:02:12.665
+ensuring that the protocol evolves based on
+
+47
+00:02:12.665 --> 00:02:15.201
+the collective needs of the ecosystem and community,
+
+48
+00:02:15.201 --> 00:02:17.403
+rather than what's useful for a single company.
+
+49
+00:02:17.403 --> 00:02:19.706
+A2A will soon release version 1.0.
+
+50
+00:02:19.706 --> 00:02:22.709
+And note that there are some significant changes from previous versions.
+
+51
+00:02:22.709 --> 00:02:24.310
+So make sure that you refer
+
+52
+00:02:24.344 --> 00:02:28.948
+the latest version of the specification at a2a-protocol.org
+
+53
+00:02:29.349 --> 00:02:32.152
+Now, a protocol is only as useful as its adoption
+
+54
+00:02:32.452 --> 00:02:34.854
+and A2A has already become widely accepted
+
+55
+00:02:35.155 --> 00:02:38.958
+as the standard for multi-agent collaboration in the software development industry.
+
+56
+00:02:39.159 --> 00:02:42.162
+We have over 150 named partners for A2A.
+
+57
+00:02:42.362 --> 00:02:45.865
+And you can find the most up-to-date list in the A2A documentation.
+
+58
+00:02:46.166 --> 00:02:47.867
+So, what can you do with A2A?
+
+59
+00:02:48.168 --> 00:02:51.137
+A2A agents can dynamically discover each other,
+
+60
+00:02:51.504 --> 00:02:53.706
+collaborate via standardized tasks,
+
+61
+00:02:53.706 --> 00:02:56.676
+share content, handle long-running and stream processes,
+
+62
+00:02:56.676 --> 00:02:59.679
+and do all of this with enterprise-grade security.
+
+63
+00:02:59.979 --> 00:03:02.282
+Importantly, every agent is opaque,
+
+64
+00:03:02.282 --> 00:03:04.651
+which means that implementation details never need
+
+65
+00:03:04.651 --> 00:03:06.986
+to be exposed to follow the protocol.
+
+66
+00:03:07.287 --> 00:03:11.991
+A2A is focused primarily on the bridge between agents, including across organizations.
+
+67
+00:03:12.292 --> 00:03:14.994
+Now, one of the biggest questions about A2A
+
+68
+00:03:14.994 --> 00:03:18.298
+is how it relates to Model Context Protocol, or MCP, created by
+
+69
+00:03:18.631 --> 00:03:21.935
+Anthropic, and now also donated to the Linux Foundation.
+
+70
+00:03:22.135 --> 00:03:24.637
+A2A and MCP are complementary protocols.
+
+71
+00:03:25.138 --> 00:03:27.840
+MCP is all about connecting agents to tools.
+
+72
+00:03:28.141 --> 00:03:30.843
+It's the standardized way an agent performs function calling,
+
+73
+00:03:31.144 --> 00:03:33.446
+executing tasks on a user's behalf.
+
+74
+00:03:33.646 --> 00:03:37.417
+A2A is about connecting agents to other peer agents
+
+75
+00:03:37.517 --> 00:03:41.120
+to collaborate, delegate tasks, and manage shared workflows.
+
+76
+00:03:41.421 --> 00:03:44.624
+So you'll often see both in a sophisticated agentic system.
+
+77
+00:03:44.924 --> 00:03:47.794
+Agents use A2A to coordinate with other agents,
+
+78
+00:03:47.994 --> 00:03:50.730
+and they use MCP to interact with their tools
+
+79
+00:03:50.730 --> 00:03:52.665
+to get their part of the job done.
+
+80
+00:03:53.066 --> 00:03:55.635
+This also brings up the question, why not have agents communicate
+
+81
+00:03:55.635 --> 00:03:58.838
+over MCP or use agents as tools?
+
+82
+00:03:59.138 --> 00:04:02.208
+You can do this, but you're reducing capability of the agent.
+
+83
+00:04:02.575 --> 00:04:05.578
+Tools are designed for a single, usually deterministic task,
+
+84
+00:04:05.778 --> 00:04:09.682
+whereas agents are open-ended problem solvers capable of handling ambiguity
+
+85
+00:04:09.983 --> 00:04:12.685
+and multi-step workflows that can't be defined by
+
+86
+00:04:12.919 --> 00:04:16.489
+single input output schema. You can read more about this paradigm
+
+87
+00:04:16.489 --> 00:04:19.425
+at goo.gle/agents-not-tools.
+
+88
+00:04:19.792 --> 00:04:23.496
+Note, A2A is just one part of a possible agent stack.
+
+89
+00:04:23.696 --> 00:04:25.898
+It acts at the Agent orchestration layer
+
+90
+00:04:25.898 --> 00:04:28.701
+alongside components like the Foundation models,
+
+91
+00:04:28.701 --> 00:04:32.005
+storage, cloud infrastructure, and the application layer.
+
+92
+00:04:32.405 --> 00:04:35.708
+Next up, we'll discuss the actual A2A architecture
+
+93
+00:04:35.708 --> 00:04:39.178
+and how it enables multi-agent communication and collaboration.

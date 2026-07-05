@@ -1,0 +1,106 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:01.801
+Congratulations on completing the course.
+
+2
+00:00:02.002 --> 00:00:04.170
+We hope that getting hands-on and building
+
+3
+00:00:04.170 --> 00:00:06.473
+A2A agents has sparked your creativity
+
+4
+00:00:06.473 --> 00:00:09.976
+and got you excited about what's possible when agents collaborate effectively.
+
+5
+00:00:10.176 --> 00:00:12.979
+Throughout this course, you've explored why A2A is valuable,
+
+6
+00:00:13.179 --> 00:00:15.181
+learned its core principles, and actually built
+
+7
+00:00:15.181 --> 00:00:17.784
+and ran your own A2A agents.
+
+8
+00:00:17.984 --> 00:00:22.489
+The Agent2Agent protocol signals the maturation of the generative AI industry,
+
+9
+00:00:22.489 --> 00:00:24.691
+the end of the wild west of isolated
+
+10
+00:00:24.691 --> 00:00:27.193
+bots and the beginning of the internet of agents.
+
+11
+00:00:27.494 --> 00:00:29.929
+By providing a rigorous, standardized, and
+
+12
+00:00:29.929 --> 00:00:32.799
+secure method for autonomous systems to collaborate,
+
+13
+00:00:32.799 --> 00:00:37.470
+A2A enables complex, multi-vendor workflows that were previously impossible.
+
+14
+00:00:38.004 --> 00:00:41.808
+You can find sample code in the a2a-samples GitHub repo,
+
+15
+00:00:41.808 --> 00:00:46.513
+and explore all the repositories in the google-a2a GitHub organization.
+
+16
+00:00:46.813 --> 00:00:50.517
+All official A2A code will be added to repos in this organization.
+
+17
+00:00:51.484 --> 00:00:53.987
+A2A is community governed and open,
+
+18
+00:00:54.487 --> 00:00:56.489
+built by the community for the community.
+
+19
+00:00:56.990 --> 00:00:59.192
+Whether you're building, contributing, or just curious,
+
+20
+00:00:59.292 --> 00:01:01.294
+there's a place for you in this ecosystem.
+
+21
+00:01:01.661 --> 00:01:03.296
+Please submit pull requests if you'd
+
+22
+00:01:03.296 --> 00:01:05.165
+like to suggest improvements to the protocol
+
+23
+00:01:05.165 --> 00:01:06.966
+or share your implementations.
+
+24
+00:01:07.167 --> 00:01:08.835
+Thank you so much for learning with
+
+25
+00:01:08.835 --> 00:01:10.470
+us and we can't wait to see
+
+26
+00:01:10.470 --> 00:01:12.939
+what you create in the multi-agent world using A2A.

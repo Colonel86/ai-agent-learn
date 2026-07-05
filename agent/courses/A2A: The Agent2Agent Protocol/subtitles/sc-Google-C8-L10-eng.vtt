@@ -1,0 +1,1218 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.770
+In this lesson, you're going to bring together the healthcare research agent,
+
+2
+00:00:03.870 --> 00:00:06.873
+insurance policy agent, and healthcare provider agent
+
+3
+00:00:06.973 --> 00:00:09.476
+using the open-source BeeAI Framework
+
+4
+00:00:09.576 --> 00:00:11.478
+created by IBM research.
+
+5
+00:00:11.511 --> 00:00:16.016
+This framework dynamically calls agents when needed, creating a multi-agent system.
+
+6
+00:00:16.483 --> 00:00:19.419
+Each agent is built with different underlying technologies.
+
+7
+00:00:19.719 --> 00:00:22.088
+But since you've already wrapped them as A2A servers,
+
+8
+00:00:22.389 --> 00:00:24.791
+you can orchestrate them as part of the same team.
+
+9
+00:00:25.392 --> 00:00:27.594
+That way they communicate using the same protocol.
+
+10
+00:00:27.994 --> 00:00:29.963
+Kind of akin to speaking the same
+
+11
+00:00:29.963 --> 00:00:31.898
+language, even if they have different accents.
+
+12
+00:00:32.399 --> 00:00:34.501
+Let's go. The open source BeeAI framework
+
+13
+00:00:34.501 --> 00:00:37.370
+is a developer tool for building production-ready
+
+14
+00:00:37.370 --> 00:00:40.540
+AI agents with an emphasis on agent reliability.
+
+15
+00:00:41.041 --> 00:00:43.143
+BeeAI goes beyond simple prompting
+
+16
+00:00:43.343 --> 00:00:47.647
+by providing a lightweight yet powerful approach to reliable agent development.
+
+17
+00:00:47.947 --> 00:00:50.850
+With built-in constraint enforcement and rule-based governance
+
+18
+00:00:51.151 --> 00:00:55.155
+that preserves reasoning abilities while ensuring predictable behavior.
+
+19
+00:00:55.555 --> 00:00:58.258
+It's not enough to create an agent. It's important that you are
+
+20
+00:00:58.291 --> 00:01:00.060
+confident that the agent won't act outside
+
+21
+00:01:00.060 --> 00:01:02.095
+of the constraints that you set for it.
+
+22
+00:01:02.395 --> 00:01:04.297
+As we walk through the notebook, we'll
+
+23
+00:01:04.297 --> 00:01:06.499
+learn about the features of the BeeAI Framework,
+
+24
+00:01:06.800 --> 00:01:10.103
+like its ability to enforce rules that drive agent behavior,
+
+25
+00:01:10.403 --> 00:01:13.406
+Event Driven Middleware, pluggable observability,
+
+26
+00:01:13.706 --> 00:01:17.811
+built-in memory management, and MCP and A2A nativeness.
+
+27
+00:01:18.111 --> 00:01:21.247
+Let's get started. We'll start by importing your dependencies.
+
+28
+00:01:21.748 --> 00:01:25.718
+You'll see we're importing asyncio for handling asynchronous operations
+
+29
+00:01:25.718 --> 00:01:29.122
+in a notebook environment, the standard os module,
+
+30
+00:01:29.322 --> 00:01:31.524
+and some display utilities from IPython.
+
+31
+00:01:32.025 --> 00:01:35.829
+We're also importing a helper function called authenticate from our helpers module,
+
+32
+00:01:36.429 --> 00:01:38.631
+so we can use VertexAI as
+
+33
+00:01:38.631 --> 00:01:40.834
+our inference provider for the orchestrator agent.
+
+34
+00:01:41.234 --> 00:01:43.837
+Next, we need to ensure that all of our individual agents
+
+35
+00:01:43.837 --> 00:01:46.239
+that we created in the previous lessons
+
+36
+00:01:46.239 --> 00:01:48.241
+are running in their own terminal,
+
+37
+00:01:48.241 --> 00:01:50.543
+so that when we build the orchestrator agent,
+
+38
+00:01:50.543 --> 00:01:52.545
+they can be found and responsive.
+
+39
+00:01:52.779 --> 00:01:55.582
+Let's start the policy agent that you built in lesson four.
+
+40
+00:01:55.982 --> 00:01:58.885
+It's already running because it's been ran in a previous lesson.
+
+41
+00:01:59.285 --> 00:02:01.688
+Then we'll start the research agent from lesson six.
+
+42
+00:02:03.289 --> 00:02:05.692
+And finally, the provider agent from lesson eight.
+
+43
+00:02:07.393 --> 00:02:09.896
+All right, now let's get to the exciting part.
+
+44
+00:02:10.029 --> 00:02:12.632
+I'm going to create what's called a requirement agent
+
+45
+00:02:12.832 --> 00:02:16.636
+to dynamically orchestrate and call the other agents when needed.
+
+46
+00:02:17.036 --> 00:02:19.339
+It's called the requirement agent
+
+47
+00:02:19.339 --> 00:02:21.040
+because you can ensure that it
+
+48
+00:02:21.040 --> 00:02:23.009
+enforces certain rules by setting conditional requirements.
+
+49
+00:02:23.209 --> 00:02:25.311
+But you'll learn more about that in a few minutes.
+
+50
+00:02:25.612 --> 00:02:28.414
+For now, let's ensure that you have the imports installed
+
+51
+00:02:28.615 --> 00:02:30.617
+and helper function for observability.
+
+52
+00:02:30.850 --> 00:02:34.654
+I use the beeai_framework adapters to import the needed modules,
+
+53
+00:02:34.654 --> 00:02:36.389
+which make it simple to wrap
+
+54
+00:02:36.389 --> 00:02:38.458
+a BeeAI agent as an A2A server.
+
+55
+00:02:38.458 --> 00:02:41.027
+The VertexAIChatModel to use vertexai as the
+
+56
+00:02:41.027 --> 00:02:43.630
+inference provider for the main orchestrator agent.
+
+57
+00:02:44.130 --> 00:02:47.033
+BeeAI also has 15 plus built-in providers
+
+58
+00:02:47.033 --> 00:02:50.436
+and can be easily extended to add custom inference providers.
+
+59
+00:02:50.637 --> 00:02:54.641
+And finally, the remaining modules that add memory, ConditionalRequirement,
+
+60
+00:02:54.908 --> 00:02:59.412
+the HandoffTool and the ThinkTool, which we'll cover as we implement.
+
+61
+00:02:59.779 --> 00:03:03.082
+Now we load the environment variables and authenticate to Google Cloud,
+
+62
+00:03:03.283 --> 00:03:06.586
+since we're using Vertex as the LLM inference provider.
+
+63
+00:03:06.986 --> 00:03:10.290
+Then we set up the connection details and get the ports
+
+64
+00:03:10.290 --> 00:03:12.292
+for where each of the agents is running.
+
+65
+00:03:12.492 --> 00:03:14.994
+And I define a port for the new healthcare agent
+
+66
+00:03:14.994 --> 00:03:18.298
+that you'll be building in this lesson using the RequirementAgent.
+
+67
+00:03:18.731 --> 00:03:21.935
+Next, I use the abstraction in the BeeAI framework
+
+68
+00:03:21.935 --> 00:03:25.939
+to make an A2A agent instance of the running servers.
+
+69
+00:03:26.239 --> 00:03:29.842
+First, I create the A2A object pointing to that agent's URL.
+
+70
+00:03:30.243 --> 00:03:32.245
+This acts as the A2A client
+
+71
+00:03:32.245 --> 00:03:34.747
+that will take care of forwarding the request
+
+72
+00:03:34.747 --> 00:03:36.549
+to the server agent through A2A.
+
+73
+00:03:36.549 --> 00:03:38.751
+Then I give it UnconstrainedMemory
+
+74
+00:03:38.751 --> 00:03:41.654
+so it can manage conversation history. The BeeAI framework
+
+75
+00:03:41.754 --> 00:03:44.924
+also has other built-in memory optimization strategies,
+
+76
+00:03:44.924 --> 00:03:48.528
+like sliding window, which keeps only the most recent K entries,
+
+77
+00:03:48.528 --> 00:03:53.132
+token memory, which manages token usage to stay within model context limits,
+
+78
+00:03:53.132 --> 00:03:56.836
+and summarize memory, which maintains a single summarization of the conversation.
+
+79
+00:03:56.836 --> 00:04:01.641
+Determining your memory strategy makes a large impact on agent performance
+
+80
+00:04:01.641 --> 00:04:03.443
+and is something that you should
+
+81
+00:04:03.443 --> 00:04:05.545
+experiment with as you build agentic systems.
+
+82
+00:04:05.545 --> 00:04:08.715
+Finally, I call check_agent_exists method,
+
+83
+00:04:08.715 --> 00:04:12.518
+which reaches out to the agent server and fetches its AgentCard,
+
+84
+00:04:12.518 --> 00:04:15.221
+which is like the agent's metadata profile.
+
+85
+00:04:15.221 --> 00:04:18.925
+It includes the agent's name, description, and capabilities.
+
+86
+00:04:18.925 --> 00:04:20.994
+See how after I run it,
+
+87
+00:04:20.994 --> 00:04:23.029
+it confirms that the agent has been initialized?
+
+88
+00:04:23.029 --> 00:04:27.233
+The check_agent_exists method validated that each server is running
+
+89
+00:04:27.734 --> 00:04:29.936
+and retrieve their AgentCard information.
+
+90
+00:04:30.436 --> 00:04:33.106
+This AgentCard data will be crucial in the next session
+
+91
+00:04:33.406 --> 00:04:35.808
+when I set up an orchestrator. It tells
+
+92
+00:04:35.808 --> 00:04:38.511
+the requirement agent what each specialized agent can do.
+
+93
+00:04:39.012 --> 00:04:41.014
+Now let's do the same for the research_agent.
+
+94
+00:04:42.582 --> 00:04:44.584
+And finally, for the provider agent.
+
+95
+00:04:45.285 --> 00:04:46.986
+Now all these agents are ready
+
+96
+00:04:46.986 --> 00:04:48.988
+to be called by the Orchestrator agent.
+
+97
+00:04:49.489 --> 00:04:52.992
+It's time to create the brain of the operation, the Orchestrator agent,
+
+98
+00:04:53.593 --> 00:04:55.395
+which I'm calling the healthcare agent.
+
+99
+00:04:55.795 --> 00:04:57.563
+But before I dive into the code,
+
+100
+00:04:57.563 --> 00:04:59.599
+let's talk about what makes the agent special
+
+101
+00:04:59.799 --> 00:05:02.302
+and why it's important for production AI systems.
+
+102
+00:05:02.902 --> 00:05:06.205
+Traditional AI agents exhibit unpredictable behavior.
+
+103
+00:05:06.706 --> 00:05:09.409
+You might have an agent that works perfectly in testing,
+
+104
+00:05:09.509 --> 00:05:12.111
+but in production it starts skipping critical steps,
+
+105
+00:05:12.512 --> 00:05:15.915
+using wrong tools, or terminating before completing its task.
+
+106
+00:05:16.416 --> 00:05:18.518
+Different language models also produce
+
+107
+00:05:18.618 --> 00:05:21.321
+wildly different execution patterns for the same task.
+
+108
+00:05:21.621 --> 00:05:24.824
+What works with one model might completely fail with another.
+
+109
+00:05:25.058 --> 00:05:28.461
+This unpredictability is actually one of the biggest barriers
+
+110
+00:05:28.461 --> 00:05:31.264
+to deploying AI agents in real world applications
+
+111
+00:05:31.264 --> 00:05:33.666
+where reliability matters.
+
+112
+00:05:33.866 --> 00:05:37.570
+The Requirement Agent solves this through declarative rule-based constraints
+
+113
+00:05:37.570 --> 00:05:39.939
+called Conditional Requirements.
+
+114
+00:05:40.273 --> 00:05:42.442
+Instead of hoping your agent will do the right thing
+
+115
+00:05:42.742 --> 00:05:44.744
+and put directions in your system prompt,
+
+116
+00:05:45.044 --> 00:05:46.746
+which is not enforceable,
+
+117
+00:05:46.846 --> 00:05:48.748
+you can explicitly declare rules
+
+118
+00:05:48.848 --> 00:05:51.451
+about when and how tools should be used.
+
+119
+00:05:51.918 --> 00:05:54.887
+The framework then enforces these rules
+
+120
+00:05:54.887 --> 00:05:57.090
+regardless of which language model you're using underneath.
+
+121
+00:05:57.290 --> 00:06:01.394
+It works by checking the conditional rules before each LLM invocation.
+
+122
+00:06:01.694 --> 00:06:03.563
+Only the tools whose Conditional Requirements
+
+123
+00:06:03.563 --> 00:06:05.698
+are satisfied at that point of time
+
+124
+00:06:05.698 --> 00:06:08.701
+are exposed to the LLM as callable options.
+
+125
+00:06:09.102 --> 00:06:11.904
+For example, if an agent has 10 tools,
+
+126
+00:06:11.904 --> 00:06:14.407
+but in the third turn of the conversation,
+
+127
+00:06:14.407 --> 00:06:16.809
+only four of the 10 tools should be used
+
+128
+00:06:16.809 --> 00:06:18.478
+according to the logic that you set.
+
+129
+00:06:18.478 --> 00:06:20.446
+in the conditional requirements,
+
+130
+00:06:20.446 --> 00:06:22.348
+then only the four tools are exposed
+
+131
+00:06:22.348 --> 00:06:24.250
+to the LLM as options to call.
+
+132
+00:06:24.650 --> 00:06:28.254
+This enforces the rules at the framework level
+
+133
+00:06:28.254 --> 00:06:31.958
+rather than suggesting them in the system prompt, which is unenforceable.
+
+134
+00:06:32.258 --> 00:06:34.460
+Limits unnecessary context bloat,
+
+135
+00:06:34.460 --> 00:06:36.963
+which affects performance and production costs,
+
+136
+00:06:36.963 --> 00:06:40.466
+and reduces the necessary reasoning ability of the model
+
+137
+00:06:40.466 --> 00:06:42.668
+to choose the correct tool at the correct time.
+
+138
+00:06:42.668 --> 00:06:44.670
+Now let's configure the Requirement Agent.
+
+139
+00:06:45.037 --> 00:06:47.807
+First, we give it a name and a description.
+
+140
+00:06:48.207 --> 00:06:52.111
+Healthcare agent is our concierge that's customized to your policy.
+
+141
+00:06:52.512 --> 00:06:54.847
+This metadata will be important when we
+
+142
+00:06:54.847 --> 00:06:57.517
+expose this agent as an A2A server itself.
+
+143
+00:06:57.917 --> 00:06:59.519
+Next, the LLM.
+
+144
+00:06:59.919 --> 00:07:03.322
+We're using Vertex AI's gemini-2.5-flash model.
+
+145
+00:07:03.623 --> 00:07:06.025
+Notice we're enabling parallel tool calls.
+
+146
+00:07:06.025 --> 00:07:10.129
+This means the agent can call multiple specialized agents simultaneously if needed.
+
+147
+00:07:10.430 --> 00:07:14.100
+For example, if a user asks about both insurance coverage and
+
+148
+00:07:14.100 --> 00:07:18.137
+a nearby provider, it can query both agents at the same time.
+
+149
+00:07:18.438 --> 00:07:20.306
+Now let's look at the tools array.
+
+150
+00:07:20.606 --> 00:07:24.410
+We have four tools, the think tool. This is a reasoning tool.
+
+151
+00:07:24.510 --> 00:07:26.646
+I can change the conditional requirements on
+
+152
+00:07:26.646 --> 00:07:29.115
+the think tool to enable different reasoning patterns.
+
+153
+00:07:29.515 --> 00:07:31.617
+For instance, I can create a
+
+154
+00:07:31.617 --> 00:07:34.120
+react or reasoning and then acting pattern
+
+155
+00:07:34.420 --> 00:07:36.456
+by forcing the think tool to be
+
+156
+00:07:36.456 --> 00:07:38.524
+run in between every other tool call.
+
+157
+00:07:38.891 --> 00:07:42.895
+or a planning pattern by forcing the ThinkTool at just step one.
+
+158
+00:07:43.396 --> 00:07:45.198
+I also have three HandoffTools.
+
+159
+00:07:45.498 --> 00:07:47.266
+One for each specialized agent.
+
+160
+00:07:47.400 --> 00:07:50.269
+The HandoffTool is similar to a normal tool,
+
+161
+00:07:50.470 --> 00:07:53.372
+except it doesn't just execute the tool as an isolated function
+
+162
+00:07:53.372 --> 00:07:55.374
+and return the result to the main agent.
+
+163
+00:07:55.475 --> 00:07:57.944
+It also passes the state and context off to
+
+164
+00:07:57.944 --> 00:08:00.680
+the other agent the task is being handed off to.
+
+165
+00:08:00.980 --> 00:08:02.882
+The abstraction makes it easy to
+
+166
+00:08:02.882 --> 00:08:05.084
+call agents as tools without needing to
+
+167
+00:08:05.084 --> 00:08:07.086
+implement the handoff logic yourself.
+
+168
+00:08:07.286 --> 00:08:10.056
+Notice that we're using the agent_card.description
+
+169
+00:08:10.156 --> 00:08:12.859
+from each A2A agent as the tool description.
+
+170
+00:08:13.059 --> 00:08:16.863
+Remember how we fetched the agent cards earlier with check_agent_exists?
+
+171
+00:08:17.063 --> 00:08:20.266
+That's why. The descriptions tell the requirement agent
+
+172
+00:08:20.466 --> 00:08:22.869
+exactly what each specialized agent can do.
+
+173
+00:08:23.269 --> 00:08:26.272
+Next, we get to the differentiator for the BeeAI framework.
+
+174
+00:08:26.572 --> 00:08:28.274
+The ConditionalRequirement.
+
+175
+00:08:28.574 --> 00:08:31.077
+Because we want the LLM's reasoning ability to
+
+176
+00:08:31.244 --> 00:08:34.046
+dynamically select the correct agent
+
+177
+00:08:34.046 --> 00:08:36.249
+to hand off tasks to at the correct time.
+
+178
+00:08:36.249 --> 00:08:38.251
+We won't force a certain order
+
+179
+00:08:38.251 --> 00:08:40.253
+or necessarily even which agent should be called.
+
+180
+00:08:40.453 --> 00:08:42.255
+But we can put some rules around how
+
+181
+00:08:42.255 --> 00:08:44.056
+the agent should behave if they are called.
+
+182
+00:08:44.457 --> 00:08:47.059
+In this case, we're only setting one ConditionalRequirement,
+
+183
+00:08:47.059 --> 00:08:49.061
+but I'll speak about a couple others.
+
+184
+00:08:49.262 --> 00:08:51.764
+We want to force the agent to think at the first turn
+
+185
+00:08:51.764 --> 00:08:56.068
+to do some planning. And then after every additional tool call,
+
+186
+00:08:56.068 --> 00:09:00.840
+but not consecutively. This enforces a thinking and then a ReAct pattern.
+
+187
+00:09:01.340 --> 00:09:04.443
+We can also add additional conditional requirements
+
+188
+00:09:04.443 --> 00:09:07.446
+on our agents themselves that are being handed off to.
+
+189
+00:09:07.747 --> 00:09:11.751
+In this case it's commented out, but you can add conditional requirements
+
+190
+00:09:11.751 --> 00:09:15.454
+on each of the agent tools that say max consecutive allowed,
+
+191
+00:09:15.755 --> 00:09:18.658
+minimum consecutive allowed, or even
+
+192
+00:09:18.658 --> 00:09:22.261
+which agent should be called at which step of the agent process.
+
+193
+00:09:22.929 --> 00:09:25.031
+many built-in parameters to choose from
+
+194
+00:09:25.031 --> 00:09:27.033
+when setting your ConditionalRequirement logic,
+
+195
+00:09:27.333 --> 00:09:30.236
+such as minimum or maximum invocations of a tool allowed,
+
+196
+00:09:30.536 --> 00:09:34.440
+forcing certain tools only before or after other tools have been called,
+
+197
+00:09:34.740 --> 00:09:36.742
+or even your own custom conditions.
+
+198
+00:09:36.842 --> 00:09:38.911
+You can see the entire parameter reference
+
+199
+00:09:38.911 --> 00:09:40.613
+and how to build custom ones in
+
+200
+00:09:40.613 --> 00:09:42.515
+the resources at the bottom of the notebook.
+
+201
+00:09:42.815 --> 00:09:44.784
+Now we can set our agent's role.
+
+202
+00:09:44.784 --> 00:09:46.886
+which is a Healthcare Concierge
+
+203
+00:09:46.986 --> 00:09:49.088
+and the instructions that it should follow.
+
+204
+00:09:49.388 --> 00:09:51.057
+Note that we don't need to repeat
+
+205
+00:09:51.057 --> 00:09:52.992
+the rules that we put in the ConditionalRequirement
+
+206
+00:09:53.092 --> 00:09:54.794
+in natural language in the system prompt
+
+207
+00:09:55.061 --> 00:09:58.664
+because the conditional requirements give us an enforceable way
+
+208
+00:09:58.664 --> 00:10:00.866
+to ensure that the agent follows directions,
+
+209
+00:10:00.866 --> 00:10:03.169
+rather than a suggestion in the system prompt.
+
+210
+00:10:03.636 --> 00:10:06.839
+Instead, we can keep our system prompt more concise and clean
+
+211
+00:10:06.839 --> 00:10:10.142
+without overburdening the LLM's reasoning abilities.
+
+212
+00:10:10.676 --> 00:10:13.179
+Okay, now it's time to run the full workflow.
+
+213
+00:10:13.179 --> 00:10:15.681
+In the response variable, let's wait
+
+214
+00:10:15.681 --> 00:10:18.184
+until the agent runs and ask it,
+
+215
+00:10:18.184 --> 00:10:20.486
+I'm based in Austin, Texas.
+
+216
+00:10:20.486 --> 00:10:22.688
+How do I get the mental health therapy near me
+
+217
+00:10:22.688 --> 00:10:24.690
+and what does my insurance cover?
+
+218
+00:10:24.924 --> 00:10:28.127
+Now because we want to see what's happening under the hood,
+
+219
+00:10:28.427 --> 00:10:30.730
+we can use the BeeAI framework's middleware
+
+220
+00:10:30.896 --> 00:10:33.799
+to view the agent trace as a form of observability.
+
+221
+00:10:34.100 --> 00:10:35.968
+The middleware can also be used as a
+
+222
+00:10:35.968 --> 00:10:37.803
+way to hook into the agent emitted events,
+
+223
+00:10:38.004 --> 00:10:42.008
+and inject things like content safety filters or prompt injection detection.
+
+224
+00:10:42.308 --> 00:10:44.010
+You can check out more examples on
+
+225
+00:10:44.010 --> 00:10:45.711
+how to use middleware in the documentation.
+
+226
+00:10:45.911 --> 00:10:49.482
+So finally, let's display the agent's last response,
+
+227
+00:10:49.582 --> 00:10:51.283
+which is its final answer.
+
+228
+00:10:51.484 --> 00:10:53.486
+We can see that the agent has started to work
+
+229
+00:10:53.586 --> 00:10:56.389
+and it's going through each of those ConditionalRequirement
+
+230
+00:10:56.489 --> 00:10:58.791
+to check for what tools it's allowed to call.
+
+231
+00:10:58.891 --> 00:11:00.993
+Then it calls the VertexAIChatModel.
+
+232
+00:11:01.293 --> 00:11:03.195
+It's decided to call a ThinkTool
+
+233
+00:11:03.295 --> 00:11:04.997
+because we've forced that tool at step one.
+
+234
+00:11:05.097 --> 00:11:07.600
+And it will go through the process over and over again
+
+235
+00:11:07.700 --> 00:11:09.602
+until it has a final answer.
+
+236
+00:11:10.803 --> 00:11:12.805
+It's produced its final answer.
+
+237
+00:11:12.805 --> 00:11:14.473
+So we can see that it gave
+
+238
+00:11:14.473 --> 00:11:16.375
+us a summary of mental health therapy options
+
+239
+00:11:16.375 --> 00:11:19.245
+near you and the insurance coverage.
+
+240
+00:11:19.478 --> 00:11:21.347
+So it pulled from the provider agent,
+
+241
+00:11:21.547 --> 00:11:24.383
+which provider that we can see within our insurance plan.
+
+242
+00:11:24.884 --> 00:11:27.186
+And then from the insurance policy agent,
+
+243
+00:11:27.186 --> 00:11:30.656
+some information about outpatient services, inpatient services,
+
+244
+00:11:30.656 --> 00:11:33.359
+and important notes on our individual policy.
+
+245
+00:11:33.359 --> 00:11:35.861
+Notice how it didn't call information from the research agent.
+
+246
+00:11:36.896 --> 00:11:39.165
+That's because we didn't explicitly say that
+
+247
+00:11:39.165 --> 00:11:41.400
+the research agent needed to be called
+
+248
+00:11:41.400 --> 00:11:43.102
+and the orchestrator didn't deem that it
+
+249
+00:11:43.102 --> 00:11:44.804
+needed to be called for this circumstance.
+
+250
+00:11:45.204 --> 00:11:47.907
+If we wanted to enforce the research agent also be called,
+
+251
+00:11:47.907 --> 00:11:51.711
+we could add a conditional requirement that had a minimum invocation
+
+252
+00:11:51.711 --> 00:11:53.713
+or a maximum invocation for how many
+
+253
+00:11:53.713 --> 00:11:55.715
+times the research agent could be called.
+
+254
+00:11:55.915 --> 00:11:58.184
+In order to be able to run the healthcare
+
+255
+00:11:58.184 --> 00:12:00.486
+agent as an A2A agent on its own server,
+
+256
+00:12:00.686 --> 00:12:02.988
+we need to write the code to a Python file.
+
+257
+00:12:02.988 --> 00:12:04.523
+This code helps us do that.
+
+258
+00:12:04.557 --> 00:12:07.560
+It's the same logic that we just created above,
+
+259
+00:12:07.560 --> 00:12:10.529
+but formatted as classes and functions.
+
+260
+00:12:10.529 --> 00:12:13.532
+Rather than being ran in a Jupyter notebook cell.
+
+261
+00:12:25.010 --> 00:12:26.779
+Now that we have the healthcare agent
+
+262
+00:12:26.779 --> 00:12:28.547
+code written out to its own file,
+
+263
+00:12:28.814 --> 00:12:30.449
+the only change we need to make
+
+264
+00:12:30.449 --> 00:12:32.351
+to run the agent as an A2A agent
+
+265
+00:12:32.451 --> 00:12:36.122
+is to add a single A2A server registration statement.
+
+266
+00:12:36.455 --> 00:12:38.524
+The BeeAI framework makes it easy
+
+267
+00:12:38.724 --> 00:12:41.127
+to turn any agent into an A2A agent
+
+268
+00:12:41.427 --> 00:12:44.130
+by providing its A2A server abstraction.
+
+269
+00:12:44.430 --> 00:12:48.934
+We set our config by assigning the port, protocol, and host.
+
+270
+00:12:49.135 --> 00:12:51.570
+We add memory, which is the session
+
+271
+00:12:51.570 --> 00:12:54.340
+memory, rather than the individual agent context memory.
+
+272
+00:12:54.540 --> 00:12:56.642
+and then we register the agent and serve it.
+
+273
+00:12:57.243 --> 00:13:00.646
+We're appending this to the same a2a_healthcare_agent.py file.
+
+274
+00:13:00.946 --> 00:13:02.782
+But I wanted to separate it out for
+
+275
+00:13:02.782 --> 00:13:04.617
+you to see just how simple the actual
+
+276
+00:13:04.683 --> 00:13:07.153
+process of creating the A2A server is.
+
+277
+00:13:07.853 --> 00:13:10.256
+Now let's start the BeeAI healthcare agent as
+
+278
+00:13:10.256 --> 00:13:12.658
+its own A2A server in a new terminal.
+
+279
+00:13:13.159 --> 00:13:17.163
+This demonstrates that the A2A agent that calls other A2A agents
+
+280
+00:13:17.463 --> 00:13:20.166
+can itself be exposed as an A2A agent.
+
+281
+00:13:20.666 --> 00:13:23.469
+Let's type uv run
+
+282
+00:13:23.836 --> 00:13:28.836
+a2a_healthcare_agent.py
+
+283
+00:13:30.242 --> 00:13:31.844
+to start the server.
+
+284
+00:13:32.144 --> 00:13:34.547
+Now we can see that the server has started
+
+285
+00:13:34.647 --> 00:13:36.782
+and all of the other agents that are
+
+286
+00:13:36.782 --> 00:13:38.918
+being used as handoff tools have been initialized.
+
+287
+00:13:39.318 --> 00:13:42.321
+Now let's create the client that calls the healthcare agent
+
+288
+00:13:42.421 --> 00:13:46.525
+running on the A2A server. We use our A2AAgent wrapper
+
+289
+00:13:46.625 --> 00:13:49.128
+and point it to the URL that the agent is running on.
+
+290
+00:13:49.728 --> 00:13:52.031
+Then we add memory for the agent itself.
+
+291
+00:13:52.331 --> 00:13:55.534
+We capture the agent run response in the responses variable,
+
+292
+00:13:55.835 --> 00:13:58.537
+and just like we did before, we ask the same question
+
+293
+00:13:58.838 --> 00:14:02.041
+and display the trajectory using middleware for observability
+
+294
+00:14:04.610 --> 00:14:08.113
+and voila. The A2A agent client is invoking
+
+295
+00:14:08.113 --> 00:14:11.217
+an A2A agent in a server that calls other A2A agents
+
+296
+00:14:11.217 --> 00:14:15.054
+on separate servers. And there we have it.
+
+297
+00:14:15.354 --> 00:14:17.523
+In this lesson, we used the
+
+298
+00:14:17.523 --> 00:14:20.059
+open source BeeAI framework by IBM Research
+
+299
+00:14:20.059 --> 00:14:22.361
+to create an A2A agent
+
+300
+00:14:22.361 --> 00:14:27.333
+that dynamically calls other A2A agents written using different frameworks.
+
+301
+00:14:27.633 --> 00:14:31.737
+And then we made the main A2A agent an A2A server itself.
+
+302
+00:14:32.037 --> 00:14:34.740
+We hope that you saw the power of conditional requirements
+
+303
+00:14:34.740 --> 00:14:39.044
+that make it easy to set rule-based constraints on agent behavior
+
+304
+00:14:39.345 --> 00:14:43.315
+and ensure that your agent acts within their allowed scope every time.

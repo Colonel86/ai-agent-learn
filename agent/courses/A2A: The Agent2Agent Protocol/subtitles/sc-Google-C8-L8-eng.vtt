@@ -1,0 +1,534 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.202
+We mentioned earlier in the course
+
+2
+00:00:02.202 --> 00:00:04.471
+how A2A and MCP are complementary protocols.
+
+3
+00:00:04.471 --> 00:00:07.173
+So let's actually build an agent that uses both.
+
+4
+00:00:07.173 --> 00:00:09.476
+For this example, you'll create
+
+5
+00:00:09.476 --> 00:00:11.778
+a healthcare provider recommendation agent
+
+6
+00:00:11.778 --> 00:00:16.049
+using LangGraph and OpenAI GPT OSS on Vertex AI.
+
+7
+00:00:16.049 --> 00:00:18.151
+You'll build an MCP server
+
+8
+00:00:18.151 --> 00:00:21.755
+that provides a list of fictional doctors with their locations and specialties.
+
+9
+00:00:22.055 --> 00:00:23.656
+Then you'll connect it to the agent,
+
+10
+00:00:23.656 --> 00:00:27.527
+which you'll finally expose as an A2A server. Let's go.
+
+11
+00:00:27.894 --> 00:00:32.894
+Now, you're going to create an A2A agent which also uses MCP.
+
+12
+00:00:33.400 --> 00:00:35.502
+And this agent is being
+
+13
+00:00:35.502 --> 00:00:37.904
+built using the popular AI agent framework LangGraph.
+
+14
+00:00:38.405 --> 00:00:40.707
+So first, we need to create an MCP server.
+
+15
+00:00:40.907 --> 00:00:44.677
+We're going to be creating this MCP server using the FastMCP library.
+
+16
+00:00:44.878 --> 00:00:47.881
+So I'll again use the writefile Jupyter magic
+
+17
+00:00:47.881 --> 00:00:51.384
+to define this as a separate file called mcpserver.py
+
+18
+00:00:51.384 --> 00:00:55.355
+Once again, we'll import some libraries including FastMCP.
+
+19
+00:00:55.655 --> 00:00:58.558
+Then I'll create the FastMCP server,
+
+20
+00:00:58.558 --> 00:01:00.260
+which I'll call doctorserver.
+
+21
+00:01:00.560 --> 00:01:04.064
+This agent is going to be searching for healthcare providers
+
+22
+00:01:04.064 --> 00:01:05.765
+using a specific MCP tool.
+
+23
+00:01:06.066 --> 00:01:08.168
+I'll load in a JSON file that
+
+24
+00:01:08.168 --> 00:01:10.236
+I have stored in the data directory.
+
+25
+00:01:10.437 --> 00:01:13.039
+And I'll load it in as a list called doctors.
+
+26
+00:01:13.239 --> 00:01:15.842
+Then I'll use the MCP tool
+
+27
+00:01:15.909 --> 00:01:18.044
+decorator to make this next method we're
+
+28
+00:01:18.044 --> 00:01:20.146
+going to create into an MCP tool.
+
+29
+00:01:20.346 --> 00:01:22.449
+This method is called list_doctors.
+
+30
+00:01:22.649 --> 00:01:24.350
+So I'll have it take in
+
+31
+00:01:24.350 --> 00:01:26.352
+a US state name and a city.
+
+32
+00:01:26.753 --> 00:01:28.955
+And it'll return a list of dictionaries.
+
+33
+00:01:29.556 --> 00:01:32.058
+And remember to put in a detailed docstring,
+
+34
+00:01:32.459 --> 00:01:34.761
+because this will be used by the LLM
+
+35
+00:01:34.761 --> 00:01:37.163
+to decide which functions to call and when.
+
+36
+00:01:40.066 --> 00:01:42.402
+This method will first do some input validation
+
+37
+00:01:42.402 --> 00:01:45.105
+to make sure at least a city or a state is provided.
+
+38
+00:01:45.572 --> 00:01:49.175
+We'll normalize the city and state to do case-insensitive matching.
+
+39
+00:01:49.776 --> 00:01:52.879
+So now, we'll filter down the list by state and city.
+
+40
+00:01:53.179 --> 00:01:55.181
+using a list comprehension.
+
+41
+00:01:55.181 --> 00:01:58.685
+FastMCP will automatically convert this list of dictionaries
+
+42
+00:01:58.685 --> 00:02:00.687
+into JSON when sending to the model.
+
+43
+00:02:00.687 --> 00:02:02.989
+Now, I'll kick off the server with dunder main
+
+44
+00:02:02.989 --> 00:02:05.391
+and run the MCP server over standard IO.
+
+45
+00:02:05.391 --> 00:02:07.994
+This means the server will be running locally.
+
+46
+00:02:08.361 --> 00:02:10.763
+Now that you have the MCP server set up,
+
+47
+00:02:11.164 --> 00:02:14.968
+you'll now build the health provider agent using LangChain and LangGraph.
+
+48
+00:02:15.568 --> 00:02:19.472
+First, I'll import all the libraries, including LangChain.
+
+49
+00:02:20.073 --> 00:02:21.875
+I'll authenticate to Google Cloud.
+
+50
+00:02:22.675 --> 00:02:26.279
+In order to use the LangChain OpenAI connector with Vertex AI,
+
+51
+00:02:26.479 --> 00:02:28.481
+you'll need to override the default URL.
+
+52
+00:02:28.681 --> 00:02:33.681
+So I'll use this custom URL with the Vertex AI OpenAI endpoint.
+
+53
+00:02:34.487 --> 00:02:36.656
+I'll use nest_asyncio to enable async
+
+54
+00:02:36.656 --> 00:02:39.192
+code to run in a Jupyter environment.
+
+55
+00:02:39.492 --> 00:02:43.496
+Now I'll define the MultiServerMCPClient for LangGraph.
+
+56
+00:02:43.997 --> 00:02:46.900
+I'll call it find_healthcare_providers, and run
+
+57
+00:02:46.900 --> 00:02:50.103
+the MCP server over standard IO,
+
+58
+00:02:50.103 --> 00:02:52.705
+using uv run mcpserver.py.
+
+59
+00:02:53.106 --> 00:02:55.708
+Just to clarify in this case, the MCP server
+
+60
+00:02:55.708 --> 00:02:58.711
+is running as a subprocess of the Python script,
+
+61
+00:02:58.711 --> 00:03:00.880
+not as a separate HTTP server.
+
+62
+00:03:01.114 --> 00:03:05.518
+Then, I'll convert the MCP client into a LangGraph tool.
+
+63
+00:03:06.119 --> 00:03:10.390
+Now, I'll create the agent using the LangChain create_agent method.
+
+64
+00:03:10.690 --> 00:03:13.293
+I'll use the ChatOpenAI class for the model.
+
+65
+00:03:13.593 --> 00:03:16.029
+The name will be OpenAI GPT
+
+66
+00:03:16.029 --> 00:03:18.898
+OSS 20 billion model as a service.
+
+67
+00:03:19.098 --> 00:03:22.368
+I'll add the Google Cloud credentials as the API key.
+
+68
+00:03:22.769 --> 00:03:25.972
+and I'll use the Vertex AI URL as the base_url.
+
+69
+00:03:26.573 --> 00:03:29.475
+I'll add in the tools, give this agent a name,
+
+70
+00:03:30.176 --> 00:03:32.679
+and add in the system_prompt, which will task the agent
+
+71
+00:03:32.779 --> 00:03:35.481
+with using the MCP tool to find healthcare providers
+
+72
+00:03:35.582 --> 00:03:37.951
+based on the user's query. Now, in my
+
+73
+00:03:38.151 --> 00:03:41.154
+experimentation, this model likes to try and include real doctors
+
+74
+00:03:41.187 --> 00:03:42.522
+instead of the fake ones in the
+
+75
+00:03:42.522 --> 00:03:43.856
+tool. So I need to prompt it
+
+76
+00:03:43.890 --> 00:03:46.659
+to just return providers from the tool.
+
+77
+00:03:46.759 --> 00:03:48.861
+Now, I'll test this agent with a user prompt.
+
+78
+00:03:48.962 --> 00:03:51.664
+In this case, I'll ask this agent for any psychiatrists
+
+79
+00:03:51.965 --> 00:03:55.835
+in Austin, Texas. I'll print out the last message as markdown.
+
+80
+00:03:57.437 --> 00:04:01.441
+And it looks like Dr. Coffey is available in Austin for psychiatry.
+
+81
+00:04:02.141 --> 00:04:03.843
+So, the LangGraph agent works.
+
+82
+00:04:04.344 --> 00:04:06.145
+Now, let's make it A2A compliant.
+
+83
+00:04:06.546 --> 00:04:09.649
+LangGraph serving, LangSmith, has a built-in A2A integration,
+
+84
+00:04:10.149 --> 00:04:12.151
+but it works very differently than the
+
+85
+00:04:12.151 --> 00:04:14.454
+other integrations in this lesson. So for consistency,
+
+86
+00:04:14.621 --> 00:04:16.522
+I'll follow a similar process to the
+
+87
+00:04:16.522 --> 00:04:18.424
+first agent created using the A2A SDK.
+
+88
+00:04:18.625 --> 00:04:20.627
+This is also what you would do for any agent framework
+
+89
+00:04:20.827 --> 00:04:22.829
+which doesn't yet have an A2A integration.
+
+90
+00:04:23.429 --> 00:04:25.531
+We're going to again use the writefile
+
+91
+00:04:25.531 --> 00:04:27.900
+Jupyter magic to add this to agents.py.
+
+92
+00:04:27.900 --> 00:04:30.803
+In this case, we'll be appending it to the end
+
+93
+00:04:30.803 --> 00:04:35.803
+because we already have the Claude agent from earlier in agents.py
+
+94
+00:04:36.209 --> 00:04:38.077
+First, we'll import some libraries,
+
+95
+00:04:38.678 --> 00:04:41.381
+including everything from LangChain and our helpers.
+
+96
+00:04:41.781 --> 00:04:44.684
+And I'll create a container class for the LangGraph agent
+
+97
+00:04:44.684 --> 00:04:48.488
+called ProviderAgent to make it easier to abstract away the details.
+
+98
+00:04:48.688 --> 00:04:51.891
+We have an init method to initialize the agent
+
+99
+00:04:51.891 --> 00:04:53.693
+and set all the important fields.
+
+100
+00:04:53.926 --> 00:04:56.429
+Then we also have an initialize method.
+
+101
+00:04:56.729 --> 00:04:59.732
+Because the MCP client connection is asynchronous,
+
+102
+00:05:00.033 --> 00:05:02.435
+you need to use a helper initialize method
+
+103
+00:05:02.535 --> 00:05:05.138
+to avoid race conditions when initializing.
+
+104
+00:05:05.471 --> 00:05:07.473
+This is where we actually create the agent.
+
+105
+00:05:07.674 --> 00:05:09.842
+Then we'll put all of the
+
+106
+00:05:09.842 --> 00:05:12.378
+agent communication logic within the answer_query method.
+
+107
+00:05:12.679 --> 00:05:15.181
+It'll take in the prompt and it'll
+
+108
+00:05:15.181 --> 00:05:17.684
+send out a response as a string.
+
+109
+00:05:20.586 --> 00:05:22.255
+Now, I'll test this class we just created
+
+110
+00:05:22.255 --> 00:05:24.157
+to make sure it works as we expect.
+
+111
+00:05:24.557 --> 00:05:27.160
+Okay? And it's working just like we expect.
+
+112
+00:05:27.860 --> 00:05:31.864
+Now, I'll wrap up this provider agent in an A2A agent executor.
+
+113
+00:05:32.165 --> 00:05:36.169
+We'll save it as a file called a2a_provider_agent.py
+
+114
+00:05:36.569 --> 00:05:39.872
+We'll load in the libraries, create our executor class.
+
+115
+00:05:40.373 --> 00:05:44.377
+In this case, I'll do a lazy initialization of the agent.
+
+116
+00:05:45.378 --> 00:05:49.449
+In the execute method, I'll make sure that the agent is initialized,
+
+117
+00:05:49.849 --> 00:05:51.851
+and then I'll get the user input just like before,
+
+118
+00:05:51.951 --> 00:05:54.153
+pass the prompt into the answer_query method.
+
+119
+00:05:54.554 --> 00:05:57.857
+Then I'll enqueue the agent message to the event_queue.
+
+120
+00:05:58.257 --> 00:06:01.160
+And I'll pass on the cancel method just like before.
+
+121
+00:06:01.461 --> 00:06:03.563
+Now, let's look at the main method.
+
+122
+00:06:03.863 --> 00:06:07.266
+I'll load in environment variables, define the HOST and PORT,
+
+123
+00:06:07.767 --> 00:06:11.671
+create the AgentSkill, which will basically just be describing the MCP tool.
+
+124
+00:06:11.971 --> 00:06:14.941
+Then load up the AgentCard with all the details.
+
+125
+00:06:15.308 --> 00:06:17.343
+I'll create a request handler
+
+126
+00:06:17.844 --> 00:06:21.814
+and an A2A Starlette server and run it with uvicorn,
+
+127
+00:06:22.115 --> 00:06:25.318
+and we'll have dunder main to actually run all of this code.
+
+128
+00:06:25.651 --> 00:06:28.154
+Now, I'll run it in terminal 3.
+
+129
+00:06:33.292 --> 00:06:35.094
+It looks like it's up and running.
+
+130
+00:06:35.495 --> 00:06:38.097
+Now, in the next lesson, we'll connect to this agent
+
+131
+00:06:38.097 --> 00:06:40.099
+with another example of an A2A client
+
+132
+00:06:40.099 --> 00:06:41.801
+using Microsoft agent framework.
+
+133
+00:06:42.101 --> 00:06:45.104
+Then after that, we'll combine this agent

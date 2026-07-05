@@ -1,0 +1,242 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.602
+We now have two A2A servers,
+
+2
+00:00:02.702 --> 00:00:05.572
+an insurance policy agent and a health research agent.
+
+3
+00:00:05.872 --> 00:00:07.974
+Let's have them work on a task together.
+
+4
+00:00:08.174 --> 00:00:10.377
+You'll use a sequential agent from ADK,
+
+5
+00:00:10.477 --> 00:00:12.879
+which will handle the A2A communications
+
+6
+00:00:12.979 --> 00:00:14.881
+and call the two agents in sequence,
+
+7
+00:00:14.981 --> 00:00:17.784
+feeding the results from one agent into the next using
+
+8
+00:00:17.817 --> 00:00:20.020
+A2A clients. Let's dive in.
+
+9
+00:00:20.020 --> 00:00:23.823
+Now we're going to create a sequential workflow chain agent with ADK
+
+10
+00:00:23.823 --> 00:00:26.626
+using the previous agents we've already created.
+
+11
+00:00:26.626 --> 00:00:28.194
+First, I'll make sure that both
+
+12
+00:00:28.194 --> 00:00:30.030
+of the previous agents are still running.
+
+13
+00:00:30.030 --> 00:00:32.632
+You can see in terminal one,
+
+14
+00:00:32.632 --> 00:00:35.335
+I have the insurance policy agent still running.
+
+15
+00:00:36.536 --> 00:00:38.772
+Now, let's open terminal 2.
+
+16
+00:00:39.272 --> 00:00:40.673
+And I can see that the
+
+17
+00:00:40.673 --> 00:00:42.308
+health research agent is also still running.
+
+18
+00:00:42.609 --> 00:00:44.911
+If not, be sure to run the uv run
+
+19
+00:00:44.911 --> 00:00:47.247
+command again as you did in the previous lessons.
+
+20
+00:00:47.480 --> 00:00:49.749
+You can find the instructions in your notebook.
+
+21
+00:00:50.250 --> 00:00:52.252
+Then, I'll import the libraries,
+
+22
+00:00:52.452 --> 00:00:56.256
+including the RemoteA2Aagent class from ADK.
+
+23
+00:00:56.556 --> 00:00:58.558
+and the SequentialAgent class.
+
+24
+00:00:58.825 --> 00:01:00.827
+and InMemoryRunner.
+
+25
+00:01:00.827 --> 00:01:03.296
+And I'll disable warnings as before.
+
+26
+00:01:03.296 --> 00:01:05.598
+Then I'll load in the environment variables.
+
+27
+00:01:05.598 --> 00:01:08.802
+Note, this time, I need to pull in the host
+
+28
+00:01:08.802 --> 00:01:12.605
+and the ports for both the policy agent and research agent.
+
+29
+00:01:12.605 --> 00:01:14.808
+Now, to connect to the A2A agents,
+
+30
+00:01:14.808 --> 00:01:18.611
+you just need to instantiate the class RemoteA2Aagent,
+
+31
+00:01:18.611 --> 00:01:20.313
+give the agent a name,
+
+32
+00:01:20.447 --> 00:01:22.015
+and pass in the URL for
+
+33
+00:01:22.015 --> 00:01:23.850
+where the agent card will be hosted.
+
+34
+00:01:24.350 --> 00:01:26.853
+I'll do this for both the policy_agent
+
+35
+00:01:27.253 --> 00:01:29.956
+and the health_research_agent.
+
+36
+00:01:30.557 --> 00:01:32.659
+This RemoteA2Aagent class
+
+37
+00:01:32.759 --> 00:01:34.727
+acts as your A2A client.
+
+38
+00:01:34.928 --> 00:01:37.230
+and it handles all of the boilerplate code
+
+39
+00:01:37.230 --> 00:01:38.932
+for interacting with an A2A agent,
+
+40
+00:01:39.432 --> 00:01:41.034
+like the HTTP connections,
+
+41
+00:01:41.134 --> 00:01:42.735
+tasks, and messages.
+
+42
+00:01:43.136 --> 00:01:46.206
+Next, I'll create an ADK SequentialAgent,
+
+43
+00:01:46.406 --> 00:01:48.708
+which will have the health_research_agent,
+
+44
+00:01:48.808 --> 00:01:51.411
+and policy_agent as sub_agents.
+
+45
+00:01:52.011 --> 00:01:54.614
+Note, because this is a SequentialAgent,
+
+46
+00:01:54.781 --> 00:01:58.384
+the order of these agents listed under sub_agents does matter.
+
+47
+00:01:58.685 --> 00:02:00.887
+It determines which agent is called first.
+
+48
+00:02:01.387 --> 00:02:03.990
+This is different if you're using an LLMAgent,
+
+49
+00:02:03.990 --> 00:02:06.693
+which has the model decide which agent to call when.
+
+50
+00:02:07.193 --> 00:02:10.697
+Now, I can send a single request to the sequential agent
+
+51
+00:02:10.697 --> 00:02:13.700
+and it should give me a response from both agents.
+
+52
+00:02:13.700 --> 00:02:17.070
+I'll create an InMemoryRunner to store the agent state.
+
+53
+00:02:17.470 --> 00:02:19.439
+and then run it with the prompt.
+
+54
+00:02:20.140 --> 00:02:22.442
+and print out the final response.
+
+55
+00:02:22.742 --> 00:02:26.946
+And here we can see responses from the health research agent,
+
+56
+00:02:29.649 --> 00:02:33.653
+and our policy agent, tailored to our specific insurance policy.
+
+57
+00:02:34.154 --> 00:02:36.689
+And there you go. You've successfully
+
+58
+00:02:36.689 --> 00:02:39.659
+built a chained multi-agent system using A2A.
+
+59
+00:02:40.059 --> 00:02:42.462
+Next up, we'll build yet another agent
+
+60
+00:02:43.062 --> 00:02:45.165
+using A2A and MCP.

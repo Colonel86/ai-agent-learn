@@ -1,0 +1,502 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.770
+Now that you have a good understanding of the A2A values,
+
+2
+00:00:04.170 --> 00:00:06.172
+let's explore its place in the tech stack,
+
+3
+00:00:06.473 --> 00:00:10.777
+the overall architecture and the life cycle of an A2A agent.
+
+4
+00:00:10.777 --> 00:00:13.279
+All right, let's go.
+
+5
+00:00:13.279 --> 00:00:17.250
+It will abstract the complexity of agent workflows into a common language
+
+6
+00:00:17.250 --> 00:00:21.254
+with standardized data structure and methods for external communication.
+
+7
+00:00:21.354 --> 00:00:25.558
+It utilize standard web technologies like HTTP, JSON-RPC,
+
+8
+00:00:25.558 --> 00:00:28.261
+gRPC, and server-sent events
+
+9
+00:00:28.261 --> 00:00:30.563
+to communicate between independent system.
+
+10
+00:00:30.563 --> 00:00:33.767
+This way, once you have an agent built with any framework,
+
+11
+00:00:33.767 --> 00:00:36.970
+you can wrap it up as an A2A agent
+
+12
+00:00:36.970 --> 00:00:40.540
+to enable collaboration with any other A2A agent. We will walk
+
+13
+00:00:40.540 --> 00:00:44.044
+through how we would build a simple system
+
+14
+00:00:44.044 --> 00:00:46.346
+where agent A needs agent B to do something.
+
+15
+00:00:46.546 --> 00:00:49.349
+As we go, we will discuss the core building blocks
+
+16
+00:00:49.449 --> 00:00:51.451
+of A2A and how they work.
+
+17
+00:00:51.551 --> 00:00:54.921
+You can refer to the official specification docs to learn more details.
+
+18
+00:00:55.321 --> 00:00:57.524
+In this case, agent A is the client agent,
+
+19
+00:00:57.824 --> 00:01:00.126
+and agent B is the remote agent.
+
+20
+00:01:00.226 --> 00:01:01.961
+The client agent is the agent
+
+21
+00:01:01.961 --> 00:01:03.930
+making a request to the remote agent.
+
+22
+00:01:04.230 --> 00:01:08.034
+Usually, the client will be the agent interacting with the end user.
+
+23
+00:01:08.368 --> 00:01:11.571
+So first, how does agent A discover agent B
+
+24
+00:01:11.571 --> 00:01:13.873
+and know what it can do?
+
+25
+00:01:14.374 --> 00:01:16.876
+Each A2A agent must publish an agent card,
+
+26
+00:01:16.876 --> 00:01:19.879
+which is a JSON file, typically hosted
+
+27
+00:01:19.879 --> 00:01:22.382
+at the well-known URL on the agent server.
+
+28
+00:01:22.582 --> 00:01:24.884
+.well-known/agent-card.json
+
+29
+00:01:25.185 --> 00:01:27.887
+For this course, we will assume that we know
+
+30
+00:01:27.887 --> 00:01:29.589
+what URL the agents are hosted at.
+
+31
+00:01:29.589 --> 00:01:31.891
+But you can refer to the additional materials
+
+32
+00:01:31.891 --> 00:01:33.560
+to learn more about agent discovery
+
+33
+00:01:33.560 --> 00:01:34.828
+and registries.
+
+34
+00:01:38.064 --> 00:01:41.701
+The agent cards serve as the digital business card of the agent,
+
+35
+00:01:41.701 --> 00:01:45.405
+comparable to robots.txt for the web crawler
+
+36
+00:01:45.405 --> 00:01:49.409
+or a swagger open API definition for REST APIs.
+
+37
+00:01:49.409 --> 00:01:52.712
+But specifically tailored for agentic capabilities.
+
+38
+00:01:52.712 --> 00:01:55.515
+Agent B's card tells Agent A everything it needs to know
+
+39
+00:01:55.515 --> 00:01:57.717
+to start a conversation,
+
+40
+00:01:57.717 --> 00:02:00.687
+which includes Agent B's name, what it can
+
+41
+00:02:00.687 --> 00:02:03.389
+do, which version of the protocol it's using,
+
+42
+00:02:03.490 --> 00:02:05.692
+the URI and protocol bindings,
+
+43
+00:02:05.792 --> 00:02:09.496
+what media types it supports, any special capabilities like streaming,
+
+44
+00:02:09.596 --> 00:02:13.600
+pushing notification and custom extensions, as well as how to authenticate.
+
+45
+00:02:14.000 --> 00:02:16.769
+Once Agent A found Agent B, how do they actually talk?
+
+46
+00:02:17.270 --> 00:02:21.074
+Agent B's card says what URI and protocol bindings should be used.
+
+47
+00:02:21.174 --> 00:02:24.777
+So Agent A can send requests to Agent B using
+
+48
+00:02:24.878 --> 00:02:27.680
+that URI over whichever binding is supported.
+
+49
+00:02:27.680 --> 00:02:30.650
+The protocol supports JSON-RPC, gRPC,
+
+50
+00:02:30.650 --> 00:02:34.654
+and the HTTP JSON for rest-like interface.
+
+51
+00:02:34.654 --> 00:02:38.658
+Agent A and Agent B can communicate using four execution modes.
+
+52
+00:02:38.658 --> 00:02:40.660
+synchronous, asynchronous,
+
+53
+00:02:40.660 --> 00:02:42.862
+streaming, or push notifications.
+
+54
+00:02:42.862 --> 00:02:45.865
+This flexibility allows the agents to choose between
+
+55
+00:02:45.865 --> 00:02:48.668
+waiting for an immediate response
+
+56
+00:02:49.035 --> 00:02:51.838
+proceeding without blocking for a reply,
+
+57
+00:02:51.838 --> 00:02:54.040
+transmitting continuous data flows,
+
+58
+00:02:54.040 --> 00:02:58.845
+or simply alerting the other agent when specific events occur.
+
+59
+00:02:59.045 --> 00:03:03.550
+To start communicating synchronously, agent A will first send a message object,
+
+60
+00:03:03.550 --> 00:03:07.253
+wrapped in a send message request using the message send method.
+
+61
+00:03:07.554 --> 00:03:10.857
+A Message represent one turn in the conversation,
+
+62
+00:03:10.857 --> 00:03:12.859
+like agent A asking a question.
+
+63
+00:03:12.859 --> 00:03:16.029
+It has a Role, user, agent, and contains Parts.
+
+64
+00:03:16.029 --> 00:03:18.431
+A part is the actual content.
+
+65
+00:03:18.598 --> 00:03:21.301
+It could be plain text, a file,
+
+66
+00:03:21.301 --> 00:03:24.304
+multimodal data, or structured JSON data.
+
+67
+00:03:24.504 --> 00:03:27.106
+So Agent B receives a request from Agent A.
+
+68
+00:03:27.106 --> 00:03:31.010
+And if the request is pretty simple and it completes quickly,
+
+69
+00:03:31.010 --> 00:03:32.845
+it can respond directly to Agent A
+
+70
+00:03:32.845 --> 00:03:34.981
+with a message containing the response.
+
+71
+00:03:35.882 --> 00:03:38.084
+But what if it's a more complicated
+
+72
+00:03:38.084 --> 00:03:40.286
+request or takes some time to complete?
+
+73
+00:03:40.587 --> 00:03:41.888
+We don't want to block Agent A
+
+74
+00:03:41.888 --> 00:03:43.389
+while Agent B works on it.
+
+75
+00:03:43.690 --> 00:03:45.892
+This is where asynchronous communication comes in.
+
+76
+00:03:46.092 --> 00:03:49.596
+Instead of a message, agent B can respond with a Task object.
+
+77
+00:03:49.896 --> 00:03:52.298
+A Task is the job an agent needs to do.
+
+78
+00:03:52.599 --> 00:03:55.602
+This Task has an ID, a context ID,
+
+79
+00:03:55.602 --> 00:03:58.905
+which matches on the relates one of the message, and a Status.
+
+80
+00:03:58.905 --> 00:04:02.275
+The Status indicates the current state of the Task Lifecycle.
+
+81
+00:04:02.575 --> 00:04:05.578
+submitted, working, input required
+
+82
+00:04:05.612 --> 00:04:08.581
+if an agent B needs more information from the end user,
+
+83
+00:04:08.615 --> 00:04:11.284
+and the terminal states, completed or failed.
+
+84
+00:04:11.584 --> 00:04:14.988
+So when agent A sends its initial request,
+
+85
+00:04:15.021 --> 00:04:18.591
+Agent B can respond with a task ID and the current status.
+
+86
+00:04:18.691 --> 00:04:20.793
+Agent A then knows the task ID,
+
+87
+00:04:20.893 --> 00:04:24.297
+and it can poll the task get method to get updates.
+
+88
+00:04:24.397 --> 00:04:26.633
+Notice that Agent B decided whatever
+
+89
+00:04:26.633 --> 00:04:29.202
+to return a task or a message,
+
+90
+00:04:29.302 --> 00:04:31.504
+and Agent A needs to handle either case.
+
+91
+00:04:31.604 --> 00:04:35.508
+Eventually, the task get method will return the task as completed,
+
+92
+00:04:35.608 --> 00:04:38.811
+and the task outputs will be in the artifacts field.
+
+93
+00:04:38.911 --> 00:04:41.381
+Artifacts are structures similar to
+
+94
+00:04:41.381 --> 00:04:44.951
+messages in that they have an Artifact ID and Parts,
+
+95
+00:04:45.285 --> 00:04:47.253
+which contain the actual response content.
+
+96
+00:04:47.654 --> 00:04:50.490
+Polling task like this can work well for simple cases,
+
+97
+00:04:50.923 --> 00:04:54.027
+but it's not very efficient if you want quick updates.
+
+98
+00:04:54.327 --> 00:04:58.931
+For this, A2A supports streaming using server-sent events.
+
+99
+00:04:59.499 --> 00:05:03.903
+If Agent B's card says it supports streaming, Agent A can use
+
+100
+00:05:04.103 --> 00:05:07.907
+message stream method. Now, the connection stays open
+
+101
+00:05:07.907 --> 00:05:10.877
+and Agent B can push update to Agent A as they happen.
+
+102
+00:05:10.877 --> 00:05:15.081
+These updates can be the initial task object,
+
+103
+00:05:15.081 --> 00:05:17.884
+the task status update events, messages
+
+104
+00:05:17.884 --> 00:05:19.986
+like, I'm now working on part
+
+105
+00:05:19.986 --> 00:05:22.388
+X or the task is now completed.
+
+106
+00:05:22.388 --> 00:05:24.490
+Task artifact update events.
+
+107
+00:05:24.490 --> 00:05:27.293
+If the result is larger, like a long summary,
+
+108
+00:05:27.293 --> 00:05:30.463
+Agent B can stream it in chunks. Here is the first
+
+109
+00:05:30.463 --> 00:05:33.366
+this paragraph, here's the second paragraph, and so on.
+
+110
+00:05:33.766 --> 00:05:35.668
+This is much better for the user.
+
+111
+00:05:35.668 --> 00:05:38.271
+They can see live progress updates
+
+112
+00:05:38.571 --> 00:05:41.474
+or the answer can appear as it is being generated.
+
+113
+00:05:41.974 --> 00:05:43.976
+Now, what if you have no idea
+
+114
+00:05:43.976 --> 00:05:45.978
+when or if Agent B will respond?
+
+115
+00:05:46.279 --> 00:05:49.282
+For this, you can use webhook push notifications.
+
+116
+00:05:49.482 --> 00:05:53.086
+with the task push notification configs set method.
+
+117
+00:05:53.386 --> 00:05:56.656
+Or you can add this configuration when sending the first message.
+
+118
+00:05:57.390 --> 00:05:59.859
+Agent A provides a callback URL
+
+119
+00:05:59.859 --> 00:06:03.763
+and Agent B will actively push a notification to that URL
+
+120
+00:06:03.763 --> 00:06:07.033
+when the task state changes or an artifact is ready.
+
+121
+00:06:07.033 --> 00:06:11.337
+Now, we've covered the basic methods and data structures for A2A.
+
+122
+00:06:11.337 --> 00:06:14.307
+We'll discuss some of the more complex part
+
+123
+00:06:14.307 --> 00:06:17.643
+like observability, security, and extensions in a later section.
+
+124
+00:06:17.643 --> 00:06:20.646
+Next up, let's start using the protocol in code
+
+125
+00:06:20.646 --> 00:06:22.615
+with the A2A Python SDK.

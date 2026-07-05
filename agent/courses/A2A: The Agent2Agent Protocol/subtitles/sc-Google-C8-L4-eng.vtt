@@ -1,0 +1,382 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.402
+In this lesson, you're going to take the insurance
+
+2
+00:00:02.402 --> 00:00:04.771
+policy agent that you've built in the previous lesson
+
+3
+00:00:04.871 --> 00:00:06.873
+and make it support the A2A protocol.
+
+4
+00:00:07.173 --> 00:00:09.342
+You'll use the A2A Python SDK, which
+
+5
+00:00:09.342 --> 00:00:11.478
+handles a lot of the low-level details,
+
+6
+00:00:11.778 --> 00:00:13.646
+so you'll just need to focus on
+
+7
+00:00:13.646 --> 00:00:15.782
+what happens when the agent receives a request.
+
+8
+00:00:15.982 --> 00:00:18.985
+Let's get coding. Here is the code of the server agent
+
+9
+00:00:19.185 --> 00:00:23.256
+that I'll save as a Python file, a2a_policy_agent.py.
+
+10
+00:00:23.256 --> 00:00:27.060
+For that, I'm again using the write file Jupyter magic function,
+
+11
+00:00:27.460 --> 00:00:29.162
+which will not run this cell directly,
+
+12
+00:00:29.462 --> 00:00:31.865
+but will copy its content to the Python file.
+
+13
+00:00:32.065 --> 00:00:35.068
+First, I'll import all the libraries I'll be using,
+
+14
+00:00:35.468 --> 00:00:38.471
+including the modules from the A2A Python SDK
+
+15
+00:00:38.772 --> 00:00:41.274
+and the PolicyAgent class I just created.
+
+16
+00:00:41.775 --> 00:00:43.777
+I'm going to wrap up the PolicyAgent
+
+17
+00:00:44.077 --> 00:00:46.079
+in what's called an AgentExecutor.
+
+18
+00:00:46.546 --> 00:00:48.348
+This is a class that you
+
+19
+00:00:48.348 --> 00:00:50.417
+write which inherits from the AgentExecutor class
+
+20
+00:00:50.417 --> 00:00:52.252
+in the A2A Python SDK.
+
+21
+00:00:52.819 --> 00:00:55.455
+In this case, I'll call it PolicyAgentExecutor.
+
+22
+00:00:56.022 --> 00:00:58.758
+This is what links the generic A2A protocol plumbing
+
+23
+00:00:58.758 --> 00:01:00.560
+handled by the A2A SDK
+
+24
+00:01:00.560 --> 00:01:02.529
+and the specific logic of your agent.
+
+25
+00:01:03.063 --> 00:01:04.931
+I'll add a __init__ method.
+
+26
+00:01:05.331 --> 00:01:08.334
+All this will do is initialize the PolicyAgent class
+
+27
+00:01:08.535 --> 00:01:11.337
+and save the instance as self.agent.
+
+28
+00:01:11.638 --> 00:01:13.740
+Next, I'll create an execute method.
+
+29
+00:01:13.940 --> 00:01:16.342
+This will take in the request context,
+
+30
+00:01:16.342 --> 00:01:19.612
+which includes the user input and an event queue,
+
+31
+00:01:19.712 --> 00:01:21.381
+which is where the output will
+
+32
+00:01:21.381 --> 00:01:23.316
+be sent and read by A2A clients.
+
+33
+00:01:23.616 --> 00:01:25.718
+To get the user prompt, you just call
+
+34
+00:01:25.718 --> 00:01:28.321
+context.get_user_input
+
+35
+00:01:28.621 --> 00:01:30.490
+In a production environment, you'd want to
+
+36
+00:01:30.490 --> 00:01:32.625
+read in the context ID to manage state.
+
+37
+00:01:33.093 --> 00:01:35.328
+But for simplicity, I'll skip that for
+
+38
+00:01:35.328 --> 00:01:37.530
+now. Then you can send that prompt
+
+39
+00:01:37.730 --> 00:01:41.167
+to the agent.answer_query method and get the response.
+
+40
+00:01:41.601 --> 00:01:44.003
+In this case, it should be a pretty quick turnaround.
+
+41
+00:01:44.404 --> 00:01:48.308
+So I'll just wrap up that text response as an A2A message.
+
+42
+00:01:48.775 --> 00:01:50.477
+Then I'll send it to the event_queue
+
+43
+00:01:50.677 --> 00:01:53.213
+with event_queue.enqueue_event
+
+44
+00:01:53.480 --> 00:01:56.783
+and await that because it's an asynchronous method.
+
+45
+00:01:57.083 --> 00:02:01.087
+The AgentExecutor class also requires you to implement the cancel method,
+
+46
+00:02:01.287 --> 00:02:03.389
+but I don't need that because I'm
+
+47
+00:02:03.389 --> 00:02:05.792
+just doing synchronous communication. So, I'll just pass.
+
+48
+00:02:06.092 --> 00:02:08.294
+Now, I'll create the main method
+
+49
+00:02:08.495 --> 00:02:11.097
+where I'll define all of the metadata for the agent.
+
+50
+00:02:11.297 --> 00:02:13.299
+I'll first add a print statement
+
+51
+00:02:13.466 --> 00:02:15.568
+to confirm that the agent is running,
+
+52
+00:02:15.768 --> 00:02:17.504
+load our environment variables. Now, this agent
+
+53
+00:02:17.504 --> 00:02:19.472
+is going to be run as a server,
+
+54
+00:02:19.572 --> 00:02:22.876
+so you need a host and a port number.
+
+55
+00:02:23.376 --> 00:02:26.479
+So I'll get these for the agent from the environment variables.
+
+56
+00:02:26.579 --> 00:02:30.183
+In this course, You're going to use localhost for all the agents.
+
+57
+00:02:30.483 --> 00:02:33.086
+But these can be running on multiple remote servers.
+
+58
+00:02:33.486 --> 00:02:35.488
+Then, I'll define the AgentSkill.
+
+59
+00:02:35.688 --> 00:02:37.690
+This is what the agent can do.
+
+60
+00:02:37.891 --> 00:02:40.393
+In this case, I'll call it insurance coverage.
+
+61
+00:02:40.894 --> 00:02:45.198
+The description is, provides information about insurance coverage options and details.
+
+62
+00:02:45.398 --> 00:02:47.867
+I'll add some tags and example queries.
+
+63
+00:02:48.368 --> 00:02:50.870
+Now, I'll define the AgentCard.
+
+64
+00:02:50.870 --> 00:02:53.573
+This is that digital business card for the agent.
+
+65
+00:02:53.573 --> 00:02:56.376
+The name will be InsurancePolicyCoverageAgent.
+
+66
+00:02:56.876 --> 00:02:59.579
+I'll pass in the URL for where the agent will be hosted,
+
+67
+00:02:59.579 --> 00:03:01.581
+and a version number for the agent,
+
+68
+00:03:01.581 --> 00:03:04.884
+define the input and output modes as text only.
+
+69
+00:03:04.884 --> 00:03:07.187
+We aren't supporting streaming for this agent.
+
+70
+00:03:07.420 --> 00:03:10.223
+So I'll mark streaming as false in capabilities,
+
+71
+00:03:10.924 --> 00:03:13.026
+and I'll pass in that skill that I created.
+
+72
+00:03:13.426 --> 00:03:15.929
+Now, I'll create a request handler and server,
+
+73
+00:03:16.229 --> 00:03:18.731
+which is an Starlette Fast API application.
+
+74
+00:03:19.232 --> 00:03:20.833
+This will be hosting the agent card
+
+75
+00:03:21.034 --> 00:03:23.136
+and direct requests to the agent executor.
+
+76
+00:03:23.536 --> 00:03:25.605
+Then, I'll run the server using uvicorn
+
+77
+00:03:25.805 --> 00:03:27.607
+with the host and port.
+
+78
+00:03:28.508 --> 00:03:31.077
+And I'll end the script with the dunder main block.
+
+79
+00:03:31.578 --> 00:03:34.080
+So now our agent is saved as a Python file.
+
+80
+00:03:34.380 --> 00:03:36.382
+So you can run the server in a terminal.
+
+81
+00:03:36.683 --> 00:03:39.085
+I'll use this block to display the terminal in the notebook
+
+82
+00:03:39.285 --> 00:03:41.287
+so that you can run the server and keep it going,
+
+83
+00:03:41.487 --> 00:03:43.590
+because you'll need to interact with this agent later.
+
+84
+00:03:43.990 --> 00:03:45.892
+I'll be using different terminals for each agent.
+
+85
+00:03:45.992 --> 00:03:48.494
+For the policy agent, I'm using terminal one.
+
+86
+00:03:48.928 --> 00:03:52.131
+You can run the agent with uv run
+
+87
+00:03:52.131 --> 00:03:54.734
+a2a_policy_agent.
+
+88
+00:03:55.935 --> 00:03:57.737
+And you can see that it's running.
+
+89
+00:03:58.338 --> 00:04:00.139
+Notice, nothing else is happening yet.
+
+90
+00:04:00.740 --> 00:04:02.742
+That's because I've just started the server.
+
+91
+00:04:02.742 --> 00:04:04.744
+We haven't sent any requests to the agent yet.
+
+92
+00:04:04.744 --> 00:04:06.312
+Be sure to keep this agent running
+
+93
+00:04:06.312 --> 00:04:08.147
+because we'll need it in the next lesson.
+
+94
+00:04:08.448 --> 00:04:12.151
+Speaking of which, in the next lesson, you'll create an A2A client
+
+95
+00:04:12.151 --> 00:04:14.320
+which can connect to this A2A server.
