@@ -1,0 +1,994 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.203
+In this lesson, you'll build your first agent chat UI
+
+2
+00:00:03.269 --> 00:00:05.338
+on a production grade foundation that you
+
+3
+00:00:05.338 --> 00:00:07.374
+can customize and continue to expand on.
+
+4
+00:00:07.674 --> 00:00:09.976
+You'll use CopilotKit, an agent UI,
+
+5
+00:00:10.076 --> 00:00:13.580
+to connect your React front end to a LangChain Deep Agent
+
+6
+00:00:13.780 --> 00:00:15.782
+as well as to a Google ADK agent.
+
+7
+00:00:15.982 --> 00:00:17.517
+Throughout the rest of this course,
+
+8
+00:00:17.517 --> 00:00:19.285
+we will expand on the foundation here
+
+9
+00:00:19.686 --> 00:00:21.688
+with a full generative UI spectrum.
+
+10
+00:00:21.788 --> 00:00:23.790
+All right, let's get coding.
+
+11
+00:00:23.890 --> 00:00:25.525
+Throughout this course, we're going to augment
+
+12
+00:00:25.525 --> 00:00:27.193
+our agent beyond the text-only chat experience.
+
+13
+00:00:27.293 --> 00:00:28.928
+But before we do that, I want to take
+
+14
+00:00:28.928 --> 00:00:30.797
+a minute to talk about the lasting value of chat.
+
+15
+00:00:30.864 --> 00:00:32.932
+LLMs first broke through the public imagination
+
+16
+00:00:32.932 --> 00:00:34.968
+with the launch of ChatGPT in 2022.
+
+17
+00:00:35.268 --> 00:00:38.571
+And ChatGPT was, of course, first and foremost, a chat experience.
+
+18
+00:00:38.972 --> 00:00:42.175
+Many people predicted that chat would be a quickly passing fad
+
+19
+00:00:42.275 --> 00:00:45.078
+and that it would be replaced by a more traditional interaction modality.
+
+20
+00:00:45.178 --> 00:00:48.181
+But LLMs have come a very long way since the original ChatGPT.
+
+21
+00:00:48.581 --> 00:00:51.184
+And we're now fully in the age of AI agents.
+
+22
+00:00:51.584 --> 00:00:53.987
+And yet the chat modality is still here with us.
+
+23
+00:00:54.387 --> 00:00:56.089
+With far more staying power than many
+
+24
+00:00:56.089 --> 00:00:57.791
+of us initially gave it credit for.
+
+25
+00:00:58.291 --> 00:01:01.494
+Why is that? At CopilotKit, we've come to think
+
+26
+00:01:01.494 --> 00:01:03.496
+of chat as essentially Slack with an agent.
+
+27
+00:01:03.596 --> 00:01:07.500
+Chat is an open-ended communication medium between intelligent entities,
+
+28
+00:01:07.801 --> 00:01:10.804
+which doesn't limit you to some predefined ideas with buttons and menus.
+
+29
+00:01:11.004 --> 00:01:12.906
+It's also how people communicate.
+
+30
+00:01:13.006 --> 00:01:15.475
+It's how we communicate with each other and sometimes even with ourselves.
+
+31
+00:01:15.775 --> 00:01:17.777
+And so, all signs are that chat is here to stay
+
+32
+00:01:17.777 --> 00:01:19.879
+with us for the long run of the agentic revolution.
+
+33
+00:01:20.280 --> 00:01:22.282
+But chat doesn't have to be text only.
+
+34
+00:01:22.582 --> 00:01:25.785
+It can be augmented by Generative UI and in-app interactions,
+
+35
+00:01:25.985 --> 00:01:27.921
+and it could even be anchored in
+
+36
+00:01:27.921 --> 00:01:29.856
+voice or video rather than in text.
+
+37
+00:01:29.956 --> 00:01:31.357
+The ideas we're exploring in this
+
+38
+00:01:31.357 --> 00:01:33.026
+course are likely to form our foundation
+
+39
+00:01:33.026 --> 00:01:35.662
+that will continue to hold as the chat medium evolves.
+
+40
+00:01:36.129 --> 00:01:38.331
+You've likely built a basic chat UI before.
+
+41
+00:01:38.665 --> 00:01:41.401
+Even if only in a streamlit app while debugging your agent.
+
+42
+00:01:41.734 --> 00:01:43.103
+The chat app you will build in
+
+43
+00:01:43.103 --> 00:01:44.671
+this module is different in two major ways.
+
+44
+00:01:45.105 --> 00:01:48.675
+First, it is built a top a robust, production grade foundation
+
+45
+00:01:48.675 --> 00:01:50.777
+that you will be able to continue to expand
+
+46
+00:01:50.777 --> 00:01:52.879
+on to build full stack agents and generative UIs.
+
+47
+00:01:53.379 --> 00:01:56.749
+Second, you'll be able to use the chat setup you'll create here
+
+48
+00:01:56.749 --> 00:01:58.751
+with practically any agentic backend
+
+49
+00:01:58.751 --> 00:02:00.854
+solution across any programming language,
+
+50
+00:02:00.954 --> 00:02:03.623
+any LLM provider, and any agent harness.
+
+51
+00:02:03.823 --> 00:02:05.492
+As the ecosystem evolves, you will also
+
+52
+00:02:05.492 --> 00:02:07.127
+be able to bring the same setup
+
+53
+00:02:07.227 --> 00:02:10.630
+to any front-end environment. We will continue to expand on the foundation
+
+54
+00:02:10.730 --> 00:02:13.933
+we will build in this module throughout the remainder of this course.
+
+55
+00:02:14.234 --> 00:02:16.136
+This course will assume that you already know
+
+56
+00:02:16.236 --> 00:02:19.038
+how to build an AI agent. We will provide a pre-built agent,
+
+57
+00:02:19.139 --> 00:02:21.141
+but DeepLearning has lots of great resources
+
+58
+00:02:21.241 --> 00:02:23.042
+if you want to learn how to build your own.
+
+59
+00:02:23.243 --> 00:02:25.745
+In this lesson, we will build a LangChain Deep Agent
+
+60
+00:02:25.845 --> 00:02:28.348
+that we will deploy behind an AG-UI FastAPI
+
+61
+00:02:28.615 --> 00:02:30.617
+endpoint built in Python.
+
+62
+00:02:30.817 --> 00:02:32.619
+We will build a React frontend
+
+63
+00:02:32.919 --> 00:02:35.922
+using CopilotChat component, which ships with CopilotKit,
+
+64
+00:02:35.922 --> 00:02:37.757
+and which provides a fully featured chat
+
+65
+00:02:37.757 --> 00:02:39.626
+component that works out of the box.
+
+66
+00:02:39.926 --> 00:02:43.429
+Lastly, we'll connect our front end to the agent via the CopilotRuntime,
+
+67
+00:02:43.429 --> 00:02:45.598
+which in this setup, we will host on a Hono server,
+
+68
+00:02:45.899 --> 00:02:48.101
+which is a lightweight TypeScript server.
+
+69
+00:02:48.201 --> 00:02:50.003
+In production, you can host the
+
+70
+00:02:50.003 --> 00:02:52.105
+CopilotRuntime in essentially every standard server setup.
+
+71
+00:02:52.105 --> 00:02:54.507
+The CopilotRuntime setup is technically optional,
+
+72
+00:02:54.507 --> 00:02:56.910
+but it is highly recommended for production deployments
+
+73
+00:02:56.910 --> 00:02:58.478
+due to a combination of security,
+
+74
+00:02:58.478 --> 00:03:00.580
+performance and scalability requirements.
+
+75
+00:03:00.580 --> 00:03:02.148
+Every piece of technology you use
+
+76
+00:03:02.148 --> 00:03:04.317
+in this setup is fully open source.
+
+77
+00:03:04.317 --> 00:03:06.386
+After we get our LangChain Deep Agent running,
+
+78
+00:03:06.386 --> 00:03:08.955
+we'll add an additional Google ADK agent.
+
+79
+00:03:09.355 --> 00:03:11.157
+and connect it to our front end.
+
+80
+00:03:11.157 --> 00:03:12.859
+So you can learn firsthand how to
+
+81
+00:03:12.859 --> 00:03:14.861
+swap and add agents into your own applications.
+
+82
+00:03:14.861 --> 00:03:17.030
+This flexibility is made possible by
+
+83
+00:03:17.030 --> 00:03:19.532
+the AG-UI protocol. So, what is AG-UI?
+
+84
+00:03:19.532 --> 00:03:23.636
+AG-UI stands for the Agent-User Interaction Protocol.
+
+85
+00:03:23.803 --> 00:03:27.073
+It's an open, lightweight, event-based protocol
+
+86
+00:03:27.073 --> 00:03:31.010
+for facilitating interactions between agentic backends and agentic frontends.
+
+87
+00:03:31.211 --> 00:03:33.479
+Under the hood, AG-UI compatible agents
+
+88
+00:03:33.479 --> 00:03:36.115
+emit AG-UI output events as they run,
+
+89
+00:03:36.416 --> 00:03:38.618
+and they accept AG-UI input events
+
+90
+00:03:38.618 --> 00:03:41.821
+emitted by frontends in response to relevant user interactions.
+
+91
+00:03:42.322 --> 00:03:43.823
+The AG-UI protocol was born from
+
+92
+00:03:43.823 --> 00:03:45.592
+a partnership with LangChain and CrewAI.
+
+93
+00:03:45.792 --> 00:03:48.795
+This means that you can use these agents side by side
+
+94
+00:03:48.795 --> 00:03:50.697
+in any user-facing application.
+
+95
+00:03:50.997 --> 00:03:53.099
+Let's jump into some code and see it in action.
+
+96
+00:03:53.366 --> 00:03:56.169
+We'll begin by setting up our project dependencies.
+
+97
+00:03:56.669 --> 00:03:59.172
+First, we'll install the Python dependencies
+
+98
+00:03:59.272 --> 00:04:01.274
+from the requirements.txt file.
+
+99
+00:04:01.975 --> 00:04:04.978
+Then, we will install the front-end dependencies.
+
+100
+00:04:07.880 --> 00:04:11.150
+And finally, we will load the API keys
+
+101
+00:04:11.284 --> 00:04:13.353
+using our helper function.
+
+102
+00:04:14.354 --> 00:04:17.657
+Next, we're going to start by building the agentic back end,
+
+103
+00:04:17.857 --> 00:04:20.860
+the agent itself. We're going to start the server.
+
+104
+00:04:21.361 --> 00:04:24.330
+First, we'll just create a standard FastAPI server.
+
+105
+00:04:24.664 --> 00:04:27.834
+Then, we'll create a LangGraphAGUIAgent.
+
+106
+00:04:28.334 --> 00:04:32.639
+This is an AGUI compatible endpoint for your LangGraph agent.
+
+107
+00:04:32.905 --> 00:04:37.905
+Now remember, LangGraph is the framework underneath all of LangChain's agentic solutions.
+
+108
+00:04:38.911 --> 00:04:40.847
+So under the hood here, we're actually
+
+109
+00:04:40.847 --> 00:04:43.016
+going to be using a LangChain Deep Agent,
+
+110
+00:04:43.416 --> 00:04:45.818
+but it is implemented on top of
+
+111
+00:04:45.818 --> 00:04:48.221
+LangGraph and therefore we're using the LangGraphAGUIAgent.
+
+112
+00:04:48.421 --> 00:04:51.057
+Then we're going to bind our LangChain AGUI
+
+113
+00:04:51.057 --> 00:04:54.027
+agent into the root path of our FastAPI server.
+
+114
+00:04:54.427 --> 00:04:58.131
+Finally, we're going to start our server on port 8002.
+
+115
+00:04:58.564 --> 00:05:01.768
+You will notice that each lesson uses a different port
+
+116
+00:05:01.968 --> 00:05:03.770
+so that they don't override each other.
+
+117
+00:05:03.870 --> 00:05:05.972
+All right, now we have our basic skeleton
+
+118
+00:05:06.172 --> 00:05:08.274
+for our agentic backend setup.
+
+119
+00:05:08.508 --> 00:05:11.110
+We're now going to populate it with an actual agent.
+
+120
+00:05:11.411 --> 00:05:13.413
+First, we will define that agent.
+
+121
+00:05:13.413 --> 00:05:16.015
+We're creating a standard LangChain Deep Agent.
+
+122
+00:05:16.416 --> 00:05:18.918
+Everything about this setup is completely standard
+
+123
+00:05:19.018 --> 00:05:21.220
+except for one part that I want to call out.
+
+124
+00:05:21.387 --> 00:05:25.391
+which is we're injecting CopilotKit's middleware into the LangChain agent.
+
+125
+00:05:25.391 --> 00:05:28.194
+Middleware is a standard concept in the LangChain universe,
+
+126
+00:05:28.194 --> 00:05:32.198
+and the CopilotKit middleware allows us to connect our LangChain agent
+
+127
+00:05:32.198 --> 00:05:33.900
+to everything AG-UI.
+
+128
+00:05:34.267 --> 00:05:38.137
+Finally, we're going to set the graph
+
+129
+00:05:38.137 --> 00:05:40.239
+of our previous LangChain agent to the
+
+130
+00:05:40.239 --> 00:05:43.443
+graph of the agent we just created.
+
+131
+00:05:44.577 --> 00:05:46.579
+And that's it. We're running.
+
+132
+00:05:46.879 --> 00:05:48.981
+Now that we've set up our agentic backend,
+
+133
+00:05:49.015 --> 00:05:52.285
+we're going to get started with the agentic frontend with CopilotKit.
+
+134
+00:05:52.585 --> 00:05:54.187
+We're going to start the frontend,
+
+135
+00:05:54.287 --> 00:05:58.191
+and we're going to use our standard helper start_frontend function.
+
+136
+00:05:58.424 --> 00:05:59.726
+By the way, if you're curious,
+
+137
+00:05:59.726 --> 00:06:01.260
+you can check out the helper file,
+
+138
+00:06:01.260 --> 00:06:03.930
+but it really just has a lot of standard boilerplate
+
+139
+00:06:03.930 --> 00:06:06.399
+for the standard operations we're going to take on here.
+
+140
+00:06:06.532 --> 00:06:09.635
+Now our frontend is up and running in port 3002.
+
+141
+00:06:09.936 --> 00:06:13.172
+You'll notice the read the logs statement in this output cell.
+
+142
+00:06:13.172 --> 00:06:16.442
+If you ever run into an issue with your front end,
+
+143
+00:06:16.442 --> 00:06:20.113
+you can check out this dev-logs.txt file for the full
+
+144
+00:06:20.713 --> 00:06:22.982
+logging generated by the front end.
+
+145
+00:06:22.982 --> 00:06:25.184
+You can view the front end app
+
+146
+00:06:25.184 --> 00:06:27.186
+by clicking on the link you saw before.
+
+147
+00:06:27.186 --> 00:06:29.689
+But for convenience, we're also going to display the iframe embedded
+
+148
+00:06:29.689 --> 00:06:32.692
+right within the Jupyter notebook using the display_app helper function.
+
+149
+00:06:32.692 --> 00:06:35.695
+You'll see here that the initial state of the front end
+
+150
+00:06:35.695 --> 00:06:37.463
+is an empty app that just has
+
+151
+00:06:37.463 --> 00:06:39.198
+the text in the middle of it.
+
+152
+00:06:39.198 --> 00:06:42.502
+There is no copilot, there's no agents, just an empty starting point.
+
+153
+00:06:42.502 --> 00:06:45.705
+We're going to continue by setting up the CopilotRuntime.
+
+154
+00:06:46.072 --> 00:06:48.174
+The CopilotRuntime is a backend that sits in
+
+155
+00:06:48.174 --> 00:06:50.610
+between your front end and your agent
+
+156
+00:06:51.010 --> 00:06:54.881
+for security, performance, and engineering scalability reasons.
+
+157
+00:06:55.181 --> 00:06:57.884
+It is technically not absolutely required.
+
+158
+00:06:58.184 --> 00:07:00.319
+You could connect your front end directly to your agent,
+
+159
+00:07:00.620 --> 00:07:04.891
+but for production environments, we highly, highly recommend using the CopilotRuntime.
+
+160
+00:07:05.057 --> 00:07:06.559
+The first thing we're going to do
+
+161
+00:07:06.626 --> 00:07:08.728
+is import the LangGraph Http Connector
+
+162
+00:07:08.761 --> 00:07:11.330
+from the @ag-ui package.
+
+163
+00:07:12.131 --> 00:07:14.434
+We're then going to use this connector
+
+164
+00:07:14.434 --> 00:07:16.536
+to point at the LangChain endpoint
+
+165
+00:07:16.536 --> 00:07:21.007
+we set up earlier at port 8002. Now we're going to
+
+166
+00:07:21.007 --> 00:07:23.810
+set up a new CopilotRuntime instance.
+
+167
+00:07:24.310 --> 00:07:27.513
+You'll notice that when we set up the CopilotRuntime,
+
+168
+00:07:27.513 --> 00:07:30.216
+we specify a dictionary mapping between agent IDs
+
+169
+00:07:30.216 --> 00:07:32.485
+and actual agent endpoints.
+
+170
+00:07:32.485 --> 00:07:36.355
+We're setting up the langGraphAgent under the default ID in this case.
+
+171
+00:07:36.956 --> 00:07:40.059
+Your frontend can specify which agent it's talking to.
+
+172
+00:07:40.560 --> 00:07:44.664
+If no agent is specified, the default agent is used.
+
+173
+00:07:44.897 --> 00:07:48.901
+Then we're going to create an endpoint using our CopilotRuntime
+
+174
+00:07:48.901 --> 00:07:53.005
+and set its basePath to /api/copilotkit.
+
+175
+00:07:53.005 --> 00:07:57.777
+And lastly, we're going to serve this application using a Hono server.
+
+176
+00:07:57.777 --> 00:08:01.080
+Now we've got a CopilotRuntime running and we've got an agent running.
+
+177
+00:08:01.080 --> 00:08:03.282
+It's time to bring the front end up to speed.
+
+178
+00:08:03.282 --> 00:08:07.186
+We'll begin by wrapping our application with the CopilotKit provider.
+
+179
+00:08:07.520 --> 00:08:10.022
+When we set up the CopilotKit provider,
+
+180
+00:08:10.022 --> 00:08:11.524
+we point it at the runtime URL we
+
+181
+00:08:11.524 --> 00:08:13.025
+just set up in the step before.
+
+182
+00:08:13.426 --> 00:08:15.428
+Remember, /api/copilotkit.
+
+183
+00:08:16.128 --> 00:08:19.332
+Any part of your application that talks to agents
+
+184
+00:08:19.332 --> 00:08:21.834
+must be wrapped by a CopilotKit provider.
+
+185
+00:08:22.335 --> 00:08:24.604
+You could do this on a page-by-page basis,
+
+186
+00:08:24.604 --> 00:08:27.607
+but it is usually easiest to do this in a single place
+
+187
+00:08:27.607 --> 00:08:30.309
+in your layout.tsx file.
+
+188
+00:08:30.710 --> 00:08:33.312
+So you can wrap your entire application once
+
+189
+00:08:33.312 --> 00:08:35.014
+and then talk to agents anywhere within it.
+
+190
+00:08:35.047 --> 00:08:38.651
+Next, we're going to set up the CopilotChat component.
+
+191
+00:08:39.552 --> 00:08:42.188
+CopilotChat is a built-in, fully featured chat
+
+192
+00:08:42.188 --> 00:08:44.857
+component that ships with the CopilotKit packages.
+
+193
+00:08:44.957 --> 00:08:48.261
+You can fully customize it using custom CSS or custom subcomponents,
+
+194
+00:08:48.361 --> 00:08:50.530
+although we will not be covering that in this course.
+
+195
+00:08:50.930 --> 00:08:54.333
+Or if should you choose to, you could use the useAgent hook
+
+196
+00:08:54.634 --> 00:08:58.304
+to build a fully featured chat interface from scratch.
+
+197
+00:08:58.604 --> 00:09:00.039
+Now that we've set up the chat, let's give
+
+198
+00:09:00.039 --> 00:09:01.607
+it a try. Hello, how can I help you today?
+
+199
+00:09:01.807 --> 00:09:03.409
+All right, we've just built a chat
+
+200
+00:09:03.409 --> 00:09:05.011
+that connects to a real LangChain agent.
+
+201
+00:09:05.311 --> 00:09:10.311
+Now, remember, AGUI lets you connect to any agentic backends out there.
+
+202
+00:09:10.750 --> 00:09:12.852
+So we're now going to demonstrate this
+
+203
+00:09:12.852 --> 00:09:15.254
+by connecting the same application
+
+204
+00:09:15.254 --> 00:09:16.956
+to a Google ADK agent. We're
+
+205
+00:09:16.956 --> 00:09:18.958
+going to set up an ADK agent.
+
+206
+00:09:19.258 --> 00:09:22.962
+First, we're going to create a standard Gemini ADK agent
+
+207
+00:09:23.262 --> 00:09:24.964
+by importing the LlmAgent
+
+208
+00:09:24.964 --> 00:09:26.966
+from the standard Google ADK packages.
+
+209
+00:09:27.266 --> 00:09:29.969
+Next, we're going to set up an AGUI
+
+210
+00:09:30.670 --> 00:09:34.240
+server for this raw agent.
+
+211
+00:09:34.607 --> 00:09:39.512
+We're using the ADKAgent class imported from the ag_ui_adk package.
+
+212
+00:09:40.079 --> 00:09:43.182
+Next, we're going to set up a plain old FastAPI server
+
+213
+00:09:43.449 --> 00:09:48.449
+and add our AGUI endpoint for the gemini_agent to its root path.
+
+214
+00:09:49.221 --> 00:09:52.158
+Finally, we're going to start the server on port 8009.
+
+215
+00:09:52.491 --> 00:09:54.160
+All right, so now we have
+
+216
+00:09:54.160 --> 00:09:57.063
+our old LangChain agent running in the background.
+
+217
+00:09:57.463 --> 00:10:00.032
+And we have another agent that is being
+
+218
+00:10:00.032 --> 00:10:02.969
+served with its own FastAPI server on port 8009.
+
+219
+00:10:03.069 --> 00:10:06.238
+We're now going to update the CopilotRuntime to register this new agent.
+
+220
+00:10:06.639 --> 00:10:09.342
+Because we're using TypeScript inside of this Jupyter notebook,
+
+221
+00:10:09.642 --> 00:10:11.410
+we cannot update the code from
+
+222
+00:10:11.410 --> 00:10:13.446
+before, we must overwrite the file altogether.
+
+223
+00:10:13.779 --> 00:10:15.481
+The majority of what you see here
+
+224
+00:10:15.481 --> 00:10:17.183
+is identical to what you saw before.
+
+225
+00:10:17.583 --> 00:10:20.286
+Let me highlight the two places where we've changed the code.
+
+226
+00:10:20.386 --> 00:10:22.655
+First, we're going to set up a connector
+
+227
+00:10:22.655 --> 00:10:24.957
+to the agent endpoint we just set up,
+
+228
+00:10:25.458 --> 00:10:27.627
+running at port 8009. And then we're going
+
+229
+00:10:27.627 --> 00:10:29.762
+to add it to the dictionary of agents
+
+230
+00:10:29.862 --> 00:10:33.566
+served by the CopilotRuntime, this time under the Gemini ID.
+
+231
+00:10:33.866 --> 00:10:35.968
+There's nothing special about the Gemini ID.
+
+232
+00:10:36.268 --> 00:10:38.104
+You could use any string you want.
+
+233
+00:10:38.104 --> 00:10:39.905
+Now we're going to update the frontend
+
+234
+00:10:40.006 --> 00:10:43.609
+to use the new Gemini agent we've set up.
+
+235
+00:10:44.010 --> 00:10:47.713
+Once again, because we're editing TypeScript files, we have to override them.
+
+236
+00:10:48.014 --> 00:10:50.116
+You'll see here, the only change we're
+
+237
+00:10:50.116 --> 00:10:52.218
+making is that we've changed the agentId
+
+238
+00:10:52.218 --> 00:10:54.620
+to point at the Gemini identifier.
+
+239
+00:10:54.987 --> 00:10:57.790
+that we set up earlier for our Gemini agent.
+
+240
+00:10:58.491 --> 00:11:03.396
+That's it. Now, let's display the app one more time
+
+241
+00:11:04.463 --> 00:11:07.767
+and let's ask it what model is it powered by.
+
+242
+00:11:13.606 --> 00:11:16.008
+All right, it's a large language model trained by Google.
+
+243
+00:11:16.308 --> 00:11:17.610
+For those who don't know, Google
+
+244
+00:11:17.610 --> 00:11:19.111
+is the maker of the Gemini models.
+
+245
+00:11:19.412 --> 00:11:21.714
+So you see here, we took an existing chat UI
+
+246
+00:11:21.814 --> 00:11:23.282
+and pointed it at a different
+
+247
+00:11:23.282 --> 00:11:25.017
+agent with almost no work at all.
+
+248
+00:11:25.117 --> 00:11:27.086
+That's it. On to the next one.

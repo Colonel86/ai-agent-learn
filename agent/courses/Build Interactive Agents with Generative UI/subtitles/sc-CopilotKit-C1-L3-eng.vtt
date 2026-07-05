@@ -1,0 +1,954 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.770
+In the previous lesson, your agent could only respond with text.
+
+2
+00:00:03.870 --> 00:00:06.473
+In this lesson, you'll go beyond text
+
+3
+00:00:06.573 --> 00:00:09.476
+by building with Controlled Generative UI
+
+4
+00:00:10.010 --> 00:00:13.213
+which is the workhorse of the generative UI spectrum.
+
+5
+00:00:13.513 --> 00:00:16.816
+In controlled generative UI, you, as the programmer,
+
+6
+00:00:17.017 --> 00:00:19.219
+define fully custom components,
+
+7
+00:00:19.519 --> 00:00:22.322
+which the agent can then use and populate with data.
+
+8
+00:00:22.622 --> 00:00:24.924
+You the programmer control the look and feel,
+
+9
+00:00:25.125 --> 00:00:28.528
+and the agent controls the intent. All right, let's get to it.
+
+10
+00:00:28.528 --> 00:00:32.932
+Going beyond text gives your agent an immediate communication advantage.
+
+11
+00:00:33.133 --> 00:00:37.037
+For instance, what was previously a long and indecipherable wall of text
+
+12
+00:00:37.137 --> 00:00:38.838
+can instantly turn into a clear
+
+13
+00:00:38.838 --> 00:00:40.840
+and concise table or a pie chart.
+
+14
+00:00:41.107 --> 00:00:44.310
+Controlled Generative UI is the most straightforward
+
+15
+00:00:44.344 --> 00:00:46.613
+and most widely used variant of Generative UI.
+
+16
+00:00:46.913 --> 00:00:49.616
+Developers simply define a set of custom components
+
+17
+00:00:49.649 --> 00:00:52.318
+that the agent is allowed to use in its replies.
+
+18
+00:00:52.352 --> 00:00:54.120
+along with the arguments that those
+
+19
+00:00:54.120 --> 00:00:56.156
+components expect to get from the agent.
+
+20
+00:00:56.556 --> 00:01:00.260
+The technical setup would be incredibly familiar to any frontend developer
+
+21
+00:01:00.360 --> 00:01:04.164
+because it mirrors the standard definition of any frontend component.
+
+22
+00:01:04.464 --> 00:01:07.367
+Since each interaction requires its own component's definition,
+
+23
+00:01:07.567 --> 00:01:10.837
+the Controlled Generative UI paradigm offers developers maximal flexibility
+
+24
+00:01:10.870 --> 00:01:13.073
+once the component is displayed.
+
+25
+00:01:13.273 --> 00:01:16.476
+Components can be interactive and trivially affect other parts of the application.
+
+26
+00:01:16.776 --> 00:01:18.511
+And they can also be made pixel perfect
+
+27
+00:01:18.511 --> 00:01:20.480
+to conform to any specs by your design team.
+
+28
+00:01:20.747 --> 00:01:22.982
+The standard variant of Controlled Generative UI,
+
+29
+00:01:22.982 --> 00:01:25.785
+which we will explore in this lesson, gives the agent
+
+30
+00:01:25.785 --> 00:01:29.255
+the ability to decide which UI components to engage with and when.
+
+31
+00:01:29.489 --> 00:01:31.691
+Controlled Generative UI is considered the workhorse
+
+32
+00:01:31.691 --> 00:01:34.394
+of the Generative UI universe for a number of reasons.
+
+33
+00:01:34.427 --> 00:01:36.329
+First, it offers full brand control
+
+34
+00:01:36.329 --> 00:01:38.431
+because you can fully customize each component
+
+35
+00:01:38.431 --> 00:01:40.233
+for pixel-perfect designs.
+
+36
+00:01:40.233 --> 00:01:42.635
+Second, when using Controlled Generative UI,
+
+37
+00:01:42.635 --> 00:01:45.839
+your agent will never hallucinate a component you've not registered.
+
+38
+00:01:46.306 --> 00:01:49.509
+At worst, it could call the wrong component at the wrong time
+
+39
+00:01:50.009 --> 00:01:52.512
+or populate a component with wrong data.
+
+40
+00:01:52.912 --> 00:01:54.914
+But these are far less likely to happen.
+
+41
+00:01:55.115 --> 00:01:57.517
+Controlled Generative UI is also the fastest and
+
+42
+00:01:57.517 --> 00:01:59.919
+most reliable solution along the Generative UI spectrum.
+
+43
+00:02:00.220 --> 00:02:02.622
+All of these qualities make it the most suitable solution
+
+44
+00:02:02.889 --> 00:02:05.692
+for your product's most used surfaces.
+
+45
+00:02:06.092 --> 00:02:08.394
+It's a really great 80/20 solution.
+
+46
+00:02:08.695 --> 00:02:11.097
+The primary tradeoff of Controlled Generative UI
+
+47
+00:02:11.097 --> 00:02:13.700
+is that every new capability in your application
+
+48
+00:02:13.700 --> 00:02:16.102
+requires a new dedicated component definition.
+
+49
+00:02:16.302 --> 00:02:17.770
+And so complexity of implementation scales
+
+50
+00:02:17.770 --> 00:02:19.506
+linearly with the scope of the agent.
+
+51
+00:02:19.506 --> 00:02:21.908
+Here's how Controlled Generative UI works under the hood.
+
+52
+00:02:22.208 --> 00:02:24.611
+Each registered component is associated with a name,
+
+53
+00:02:24.811 --> 00:02:26.913
+a description, and a list of arguments
+
+54
+00:02:27.013 --> 00:02:30.316
+needed to provide by the agent in order to display the component.
+
+55
+00:02:30.717 --> 00:02:32.719
+These parameters are converted to tool definitions.
+
+56
+00:02:33.019 --> 00:02:36.322
+The AG-UI middleware then registers these as frontend-defined tools.
+
+57
+00:02:36.723 --> 00:02:39.225
+When the agent runs, it sees those tools
+
+58
+00:02:39.225 --> 00:02:40.827
+just like it sees any other tool.
+
+59
+00:02:41.127 --> 00:02:43.496
+Agent can decide to call those tools
+
+60
+00:02:43.496 --> 00:02:45.899
+when it wishes to display some content to the user.
+
+61
+00:02:46.199 --> 00:02:49.202
+When an agent decides to call a frontend tool, the AG-UI connection
+
+62
+00:02:49.502 --> 00:02:53.206
+halts backend execution and hands off execution to the frontend.
+
+63
+00:02:53.506 --> 00:02:57.210
+The CopilotKit SDK then maps the frontend tool execution
+
+64
+00:02:57.210 --> 00:02:59.712
+back to the React component it is associated with,
+
+65
+00:03:00.013 --> 00:03:01.714
+and displays that component to the user.
+
+66
+00:03:02.015 --> 00:03:06.119
+Finally, if the tool returns any result upon interactivity, the result is
+
+67
+00:03:06.119 --> 00:03:07.854
+passed back to the agent back end
+
+68
+00:03:07.854 --> 00:03:09.923
+as a standard tool call result.
+
+69
+00:03:10.223 --> 00:03:13.126
+In this lab, you'll learn to use CopilotKit's useComponent hook
+
+70
+00:03:13.226 --> 00:03:15.328
+register components to the agent.
+
+71
+00:03:15.428 --> 00:03:17.297
+Without the agent ever being directly exposed
+
+72
+00:03:17.297 --> 00:03:19.199
+to a React abstraction or to code.
+
+73
+00:03:19.399 --> 00:03:21.401
+The useComponent hook is straightforward.
+
+74
+00:03:21.501 --> 00:03:23.703
+Simply give each component a name, a
+
+75
+00:03:23.703 --> 00:03:25.905
+schema, and a React component or renderer,
+
+76
+00:03:26.005 --> 00:03:28.441
+and that's it, you're done. You can define components
+
+77
+00:03:28.441 --> 00:03:31.110
+in a centralized fashion when you initialize your React application,
+
+78
+00:03:31.311 --> 00:03:33.246
+or you can register components in
+
+79
+00:03:33.246 --> 00:03:35.515
+different regions and pages in your application.
+
+80
+00:03:35.515 --> 00:03:39.018
+and these components will become active and available for the agent
+
+81
+00:03:39.018 --> 00:03:41.020
+as the user traverses your application.
+
+82
+00:03:41.321 --> 00:03:43.523
+If you're familiar with React hook dynamics,
+
+83
+00:03:43.523 --> 00:03:46.326
+this hook behaves just like any other React hook,
+
+84
+00:03:46.326 --> 00:03:50.029
+and all of the backend complexity is handled automatically by the framework.
+
+85
+00:03:50.330 --> 00:03:52.999
+The useComponent hook explicitly demonstrates
+
+86
+00:03:52.999 --> 00:03:55.501
+the clean separation of concerns of controlled generative UI.
+
+87
+00:03:55.902 --> 00:03:58.705
+The agent decides when to display the component
+
+88
+00:03:58.705 --> 00:04:00.707
+based on its name, description, and schema,
+
+89
+00:04:00.707 --> 00:04:03.409
+and the programmer decides exactly what the component would look like
+
+90
+00:04:03.409 --> 00:04:05.411
+and what interaction it would support
+
+91
+00:04:05.411 --> 00:04:08.014
+by defining a custom React component or renderer.
+
+92
+00:04:08.414 --> 00:04:10.817
+In this lab, we're going to register three components
+
+93
+00:04:10.817 --> 00:04:12.685
+with an agent using the useComponent hook.
+
+94
+00:04:12.885 --> 00:04:16.189
+We'll start with the name component, the simplest possible component registration.
+
+95
+00:04:16.289 --> 00:04:19.592
+A hello world of sorts to get comfortable with a pattern.
+
+96
+00:04:19.692 --> 00:04:21.694
+We will then register a pie chart component,
+
+97
+00:04:21.794 --> 00:04:23.830
+where the agent doesn't just pick the component, it
+
+98
+00:04:23.830 --> 00:04:25.898
+also figures out what data to fill it with.
+
+99
+00:04:25.999 --> 00:04:28.568
+Finally, we will register a flight card component
+
+100
+00:04:28.668 --> 00:04:31.170
+as an example of a pixel-perfect custom design.
+
+101
+00:04:31.271 --> 00:04:32.739
+By the end of this lab, you
+
+102
+00:04:32.739 --> 00:04:34.374
+will be able to register any React component
+
+103
+00:04:34.474 --> 00:04:36.576
+so your agent can render it on demand.
+
+104
+00:04:36.676 --> 00:04:40.179
+We're going to start by resetting the states of your notebook.
+
+105
+00:04:40.179 --> 00:04:42.181
+Remember, this is just a helper tool
+
+106
+00:04:42.181 --> 00:04:43.883
+in case you get into a stuck state,
+
+107
+00:04:43.883 --> 00:04:45.985
+always worth trying to reset your state.
+
+108
+00:04:45.985 --> 00:04:48.655
+Just like before, we're going to start by setting up the dependencies.
+
+109
+00:04:48.655 --> 00:04:50.456
+This section is going to look very familiar.
+
+110
+00:04:50.657 --> 00:04:54.160
+We're going to start by installing our Python backend dependencies.
+
+111
+00:04:54.560 --> 00:04:56.162
+And now we're going to load up
+
+112
+00:04:56.162 --> 00:04:58.231
+our API keys using our helper function.
+
+113
+00:04:58.331 --> 00:05:00.733
+These are set up for you automatically by the deep learning platform.
+
+114
+00:05:00.833 --> 00:05:03.336
+Now that we've got everything set up, let's start the agent.
+
+115
+00:05:03.636 --> 00:05:05.204
+First, we'll start our backend.
+
+116
+00:05:05.204 --> 00:05:07.407
+It's now running in port 8003.
+
+117
+00:05:07.707 --> 00:05:10.009
+We'll now use our helper function to start our frontend
+
+118
+00:05:10.209 --> 00:05:12.011
+in port 3003.
+
+119
+00:05:13.513 --> 00:05:15.214
+All right. Now that it's running,
+
+120
+00:05:15.415 --> 00:05:18.318
+we can click into that and play with it. Just like before,
+
+121
+00:05:18.351 --> 00:05:20.453
+We're going to embed the iframe
+
+122
+00:05:20.453 --> 00:05:22.855
+of this URL directly in our Jupyter notebook for convenience.
+
+123
+00:05:23.556 --> 00:05:25.858
+using the display_app helper function.
+
+124
+00:05:26.559 --> 00:05:28.361
+Now we've got the basic front end
+
+125
+00:05:28.361 --> 00:05:30.763
+that we set up in lesson two all set
+
+126
+00:05:30.763 --> 00:05:33.166
+up for us. All right, the chat is working.
+
+127
+00:05:33.700 --> 00:05:36.803
+We're now going to venture outside of pure text chat
+
+128
+00:05:36.803 --> 00:05:38.805
+with Controlled Generative UI.
+
+129
+00:05:39.205 --> 00:05:41.307
+Remember, in Controlled Generative UI,
+
+130
+00:05:41.507 --> 00:05:44.110
+we as programmers register components
+
+131
+00:05:44.310 --> 00:05:47.113
+that the agent can use when it chooses to.
+
+132
+00:05:47.213 --> 00:05:50.316
+We're going to start by registering these components with the agent.
+
+133
+00:05:50.550 --> 00:05:55.550
+In this, we've added three useComponent hook calls to our application code.
+
+134
+00:05:56.055 --> 00:05:57.757
+Registering three different components that are now
+
+135
+00:05:57.757 --> 00:05:59.459
+available for the agent to call upon
+
+136
+00:05:59.559 --> 00:06:02.662
+as part of its controlled generative UI toolbox.
+
+137
+00:06:03.062 --> 00:06:05.064
+Let's go through each of them one by one.
+
+138
+00:06:05.064 --> 00:06:07.367
+The useComponent hook takes four different arguments.
+
+139
+00:06:07.734 --> 00:06:09.335
+The first argument is the name
+
+140
+00:06:09.369 --> 00:06:10.937
+argument. This is the name of
+
+141
+00:06:10.937 --> 00:06:12.772
+the component made available to the agent.
+
+142
+00:06:13.072 --> 00:06:15.274
+The next argument is the description argument.
+
+143
+00:06:15.575 --> 00:06:17.510
+This is a simple string, but it's very important
+
+144
+00:06:17.977 --> 00:06:20.346
+because it tells the agent when and how
+
+145
+00:06:20.847 --> 00:06:22.849
+to use this given component.
+
+146
+00:06:23.449 --> 00:06:24.951
+In this case, we're telling the agent
+
+147
+00:06:24.951 --> 00:06:26.652
+to show the user's name in a card.
+
+148
+00:06:26.853 --> 00:06:28.654
+Just a short sentence here. But if
+
+149
+00:06:28.654 --> 00:06:30.690
+you find that the agent does not display
+
+150
+00:06:31.090 --> 00:06:33.860
+your component at times when you expect it to,
+
+151
+00:06:34.060 --> 00:06:37.864
+you can continue to add this description to your heart's content.
+
+152
+00:06:38.197 --> 00:06:41.667
+Some applications even have dozens of lines in this description,
+
+153
+00:06:42.168 --> 00:06:43.936
+teasing out a very specific scenario in
+
+154
+00:06:43.936 --> 00:06:45.671
+which the given component should be shown.
+
+155
+00:06:45.872 --> 00:06:49.375
+The next argument is the parameters that this given component expects
+
+156
+00:06:49.675 --> 00:06:52.979
+to get from the agent when it is called upon.
+
+157
+00:06:53.379 --> 00:06:55.047
+This component, the showMyName component, is
+
+158
+00:06:55.047 --> 00:06:56.983
+the simplest component we can think of.
+
+159
+00:06:57.283 --> 00:06:59.986
+So there is really just a single argument it expects,
+
+160
+00:07:00.186 --> 00:07:04.157
+which is the name of the person, its type is a string.
+
+161
+00:07:04.157 --> 00:07:06.259
+We're using "zod" to specify the
+
+162
+00:07:06.259 --> 00:07:08.761
+schema of arguments this component is expecting.
+
+163
+00:07:08.761 --> 00:07:12.765
+The schema consists of both argument names and argument types.
+
+164
+00:07:12.765 --> 00:07:14.600
+In this case, the argument name is
+
+165
+00:07:14.600 --> 00:07:16.436
+name, and the argument type is string.
+
+166
+00:07:16.436 --> 00:07:19.739
+Zod is the TypeScript equivalent of Pydantic.
+
+167
+00:07:19.739 --> 00:07:22.742
+The next argument is the actual renderer for this component.
+
+168
+00:07:22.742 --> 00:07:26.946
+It's a function that takes the arguments we specified in the parameters
+
+169
+00:07:26.946 --> 00:07:31.451
+and maps it to a simple React component. In this case,
+
+170
+00:07:31.818 --> 00:07:35.688
+we're mapping the name argument that we specified previously
+
+171
+00:07:35.988 --> 00:07:39.792
+to a very simple inline React component that displays this name.
+
+172
+00:07:40.293 --> 00:07:42.161
+Now let's look at the next component.
+
+173
+00:07:42.161 --> 00:07:45.665
+This next component is a PieChart component.
+
+174
+00:07:46.065 --> 00:07:48.968
+And the description of this component tells the agent
+
+175
+00:07:48.968 --> 00:07:51.137
+that it can use this component to display data
+
+176
+00:07:51.137 --> 00:07:53.239
+in the form of a pie chart.
+
+177
+00:07:53.439 --> 00:07:56.642
+The agent also sees the types of this component,
+
+178
+00:07:56.642 --> 00:07:58.644
+it can infer from those types
+
+179
+00:07:58.845 --> 00:08:01.647
+when and how that component should be used.
+
+180
+00:08:02.048 --> 00:08:03.716
+In this case, we're importing the
+
+181
+00:08:03.716 --> 00:08:05.651
+props of a pre-built pie chart component.
+
+182
+00:08:05.852 --> 00:08:08.855
+These are standard React component props,
+
+183
+00:08:09.055 --> 00:08:10.690
+and if you'd like, you can go
+
+184
+00:08:10.690 --> 00:08:12.358
+and explore them to your heart's content.
+
+185
+00:08:12.558 --> 00:08:16.863
+Finally, the render function in this case is taking a React component
+
+186
+00:08:17.063 --> 00:08:19.632
+as opposed to specifying a function in line.
+
+187
+00:08:19.832 --> 00:08:21.834
+A React component is itself
+
+188
+00:08:22.101 --> 00:08:25.004
+a function which takes arguments of the props
+
+189
+00:08:25.004 --> 00:08:27.907
+and returns a rendered React component.
+
+190
+00:08:28.307 --> 00:08:31.310
+Lastly, we're registering a flightCard component to show flights to the user.
+
+191
+00:08:31.310 --> 00:08:32.845
+You'll also notice that we've added
+
+192
+00:08:32.845 --> 00:08:34.614
+another hook call to our app code,
+
+193
+00:08:34.614 --> 00:08:38.784
+useExampleSuggestions. This is going to populate our chat
+
+194
+00:08:38.784 --> 00:08:41.787
+with pre-built suggestions that we can click on
+
+195
+00:08:41.787 --> 00:08:43.189
+so that we don't have to
+
+196
+00:08:43.189 --> 00:08:44.790
+remember what to type into the prompt.
+
+197
+00:08:44.891 --> 00:08:46.559
+And lastly, you will see we
+
+198
+00:08:46.559 --> 00:08:48.494
+still have our CopilotChat component down here.
+
+199
+00:08:49.095 --> 00:08:51.497
+Once again, you could customize this component,
+
+200
+00:08:51.497 --> 00:08:54.100
+custom CSS or custom subcomponents
+
+201
+00:08:54.100 --> 00:08:57.303
+or build your own fully custom chat UI from scratch
+
+202
+00:08:57.503 --> 00:09:00.106
+using the headless useAgent hook.
+
+203
+00:09:00.473 --> 00:09:02.108
+If you want to explore the source
+
+204
+00:09:02.108 --> 00:09:04.110
+code of the PieChart and the FlightCard components,
+
+205
+00:09:04.210 --> 00:09:06.812
+you can click into the frontend folder and under components
+
+206
+00:09:06.913 --> 00:09:08.614
+you'll find both of these components laid out.
+
+207
+00:09:08.814 --> 00:09:12.018
+These are standard React components, there's nothing special there.
+
+208
+00:09:12.018 --> 00:09:14.120
+Now we're ready to display the app once again.
+
+209
+00:09:14.820 --> 00:09:16.255
+We'll once again embed the iframe
+
+210
+00:09:16.255 --> 00:09:17.924
+right here in the Jupyter for convenience.
+
+211
+00:09:18.324 --> 00:09:20.126
+Now we have three pre-built suggestions here.
+
+212
+00:09:20.126 --> 00:09:21.894
+When we press one of the suggestions,
+
+213
+00:09:21.994 --> 00:09:24.897
+it's going to populate our text with a pre-built prompt.
+
+214
+00:09:25.298 --> 00:09:27.099
+Let's try the first one, Show my name.
+
+215
+00:09:27.166 --> 00:09:29.268
+You see that the chat added a new prompt.
+
+216
+00:09:29.268 --> 00:09:31.370
+Please show my name in the chat.
+
+217
+00:09:31.370 --> 00:09:33.472
+The agent does not yet know my name,
+
+218
+00:09:33.472 --> 00:09:35.274
+so it's asking me, hey, what is your name?
+
+219
+00:09:35.274 --> 00:09:37.376
+so I can display for you. Well, my name is Atai.
+
+220
+00:09:37.977 --> 00:09:40.947
+Now it said my name. My name is appearing in blue background
+
+221
+00:09:40.947 --> 00:09:43.749
+because it's no longer replying in text.
+
+222
+00:09:43.749 --> 00:09:48.321
+It's using the show my name component we defined earlier, which
+
+223
+00:09:48.321 --> 00:09:51.223
+shows my name in a text wrapped in a blue rectangle.
+
+224
+00:09:51.724 --> 00:09:53.726
+Now let's move on to the next component.
+
+225
+00:09:54.126 --> 00:09:56.128
+Uh, Pie chart.
+
+226
+00:09:56.228 --> 00:09:58.230
+You see here when we click this suggestion, there's just a pre-canned
+
+227
+00:09:58.264 --> 00:09:59.865
+text that goes in there.
+
+228
+00:10:00.266 --> 00:10:03.269
+And the agent replied with a fully featured component
+
+229
+00:10:03.569 --> 00:10:06.072
+that we rendered and controlled from end to end.
+
+230
+00:10:06.572 --> 00:10:08.341
+Isn't that nice? Lastly, let's check
+
+231
+00:10:08.341 --> 00:10:10.376
+out the last suggestion, the flight card.
+
+232
+00:10:10.476 --> 00:10:12.678
+And we see here a flight component fully rendered.
+
+233
+00:10:13.079 --> 00:10:16.682
+As you see here, these are just simple, straightforward React components.
+
+234
+00:10:17.083 --> 00:10:19.585
+And so you can fully customize them to your heart's content
+
+235
+00:10:20.086 --> 00:10:22.388
+and even make them fully interactive, including
+
+236
+00:10:22.788 --> 00:10:24.690
+with other parts of your application. That's it.
+
+237
+00:10:24.890 --> 00:10:26.792
+You've now mastered Controlled Generative UI,
+
+238
+00:10:27.159 --> 00:10:30.062
+the workhorse of a Generative UI universe.

@@ -1,0 +1,294 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.202
+I'm excited to welcome you to this course
+
+2
+00:00:02.202 --> 00:00:04.771
+on building interactive agents with generative UI,
+
+3
+00:00:04.771 --> 00:00:06.473
+built in partnership with CopilotKit.
+
+4
+00:00:06.473 --> 00:00:09.075
+Building a capable AI agent is hard work.
+
+5
+00:00:09.075 --> 00:00:11.578
+But once you've done that, you get a new challenge:
+
+6
+00:00:11.578 --> 00:00:13.313
+getting it to users in a
+
+7
+00:00:13.313 --> 00:00:15.281
+way that they enjoy interacting with it,
+
+8
+00:00:15.482 --> 00:00:19.886
+which might require much more than building yet another chatbot interface.
+
+9
+00:00:20.387 --> 00:00:23.089
+Think about what a good agent interface might look like.
+
+10
+00:00:23.423 --> 00:00:26.426
+Instead of it outputting long paragraphs of text,
+
+11
+00:00:26.826 --> 00:00:29.896
+maybe the user would rather just get a simple form to fill
+
+12
+00:00:29.896 --> 00:00:31.898
+or a chart to interact with.
+
+13
+00:00:31.998 --> 00:00:34.901
+The agent doesn't just answer in plain text,
+
+14
+00:00:34.901 --> 00:00:37.904
+it can give the user something to see or act on.
+
+15
+00:00:38.104 --> 00:00:40.407
+In this course, you'll learn to build that interface
+
+16
+00:00:40.407 --> 00:00:43.410
+using three approaches that generative UI,
+
+17
+00:00:43.410 --> 00:00:45.211
+where the UI, the user interfaces,
+
+18
+00:00:45.412 --> 00:00:49.215
+generated. The first approach is controlled components
+
+19
+00:00:49.215 --> 00:00:52.218
+where you define exactly what the agent can show.
+
+20
+00:00:52.852 --> 00:00:55.055
+The second is declarative UI
+
+21
+00:00:55.255 --> 00:00:57.924
+with the framework A2UI,
+
+22
+00:00:58.158 --> 00:01:02.629
+which is an open spec originated by Google and co-developed with CopilotKit,
+
+23
+00:01:03.029 --> 00:01:06.132
+where the agent generates layouts from a schema.
+
+24
+00:01:06.733 --> 00:01:10.737
+The third is open-ended UI with MCP apps, where the agent
+
+25
+00:01:11.237 --> 00:01:15.742
+surfaces full interactive experiences like whiteboards and approval flows
+
+26
+00:01:15.742 --> 00:01:19.446
+directly inside your product. Your instructor is Atai Barkai,
+
+27
+00:01:19.846 --> 00:01:22.415
+who is co-founder of CopilotKit, the team behind
+
+28
+00:01:22.415 --> 00:01:25.351
+the AG-UI protocol that this course is built on.
+
+29
+00:01:25.618 --> 00:01:26.820
+Thank you, Andrew.
+
+30
+00:01:26.920 --> 00:01:29.222
+Every interaction between people and technology
+
+31
+00:01:29.222 --> 00:01:31.224
+is increasingly mediated by agents.
+
+32
+00:01:31.624 --> 00:01:33.593
+And yet, as we film this course,
+
+33
+00:01:33.626 --> 00:01:35.995
+most agents still talk to users in plain text,
+
+34
+00:01:36.396 --> 00:01:38.398
+which is a lot like the command line
+
+35
+00:01:38.431 --> 00:01:40.700
+MS-DOS era, of personal computing,
+
+36
+00:01:41.234 --> 00:01:44.938
+powerful for early adopters but not yet built for mass adoption.
+
+37
+00:01:45.338 --> 00:01:47.607
+The Windows and Mac era changed that
+
+38
+00:01:47.607 --> 00:01:50.243
+and brought full-featured applications that anybody could use.
+
+39
+00:01:50.844 --> 00:01:52.846
+AI is going through the same transition now,
+
+40
+00:01:53.546 --> 00:01:55.849
+and all UI is becoming AI.
+
+41
+00:01:56.149 --> 00:01:59.419
+When a user asks for a report, the agent should build it.
+
+42
+00:01:59.752 --> 00:02:01.354
+When they need to approve something,
+
+43
+00:02:01.354 --> 00:02:03.256
+the agent should show them a form.
+
+44
+00:02:03.556 --> 00:02:06.659
+When they need to explore data, the agent should render a chart.
+
+45
+00:02:06.960 --> 00:02:09.762
+You'll start by connecting a LangChain Deep Agent
+
+46
+00:02:09.762 --> 00:02:13.266
+to a React front end using CopilotKit and AG-UI.
+
+47
+00:02:13.867 --> 00:02:17.270
+From there, you'll build across the full generative UI spectrum
+
+48
+00:02:17.470 --> 00:02:21.975
+from controlled generative UI with handcrafted components that render on demand,
+
+49
+00:02:22.375 --> 00:02:24.377
+to declarative generative UI
+
+50
+00:02:24.477 --> 00:02:28.081
+where the agent assembles UIs from a component catalog of building blocks,
+
+51
+00:02:28.181 --> 00:02:30.383
+to open-ended generative UI.
+
+52
+00:02:30.650 --> 00:02:33.520
+with app experiences powered first by MCP apps
+
+53
+00:02:33.520 --> 00:02:35.522
+and then by full app sandboxes.
+
+54
+00:02:36.022 --> 00:02:38.124
+By the end of this course, you have built
+
+55
+00:02:38.124 --> 00:02:41.327
+a full-stack agent app that renders charts
+
+56
+00:02:41.327 --> 00:02:42.929
+and cards on demand,
+
+57
+00:02:43.329 --> 00:02:46.833
+surfaces a live whiteboard through your custom apps
+
+58
+00:02:47.133 --> 00:02:49.068
+and keeps a shared to-do list in
+
+59
+00:02:49.068 --> 00:02:51.037
+sync between the agents and the UI.
+
+60
+00:02:51.638 --> 00:02:53.239
+CopilotKit is open source,
+
+61
+00:02:53.439 --> 00:02:55.608
+and it supports all three of the
+
+62
+00:02:55.608 --> 00:02:57.810
+major generative UI patterns in one framework.
+
+63
+00:02:58.411 --> 00:03:01.281
+It also has first-party integrations with LangGraph,
+
+64
+00:03:01.281 --> 00:03:04.117
+Google Cloud, AWS, Microsoft Azure, and others.
+
+65
+00:03:04.417 --> 00:03:06.219
+Many people have worked to create this course.
+
+66
+00:03:06.319 --> 00:03:09.822
+I'd like to thank from CopilotKit, Uli Barkai and Tyler Slaton.
+
+67
+00:03:10.123 --> 00:03:14.227
+From DeepLearning.AI, Summer Rae also worked on this course. In lesson one,
+
+68
+00:03:14.327 --> 00:03:16.095
+you'll walk through the three major pillars
+
+69
+00:03:16.095 --> 00:03:18.131
+of the generative UI spectrum side by side.
+
+70
+00:03:18.698 --> 00:03:21.401
+what makes each one different and when you'd use each one.
+
+71
+00:03:22.001 --> 00:03:23.570
+By the end, you'll have the mental model
+
+72
+00:03:23.570 --> 00:03:25.305
+for everything you're going to build in this course.
+
+73
+00:03:26.372 --> 00:03:28.942
+So, let's jump in and get interactive.

@@ -1,0 +1,114 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:04.571
+Congratulations. You've now built across the entire Generative UI spectrum.
+
+2
+00:00:04.771 --> 00:00:07.173
+You started with controlled Generative UI.
+
+3
+00:00:07.674 --> 00:00:11.778
+where you, as the programmer, had full control over every single component.
+
+4
+00:00:11.978 --> 00:00:14.481
+You then moved to declarative Generative UI.
+
+5
+00:00:15.148 --> 00:00:18.752
+We defined building blocks that the agents could assemble on demand.
+
+6
+00:00:18.952 --> 00:00:21.755
+You then connected your agent to third-party MCP apps,
+
+7
+00:00:22.155 --> 00:00:25.658
+and you even explored fully open-ended Generative UI.
+
+8
+00:00:25.692 --> 00:00:28.495
+where the agent creates interfaces from scratch.
+
+9
+00:00:28.495 --> 00:00:30.897
+Finally, you built a shared state application
+
+10
+00:00:30.897 --> 00:00:33.600
+where the agent and the frontend stay in sync
+
+11
+00:00:33.600 --> 00:00:37.203
+beyond the chat window. The key takeaway is this,
+
+12
+00:00:37.237 --> 00:00:39.839
+There's no one approach to rule them all.
+
+13
+00:00:40.040 --> 00:00:42.442
+Each part of the Generative UI spectrum
+
+14
+00:00:42.442 --> 00:00:45.245
+serves a different need. And now you have the tools
+
+15
+00:00:45.245 --> 00:00:47.447
+to mix and match those in your own applications.
+
+16
+00:00:47.647 --> 00:00:51.618
+And because everything you built uses the open-source AG-UI protocol,
+
+17
+00:00:51.951 --> 00:00:56.951
+These patterns work across the entire agentic ecosystem, not just within CopilotKit.
+
+18
+00:00:57.357 --> 00:01:01.461
+This course explored the first layer of the agentic frontend stack.
+
+19
+00:01:01.761 --> 00:01:04.697
+But there's a lot more. From the persistence layer
+
+20
+00:01:04.697 --> 00:01:07.600
+of all of this rich interactivity to the insight layer,
+
+21
+00:01:07.700 --> 00:01:09.536
+that allows you to understand how your
+
+22
+00:01:09.536 --> 00:01:11.604
+users are interacting with your agents in production.
+
+23
+00:01:11.704 --> 00:01:15.208
+All the way to the self-improvement layer that allows your agents
+
+24
+00:01:15.508 --> 00:01:18.912
+to learn across interactions and improve on their own over time.
+
+25
+00:01:19.412 --> 00:01:21.514
+We hope you'll join us to keep learning.
+
+26
+00:01:21.614 --> 00:01:24.217
+You can start by exploring the CopilotKit docs
+
+27
+00:01:24.317 --> 00:01:26.219
+or by joining the open source community.
+
+28
+00:01:26.619 --> 00:01:28.888
+Thank you for taking this course and happy building.

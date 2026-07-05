@@ -1,0 +1,1090 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.200
+In the previous lessons, you built agents that present rich UIs,
+
+2
+00:00:03.200 --> 00:00:05.400
+but only inside of the chat window.
+
+3
+00:00:05.400 --> 00:00:08.198
+In this lesson, you'll go beyond the chat window
+
+4
+00:00:08.198 --> 00:00:09.999
+to build an app where the agent
+
+5
+00:00:09.999 --> 00:00:11.800
+and the frontend share live state.
+
+6
+00:00:11.800 --> 00:00:14.288
+We will build an agentic take
+
+7
+00:00:14.288 --> 00:00:16.388
+on the classic to-do app,
+
+8
+00:00:16.487 --> 00:00:19.088
+where the agent creates to-dos from the backend,
+
+9
+00:00:19.487 --> 00:00:22.088
+users edit or complete those in the front end,
+
+10
+00:00:22.288 --> 00:00:24.588
+and both sides stay in sync automatically.
+
+11
+00:00:24.987 --> 00:00:29.487
+This state synchronization is the foundation for building your own Claude code
+
+12
+00:00:29.812 --> 00:00:32.612
+or Cursor style application across different verticals.
+
+13
+00:00:32.811 --> 00:00:35.612
+from legal to accounting to marketing to, you name it.
+
+14
+00:00:36.311 --> 00:00:38.468
+So, let's get to it. We are
+
+15
+00:00:38.468 --> 00:00:40.625
+now venturing beyond the isolated chat interaction
+
+16
+00:00:40.625 --> 00:00:42.825
+to explore fully featured full-stack agents,
+
+17
+00:00:42.825 --> 00:00:44.825
+which are designed to feel like true co-workers.
+
+18
+00:00:45.125 --> 00:00:47.825
+It turns out that a small set of agent user interaction primitives
+
+19
+00:00:47.825 --> 00:00:50.625
+are used by virtually all successful full-stack agents.
+
+20
+00:00:50.924 --> 00:00:53.125
+Before we explore a couple of those technical primitives,
+
+21
+00:00:53.125 --> 00:00:55.458
+it's worth taking a step back and briefly asking, what
+
+22
+00:00:55.458 --> 00:00:58.024
+makes for a great Fullstack Agentic App from a product standpoint?
+
+23
+00:00:58.325 --> 00:01:00.725
+Of course, a great intuitive user experience is the foundation.
+
+24
+00:01:00.924 --> 00:01:02.908
+As we mentioned before, there is no reason
+
+25
+00:01:02.908 --> 00:01:04.459
+to run away from the chat modality
+
+26
+00:01:04.459 --> 00:01:06.009
+which has taken the world by storm.
+
+27
+00:01:06.409 --> 00:01:09.509
+And remember that chat also does not mean text only interaction.
+
+28
+00:01:09.909 --> 00:01:12.808
+You want to build augmented chat, which leverages
+
+29
+00:01:12.808 --> 00:01:15.709
+Generative UI, voice interactions, and perhaps even video.
+
+30
+00:01:15.909 --> 00:01:18.009
+A great chat experience also gives users
+
+31
+00:01:18.009 --> 00:01:20.108
+visibility into what the agent is doing.
+
+32
+00:01:20.209 --> 00:01:22.909
+To keep them engaged, but more importantly, to earn user's trust
+
+33
+00:01:22.909 --> 00:01:25.009
+and to give users the opportunity to
+
+34
+00:01:25.009 --> 00:01:27.409
+steer the agent to better address their needs.
+
+35
+00:01:27.992 --> 00:01:30.192
+So this is a good place to experiment. Just as critically,
+
+36
+00:01:30.192 --> 00:01:32.492
+chat as the anchor of a agentic interaction
+
+37
+00:01:32.492 --> 00:01:34.692
+does not mean that chat exists in isolation.
+
+38
+00:01:34.992 --> 00:01:38.293
+The agent should feel like a native part of a larger application.
+
+39
+00:01:38.793 --> 00:01:40.893
+It should be able to leverage any data, context,
+
+40
+00:01:40.992 --> 00:01:43.793
+connectors, or actions associated with the application at large.
+
+41
+00:01:44.192 --> 00:01:45.406
+A good rule of thumb is that
+
+42
+00:01:45.406 --> 00:01:46.793
+if an end user can take some action
+
+43
+00:01:46.793 --> 00:01:48.992
+or learn some fact using the application at large,
+
+44
+00:01:49.293 --> 00:01:51.185
+they should also be able to take that same
+
+45
+00:01:51.185 --> 00:01:53.076
+action or learn the same fact via the chat.
+
+46
+00:01:53.076 --> 00:01:56.876
+The agent must also have deep access to the application's real-time context,
+
+47
+00:01:56.977 --> 00:01:59.277
+meaning to what the user is currently looking at
+
+48
+00:01:59.376 --> 00:02:01.876
+and to the actions currently available to the user.
+
+49
+00:02:02.076 --> 00:02:04.277
+We can tease out these qualities with a few examples.
+
+50
+00:02:04.576 --> 00:02:06.876
+In Cursor and in GitHub Copilot,
+
+51
+00:02:06.977 --> 00:02:08.377
+the agent isn't a chat window you
+
+52
+00:02:08.377 --> 00:02:09.977
+switch to, it's integrated into the workspace itself.
+
+53
+00:02:10.276 --> 00:02:13.477
+It reads your code, understands your project, edits files, runs commands,
+
+54
+00:02:13.676 --> 00:02:15.276
+all without you leaving the editor.
+
+55
+00:02:15.576 --> 00:02:17.877
+The agent and the tool are a single entity.
+
+56
+00:02:18.161 --> 00:02:19.928
+In Notion AI, the agent is
+
+57
+00:02:19.928 --> 00:02:21.991
+automatically aware of what's on the page.
+
+58
+00:02:21.991 --> 00:02:24.741
+You don't need to paste context or explain what you're working on.
+
+59
+00:02:24.741 --> 00:02:27.360
+It already knows because it's embedded in the document,
+
+60
+00:02:27.360 --> 00:02:30.907
+not sitting beside it. In Harvey, a legal AI assistant,
+
+61
+00:02:30.907 --> 00:02:33.108
+the agent doesn't just answer questions,
+
+62
+00:02:33.108 --> 00:02:35.407
+it takes actions alongside the user,
+
+63
+00:02:35.407 --> 00:02:37.807
+drafting documents, analyzing contracts,
+
+64
+00:02:37.807 --> 00:02:40.407
+operating inside the same workflow the lawyer is using.
+
+65
+00:02:40.407 --> 00:02:42.407
+Again, it's a collaborator, not a chatbot.
+
+66
+00:02:42.707 --> 00:02:45.907
+It turns out that agentic applications across very different domains
+
+67
+00:02:45.907 --> 00:02:48.707
+end up being built atop the same small set of core primitives.
+
+68
+00:02:48.707 --> 00:02:50.590
+One of those building blocks is the Generative
+
+69
+00:02:50.590 --> 00:02:52.707
+UI spectrum that we explored in the previous lessons.
+
+70
+00:02:53.207 --> 00:02:56.207
+In this lesson, we'll look at two additional technical building blocks.
+
+71
+00:02:56.286 --> 00:02:58.885
+Frontend Tool calling and Shared State synchronization.
+
+72
+00:02:58.885 --> 00:03:00.686
+We will explore them from two perspectives.
+
+73
+00:03:00.686 --> 00:03:02.485
+First, from the standpoint of developers,
+
+74
+00:03:02.485 --> 00:03:06.186
+the cases you should know about in day-to-day development. And second, conceptually,
+
+75
+00:03:06.186 --> 00:03:09.086
+so you can understand how these paradigms work under the hood.
+
+76
+00:03:09.352 --> 00:03:11.451
+First, frontend tool calls.
+
+77
+00:03:11.451 --> 00:03:14.352
+Frontend tool calls are directly analogous to the standard backend tool calls
+
+78
+00:03:14.352 --> 00:03:16.852
+you're likely already familiar with.
+
+79
+00:03:16.852 --> 00:03:19.352
+The difference is that they allow an agent to execute an action
+
+80
+00:03:19.352 --> 00:03:21.852
+directly in the frontend application, not just where it's running.
+
+81
+00:03:21.852 --> 00:03:25.352
+In React, you register frontend tools using the useFrontendTool hook,
+
+82
+00:03:25.352 --> 00:03:28.352
+specifying the arguments expected by the tool
+
+83
+00:03:28.352 --> 00:03:30.852
+and the handler to be executed when the tool is called.
+
+84
+00:03:30.852 --> 00:03:32.852
+If your handler returns a result,
+
+85
+00:03:32.852 --> 00:03:34.852
+that result is passed back to the agent
+
+86
+00:03:34.852 --> 00:03:37.252
+as a standard tool call result. You can register
+
+87
+00:03:37.286 --> 00:03:39.286
+frontend tool calls in a centralized fashion
+
+88
+00:03:39.286 --> 00:03:41.786
+when your application initializes, or you can disperse their definitions
+
+89
+00:03:41.786 --> 00:03:44.086
+across different parts of the app, so that they load and unload
+
+90
+00:03:44.086 --> 00:03:47.186
+automatically as users traverse the application.
+
+91
+00:03:47.385 --> 00:03:49.135
+Under the hood, these tool calls are passed
+
+92
+00:03:49.135 --> 00:03:50.885
+to the agentic backend in a standard format.
+
+93
+00:03:51.086 --> 00:03:53.786
+When the agent then decides to execute a frontend tool,
+
+94
+00:03:53.786 --> 00:03:55.485
+the AG-UI recognizes that,
+
+95
+00:03:55.485 --> 00:03:57.286
+pauses the backend execution,
+
+96
+00:03:57.286 --> 00:03:59.086
+hands off control to the frontend,
+
+97
+00:03:59.086 --> 00:04:02.186
+executes that tool, and then transfers control
+
+98
+00:04:02.186 --> 00:04:04.786
+back to the agentic backend once execution is complete.
+
+99
+00:04:05.219 --> 00:04:06.835
+Once again, you don't have to
+
+100
+00:04:06.835 --> 00:04:08.719
+worry about all this complexity when developing,
+
+101
+00:04:08.819 --> 00:04:11.719
+you simply call the useFrontendTool hook.
+
+102
+00:04:12.120 --> 00:04:14.620
+Next, shared state synchronization.
+
+103
+00:04:14.719 --> 00:04:17.720
+By default, the agent and the front end are disconnected.
+
+104
+00:04:17.819 --> 00:04:19.720
+The agent does not know what the user sees,
+
+105
+00:04:19.819 --> 00:04:22.019
+and the front end does not know what the agent knows.
+
+106
+00:04:22.345 --> 00:04:24.915
+Shared state is the primitive that solves this.
+
+107
+00:04:25.314 --> 00:04:29.415
+To use shared state synchronization, use your agent's standard state abstractions.
+
+108
+00:04:29.714 --> 00:04:32.235
+In this lesson, we will use LangChain's agent state.
+
+109
+00:04:32.634 --> 00:04:34.845
+On the frontend, use the useAgent hook,
+
+110
+00:04:35.144 --> 00:04:37.925
+which exposes a reactively updated, typed state.
+
+111
+00:04:38.197 --> 00:04:40.396
+object. Under the hood, here's how this works.
+
+112
+00:04:40.406 --> 00:04:42.497
+As the agent run, it can update its state.
+
+113
+00:04:42.507 --> 00:04:45.096
+When it does so, it can then update the frontend state
+
+114
+00:04:45.107 --> 00:04:47.096
+by emitting state delta events,
+
+115
+00:04:47.107 --> 00:04:49.096
+meaning it communicates the changes
+
+116
+00:04:49.107 --> 00:04:51.697
+that needs to be applied to the frontend state
+
+117
+00:04:51.706 --> 00:04:54.048
+so that it remains in sync with the backend state.
+
+118
+00:04:54.048 --> 00:04:56.848
+These state delta events are themselves streamed
+
+119
+00:04:56.848 --> 00:04:59.149
+because they're often generated by an LLM.
+
+120
+00:04:59.149 --> 00:05:02.048
+The front end can also emit state delta events
+
+121
+00:05:02.048 --> 00:05:04.949
+to support the state modifications that are coming from the user.
+
+122
+00:05:04.949 --> 00:05:07.949
+Finally, when needed, conflict resolution between the two states
+
+123
+00:05:07.949 --> 00:05:10.548
+is handled via AG-UI middleware.
+
+124
+00:05:10.867 --> 00:05:13.067
+Once again, these are implementation details
+
+125
+00:05:13.067 --> 00:05:15.367
+you do not need to be aware of in day-to-day development.
+
+126
+00:05:15.367 --> 00:05:17.367
+Simply use the useAgent hook.
+
+127
+00:05:17.666 --> 00:05:20.666
+In this lesson, you will build a canvas agentic to-do app
+
+128
+00:05:20.666 --> 00:05:23.867
+that combines a chat interface with a traditional to-do board.
+
+129
+00:05:24.067 --> 00:05:26.666
+You will expose a open to-do canvas tool to the agent
+
+130
+00:05:26.666 --> 00:05:28.374
+to allow the agent to interact
+
+131
+00:05:28.374 --> 00:05:30.367
+with the application on the user's behalf.
+
+132
+00:05:30.666 --> 00:05:33.367
+And you will use state synchronization to keep the front-end
+
+133
+00:05:33.367 --> 00:05:36.367
+representation of to-dos synced bidirectionally
+
+134
+00:05:36.367 --> 00:05:39.963
+with the agent's representation of to-dos. Let's look at the code.
+
+135
+00:05:39.963 --> 00:05:42.764
+We're going to be building an agentic to-do app
+
+136
+00:05:43.363 --> 00:05:45.564
+that will venture outside of the chat window
+
+137
+00:05:45.564 --> 00:05:47.963
+to a fully featured full-stack agentic application.
+
+138
+00:05:48.163 --> 00:05:51.564
+Just like before, we'll start with our reset lesson cell.
+
+139
+00:05:51.569 --> 00:05:53.670
+to make sure we're on a clean state.
+
+140
+00:05:54.470 --> 00:05:56.470
+We'll set up our project dependencies.
+
+141
+00:05:56.670 --> 00:05:59.470
+Once again, starting with our Python dependencies,
+
+142
+00:06:02.370 --> 00:06:04.470
+and followed by our frontend dependencies.
+
+143
+00:06:08.170 --> 00:06:11.670
+Before we move on, we'll also load up our API keys
+
+144
+00:06:11.769 --> 00:06:13.870
+that are provided by the DeepLearning platform.
+
+145
+00:06:17.553 --> 00:06:19.754
+We're now ready to load back
+
+146
+00:06:20.254 --> 00:06:21.853
+our familiar starting point
+
+147
+00:06:22.153 --> 00:06:24.454
+by starting the frontend and the agent server.
+
+148
+00:06:24.675 --> 00:06:27.975
+We'll once again use a standard LangChain deep agent
+
+149
+00:06:28.274 --> 00:06:30.475
+and serve it behind a FastAPI server.
+
+150
+00:06:30.875 --> 00:06:32.675
+Now we're ready to start our frontend.
+
+151
+00:06:34.675 --> 00:06:37.175
+Once again, we have our basic chat setup
+
+152
+00:06:37.175 --> 00:06:39.475
+and ready for modification and augmentation.
+
+153
+00:06:39.675 --> 00:06:44.175
+We're going to amplify this basic chat with frontend tool calling
+
+154
+00:06:44.175 --> 00:06:47.475
+as well as state synchronization between the frontend and the agent.
+
+155
+00:06:47.675 --> 00:06:50.875
+We'll begin by implementing shared state between the agent and the frontend.
+
+156
+00:06:50.923 --> 00:06:55.023
+First, we're going to define a schema for our agent state.
+
+157
+00:06:55.023 --> 00:06:58.923
+Our agent state consists of an array of to-dos, where each to-do
+
+158
+00:06:58.923 --> 00:07:01.423
+has an ID, a title, and a flag
+
+159
+00:07:01.423 --> 00:07:04.023
+indicating whether the to-do has been completed or not.
+
+160
+00:07:04.023 --> 00:07:06.023
+We've defined our agent state.
+
+161
+00:07:06.023 --> 00:07:08.411
+We're now going to define tools that will allow our
+
+162
+00:07:08.411 --> 00:07:10.911
+agent to interact with its own state.
+
+163
+00:07:11.211 --> 00:07:14.211
+The first tool we define is the manage_todos tool.
+
+164
+00:07:14.511 --> 00:07:17.411
+This tool lets the agent update its own state
+
+165
+00:07:17.411 --> 00:07:20.211
+using the Command function provided by LangChain.
+
+166
+00:07:20.511 --> 00:07:22.911
+The second tool we provide is the get_todos tool,
+
+167
+00:07:22.911 --> 00:07:25.511
+which allows the agent to read its own state.
+
+168
+00:07:25.899 --> 00:07:29.100
+Finally, we put both of these tools in an array
+
+169
+00:07:29.100 --> 00:07:32.699
+so that we can easily populate them into our agent later.
+
+170
+00:07:33.399 --> 00:07:34.784
+All right. Now that we have
+
+171
+00:07:34.784 --> 00:07:36.399
+the agent state and the tools defined,
+
+172
+00:07:36.399 --> 00:07:39.100
+we're going to be updating our agent to take advantage of those.
+
+173
+00:07:39.408 --> 00:07:42.108
+This code replaces the previous agent we defined
+
+174
+00:07:42.208 --> 00:07:44.708
+with a new LangChain deep agent.
+
+175
+00:07:44.807 --> 00:07:47.108
+This LangChain deep agent is still very basic
+
+176
+00:07:47.208 --> 00:07:51.007
+with a few key changes. First, it specifies a state schema.
+
+177
+00:07:51.117 --> 00:07:53.916
+using the AgentState type we created earlier.
+
+178
+00:07:54.117 --> 00:07:56.317
+Second, it specifies the todo_tools
+
+179
+00:07:56.317 --> 00:07:58.416
+that are now made available to the agent.
+
+180
+00:07:58.617 --> 00:08:01.916
+Lastly, just like before, we're specifying CopilotKitMiddleware
+
+181
+00:08:01.916 --> 00:08:04.292
+to allow the CopilotKit and the UI stacks
+
+182
+00:08:04.292 --> 00:08:06.817
+to easily interact with the LangChain agent.
+
+183
+00:08:06.824 --> 00:08:08.824
+Now, that we set up of the agent, it's time to set up the
+
+184
+00:08:08.824 --> 00:08:10.824
+frontend to take advantage of this new functionality.
+
+185
+00:08:10.875 --> 00:08:13.625
+Now we're going to introduce frontend tool calls to our agent,
+
+186
+00:08:13.675 --> 00:08:15.798
+as well as bind the agent state
+
+187
+00:08:15.798 --> 00:08:18.225
+we just defined to our frontend state bidirectionally.
+
+188
+00:08:18.274 --> 00:08:22.524
+Once again, because we're editing TypeScript code inside of this Jupyter notebook,
+
+189
+00:08:22.531 --> 00:08:25.331
+we must fully overwrite the file that was defined before.
+
+190
+00:08:25.432 --> 00:08:27.732
+But let's walk through the changes we made.
+
+191
+00:08:27.831 --> 00:08:30.331
+First, we're going to define a simple local variable
+
+192
+00:08:30.432 --> 00:08:32.631
+that our application is going to take advantage of.
+
+193
+00:08:32.673 --> 00:08:35.874
+todosOpen and setTodosOpen initially sets to false.
+
+194
+00:08:36.274 --> 00:08:38.438
+We're then going to define a frontend tool
+
+195
+00:08:38.438 --> 00:08:40.874
+that's going to be made available to the agent
+
+196
+00:08:40.874 --> 00:08:43.274
+so that the agent can interact with this local variable.
+
+197
+00:08:43.673 --> 00:08:46.573
+We are using the useFrontendTool hook provided by CopilotKit,
+
+198
+00:08:46.874 --> 00:08:49.374
+which connects to AG-UI's frontend tool concept.
+
+199
+00:08:49.974 --> 00:08:51.747
+And just like every other tool, this
+
+200
+00:08:51.747 --> 00:08:53.774
+frontend tool can provide a name, a description,
+
+201
+00:08:54.274 --> 00:08:57.974
+parameters, specified once again as a Zod schema.
+
+202
+00:08:58.577 --> 00:09:02.508
+As a reminder, Zod is the TypeScript equivalent of Pydantic.
+
+203
+00:09:02.807 --> 00:09:05.177
+And finally, our frontend tool can have a handler
+
+204
+00:09:05.177 --> 00:09:06.942
+that will be executed when the agent
+
+205
+00:09:06.942 --> 00:09:08.957
+decides to call this tool on the frontend.
+
+206
+00:09:09.187 --> 00:09:11.687
+Notice that the frontend tool handler can be asynchronous.
+
+207
+00:09:11.888 --> 00:09:14.988
+Under the hood, whenever an agent decides to call a frontend tool,
+
+208
+00:09:15.187 --> 00:09:17.687
+the AG-UI middleware hands off execution from
+
+209
+00:09:17.687 --> 00:09:20.187
+the agentic backend to the agentic frontend.
+
+210
+00:09:20.388 --> 00:09:22.488
+Once a result is provided by the frontend,
+
+211
+00:09:22.488 --> 00:09:24.587
+it is propagated back to the agentic backend.
+
+212
+00:09:24.633 --> 00:09:26.732
+and the agentic loop continues.
+
+213
+00:09:26.732 --> 00:09:29.633
+To recap what we did here, we created a local variable
+
+214
+00:09:29.633 --> 00:09:32.033
+that allows the application to open a to-dos panel.
+
+215
+00:09:32.033 --> 00:09:34.332
+Initially this to-do's panel is set to false.
+
+216
+00:09:34.332 --> 00:09:36.732
+And we give the agent the ability to interact
+
+217
+00:09:36.732 --> 00:09:39.133
+with this variable via a dedicated frontend tool call.
+
+218
+00:09:39.332 --> 00:09:40.948
+Now we're going to subscribe to
+
+219
+00:09:40.948 --> 00:09:42.832
+our agent state using the useAgent hook.
+
+220
+00:09:43.153 --> 00:09:45.952
+useAgent is an incredibly powerful primitive
+
+221
+00:09:46.352 --> 00:09:48.352
+for the agentic age on the frontend.
+
+222
+00:09:48.452 --> 00:09:50.352
+It gives you everything you need on the frontend
+
+223
+00:09:50.452 --> 00:09:53.452
+in order to interact with agents with all of the messy details
+
+224
+00:09:53.552 --> 00:09:55.253
+automatically taken care of for you.
+
+225
+00:09:55.346 --> 00:09:59.046
+In this case, we're going to be using useAgent's state variable
+
+226
+00:09:59.346 --> 00:10:03.046
+in order to bidirectionally tie our frontend state to the agent state.
+
+227
+00:10:03.346 --> 00:10:06.846
+Finally, we're returning the React component associated with this application now.
+
+228
+00:10:07.145 --> 00:10:09.546
+The most important part I would like to point out here
+
+229
+00:10:09.645 --> 00:10:12.846
+is the TodoList component, which accepts a state getter
+
+230
+00:10:12.946 --> 00:10:15.346
+and a state setter for its own to-dos.
+
+231
+00:10:15.654 --> 00:10:18.154
+The state getter is simply reading
+
+232
+00:10:18.154 --> 00:10:20.154
+agent.state.todos.
+
+233
+00:10:20.455 --> 00:10:22.455
+The state setter is simply setting
+
+234
+00:10:22.455 --> 00:10:24.455
+agent.state with new todos.
+
+235
+00:10:24.754 --> 00:10:26.315
+This is quite profound.
+
+236
+00:10:26.315 --> 00:10:30.125
+We see here that the useAgent hook provides us with full-featured
+
+237
+00:10:30.125 --> 00:10:32.725
+state synchronization between our front end and our back end.
+
+238
+00:10:32.945 --> 00:10:36.225
+Just like local standard React state, the state is reactive,
+
+239
+00:10:36.445 --> 00:10:38.485
+which we can take advantage of in our application.
+
+240
+00:10:38.559 --> 00:10:41.549
+And every act of state update streaming
+
+241
+00:10:41.549 --> 00:10:44.389
+and context resolution is automatically handled for us.
+
+242
+00:10:44.789 --> 00:10:48.460
+As application developers, we can simply treat it as standard state
+
+243
+00:10:48.460 --> 00:10:51.240
+as if it was just defined in our local application.
+
+244
+00:10:51.759 --> 00:10:54.440
+Under the hood, it's automatically kept in sync with our agentic backend.
+
+245
+00:10:54.784 --> 00:10:56.784
+All right, let's give it a try.
+
+246
+00:10:56.784 --> 00:10:58.784
+Once again, we're going to use the display_app helper
+
+247
+00:10:58.784 --> 00:11:00.585
+to display our application in line.
+
+248
+00:11:00.784 --> 00:11:02.784
+All right, you see here we have now a chat
+
+249
+00:11:02.784 --> 00:11:05.585
+with a new Todos button. Let's click it to see what happens.
+
+250
+00:11:05.585 --> 00:11:08.585
+When we click it, we see a panel opening from the side
+
+251
+00:11:08.585 --> 00:11:10.985
+with Todos. Right now, there are no Todos defined as of yet.
+
+252
+00:11:11.369 --> 00:11:13.869
+If we wanted to, we could interact with this locally.
+
+253
+00:11:14.168 --> 00:11:16.869
+Under the hood, remember, every time we do this,
+
+254
+00:11:16.869 --> 00:11:18.568
+the agent.state is updated.
+
+255
+00:11:18.869 --> 00:11:21.168
+and we can also close it
+
+256
+00:11:21.168 --> 00:11:23.168
+and allow our agent to edit our to-dos for us.
+
+257
+00:11:23.869 --> 00:11:27.869
+Remember, the agent can also set the to-dos open variable
+
+258
+00:11:27.869 --> 00:11:29.869
+that decides whether the to-dos
+
+259
+00:11:30.225 --> 00:11:32.326
+panel is open or closed.
+
+260
+00:11:32.426 --> 00:11:35.525
+Let's ask our agent to set the Todos to open
+
+261
+00:11:35.625 --> 00:11:38.826
+and to create a number of interesting Todos.
+
+262
+00:11:38.926 --> 00:11:40.926
+All right, there you have it.
+
+263
+00:11:41.025 --> 00:11:43.426
+We now have our agent open our Todos panel
+
+264
+00:11:43.525 --> 00:11:45.525
+and populate it with brand new data.
+
+265
+00:11:45.625 --> 00:11:47.625
+This state synchronization works in both directions.
+
+266
+00:11:47.725 --> 00:11:50.025
+We can edit our Todos and ask our agent
+
+267
+00:11:50.038 --> 00:11:53.337
+How many to-dos are still open and get a correct answer.
+
+268
+00:11:53.837 --> 00:11:56.937
+Congratulations. You've now mastered frontend tool calling
+
+269
+00:11:57.038 --> 00:11:59.038
+and state synchronization in addition to the
+
+270
+00:11:59.038 --> 00:12:01.038
+full Generative UI spectrum you've mastered before.
+
+271
+00:12:01.538 --> 00:12:03.937
+I'm extremely excited to see what you all be building.
+
+272
+00:12:04.538 --> 00:12:06.837
+See you in the conclusion section for a quick recap.

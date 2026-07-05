@@ -1,0 +1,1070 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.769
+I'm Atai. I'm co-founder and CEO of CopilotKit.
+
+2
+00:00:03.203 --> 00:00:06.773
+In this course, you will learn to use the open-source CopilotKit stack
+
+3
+00:00:06.873 --> 00:00:10.176
+and the AG-UI protocol, which has been adopted by Google,
+
+4
+00:00:10.577 --> 00:00:12.879
+Microsoft, Amazon, LangChain, Oracle,
+
+5
+00:00:13.179 --> 00:00:15.782
+and many of the other leading agentic ecosystems.
+
+6
+00:00:15.982 --> 00:00:17.917
+So everything you learn here can
+
+7
+00:00:17.917 --> 00:00:20.186
+apply across the entire popular agentic stack.
+
+8
+00:00:20.487 --> 00:00:23.790
+In this lesson, you will learn about the Generative UI spectrum
+
+9
+00:00:24.190 --> 00:00:27.193
+and about its three key pillars: controlled, declarative,
+
+10
+00:00:27.494 --> 00:00:29.763
+all the way to fully open-ended Generative UI.
+
+11
+00:00:29.963 --> 00:00:31.564
+And about what makes each one of
+
+12
+00:00:31.564 --> 00:00:33.366
+those parts different and when to apply each.
+
+13
+00:00:33.666 --> 00:00:35.635
+By the end of this lesson, you'll have the
+
+14
+00:00:35.635 --> 00:00:37.604
+mental model for everything you're going to be building
+
+15
+00:00:37.604 --> 00:00:41.307
+in this course. So let's go. All right, let's jump in.
+
+16
+00:00:41.408 --> 00:00:42.742
+I want to start the course
+
+17
+00:00:42.742 --> 00:00:44.310
+with a bit of a provocative statement.
+
+18
+00:00:44.411 --> 00:00:47.614
+Over the next few years, all UI will become AI.
+
+19
+00:00:48.014 --> 00:00:50.617
+Meaning every interaction between humans and technology
+
+20
+00:00:50.617 --> 00:00:53.019
+will be increasingly mediated by agentic systems.
+
+21
+00:00:53.319 --> 00:00:55.622
+Of course, this is true of complex software products,
+
+22
+00:00:55.622 --> 00:00:57.724
+HubSpot, Zendesk, Figma and so on.
+
+23
+00:00:57.724 --> 00:00:59.726
+But it may even be true of your refrigerator.
+
+24
+00:00:59.726 --> 00:01:01.628
+That might sound a little bit preposterous,
+
+25
+00:01:01.628 --> 00:01:03.630
+but wouldn't it be nice if you could walk by your refrigerator
+
+26
+00:01:03.630 --> 00:01:06.833
+and tell it to order the missing ingredients for tonight's lasagna.
+
+27
+00:01:06.833 --> 00:01:10.837
+So that's where we're going. Ubiquitous interactions between agents and humans.
+
+28
+00:01:11.271 --> 00:01:13.773
+But where are we now? Current agentic interfaces
+
+29
+00:01:13.773 --> 00:01:16.242
+look a lot like the MS-DOS command line interfaces
+
+30
+00:01:16.242 --> 00:01:19.045
+of the 1980s. These initial raw interfaces
+
+31
+00:01:19.045 --> 00:01:21.047
+are good enough for early adopter types
+
+32
+00:01:21.047 --> 00:01:23.049
+who drive the lion's share of initial use.
+
+33
+00:01:23.249 --> 00:01:25.652
+But they're not good enough for mainstream mass adoption.
+
+34
+00:01:25.752 --> 00:01:28.855
+To continue this analogy, today's agents are beginning to graduate
+
+35
+00:01:28.855 --> 00:01:31.257
+from the MS-DOS era to the Windows and Mac era.
+
+36
+00:01:31.357 --> 00:01:33.193
+If you're paying attention, you've likely noticed
+
+37
+00:01:33.193 --> 00:01:35.061
+your customers are asking for this loudly.
+
+38
+00:01:35.161 --> 00:01:37.063
+In this course, we will walk you
+
+39
+00:01:37.063 --> 00:01:39.265
+through the concepts behind building fullstack agentic applications,
+
+40
+00:01:39.265 --> 00:01:43.536
+which are ready for mass adoption. Great Fullstack Agentic Applications
+
+41
+00:01:43.536 --> 00:01:46.639
+leverage generative UI capabilities to build a great user experience
+
+42
+00:01:46.639 --> 00:01:48.608
+for working alongside agents.
+
+43
+00:01:48.708 --> 00:01:50.910
+For example, in Claude Code and in Cursor,
+
+44
+00:01:50.910 --> 00:01:53.213
+we're able to seamlessly work alongside our agent
+
+45
+00:01:53.513 --> 00:01:56.216
+and see what it is doing and steer it in coherent steps.
+
+46
+00:01:56.616 --> 00:01:58.918
+In Notion, our agents are able to take actions
+
+47
+00:01:58.918 --> 00:02:01.921
+on our behalf in the application right as we work.
+
+48
+00:02:02.222 --> 00:02:04.224
+In Manus, our agents stream to us
+
+49
+00:02:04.224 --> 00:02:06.226
+what they're doing and present it with a nice UI.
+
+50
+00:02:06.359 --> 00:02:08.461
+So why is building all of this so hard?
+
+51
+00:02:08.761 --> 00:02:11.564
+Developers who first approach agentic application development
+
+52
+00:02:11.865 --> 00:02:13.533
+start by focusing on the agent itself.
+
+53
+00:02:13.833 --> 00:02:15.835
+They initially expect that once they build the agent,
+
+54
+00:02:15.935 --> 00:02:17.403
+they'll just throw it behind an API
+
+55
+00:02:17.403 --> 00:02:18.838
+and connect it to any user-facing application.
+
+56
+00:02:19.239 --> 00:02:21.541
+Just like they've done with every front-end and back-end development
+
+57
+00:02:21.841 --> 00:02:24.544
+before agents came along. But when we try to do that,
+
+58
+00:02:24.644 --> 00:02:27.547
+we run into a second and initially unexpected set of problems.
+
+59
+00:02:27.947 --> 00:02:29.549
+We discover that agents break
+
+60
+00:02:29.749 --> 00:02:31.851
+the Request/Response Paradigm, which has been
+
+61
+00:02:31.985 --> 00:02:34.287
+empowering the internet for the last 30 years.
+
+62
+00:02:34.787 --> 00:02:36.389
+Agents are of course just software.
+
+63
+00:02:36.456 --> 00:02:38.525
+But from the standpoint of pre-agentic software,
+
+64
+00:02:38.525 --> 00:02:40.860
+they're a little bit like a weird bird.
+
+65
+00:02:40.960 --> 00:02:42.295
+They're long running, so they have
+
+66
+00:02:42.295 --> 00:02:43.863
+to stream their work as they run
+
+67
+00:02:43.963 --> 00:02:47.967
+and support reconnections, interruptions, and mid-run steerings.
+
+68
+00:02:48.168 --> 00:02:49.736
+They have to support structured and
+
+69
+00:02:49.736 --> 00:02:51.571
+unstructured data exchange at the same time.
+
+70
+00:02:51.671 --> 00:02:53.139
+You have text and voice alongside tool
+
+71
+00:02:53.139 --> 00:02:54.574
+calls and state updates and so on.
+
+72
+00:02:54.774 --> 00:02:57.477
+So it's a little bit like implementing Slack and Zoom.
+
+73
+00:02:57.610 --> 00:02:59.612
+in a traditional application all at once.
+
+74
+00:03:00.113 --> 00:03:02.582
+And there's really a long, long list of these peculiarities
+
+75
+00:03:03.082 --> 00:03:05.885
+that agents have from the standpoint of pre-agentic software.
+
+76
+00:03:06.286 --> 00:03:07.453
+And so when we try to
+
+77
+00:03:07.453 --> 00:03:08.788
+stick an agent behind a traditional API,
+
+78
+00:03:08.788 --> 00:03:11.791
+we end up running into wall after wall after wall of complexity,
+
+79
+00:03:12.091 --> 00:03:13.726
+and we discover that we have
+
+80
+00:03:13.726 --> 00:03:15.595
+to reimplement 30 years of glue code,
+
+81
+00:03:15.595 --> 00:03:18.398
+which we've all been taking for granted for the agentic age.
+
+82
+00:03:18.798 --> 00:03:21.000
+And that's where CopilotKit and AG-UI come in.
+
+83
+00:03:21.201 --> 00:03:23.803
+CopilotKit provides open source developer SDKs
+
+84
+00:03:24.003 --> 00:03:27.207
+and a cloud platform for building user-facing agentic applications.
+
+85
+00:03:27.407 --> 00:03:29.809
+in a way that's optimized for the agentic era,
+
+86
+00:03:29.809 --> 00:03:32.312
+as opposed to retrofitted from the request-response paradigm.
+
+87
+00:03:32.512 --> 00:03:36.482
+The AG-UI protocol, which stands for the Agent-User Interaction Protocol,
+
+88
+00:03:36.482 --> 00:03:39.786
+lets developers who build agent frameworks and harnesses bring their agents
+
+89
+00:03:39.786 --> 00:03:43.489
+to user-facing ecosystems by building against our robust standard,
+
+90
+00:03:43.489 --> 00:03:44.924
+which means they conform to a
+
+91
+00:03:44.924 --> 00:03:46.593
+few simple requirements and everything just works.
+
+92
+00:03:46.893 --> 00:03:50.396
+This in turn allows developers and organizations to build agentic applications
+
+93
+00:03:50.396 --> 00:03:52.165
+to build against all of
+
+94
+00:03:52.165 --> 00:03:54.200
+these different agents in a streamlined fashion.
+
+95
+00:03:54.701 --> 00:03:56.903
+To situate AG-UI in the landscape,
+
+96
+00:03:56.903 --> 00:04:00.206
+you have obviously MCP connecting agents to third-party tools into context.
+
+97
+00:04:00.306 --> 00:04:03.610
+You have A2A connecting agents to other agentic systems.
+
+98
+00:04:03.810 --> 00:04:05.812
+And AG-UI is the third leg of this triangle.
+
+99
+00:04:05.912 --> 00:04:08.181
+Connects your agent to user-facing applications.
+
+100
+00:04:08.581 --> 00:04:11.584
+AG-UI emerged from our initial partnership with LangChain and Crew AI.
+
+101
+00:04:11.684 --> 00:04:14.387
+And since we launched the protocol, it's been widely adopted
+
+102
+00:04:14.387 --> 00:04:15.955
+by many of the top leaders in the agentic space.
+
+103
+00:04:15.955 --> 00:04:18.958
+Which means that everything you learn in this course can be applied
+
+104
+00:04:18.958 --> 00:04:21.361
+to any agentic system you work with out there in production.
+
+105
+00:04:21.661 --> 00:04:24.664
+By the way, if you do come across a system that is not yet supported,
+
+106
+00:04:24.664 --> 00:04:27.267
+or if your organization made its own agentic system,
+
+107
+00:04:27.267 --> 00:04:30.670
+you can also build your own AG-UI connectors for that system.
+
+108
+00:04:30.970 --> 00:04:32.338
+However, we will not cover that
+
+109
+00:04:32.338 --> 00:04:33.973
+side of the equation in this course.
+
+110
+00:04:34.274 --> 00:04:37.644
+So you can use AG-UI to connect any agent to your users.
+
+111
+00:04:37.944 --> 00:04:39.512
+But you can also use AG-UI
+
+112
+00:04:39.512 --> 00:04:41.347
+to connect any user to your agents.
+
+113
+00:04:41.648 --> 00:04:44.517
+Everything you will learn in this course can be applied
+
+114
+00:04:44.517 --> 00:04:47.654
+to building agentic applications in any front end your users use.
+
+115
+00:04:47.754 --> 00:04:50.556
+From web to mobile to Slack to text messaging and so on.
+
+116
+00:04:50.857 --> 00:04:52.659
+In this course, we're going to focus on web,
+
+117
+00:04:52.959 --> 00:04:56.362
+and specifically on React, which is the dominant web framework.
+
+118
+00:04:56.663 --> 00:04:58.498
+So having laid out the architecture, let's bring
+
+119
+00:04:58.498 --> 00:05:00.566
+our attention back to the world of generative UI.
+
+120
+00:05:00.566 --> 00:05:03.336
+First, what is generative UI?
+
+121
+00:05:03.770 --> 00:05:07.340
+Generative UI is a UI paradigm which is both enabled by
+
+122
+00:05:07.540 --> 00:05:10.743
+and exists in service of LLM systems and agents.
+
+123
+00:05:11.110 --> 00:05:14.013
+What does that mean? Well, LLM systems and agents
+
+124
+00:05:14.113 --> 00:05:16.916
+introduce both new capabilities and new challenges
+
+125
+00:05:17.016 --> 00:05:19.619
+to the software landscape. Generative UI
+
+126
+00:05:19.719 --> 00:05:22.522
+is the UI paradigm that takes advantage of those new capabilities,
+
+127
+00:05:22.588 --> 00:05:26.092
+both to improve experiences and to address those new challenges.
+
+128
+00:05:26.693 --> 00:05:28.795
+Generative UI solutions exist on a spectrum
+
+129
+00:05:28.895 --> 00:05:31.097
+where control flows from the developer to the agent.
+
+130
+00:05:31.397 --> 00:05:33.099
+There are three pillars in this spectrum:
+
+131
+00:05:33.166 --> 00:05:35.068
+Controlled generative UI,
+
+132
+00:05:35.168 --> 00:05:37.370
+Declarative generative UI,
+
+133
+00:05:37.470 --> 00:05:39.372
+and open-ended generative UI.
+
+134
+00:05:39.772 --> 00:05:41.374
+The entire generative UI spectrum
+
+135
+00:05:41.407 --> 00:05:43.710
+is needed in modern agentic applications.
+
+136
+00:05:44.010 --> 00:05:47.413
+Because different solutions along the spectrum have different pros and cons,
+
+137
+00:05:47.513 --> 00:05:49.816
+and so are best suited for different use cases.
+
+138
+00:05:50.116 --> 00:05:52.018
+In this lesson, we will briefly outline
+
+139
+00:05:52.018 --> 00:05:54.220
+the three pillars of the Generative UI Spectrum.
+
+140
+00:05:54.520 --> 00:05:56.022
+And then, in the rest of this
+
+141
+00:05:56.022 --> 00:05:57.724
+course, you will dive deep into each one
+
+142
+00:05:58.024 --> 00:05:59.926
+and learn how and when to apply it.
+
+143
+00:06:00.259 --> 00:06:02.762
+Controlled Generative UI is a paradigm
+
+144
+00:06:02.762 --> 00:06:04.464
+where the developer provides the agent
+
+145
+00:06:04.464 --> 00:06:06.766
+with pre-built, fully custom UI components
+
+146
+00:06:06.766 --> 00:06:09.268
+that the agent can call upon as needed to augment the interaction.
+
+147
+00:06:09.569 --> 00:06:12.271
+It allows for maximum customization and predictability
+
+148
+00:06:12.271 --> 00:06:14.073
+and pixel-perfect designs.
+
+149
+00:06:14.273 --> 00:06:18.444
+Controlled Generative UI also allows for a straightforward development experience,
+
+150
+00:06:18.745 --> 00:06:22.048
+familiar from the pre-agentic back-end front-end era.
+
+151
+00:06:22.448 --> 00:06:26.052
+Controlled Generative UI is considered the workhorse of the Generative UI world
+
+152
+00:06:26.419 --> 00:06:28.588
+because maximum customization and predictability
+
+153
+00:06:28.588 --> 00:06:31.891
+are important for your product's most used surfaces.
+
+154
+00:06:32.392 --> 00:06:34.594
+The downside of controlled Generative UI
+
+155
+00:06:34.594 --> 00:06:36.896
+is that you have to design a specific component
+
+156
+00:06:36.896 --> 00:06:39.899
+for each interaction you want an agent to support.
+
+157
+00:06:40.199 --> 00:06:43.603
+And so implementation complexity scales linearly with capabilities.
+
+158
+00:06:43.903 --> 00:06:46.205
+We will implement controlled Generative UI
+
+159
+00:06:46.205 --> 00:06:48.408
+using AG-UI and CopilotKit in this course.
+
+160
+00:06:48.708 --> 00:06:51.210
+Declarative Generative UI is a paradigm
+
+161
+00:06:51.210 --> 00:06:53.513
+where developers declare a component catalog
+
+162
+00:06:53.513 --> 00:06:55.882
+of pre-built Lego-like building blocks,
+
+163
+00:06:55.882 --> 00:06:58.885
+which the agent can then assemble into rendered components
+
+164
+00:06:58.885 --> 00:07:01.687
+dynamically and on demand for any given interaction.
+
+165
+00:07:01.988 --> 00:07:04.690
+Under the hood, the agent returns a structured schema.
+
+166
+00:07:05.124 --> 00:07:07.927
+that represents an assembly of building blocks
+
+167
+00:07:07.927 --> 00:07:11.931
+along with data bindings containing values that fill in that schema.
+
+168
+00:07:11.931 --> 00:07:15.902
+The schema and the data bindings are then passed to frontend renderers
+
+169
+00:07:15.902 --> 00:07:19.305
+which can visualize the structured content as native UI components.
+
+170
+00:07:19.305 --> 00:07:21.407
+We will soon see an example of this in action.
+
+171
+00:07:21.607 --> 00:07:23.910
+In consumer-facing applications,
+
+172
+00:07:23.910 --> 00:07:26.279
+declarative generative UI is most suited for the long
+
+173
+00:07:26.279 --> 00:07:28.881
+tail of product surfaces where flexibility
+
+174
+00:07:29.081 --> 00:07:31.083
+is more impactful than perfection.
+
+175
+00:07:31.284 --> 00:07:34.487
+Declarative Generative UI also excels in internal applications
+
+176
+00:07:34.787 --> 00:07:38.791
+that generally favor pure functionality and ease of implementation
+
+177
+00:07:39.091 --> 00:07:42.061
+over a perfectly optimized user experience.
+
+178
+00:07:42.462 --> 00:07:46.165
+The reason is that Declarative Generative UI cannot be made pixel perfect.
+
+179
+00:07:46.466 --> 00:07:50.336
+Components have to consists of a standard combination of pre-built building blocks.
+
+180
+00:07:50.636 --> 00:07:54.540
+Declarative Generative UI is also less deterministic than controlled Generative UI.
+
+181
+00:07:54.640 --> 00:07:56.576
+The same user query may be answered via
+
+182
+00:07:56.576 --> 00:07:58.744
+a different combination of building blocks at different times.
+
+183
+00:07:58.945 --> 00:08:01.747
+And because it requires more computation and generation time,
+
+184
+00:08:01.848 --> 00:08:03.850
+it is also slower than controlled Generative UI.
+
+185
+00:08:04.250 --> 00:08:06.853
+The tools we will use here are CopilotKit
+
+186
+00:08:06.953 --> 00:08:10.790
+and the A2UI spec, which is spearheaded by Google.
+
+187
+00:08:10.790 --> 00:08:14.193
+CopilotKit and AG-UI are launch and design partners on A2UI.
+
+188
+00:08:14.193 --> 00:08:17.497
+And AG-UI allows you to use the A2UI spec
+
+189
+00:08:17.497 --> 00:08:19.599
+with any agentic backend. Further along the
+
+190
+00:08:19.599 --> 00:08:21.701
+generative UI spectrum, we find MCP apps,
+
+191
+00:08:21.701 --> 00:08:24.203
+which are an official extension of MCP.
+
+192
+00:08:24.203 --> 00:08:27.406
+MCP apps are widgets or even fully featured applications
+
+193
+00:08:27.406 --> 00:08:30.109
+that get embedded inside the AI chat window.
+
+194
+00:08:30.109 --> 00:08:33.513
+Under the hood, MCP apps are implemented via an embedded iframe.
+
+195
+00:08:33.713 --> 00:08:37.817
+MCP apps are supported by the ChatGPT and Claude App Stores
+
+196
+00:08:37.984 --> 00:08:41.587
+and they are deeply optimized for those App Store use cases.
+
+197
+00:08:41.888 --> 00:08:43.990
+The advantage is that you can bring
+
+198
+00:08:43.990 --> 00:08:46.592
+any third-party app into a chat experience,
+
+199
+00:08:46.692 --> 00:08:48.995
+while allowing it to keep its branding
+
+200
+00:08:48.995 --> 00:08:51.597
+and without having to customize the host app in any way.
+
+201
+00:08:51.898 --> 00:08:56.302
+The disadvantage is that this constraint necessitates an inherent indirection
+
+202
+00:08:56.669 --> 00:08:59.472
+in the interaction between an MCP app and the host,
+
+203
+00:08:59.472 --> 00:09:01.874
+which introduces additional implementation complexity
+
+204
+00:09:01.874 --> 00:09:05.878
+because you're implementing essentially an app inside of another app,
+
+205
+00:09:05.878 --> 00:09:08.447
+security challenges and limited customization
+
+206
+00:09:08.447 --> 00:09:10.850
+outside of the MCP app window.
+
+207
+00:09:10.850 --> 00:09:15.850
+Additionally, today MCP apps are inherently tied to an iframe implementation,
+
+208
+00:09:15.855 --> 00:09:19.458
+which means they're less suitable for experiences that exist outside of web,
+
+209
+00:09:19.458 --> 00:09:21.260
+such as mobile or Slack.
+
+210
+00:09:21.260 --> 00:09:23.462
+In this course, we will take advantage of the handshake
+
+211
+00:09:23.629 --> 00:09:25.831
+between AG-UI and MCP apps
+
+212
+00:09:25.831 --> 00:09:29.201
+to bring any MCP app, including those apps originally
+
+213
+00:09:29.201 --> 00:09:32.605
+built primarily for the ChatGPT and Claude app stores
+
+214
+00:09:32.605 --> 00:09:35.608
+into your own custom agentic applications.
+
+215
+00:09:36.108 --> 00:09:37.743
+Which means that your users can
+
+216
+00:09:37.743 --> 00:09:39.612
+bring the apps they're already familiar with,
+
+217
+00:09:39.612 --> 00:09:42.415
+from Salesforce and HubSpot to Figma and Spotify,
+
+218
+00:09:42.415 --> 00:09:44.817
+into your own custom agentic application.
+
+219
+00:09:45.117 --> 00:09:48.120
+Finally, at the very far end of the Generative UI spectrum,
+
+220
+00:09:48.120 --> 00:09:50.423
+we find fully open-ended generative
+
+221
+00:09:50.590 --> 00:09:52.191
+UI. This paradigm consists of UI
+
+222
+00:09:52.191 --> 00:09:54.060
+that is fully generated by the agent
+
+223
+00:09:54.360 --> 00:09:56.362
+on demand per user request.
+
+224
+00:09:56.762 --> 00:09:59.065
+Fully open-ended generative UI
+
+225
+00:09:59.065 --> 00:10:00.466
+is often what people have in mind
+
+226
+00:10:00.466 --> 00:10:02.068
+when they first hear the term generative UI.
+
+227
+00:10:02.368 --> 00:10:04.236
+This paradigm of generative UI is most suitable
+
+228
+00:10:04.236 --> 00:10:06.072
+for the far long tail of user queries.
+
+229
+00:10:06.272 --> 00:10:09.575
+And for delighting users with custom and boundless experiences
+
+230
+00:10:09.575 --> 00:10:11.877
+that by today's standards are unexpected.
+
+231
+00:10:12.378 --> 00:10:14.780
+That said, fully open-ended generative UI
+
+232
+00:10:15.081 --> 00:10:17.183
+requires far more thinking tokens to work,
+
+233
+00:10:17.516 --> 00:10:19.719
+which is both slower and more expensive.
+
+234
+00:10:20.319 --> 00:10:22.521
+And it is far less predictable and robust
+
+235
+00:10:22.722 --> 00:10:25.024
+than alternatives in the generative UI spectrum.
+
+236
+00:10:25.424 --> 00:10:28.327
+It's currently still in the experimental phase of adoption,
+
+237
+00:10:28.527 --> 00:10:31.030
+but it represents the full promise of agentic UI
+
+238
+00:10:31.330 --> 00:10:32.932
+and captures our imagination.
+
+239
+00:10:33.332 --> 00:10:35.735
+Given the tremendous pace of development in the agentic space,
+
+240
+00:10:35.835 --> 00:10:38.137
+it will likely quickly become more and more production ready.
+
+241
+00:10:38.337 --> 00:10:41.340
+In this course, we will implement fully open generative UI
+
+242
+00:10:41.440 --> 00:10:43.442
+using CopilotKit and AG-UI middleware,
+
+243
+00:10:43.542 --> 00:10:46.045
+which means you can bring it to any agentic back-end right away.
+
+244
+00:10:46.412 --> 00:10:48.514
+Let's do a quick recap.
+
+245
+00:10:48.514 --> 00:10:50.516
+As you will soon see up close,
+
+246
+00:10:50.516 --> 00:10:53.319
+the different parts of a generative UI spectrum
+
+247
+00:10:53.352 --> 00:10:56.222
+have different strengths which are suitable for different needs and surfaces.
+
+248
+00:10:56.389 --> 00:11:00.292
+Controlled Generative UI, the so-called workhorse of the generative UI world,
+
+249
+00:11:00.292 --> 00:11:02.795
+is the most appropriate solution for the most used
+
+250
+00:11:02.828 --> 00:11:04.930
+surfaces in your application.
+
+251
+00:11:04.930 --> 00:11:09.335
+Declarative Generative UI, which is more flexible but less customizable and deterministic,
+
+252
+00:11:09.335 --> 00:11:12.438
+is most suitable for the long tail of surfaces in your application.
+
+253
+00:11:12.638 --> 00:11:14.640
+An open-ended Generative UI
+
+254
+00:11:14.640 --> 00:11:16.842
+is most suitable for interacting with third-party systems
+
+255
+00:11:16.842 --> 00:11:19.245
+and for the late long tail of your application.
+
+256
+00:11:19.278 --> 00:11:21.480
+I'm really looking forward to going on this journey with you.
+
+257
+00:11:21.781 --> 00:11:24.483
+We will begin the course by building a basic agent chat UI
+
+258
+00:11:24.483 --> 00:11:27.186
+on top of a solid foundation we can continue to build on.
+
+259
+00:11:27.486 --> 00:11:30.790
+Then we'll go over controlled, declarative, and open Generative UIs
+
+260
+00:11:30.790 --> 00:11:32.792
+with hands-on examples for each.
+
+261
+00:11:33.292 --> 00:11:35.594
+Finally, we will close out with additional building blocks
+
+262
+00:11:35.594 --> 00:11:38.064
+needed to create a great fullstack agentic application
+
+263
+00:11:38.064 --> 00:11:39.765
+outside of the chat,
+
+264
+00:11:39.765 --> 00:11:41.967
+including front-end tool calling and state synchronization.
+
+265
+00:11:42.268 --> 00:11:43.969
+This is a quickly evolving and emerging space,
+
+266
+00:11:43.969 --> 00:11:44.937
+and I really hope this course
+
+267
+00:11:44.937 --> 00:11:46.072
+will get you ahead of the curve.

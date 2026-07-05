@@ -1,0 +1,794 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.370
+In the previous lessons, you constrained what your agent could show
+
+2
+00:00:03.870 --> 00:00:07.874
+through specific components in the case of controlled generative UI,
+
+3
+00:00:08.475 --> 00:00:10.477
+or through a catalog of building blocks
+
+4
+00:00:10.777 --> 00:00:12.879
+in the case of declarative generative UI.
+
+5
+00:00:13.279 --> 00:00:15.482
+In this lesson, you'll take a different approach
+
+6
+00:00:15.482 --> 00:00:17.684
+by removing these constraints on your agent's UI.
+
+7
+00:00:18.184 --> 00:00:20.387
+First, you'll connect your agent to MCP apps,
+
+8
+00:00:20.687 --> 00:00:22.989
+letting it hand off control to third-party applications.
+
+9
+00:00:23.390 --> 00:00:25.091
+The same applications that are built for
+
+10
+00:00:25.091 --> 00:00:27.594
+the ChatGPT and Claude App stores.
+
+11
+00:00:27.627 --> 00:00:31.398
+We will follow up by exploring fully open-ended generative UI,
+
+12
+00:00:31.431 --> 00:00:33.199
+where you allow your agent to
+
+13
+00:00:33.199 --> 00:00:35.301
+create brand new interfaces on the fly.
+
+14
+00:00:35.301 --> 00:00:38.705
+Fully open-ended Gen UI really captures the full promise
+
+15
+00:00:38.705 --> 00:00:42.108
+of how Gen UI could continue to evolve. Let's get coding.
+
+16
+00:00:42.142 --> 00:00:43.910
+The first type of Open-Ended Gen
+
+17
+00:00:43.910 --> 00:00:45.979
+UI we will explore is MCP Apps.
+
+18
+00:00:46.346 --> 00:00:48.948
+Instead of building a UI for every new capability,
+
+19
+00:00:49.149 --> 00:00:51.751
+with MCP Apps, you simply connect your full-stack agents
+
+20
+00:00:51.751 --> 00:00:53.953
+to third-party applications that already exist
+
+21
+00:00:53.953 --> 00:00:56.156
+and which come with their own UI and branding.
+
+22
+00:00:56.556 --> 00:00:58.958
+As a developer, you only need to wire up the MCP Apps,
+
+23
+00:00:59.159 --> 00:01:00.960
+which are then made available to the agent.
+
+24
+00:01:01.061 --> 00:01:02.662
+The agent then decides when to call
+
+25
+00:01:02.829 --> 00:01:04.697
+on those apps and how to interact with them.
+
+26
+00:01:04.931 --> 00:01:06.733
+MCP Apps are the standard supported
+
+27
+00:01:06.733 --> 00:01:08.835
+by the ChatGPT and Claude app stores,
+
+28
+00:01:08.835 --> 00:01:10.837
+which means you can bring the same applications
+
+29
+00:01:10.837 --> 00:01:13.640
+that your users are using in these environments
+
+30
+00:01:13.640 --> 00:01:15.842
+to your own custom agentic applications,
+
+31
+00:01:16.209 --> 00:01:19.312
+including Figma, HubSpot, Excalidraw, and so on.
+
+32
+00:01:19.913 --> 00:01:22.916
+MCP Apps are implemented via a three-part architecture.
+
+33
+00:01:23.516 --> 00:01:25.618
+The first part is the MCP server.
+
+34
+00:01:25.618 --> 00:01:28.421
+With the MCP apps extension to the MCP protocol,
+
+35
+00:01:28.421 --> 00:01:32.425
+the same server that serves your familiar MCP tools
+
+36
+00:01:32.425 --> 00:01:34.828
+can now also serve UI resources.
+
+37
+00:01:35.128 --> 00:01:37.530
+These UI resources can then be assembled
+
+38
+00:01:37.530 --> 00:01:39.732
+into an iframe web representation.
+
+39
+00:01:40.033 --> 00:01:42.302
+Second, you have your host front-end application.
+
+40
+00:01:42.702 --> 00:01:46.306
+The UI resources are embedded inside of a double iframe
+
+41
+00:01:46.306 --> 00:01:48.508
+for isolation and security purposes.
+
+42
+00:01:49.008 --> 00:01:52.512
+The third part is of course the MCP app view itself.
+
+43
+00:01:52.512 --> 00:01:56.015
+This MCP app view is isolated from the rest of the application,
+
+44
+00:01:56.015 --> 00:01:59.519
+and it may communicate with the host front end via JSON-RPC.
+
+45
+00:01:59.519 --> 00:02:01.354
+It's worth noting that even though
+
+46
+00:02:01.354 --> 00:02:03.523
+MCP apps are served by MCP servers,
+
+47
+00:02:03.523 --> 00:02:06.025
+they are otherwise completely independent from the
+
+48
+00:02:06.025 --> 00:02:08.528
+MCP tools returned by those same servers.
+
+49
+00:02:08.528 --> 00:02:11.498
+This may be a little confusing because MCP apps evolved
+
+50
+00:02:11.498 --> 00:02:15.502
+out of a previous standard called MCPUI, which did allow any
+
+51
+00:02:15.502 --> 00:02:19.272
+MCP tool to optionally return UI resources from any interaction.
+
+52
+00:02:19.472 --> 00:02:22.675
+But MCP UI has now evolved into the MCP Apps standard,
+
+53
+00:02:22.976 --> 00:02:25.345
+which again, has fully decoupled the
+
+54
+00:02:25.345 --> 00:02:28.081
+UI resources aspect from the MCP tools.
+
+55
+00:02:28.381 --> 00:02:30.283
+The tools and the UI are served by
+
+56
+00:02:30.283 --> 00:02:32.385
+the same servers, but they do not otherwise interact.
+
+57
+00:02:32.785 --> 00:02:36.789
+The main reason to use MCP Apps is to bring third-party applications
+
+58
+00:02:36.990 --> 00:02:39.392
+from those ChatGPT and Claude App Stores
+
+59
+00:02:39.492 --> 00:02:41.794
+into your own custom agentic applications.
+
+60
+00:02:41.961 --> 00:02:45.565
+MCP apps are highly optimized for that specific use case,
+
+61
+00:02:45.565 --> 00:02:49.969
+including with its benefits, which allow fully custom branding from the outside,
+
+62
+00:02:49.969 --> 00:02:53.773
+and interaction with third-party services at the expense of some tradeoffs.
+
+63
+00:02:53.773 --> 00:02:55.608
+MCP apps are essentially an app
+
+64
+00:02:55.608 --> 00:02:57.777
+designed to live inside of another app,
+
+65
+00:02:57.777 --> 00:02:59.879
+which introduces meaningful indirection overhead.
+
+66
+00:02:59.879 --> 00:03:03.950
+So you typically would not want to implement your own app's functionality
+
+67
+00:03:04.117 --> 00:03:07.921
+as MCP apps. In a moment, we're going to embed
+
+68
+00:03:07.921 --> 00:03:10.623
+the Excalidraw MCP server into your application,
+
+69
+00:03:10.623 --> 00:03:14.627
+which will expose the Excalidraw MCP app to your full-stack agent.
+
+70
+00:03:14.627 --> 00:03:16.930
+As you can see, there's just a single
+
+71
+00:03:16.930 --> 00:03:19.232
+MCP server URL you have to deal with.
+
+72
+00:03:19.232 --> 00:03:22.135
+There's no separate URL specifically for the MCP app.
+
+73
+00:03:22.135 --> 00:03:25.605
+Finally, at the far end of the Generative UI spectrum,
+
+74
+00:03:25.605 --> 00:03:27.607
+we find fully open-ended Generative UI,
+
+75
+00:03:27.607 --> 00:03:30.610
+where your agent writes brand new applications on the fly,
+
+76
+00:03:30.610 --> 00:03:33.413
+typically to be embedded inside of the AI chat.
+
+77
+00:03:33.646 --> 00:03:35.181
+This part of the Gen UI
+
+78
+00:03:35.181 --> 00:03:36.950
+spectrum, of course, provides the most flexibility.
+
+79
+00:03:37.150 --> 00:03:39.552
+You're essentially giving your agent full creative freedom.
+
+80
+00:03:39.953 --> 00:03:41.721
+But this comes at a tradeoff.
+
+81
+00:03:41.721 --> 00:03:43.756
+Generation is slower and more error prone.
+
+82
+00:03:44.157 --> 00:03:46.259
+It is far less consistent and deterministic,
+
+83
+00:03:46.459 --> 00:03:48.361
+and the quality of your result
+
+84
+00:03:48.361 --> 00:03:50.563
+is highly sensitive both to model choice
+
+85
+00:03:50.563 --> 00:03:52.031
+and even to the prompts and
+
+86
+00:03:52.031 --> 00:03:53.766
+skills that you feed to your agent.
+
+87
+00:03:53.967 --> 00:03:57.770
+Fully open-ended gen UI is still in the exploratory phase of adoption.
+
+88
+00:03:57.971 --> 00:04:00.173
+But as the AI stack continues to evolve,
+
+89
+00:04:00.273 --> 00:04:02.475
+it will likely fill a larger and larger role
+
+90
+00:04:02.575 --> 00:04:04.577
+in the production stack over time.
+
+91
+00:04:04.677 --> 00:04:06.779
+All right, let's get to the code. Just like before,
+
+92
+00:04:06.879 --> 00:04:08.982
+we'll start with the reset lesson cell.
+
+93
+00:04:09.215 --> 00:04:11.618
+to make sure our notebook is in a clean state.
+
+94
+00:04:11.818 --> 00:04:15.221
+And just like before, we'll begin by setting up our project dependencies.
+
+95
+00:04:15.421 --> 00:04:18.024
+We'll begin by installing the Python requirements,
+
+96
+00:04:22.428 --> 00:04:24.731
+followed by our frontend requirements.
+
+97
+00:04:26.599 --> 00:04:29.202
+And finally, we'll load our API keys.
+
+98
+00:04:29.502 --> 00:04:32.171
+They're pre-provided by the deep learning platform.
+
+99
+00:04:33.873 --> 00:04:35.408
+We'll now start the backend and
+
+100
+00:04:35.408 --> 00:04:37.176
+the frontend, just like we did before.
+
+101
+00:04:37.377 --> 00:04:39.779
+We'll start our backend in port 8005.
+
+102
+00:04:42.715 --> 00:04:45.485
+and we'll start our front end in port 3005.
+
+103
+00:04:52.091 --> 00:04:54.027
+Now that our frontend is running, let's display
+
+104
+00:04:54.027 --> 00:04:55.962
+it inside of the Jupyter notebook using an iframe
+
+105
+00:04:55.962 --> 00:04:58.064
+for convenience. All right, you now see
+
+106
+00:04:58.064 --> 00:05:00.133
+the same chat experience we defined before.
+
+107
+00:05:00.433 --> 00:05:02.635
+Now let's add an MCP app to our basic chat.
+
+108
+00:05:03.036 --> 00:05:05.138
+Like we discussed before, MCP apps is an extension
+
+109
+00:05:05.338 --> 00:05:09.142
+to the MCP protocol that allows MCP servers to specify
+
+110
+00:05:09.342 --> 00:05:11.978
+not only tools and context, but also applications
+
+111
+00:05:11.978 --> 00:05:14.647
+that may be embedded inside of the chat.
+
+112
+00:05:14.947 --> 00:05:17.950
+The code you're seeing here should look very familiar from before.
+
+113
+00:05:18.084 --> 00:05:20.887
+There is only one point of addition we're making here.
+
+114
+00:05:21.187 --> 00:05:25.191
+When we define the CopilotRuntime, we specify an mcpApps parameter.
+
+115
+00:05:25.591 --> 00:05:29.095
+Inside of the mcpApps parameter, we pass an array of MCP servers
+
+116
+00:05:29.595 --> 00:05:31.597
+which may serve MCP apps.
+
+117
+00:05:32.098 --> 00:05:36.502
+The CopilotRuntime will automatically access these MCP servers
+
+118
+00:05:36.502 --> 00:05:39.272
+and determine if there are any MCP apps served from them.
+
+119
+00:05:39.672 --> 00:05:43.176
+In this example, we're specifying Excalidraw's MCP app.
+
+120
+00:05:43.176 --> 00:05:45.211
+You may be familiar with Excalidraw
+
+121
+00:05:45.211 --> 00:05:47.580
+as a great tool for visualizing diagrams.
+
+122
+00:05:47.914 --> 00:05:50.016
+That's it. That's all we have to do.
+
+123
+00:05:50.016 --> 00:05:52.085
+Let's give it a try now.
+
+124
+00:05:52.085 --> 00:05:55.088
+We'll display once again the updated iframe for our frontend.
+
+125
+00:05:55.788 --> 00:05:57.423
+Now our chat has an Excalidraw
+
+126
+00:05:57.423 --> 00:05:59.292
+MCP app to call on as needed.
+
+127
+00:05:59.292 --> 00:06:01.294
+Let's give it a prompt and see what happens.
+
+128
+00:06:01.594 --> 00:06:03.863
+Show me a simple network diagram
+
+129
+00:06:03.863 --> 00:06:06.065
+of three routers, two laptops,
+
+130
+00:06:06.065 --> 00:06:08.234
+and a server using Excalidraw
+
+131
+00:06:10.536 --> 00:06:12.538
+And there you have it, an actual Excalidraw diagram
+
+132
+00:06:12.638 --> 00:06:14.607
+embedded right inside of your chat.
+
+133
+00:06:14.807 --> 00:06:16.075
+As you see here, there's a few
+
+134
+00:06:16.075 --> 00:06:17.510
+limitations to what we got out of this.
+
+135
+00:06:17.710 --> 00:06:19.712
+Let's try to prompt it once again and see what we get.
+
+136
+00:06:19.812 --> 00:06:22.415
+We'll ask it to add labels, titles,
+
+137
+00:06:22.515 --> 00:06:24.917
+and generally make it as coherent as possible.
+
+138
+00:06:27.854 --> 00:06:29.655
+All right, we're doing a little bit better.
+
+139
+00:06:29.856 --> 00:06:32.458
+Our diagram now has some texts and labels and arrows.
+
+140
+00:06:32.959 --> 00:06:34.727
+Um, but you see it's still not
+
+141
+00:06:34.727 --> 00:06:36.462
+perfect. And this is a great demonstration
+
+142
+00:06:36.562 --> 00:06:39.966
+of the tradeoffs you get with open-ended generative UI.
+
+143
+00:06:40.400 --> 00:06:42.502
+Generation takes longer,
+
+144
+00:06:42.502 --> 00:06:44.704
+is less deterministic and is more error prone.
+
+145
+00:06:44.904 --> 00:06:48.908
+An important tip here is that open-ended generative UI
+
+146
+00:06:48.908 --> 00:06:51.411
+is the part of the generative UI spectrum
+
+147
+00:06:51.411 --> 00:06:54.213
+most sensitive to prompts and to skills.
+
+148
+00:06:54.313 --> 00:06:56.916
+You can often significantly improve the performance
+
+149
+00:06:56.916 --> 00:06:59.218
+you get from open-ended generative UI components
+
+150
+00:06:59.385 --> 00:07:02.321
+by optimizing your prompt and your agent skills.
+
+151
+00:07:02.321 --> 00:07:04.190
+Okay, now that we saw how easy it
+
+152
+00:07:04.190 --> 00:07:06.092
+is to add MCP apps to our application,
+
+153
+00:07:06.092 --> 00:07:09.862
+let's add fully open-ended generative UI to our application as well.
+
+154
+00:07:10.263 --> 00:07:13.866
+Once again, because we're using TypeScript in our Jupyter notebook,
+
+155
+00:07:14.033 --> 00:07:16.335
+we can only override the file altogether.
+
+156
+00:07:16.736 --> 00:07:18.838
+Almost everything in this file is exactly the
+
+157
+00:07:18.838 --> 00:07:20.940
+same as it was before, with one modification.
+
+158
+00:07:21.140 --> 00:07:24.343
+We're specifying a new argument in the CopilotRuntime definition,
+
+159
+00:07:24.544 --> 00:07:26.946
+openGenerativeUI and setting it to true.
+
+160
+00:07:27.146 --> 00:07:29.749
+Under the hood, when we do this, an open-ended
+
+161
+00:07:29.749 --> 00:07:33.352
+Generative UI middleware is injected to the AGUI stack.
+
+162
+00:07:33.953 --> 00:07:36.556
+Just like with A2UI, open-ended Generative UI
+
+163
+00:07:36.756 --> 00:07:41.360
+is implemented by passing an additional special tool to our backend agent.
+
+164
+00:07:41.561 --> 00:07:44.363
+This is propagated via the AGUI middleware stack.
+
+165
+00:07:44.597 --> 00:07:46.466
+All right, let's give it a try.
+
+166
+00:07:46.466 --> 00:07:48.601
+Once again, we'll display the updated frontend
+
+167
+00:07:48.801 --> 00:07:51.103
+as an iframe inside of our Jupyter notebook.
+
+168
+00:07:52.405 --> 00:07:55.808
+Let's try a crazy prompt. Hey chat, make it rain tacos.
+
+169
+00:07:59.812 --> 00:08:01.314
+We see here that as the app is
+
+170
+00:08:01.314 --> 00:08:02.815
+building, we're seeing it displayed part by part.
+
+171
+00:08:03.182 --> 00:08:05.985
+And we have here something that looks like raining tacos.
+
+172
+00:08:06.285 --> 00:08:07.854
+It's a little bit odd though. This shows
+
+173
+00:08:07.854 --> 00:08:09.589
+another one of the tradeoffs of open-ended generative UI.
+
+174
+00:08:09.589 --> 00:08:11.524
+You never quite know what you're going to get
+
+175
+00:08:11.524 --> 00:08:13.693
+on the other side. Let's try to improve the prompt.
+
+176
+00:08:13.759 --> 00:08:16.562
+We'll ask the agent to use taco emojis
+
+177
+00:08:16.562 --> 00:08:18.764
+that are more likely to resemble real tacos
+
+178
+00:08:18.764 --> 00:08:19.899
+and to make the rain look
+
+179
+00:08:19.899 --> 00:08:21.234
+a little bit more like real rain.
+
+180
+00:08:21.534 --> 00:08:23.236
+All right, that's not too bad.
+
+181
+00:08:23.736 --> 00:08:26.339
+There's still room for improvement probably, but it's not too bad.
+
+182
+00:08:26.539 --> 00:08:29.041
+So there you have it. Open-ended Generative UI.
+
+183
+00:08:29.242 --> 00:08:32.245
+To recap, we showed how we can easily integrate MCP apps
+
+184
+00:08:32.245 --> 00:08:35.348
+that may be served by any MCP server into our application.
+
+185
+00:08:35.548 --> 00:08:37.550
+And we showed how we can let
+
+186
+00:08:37.550 --> 00:08:39.552
+the agent create fully open-ended generative UI
+
+187
+00:08:39.552 --> 00:08:41.754
+on the fly to meet any prompt we throw at it.
+
+188
+00:08:41.954 --> 00:08:44.557
+There are tradeoffs to this part of the generative UI spectrum.
+
+189
+00:08:44.724 --> 00:08:46.826
+It is slower. It is less deterministic
+
+190
+00:08:46.826 --> 00:08:50.229
+and it is more likely to result in errors.
+
+191
+00:08:50.229 --> 00:08:52.732
+But it also really captures our imagination
+
+192
+00:08:52.732 --> 00:08:54.133
+and points the way to where
+
+193
+00:08:54.133 --> 00:08:55.735
+the Generative UI world may evolve to.
+
+194
+00:08:56.035 --> 00:08:58.237
+Great job. You've now gotten experience
+
+195
+00:08:58.237 --> 00:09:00.239
+across the entire Generative UI spectrum.
+
+196
+00:09:00.239 --> 00:09:02.742
+All the way from fully controlled Generative UI,
+
+197
+00:09:02.742 --> 00:09:04.744
+to declarative Generative UI,
+
+198
+00:09:04.744 --> 00:09:07.213
+and now to fully open-ended Generative UI.
