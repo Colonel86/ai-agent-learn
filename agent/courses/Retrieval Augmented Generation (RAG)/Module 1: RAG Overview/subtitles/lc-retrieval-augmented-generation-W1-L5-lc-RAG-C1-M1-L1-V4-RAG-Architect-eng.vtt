@@ -1,0 +1,311 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.646 --> 00:00:11.500
+You've already seen the most important components in a RAG system, namely the LLM itself, a knowledge base of relevant information, and a retriever that can search the knowledge base.
+
+2
+00:00:11.500 --> 00:00:17.500
+Now let's look at the overall architecture of a RAG system and how these components work together.
+
+3
+00:00:17.500 --> 00:00:21.500
+Let's start by looking at how you normally use a large language model.
+
+4
+00:00:21.500 --> 00:00:24.500
+You type a prompt and send it to the LLM.
+
+5
+00:00:24.500 --> 00:00:28.500
+The LLM processes the prompt and generates a response.
+
+6
+00:00:28.500 --> 00:00:32.500
+The user experience for a RAG system is actually identical.
+
+7
+00:00:32.500 --> 00:00:35.500
+You submit a prompt and get back a response.
+
+8
+00:00:35.500 --> 00:00:39.500
+Inside the system, however, there's a few more steps.
+
+9
+00:00:39.500 --> 00:00:44.500
+When the RAG system receives your prompt, it first routes it to the retriever.
+
+10
+00:00:44.500 --> 00:00:51.500
+The retriever has access to the knowledge base, which, practically speaking, is just a database of useful documents.
+
+11
+00:00:51.500 --> 00:00:58.500
+The retriever queries the database, returning documents that it determines are most relevant to the prompt.
+
+12
+00:00:58.500 --> 00:01:07.000
+Next, the system creates an augmented prompt, incorporating information from the relevant documents into the original prompt.
+
+13
+00:01:07.000 --> 00:01:10.000
+For example, an augmented prompt might be,
+
+14
+00:01:10.000 --> 00:01:12.000
+Answer the following question.
+
+15
+00:01:12.000 --> 00:01:16.000
+Why are hotels in Vancouver so expensive this coming weekend?
+
+16
+00:01:16.000 --> 00:01:19.000
+Here are five relevant articles that may help you respond.
+
+17
+00:01:19.000 --> 00:01:22.000
+And then insert text from the articles.
+
+18
+00:01:22.000 --> 00:01:26.000
+At this point, the system operates like any other LLM.
+
+19
+00:01:26.000 --> 00:01:30.500
+The augmented prompt is sent to the LLM and it generates a response.
+
+20
+00:01:30.500 --> 00:01:36.500
+The LLM is able to respond based on both the knowledge it learned from its training data,
+
+21
+00:01:36.500 --> 00:01:41.500
+as well as any additional context provided by the retrieved documents.
+
+22
+00:01:41.500 --> 00:01:47.000
+The user experience is the same as always, perhaps with a little bit of added latency.
+
+23
+00:01:47.000 --> 00:01:50.000
+You type a prompt and you get back a response.
+
+24
+00:01:50.000 --> 00:01:54.000
+Thanks to that side route through the retriever, however,
+
+25
+00:01:54.000 --> 00:01:59.000
+there's a higher likelihood the response is accurate, up to date, and context aware.
+
+26
+00:01:59.000 --> 00:02:05.000
+As you just saw, the main difference between using an LLM directly and a RAG system
+
+27
+00:02:05.000 --> 00:02:07.500
+is the addition of the retriever.
+
+28
+00:02:07.500 --> 00:02:12.500
+This fairly straightforward addition, however, allows for a number of advantages.
+
+29
+00:02:12.500 --> 00:02:19.500
+First and most importantly, it makes information available to the LLM that might otherwise not be.
+
+30
+00:02:19.500 --> 00:02:25.500
+Whether it's company policies, a piece of personal information, or this morning's headlines,
+
+31
+00:02:25.500 --> 00:02:30.500
+RAG is often the only way to make some kinds of information available to an LLM.
+
+32
+00:02:30.500 --> 00:02:37.000
+Related to this first point, RAG reduces the likelihood of hallucinations or misleading responses.
+
+33
+00:02:37.000 --> 00:02:41.000
+These are often caused by LLMs generating responses about topics
+
+34
+00:02:41.000 --> 00:02:45.500
+which were excluded from their training data, or perhaps just mentioned rarely.
+
+35
+00:02:45.500 --> 00:02:51.000
+Adding relevant information directly in the prompt grounds the language model's responses
+
+36
+00:02:51.000 --> 00:02:55.000
+and makes them less likely to create generic or misleading text.
+
+37
+00:02:55.000 --> 00:03:00.500
+RAG makes it much easier to keep LLMs up to date with rapidly changing information.
+
+38
+00:03:00.500 --> 00:03:05.500
+Retraining a language model is usually a costly and time-consuming feat,
+
+39
+00:03:05.500 --> 00:03:09.500
+so LLMs struggle to keep up with very new information.
+
+40
+00:03:09.500 --> 00:03:14.500
+In a RAG system, however, you can simply update the information in the knowledge base,
+
+41
+00:03:14.500 --> 00:03:18.000
+just like you would update entries in any other database.
+
+42
+00:03:18.000 --> 00:03:24.000
+As soon as those changes are indexed, your LLM will be able to respond based on the new information.
+
+43
+00:03:24.000 --> 00:03:27.000
+RAG improves an LLM's ability to cite sources.
+
+44
+00:03:27.000 --> 00:03:31.000
+A RAG system can add citation information to the augmented prompt,
+
+45
+00:03:31.000 --> 00:03:36.000
+and the LLM can then include that information in its ultimate response.
+
+46
+00:03:36.000 --> 00:03:38.000
+This doesn't just ground the response,
+
+47
+00:03:38.000 --> 00:03:42.500
+but enables human readers to dig deeper and validate the generated text.
+
+48
+00:03:42.500 --> 00:03:47.000
+Finally, RAG allows an LLM to focus on this text generation.
+
+49
+00:03:47.000 --> 00:03:50.500
+The retriever filters down a vast world of information,
+
+50
+00:03:51.000 --> 00:03:56.000
+finds what's most important and relevant, and presents it succinctly.
+
+51
+00:03:56.000 --> 00:03:59.000
+The LLM still needs to write a good response,
+
+52
+00:03:59.000 --> 00:04:03.500
+but it's not being relied upon to do fact-finding or filtering steps.
+
+53
+00:04:03.500 --> 00:04:09.500
+In other words, each component is assigned to work on the area of its greatest strength.
+
+54
+00:04:09.500 --> 00:04:14.500
+By the end of this course, you'll dive deep on building RAG systems from the ground up,
+
+55
+00:04:14.500 --> 00:04:18.000
+but here's a very simple code demo of how RAG works,
+
+56
+00:04:18.000 --> 00:04:21.000
+with most of the details abstracted away.
+
+57
+00:04:21.000 --> 00:04:25.000
+I have a retrieve function and a generate function.
+
+58
+00:04:25.000 --> 00:04:29.000
+The retrieve function is a wrapper around a retriever.
+
+59
+00:04:29.000 --> 00:04:35.000
+It accepts a text query and returns relevant documents from the knowledge base.
+
+60
+00:04:35.000 --> 00:04:40.500
+The generate function is just a wrapper around a large language model.
+
+61
+00:04:40.500 --> 00:04:45.000
+It accepts a text prompt and returns the LLM's response.
+
+62
+00:04:45.000 --> 00:04:48.500
+I'll write a prompt and save it in the variable prompt.
+
+63
+00:04:48.500 --> 00:04:54.000
+The prompt is, why are hotel prices in Vancouver super expensive this weekend?
+
+64
+00:04:54.000 --> 00:05:01.000
+Now, let's submit our prompt directly to our LLM and see what answer it returns.
+
+65
+00:05:01.000 --> 00:05:09.000
+Okay, now let's see what additional information our retriever has about this prompt, like this.
+
+66
+00:05:09.000 --> 00:05:14.000
+And now let's build an augmented prompt that contains both the original user question
+
+67
+00:05:14.000 --> 00:05:16.000
+and the retrieved information.
+
+68
+00:05:16.000 --> 00:05:20.000
+So here, the augmented prompt reads, respond to the following prompt.
+
+69
+00:05:20.000 --> 00:05:25.500
+We add in our prompt, using the following information retrieved to help you answer.
+
+70
+00:05:25.500 --> 00:05:28.000
+And then we add in our retrieved documents.
+
+71
+00:05:28.000 --> 00:05:32.000
+Now, let's submit this augmented prompt to our LLM.
+
+72
+00:05:32.000 --> 00:05:35.500
+Now the LLM is able to provide an accurate response to the question,
+
+73
+00:05:35.500 --> 00:05:39.000
+integrating the information that was retrieved from the knowledge base.
+
+74
+00:05:39.000 --> 00:05:41.500
+That's really all there is to RAG.
+
+75
+00:05:41.500 --> 00:05:47.000
+Adding additional context to your prompt to help an LLM respond more accurately.
+
+76
+00:05:47.000 --> 00:05:51.500
+This was admittedly a very high level overview of a RAG architecture.
+
+77
+00:05:51.500 --> 00:05:56.500
+So join me in the next video and we'll start looking at each component in more detail.
+

@@ -1,0 +1,291 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.333 --> 00:00:04.000
+At this point, the purpose of the retriever is probably pretty clear.
+
+2
+00:00:04.000 --> 00:00:10.000
+It needs to provide useful information to the LLM that was potentially not available when the model was trained.
+
+3
+00:00:10.000 --> 00:00:14.000
+Now let's take a look at how this component actually works.
+
+4
+00:00:14.000 --> 00:00:16.000
+Let's start with an analogy.
+
+5
+00:00:16.000 --> 00:00:20.000
+Imagine you're visiting a library to answer the question,
+
+6
+00:00:20.000 --> 00:00:23.000
+How can I make New York style pizza at home?
+
+7
+00:00:23.000 --> 00:00:27.000
+I know, I know, you probably just looked this up online.
+
+8
+00:00:27.000 --> 00:00:29.000
+And honestly, so would I.
+
+9
+00:00:29.000 --> 00:00:32.000
+But stick with the metaphor because I think the visuals are helpful.
+
+10
+00:00:32.000 --> 00:00:36.000
+The library has a large collection of books on many topics.
+
+11
+00:00:36.000 --> 00:00:41.000
+To help you browse the collection, the books are organized in sections and shelves
+
+12
+00:00:41.000 --> 00:00:47.000
+based on characteristics of their topics, genre, authors, and so forth.
+
+13
+00:00:47.000 --> 00:00:52.000
+If you share your question with the librarian, they can help you find the sections of the library
+
+14
+00:00:52.000 --> 00:00:55.000
+or even the exact books that are most relevant to your question.
+
+15
+00:00:55.000 --> 00:00:58.000
+Retrievers have many similar components.
+
+16
+00:00:58.000 --> 00:01:04.000
+Where a library has a collection of books, a retriever has a knowledge base of documents.
+
+17
+00:01:04.000 --> 00:01:09.000
+A retriever will similarly create an index of the documents in the knowledge base
+
+18
+00:01:09.000 --> 00:01:13.000
+which keeps the documents organized and makes them easy to search.
+
+19
+00:01:13.000 --> 00:01:17.000
+The next step is to actually retrieve relevant information.
+
+20
+00:01:17.000 --> 00:01:20.000
+In the library, you can just ask the librarian directly.
+
+21
+00:01:20.000 --> 00:01:23.000
+The librarian is able to understand the meaning of your question
+
+22
+00:01:23.000 --> 00:01:30.000
+and knows to go look in sections of the library on cooking or Italian cuisine or possibly New York.
+
+23
+00:01:30.000 --> 00:01:33.000
+The ability to interpret the meaning of your question
+
+24
+00:01:33.000 --> 00:01:37.000
+allows them to identify the right shelves of the library to search through
+
+25
+00:01:37.000 --> 00:01:39.000
+and eventually find relevant books.
+
+26
+00:01:39.000 --> 00:01:42.000
+Inside a RAG system, the retriever does something similar.
+
+27
+00:01:42.000 --> 00:01:47.000
+It first needs to process the prompt to understand its underlying meaning.
+
+28
+00:01:47.000 --> 00:01:52.000
+It then uses that understanding to search the index of documents.
+
+29
+00:01:52.000 --> 00:01:55.000
+The retriever then returns the documents from the knowledge base
+
+30
+00:01:55.000 --> 00:01:58.000
+that it determines are the most relevant to the prompt.
+
+31
+00:01:58.000 --> 00:02:00.000
+When it's completing its search,
+
+32
+00:02:00.000 --> 00:02:06.000
+the retriever ranks documents in the knowledge base by how relevant they are to the prompt.
+
+33
+00:02:06.000 --> 00:02:11.000
+Each document receives a numerical score that quantifies its relevance.
+
+34
+00:02:11.000 --> 00:02:17.000
+Usually, this means some measure of the similarity between the text of the prompt
+
+35
+00:02:17.000 --> 00:02:19.000
+and the text of the document.
+
+36
+00:02:19.000 --> 00:02:23.000
+The documents with the highest scores are the ones that are returned.
+
+37
+00:02:23.000 --> 00:02:27.000
+There are a variety of approaches to calculating these similarity scores
+
+38
+00:02:27.000 --> 00:02:30.000
+that you'll learn more about later in the course.
+
+39
+00:02:30.000 --> 00:02:34.000
+A well-designed retriever should, of course, return relevant documents,
+
+40
+00:02:34.000 --> 00:02:38.000
+but it also needs to withhold irrelevant documents.
+
+41
+00:02:38.000 --> 00:02:42.000
+If you asked for information about making New York-style pizza at home
+
+42
+00:02:42.000 --> 00:02:45.000
+and the retriever responded with all the documents in the knowledge base,
+
+43
+00:02:45.000 --> 00:02:48.000
+technically, you'd have every relevant document,
+
+44
+00:02:48.000 --> 00:02:52.000
+but it'd be lost in a mountain of irrelevant information.
+
+45
+00:02:52.000 --> 00:02:56.000
+As you saw earlier, this would also lead to costly prompts
+
+46
+00:02:56.000 --> 00:03:00.000
+or even entirely use up the LLM's context window.
+
+47
+00:03:00.000 --> 00:03:05.000
+On the other hand, if you only retrieve the highest-ranked documents in the knowledge base,
+
+48
+00:03:05.000 --> 00:03:11.000
+you might miss valuable relevant information in the documents ranked 2nd, 3rd, or 4th.
+
+49
+00:03:12.000 --> 00:03:17.000
+In a perfect world, the retriever perfectly ranks the documents
+
+50
+00:03:17.000 --> 00:03:21.000
+and chooses the exact right number of them to return.
+
+51
+00:03:21.000 --> 00:03:25.000
+In practice, however, you know the retriever will sometimes rank
+
+52
+00:03:25.000 --> 00:03:30.000
+some relevant documents too low and rank some other irrelevant documents too high,
+
+53
+00:03:30.000 --> 00:03:35.000
+making it difficult to confidently decide how many of them to return.
+
+54
+00:03:35.000 --> 00:03:39.000
+To optimize a retriever's performance, you'll need to monitor it over time
+
+55
+00:03:39.000 --> 00:03:44.000
+and experiment with different settings, something you'll see extensively in this course.
+
+56
+00:03:44.000 --> 00:03:50.000
+It's worth noting that many familiar pieces of software perform very similar tasks to a retriever.
+
+57
+00:03:50.000 --> 00:03:55.000
+A web search engine retrieves web pages that are relevant to a web search,
+
+58
+00:03:55.000 --> 00:04:01.000
+and a relational database retrieves rows and tables that match a SQL query.
+
+59
+00:04:01.000 --> 00:04:05.000
+The broader field of information retrieval was already mature
+
+60
+00:04:05.000 --> 00:04:08.000
+when large language models first were developed,
+
+61
+00:04:08.000 --> 00:04:13.000
+but ideas from this field underlie the way retrievers and RAG systems are designed.
+
+62
+00:04:13.000 --> 00:04:17.000
+In theory, there's lots of ways to implement the retriever in a RAG system.
+
+63
+00:04:17.000 --> 00:04:22.000
+Since most companies already have their data in traditional relational databases,
+
+64
+00:04:22.000 --> 00:04:29.000
+it'd be nice to keep the data there and figure out a way to retrieve from that database to power a RAG system.
+
+65
+00:04:29.000 --> 00:04:36.000
+While they're not strictly necessary, at scale, most retrievers will be built on top of a vector database.
+
+66
+00:04:36.000 --> 00:04:42.000
+A specialized type of database that is optimized for rapidly finding the documents in your knowledge base
+
+67
+00:04:42.000 --> 00:04:44.000
+that most closely match a prompt.
+
+68
+00:04:44.000 --> 00:04:49.000
+In this course, you'll learn about both general principles of information retrieval
+
+69
+00:04:49.000 --> 00:04:54.000
+that power a wide variety of search technologies and vector databases
+
+70
+00:04:54.000 --> 00:04:59.000
+that are typically used as a retriever inside a production-scale RAG system.
+
+71
+00:04:59.000 --> 00:05:04.000
+There's lots more to learn about retrievers, but for now, that covers the most important points.
+
+72
+00:05:04.000 --> 00:05:08.000
+Join me in the next video, and let's wrap up this module.
+

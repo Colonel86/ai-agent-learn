@@ -1,0 +1,347 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.353 --> 00:00:03.839
+Welcome to Retrieval Augmented Generation from Devo.ai.
+
+2
+00:00:04.480 --> 00:00:09.760
+Retrieval Augmented Generation, or RAG, is the most widely used technique for improving the
+
+3
+00:00:09.760 --> 00:00:15.920
+quality and accuracy of a large-language model's response. An OM starts off knowing only
+
+4
+00:00:15.920 --> 00:00:21.440
+information from maybe the public internet data it was trained on. So if you needed to answer
+
+5
+00:00:21.440 --> 00:00:28.239
+questions using facts drawn from proprietary data, say your own documents, RAG lets the model do
+
+6
+00:00:28.239 --> 00:00:34.400
+this by providing the model access to that additional data. This lets an LLM answer
+
+7
+00:00:34.400 --> 00:00:40.080
+questions with facts that it was not already trained on. For example, you may also have seen
+
+8
+00:00:40.080 --> 00:00:45.680
+a chatbot like ChatGP or Cloud or Gemini tell you it's searching the web to help answer your
+
+9
+00:00:45.680 --> 00:00:50.639
+question. This LLM is accessing additional information to try to make sure the response
+
+10
+00:00:50.639 --> 00:00:54.720
+is up-to-date and accurate. I'm excited to introduce your instructor for this course,
+
+11
+00:00:54.720 --> 00:01:01.520
+Zan Hassan. Zan is an experienced AI and machine learning engineer and researcher and educator.
+
+12
+00:01:01.520 --> 00:01:07.519
+He spent much of the last decade working at a handful of exciting AI companies like Weaviate,
+
+13
+00:01:07.519 --> 00:01:12.879
+which is a leading vector database company providing one of the key components of RAG,
+
+14
+00:01:12.879 --> 00:01:16.639
+as well as Together AI, which is a provider of LLM services.
+
+15
+00:01:17.599 --> 00:01:20.319
+Thank you, Andrew. I'm super excited to be here.
+
+16
+00:01:21.279 --> 00:01:27.599
+What I love about RAG is the fact that it provides a simple and practical way to focus the power of
+
+17
+00:01:27.599 --> 00:01:34.000
+large language models. The core idea of RAG is pairing classical search systems with the
+
+18
+00:01:34.000 --> 00:01:39.199
+reasoning abilities of large language models. With this course, we've tried to balance covering
+
+19
+00:01:39.199 --> 00:01:44.959
+foundational concepts underlying both search and LLMs and the practical tips for applying
+
+20
+00:01:44.959 --> 00:01:50.800
+these concepts to architect a high-performing RAG system. Even though the concept of RAG is not
+
+21
+00:01:50.800 --> 00:01:56.400
+complex, there's a zillion ways to implement it, and the design choices make a huge difference in
+
+22
+00:01:56.400 --> 00:02:02.400
+accuracy and speed of your system. You'll learn how to prepare your data to be used in this system,
+
+23
+00:02:02.959 --> 00:02:08.559
+prompt your language model to get the most out of that data, and evaluate actual user traffic to
+
+24
+00:02:08.559 --> 00:02:13.279
+ensure you're providing high-quality responses. So you're going to leave this course with a lot
+
+25
+00:02:13.360 --> 00:02:18.720
+of practical skills to build and tune your RAG system and have the foundational understanding
+
+26
+00:02:18.720 --> 00:02:25.039
+of why these techniques work. It's an incredibly useful skill set and has applications to a huge
+
+27
+00:02:25.039 --> 00:02:31.279
+variety of industries. I think RAG may be the most commonly built type of LLM-based application
+
+28
+00:02:31.279 --> 00:02:36.720
+in the world today. Large companies are using it to help their customers get answers to questions
+
+29
+00:02:36.720 --> 00:02:44.160
+about their products, or help their own employees get answers to the company's internal policies or
+
+30
+00:02:44.160 --> 00:02:50.160
+other matters. Startups are also building RAG applications in many verticals, like healthcare,
+
+31
+00:02:50.160 --> 00:02:54.880
+such as answering medical questions, or in education, to help tutor students on a range
+
+32
+00:02:54.880 --> 00:03:01.919
+of subjects, and so on. One interesting thing about RAG is that as LLM technology improves,
+
+33
+00:03:02.479 --> 00:03:07.039
+RAG systems are also rapidly incorporating these technologies. So, for example,
+
+34
+00:03:07.039 --> 00:03:13.039
+the recent generation of models have been much better than those from one or three years ago
+
+35
+00:03:13.039 --> 00:03:19.759
+at getting RAG systems to be more grounded in the documents or contexts it's given, so that
+
+36
+00:03:19.759 --> 00:03:24.479
+over the last year or so, it feels like the hallucination rates of RAG systems have been
+
+37
+00:03:24.479 --> 00:03:31.199
+steadily trending downwards. And reasoning models also let them tackle much more complex
+
+38
+00:03:31.199 --> 00:03:36.880
+questions and can reason on top of the provided context. And one interesting change over the last
+
+39
+00:03:36.880 --> 00:03:42.800
+couple of years is, as the input context window of LLMs has gone up, the hyperparameter tuning,
+
+40
+00:03:42.800 --> 00:03:46.720
+you know, what exactly do you insert into the RAG, how do you cut documents into pieces, the
+
+41
+00:03:46.720 --> 00:03:52.639
+signal input context, the best practices, which Zan is really expert on, has been evolving as well,
+
+42
+00:03:52.639 --> 00:03:57.679
+because now you don't need to squeeze so much information into a tiny little context window.
+
+43
+00:03:57.679 --> 00:04:02.880
+And as agentic document extraction and related technologies improve, you can now also more
+
+44
+00:04:02.880 --> 00:04:09.039
+easily build RAG systems on top of PDF files or slides or other types of documents, so you can
+
+45
+00:04:09.039 --> 00:04:16.079
+build RAG systems to more easily ingest and reason over and answer questions relating to broader
+
+46
+00:04:16.079 --> 00:04:21.679
+sets of materials that you may have. And more broadly, as teams are building more complex
+
+47
+00:04:21.679 --> 00:04:28.399
+multi-step agentic workflows, RAG is often then one component in a complex agentic workflow where
+
+48
+00:04:28.399 --> 00:04:33.839
+maybe on, you know, step five or step seven of some internal enterprise workload, RAG gives the
+
+49
+00:04:33.839 --> 00:04:38.640
+agent the information it needs in order to process a document or reason about a customer request.
+
+50
+00:04:38.640 --> 00:04:44.399
+Oh, I completely agree. Even as the AI field continues to evolve rapidly, I don't think RAG's
+
+51
+00:04:44.399 --> 00:04:50.160
+going anywhere. LLMs will continue to benefit from access to high-quality relevant data.
+
+52
+00:04:50.160 --> 00:04:54.480
+I also think this course gives a really strong foundation to work with all these cutting-edge
+
+53
+00:04:54.480 --> 00:05:00.559
+advances. We've included a huge variety of advanced techniques in this course, from multi-modal or
+
+54
+00:05:00.559 --> 00:05:07.200
+reasoning models, like you mentioned, to balancing approaches like RAG, fine-tuning, and newer long
+
+55
+00:05:07.200 --> 00:05:14.079
+context models. One technique that I'm personally quite excited about is agentic RAG, or building
+
+56
+00:05:14.079 --> 00:05:20.160
+systems that use multiple large language models where each one handles a single part of a large
+
+57
+00:05:20.160 --> 00:05:27.040
+workflow and has the agency to decide what data to retrieve. This is right at the frontier of
+
+58
+00:05:27.040 --> 00:05:31.440
+where companies are pushing the performance of LLM-based applications. I think the earlier
+
+59
+00:05:31.440 --> 00:05:35.839
+generation of RAG systems was a human engineer that would write a bunch of code, write a bunch
+
+60
+00:05:35.839 --> 00:05:41.119
+of rules, to decide, give the query, this is how we take a long document, how we cut it into pieces,
+
+61
+00:05:41.119 --> 00:05:45.279
+how we retrieve it, and we're going to take, you know, seven pieces or something to put into
+
+62
+00:05:45.279 --> 00:05:50.320
+the LLM context. So it's really a human engineer deciding what to give as context for the LLM to
+
+63
+00:05:50.320 --> 00:05:56.239
+answer a question. And the thing that's really interesting about agentic RAG is you can give
+
+64
+00:05:56.239 --> 00:06:02.959
+AI agent tools to retrieve information and then let it decide, does it want to do a web search next?
+
+65
+00:06:02.959 --> 00:06:07.440
+And if so, what keywords does it want to use for the web search? Or maybe query a specific specialized
+
+66
+00:06:07.440 --> 00:06:11.839
+database. And after retrieving the first round of information, is it good enough? Or do you want
+
+67
+00:06:11.839 --> 00:06:17.679
+to do a second round of retrieval? So these highly agentic systems can then decide by themselves
+
+68
+00:06:17.679 --> 00:06:25.519
+what information to retrieve to serve a specific information need. And I find that to be an
+
+69
+00:06:25.519 --> 00:06:30.079
+important way to make the systems much more flexible and powerful. It gives them a way to deal
+
+70
+00:06:30.079 --> 00:06:36.480
+with the messiness of the real world. They mess up, they can route back and fix the approach that
+
+71
+00:06:36.480 --> 00:06:44.959
+they're going with. So going all the way from basic RAG to advanced agentic RAG, in this course,
+
+72
+00:06:44.959 --> 00:06:50.239
+you learn about this range of techniques, both from the core principles and the mental frameworks
+
+73
+00:06:50.239 --> 00:06:55.440
+of how to build these systems to the practicalities of how do you actually tune a hyperparameter of
+
+74
+00:06:55.440 --> 00:07:01.359
+what is the appropriate chunk size to cut a very long document into and how to manage context.
+
+75
+00:07:01.359 --> 00:07:07.920
+And if you are just starting out on the earlier phases of building out Gen AI applications,
+
+76
+00:07:07.920 --> 00:07:13.040
+I think that this course will give you a good overview of not just RAG, but many of the
+
+77
+00:07:13.040 --> 00:07:18.320
+components that go into RAG that could be useful for other things you may build in the future as
+
+78
+00:07:18.320 --> 00:07:25.679
+well. So I think that this course will set you up absolutely to do RAG, but more broadly,
+
+79
+00:07:25.679 --> 00:07:30.079
+to have a good foundation to think about how to assemble many of the tools that we now have in
+
+80
+00:07:30.079 --> 00:07:37.200
+Gen AI to build an application and to evaluate it and to drive continued improvements. So far,
+
+81
+00:07:37.200 --> 00:07:43.200
+Zan and I have chatted about RAG and why we think it's important and why we think you benefit from
+
+82
+00:07:43.200 --> 00:07:49.040
+learning about it. And in the next video, Zan will present a high-level overview of what are
+
+83
+00:07:49.040 --> 00:07:53.920
+the most important components of RAG, so that whether you're building a standalone RAG system
+
+84
+00:07:53.920 --> 00:07:59.040
+or building it as one component of a more complex, agentic, auto-type system, you have
+
+85
+00:07:59.040 --> 00:08:04.640
+that mental map for what are the things you need to do to get an effective RAG system going. So
+
+86
+00:08:04.640 --> 00:08:08.880
+let's take a look at the next video to dive into the details of RAG.
+

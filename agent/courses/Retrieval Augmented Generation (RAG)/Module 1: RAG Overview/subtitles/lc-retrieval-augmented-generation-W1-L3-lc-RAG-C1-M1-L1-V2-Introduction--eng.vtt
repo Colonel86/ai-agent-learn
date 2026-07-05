@@ -1,0 +1,223 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.300 --> 00:00:09.800
+LLMs are remarkable tools. They can answer questions, summarize and rewrite text, provide feedback on documents, generate code, and much more.
+
+2
+00:00:09.800 --> 00:00:18.399
+These types of tasks seemed out of reach for computers just a few years ago, and interacting with one can feel a lot like working with another person.
+
+3
+00:00:18.399 --> 00:00:27.600
+RAG is an approach that further improves the performance of large language models by giving them access to information that they don't know from their training.
+
+4
+00:00:28.000 --> 00:00:31.500
+To help highlight that idea, let's look at a few examples.
+
+5
+00:00:31.500 --> 00:00:36.000
+Suppose I asked you the question, why are hotels expensive on the weekend?
+
+6
+00:00:36.000 --> 00:00:42.799
+You can probably answer that question. More people travel on weekends, so there's more competition for rooms.
+
+7
+00:00:42.799 --> 00:00:49.200
+Now, suppose I asked you, why are hotels in Vancouver super expensive this coming weekend?
+
+8
+00:00:49.200 --> 00:00:51.700
+You'll need more information to answer this one.
+
+9
+00:00:51.700 --> 00:00:59.200
+If you searched online, you might find that international superstar Taylor Swift is in town this weekend for a two-night residency.
+
+10
+00:00:59.200 --> 00:01:04.199
+With that additional information, you again probably could answer the question.
+
+11
+00:01:04.199 --> 00:01:10.900
+Finally, suppose I asked you, why doesn't Vancouver have more hotel capacity close to downtown?
+
+12
+00:01:10.900 --> 00:01:20.199
+To answer this question, you'd probably need to do some deep research into the history of Vancouver's development, urban planning in general, and so forth.
+
+13
+00:01:20.199 --> 00:01:24.500
+In other words, you'd need access to a lot of specialized information.
+
+14
+00:01:24.500 --> 00:01:29.099
+You can think of the way you'd respond to these questions as two phases.
+
+15
+00:01:29.099 --> 00:01:37.599
+First, you collect any necessary information, and then you reason over that information to develop your response.
+
+16
+00:01:37.599 --> 00:01:42.400
+As you saw with the first question, sometimes you don't need to collect any information.
+
+17
+00:01:42.400 --> 00:01:46.400
+Based on your knowledge of the world, you're ready to respond right away.
+
+18
+00:01:46.400 --> 00:01:51.599
+Other times, though, you might need to collect a little bit or even a lot of information.
+
+19
+00:01:51.599 --> 00:01:57.500
+In RAG, the process of collecting useful information is called retrieval.
+
+20
+00:01:57.500 --> 00:02:03.900
+And the process of reasoning over that information and responding is called generation.
+
+21
+00:02:03.900 --> 00:02:09.500
+LLMs benefit from the retrieval stage for basically the same reasons you do.
+
+22
+00:02:09.500 --> 00:02:12.600
+You'll learn more about LLMs throughout this course.
+
+23
+00:02:12.699 --> 00:02:21.800
+But for now, you can think of them as kind of like a person that has a wide variety of general knowledge from reading huge chunks of the Internet.
+
+24
+00:02:21.800 --> 00:02:26.000
+When you prompt an LLM, it relies on this knowledge to generate a response.
+
+25
+00:02:26.000 --> 00:02:28.600
+For many prompts, this works great.
+
+26
+00:02:28.600 --> 00:02:34.500
+In other cases, though, the LLM doesn't know the information it needs to respond accurately.
+
+27
+00:02:34.500 --> 00:02:41.699
+The prompt might be about a very recent event or some specialized information it hasn't previously seen.
+
+28
+00:02:41.699 --> 00:02:47.800
+Just as was true with you, it's unreasonable to expect LLMs to be experts on every topic.
+
+29
+00:02:47.800 --> 00:02:52.600
+And they provide much better responses when they have access to better information.
+
+30
+00:02:52.600 --> 00:02:59.500
+Recognizing that LLMs also benefit from a retrieval phase is the core idea of RAG.
+
+31
+00:02:59.500 --> 00:03:03.100
+Of course, LLMs aren't people who spend a lot of time on Wikipedia.
+
+32
+00:03:03.100 --> 00:03:10.000
+Instead, they're mathematical models that have been trained on massive data sets taken from all over the open Internet.
+
+33
+00:03:10.000 --> 00:03:15.600
+During the training process, the model learns any information contained in the training data.
+
+34
+00:03:15.600 --> 00:03:24.100
+When you send a prompt to an LLM, you're hoping information relevant to your question was included in the training data, ideally many times.
+
+35
+00:03:24.100 --> 00:03:27.500
+Unfortunately, lots of information won't be included.
+
+36
+00:03:27.500 --> 00:03:29.800
+Companies keep private databases.
+
+37
+00:03:29.800 --> 00:03:33.199
+Some information is just hidden or hard to access.
+
+38
+00:03:33.199 --> 00:03:41.199
+And with news being published every minute of the day, there will always be information out there that an LLM wasn't trained on.
+
+39
+00:03:41.199 --> 00:03:47.100
+The question then is, how do you make sure the LLM knows this useful information?
+
+40
+00:03:47.100 --> 00:03:50.100
+The short answer, just put it in the prompt.
+
+41
+00:03:50.100 --> 00:03:57.899
+The key idea of a RAG system is that you can modify a prompt before sending it to the large language model.
+
+42
+00:03:57.899 --> 00:04:04.199
+In addition to the user's original question, you can add in information that helps the LLM respond.
+
+43
+00:04:04.199 --> 00:04:09.399
+If you asked a RAG system, why are hotels in Vancouver super expensive this weekend?
+
+44
+00:04:09.399 --> 00:04:14.199
+It would first perform a retrieval step to gather relevant information.
+
+45
+00:04:14.199 --> 00:04:23.000
+The language model would then be provided an augmented prompt that includes both the original question and any retrieved information.
+
+46
+00:04:23.000 --> 00:04:27.799
+Now, the LLM has the information it needs to respond accurately.
+
+47
+00:04:27.799 --> 00:04:31.500
+Of course, this information needs to be retrieved from somewhere.
+
+48
+00:04:31.500 --> 00:04:36.399
+The component of a RAG system that handles this process is called a retriever.
+
+49
+00:04:36.399 --> 00:04:43.500
+The retriever manages a knowledge base of trusted, relevant, and possibly private information.
+
+50
+00:04:43.500 --> 00:04:53.000
+When the RAG system receives a prompt, the retriever finds and retrieves the most relevant information from the knowledge base to share with the LLM.
+
+51
+00:04:53.000 --> 00:04:57.899
+The model then uses that retrieved information when it responds to the prompt.
+
+52
+00:04:57.899 --> 00:05:06.899
+The name Retrieval Augmented Generation, which is admittedly a mouthful, hopefully now makes more sense.
+
+53
+00:05:06.899 --> 00:05:17.299
+All you're doing is improving or augmenting the way an LLM generates text by first retrieving relevant information from a knowledge base.
+
+54
+00:05:17.299 --> 00:05:23.899
+This is a high-level description of how RAG works, but sometimes it can be more useful to see some example applications.
+
+55
+00:05:23.899 --> 00:05:27.899
+So join me in the next video where I'll talk through some ways RAG is already used.
+
