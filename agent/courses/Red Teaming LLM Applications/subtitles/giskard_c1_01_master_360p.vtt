@@ -1,0 +1,191 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:05.000
+Welcome to Red Teaming LLM Applications, built in partnership with Giskard.
+
+2
+00:00:05.000 --> 00:00:10.000
+I'm joined by Matteo Dora, who is Lead LLM Safety Researcher at Giskard,
+
+3
+00:00:10.000 --> 00:00:16.000
+and Luca Martial, who is Product Lead at Giskard, who are both instructors of this course.
+
+4
+00:00:16.000 --> 00:00:21.000
+Thanks, Andrew. I'm excited to be here with Luca. We can't wait to teach this course.
+
+5
+00:00:21.000 --> 00:00:27.000
+We're now seeing more LLMs used in real-world applications, like building chatbots or Q&A systems,
+
+6
+00:00:27.000 --> 00:00:35.000
+but often their risks and performance aren't rigorously checked before they are deployed and used by maybe even millions of people.
+
+7
+00:00:35.000 --> 00:00:42.000
+This has led to sometimes sensationalist reports in the media on problems that these deployments say about some LLM,
+
+8
+00:00:42.000 --> 00:00:50.000
+saying something inappropriate, like offering to sell a car for $1 or leaching valuable IP, such as your system message.
+
+9
+00:00:50.000 --> 00:00:56.000
+And there can be real-world impacts to businesses when an LLM misfires like this.
+
+10
+00:00:56.000 --> 00:00:58.000
+In this course, you learned about Red Teaming.
+
+11
+00:00:58.000 --> 00:01:04.000
+Originally, Red Teaming referred to a strategy in cybersecurity and military training
+
+12
+00:01:04.000 --> 00:01:09.000
+where a group called the Red Team plays the role of an adversary and tries to attack a system
+
+13
+00:01:09.000 --> 00:01:13.000
+for the purpose of discovering and fixing vulnerabilities.
+
+14
+00:01:13.000 --> 00:01:21.000
+Red Teaming and Penetration Testing, also called Pen Testing, are now widely accepted practices in security,
+
+15
+00:01:21.000 --> 00:01:28.000
+and improving how to Red Team an AI will also reduce vulnerabilities in our AI systems.
+
+16
+00:01:28.000 --> 00:01:32.000
+In this course, you deep dive into Red Teaming LLM applications.
+
+17
+00:01:32.000 --> 00:01:36.000
+Using the skills you learned here, ethically and responsibly,
+
+18
+00:01:36.000 --> 00:01:43.000
+will help you to attack your own applications to detect and fix vulnerabilities before moving them into production.
+
+19
+00:01:43.000 --> 00:01:50.000
+In this course, you'll learn about the difference between benchmarking foundation models and testing LLM applications.
+
+20
+00:01:50.000 --> 00:01:56.000
+You will explore the fundamental LLM application vulnerabilities and how they affect real-world deployments.
+
+21
+00:01:56.000 --> 00:02:03.000
+And you will learn about the concept of Red Teaming and its relevance in identifying vulnerabilities in LLM applications.
+
+22
+00:02:03.000 --> 00:02:08.000
+You'll also get to try both manual and automated LLM Red Teaming methods,
+
+23
+00:02:08.000 --> 00:02:11.000
+and get a glimpse of what a full Red Teaming assessment looks like,
+
+24
+00:02:11.000 --> 00:02:14.000
+applying the concepts and techniques covered throughout the course.
+
+25
+00:02:14.000 --> 00:02:19.000
+Matteo and Luca will go through Red Teaming techniques step-by-step,
+
+26
+00:02:19.000 --> 00:02:25.000
+and you'll be also using an open-source Python library by Giskard to help automate these tests.
+
+27
+00:02:25.000 --> 00:02:33.000
+Generative AI has just made it to the list of major threat categories which cybersecurity folks are having to deal with.
+
+28
+00:02:33.000 --> 00:02:38.000
+A unique aspect of this threat is that the underlying technology is from a new field,
+
+29
+00:02:38.000 --> 00:02:42.000
+and every person involved in the development and deployment of these applications,
+
+30
+00:02:42.000 --> 00:02:49.000
+from ML engineers to security architects, are wrestling with novel and complex concepts of risk.
+
+31
+00:02:49.000 --> 00:02:54.000
+A unique aspect of this threat is that the underlying technology is from a new field,
+
+32
+00:02:54.000 --> 00:02:58.000
+and every person involved in the development and deployment of these applications,
+
+33
+00:02:58.000 --> 00:03:05.000
+from ML engineers to security architects, are wrestling with novel and complex concepts of risk.
+
+34
+00:03:05.000 --> 00:03:11.000
+At Giskard, we've been seeing an explosion of interest from organizations to Red Team their LLM applications.
+
+35
+00:03:11.000 --> 00:03:19.000
+By making the fundamental techniques and tools required for conducting different versions of these assessments available to all developers,
+
+36
+00:03:19.000 --> 00:03:22.000
+we can all make LLM applications better and safer.
+
+37
+00:03:22.000 --> 00:03:27.000
+We're excited to present this course to you, and share some of our experience leading Red Team attacks,
+
+38
+00:03:27.000 --> 00:03:31.000
+as well as methodologies needed for Red Teaming your LLM applications.
+
+39
+00:03:31.000 --> 00:03:34.000
+Many people have worked to create this course.
+
+40
+00:03:34.000 --> 00:03:40.000
+I'd like to thank, from Giskard, Alex Combessie and Rabah Abdul-Khalek.
+
+41
+00:03:40.000 --> 00:03:45.000
+From DeepLearner.ai, Diala Ezzeddine has also contributed to this course.
+
+42
+00:03:45.000 --> 00:03:49.000
+The first lesson will introduce fundamental LLM application vulnerabilities,
+
+43
+00:03:49.000 --> 00:03:54.000
+and the important difference between foundation model benchmarks and LLM application testing.
+
+44
+00:03:54.000 --> 00:03:59.000
+Given how new and how important the field of Red Teaming LLMs is,
+
+45
+00:03:59.000 --> 00:04:02.000
+this is an excellent time to be learning these techniques,
+
+46
+00:04:02.000 --> 00:04:06.000
+which are really at the forefront of LLM application safety and security.
+
+47
+00:04:06.000 --> 00:04:09.000
+Let's go on to the next video and get started.
+
