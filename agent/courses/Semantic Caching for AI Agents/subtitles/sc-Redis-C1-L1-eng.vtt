@@ -1,0 +1,866 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.502
+In this lesson, you'll learn what Semantic Caching is,
+
+2
+00:00:02.502 --> 00:00:05.772
+why it matters and how it helps AI Agents reuse results
+
+3
+00:00:05.772 --> 00:00:07.774
+to reduce cost and latency.
+
+4
+00:00:07.874 --> 00:00:10.377
+Let's dive in. Let's start at the beginning.
+
+5
+00:00:10.477 --> 00:00:13.680
+Model quality tends to go up with cost per token.
+
+6
+00:00:13.713 --> 00:00:17.083
+That curve is improving, but the price and latency tradeoff
+
+7
+00:00:17.083 --> 00:00:19.886
+is still the gating factor on real-world deployments.
+
+8
+00:00:20.286 --> 00:00:23.490
+This is a real tension, because popular models for reasoning
+
+9
+00:00:23.490 --> 00:00:26.493
+and solving complex tasks like GPT-5 or Claude
+
+10
+00:00:26.493 --> 00:00:28.895
+are just more expensive and also slower.
+
+11
+00:00:29.262 --> 00:00:32.532
+Here we see some results produced by artificialanalysis.ai.
+
+12
+00:00:32.832 --> 00:00:36.136
+In their comparison of multiple foundation models against one another,
+
+13
+00:00:36.236 --> 00:00:38.838
+and we compare intelligence versus price.
+
+14
+00:00:39.139 --> 00:00:41.841
+So for many teams, inference, not data plumbing,
+
+15
+00:00:42.142 --> 00:00:44.544
+is now the dominant unit cost in AI systems.
+
+16
+00:00:44.778 --> 00:00:48.982
+organizations are building Retrieval Augmented Generation systems or RAG for short.
+
+17
+00:00:49.382 --> 00:00:51.818
+These systems can infuse domain specific knowledge
+
+18
+00:00:51.818 --> 00:00:54.587
+into the prompt of a large language model
+
+19
+00:00:54.587 --> 00:00:57.057
+and make them so they reduce hallucinations by
+
+20
+00:00:57.057 --> 00:00:59.492
+inserting the right information at the right time.
+
+21
+00:00:59.826 --> 00:01:02.896
+and also stay fresh by providing up-to-date information
+
+22
+00:01:02.896 --> 00:01:06.199
+at runtime that the large language model has never seen before.
+
+23
+00:01:06.599 --> 00:01:09.202
+AI agents, however, are token hungry.
+
+24
+00:01:09.536 --> 00:01:13.139
+they by nature extract and plan and act
+
+25
+00:01:13.406 --> 00:01:16.509
+and reflect and iterate over multiple, multiple passes.
+
+26
+00:01:17.010 --> 00:01:21.014
+So agents use multiple LLM calls throughout the course of their execution.
+
+27
+00:01:21.214 --> 00:01:23.917
+This consumes more tokens, adds additional latency
+
+28
+00:01:24.284 --> 00:01:26.586
+and the prompt lengths also grow over time.
+
+29
+00:01:27.487 --> 00:01:30.790
+And as we can see through this one benchmark produced by TheAgentCompany,
+
+30
+00:01:30.790 --> 00:01:33.193
+this is a paper that came out in September 2025.
+
+31
+00:01:33.593 --> 00:01:36.096
+Multiple real-world tasks compared against one another
+
+32
+00:01:36.096 --> 00:01:38.098
+with different LLMs.
+
+33
+00:01:38.431 --> 00:01:41.201
+You can see that even in some cases,
+
+34
+00:01:41.201 --> 00:01:44.204
+an entire execution end-to-end costs up to USD $6.8.
+
+35
+00:01:44.804 --> 00:01:47.407
+Let's talk about a very common use case for agents.
+
+36
+00:01:47.407 --> 00:01:50.210
+One where we might see in the real world, like customer support.
+
+37
+00:01:50.410 --> 00:01:53.313
+So in a customer support scenario, agents are trying
+
+38
+00:01:53.313 --> 00:01:55.115
+to accelerate the time to resolution
+
+39
+00:01:55.115 --> 00:01:57.217
+of a customer support ticket or inquiry.
+
+40
+00:01:57.417 --> 00:02:00.920
+Slow agents negatively impact the end customer user experience.
+
+41
+00:02:01.154 --> 00:02:04.357
+And customer support agents generate tons of frequently asked questions,
+
+42
+00:02:04.357 --> 00:02:06.659
+redundant data that adds up over time.
+
+43
+00:02:06.659 --> 00:02:10.663
+And the RAG operations over that data will drive up infrastructure costs.
+
+44
+00:02:10.964 --> 00:02:13.366
+So take for example, multiple users asking questions
+
+45
+00:02:13.366 --> 00:02:14.767
+about how they can get a refund,
+
+46
+00:02:14.767 --> 00:02:16.369
+or how they can get their money back,
+
+47
+00:02:16.369 --> 00:02:18.371
+or what the refund policy is.
+
+48
+00:02:18.371 --> 00:02:21.674
+This agent is having to solve all of these scenarios from scratch.
+
+49
+00:02:21.975 --> 00:02:24.177
+Let's talk about this classic principle called
+
+50
+00:02:24.177 --> 00:02:27.981
+caching. The idea is not to repeat yourself on redundant information.
+
+51
+00:02:28.281 --> 00:02:31.384
+Users might ask multiple questions of agents, and in these cases,
+
+52
+00:02:31.384 --> 00:02:33.052
+we can check the cache for queries
+
+53
+00:02:33.052 --> 00:02:34.988
+that have already been answered in the past
+
+54
+00:02:35.388 --> 00:02:38.691
+and avoid invoking the large language model when we don't have to.
+
+55
+00:02:38.992 --> 00:02:41.694
+This is a great idea in theory, but the problem is that
+
+56
+00:02:41.694 --> 00:02:44.998
+a naive exact match caching fails for natural language.
+
+57
+00:02:45.098 --> 00:02:47.200
+So let's look at this example again. I want my money
+
+58
+00:02:47.200 --> 00:02:50.436
+back, how do I get a refund? What is your refund policy?
+
+59
+00:02:50.637 --> 00:02:53.206
+In Traditional Caching, you use exact matches on string data.
+
+60
+00:02:53.406 --> 00:02:55.642
+The words and tokens and characters have to be
+
+61
+00:02:55.642 --> 00:02:58.111
+exactly the same in order to get a cache hit.
+
+62
+00:02:58.511 --> 00:03:01.214
+This yields perfect precision but really poor recall
+
+63
+00:03:01.414 --> 00:03:04.250
+and in most cases very low cache hit rates for natural language.
+
+64
+00:03:04.651 --> 00:03:06.019
+So in this scenario, all three of
+
+65
+00:03:06.019 --> 00:03:07.420
+these questions would be a Cache Miss.
+
+66
+00:03:08.021 --> 00:03:09.722
+But introducing semantic caching,
+
+67
+00:03:10.223 --> 00:03:11.691
+This is where we can take
+
+68
+00:03:11.691 --> 00:03:13.426
+advantage of the meaning of the questions.
+
+69
+00:03:13.826 --> 00:03:16.229
+And now this brings us with higher recall and
+
+70
+00:03:16.229 --> 00:03:18.631
+higher cache hit rates, the ability to influence performance.
+
+71
+00:03:18.831 --> 00:03:22.135
+However, this also introduces the risk of false positives.
+
+72
+00:03:22.435 --> 00:03:25.038
+In other words, this introduces the opportunity for
+
+73
+00:03:25.138 --> 00:03:27.040
+the cache to hit on the incorrect thing.
+
+74
+00:03:27.440 --> 00:03:30.043
+So let's talk about how semantic caching works from scratch.
+
+75
+00:03:30.143 --> 00:03:32.812
+Step one is we're going to embed the user question.
+
+76
+00:03:33.246 --> 00:03:35.748
+We're going to convert this user question into a vector
+
+77
+00:03:35.748 --> 00:03:38.051
+that we can use for semantic search.
+
+78
+00:03:38.451 --> 00:03:41.254
+Second, we're going to compare the similarity
+
+79
+00:03:41.254 --> 00:03:44.757
+of the user query to every entry in our semantic cache.
+
+80
+00:03:45.258 --> 00:03:47.460
+And next, we will classify this result.
+
+81
+00:03:47.961 --> 00:03:49.862
+If the result is close enough to
+
+82
+00:03:49.862 --> 00:03:52.031
+the original question in terms of semantic distance,
+
+83
+00:03:52.232 --> 00:03:54.734
+we can go straight back to the user with the answer
+
+84
+00:03:54.734 --> 00:03:56.035
+that was stored in the cache.
+
+85
+00:03:56.035 --> 00:03:57.537
+But if it's a cache miss, then
+
+86
+00:03:57.570 --> 00:03:59.672
+we need to call our RAG system.
+
+87
+00:03:59.772 --> 00:04:02.575
+The RAG system involves generating some kind of search
+
+88
+00:04:03.076 --> 00:04:05.178
+and then some kind of call to an LLM.
+
+89
+00:04:05.278 --> 00:04:06.879
+And at the very end, we need
+
+90
+00:04:06.879 --> 00:04:08.481
+to still respond back to the user.
+
+91
+00:04:08.581 --> 00:04:11.384
+Once we have an answer, we can update our cache
+
+92
+00:04:11.484 --> 00:04:12.919
+with that question and answer pair to
+
+93
+00:04:12.919 --> 00:04:14.387
+make sure it's reusable in the future.
+
+94
+00:04:14.687 --> 00:04:16.522
+Now, the very backbone of semantic
+
+95
+00:04:16.522 --> 00:04:18.691
+caching is this idea of vector search.
+
+96
+00:04:18.791 --> 00:04:21.694
+And just as a recap, vectors are lists of numbers.
+
+97
+00:04:22.128 --> 00:04:25.732
+And these numbers represent data and encode meaning and semantics.
+
+98
+00:04:25.932 --> 00:04:28.735
+There are many example applications of vector search in the wild
+
+99
+00:04:28.735 --> 00:04:31.738
+including content discovery, search, recommendation systems,
+
+100
+00:04:31.738 --> 00:04:34.240
+or even fraud and anomaly detection.
+
+101
+00:04:34.774 --> 00:04:38.278
+Semantic caching in production introduces new kinds of challenges.
+
+102
+00:04:38.578 --> 00:04:40.580
+It's more than just vector search.
+
+103
+00:04:41.080 --> 00:04:43.383
+Here we have to care about the cache effectiveness.
+
+104
+00:04:43.983 --> 00:04:45.585
+In particular, accuracy.
+
+105
+00:04:46.286 --> 00:04:47.954
+Are we serving the correct results from
+
+106
+00:04:47.954 --> 00:04:49.656
+the cache when we get a hit?
+
+107
+00:04:49.656 --> 00:04:52.058
+Performance. Are we making sure that we actually hit
+
+108
+00:04:52.058 --> 00:04:54.460
+the cache often enough to get value from it?
+
+109
+00:04:54.761 --> 00:04:57.030
+And can we actually serve the cache
+
+110
+00:04:57.030 --> 00:04:59.265
+at scale without impacting round trip latency?
+
+111
+00:04:59.766 --> 00:05:02.568
+The next area we need to care about is Updatability or extensibility.
+
+112
+00:05:02.869 --> 00:05:04.971
+Can we refresh and invalidate or warm
+
+113
+00:05:04.971 --> 00:05:07.373
+the semantic cache as data evolves over time?
+
+114
+00:05:07.774 --> 00:05:10.677
+And lastly, Observability. Can we make sure to measure and observe
+
+115
+00:05:10.877 --> 00:05:13.079
+the right metrics like cache hit-rate, latency,
+
+116
+00:05:13.413 --> 00:05:15.481
+the cost savings and cache quality.
+
+117
+00:05:15.481 --> 00:05:16.749
+So in this course, we're going
+
+118
+00:05:16.749 --> 00:05:18.184
+to be focusing on four different metrics
+
+119
+00:05:18.184 --> 00:05:20.086
+to measure the effectiveness of the cache.
+
+120
+00:05:20.086 --> 00:05:22.388
+That is Cache Hit Rate, which is the frequency
+
+121
+00:05:22.388 --> 00:05:25.591
+of times that we hit the cache given a distance threshold.
+
+122
+00:05:25.591 --> 00:05:28.594
+And this is what primarily influences our cost savings
+
+123
+00:05:28.594 --> 00:05:30.797
+that we get from adding a semantic cache.
+
+124
+00:05:30.797 --> 00:05:33.199
+And then the next set of metrics are ranking metrics,
+
+125
+00:05:33.199 --> 00:05:36.903
+like Precision and Recall and F1 Score. These will be used to
+
+126
+00:05:37.136 --> 00:05:39.605
+help us understand how accurate our cache is
+
+127
+00:05:39.605 --> 00:05:41.341
+when we actually get a hit. Now,
+
+128
+00:05:41.341 --> 00:05:43.309
+this course is also going to help us
+
+129
+00:05:43.309 --> 00:05:45.011
+introduce different ways to improve
+
+130
+00:05:45.011 --> 00:05:47.914
+the accuracy and performance of the semantic cache.
+
+131
+00:05:48.314 --> 00:05:50.917
+For improving the precision and recall of the cache,
+
+132
+00:05:50.917 --> 00:05:52.618
+we'll focus on a couple different methods
+
+133
+00:05:52.919 --> 00:05:54.921
+like tuning the distance threshold
+
+134
+00:05:55.321 --> 00:05:58.624
+and adding additional reranker steps like a cross-encoder model
+
+135
+00:05:58.624 --> 00:06:00.626
+or a large language model as a judge.
+
+136
+00:06:00.860 --> 00:06:02.862
+Additionally, if techniques like Fuzzy Matching
+
+137
+00:06:02.862 --> 00:06:05.031
+can be used to help us handle typos
+
+138
+00:06:05.031 --> 00:06:07.033
+and exact match cases
+
+139
+00:06:07.033 --> 00:06:10.636
+before even invoking the embeddings associated with the cache.
+
+140
+00:06:10.636 --> 00:06:12.338
+This helps us save on compute.
+
+141
+00:06:12.505 --> 00:06:14.907
+And lastly, additional filters for different kinds
+
+142
+00:06:14.907 --> 00:06:17.310
+of data and context like temporal data,
+
+143
+00:06:17.510 --> 00:06:20.313
+so time sensitive queries or Code Detection,
+
+144
+00:06:20.513 --> 00:06:24.317
+like domain specific code, Python code, Java code, you name it.
+
+145
+00:06:24.517 --> 00:06:26.753
+All of those things that should potentially bypass
+
+146
+00:06:26.753 --> 00:06:29.021
+any kind of caching operation to begin with.
+
+147
+00:06:29.489 --> 00:06:32.592
+In this course, we're primarily going to implement a cache
+
+148
+00:06:32.592 --> 00:06:35.595
+that uses techniques to improve precision and recall and efficiency.
+
+149
+00:06:35.895 --> 00:06:37.730
+So let's talk about a real-world
+
+150
+00:06:37.730 --> 00:06:39.899
+example at a large retailer like Walmart.
+
+151
+00:06:40.066 --> 00:06:42.068
+Walmart published a paper recently where they
+
+152
+00:06:42.068 --> 00:06:44.370
+talked about the need for semantic caching
+
+153
+00:06:44.370 --> 00:06:47.573
+in both internal use cases and their external
+
+154
+00:06:47.573 --> 00:06:50.777
+customer support use cases. They called this waLLMartCache.
+
+155
+00:06:50.877 --> 00:06:53.446
+In this cache, they introduced several different techniques
+
+156
+00:06:53.446 --> 00:06:55.982
+like distribution of the cache across multiple nodes.
+
+157
+00:06:56.416 --> 00:07:00.420
+adding a flexible decision engine and even pre-loading common FAQs.
+
+158
+00:07:00.520 --> 00:07:04.424
+And this helps to increase the overall accuracy to nearly 90%.
+
+159
+00:07:04.724 --> 00:07:06.526
+So let's take a quick dive into
+
+160
+00:07:06.526 --> 00:07:08.628
+how exactly they got to this particular benchmark.
+
+161
+00:07:09.228 --> 00:07:12.899
+The first place that we see the contributions from the waLLMartCache
+
+162
+00:07:12.899 --> 00:07:15.034
+was first by adding a Load Balancer. And
+
+163
+00:07:15.034 --> 00:07:17.403
+this Load Balancer allows them to grow the system
+
+164
+00:07:17.403 --> 00:07:20.506
+very easily horizontally, meaning they can add additional
+
+165
+00:07:20.540 --> 00:07:23.342
+nodes of compute and the cache can scale up
+
+166
+00:07:23.342 --> 00:07:25.545
+in terms of the number of operations that it can serve.
+
+167
+00:07:25.545 --> 00:07:29.048
+This is absolutely essential for an organization like Walmart
+
+168
+00:07:29.048 --> 00:07:31.050
+at scale across the entire world.
+
+169
+00:07:31.250 --> 00:07:34.554
+Secondly, they added Dual-tiered storage layer for the cache.
+
+170
+00:07:34.754 --> 00:07:37.557
+By Dual-tiered we mean there's both an L1 and an L2
+
+171
+00:07:37.557 --> 00:07:41.360
+layer of storage. In L1, this is a Vector Database.
+
+172
+00:07:41.360 --> 00:07:44.363
+This is a simple retrieval based on semantic search.
+
+173
+00:07:44.697 --> 00:07:47.300
+to find similar entries in the semantic cache.
+
+174
+00:07:47.567 --> 00:07:50.002
+And L2, this is an in-memory cache like Redis
+
+175
+00:07:50.269 --> 00:07:52.572
+or some other database to just do a simple lookup.
+
+176
+00:07:52.872 --> 00:07:55.875
+Given the IDs that come from the L1 cache, we go find
+
+177
+00:07:56.375 --> 00:07:59.679
+their data and metadata in the L2 cache for retrieval.
+
+178
+00:08:00.079 --> 00:08:04.484
+Lastly is Multi-tenancy. So given the size of an organization like Walmart,
+
+179
+00:08:04.584 --> 00:08:06.486
+they can have multiple teams, multiple tenants,
+
+180
+00:08:06.586 --> 00:08:09.355
+and applications use the same storage infrastructure.
+
+181
+00:08:09.755 --> 00:08:12.725
+by serving multiple tenants out of the same cache storage.
+
+182
+00:08:13.025 --> 00:08:15.027
+And next, Walmart added a Decision Engine.
+
+183
+00:08:15.228 --> 00:08:18.231
+The Decision Engine is there to improve the cache precision
+
+184
+00:08:18.231 --> 00:08:20.032
+beyond pure semantic search.
+
+185
+00:08:20.433 --> 00:08:22.935
+In their particular decision engine they added a module
+
+186
+00:08:22.935 --> 00:08:26.539
+for Code Detection. and also Temporal Context Detection.
+
+187
+00:08:27.240 --> 00:08:30.042
+In any case, a user query that comes in involves code
+
+188
+00:08:30.343 --> 00:08:32.044
+or time-sensitive queries.
+
+189
+00:08:32.278 --> 00:08:34.780
+These avoid the cache operations altogether
+
+190
+00:08:34.780 --> 00:08:37.783
+and just go straight through the traditional LLM or RAG based workflow.
+
+191
+00:08:38.084 --> 00:08:41.053
+And these are both added before semantic search happens.
+
+192
+00:08:41.454 --> 00:08:42.755
+So in this course, we're going
+
+193
+00:08:42.755 --> 00:08:44.257
+to end with building an AI agent
+
+194
+00:08:44.257 --> 00:08:46.759
+from scratch using a LangGraph workflow.
+
+195
+00:08:47.059 --> 00:08:50.763
+In this LangGraph workflow, we will take a large, complicated user query,
+
+196
+00:08:50.763 --> 00:08:52.765
+like from a customer support use case.
+
+197
+00:08:52.865 --> 00:08:55.668
+And the agent will decompose that query into smaller pieces.
+
+198
+00:08:55.768 --> 00:08:57.770
+The agent will then check the cache.
+
+199
+00:08:57.837 --> 00:08:59.305
+for each query to find if
+
+200
+00:08:59.305 --> 00:09:01.007
+we've already answered this in the past.
+
+201
+00:09:01.007 --> 00:09:04.010
+And if we haven't, the agent will proceed with additional research
+
+202
+00:09:04.010 --> 00:09:06.312
+and evaluation iterations
+
+203
+00:09:06.312 --> 00:09:08.114
+to make sure we get quality answers.
+
+204
+00:09:08.114 --> 00:09:10.616
+And at the very end, an LLM will synthesize
+
+205
+00:09:10.616 --> 00:09:13.819
+the results back to the user in a personalized fashion.
+
+206
+00:09:13.819 --> 00:09:17.623
+This will be paired with a front-end experience that we provide
+
+207
+00:09:17.623 --> 00:09:20.126
+that allows you to put the URL of your favorite website.
+
+208
+00:09:20.126 --> 00:09:23.029
+We can scrape this website for all of its raw content.
+
+209
+00:09:23.362 --> 00:09:25.565
+enabling you to chat with the data.
+
+210
+00:09:25.865 --> 00:09:28.868
+By the end, we will build up a Semantic Cache from scratch
+
+211
+00:09:29.168 --> 00:09:32.872
+that is filled with commonly asked questions from your testing.
+
+212
+00:09:33.172 --> 00:09:36.676
+And this agent will be able to leverage those Semantic Cache entries
+
+213
+00:09:36.976 --> 00:09:38.578
+for improved performance over time.
+
+214
+00:09:38.678 --> 00:09:41.180
+In the very next lesson, we're first going to start
+
+215
+00:09:41.280 --> 00:09:43.182
+with building a Semantic Cache from scratch.
+
+216
+00:09:43.583 --> 00:09:45.451
+Let's get started.

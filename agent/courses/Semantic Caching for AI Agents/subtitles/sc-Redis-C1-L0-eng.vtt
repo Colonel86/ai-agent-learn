@@ -1,0 +1,286 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.602
+Welcome to Semantic Caching for AI Agents
+
+2
+00:00:02.602 --> 00:00:04.471
+built in partnership with Redis,
+
+3
+00:00:04.471 --> 00:00:06.172
+taught by Tyler Hutcherson,
+
+4
+00:00:06.172 --> 00:00:08.775
+who is applied AI engineering lead
+
+5
+00:00:08.775 --> 00:00:10.377
+and Iliya Zhechev,
+
+6
+00:00:10.410 --> 00:00:13.213
+who is senior research engineer at Redis.
+
+7
+00:00:13.913 --> 00:00:16.916
+In this course, you'll learn how to make your AI agents faster
+
+8
+00:00:16.916 --> 00:00:19.919
+and more cost-effective by adding a semantic cache.
+
+9
+00:00:20.420 --> 00:00:23.223
+In many projects, inference costs and latency
+
+10
+00:00:23.223 --> 00:00:25.425
+affect your ability to scale an application.
+
+11
+00:00:25.925 --> 00:00:27.894
+Traditional input-output caches that work when
+
+12
+00:00:27.894 --> 00:00:30.196
+the input text is exactly the same
+
+13
+00:00:30.196 --> 00:00:31.898
+can help in some cases,
+
+14
+00:00:32.399 --> 00:00:35.201
+but if someone asks, how can I get a refund?
+
+15
+00:00:35.201 --> 00:00:37.604
+and another person asks, I want my money back.
+
+16
+00:00:37.904 --> 00:00:41.674
+a normal exact match cache sees them as completely different.
+
+17
+00:00:42.275 --> 00:00:44.878
+Semantic caching on the other hand looks at meaning.
+
+18
+00:00:44.878 --> 00:00:47.881
+It uses embeddings to measure how similar two questions are
+
+19
+00:00:47.881 --> 00:00:50.383
+in this meaning space.
+
+20
+00:00:50.383 --> 00:00:54.387
+And if they're semantically similar, then we can reuse the model's response
+
+21
+00:00:54.387 --> 00:00:57.791
+to an old answer instead of calling the model again. Thanks, Andrew.
+
+22
+00:00:57.991 --> 00:00:59.993
+You'll first build a cache from scratch
+
+23
+00:01:00.026 --> 00:01:03.396
+to learn under the hood of semantic caching piece by piece.
+
+24
+00:01:03.797 --> 00:01:06.099
+You will create embeddings, compare distances,
+
+25
+00:01:06.299 --> 00:01:08.034
+and set a threshold to decide
+
+26
+00:01:08.034 --> 00:01:10.070
+when two queries are semantically similar enough.
+
+27
+00:01:10.336 --> 00:01:13.039
+Then we'll move it into implementing our semantic cache
+
+28
+00:01:13.239 --> 00:01:15.308
+using Redis as open source SDK.
+
+29
+00:01:15.809 --> 00:01:18.311
+This will make your cache closer to a production deployment
+
+30
+00:01:18.411 --> 00:01:21.114
+as your cache will now have features like time to live
+
+31
+00:01:21.214 --> 00:01:23.116
+to keep your cache fresh and small,
+
+32
+00:01:23.416 --> 00:01:26.219
+and even separate caches for different users or teams or tenants.
+
+33
+00:01:26.719 --> 00:01:29.222
+We'll also use our open weight embedding model,
+
+34
+00:01:29.222 --> 00:01:31.024
+fine-tuned for cache accuracy.
+
+35
+00:01:31.224 --> 00:01:32.926
+Once you have a working cache,
+
+36
+00:01:32.926 --> 00:01:34.527
+we'll measure how well it performs.
+
+37
+00:01:34.727 --> 00:01:36.930
+We'll look at hit rate, precision, and recall.
+
+38
+00:01:37.397 --> 00:01:40.400
+These metrics will show how often your cache helps
+
+39
+00:01:40.400 --> 00:01:42.368
+and how often it is correct.
+
+40
+00:01:42.402 --> 00:01:44.871
+You'll visualize them in a confusion matrix
+
+41
+00:01:44.904 --> 00:01:47.373
+and you'll see how changing the similarity threshold
+
+42
+00:01:47.407 --> 00:01:49.876
+will shift the balance between precision and recall.
+
+43
+00:01:50.443 --> 00:01:52.445
+We'll also look at latency
+
+44
+00:01:52.645 --> 00:01:54.948
+and we'll see how a few hits
+
+45
+00:01:55.048 --> 00:01:56.950
+quickly add up to a big time saving.
+
+46
+00:01:57.150 --> 00:01:59.352
+After measuring the effectiveness of your cache,
+
+47
+00:01:59.452 --> 00:02:01.454
+you'll learn four methods for enhancing it.
+
+48
+00:02:01.654 --> 00:02:03.356
+You'll optimize the threshold
+
+49
+00:02:03.456 --> 00:02:05.959
+and we'll use a cross-encoder for better re-ranking.
+
+50
+00:02:06.059 --> 00:02:08.161
+And even a small LLM check that can confirm
+
+51
+00:02:08.261 --> 00:02:10.263
+whether two questions mean the same thing.
+
+52
+00:02:10.897 --> 00:02:13.500
+We also add fuzzy matching to handle simple typos
+
+53
+00:02:13.700 --> 00:02:17.003
+that frequently happen when users ask questions.
+
+54
+00:02:17.103 --> 00:02:19.606
+Finally, we'll connect it all inside an AI agent.
+
+55
+00:02:19.906 --> 00:02:22.609
+The agent breaks a big question into smaller parts
+
+56
+00:02:22.709 --> 00:02:24.544
+and checks the cache for each one and
+
+57
+00:02:24.544 --> 00:02:26.412
+only calls the LLM when it needs to.
+
+58
+00:02:26.946 --> 00:02:29.716
+This means every new user or slightly different phrasing
+
+59
+00:02:29.716 --> 00:02:31.718
+benefits from what the system already knows.
+
+60
+00:02:32.018 --> 00:02:34.020
+Over time, as the cache warms up,
+
+61
+00:02:34.420 --> 00:02:36.222
+model calls drop and responses feel
+
+62
+00:02:36.222 --> 00:02:38.324
+just as good but arrive much faster.
+
+63
+00:02:38.725 --> 00:02:40.727
+Many people have worked to create this course.
+
+64
+00:02:41.127 --> 00:02:42.729
+I'd like to thank from Redis,
+
+65
+00:02:42.929 --> 00:02:47.333
+the applied AI, AI research, product, and education teams.
+
+66
+00:02:47.534 --> 00:02:51.337
+From DeepLearning.AI, Esmaeil Gargari also contributed to this course.
+
+67
+00:02:51.738 --> 00:02:54.641
+The first lesson will be an overview of semantic caching.
+
+68
+00:02:55.108 --> 00:02:57.577
+You will also learn about a real use case
+
+69
+00:02:57.710 --> 00:02:59.879
+where Walmart published techniques
+
+70
+00:03:00.079 --> 00:03:02.882
+to improve their production caching system.
+
+71
+00:03:03.283 --> 00:03:05.885
+So, let's go into the next video and get started.

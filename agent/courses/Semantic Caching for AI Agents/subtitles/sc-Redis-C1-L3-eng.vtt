@@ -1,0 +1,1122 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.769
+In this lesson, you will learn how to evaluate your cache
+
+2
+00:00:02.802 --> 00:00:05.472
+using metrics like hit rate, precision, recall, and latency
+
+3
+00:00:05.505 --> 00:00:08.775
+to understand its real impact. All right, let's go.
+
+4
+00:00:08.975 --> 00:00:10.977
+So the two ways that our cache can fail,
+
+5
+00:00:11.011 --> 00:00:14.280
+it can either have a Low Quality or a Poor Performance.
+
+6
+00:00:14.481 --> 00:00:17.183
+And the way that we're going to measure our cache performance
+
+7
+00:00:17.183 --> 00:00:20.186
+is similar to how we measure the performance of machine learning models.
+
+8
+00:00:20.720 --> 00:00:23.023
+In this lab, we're going to use this data set
+
+9
+00:00:23.023 --> 00:00:25.025
+where we have user queries,
+
+10
+00:00:25.525 --> 00:00:28.895
+their corresponding cache hits or the closest match we have,
+
+11
+00:00:28.895 --> 00:00:30.563
+the distance to that cache hit,
+
+12
+00:00:30.563 --> 00:00:32.499
+and we also have a label column,
+
+13
+00:00:32.499 --> 00:00:35.802
+which tells us whether this cache hit was true or not.
+
+14
+00:00:36.202 --> 00:00:40.507
+This last column can be obtained either by using human feedback
+
+15
+00:00:40.507 --> 00:00:42.509
+or labeling it with LLM as a judge.
+
+16
+00:00:42.709 --> 00:00:44.444
+In this slide here, we can see
+
+17
+00:00:44.444 --> 00:00:46.212
+diagrammatically what happens with the data set.
+
+18
+00:00:46.413 --> 00:00:48.515
+We have examples of the cache entries
+
+19
+00:00:48.515 --> 00:00:50.517
+and they are mapped in the embedding space.
+
+20
+00:00:50.717 --> 00:00:52.919
+Here we have a point in the embedding space.
+
+21
+00:00:53.186 --> 00:00:55.989
+and we also see the distance threshold.
+
+22
+00:00:56.489 --> 00:00:59.993
+These two user queries are mapped to the specific cache entry.
+
+23
+00:01:00.393 --> 00:01:02.195
+This metric measures from all of the
+
+24
+00:01:02.195 --> 00:01:03.997
+user queries that come to our system,
+
+25
+00:01:03.997 --> 00:01:06.299
+how many of those actually fall
+
+26
+00:01:06.299 --> 00:01:09.002
+within the bounds of the distance threshold.
+
+27
+00:01:09.302 --> 00:01:11.204
+In this case, we have three out of five.
+
+28
+00:01:11.204 --> 00:01:13.306
+Next, we'll continue with Precision.
+
+29
+00:01:13.306 --> 00:01:17.010
+And Precision measures how much of all of the entries
+
+30
+00:01:17.010 --> 00:01:20.013
+that fall within the Distance threshold are actually valid.
+
+31
+00:01:20.113 --> 00:01:22.715
+And this validity comes from the label column.
+
+32
+00:01:23.149 --> 00:01:25.151
+Recall measures how many of the
+
+33
+00:01:25.151 --> 00:01:27.520
+queries that should have hit actually hit.
+
+34
+00:01:27.520 --> 00:01:29.789
+And here in this case, we see that
+
+35
+00:01:29.789 --> 00:01:32.058
+one of the questions that should have hit
+
+36
+00:01:32.058 --> 00:01:35.028
+did not because of a too low of a distance threshold.
+
+37
+00:01:35.128 --> 00:01:38.932
+It is also important to see where each example falls
+
+38
+00:01:38.932 --> 00:01:42.936
+in our confusion matrix, which shows us all the true positives,
+
+39
+00:01:42.936 --> 00:01:45.638
+true negatives, false positives, and false negatives.
+
+40
+00:01:45.638 --> 00:01:49.843
+In the specific case of our example, we have one true negative
+
+41
+00:01:49.843 --> 00:01:52.045
+that doesn't map to anything.
+
+42
+00:01:52.812 --> 00:01:56.616
+We have one False Positive, which maps but it's wrong.
+
+43
+00:01:57.117 --> 00:01:59.519
+We have one False Negative that should have mapped,
+
+44
+00:01:59.519 --> 00:02:02.122
+but just because of the threshold was too low it didn't,
+
+45
+00:02:02.122 --> 00:02:04.090
+and two True Positives. And these are
+
+46
+00:02:04.090 --> 00:02:06.092
+all the values of our confusion matrix.
+
+47
+00:02:06.292 --> 00:02:08.795
+We prefer for the confusion matrix values
+
+48
+00:02:08.795 --> 00:02:10.897
+to be mainly on the main diagonal.
+
+49
+00:02:10.997 --> 00:02:15.201
+The distance threshold can help us trade off between Precision and Recall.
+
+50
+00:02:15.502 --> 00:02:17.737
+As we lower the distance threshold, we
+
+51
+00:02:17.737 --> 00:02:20.006
+can increase Precision but we lose Recall.
+
+52
+00:02:20.206 --> 00:02:22.208
+And as we increase it, the reverse
+
+53
+00:02:22.208 --> 00:02:24.511
+happen. We increase the recall of the model
+
+54
+00:02:24.511 --> 00:02:27.046
+and decrease the precision. And the measure that
+
+55
+00:02:27.046 --> 00:02:29.616
+we can use to strike a good balance
+
+56
+00:02:29.616 --> 00:02:31.584
+between precision and recall is the F1 score.
+
+57
+00:02:32.719 --> 00:02:35.522
+We'll use this technique of sweeping through the threshold
+
+58
+00:02:35.522 --> 00:02:38.791
+to optimize and find the best threshold for our data.
+
+59
+00:02:39.092 --> 00:02:41.928
+And in the next lesson, we're going to use the F1 score
+
+60
+00:02:41.928 --> 00:02:43.897
+to find the perfect threshold for our cache.
+
+61
+00:02:43.963 --> 00:02:45.932
+It is important also to measure the
+
+62
+00:02:45.932 --> 00:02:48.168
+speedup that the caching system can give us
+
+63
+00:02:48.468 --> 00:02:50.570
+and the LLM tokens that it can save us.
+
+64
+00:02:50.870 --> 00:02:53.773
+To measure the latency performance, we can use this formula,
+
+65
+00:02:53.973 --> 00:02:56.876
+which measures a metric called With Cache Latency,
+
+66
+00:02:57.477 --> 00:03:01.114
+which breaks down into three different variables. ACL or Average Cache Latency.
+
+67
+00:03:01.114 --> 00:03:03.616
+which is the average time
+
+68
+00:03:03.616 --> 00:03:06.419
+that our cache takes to respond.
+
+69
+00:03:06.619 --> 00:03:08.922
+ALL or average LLM latency,
+
+70
+00:03:08.922 --> 00:03:11.391
+which is how long the LLM takes to respond,
+
+71
+00:03:11.591 --> 00:03:13.893
+and CHR or cache hit ratio,
+
+72
+00:03:13.893 --> 00:03:17.897
+which is how many of the user queries actually get cache hits.
+
+73
+00:03:18.264 --> 00:03:20.366
+And let's look at a specific example
+
+74
+00:03:20.366 --> 00:03:23.236
+where the average cache latency would be 11 milliseconds,
+
+75
+00:03:23.236 --> 00:03:27.040
+the average LLM latency is 350 milliseconds,
+
+76
+00:03:27.040 --> 00:03:28.741
+which is probably an underestimate.
+
+77
+00:03:29.275 --> 00:03:31.844
+and the cache hit ratio is 30%.
+
+78
+00:03:32.512 --> 00:03:36.015
+We calculate that the with cache latency is 256 milliseconds.
+
+79
+00:03:37.116 --> 00:03:40.920
+which you can compare to the system's latency before being cached,
+
+80
+00:03:41.221 --> 00:03:42.922
+and we see the improvement.
+
+81
+00:03:43.122 --> 00:03:45.225
+which in this case is 26%.
+
+82
+00:03:45.825 --> 00:03:47.894
+And to measure the saved LLM tokens, you
+
+83
+00:03:47.894 --> 00:03:49.929
+can use the resource at the corresponding URL,
+
+84
+00:03:50.630 --> 00:03:53.032
+where you can put your cache hit rate
+
+85
+00:03:53.032 --> 00:03:55.435
+and expected daily queries, input and output tokens.
+
+86
+00:03:55.868 --> 00:03:58.071
+and it will calculate for you
+
+87
+00:03:58.071 --> 00:04:00.640
+an expected measure of the annual savings.
+
+88
+00:04:01.040 --> 00:04:04.043
+And now let's do all the cache performance measures in the code.
+
+89
+00:04:04.744 --> 00:04:07.247
+All right, let's start by setting up our environment.
+
+90
+00:04:10.650 --> 00:04:14.654
+And let's continue with loading our data that we're already familiar with.
+
+91
+00:04:15.255 --> 00:04:17.790
+Then we'll introduce the SemanticCacheWrapper,
+
+92
+00:04:17.790 --> 00:04:21.327
+that wraps around our cache and provides us some helper functions
+
+93
+00:04:21.728 --> 00:04:23.563
+uh that we can use to
+
+94
+00:04:23.563 --> 00:04:25.698
+hydrate our cache or check our cache.
+
+95
+00:04:25.932 --> 00:04:27.934
+and so forth. Then using the abstraction,
+
+96
+00:04:27.934 --> 00:04:31.504
+we can hydrate our cache using this simple helper function,
+
+97
+00:04:31.504 --> 00:04:34.507
+and you can also check it with questions
+
+98
+00:04:34.507 --> 00:04:37.310
+like this first instance of a user query that we have
+
+99
+00:04:37.310 --> 00:04:39.312
+in our FAQ data frame.
+
+100
+00:04:39.646 --> 00:04:41.714
+When we check our cache, we get
+
+101
+00:04:41.714 --> 00:04:44.050
+an object which we see nicely formatted here,
+
+102
+00:04:44.450 --> 00:04:48.454
+which shows us what our query was and all of our matches.
+
+103
+00:04:48.855 --> 00:04:51.157
+In this case, we have a single match.
+
+104
+00:04:51.758 --> 00:04:54.160
+We have already defined this test_queries list,
+
+105
+00:04:54.160 --> 00:04:55.695
+which contains all of the user
+
+106
+00:04:55.695 --> 00:04:57.463
+queries that we're going to be using.
+
+107
+00:04:57.563 --> 00:05:00.466
+We can also introduce the check_many helper function,
+
+108
+00:05:00.867 --> 00:05:03.169
+which can given a list of user
+
+109
+00:05:03.169 --> 00:05:05.471
+queries, give us results of the matches.
+
+110
+00:05:05.972 --> 00:05:08.508
+We can also configure it with
+
+111
+00:05:08.508 --> 00:05:11.444
+different thresholds or different number of matches.
+
+112
+00:05:11.844 --> 00:05:13.946
+Okay, moving on,
+
+113
+00:05:13.946 --> 00:05:17.650
+we can now also use an abstraction called the CacheEvaluator.
+
+114
+00:05:17.650 --> 00:05:20.019
+I've already executed this cell,
+
+115
+00:05:20.019 --> 00:05:21.888
+but as you can see, you
+
+116
+00:05:21.888 --> 00:05:24.023
+can provide it a number of cache_results.
+
+117
+00:05:24.023 --> 00:05:27.327
+And because our data set is set up in a particular way,
+
+118
+00:05:27.327 --> 00:05:29.829
+we're actually able to automatically label them
+
+119
+00:05:29.829 --> 00:05:32.332
+because the data set was automatically generated.
+
+120
+00:05:32.332 --> 00:05:35.034
+We can use the data_container that provides the data
+
+121
+00:05:35.034 --> 00:05:37.637
+to provide also labels for the data.
+
+122
+00:05:37.637 --> 00:05:40.840
+Because the data_container can extract the queries
+
+123
+00:05:40.840 --> 00:05:42.842
+and the matches,
+
+124
+00:05:42.842 --> 00:05:44.744
+and because we already know the
+
+125
+00:05:44.744 --> 00:05:46.946
+correspondences because of how the data was
+
+126
+00:05:46.946 --> 00:05:50.350
+generated, we can generate labels automatically.
+
+127
+00:05:50.650 --> 00:05:52.752
+Running the report_metrics function
+
+128
+00:05:52.752 --> 00:05:55.455
+also prints us this nice-looking report
+
+129
+00:05:55.455 --> 00:05:57.357
+where we'll see the confusion matrix.
+
+130
+00:05:57.557 --> 00:06:00.860
+In this case, we have a rather nice-looking confusion matrix
+
+131
+00:06:01.260 --> 00:06:03.763
+and all of the metrics for the particular threshold
+
+132
+00:06:03.763 --> 00:06:06.265
+that the cache was instantiated with.
+
+133
+00:06:06.466 --> 00:06:09.769
+In this case, we get a precision of 0.79
+
+134
+00:06:09.769 --> 00:06:12.205
+and recall of 0.79.
+
+135
+00:06:12.205 --> 00:06:16.342
+Another very useful high-level helper function is called get_metrics.
+
+136
+00:06:16.776 --> 00:06:18.878
+This function gives us access to all
+
+137
+00:06:18.878 --> 00:06:20.980
+of these metrics in a dictionary format,
+
+138
+00:06:21.047 --> 00:06:23.649
+but it also gives us something called the confusion_mask.
+
+139
+00:06:23.850 --> 00:06:26.552
+The confusion mask is similar to the confusion matrix,
+
+140
+00:06:27.053 --> 00:06:29.856
+but instead of giving you the values of the
+
+141
+00:06:30.022 --> 00:06:32.125
+confusion matrix as numbers.
+
+142
+00:06:32.125 --> 00:06:35.027
+It gives you a mask over the data set,
+
+143
+00:06:35.027 --> 00:06:37.930
+which you can use and extract the different values
+
+144
+00:06:37.930 --> 00:06:41.033
+corresponding to different categories of the confusion matrix.
+
+145
+00:06:41.033 --> 00:06:44.837
+In this example, we're seeing the first nine examples
+
+146
+00:06:44.837 --> 00:06:47.440
+of the true negatives group.
+
+147
+00:06:48.007 --> 00:06:49.909
+In this case, we see that the
+
+148
+00:06:49.909 --> 00:06:51.778
+0, 1, 2, and the third element
+
+149
+00:06:51.778 --> 00:06:54.180
+is a part of the true negatives group.
+
+150
+00:06:54.480 --> 00:06:57.784
+Another very useful method of the evaluator
+
+151
+00:06:57.784 --> 00:06:59.952
+is the matches data frame, matches_df. If we run it,
+
+152
+00:06:59.952 --> 00:07:02.121
+we get a nicely looking data frame
+
+153
+00:07:02.422 --> 00:07:04.824
+that gives us our queries, matches,
+
+154
+00:07:05.124 --> 00:07:08.327
+distance to the corresponding match, and labeling.
+
+155
+00:07:08.828 --> 00:07:11.330
+We can use our confusion masks and filter out
+
+156
+00:07:11.631 --> 00:07:13.733
+and get the corresponding groups.
+
+157
+00:07:13.733 --> 00:07:16.135
+In this case, we're looking at the false positives
+
+158
+00:07:16.135 --> 00:07:19.539
+or these five examples here of this particular example.
+
+159
+00:07:19.639 --> 00:07:21.841
+In this specific instance, we see that the query,
+
+160
+00:07:21.841 --> 00:07:23.843
+Can I get a refund if I change my mind?
+
+161
+00:07:24.043 --> 00:07:27.847
+is mapped to the cache entry, How do I get a refund?
+
+162
+00:07:28.247 --> 00:07:30.750
+It's obvious why the retrieval model got confused,
+
+163
+00:07:31.818 --> 00:07:35.521
+but because we generated our dataset in a particular way,
+
+164
+00:07:35.721 --> 00:07:38.124
+having in mind that this query
+
+165
+00:07:38.224 --> 00:07:40.393
+is not particular enough to be matched
+
+166
+00:07:40.393 --> 00:07:42.528
+to this cache entry. We have generated
+
+167
+00:07:42.662 --> 00:07:46.165
+the label to be false. And this so that
+
+168
+00:07:46.265 --> 00:07:49.435
+because of that, we're considering this example as a false positive.
+
+169
+00:07:49.635 --> 00:07:53.139
+So for instance, let's look at this last example in the table.
+
+170
+00:07:53.239 --> 00:07:55.842
+Can I schedule a specific delivery time?
+
+171
+00:07:55.942 --> 00:07:57.810
+is matched against Can I change
+
+172
+00:07:57.810 --> 00:07:59.946
+my delivery address? As you can see,
+
+173
+00:08:00.079 --> 00:08:03.483
+These are quite different, even though they sound similar.
+
+174
+00:08:03.983 --> 00:08:06.786
+The model has given them low enough distance
+
+175
+00:08:06.986 --> 00:08:09.288
+so that we've considered them as a match,
+
+176
+00:08:09.489 --> 00:08:11.057
+even though we've labeled them as
+
+177
+00:08:11.057 --> 00:08:12.892
+though they should be a false match.
+
+178
+00:08:13.192 --> 00:08:16.796
+So that's why this example falls into the bucket of false positives.
+
+179
+00:08:17.163 --> 00:08:21.067
+I would strongly encourage you to change this false positives modifier here
+
+180
+00:08:21.067 --> 00:08:22.768
+or a mask
+
+181
+00:08:23.169 --> 00:08:25.571
+to all of the other values like
+
+182
+00:08:25.571 --> 00:08:27.974
+false positives, false negatives, and true positives,
+
+183
+00:08:27.974 --> 00:08:30.376
+all of the other groups of the confusion matrix
+
+184
+00:08:30.376 --> 00:08:32.678
+so that you can explore the results there.
+
+185
+00:08:33.079 --> 00:08:35.281
+Now let's introduce helper functions
+
+186
+00:08:35.281 --> 00:08:38.351
+for evaluating the latency performance of our cache.
+
+187
+00:08:38.818 --> 00:08:41.621
+We'll define a simple function just
+
+188
+00:08:41.621 --> 00:08:45.324
+that would simulate an LLM response latency
+
+189
+00:08:45.324 --> 00:08:48.327
+by randomly sleeping for a period of
+
+190
+00:08:48.628 --> 00:08:51.330
+200 to 500 milliseconds.
+
+191
+00:08:51.731 --> 00:08:54.634
+Then we'll run this performance code,
+
+192
+00:08:54.634 --> 00:08:57.637
+which uses an abstraction called PerfEval.
+
+193
+00:08:57.803 --> 00:09:01.007
+which we can use to compare the performance
+
+194
+00:09:01.007 --> 00:09:05.011
+of two different executions simultaneously.
+
+195
+00:09:05.711 --> 00:09:10.711
+At the end of the execution, we'll obtain a dictionary called metrics,
+
+196
+00:09:10.816 --> 00:09:14.387
+which is generated by the perf_eval abstraction, which will give us
+
+197
+00:09:14.487 --> 00:09:18.291
+the latency both for the cache and the LLM calls.
+
+198
+00:09:18.391 --> 00:09:20.693
+If we look into the dictionary, we can
+
+199
+00:09:20.693 --> 00:09:22.962
+see that we can obtain the average latency
+
+200
+00:09:22.962 --> 00:09:26.365
+of the cache, which is 2.2 milliseconds,
+
+201
+00:09:26.365 --> 00:09:29.569
+and the average latency of the simulated LLM,
+
+202
+00:09:29.569 --> 00:09:32.171
+which is 361 milliseconds.
+
+203
+00:09:32.672 --> 00:09:34.974
+Using the perf_eval, we can also plot
+
+204
+00:09:34.974 --> 00:09:37.276
+all of the metrics that we have obtained.
+
+205
+00:09:37.743 --> 00:09:39.745
+Here, we see a breakdown
+
+206
+00:09:39.845 --> 00:09:43.149
+of all of the different groups of evaluations that we did.
+
+207
+00:09:43.249 --> 00:09:46.352
+We had 80 cache hits and 80 LLM calls.
+
+208
+00:09:46.552 --> 00:09:50.256
+And here we can compare their latency in a visual manner.
+
+209
+00:09:50.756 --> 00:09:55.561
+So this is how a 360 milliseconds on average looks like,
+
+210
+00:09:55.962 --> 00:10:00.962
+compared to the 2 point something milliseconds for the cache.
+
+211
+00:10:01.567 --> 00:10:03.302
+In the summary block here, we can
+
+212
+00:10:03.302 --> 00:10:05.271
+also see the cache speedup that we get,
+
+213
+00:10:05.271 --> 00:10:08.774
+which in this case is 161 times faster.
+
+214
+00:10:09.041 --> 00:10:12.244
+So what we saw now is a raw LLM latency
+
+215
+00:10:12.244 --> 00:10:14.513
+versus full cache latency.
+
+216
+00:10:14.814 --> 00:10:16.349
+which gave us this big speed
+
+217
+00:10:16.349 --> 00:10:18.117
+up, but it's not a fair comparison.
+
+218
+00:10:18.317 --> 00:10:21.220
+What we should actually do is get our raw LLM latency
+
+219
+00:10:21.821 --> 00:10:24.223
+and compare it. This is the cache latency.
+
+220
+00:10:24.624 --> 00:10:27.627
+We can assume some cache hit rate, in this case 30%.
+
+221
+00:10:27.827 --> 00:10:31.030
+and we can calculate using the formula from the slide,
+
+222
+00:10:31.564 --> 00:10:34.567
+the cached LLM latency that we can expect.
+
+223
+00:10:35.034 --> 00:10:37.670
+Now using that, we can calculate both
+
+224
+00:10:37.670 --> 00:10:39.271
+a drop in the latency
+
+225
+00:10:39.538 --> 00:10:41.374
+and a cached LLM speedup.
+
+226
+00:10:41.374 --> 00:10:43.743
+And here, for this particular example,
+
+227
+00:10:44.043 --> 00:10:47.179
+you see that we see 29% drop in latency.
+
+228
+00:10:47.780 --> 00:10:52.218
+and around 1.42x speed up of the system.
+
+229
+00:10:52.218 --> 00:10:55.921
+Let's move to our last section here, which is LLM-as-a-Judge,
+
+230
+00:10:56.222 --> 00:10:58.557
+where we were going to introduce an
+
+231
+00:10:58.557 --> 00:11:01.227
+automatic way to label your query cache pairs.
+
+232
+00:11:01.527 --> 00:11:05.931
+We're going to start over by hydrating our cache with the faq data frame.
+
+233
+00:11:06.232 --> 00:11:08.234
+We're going to do a full retrieval.
+
+234
+00:11:08.334 --> 00:11:10.536
+So we're going to use a distance_threshold of 1,
+
+235
+00:11:10.636 --> 00:11:14.540
+and for each test query, we're going to retrieve the closest neighbor.
+
+236
+00:11:14.940 --> 00:11:17.043
+no matter the threshold.
+
+237
+00:11:17.043 --> 00:11:18.744
+And what we get is a
+
+238
+00:11:18.744 --> 00:11:20.746
+list of all of the closest matches
+
+239
+00:11:20.746 --> 00:11:22.448
+for all of the queries.
+
+240
+00:11:22.448 --> 00:11:24.083
+Now since we're going to use an
+
+241
+00:11:24.083 --> 00:11:25.951
+LLM to label all the query cache pairs,
+
+242
+00:11:25.951 --> 00:11:28.954
+we have to load our key, which is already loaded.
+
+243
+00:11:31.357 --> 00:11:34.060
+Then we can use an abstraction called LLMEvaluator,
+
+244
+00:11:35.461 --> 00:11:38.898
+which here we will construct using the ChatGPT API.
+
+245
+00:11:39.265 --> 00:11:41.600
+It already comes with pre-configured prompt.
+
+246
+00:11:41.734 --> 00:11:46.138
+which help us compare pairs of queries and cache hits.
+
+247
+00:11:46.238 --> 00:11:48.841
+This evaluator instance has a method called predict,
+
+248
+00:11:48.941 --> 00:11:52.044
+which you can use to pass in our pairs,
+
+249
+00:11:52.144 --> 00:11:55.414
+which are the test queries and the full retrieval matches.
+
+250
+00:11:55.514 --> 00:11:57.516
+We can also configure a batch size.
+
+251
+00:12:01.821 --> 00:12:04.623
+So this call to predict gives us an object
+
+252
+00:12:04.623 --> 00:12:06.726
+called llm_similarity_results.
+
+253
+00:12:07.226 --> 00:12:09.228
+Let's inspect it.
+
+254
+00:12:11.130 --> 00:12:13.432
+This object has a property called data frame df,
+
+255
+00:12:13.933 --> 00:12:16.502
+which formats the results in a data frame format.
+
+256
+00:12:17.036 --> 00:12:19.839
+We can see that this is a data frame
+
+257
+00:12:19.839 --> 00:12:24.243
+that matches every pair with a reason and a is_similar label,
+
+258
+00:12:24.243 --> 00:12:27.947
+which tells us if this pair is similar or not
+
+259
+00:12:27.947 --> 00:12:31.050
+and the reasoning why the LLM thought that was the case.
+
+260
+00:12:31.050 --> 00:12:34.053
+Now we can continue and use our evaluator again,
+
+261
+00:12:34.053 --> 00:12:36.555
+but instead of using the data container
+
+262
+00:12:36.555 --> 00:12:38.557
+to label our data set.
+
+263
+00:12:38.891 --> 00:12:42.695
+we can use the automatic labeling that we generated here
+
+264
+00:12:43.095 --> 00:12:45.097
+by passing the is_similar column
+
+265
+00:12:45.498 --> 00:12:48.701
+and all the values as a boolean labeling.
+
+266
+00:12:48.901 --> 00:12:52.705
+It is important to note that we have to construct the evaluator
+
+267
+00:12:52.705 --> 00:12:56.408
+with this special constructor called from_full_retrieval,
+
+268
+00:12:56.408 --> 00:12:58.911
+which is important when we're using the full retrieval matches.
+
+269
+00:12:59.111 --> 00:13:03.716
+We can again use the evaluator.report_metrics function to get a report.
+
+270
+00:13:03.949 --> 00:13:06.051
+of the performance. As we can see,
+
+271
+00:13:06.051 --> 00:13:08.754
+previously we had 79% precision
+
+272
+00:13:08.754 --> 00:13:11.257
+and 79% recall.
+
+273
+00:13:11.457 --> 00:13:15.961
+Using the automatic labeling, we get 75 precision versus 90 recall,
+
+274
+00:13:16.362 --> 00:13:18.230
+which is relatively close in terms
+
+275
+00:13:18.230 --> 00:13:20.432
+of metrics to what we had previously.
+
+276
+00:13:20.533 --> 00:13:22.735
+which tells us that this method can
+
+277
+00:13:22.735 --> 00:13:24.937
+create good enough labels for our evaluation.
+
+278
+00:13:25.137 --> 00:13:27.940
+And now that you've learned how to evaluate your cache,
+
+279
+00:13:27.940 --> 00:13:30.743
+in the next lesson, you're going to learn how to improve it.
+
+280
+00:13:31.043 --> 00:13:34.113
+Now let's clean the cache and continue to the next lesson.

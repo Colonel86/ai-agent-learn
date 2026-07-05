@@ -1,0 +1,890 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.769
+In this lesson, you'll build a working semantic cache from scratch
+
+2
+00:00:02.769 --> 00:00:04.771
+so you can see how each part works.
+
+3
+00:00:05.171 --> 00:00:08.174
+And then you'll reimplement it using Redis' open source SDK
+
+4
+00:00:08.174 --> 00:00:10.877
+and database. All right, let's give it a shot.
+
+5
+00:00:10.877 --> 00:00:14.681
+In this lesson, we're going to build a semantic cache from scratch.
+
+6
+00:00:14.681 --> 00:00:16.983
+on a customer support use case.
+
+7
+00:00:16.983 --> 00:00:19.786
+Customer support is a very common agentic use case
+
+8
+00:00:19.786 --> 00:00:22.956
+where agents can help accelerate customer resolution
+
+9
+00:00:22.956 --> 00:00:25.558
+to common questions and inquiries and issues.
+
+10
+00:00:25.658 --> 00:00:27.160
+The data set we're going to work
+
+11
+00:00:27.160 --> 00:00:28.862
+with is a set of frequently asked questions
+
+12
+00:00:28.862 --> 00:00:31.264
+from a customer support system and a knowledge
+
+13
+00:00:31.264 --> 00:00:33.666
+base of content to support the agentic
+
+14
+00:00:33.967 --> 00:00:37.971
+retrieval of different kinds of knowledge. Just as a quick recap,
+
+15
+00:00:38.071 --> 00:00:42.475
+semantic caching involves first checking a cache using semantic search
+
+16
+00:00:42.575 --> 00:00:45.178
+to see if there's a question that we've processed in
+
+17
+00:00:45.178 --> 00:00:47.781
+the past that's similar enough to the current user question.
+
+18
+00:00:47.881 --> 00:00:49.716
+If it's similar enough, we can hit the
+
+19
+00:00:49.716 --> 00:00:51.751
+cache and we can return directly to the user.
+
+20
+00:00:51.851 --> 00:00:53.887
+And if it involves a cache miss, then
+
+21
+00:00:53.887 --> 00:00:56.156
+we need to go through our agentic RAG process.
+
+22
+00:00:56.556 --> 00:01:00.060
+Ultimately getting a result back to the user and updating our cache.
+
+23
+00:01:00.260 --> 00:01:03.063
+All right, in this lesson, we're going to use Redis,
+
+24
+00:01:03.496 --> 00:01:05.732
+which stands for Remote Dictionary Server.
+
+25
+00:01:05.732 --> 00:01:10.003
+Redis is an open source, fast, in-memory KV database.
+
+26
+00:01:10.003 --> 00:01:11.671
+This means that you can store
+
+27
+00:01:11.671 --> 00:01:13.640
+different data structures on the Redis server.
+
+28
+00:01:13.840 --> 00:01:16.743
+and distribute them across multiple nodes and your applications
+
+29
+00:01:16.843 --> 00:01:20.146
+can go read and write and access this data at scale.
+
+30
+00:01:20.447 --> 00:01:22.449
+Redis is commonly used for caching, but also
+
+31
+00:01:22.649 --> 00:01:24.651
+has the ability to do secondary indexing,
+
+32
+00:01:25.051 --> 00:01:27.754
+which means we can store and search across vectors, text,
+
+33
+00:01:28.354 --> 00:01:30.623
+numerics, tags, and even geospatial data.
+
+34
+00:01:31.024 --> 00:01:33.726
+These properties allow us to do semantic caching in Redis.
+
+35
+00:01:33.960 --> 00:01:36.162
+The first thing we'll see when we test with Redis
+
+36
+00:01:36.162 --> 00:01:38.164
+is we can optimize our vector search
+
+37
+00:01:38.164 --> 00:01:40.266
+for low-latency retrieval and indexing.
+
+38
+00:01:40.467 --> 00:01:43.169
+This means we can quickly insert and check the cache
+
+39
+00:01:43.169 --> 00:01:44.804
+for questions that are very similar
+
+40
+00:01:44.804 --> 00:01:46.773
+to the user query that comes in.
+
+41
+00:01:46.906 --> 00:01:50.710
+We'll also use an open source, open weight, fine-tuned embedding model
+
+42
+00:01:51.411 --> 00:01:53.413
+that improves the semantic caching accuracy.
+
+43
+00:01:53.913 --> 00:01:56.716
+Second, we'll use an open source RedisVL SDK.
+
+44
+00:01:57.117 --> 00:01:58.818
+This gives us ergonomic control
+
+45
+00:01:58.918 --> 00:02:01.721
+over cache configuration and different CRUD operations.
+
+46
+00:02:02.222 --> 00:02:05.425
+And lastly, we can take advantage of TTL or time to live.
+
+47
+00:02:05.525 --> 00:02:09.329
+and eviction and namespacing policies that allow us to configure
+
+48
+00:02:09.329 --> 00:02:11.297
+how data moves and flows through the cache
+
+49
+00:02:11.297 --> 00:02:13.299
+and how tenants can be isolated from
+
+50
+00:02:13.299 --> 00:02:15.301
+one another. Let's see this in code.
+
+51
+00:02:15.301 --> 00:02:18.605
+So the first step is we're going to load the FAQ Dataset.
+
+52
+00:02:19.239 --> 00:02:22.242
+The FAQ dataset comes from a CSV file.
+
+53
+00:02:22.842 --> 00:02:25.845
+Here in the system, and this contains frequently asked questions,
+
+54
+00:02:26.846 --> 00:02:29.849
+question and answer pairs, and some test data we can use.
+
+55
+00:02:31.484 --> 00:02:32.819
+Let's load our FAQs and take
+
+56
+00:02:32.819 --> 00:02:34.387
+a look at what they look like.
+
+57
+00:02:35.188 --> 00:02:38.491
+You'll notice each entry in our FAQ data set contains a question,
+
+58
+00:02:38.591 --> 00:02:40.493
+like how do I get a refund?
+
+59
+00:02:40.693 --> 00:02:43.463
+and an answer like to request a refund,
+
+60
+00:02:43.463 --> 00:02:46.466
+visit our orders page and select, etc, etc.
+
+61
+00:02:46.966 --> 00:02:49.469
+In order to do semantic caching, we need embeddings.
+
+62
+00:02:50.170 --> 00:02:53.173
+We will use the SentenceTransformers library in order to do so.
+
+63
+00:02:53.873 --> 00:02:56.476
+For our first example, we're going to use the popular
+
+64
+00:02:56.476 --> 00:02:58.478
+all-mpnet-base-v2 model.
+
+65
+00:02:58.678 --> 00:03:01.948
+We will use this model to encode our FAQ data set
+
+66
+00:03:02.348 --> 00:03:04.651
+or list of questions into embeddings.
+
+67
+00:03:10.256 --> 00:03:12.659
+The first time you run, you'll need to download the model,
+
+68
+00:03:12.659 --> 00:03:15.461
+which may take a couple seconds given your network connection.
+
+69
+00:03:15.862 --> 00:03:17.630
+At the end here, you can see
+
+70
+00:03:17.630 --> 00:03:19.666
+this is a sample of our first embedding.
+
+71
+00:03:19.866 --> 00:03:22.468
+A couple float values to show you what it looks like.
+
+72
+00:03:23.002 --> 00:03:25.338
+Next, we will use two functions in
+
+73
+00:03:25.338 --> 00:03:27.674
+order to implement semantic search from scratch.
+
+74
+00:03:29.342 --> 00:03:33.346
+The first function calculates the cosine distance between two sets of vectors.
+
+75
+00:03:33.546 --> 00:03:35.949
+And the second function implements semantic search
+
+76
+00:03:36.249 --> 00:03:39.752
+by taking a query, constructing an embedding of the query,
+
+77
+00:03:39.852 --> 00:03:43.323
+calculating the cosine distance between the query_embedding
+
+78
+00:03:43.423 --> 00:03:45.325
+and our matrix of faq_embeddings.
+
+79
+00:03:45.525 --> 00:03:47.293
+And at the end, we find
+
+80
+00:03:47.293 --> 00:03:49.329
+the index and value of the best
+
+81
+00:03:49.963 --> 00:03:52.732
+entry in our FAQ embeddings matrix.
+
+82
+00:03:53.032 --> 00:03:55.835
+At the end we return the index and the distance value.
+
+83
+00:03:56.135 --> 00:03:58.371
+Let's try the semantic search function over a
+
+84
+00:03:58.371 --> 00:04:00.840
+sample query to see what it comes back with.
+
+85
+00:04:01.040 --> 00:04:03.142
+We will run semantic search over the query,
+
+86
+00:04:03.209 --> 00:04:05.845
+How long will it take to get a refund for my order?
+
+87
+00:04:07.080 --> 00:04:08.881
+So the most similar FAQ in our
+
+88
+00:04:08.881 --> 00:04:10.984
+index is how do I get a refund?
+
+89
+00:04:11.484 --> 00:04:14.687
+and the cosine distance was 0.331.
+
+90
+00:04:15.688 --> 00:04:19.492
+Now we're going to turn our semantic search into a semantic cache.
+
+91
+00:04:20.193 --> 00:04:23.296
+We will do this by implementing another helper function called check_cache.
+
+92
+00:04:23.563 --> 00:04:25.765
+which takes a query as a string
+
+93
+00:04:25.765 --> 00:04:28.067
+and a distance threshold float value.
+
+94
+00:04:28.668 --> 00:04:31.471
+First, within our check_cache function,
+
+95
+00:04:31.471 --> 00:04:33.573
+we implement semantic_search with the query
+
+96
+00:04:33.573 --> 00:04:35.675
+to get the idx index and the distance value.
+
+97
+00:04:36.075 --> 00:04:39.946
+If our cosine distance value is less than the stated threshold,
+
+98
+00:04:40.413 --> 00:04:42.215
+we treat this as a cache hit
+
+99
+00:04:42.615 --> 00:04:44.717
+and return the entries from the cache.
+
+100
+00:04:45.318 --> 00:04:48.121
+Otherwise, we return None. This would be a cache miss.
+
+101
+00:04:48.521 --> 00:04:51.024
+Let's test our cache over a couple queries.
+
+102
+00:04:52.625 --> 00:04:54.060
+So we can see the first query,
+
+103
+00:04:54.060 --> 00:04:55.528
+is it possible to get a refund,
+
+104
+00:04:56.029 --> 00:04:59.799
+hit on an entry with a distance of 0.262.
+
+105
+00:05:00.099 --> 00:05:01.668
+But the other two entries in our test
+
+106
+00:05:01.668 --> 00:05:03.403
+queries did not hit on anything in the cache.
+
+107
+00:05:03.903 --> 00:05:06.205
+We can also extend our cache with new
+
+108
+00:05:06.205 --> 00:05:08.541
+entries as new data comes in over time.
+
+109
+00:05:09.409 --> 00:05:11.077
+Let's add a helper function to do that.
+
+110
+00:05:12.245 --> 00:05:14.714
+This helper function takes a question and answer pair.
+
+111
+00:05:15.114 --> 00:05:16.749
+It adds it to our data
+
+112
+00:05:16.749 --> 00:05:18.685
+frame, concatenating with what was already there.
+
+113
+00:05:18.985 --> 00:05:22.789
+generates a new embedding and adds this to our faq_embeddings.
+
+114
+00:05:23.790 --> 00:05:25.958
+Now, we're going to try updating
+
+115
+00:05:25.958 --> 00:05:28.494
+our original cache with three new entries.
+
+116
+00:05:32.432 --> 00:05:34.434
+Originally the cache had only eight entries,
+
+117
+00:05:34.734 --> 00:05:38.037
+but after all three were added successfully, the cache now has 11.
+
+118
+00:05:38.438 --> 00:05:40.440
+This operation worked exactly as we expected.
+
+119
+00:05:40.907 --> 00:05:43.810
+Now that we've extended our cache with a few new entries,
+
+120
+00:05:43.810 --> 00:05:46.512
+let's run a test to see what hits on the cache now.
+
+121
+00:05:48.414 --> 00:05:49.916
+Here we can see all three of
+
+122
+00:05:49.916 --> 00:05:51.417
+our test queries now hit the cache
+
+123
+00:05:51.417 --> 00:05:53.219
+because we've added new entries to it.
+
+124
+00:05:53.753 --> 00:05:55.588
+Now that we've seen how a
+
+125
+00:05:55.588 --> 00:05:57.724
+cache works in practice and from scratch,
+
+126
+00:05:58.324 --> 00:06:00.526
+let's move towards a more production ready scenario.
+
+127
+00:06:01.227 --> 00:06:03.629
+We're going to move to a Redis database instance.
+
+128
+00:06:04.230 --> 00:06:06.532
+First we need to connect to a Redis server.
+
+129
+00:06:06.733 --> 00:06:09.535
+You can do this through using the REDIS_URL parameter,
+
+130
+00:06:09.936 --> 00:06:13.639
+which in most cases is redis://localhost:6379.
+
+131
+00:06:14.140 --> 00:06:16.242
+Next, we need to quickly test the connection
+
+132
+00:06:16.242 --> 00:06:18.544
+to make sure we can speak to Redis properly.
+
+133
+00:06:21.347 --> 00:06:22.882
+We can see our Redis is
+
+134
+00:06:22.882 --> 00:06:24.684
+running and accessible from this notebook here.
+
+135
+00:06:25.651 --> 00:06:28.654
+The next ingredient is a cache-optimized embedding model,
+
+136
+00:06:28.654 --> 00:06:30.356
+langcache-embed-v1.
+
+137
+00:06:30.523 --> 00:06:33.826
+This is an open source open weight model available on Hugging Face
+
+138
+00:06:34.327 --> 00:06:37.730
+that's been fine-tuned specifically for semantic caching operations.
+
+139
+00:06:38.231 --> 00:06:41.534
+Let's load this model using the HFTextVectorizer class.
+
+140
+00:06:41.968 --> 00:06:44.771
+This class will reach out to Hugging Face and download
+
+141
+00:06:44.771 --> 00:06:46.773
+the weights of the model here on our server.
+
+142
+00:06:47.673 --> 00:06:50.476
+Now that we have the embedding model downloaded and ready to go,
+
+143
+00:06:50.777 --> 00:06:52.578
+we can create our semantic cache
+
+144
+00:06:52.578 --> 00:06:54.781
+using the RedisVL open source SDK.
+
+145
+00:06:55.047 --> 00:06:57.850
+Here, we pass a name to our semantic cache
+
+146
+00:06:58.050 --> 00:07:00.853
+which creates a unique namespace in the database.
+
+147
+00:07:01.053 --> 00:07:04.957
+Second, we pass the LangChain embedding model that we just created.
+
+148
+00:07:05.558 --> 00:07:08.261
+Third, we pass our Redis client connection object.
+
+149
+00:07:08.761 --> 00:07:11.664
+And lastly, we configure a baseline distance threshold
+
+150
+00:07:11.664 --> 00:07:13.933
+to use for the cache checks.
+
+151
+00:07:14.634 --> 00:07:17.303
+Let's hydrate our cache with our FAQ data set.
+
+152
+00:07:17.703 --> 00:07:19.739
+This will set up Redis with all of that data
+
+153
+00:07:19.739 --> 00:07:21.941
+and make it ready for use in our example.
+
+154
+00:07:24.043 --> 00:07:26.045
+Here we just iterate through the data frame.
+
+155
+00:07:26.379 --> 00:07:29.182
+and entry by entry we store these in the cache.
+
+156
+00:07:30.883 --> 00:07:32.885
+Let's quickly check what's in our cache.
+
+157
+00:07:33.286 --> 00:07:36.189
+We can ask the question I need a refund for my purchase.
+
+158
+00:07:40.092 --> 00:07:42.128
+Let's peek at the result.
+
+159
+00:07:42.495 --> 00:07:44.797
+There we can see a cache entry was returned
+
+160
+00:07:45.097 --> 00:07:46.999
+with the prompt, How do I get a refund?
+
+161
+00:07:47.800 --> 00:07:49.502
+The full validated answer.
+
+162
+00:07:50.503 --> 00:07:53.706
+The vector cosine distance here at 0.25,
+
+163
+00:07:53.806 --> 00:07:56.909
+which is less than our cache distance threshold of 0.3.
+
+164
+00:07:57.109 --> 00:07:59.212
+So this is a proper hit we expected.
+
+165
+00:07:59.745 --> 00:08:02.548
+Lastly, before we can test this end to end
+
+166
+00:08:02.548 --> 00:08:04.851
+with the large language model, we're going to implement TTL.
+
+167
+00:08:05.151 --> 00:08:06.752
+stands for time to live.
+
+168
+00:08:06.752 --> 00:08:09.522
+And this is how the database knows when to evict
+
+169
+00:08:09.522 --> 00:08:12.124
+data that's been in the cache for a certain period of time.
+
+170
+00:08:12.225 --> 00:08:14.427
+It's commonly used to keep the cache fresh
+
+171
+00:08:14.427 --> 00:08:16.229
+when data changes or evolves in a system.
+
+172
+00:08:16.529 --> 00:08:19.432
+This is really easy with the RedisVL open source SDK.
+
+173
+00:08:19.532 --> 00:08:22.134
+You just call set_ttl and we're going to set this
+
+174
+00:08:22.134 --> 00:08:23.736
+time to live for a full day, in seconds.
+
+175
+00:08:26.672 --> 00:08:28.841
+We're going to conclude this lesson with
+
+176
+00:08:28.841 --> 00:08:31.277
+an end-to-end large language model example using OpenAI.
+
+177
+00:08:31.677 --> 00:08:36.082
+We'll use the LangChain OpenAI SDK and the ChatOpenAI wrapper
+
+178
+00:08:36.482 --> 00:08:38.584
+to connect with gpt-4o-mini.
+
+179
+00:08:40.486 --> 00:08:42.088
+The OpenAI keys for this course
+
+180
+00:08:42.088 --> 00:08:43.990
+should already be loaded inside your environment.
+
+181
+00:08:44.323 --> 00:08:46.359
+To talk with our large language model, we
+
+182
+00:08:46.359 --> 00:08:48.361
+have a helper function that sends a prompt.
+
+183
+00:08:49.028 --> 00:08:52.031
+In this particular scenario, you are a helpful customer support assistant.
+
+184
+00:08:52.698 --> 00:08:55.001
+And this language model is going to
+
+185
+00:08:55.001 --> 00:08:57.303
+answer the customer question concisely and professionally.
+
+186
+00:08:57.803 --> 00:09:00.606
+that's going to provide a response in one to two sentences
+
+187
+00:09:00.606 --> 00:09:02.708
+based on whatever the question is that you give it.
+
+188
+00:09:03.009 --> 00:09:06.312
+Now for our end-to-end example, we have a list of test questions.
+
+189
+00:09:07.513 --> 00:09:09.615
+We also have a performance evaluation class.
+
+190
+00:09:09.916 --> 00:09:13.219
+The performance evaluation class is built as part of the course materials
+
+191
+00:09:13.519 --> 00:09:16.722
+and contains the ability to do fine-grained timings
+
+192
+00:09:17.223 --> 00:09:20.793
+on cache checks, on LLM calls, on hits and misses.
+
+193
+00:09:20.993 --> 00:09:23.296
+This will allow us to compare the
+
+194
+00:09:23.296 --> 00:09:25.565
+results after we run this entire test.
+
+195
+00:09:26.599 --> 00:09:30.903
+With our performance evaluation class ready to go to take our timings,
+
+196
+00:09:31.137 --> 00:09:33.806
+we're going to iterate through each test question, check the cache,
+
+197
+00:09:34.006 --> 00:09:35.341
+and if it's not in the
+
+198
+00:09:35.341 --> 00:09:36.909
+cache, we'll record that as a miss
+
+199
+00:09:37.209 --> 00:09:39.011
+and go to our large language model.
+
+200
+00:09:41.113 --> 00:09:43.549
+This loop runs over our list of test
+
+201
+00:09:43.549 --> 00:09:46.319
+questions we saw earlier and prints out the results.
+
+202
+00:09:47.119 --> 00:09:49.522
+Let's take a look at the results from the test.
+
+203
+00:09:50.823 --> 00:09:53.192
+We can see a mix of cache hits and cache misses
+
+204
+00:09:53.526 --> 00:09:56.696
+over the sample questions, as expected.
+
+205
+00:09:58.297 --> 00:10:02.101
+Now that we finished the test, we can look at the results
+
+206
+00:10:02.201 --> 00:10:04.470
+between the cache hits and the cache misses
+
+207
+00:10:04.570 --> 00:10:06.272
+that ultimately went to the LLM.
+
+208
+00:10:06.772 --> 00:10:08.407
+First, we can see that
+
+209
+00:10:08.407 --> 00:10:11.210
+the mean time it took to run a cache hit,
+
+210
+00:10:11.210 --> 00:10:13.512
+which is around 65 milliseconds.
+
+211
+00:10:13.913 --> 00:10:18.017
+And that in contrast with the LLM, as we would expect.
+
+212
+00:10:18.618 --> 00:10:21.020
+took over a second on average.
+
+213
+00:10:21.721 --> 00:10:23.623
+This is just one form of measurement.
+
+214
+00:10:23.923 --> 00:10:25.925
+In the very next lesson, we'll
+
+215
+00:10:25.925 --> 00:10:28.294
+go into depth about measuring cache effectiveness.
+
+216
+00:10:28.594 --> 00:10:30.329
+This means we'll focus on all
+
+217
+00:10:30.329 --> 00:10:32.298
+of the core metrics between cache accuracy
+
+218
+00:10:32.698 --> 00:10:34.300
+and cache performance
+
+219
+00:10:34.400 --> 00:10:36.202
+to make sure we have a system
+
+220
+00:10:36.202 --> 00:10:38.004
+ready for production and up and running.
+
+221
+00:10:38.804 --> 00:10:41.307
+At the very end, you can clear your cache
+
+222
+00:10:41.307 --> 00:10:43.275
+to clear the workspace and get ready for the next piece.
