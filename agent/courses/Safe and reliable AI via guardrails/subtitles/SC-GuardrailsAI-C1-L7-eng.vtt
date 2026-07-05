@@ -1,0 +1,1362 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.933 --> 00:00:02.933
+How you handle
+
+2
+00:00:02.933 --> 00:00:07.933
+Personally Identifiable Information,
+or PII, is a critical concern
+
+3
+00:00:08.100 --> 00:00:12.200
+when building any application.
+But it's especially important in
+
+4
+00:00:12.333 --> 00:00:12.733
+genAI
+
+5
+00:00:12.733 --> 00:00:15.733
+applications that use a third-party model
+
+6
+00:00:15.900 --> 00:00:19.800
+or where you retrieve text from
+lots of diverse internal documents.
+
+7
+00:00:20.400 --> 00:00:25.300
+In this lesson, you'll build a validator
+to check your user prompts for any PII,
+
+8
+00:00:25.633 --> 00:00:29.400
+and if there's PII present,
+then prevent it from being passed
+
+9
+00:00:29.400 --> 00:00:32.533
+over the internet to a third party
+model provider.
+
+10
+00:00:33.033 --> 00:00:37.200
+You'll also use a state-of-the-art
+validator from Guardrails Hub to
+
+11
+00:00:37.200 --> 00:00:40.800
+check LLM outputs for PII and redacted
+
+12
+00:00:40.800 --> 00:00:42.600
+before it's shown to the user.
+
+13
+00:00:42.600 --> 00:00:44.300
+Let's dive in.
+
+14
+00:00:44.300 --> 00:00:45.633
+PII in general,
+
+15
+00:00:45.633 --> 00:00:47.833
+you know, is something
+that should be taken pretty seriously.
+
+16
+00:00:47.833 --> 00:00:49.133
+PII stands for personal
+
+17
+00:00:49.133 --> 00:00:53.200
+identifiable information such as names,
+emails, social security numbers,
+
+18
+00:00:53.200 --> 00:00:56.400
+anything that might be sensitive
+and could be used to identify you.
+
+19
+00:00:57.833 --> 00:00:58.633
+This is a pretty
+
+20
+00:00:58.633 --> 00:01:02.100
+important risk
+that's associated with using LLMs.
+
+21
+00:01:02.400 --> 00:01:04.833
+And getting your customers to use LLMs.
+
+22
+00:01:04.833 --> 00:01:08.833
+Since most developers and organizations
+that use LLMs use
+
+23
+00:01:09.500 --> 00:01:13.100
+LLMs that are developed by third-party
+propriety organizations,
+
+24
+00:01:13.100 --> 00:01:18.100
+and so you have to make this external
+API request that sends over all of,
+
+25
+00:01:18.400 --> 00:01:21.400
+you know, maybe your data,
+maybe your customer data, etc...
+
+26
+00:01:22.200 --> 00:01:24.900
+So essentially, what you want to do when
+
+27
+00:01:24.900 --> 00:01:29.833
+being mindful of PII leakage is,
+first of all, making sure
+
+28
+00:01:29.833 --> 00:01:31.433
+that none of your customers
+
+29
+00:01:31.433 --> 00:01:35.100
+data or your employee's data
+or any of your organization's private data
+
+30
+00:01:35.400 --> 00:01:39.000
+is ever leaked out to the third party LLM
+provider.
+
+31
+00:01:39.933 --> 00:01:44.700
+The second thing to be mindful of
+is to make sure that in your responses
+
+32
+00:01:45.000 --> 00:01:48.800
+to your users, that there's
+none of your own organization's data
+
+33
+00:01:48.800 --> 00:01:52.033
+that is accidentally sent to somebody
+that should not be seeing it
+
+34
+00:01:52.633 --> 00:01:54.500
+via the LLM responses.
+
+35
+00:01:54.500 --> 00:01:56.500
+So for this lesson,
+we're actually going to be
+
+36
+00:01:56.500 --> 00:02:00.400
+using a really great open source project
+by Microsoft.
+
+37
+00:02:00.400 --> 00:02:03.600
+It's called Microsoft Presidio,
+and it's essentially a
+
+38
+00:02:03.600 --> 00:02:06.600
+tool that helps analyze and anonymize
+
+39
+00:02:07.300 --> 00:02:09.700
+many, many different types of PII.
+
+40
+00:02:09.700 --> 00:02:13.233
+And we're going to dig into more details
+about how to use later in the lesson.
+
+41
+00:02:14.000 --> 00:02:17.000
+I'm going to start
+with our usual practices here
+
+42
+00:02:17.000 --> 00:02:20.000
+where we're going to copy over our warning
+filters.
+
+43
+00:02:20.000 --> 00:02:25.000
+We are also going to copy over our imports
+that we need for our lesson.
+
+44
+00:02:26.600 --> 00:02:26.900
+Okay.
+
+45
+00:02:26.900 --> 00:02:27.533
+Now that we
+
+46
+00:02:27.533 --> 00:02:29.433
+have our warnings and import set up,
+
+47
+00:02:29.433 --> 00:02:33.000
+we are going to start with
+setting up our chatbot example.
+
+48
+00:02:33.333 --> 00:02:35.033
+And we've done this multiple times by now.
+
+49
+00:02:35.033 --> 00:02:37.433
+So I'm not going to talk through it
+into much detail.
+
+50
+00:02:37.433 --> 00:02:38.900
+But we have an unguarded kind of
+
+51
+00:02:38.900 --> 00:02:41.500
+activity and the same system message
+that we've been
+
+52
+00:02:41.500 --> 00:02:42.400
+using. And then,
+
+53
+00:02:42.400 --> 00:02:44.300
+we also initialize a
+
+54
+00:02:44.300 --> 00:02:46.000
+RAG chatbot app that
+
+55
+00:02:46.000 --> 00:02:48.333
+uses all of these components.
+
+56
+00:02:48.333 --> 00:02:51.800
+And just to familiarize yourselves again,
+let us copy
+
+57
+00:02:51.800 --> 00:02:55.900
+in our chat message
+and look at the failure in action.
+
+58
+00:02:56.100 --> 00:02:56.433
+All right.
+
+59
+00:02:56.433 --> 00:02:57.433
+So this is somebody
+
+60
+00:02:57.433 --> 00:03:00.433
+named Hank Tate
+who shared their phone number.
+
+61
+00:03:00.500 --> 00:03:03.733
+And once again for a pizza shop,
+you know, of a name and a phone number
+
+62
+00:03:03.733 --> 00:03:05.300
+isn't really that sensitive.
+
+63
+00:03:05.300 --> 00:03:08.300
+Your local pizzeria
+probably has that about you.
+
+64
+00:03:08.433 --> 00:03:12.100
+But if you really think about it,
+for banks or for government organizations
+
+65
+00:03:12.100 --> 00:03:15.500
+or for especially healthcare services,
+even details
+
+66
+00:03:15.500 --> 00:03:19.400
+that might seem as innocuous as these
+need to be dealt with very sensitively.
+
+67
+00:03:19.800 --> 00:03:22.833
+So here you see that you know the LLM responds
+with something short.
+
+68
+00:03:22.833 --> 00:03:25.833
+The response is actually not what we need
+to focus on here.
+
+69
+00:03:26.400 --> 00:03:31.400
+It's more that because Hank shared his
+private information when he wasn't meant
+
+70
+00:03:31.800 --> 00:03:36.300
+to. What we end up having is on the back
+end of our chat application.
+
+71
+00:03:36.533 --> 00:03:39.533
+If you scroll through messages,
+you actually see that
+
+72
+00:03:39.800 --> 00:03:42.633
+Hank's data
+is saves whenever we store our back end.
+
+73
+00:03:42.633 --> 00:03:43.100
+Right?
+
+74
+00:03:43.100 --> 00:03:45.100
+And once again, if you're an enterprise
+
+75
+00:03:45.100 --> 00:03:48.533
+or a large organization
+that cares about sensitive information,
+
+76
+00:03:48.800 --> 00:03:52.233
+you need to be very careful
+with how you're storing customer data.
+
+77
+00:03:52.300 --> 00:03:56.433
+What we'd like to do,
+ideally, is detect when a user
+
+78
+00:03:56.700 --> 00:04:00.633
+or a customer of your genAI
+application is sharing private,
+
+79
+00:04:00.633 --> 00:04:05.500
+sensitive information with you and filter
+it and detect it at the source. And
+
+80
+00:04:05.500 --> 00:04:08.100
+also alert,
+you know, some underlying system
+
+81
+00:04:08.100 --> 00:04:11.100
+so that you can kick in whatever measures
+you want to use for
+
+82
+00:04:11.100 --> 00:04:13.500
+handling that information correctly.
+
+83
+00:04:13.500 --> 00:04:17.400
+Those of you with ken eyes might notice
+that there's some other PII here.
+
+84
+00:04:17.400 --> 00:04:18.300
+So this is PII
+
+85
+00:04:18.300 --> 00:04:22.000
+that was retrieved by the retriever
+that was stored in the vector database.
+
+86
+00:04:22.200 --> 00:04:24.800
+Later towards the end of this lesson
+we're actually going to deal
+
+87
+00:04:24.800 --> 00:04:25.900
+with how to handle
+
+88
+00:04:25.900 --> 00:04:28.900
+this PII
+that's in your database correctly.
+
+89
+00:04:29.000 --> 00:04:29.300
+All right.
+
+90
+00:04:29.300 --> 00:04:32.600
+So before we start building out
+our validator,
+
+91
+00:04:32.600 --> 00:04:36.300
+let's actually look at how Microsoft
+Presidio works under the hood.
+
+92
+00:04:36.700 --> 00:04:40.500
+So we are going to use Microsoft
+
+93
+00:04:40.600 --> 00:04:43.833
+Presidio analyzer
+and anonymizer engines.
+
+94
+00:04:44.200 --> 00:04:45.800
+And as the name suggests you know,
+
+95
+00:04:45.800 --> 00:04:49.633
+analyzer
+engine basically takes in some string of
+
+96
+00:04:49.633 --> 00:04:50.400
+text and
+
+97
+00:04:50.400 --> 00:04:54.300
+then tells you
+what sensitive entities are present in
+
+98
+00:04:54.300 --> 00:04:57.300
+the text, are their names,
+are their phone numbers, etc...
+
+99
+00:04:57.300 --> 00:04:58.900
+And anonymize your engine
+
+100
+00:04:58.900 --> 00:05:03.900
+takes detected entities and anonymize them
+so that the rest of the text
+
+101
+00:05:04.000 --> 00:05:07.033
+is still usable
+with just the PII filtered out.
+
+102
+00:05:07.400 --> 00:05:08.433
+So I am going to
+
+103
+00:05:08.433 --> 00:05:10.700
+initialize both of these over here.
+
+104
+00:05:10.700 --> 00:05:13.033
+And first, let us look
+
+105
+00:05:13.033 --> 00:05:15.800
+at the analyzer engine in action.
+
+106
+00:05:15.800 --> 00:05:18.100
+So this is the text that I'm using.
+
+107
+00:05:18.100 --> 00:05:19.600
+Once again this is Hank's message.
+
+108
+00:05:19.600 --> 00:05:23.233
+Let's see what our analyzer spits out.
+
+109
+00:05:23.300 --> 00:05:23.933
+All right.
+
+110
+00:05:23.933 --> 00:05:26.700
+So we identify three types of PII here.
+
+111
+00:05:26.700 --> 00:05:31.700
+Date time which starts at 43 characters in
+and then ends at 60. Person.
+
+112
+00:05:32.900 --> 00:05:34.733
+That starts in 73 ends here.
+
+113
+00:05:34.733 --> 00:05:37.133
+So the person is Hank Tate.
+And then phone number is, you know,
+
+114
+00:05:37.133 --> 00:05:39.033
+the phone
+number towards the end of the string.
+
+115
+00:05:39.033 --> 00:05:42.500
+What's interesting here
+is that for us, name
+
+116
+00:05:42.500 --> 00:05:46.333
+and phone number for our pizzeria
+is what we're sensitive about.
+
+117
+00:05:46.700 --> 00:05:49.700
+Whereas date time is
+maybe not something we care as much about,
+
+118
+00:05:49.900 --> 00:05:54.333
+but the specific entities that you care
+about filtering out would really vary
+
+119
+00:05:54.333 --> 00:05:57.733
+from your organization, your use case,
+and the industry that you work in.
+
+120
+00:05:57.800 --> 00:06:00.300
+Now let's look at Presidio's
+
+121
+00:06:00.300 --> 00:06:04.333
+Anonymized engine
+and look at the anonymized version of
+
+122
+00:06:04.333 --> 00:06:06.200
+this PII. Awesome.
+
+123
+00:06:06.200 --> 00:06:09.200
+So we can see here
+that our updated message looks like
+
+124
+00:06:09.700 --> 00:06:12.300
+can you tell me
+the orders I've placed in date time?
+
+125
+00:06:12.300 --> 00:06:15.300
+My name is Person.
+And my phone number is Phone number.
+
+126
+00:06:15.300 --> 00:06:16.000
+And we also
+
+127
+00:06:16.000 --> 00:06:18.000
+got these outputs that we've seen before.
+
+128
+00:06:18.000 --> 00:06:19.933
+So this. Anonymized
+
+129
+00:06:19.933 --> 00:06:23.533
+text make sure that we've filtered out
+the PII that's sensitive for us.
+
+130
+00:06:23.900 --> 00:06:27.000
+But at the same time
+we can still use the rest of the text
+
+131
+00:06:27.200 --> 00:06:28.533
+so that we can still respond
+
+132
+00:06:28.533 --> 00:06:29.700
+to, you know, Hank's
+
+133
+00:06:29.700 --> 00:06:32.600
+question with the same manner
+that sorry, Hank
+
+134
+00:06:32.600 --> 00:06:34.500
+to all that information for you,
+but now we're not
+
+135
+00:06:34.500 --> 00:06:37.200
+mishandling this private information.
+All right.
+
+136
+00:06:37.200 --> 00:06:37.733
+Now that we
+
+137
+00:06:37.733 --> 00:06:42.733
+know how Presidio works, let's actually
+look at how we can use it to build our
+
+138
+00:06:43.333 --> 00:06:44.600
+PII Validator.
+
+139
+00:06:45.633 --> 00:06:48.633
+We are actually going to start out
+with writing a function
+
+140
+00:06:48.833 --> 00:06:53.733
+that just does PII detection
+for some entities that we define.
+
+141
+00:06:53.900 --> 00:06:58.000
+So this function is going to use Microsoft
+Presidio Analyzer to filter out
+
+142
+00:06:58.000 --> 00:07:00.600
+just the person and phone
+number entities.
+
+143
+00:07:00.600 --> 00:07:01.300
+And then we
+
+144
+00:07:01.300 --> 00:07:03.400
+are going to return the entities that
+
+145
+00:07:03.400 --> 00:07:06.333
+we've identified in our text string.
+
+146
+00:07:06.333 --> 00:07:09.800
+If you want to look at the full list
+of entities that Microsoft Presidio
+
+147
+00:07:09.800 --> 00:07:14.133
+supports, we've actually provided a link
+to that resource in the learner notebook.
+
+148
+00:07:14.133 --> 00:07:14.600
+All right.
+
+149
+00:07:14.600 --> 00:07:18.633
+So with our function
+defined, let's now go on to step two
+
+150
+00:07:18.633 --> 00:07:22.400
+which is basically creating a guardrail
+that filters out this PII.
+
+151
+00:07:22.800 --> 00:07:25.400
+And you've seen me do this
+a few times before.
+
+152
+00:07:25.400 --> 00:07:27.633
+But all I'm really doing here is creating
+
+153
+00:07:27.633 --> 00:07:30.633
+a validator class that I register
+
+154
+00:07:31.200 --> 00:07:33.300
+And then the validate function of
+
+155
+00:07:33.300 --> 00:07:37.533
+the validator class is what really
+contains a lot of the core logic
+
+156
+00:07:37.533 --> 00:07:38.500
+for validation.
+
+157
+00:07:38.500 --> 00:07:41.500
+So I'm creating that over here.
+
+158
+00:07:41.500 --> 00:07:44.800
+Our logic in the validate method
+basically uses this function
+
+159
+00:07:44.800 --> 00:07:48.500
+that we created up here,
+and then sends in the text to detect
+
+160
+00:07:48.500 --> 00:07:51.500
+if there's either a name or phone
+number present.
+
+161
+00:07:51.700 --> 00:07:53.700
+If we detect any PII
+
+162
+00:07:53.700 --> 00:07:58.000
+then we raise a fail result
+with this error message PII detected.
+
+163
+00:07:58.000 --> 00:07:58.300
+And you
+
+164
+00:07:58.300 --> 00:08:00.333
+know,
+what are the types of PII as well as
+
+165
+00:08:00.333 --> 00:08:01.900
+the metadata.
+
+166
+00:08:01.900 --> 00:08:04.633
+And then finally
+if there's no PII detected
+
+167
+00:08:04.633 --> 00:08:07.400
+then we pass pass
+result with this message.
+
+168
+00:08:07.400 --> 00:08:08.200
+Awesome.
+
+169
+00:08:08.200 --> 00:08:11.433
+Now that we have our guardrail created,
+let's actually try using.
+
+170
+00:08:11.433 --> 00:08:12.233
+It in a
+
+171
+00:08:12.233 --> 00:08:15.800
+guard and then see how we do. So,
+
+172
+00:08:15.800 --> 00:08:20.800
+This is us initializing the PII guardrails
+so that it raises an exception
+
+173
+00:08:21.200 --> 00:08:23.900
+anytime
+a name or phone number is detected.
+
+174
+00:08:23.900 --> 00:08:26.900
+And then let's actually try it on
+
+175
+00:08:26.900 --> 00:08:29.400
+the same sentence as before.
+
+176
+00:08:29.400 --> 00:08:32.000
+So once again
+this is the same sentence with Hank Tate
+
+177
+00:08:32.000 --> 00:08:32.900
+and the phone number and
+
+178
+00:08:32.900 --> 00:08:34.800
+let's see what we end up getting.
+
+179
+00:08:34.800 --> 00:08:38.833
+So we get the same error that we created
+before validation failed for failed
+
+180
+00:08:38.833 --> 00:08:39.300
+with errors.
+
+181
+00:08:39.300 --> 00:08:42.300
+PII, both person and phone number detected.
+
+182
+00:08:42.300 --> 00:08:44.900
+Now what happens
+if we remove the phone number?
+
+183
+00:08:48.033 --> 00:08:49.333
+Just person.
+
+184
+00:08:49.333 --> 00:08:49.900
+All right.
+
+185
+00:08:49.900 --> 00:08:54.100
+Now actually
+let's look at how we can set up guardrails
+
+186
+00:08:54.100 --> 00:08:57.900
+server with PII so that we can
+actually use it in our production system.
+
+187
+00:08:58.000 --> 00:09:00.700
+All right.
+So for this example we're actually
+
+188
+00:09:00.700 --> 00:09:03.300
+not using the PII guardrail
+that you've created.
+
+189
+00:09:03.300 --> 00:09:06.300
+We're going to use the guardrail
+that we pulled up from the hub.
+
+190
+00:09:06.300 --> 00:09:08.733
+Because it supports
+many many different types of entities
+
+191
+00:09:08.733 --> 00:09:11.500
+and then also supports
+real-time streaming.
+
+192
+00:09:11.500 --> 00:09:13.500
+Then we're going to take a look at in
+just a second.
+
+193
+00:09:13.500 --> 00:09:14.900
+So same as before.
+
+194
+00:09:14.900 --> 00:09:17.300
+All we're doing is now using the same
+
+195
+00:09:17.300 --> 00:09:18.700
+OpenAI API.
+
+196
+00:09:18.700 --> 00:09:20.533
+But with a PII guard
+
+197
+00:09:20.533 --> 00:09:22.633
+that runs on the input side.
+
+198
+00:09:22.633 --> 00:09:23.300
+And with that,
+
+199
+00:09:23.300 --> 00:09:25.900
+let's also create a guarded version of
+
+200
+00:09:25.900 --> 00:09:27.633
+our RAG chatbot.
+
+201
+00:09:27.633 --> 00:09:29.200
+And then I am
+
+202
+00:09:29.200 --> 00:09:32.500
+going to use this chatbot
+that I've just created
+
+203
+00:09:32.500 --> 00:09:35.900
+and then see what happens with my example.
+
+204
+00:09:35.900 --> 00:09:36.733
+All right.
+
+205
+00:09:36.733 --> 00:09:38.300
+Message history validation failed.
+
+206
+00:09:38.300 --> 00:09:39.400
+And that was also really quick
+
+207
+00:09:39.400 --> 00:09:43.500
+because what we're doing here is running
+this guardrail on the input side.
+
+208
+00:09:43.833 --> 00:09:47.400
+So what really happens
+as soon as you send that message is before
+
+209
+00:09:47.800 --> 00:09:51.000
+we could leak that
+PII out into an AI system,
+
+210
+00:09:51.133 --> 00:09:55.000
+we actually raise an exception
+even before we got onto that stage.
+
+211
+00:09:55.000 --> 00:09:59.200
+So if you look at the logs of what's being
+stored on the back end of our chatbot,
+
+212
+00:09:59.300 --> 00:10:03.400
+you'll see that the only messages restored
+are the system message
+
+213
+00:10:03.400 --> 00:10:05.333
+that was initially used. And we did not
+
+214
+00:10:05.333 --> 00:10:09.100
+store the message that Hank
+said that contains sensitive information.
+
+215
+00:10:09.400 --> 00:10:12.633
+The important thing,
+when you're building your application,
+
+216
+00:10:12.633 --> 00:10:14.033
+and you want to think about how to
+
+217
+00:10:14.033 --> 00:10:17.733
+handle sensitive data well,
+is making sure that you're detecting it.
+
+218
+00:10:17.733 --> 00:10:19.833
+And anonymizing it. And then,
+
+219
+00:10:19.833 --> 00:10:23.600
+according to your organization's policies,
+you can figure out how you
+
+220
+00:10:23.600 --> 00:10:26.600
+want to handle any sensitive information.
+
+221
+00:10:26.833 --> 00:10:29.100
+So you might remember that at
+
+222
+00:10:29.100 --> 00:10:32.100
+the beginning of this lesson,
+we talked about
+
+223
+00:10:32.233 --> 00:10:34.833
+retrieving sensitive information.
+
+224
+00:10:34.833 --> 00:10:37.833
+It's always best practice
+to sanitize your data
+
+225
+00:10:37.833 --> 00:10:40.333
+before you add it to your vector database.
+
+226
+00:10:40.333 --> 00:10:41.500
+But at the same time, you know,
+
+227
+00:10:41.500 --> 00:10:43.900
+accidents happen and sometimes some
+
+228
+00:10:43.900 --> 00:10:45.500
+data might creep in that
+
+229
+00:10:45.500 --> 00:10:47.533
+maybe contain sensitive information,
+
+230
+00:10:47.533 --> 00:10:50.533
+or maybe it's even
+okay for that information to be in there.
+
+231
+00:10:50.800 --> 00:10:52.100
+But depending on the level
+
+232
+00:10:52.100 --> 00:10:55.233
+of authorization
+that a user of your application has,
+
+233
+00:10:55.600 --> 00:10:58.333
+not everybody should have access
+to that information.
+
+234
+00:10:58.333 --> 00:10:58.933
+Right.
+
+235
+00:10:58.933 --> 00:11:02.533
+And so what you want to do
+is make sure that you are sanitizing
+
+236
+00:11:02.733 --> 00:11:07.000
+any output that the LLM generates
+so that even if the LLM sees
+
+237
+00:11:07.333 --> 00:11:10.700
+private information
+as part of the retrieved context.
+
+238
+00:11:11.000 --> 00:11:11.700
+That private
+
+239
+00:11:11.700 --> 00:11:15.100
+information is not part of the answer
+that you're showing
+
+240
+00:11:15.100 --> 00:11:16.300
+to your end user.
+
+241
+00:11:16.300 --> 00:11:19.300
+And that is a really cool thing about
+
+242
+00:11:19.400 --> 00:11:21.300
+the guardrail
+that we just pulled from the hub.
+
+243
+00:11:21.300 --> 00:11:24.000
+What you can really do is, in real
+
+244
+00:11:24.000 --> 00:11:25.600
+time, validate that
+
+245
+00:11:25.600 --> 00:11:28.300
+there's no PII that is being leaked.
+
+246
+00:11:28.300 --> 00:11:31.600
+So we're actually going to see a cool
+little demo of this happening.
+
+247
+00:11:31.600 --> 00:11:33.633
+Where we're now running our PII
+
+248
+00:11:33.633 --> 00:11:36.500
+filter on the output side
+instead of the input side.
+
+249
+00:11:36.500 --> 00:11:39.500
+So same as before. We create a guard here.
+
+250
+00:11:39.633 --> 00:11:42.300
+You might see some warnings here,
+but you know everything's
+
+251
+00:11:42.300 --> 00:11:43.700
+still working as expected.
+
+252
+00:11:43.700 --> 00:11:46.000
+And I wouldn't recommend worrying about it
+too much.
+
+253
+00:11:46.000 --> 00:11:46.800
+All right. Now that
+
+254
+00:11:46.800 --> 00:11:51.300
+we have our guard initialized, we actually
+have some boilerplate that we are
+
+255
+00:11:51.300 --> 00:11:53.933
+going to copy and over here. And all
+
+256
+00:11:53.933 --> 00:11:58.033
+this is really doing
+is calling a guard outside of the server.
+
+257
+00:11:58.033 --> 00:12:03.000
+So calling a guard in code where we call
+gpt-3.5-turbo with these messages,
+
+258
+00:12:03.000 --> 00:12:07.600
+where we're asking GPT to generate
+a two-sentence short story.
+
+259
+00:12:07.900 --> 00:12:08.800
+About an unnamed
+
+260
+00:12:08.800 --> 00:12:11.733
+protagonist
+while we're making up some ten-digit
+
+261
+00:12:11.733 --> 00:12:13.400
+phone numbers,
+you know, for the protagonist.
+
+262
+00:12:13.400 --> 00:12:15.733
+So this is just some dummy data
+
+263
+00:12:15.733 --> 00:12:19.200
+that gives you an example of
+maybe some sensitive information.
+
+264
+00:12:19.200 --> 00:12:21.300
+Then your LLM might generate.
+
+265
+00:12:21.300 --> 00:12:23.800
+Here we're doing it
+without any retrieved data.
+
+266
+00:12:23.800 --> 00:12:25.300
+But in your real system
+
+267
+00:12:25.300 --> 00:12:29.800
+this the data that the output that the LLM
+generates might actually be grounded
+
+268
+00:12:29.800 --> 00:12:33.600
+in, you know, real sensitive information
+that you accidentally leaked to the LLM.
+
+269
+00:12:33.700 --> 00:12:36.000
+So this is the request
+that we're going to be making.
+
+270
+00:12:36.000 --> 00:12:40.100
+And if you use OpenAI streaming
+ever before, what's going to happen
+
+271
+00:12:40.100 --> 00:12:43.900
+here, is we are going to stream
+the output that is
+
+272
+00:12:43.900 --> 00:12:46.233
+generated by the LLM.
+
+273
+00:12:46.233 --> 00:12:47.533
+So that you can basically see
+
+274
+00:12:47.533 --> 00:12:49.900
+validation happening in real time.
+
+275
+00:12:49.900 --> 00:12:50.300
+All right.
+
+276
+00:12:50.300 --> 00:12:54.000
+So all that's really happening here
+is we're iterating over the output of our
+
+277
+00:12:54.000 --> 00:12:55.800
+LLM chunk by chunk.
+
+278
+00:12:55.800 --> 00:12:57.700
+We have streaming set to true.
+
+279
+00:12:57.700 --> 00:12:58.033
+And then
+
+280
+00:12:58.033 --> 00:12:59.200
+we are going to validate
+
+281
+00:12:59.200 --> 00:13:01.100
+the request
+that we end up getting from the output.
+
+282
+00:13:01.100 --> 00:13:05.433
+So you can see how fast and instantaneous
+this feels in in real time.
+
+283
+00:13:06.733 --> 00:13:07.000
+All right.
+
+284
+00:13:07.000 --> 00:13:09.700
+So you can actually see there
+that even though. The LLM had
+
+285
+00:13:09.700 --> 00:13:12.733
+generated like a couple of phone numbers,
+we detected
+
+286
+00:13:12.733 --> 00:13:15.533
+it and then returned the validated result
+to you.
+
+287
+00:13:15.533 --> 00:13:15.800
+And you
+
+288
+00:13:15.800 --> 00:13:17.500
+can really use this to make sure
+
+289
+00:13:17.500 --> 00:13:19.133
+that you're not incurring
+
+290
+00:13:19.133 --> 00:13:24.133
+any substantial latency hits,
+while making sure that any output
+
+291
+00:13:24.133 --> 00:13:27.900
+that your LLM generates is still sanitized
+and free of any personal
+
+292
+00:13:27.900 --> 00:13:29.400
+or private information.
+
+293
+00:13:29.400 --> 00:13:30.000
+Now, with that,
+
+294
+00:13:30.000 --> 00:13:31.500
+let's go out into our next lesson
+
+295
+00:13:31.500 --> 00:13:35.200
+that's going to take a look at
+how to make sure your LLM doesn't generate
+
+296
+00:13:35.200 --> 00:13:38.200
+any output that might harm your
+reputation.
+
+297
+00:13:38.300 --> 00:13:42.133
+Specifically, the example that we're going
+to take a look at is making sure that
+
+298
+00:13:42.200 --> 00:13:43.833
+your RAG chat
+
+299
+00:13:43.833 --> 00:13:46.300
+application,
+doesn't mention any competitors.
+

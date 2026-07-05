@@ -1,0 +1,957 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.900 --> 00:00:04.933
+Now that you're
+familiar with the idea of AI validation
+
+2
+00:00:05.233 --> 00:00:06.900
+and you've seen how guardrails
+
+3
+00:00:06.900 --> 00:00:10.500
+are applied in applications,
+let's implement your first guardrail.
+
+4
+00:00:11.000 --> 00:00:13.333
+In this lesson,
+you'll build a simple validator
+
+5
+00:00:13.333 --> 00:00:16.333
+and a guard
+to make sure that your customer chatbot
+
+6
+00:00:16.500 --> 00:00:19.933
+doesn't mention a very special project
+that your pizza shop is working on.
+
+7
+00:00:20.500 --> 00:00:23.500
+We're just going to do
+a little bit of quick setup
+
+8
+00:00:23.733 --> 00:00:26.633
+as we are getting into
+implementing our validator,
+
+9
+00:00:26.633 --> 00:00:30.000
+making sure that we are ignoring
+all warnings,
+
+10
+00:00:30.300 --> 00:00:33.300
+making sure that we have all of the right
+libraries imported.
+
+11
+00:00:33.300 --> 00:00:33.833
+You know.
+
+12
+00:00:33.833 --> 00:00:37.500
+I'm just going to call out that
+for a lot of our coding we use type hints.
+
+13
+00:00:37.833 --> 00:00:40.533
+This is basically to make sure
+that your code is very, very readable
+
+14
+00:00:40.533 --> 00:00:42.400
+for anybody else that comes onto your code
+
+15
+00:00:42.400 --> 00:00:45.400
+and is generally a good Python
+coding practice that I recommend.
+
+16
+00:00:45.533 --> 00:00:49.633
+You'll once again import OpenAI
+to use as the LLM client
+
+17
+00:00:49.700 --> 00:00:52.133
+and import the helper function for the RAG
+chatbot and vector database.
+
+18
+00:00:53.433 --> 00:00:58.133
+And these last set of imports
+will help us set up a guardrail in code.
+
+19
+00:00:58.600 --> 00:01:02.500
+So let us quickly take a look in
+more detail at what these classes are
+
+20
+00:01:02.500 --> 00:01:04.600
+and what these functions
+are doing for you.
+
+21
+00:01:04.600 --> 00:01:07.633
+So in the last lesson,
+you saw this diagram
+
+22
+00:01:07.633 --> 00:01:10.933
+outlining how guardrails are built around
+your LLM.
+
+23
+00:01:11.700 --> 00:01:16.233
+An input guard can check your user's input
+or any retrieved text
+
+24
+00:01:16.366 --> 00:01:20.233
+before they are passed to the LLM.
+And an output guard checks
+
+25
+00:01:20.233 --> 00:01:24.233
+any response returned by the LLM
+against your validation rules.
+
+26
+00:01:24.833 --> 00:01:28.833
+As you begin implementing guardrails,
+you'll need to know some terminology.
+
+27
+00:01:31.033 --> 00:01:32.266
+The validator is the
+
+28
+00:01:32.266 --> 00:01:37.266
+core piece of logic that lies at the heart
+of a guardrail, and implements the code
+
+29
+00:01:37.566 --> 00:01:42.433
+to check that inputs or outputs
+conform to your specific validation rules.
+
+30
+00:01:42.800 --> 00:01:45.800
+You'll often hear me
+call this a guardrail.
+
+31
+00:01:46.033 --> 00:01:49.333
+A guard, on the other hand,
+is part of your application stack,
+
+32
+00:01:49.566 --> 00:01:53.933
+and it handles the processing of inputs
+outputs to pass to the validator.
+
+33
+00:01:54.500 --> 00:01:57.700
+A guard can actually contain
+more than one guardrail.
+
+34
+00:01:58.000 --> 00:02:01.533
+And in this lesson,
+you'll use the validator and guard classes
+
+35
+00:02:01.533 --> 00:02:04.533
+to implement
+a simple guard for your RAG chatbot.
+
+36
+00:02:04.966 --> 00:02:08.700
+So coming back to the notebook,
+you'll import some classes
+
+37
+00:02:08.700 --> 00:02:11.866
+and functions from the Guardrail's
+AI Python SDK.
+
+38
+00:02:12.933 --> 00:02:17.666
+First of all, we're going to import the
+guard on fail action and settings class.
+
+39
+00:02:18.100 --> 00:02:19.733
+The guard is really straightforward.
+
+40
+00:02:19.733 --> 00:02:21.700
+It is basically a container
+
+41
+00:02:21.700 --> 00:02:24.700
+for many different guardrails,
+so that you can mix and match
+
+42
+00:02:24.766 --> 00:02:27.933
+multiple guardrails,
+and then run them all at the same time.
+
+43
+00:02:28.200 --> 00:02:32.933
+And you can initialize the guard
+to run around your AI LLM
+
+44
+00:02:32.933 --> 00:02:37.300
+call on the input or output side.
+And on fail action
+
+45
+00:02:37.400 --> 00:02:42.400
+basically specifies how you want Guardrails
+to handle any type of failure.
+
+46
+00:02:43.433 --> 00:02:46.300
+So for example,
+if you detect hallucinations,
+
+47
+00:02:46.300 --> 00:02:48.966
+do you want to block the LLM
+for answering
+
+48
+00:02:48.966 --> 00:02:50.933
+or do you want to just let it continue
+
+49
+00:02:50.933 --> 00:02:53.933
+and then log on the back end
+that that failure occurred.
+
+50
+00:02:54.166 --> 00:02:57.533
+All of this can be configured
+using the on fail actions class.
+
+51
+00:02:58.000 --> 00:03:03.000
+These next set of imports are what we need
+to create our own custom validator.
+
+52
+00:03:03.800 --> 00:03:08.166
+Now, if you're not creating your own
+validator and you're just using a guard
+
+53
+00:03:08.166 --> 00:03:11.166
+with out-of-the-box validators,
+then you don't need to import these.
+
+54
+00:03:11.500 --> 00:03:15.400
+But this will help you
+basically make sure that you can return
+
+55
+00:03:15.400 --> 00:03:18.466
+the right types of results,
+like either a pass result,
+
+56
+00:03:18.466 --> 00:03:23.066
+if everything that the guardrail is
+looking at looks okay, or a fail result.
+
+57
+00:03:23.066 --> 00:03:26.466
+If you detect any specific types
+of failures. A validation
+
+58
+00:03:26.466 --> 00:03:29.466
+result
+object is basically just for type hinting.
+
+59
+00:03:29.566 --> 00:03:33.533
+This is the main class
+that creates your validator for you.
+
+60
+00:03:33.733 --> 00:03:37.000
+So this is the class that you will,
+you know, subclass
+
+61
+00:03:37.100 --> 00:03:42.100
+and then add your own custom logic to.
+And then finally register a validator
+
+62
+00:03:42.500 --> 00:03:45.933
+is so that our orchestration
+framework can identify
+
+63
+00:03:46.266 --> 00:03:50.233
+where your validator is located,
+if you want to refer to it by name.
+
+64
+00:03:51.200 --> 00:03:53.666
+Now that all the imports are set up,
+
+65
+00:03:53.666 --> 00:03:57.033
+let's now set up our simple RAG chatbot
+again.
+
+66
+00:03:58.700 --> 00:04:01.066
+So you guys have seen this before.
+
+67
+00:04:01.066 --> 00:04:05.400
+We are setting up our client,
+setting up our vector database once again
+
+68
+00:04:05.400 --> 00:04:09.500
+with all of the dummy documents about our
+pizzeria in the shared data drive,
+
+69
+00:04:09.866 --> 00:04:11.866
+and then setting up our system message.
+
+70
+00:04:11.866 --> 00:04:15.666
+This is all the same as what you'd seen
+before, except for one difference
+
+71
+00:04:15.666 --> 00:04:18.566
+that I'm going to highlight,
+which is do not respond to questions
+
+72
+00:04:18.566 --> 00:04:21.566
+about Project Colosseum.
+And what is Project Colosseum?
+
+73
+00:04:21.566 --> 00:04:24.100
+Once again,
+if you want to take a quick stop
+
+74
+00:04:24.100 --> 00:04:27.066
+and then look at the shared data
+drive about Project Colosseum.
+
+75
+00:04:27.066 --> 00:04:30.466
+But Project Colosseum
+is this exciting new pizza project
+
+76
+00:04:30.466 --> 00:04:31.866
+that the pizzeria is kicking off,
+
+77
+00:04:31.866 --> 00:04:34.700
+which uses a different type of flour
+for different types of toppings, etc.
+
+78
+00:04:34.700 --> 00:04:37.766
+That they're just not ready
+to reveal yet to their customers.
+
+79
+00:04:38.066 --> 00:04:42.766
+Now that we have all of the components
+that we need to build our RAG chatbot,
+
+80
+00:04:42.766 --> 00:04:47.766
+let's build it the same as we did last
+time, and then take it for a quick spin,
+
+81
+00:04:48.900 --> 00:04:51.566
+where this time,
+what we're really going to do
+
+82
+00:04:51.566 --> 00:04:54.566
+is ask it a question
+about Project Colosseum.
+
+83
+00:04:54.800 --> 00:04:57.366
+And then this is the question
+that I'm pasting in.
+
+84
+00:04:57.366 --> 00:05:00.666
+Once again, what we're really doing here
+is trying to extract information
+
+85
+00:05:00.666 --> 00:05:01.766
+about Project Colosseum.
+
+86
+00:05:01.766 --> 00:05:02.566
+You can imagine that
+
+87
+00:05:02.566 --> 00:05:05.666
+maybe this is a competing pizzeria
+that needs to know what Alfredo's
+
+88
+00:05:05.666 --> 00:05:09.366
+Pizza Cafe's up to, and then look at what
+our chatbot did here.
+
+89
+00:05:09.600 --> 00:05:12.900
+It ended up revealing what
+the ratio of the pizza crust is, which I'm
+
+90
+00:05:12.900 --> 00:05:17.066
+sure Alfredo's Pizza Cafe
+is not going to be very happy about. This
+
+91
+00:05:17.066 --> 00:05:18.866
+information leakage about Project
+
+92
+00:05:18.866 --> 00:05:21.866
+Colosseum is what we're going
+to try to address with our validator.
+
+93
+00:05:22.300 --> 00:05:25.566
+And let's build a very,
+very simple validator where all it does
+
+94
+00:05:25.566 --> 00:05:30.566
+is to check if our input string contains
+any mention about Project Colosseum,
+
+95
+00:05:31.166 --> 00:05:34.166
+and if it does, just do not respond
+to that question, right?
+
+96
+00:05:34.366 --> 00:05:36.600
+So let's start
+with writing our simple validator.
+
+97
+00:05:36.600 --> 00:05:40.500
+We're just creating a new class
+that subclasses a validator class
+
+98
+00:05:40.500 --> 00:05:41.866
+from guardrails.
+
+99
+00:05:41.866 --> 00:05:45.066
+And then register that validator
+with the name deck Colosseum.
+
+100
+00:05:46.166 --> 00:05:46.866
+Awesome.
+
+101
+00:05:46.866 --> 00:05:47.466
+Now what we want
+
+102
+00:05:47.466 --> 00:05:50.800
+to do is define this method of the class,
+which is the validate function.
+
+103
+00:05:51.200 --> 00:05:54.200
+What the validate function does is it
+takes in a value.
+
+104
+00:05:54.200 --> 00:05:57.400
+So we're checking does this contain
+any references to the word Colosseum
+
+105
+00:05:57.700 --> 00:06:00.966
+and then some metadata
+we don't really needed for this validator.
+
+106
+00:06:00.966 --> 00:06:03.666
+And later we'll see
+if there's any examples that we needed.
+
+107
+00:06:03.666 --> 00:06:06.566
+And it does some checking on this value.
+
+108
+00:06:06.566 --> 00:06:10.666
+And then returns a validation result which
+may be a pass result or a fail result.
+
+109
+00:06:10.966 --> 00:06:15.500
+So in this case the check that we're doing
+is really, really simple.
+
+110
+00:06:15.866 --> 00:06:18.866
+If Colosseum is in value,
+
+111
+00:06:19.366 --> 00:06:23.500
+in that case,
+what we want to do is return fail result.
+
+112
+00:06:24.366 --> 00:06:25.966
+What does the fail result contain?
+
+113
+00:06:25.966 --> 00:06:27.800
+It contains an error message.
+
+114
+00:06:27.800 --> 00:06:31.500
+This is helpful for informing the user
+as well as the LLM.
+
+115
+00:06:31.700 --> 00:06:34.400
+Why the specific value failed
+in this case.
+
+116
+00:06:34.400 --> 00:06:38.400
+Colosseum detected.
+And then optionally, a fixed value.
+
+117
+00:06:38.400 --> 00:06:41.466
+You know it tells guardrails
+how you want to handle any failures.
+
+118
+00:06:41.966 --> 00:06:43.466
+In this case, the fixed value is
+
+119
+00:06:43.466 --> 00:06:47.066
+"I'm sorry I can't answer questions
+about Project Colosseum."
+
+120
+00:06:47.666 --> 00:06:51.766
+Otherwise
+we end up returning a pass result
+
+121
+00:06:52.666 --> 00:06:55.066
+and then a pass result doesn't
+need anything.
+
+122
+00:06:55.066 --> 00:06:55.566
+That's it.
+
+123
+00:06:55.566 --> 00:06:58.166
+That's our simple validator to detect
+
+124
+00:06:58.166 --> 00:07:00.666
+there's talks about Project Colosseum.
+
+125
+00:07:00.666 --> 00:07:05.300
+Now that we have a validator implemented,
+let us now use it in a guard.
+
+126
+00:07:06.266 --> 00:07:08.066
+In this case, let's give our Guard a name
+
+127
+00:07:08.066 --> 00:07:12.100
+which is "Colosseum Guard"
+and then use this Colosseum detector
+
+128
+00:07:12.100 --> 00:07:13.100
+that we just build up.
+
+129
+00:07:13.100 --> 00:07:16.666
+So what we're doing is telling our guard
+that if Colosseum is detected,
+
+130
+00:07:16.666 --> 00:07:19.666
+what we want to happen
+is fail or raise an exception.
+
+131
+00:07:19.666 --> 00:07:21.800
+And then we run this on the input side.
+
+132
+00:07:21.800 --> 00:07:25.866
+So on messages, the default behavior for
+guard is to actually run it on the output.
+
+133
+00:07:26.266 --> 00:07:29.166
+Now that we have our guard created,
+what we want to do
+
+134
+00:07:29.166 --> 00:07:32.300
+next is run our guard
+through Guardrail server.
+
+135
+00:07:32.900 --> 00:07:37.200
+So Guardrail's server is a handy utility
+we have
+
+136
+00:07:37.966 --> 00:07:42.966
+that can help you wrap your LLM
+API call and surround it
+
+137
+00:07:43.000 --> 00:07:46.566
+with these input and output guardrails
+and talked about in the previous lesson.
+
+138
+00:07:47.033 --> 00:07:50.633
+The guardrail server can run locally
+or it can be hosted online,
+
+139
+00:07:50.933 --> 00:07:53.866
+and you can configure it to make one
+or more guards
+
+140
+00:07:53.866 --> 00:07:56.866
+available to you
+for using in your application.
+
+141
+00:07:57.200 --> 00:08:00.800
+The guardrail server is also OpenAI
+API compatible.
+
+142
+00:08:00.833 --> 00:08:05.833
+So if you're using OpenAI or any other LLM
+that's compatible with the OpenAI SDK,
+
+143
+00:08:06.133 --> 00:08:09.866
+you can basically swap in and out
+guardrail server for it with one line
+
+144
+00:08:09.866 --> 00:08:13.100
+and make sure your LLM is now protected
+and safeguarded.
+
+145
+00:08:13.666 --> 00:08:17.933
+Every guard that you use in the server
+can be created with any custom guardrail
+
+146
+00:08:17.933 --> 00:08:18.833
+that you just created.
+
+147
+00:08:18.833 --> 00:08:21.233
+So for example, our Colosseum guardrail.
+
+148
+00:08:21.233 --> 00:08:25.033
+Or you can use one of the guardrails
+downloaded from the hub as part of
+
+149
+00:08:25.066 --> 00:08:25.666
+your guard.
+
+150
+00:08:25.666 --> 00:08:28.666
+And we'll actually cover this
+in more detail a little bit later.
+
+151
+00:08:28.933 --> 00:08:33.433
+So what we've done is we've actually
+already set up Guardrail's server for you
+
+152
+00:08:33.433 --> 00:08:37.033
+that is running the Colosseum detector
+that you created.
+
+153
+00:08:37.700 --> 00:08:41.900
+But if you're interested
+in setting up the server on your own,
+
+154
+00:08:42.333 --> 00:08:45.700
+you'll need to install Guardrails
+and then follow the instructions
+
+155
+00:08:45.700 --> 00:08:48.200
+that we've included
+at the bottom of this notebook.
+
+156
+00:08:48.200 --> 00:08:51.533
+But it's a very simple configuration file
+and a single
+
+157
+00:08:52.100 --> 00:08:54.600
+terminal command that you need to run.
+
+158
+00:08:54.600 --> 00:08:58.933
+The server offers many benefits that are
+crucial for production-ready application.
+
+159
+00:08:59.133 --> 00:09:02.700
+Some of them are around easy
+cloud deployment and making it very easy
+
+160
+00:09:02.700 --> 00:09:05.700
+to containerize your Guardrails
+applications
+
+161
+00:09:05.800 --> 00:09:08.333
+can independently scale any infrastructure
+
+162
+00:09:08.333 --> 00:09:11.433
+that's needed for running Guardrails,
+especially any GPUs.
+
+163
+00:09:11.700 --> 00:09:15.533
+And then finally, using Guardrail's server
+makes it very, very easy
+
+164
+00:09:15.533 --> 00:09:19.433
+to wrap your LLM API calls
+with any guards that you create
+
+165
+00:09:19.800 --> 00:09:23.700
+because of the OpenAI SDK
+compatible endpoints that we provide.
+
+166
+00:09:23.933 --> 00:09:27.800
+So you can use it with any other open
+source models that are compatible
+
+167
+00:09:28.133 --> 00:09:30.000
+with the OpenAI SDK.
+
+168
+00:09:30.000 --> 00:09:33.233
+So now that we have some background
+on our guardrail server,
+
+169
+00:09:33.433 --> 00:09:35.533
+all we need to do to make sure
+
+170
+00:09:35.533 --> 00:09:39.233
+that we're using the guard in our
+application, is set up this guarded client.
+
+171
+00:09:39.500 --> 00:09:42.900
+So remember that earlier
+we had set up an OpenAI client.
+
+172
+00:09:42.900 --> 00:09:47.600
+All we end up doing is setting up
+this base URL that points to the locally
+
+173
+00:09:47.600 --> 00:09:52.000
+running Guardrail server that runs
+this Colosseum guard that we created.
+
+174
+00:09:52.500 --> 00:09:54.600
+So let's go ahead and run this.
+
+175
+00:09:54.600 --> 00:09:59.200
+And then now create this guarded chatbot,
+which is the same as what
+
+176
+00:09:59.200 --> 00:10:02.700
+we've done above, only swapping out
+the client for a guarded client.
+
+177
+00:10:03.300 --> 00:10:08.300
+And now, once again, let's try to
+get our chatbot to leak some information.
+
+178
+00:10:09.600 --> 00:10:13.333
+So I am going to copy-paste
+the same prompt
+
+179
+00:10:13.500 --> 00:10:17.300
+that I had used earlier
+that told me about my secret recipe
+
+180
+00:10:18.333 --> 00:10:21.333
+and let's see what Guardrails does now.
+
+181
+00:10:21.333 --> 00:10:24.600
+All right, you see that validation
+failed for a field with errors.
+
+182
+00:10:24.600 --> 00:10:26.533
+Colosseum detected. Awesome.
+
+183
+00:10:26.533 --> 00:10:27.600
+So this is really cool
+
+184
+00:10:27.600 --> 00:10:32.600
+because before we got a chance to reveal
+any proprietary company data, we saw that
+
+185
+00:10:32.900 --> 00:10:35.900
+somebody was trying to extract our secrets
+and just blocked that in there.
+
+186
+00:10:36.200 --> 00:10:40.200
+Now, the guard you've written
+here is set to throw an exception.
+
+187
+00:10:40.533 --> 00:10:44.166
+Anytime Colosseum is mentioned,
+which will actually break the flow
+
+188
+00:10:44.166 --> 00:10:46.066
+of the application.
+
+189
+00:10:46.066 --> 00:10:48.966
+This was specified
+in the guard set up with the on
+
+190
+00:10:48.966 --> 00:10:51.966
+fail action property,
+which was set to exception.
+
+191
+00:10:53.200 --> 00:10:56.266
+But if you want,
+you can actually edit this code
+
+192
+00:10:56.600 --> 00:11:01.433
+where you instead set on fail action
+to fix instead of exception,
+
+193
+00:11:01.666 --> 00:11:04.866
+and you'll be able to pass back
+a much more graceful message,
+
+194
+00:11:05.066 --> 00:11:08.366
+which is the message that we set
+as a fixed value for the guardrail.
+
+195
+00:11:08.866 --> 00:11:09.600
+So now that
+
+196
+00:11:09.600 --> 00:11:13.366
+we saw the components of building,
+you know, a quick and dirty guardrail,
+
+197
+00:11:13.666 --> 00:11:18.066
+let's look at how we can really build
+more sophisticated guardrails and address
+
+198
+00:11:18.066 --> 00:11:21.066
+some of those unreliable behaviors
+that we saw earlier.
+
+199
+00:11:21.266 --> 00:11:23.700
+And we're going to start in the next
+lesson with hallucinations.
+

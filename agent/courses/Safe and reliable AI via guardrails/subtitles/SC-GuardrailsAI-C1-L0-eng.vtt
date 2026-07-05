@@ -1,0 +1,546 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.433 --> 00:00:03.870
+Welcome to Safe and Reliable AI
+via Guardrails
+
+2
+00:00:04.204 --> 00:00:05.772
+built in partnership with GuardrailsAI.
+
+3
+00:00:05.772 --> 00:00:10.477
+Guardrails are safety mechanisms
+and validation tools built
+
+4
+00:00:10.477 --> 00:00:14.447
+into AI applications, especially those
+that use large language models or
+
+5
+00:00:14.447 --> 00:00:18.318
+LLMs to ensure at runtime
+that the application follows
+
+6
+00:00:18.318 --> 00:00:21.988
+specific rules and operates
+within predefined boundaries.
+
+7
+00:00:22.589 --> 00:00:27.227
+Guardrails act as a protective framework,
+preventing unintended outputs
+
+8
+00:00:27.227 --> 00:00:31.331
+from LLMs and aligning the behavior
+with the developer's expectations.
+
+9
+00:00:32.265 --> 00:00:35.902
+They also provide
+a critical layer of control and oversight
+
+10
+00:00:35.902 --> 00:00:40.440
+within your application, and supports
+building safe and responsible AI.
+
+11
+00:00:41.508 --> 00:00:45.178
+This course will show you how to build
+robust guardrails from scratch
+
+12
+00:00:45.378 --> 00:00:50.350
+that mitigate common failure modes of
+LLM part applications, like hallucinations
+
+13
+00:00:50.550 --> 00:00:54.587
+or inadvertently revealing
+personally identifiable information.
+
+14
+00:00:54.687 --> 00:00:57.657
+I'm delighted to introduce Shreya Rajpal,
+
+15
+00:00:57.657 --> 00:01:02.395
+who is CEO and Co-Founder of GuardrailsAI
+and your instructor for this course.
+
+16
+00:01:03.363 --> 00:01:06.433
+Shreya has
+been working on AI reliability problems
+
+17
+00:01:06.433 --> 00:01:09.669
+for most of her career,
+including for self-driving car systems,
+
+18
+00:01:09.936 --> 00:01:14.507
+where reliable behavior is critical
+for the safety of pedestrians and riders.
+
+19
+00:01:14.507 --> 00:01:17.510
+And that's
+when she and I first met many years ago.
+
+20
+00:01:17.977 --> 00:01:20.046
+She is also a founding engineer
+at Predibase,
+
+21
+00:01:20.046 --> 00:01:23.416
+and so she's deeply familiar
+with building LLM systems.
+
+22
+00:01:23.883 --> 00:01:25.385
+Welcome, Shreya.
+
+23
+00:01:25.385 --> 00:01:27.687
+Thanks, Andrew. It's great to be here.
+
+24
+00:01:27.687 --> 00:01:31.257
+I'm really excited to show you
+how Guardrails can help you create
+
+25
+00:01:31.257 --> 00:01:34.494
+reliable chatbot applications, and help
+you realize
+
+26
+00:01:34.494 --> 00:01:37.630
+the full potential of LLMs
+to power your projects.
+
+27
+00:01:38.064 --> 00:01:38.898
+I've talked to many
+
+28
+00:01:38.898 --> 00:01:42.469
+teams that are working to build
+innovative applications using LLMs.
+
+29
+00:01:43.103 --> 00:01:46.573
+The availability of APIs access
+powerful models like GPT-4,
+
+30
+00:01:46.639 --> 00:01:50.910
+Claude, Gemini, and many others
+has allowed developers to quickly
+
+31
+00:01:50.910 --> 00:01:54.347
+build prototypes, which is great
+for early stage development.
+
+32
+00:01:55.181 --> 00:01:59.919
+But when you want to move beyond to proof
+of concept, teams often encounter problems
+
+33
+00:01:59.919 --> 00:02:03.756
+with a reliable LLM that lies
+at the heart of your application.
+
+34
+00:02:04.557 --> 00:02:08.928
+The core challenge is that the output
+of LLMs is hard to predict in advance.
+
+35
+00:02:09.462 --> 00:02:11.731
+While the techniques have
+helped significantly
+
+36
+00:02:11.731 --> 00:02:14.000
+things
+like prompting techniques or model fine
+
+37
+00:02:14.000 --> 00:02:17.937
+tuning, or alignment
+methods like RLHF or RAG techniques.
+
+38
+00:02:17.971 --> 00:02:19.973
+All of these techniques have helped.
+
+39
+00:02:19.973 --> 00:02:23.409
+But the core problem is
+they still can't fully
+
+40
+00:02:23.409 --> 00:02:26.579
+eliminate
+output variability and unpredictability.
+
+41
+00:02:27.313 --> 00:02:30.450
+So this can lead to significant
+challenges, especially when
+
+42
+00:02:30.450 --> 00:02:34.287
+designing applications for industry
+with strict registry requirements,
+
+43
+00:02:34.587 --> 00:02:37.924
+or for clients
+that demand high levels of consistency.
+
+44
+00:02:38.158 --> 00:02:42.729
+Developers often find that techniques
+like RLHF and RAG are insufficient
+
+45
+00:02:42.729 --> 00:02:46.633
+on their own to meet the stringent
+reliability and compliance standards
+
+46
+00:02:46.833 --> 00:02:49.836
+that are required for many real-world
+applications.
+
+47
+00:02:50.036 --> 00:02:52.772
+At GuardrailsAI,
+we work with many clients
+
+48
+00:02:52.772 --> 00:02:55.775
+in sectors
+like healthcare, government, and finance.
+
+49
+00:02:55.842 --> 00:02:59.646
+Who are really excited about the
+possibilities of LLMs for their businesses,
+
+50
+00:02:59.946 --> 00:03:03.116
+but they can't use them in their products
+because on their own
+
+51
+00:03:03.416 --> 00:03:05.652
+LLMs aren't trustworthy enough.
+
+52
+00:03:05.652 --> 00:03:07.687
+This is where guardrails come in.
+
+53
+00:03:07.687 --> 00:03:11.157
+These additional components
+of AI applications work
+
+54
+00:03:11.157 --> 00:03:12.525
+to check that the output
+
+55
+00:03:12.525 --> 00:03:16.462
+or input of an LLM conforms
+to a set of rules or guidelines,
+
+56
+00:03:16.696 --> 00:03:19.666
+and this can be used to prevent
+incorrect, irrelevant
+
+57
+00:03:19.666 --> 00:03:22.669
+or sensitive information
+from being revealed to users.
+
+58
+00:03:23.303 --> 00:03:26.739
+Implementing guardrails
+in your applications can really help you
+
+59
+00:03:26.739 --> 00:03:29.542
+move out
+beyond the proof of concept phase,
+
+60
+00:03:29.542 --> 00:03:31.911
+and get your application
+ready for production.
+
+61
+00:03:31.911 --> 00:03:33.947
+At the heart of the guardrails
+implementation,
+
+62
+00:03:33.947 --> 00:03:37.350
+you learn in this course is a component
+called the validator.
+
+63
+00:03:37.884 --> 00:03:42.455
+This is a function that takes as input
+a user prompt and or the response
+
+64
+00:03:42.455 --> 00:03:47.327
+from an LLM, and checks to make sure
+that it conforms to a predefined rule.
+
+65
+00:03:48.094 --> 00:03:50.363
+Validators can be quite simple.
+
+66
+00:03:50.363 --> 00:03:51.130
+For example,
+
+67
+00:03:51.130 --> 00:03:54.500
+if you want to build a validator,
+that checks if the text contains
+
+68
+00:03:54.500 --> 00:03:57.837
+any personally identifiable information
+or PII.
+
+69
+00:03:58.338 --> 00:04:01.140
+You can maybe use
+a simple regex expression to check
+
+70
+00:04:01.140 --> 00:04:04.877
+for phone numbers
+or emails or similar types of PII data,
+
+71
+00:04:05.612 --> 00:04:09.849
+and if any are present, then
+have the application throw the exception
+
+72
+00:04:10.083 --> 00:04:13.019
+to prevent the information
+from being reveled to the user.
+
+73
+00:04:14.020 --> 00:04:15.021
+You can also create more
+
+74
+00:04:15.021 --> 00:04:18.891
+advanced validators that use machine
+learning models, like Transformers
+
+75
+00:04:19.192 --> 00:04:23.796
+or even other LLMs, to carry out
+more complex analysis of the text.
+
+76
+00:04:24.330 --> 00:04:28.067
+This can help you build systems that,
+for example, can help with chatbots
+
+77
+00:04:28.067 --> 00:04:32.038
+stay on topic by checking against a list
+of allowed discussion subjects,
+
+78
+00:04:32.338 --> 00:04:36.109
+or prevent specific words
+from being included in an LLMs response,
+
+79
+00:04:36.609 --> 00:04:40.647
+which is useful for avoiding trademark
+terms or mentions of competitive names.
+
+80
+00:04:41.014 --> 00:04:45.385
+You can even use guardrails
+to help reduce hallucinations from LLMs.
+
+81
+00:04:46.119 --> 00:04:50.390
+In one of the lessons in this course,
+you'll use a natural language inference
+
+82
+00:04:50.390 --> 00:04:55.028
+or NLI model to build a hallucination
+validator that checks
+
+83
+00:04:55.161 --> 00:04:58.264
+whether the answer to a question in a RAG
+system
+
+84
+00:04:58.264 --> 00:05:01.868
+is actually grounded
+in the words of the retrieved text.
+
+85
+00:05:02.302 --> 00:05:05.371
+This means that the source text
+actually confirms
+
+86
+00:05:05.371 --> 00:05:08.374
+the truthfulness of whatever the LLMs just
+generated.
+
+87
+00:05:08.908 --> 00:05:12.712
+Guardrails are very flexible,
+and you can make use of many smaller
+
+88
+00:05:12.712 --> 00:05:15.948
+machine learning models to carry out
+validation tasks.
+
+89
+00:05:16.716 --> 00:05:19.485
+This helps
+keep your application performant
+
+90
+00:05:19.485 --> 00:05:23.990
+and actually results in higher reliability
+than using LLMs alone
+
+91
+00:05:24.223 --> 00:05:27.093
+for some failure modes.
+This course will walk you
+
+92
+00:05:27.093 --> 00:05:31.164
+through the coding pattern that we use
+to build guardrails at our company,
+
+93
+00:05:31.564 --> 00:05:35.168
+and you'll implement individual guardrails
+for a number of failure modes.
+
+94
+00:05:35.535 --> 00:05:39.138
+You'll also learn how to access
+many pre-built guardrails
+
+95
+00:05:39.138 --> 00:05:42.141
+that are available on the Guardrails hub.
+
+96
+00:05:42.342 --> 00:05:45.878
+After completing the course,
+you'll be able to modify this pattern
+
+97
+00:05:46.079 --> 00:05:47.714
+and build your own guardrails
+
+98
+00:05:47.714 --> 00:05:50.983
+that are customized
+for your specific product or use case.
+
+99
+00:05:51.184 --> 00:05:54.921
+I'd like to thank Zayd Simjee
+from GuardrailsAI and Tommy
+
+100
+00:05:54.921 --> 00:05:56.122
+Nelson from DeepLearning.AI,
+
+101
+00:05:56.122 --> 00:05:59.025
+who have worked to create this course.
+
+102
+00:05:59.025 --> 00:06:03.162
+A lot of companies worry about safety
+and reliability of LLM based systems,
+
+103
+00:06:03.529 --> 00:06:07.100
+and this is slowing down investments
+in building such systems.
+
+104
+00:06:07.834 --> 00:06:10.603
+Fortunately,
+putting guardrails on your system
+
+105
+00:06:10.603 --> 00:06:14.974
+makes a huge difference in terms
+of creating safe, reliable applications.
+
+106
+00:06:15.475 --> 00:06:20.046
+So, I think the tools in this course
+will unlock for you more opportunities
+
+107
+00:06:20.046 --> 00:06:24.751
+to build and deploy
+LLM-powered applications. Specifically,
+
+108
+00:06:24.817 --> 00:06:28.221
+the next time someone expresses
+a worry to you about safety,
+
+109
+00:06:28.221 --> 00:06:31.624
+reliability,
+or hallucinations of LLM-based systems,
+
+110
+00:06:32.058 --> 00:06:36.129
+I think this course will help you answer
+in a way that helps reassure them.
+
+111
+00:06:36.896 --> 00:06:39.332
+So that, let's go on to the next video
+
+112
+00:06:39.332 --> 00:06:42.435
+where you explore
+the basic failure modes of a chatbot.
+

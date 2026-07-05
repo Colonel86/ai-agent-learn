@@ -1,0 +1,125 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:03.036
+Thanks for making it all the way
+to the end of this course.
+
+2
+00:00:03.036 --> 00:00:06.039
+Generative
+AI is a really powerful technology.
+
+3
+00:00:06.206 --> 00:00:09.275
+It's a fundamentally non-deterministic
+programing paradigm.
+
+4
+00:00:09.843 --> 00:00:13.013
+All of the amazing applications
+you see, whether it's retrieval
+
+5
+00:00:13.013 --> 00:00:16.549
+augmented generation,
+or chatbots or agents
+
+6
+00:00:16.950 --> 00:00:20.453
+to bring them to production,
+you'll need to make sure that they run
+
+7
+00:00:20.453 --> 00:00:22.155
+with the level of reliability
+
+8
+00:00:22.155 --> 00:00:25.158
+that we've come to expect
+from deterministic software.
+
+9
+00:00:25.492 --> 00:00:28.028
+Guardrails are an important tool
+to do this,
+
+10
+00:00:28.028 --> 00:00:31.998
+and can help you make sure that you deal
+with both the average case,
+
+11
+00:00:31.998 --> 00:00:36.403
+as well as the worst case
+behavior of very complex genAI workflows.
+
+12
+00:00:37.070 --> 00:00:40.874
+Validation is important
+in making sure that any genAI application
+
+13
+00:00:40.874 --> 00:00:42.108
+you build works
+
+14
+00:00:42.108 --> 00:00:46.012
+as expected, and avoids the failure cases
+you explored in this course,
+
+15
+00:00:46.246 --> 00:00:50.283
+as well as many, many more failure cases
+that you'll run into in the wild.
+
+16
+00:00:50.316 --> 00:00:51.885
+You've learned the general process
+
+17
+00:00:51.885 --> 00:00:54.888
+of building guardrails,
+which is identifying problems,
+
+18
+00:00:55.088 --> 00:00:58.491
+building validators to detect
+when those problems occur,
+
+19
+00:00:58.825 --> 00:01:01.928
+and then taking corrective actions
+to mitigate those problems.
+
+20
+00:01:02.762 --> 00:01:05.999
+Always using these guardrails around
+your LLM call
+
+21
+00:01:06.266 --> 00:01:09.903
+will help you make sure that your
+AI is reliable and safe.
+
+22
+00:01:10.203 --> 00:01:14.274
+So please take the time to explore
+the validators that are available
+
+23
+00:01:14.274 --> 00:01:18.378
+on the guardrails hub, and even consider
+building your own guardrails
+
+24
+00:01:18.545 --> 00:01:22.315
+and sharing them with the community
+through our open-source projects.
+
+25
+00:01:22.615 --> 00:01:24.684
+I can't wait to see
+what you're going to build.
+

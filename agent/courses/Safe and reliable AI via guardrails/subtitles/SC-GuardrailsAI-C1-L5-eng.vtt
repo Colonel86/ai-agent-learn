@@ -1,0 +1,572 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.100 --> 00:00:04.500
+In the
+last lesson, you built out a validator
+
+2
+00:00:04.500 --> 00:00:07.500
+that detects hallucinations
+in the output of an LLM.
+
+3
+00:00:07.800 --> 00:00:11.500
+You use an NLI model to check
+whether the LLM output
+
+4
+00:00:11.500 --> 00:00:14.500
+was actually grounded
+in your trusted documents.
+
+5
+00:00:15.000 --> 00:00:19.100
+In this lesson, you actually take that
+validator and build a guard around it.
+
+6
+00:00:19.500 --> 00:00:22.500
+You'll then add that to the pizza shop
+chatbot
+
+7
+00:00:22.500 --> 00:00:26.800
+and see how it prevents hallucinations
+from being shown to your customers.
+
+8
+00:00:27.200 --> 00:00:28.700
+Let's dive in. Awesome.
+
+9
+00:00:28.700 --> 00:00:33.600
+In the last part of this lesson,
+we took a look at how to build a validator
+
+10
+00:00:33.600 --> 00:00:37.600
+that uses
+NLI at its core to make a determination
+
+11
+00:00:37.600 --> 00:00:41.000
+of whether some LLM text
+is hallucinated or not.
+
+12
+00:00:41.433 --> 00:00:43.700
+So all I've done
+in this part of the lesson up
+
+13
+00:00:43.700 --> 00:00:45.100
+until now is like copied over
+
+14
+00:00:45.100 --> 00:00:48.100
+some of those imports
+that we need for building that validator
+
+15
+00:00:48.200 --> 00:00:52.200
+and then copy pasted that validator
+that you wrote in the last lesson.
+
+16
+00:00:53.100 --> 00:00:56.200
+We're going to
+do next, is use the guardrail that we built
+
+17
+00:00:56.300 --> 00:00:57.800
+as part of a guard,
+
+18
+00:00:57.800 --> 00:01:01.700
+to test it out on some of the examples
+that we've seen before, and actually use
+
+19
+00:01:01.700 --> 00:01:05.100
+it to mitigate some of the hallucinations
+that we've seen in our intro lesson.
+
+20
+00:01:05.633 --> 00:01:09.266
+So you've seen how to use a guardrail
+as part of a guard
+
+21
+00:01:09.733 --> 00:01:12.633
+and by itself,
+as we saw in the last lesson.
+
+22
+00:01:12.633 --> 00:01:15.633
+When would you do one versus the other?
+
+23
+00:01:15.700 --> 00:01:18.866
+Using a guardrail
+directly is really useful when you're
+
+24
+00:01:18.866 --> 00:01:22.466
+testing to see if things are working
+as you expect them to.
+
+25
+00:01:22.833 --> 00:01:25.966
+This is precisely what you did
+at the end of the previous video.
+
+26
+00:01:26.933 --> 00:01:30.866
+You can also use a guardrail directly
+if you want access to the output
+
+27
+00:01:30.866 --> 00:01:34.566
+of the guardrail, without lots of layers
+of abstraction in the middle.
+
+28
+00:01:34.766 --> 00:01:37.300
+Again, for debugging purposes.
+
+29
+00:01:37.300 --> 00:01:39.800
+However, if you wrap your guardrail
+
+30
+00:01:39.800 --> 00:01:42.800
+inside a guard, you get several benefits.
+
+31
+00:01:43.133 --> 00:01:46.533
+First of all,
+a guard allows you to combine
+
+32
+00:01:46.533 --> 00:01:50.600
+multiple guardrails in a single execution
+step.
+
+33
+00:01:50.866 --> 00:01:55.033
+Typically, for an application,
+you wouldn't just want a single guardrail.
+
+34
+00:01:55.300 --> 00:01:56.500
+You'll want to make sure
+
+35
+00:01:56.500 --> 00:02:00.933
+that your chatbot doesn't hallucinate
+and also doesn't use any profanity.
+
+36
+00:02:02.300 --> 00:02:02.933
+A guard
+
+37
+00:02:02.933 --> 00:02:07.733
+also allows a lot of benefits, such
+as streaming support, where you can allow
+
+38
+00:02:07.733 --> 00:02:12.266
+the LLM stream its output
+and then in real-time, validate it
+
+39
+00:02:12.300 --> 00:02:16.500
+like chunks as they're streamed out to you
+so that your users end up
+
+40
+00:02:16.500 --> 00:02:21.100
+getting really fast stream results
+that are also protected and validated.
+
+41
+00:02:21.800 --> 00:02:26.266
+You can also get OpenAI
+compatible LLM endpoints with a guard,
+
+42
+00:02:26.633 --> 00:02:30.900
+so that it's a single line of code
+change to go from using OpenAI
+
+43
+00:02:30.900 --> 00:02:35.366
+or an LLM directly to using a protected
+LLM endpoint instead.
+
+44
+00:02:36.166 --> 00:02:40.300
+You also get out of the box
+logging and error handling support
+
+45
+00:02:40.466 --> 00:02:45.166
+so that every guard execution is logged
+and can be analyzed later
+
+46
+00:02:45.166 --> 00:02:48.166
+to see how your application is performing
+overall.
+
+47
+00:02:49.000 --> 00:02:53.133
+With that, let's go back to our notebook
+and then see how you can set up
+
+48
+00:02:53.133 --> 00:02:54.866
+and test your hallucination guard.
+
+49
+00:02:55.866 --> 00:02:56.400
+All right.
+
+50
+00:02:56.400 --> 00:03:00.666
+So you've already seen this, to initialize
+a guard we basically do guard dot use
+
+51
+00:03:00.666 --> 00:03:04.466
+and then copying the class
+of our hallucination validation.
+
+52
+00:03:05.200 --> 00:03:07.266
+And we're going to use the embedding
+model
+
+53
+00:03:07.266 --> 00:03:09.200
+all-MiniLM-L6-v2
+
+54
+00:03:09.200 --> 00:03:11.866
+same as our last default value.
+
+55
+00:03:11.866 --> 00:03:14.766
+The entailment model we're going to use
+is again as our default value
+
+56
+00:03:14.766 --> 00:03:17.766
+the guardrailsAI
+fine-tuned NLI provenance model,
+
+57
+00:03:18.200 --> 00:03:21.800
+and for our first run,
+our first test of this guard,
+
+58
+00:03:21.800 --> 00:03:25.800
+we're going to try it out on
+some of those sources from our toy example
+
+59
+00:03:25.800 --> 00:03:29.300
+of, you know, the sun rising
+and setting in different directions.
+
+60
+00:03:29.700 --> 00:03:32.466
+And how we've configured this validator is
+so that it
+
+61
+00:03:32.466 --> 00:03:36.200
+throws an exception
+when it detects a hallucination.
+
+62
+00:03:37.366 --> 00:03:37.800
+All right.
+
+63
+00:03:37.800 --> 00:03:42.800
+Now that we have this initialized,
+let's try out this guard on the same
+
+64
+00:03:43.100 --> 00:03:46.566
+toy example we've seen in the past
+of where the sun rises.
+
+65
+00:03:46.700 --> 00:03:48.466
+So we're going to try it out
+on this sentence,
+
+66
+00:03:48.466 --> 00:03:52.000
+which should not contradict the sources
+that we've set up here in the guard.
+
+67
+00:03:52.700 --> 00:03:54.966
+And let's take it for a spin.
+
+68
+00:03:54.966 --> 00:03:58.066
+So we see that for this input sentence,
+the sun rises in the east,
+
+69
+00:03:58.266 --> 00:04:01.566
+validation passes successfully,
+and the guard doesn't throw an error.
+
+70
+00:04:02.566 --> 00:04:05.566
+Now let's try this same guard
+
+71
+00:04:05.700 --> 00:04:09.200
+on an example
+where we say the sun is a star.
+
+72
+00:04:09.400 --> 00:04:13.066
+So interestingly,
+this is actually not a false statement,
+
+73
+00:04:13.066 --> 00:04:14.900
+but it's just not a statement
+
+74
+00:04:14.900 --> 00:04:18.000
+that is supported from the sources
+that are given to our guard,
+
+75
+00:04:18.000 --> 00:04:18.566
+right?
+
+76
+00:04:18.566 --> 00:04:23.566
+So this is factual but not grounded
+and very quickly we see here that
+
+77
+00:04:24.500 --> 00:04:28.766
+validation fails with the error message
+that this sentence is hallucinated.
+
+78
+00:04:29.166 --> 00:04:33.266
+Because the sources that we use were
+sunrise in the east, sets in the west,
+
+79
+00:04:33.466 --> 00:04:34.866
+and the sun is hot.
+
+80
+00:04:34.866 --> 00:04:39.766
+So even though the sentence is true,
+it's a non-grounded or faithful. Perfect.
+
+81
+00:04:40.266 --> 00:04:43.600
+So now let's use
+the guardrail that we just created from
+
+82
+00:04:43.600 --> 00:04:45.100
+within the guardrail server
+
+83
+00:04:45.100 --> 00:04:48.166
+and use it for mitigating hallucinations
+around a chatbot.
+
+84
+00:04:48.500 --> 00:04:52.866
+Just as a reminder for this lesson,
+we've actually already set up guardrails
+
+85
+00:04:52.866 --> 00:04:56.266
+server for you to use the validator
+that you just implemented.
+
+86
+00:04:56.633 --> 00:04:59.766
+If you want to use this, guard
+in your own server setup,
+
+87
+00:05:00.033 --> 00:05:01.466
+you'll need to add the validator
+
+88
+00:05:01.466 --> 00:05:04.466
+you just wrote here to the server
+configuration file,
+
+89
+00:05:04.533 --> 00:05:08.266
+and you can look back at the earlier
+lesson for details on how to do that.
+
+90
+00:05:08.633 --> 00:05:09.166
+All right.
+
+91
+00:05:09.166 --> 00:05:11.233
+So now same as before,
+
+92
+00:05:11.233 --> 00:05:15.033
+let's swap out the earlier client
+that we created
+
+93
+00:05:15.033 --> 00:05:19.333
+for a guarded version of the client
+that uses the server that we just wrote.
+
+94
+00:05:19.333 --> 00:05:20.233
+So once again,
+
+95
+00:05:20.233 --> 00:05:23.833
+all we're doing is setting up
+the OpenAI client with a different base
+
+96
+00:05:23.833 --> 00:05:28.266
+URL that passes the LLM API to this guard
+
+97
+00:05:28.266 --> 00:05:32.066
+that we just created, which currently
+is only running the hallucination guard.
+
+98
+00:05:33.533 --> 00:05:33.933
+Awesome.
+
+99
+00:05:33.933 --> 00:05:35.766
+Now that we have this set up,
+
+100
+00:05:35.766 --> 00:05:39.033
+we can basically repeat
+the same instructions as before
+
+101
+00:05:39.033 --> 00:05:42.033
+where we set up our vector database
+and our system message.
+
+102
+00:05:42.033 --> 00:05:44.433
+You've seen this before in the past,
+
+103
+00:05:44.433 --> 00:05:48.666
+and we are going to set up
+a guarded version of our chatbot,
+
+104
+00:05:48.966 --> 00:05:53.966
+and then try running this chatbot
+on the same example as our last lesson,
+
+105
+00:05:54.433 --> 00:05:58.433
+where we pass in the same prompt
+we'd use that generated the hallucination.
+
+106
+00:05:58.666 --> 00:06:03.366
+And this time around, we get this detailed
+error message for a validation failure.
+
+107
+00:06:03.366 --> 00:06:06.433
+Because these sentences
+on how to make your own pizza,
+
+108
+00:06:06.733 --> 00:06:09.066
+the instructions for how to set it
+up, etc...
+
+109
+00:06:09.066 --> 00:06:12.066
+is hallucinated,
+which is exactly what we expected.
+
+110
+00:06:12.333 --> 00:06:16.566
+By the way, for your own use cases,
+you don't need to rely on the validation
+
+111
+00:06:16.566 --> 00:06:18.066
+failure messages here.
+
+112
+00:06:18.066 --> 00:06:21.066
+You can actually try
+to catch these exceptions,
+
+113
+00:06:21.233 --> 00:06:26.133
+same as what we did over here,
+and then add more graceful
+
+114
+00:06:26.133 --> 00:06:29.833
+error messages to control the flow
+of logic in your application.
+
+115
+00:06:30.800 --> 00:06:34.533
+So now that you've seen the pattern
+of setting up a guardrail or a validator,
+
+116
+00:06:34.900 --> 00:06:38.266
+wrapping it in a guard
+and then serving your LLM
+
+117
+00:06:38.266 --> 00:06:41.266
+calls through that guard on the server.
+
+118
+00:06:41.266 --> 00:06:45.466
+Let's take a look at some of the other
+failure modes you saw in the first lesson.
+
+119
+00:06:46.100 --> 00:06:48.500
+Join me in the next lesson to start
+
+120
+00:06:48.500 --> 00:06:51.700
+with a look at how you can
+keep your chatbot on topic.
+

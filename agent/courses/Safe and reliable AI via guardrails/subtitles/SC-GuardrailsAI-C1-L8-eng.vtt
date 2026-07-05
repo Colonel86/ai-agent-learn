@@ -1,0 +1,917 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.000 --> 00:00:03.800
+In this final example,
+
+2
+00:00:03.800 --> 00:00:04.433
+you'll build a
+
+3
+00:00:04.433 --> 00:00:08.700
+guardrail that prevents your chatbot
+from mentioning any competitors.
+
+4
+00:00:09.100 --> 00:00:12.433
+This is a critical concern
+for customer-facing applications.
+
+5
+00:00:13.100 --> 00:00:15.333
+You'll see the guardrail in action in
+
+6
+00:00:15.333 --> 00:00:18.833
+the Alfredo's Pizza chatbot example
+that you've been using
+
+7
+00:00:18.833 --> 00:00:22.500
+throughout this course,
+and you'll configure the guard to prevent
+
+8
+00:00:22.500 --> 00:00:25.500
+the chatbot from mentioning the shop's
+main competitor
+
+9
+00:00:25.733 --> 00:00:28.633
+Pizza by Alfredo. Let's get started.
+
+10
+00:00:28.633 --> 00:00:31.800
+So once again, we're going to start
+the trying to reproduce
+
+11
+00:00:32.033 --> 00:00:34.200
+that error that we had seen earlier.
+
+12
+00:00:34.200 --> 00:00:35.933
+Just to jog your memory.
+
+13
+00:00:35.933 --> 00:00:39.000
+We are pasting in our warnings,
+our imports
+
+14
+00:00:39.600 --> 00:00:43.100
+and then also setting up
+our unguarded chatbot.
+
+15
+00:00:43.700 --> 00:00:44.200
+As we've
+
+16
+00:00:44.200 --> 00:00:49.000
+done so many times now. Once again,
+let's try to reproduce the initial
+
+17
+00:00:49.000 --> 00:00:49.700
+chatbot
+
+18
+00:00:49.700 --> 00:00:52.100
+failure mode that we'd seen earlier.
+
+19
+00:00:52.100 --> 00:00:55.600
+Here, I'm basically
+pretending to be a potential customer
+
+20
+00:00:55.600 --> 00:00:59.300
+that wants to place a very large pizza
+order, and I want to decide
+
+21
+00:00:59.300 --> 00:01:00.100
+why I should
+
+22
+00:01:00.100 --> 00:01:02.700
+buy it from Alfredo's Pizzeria
+
+23
+00:01:02.700 --> 00:01:04.400
+compared to pizza by Alfredo.
+
+24
+00:01:05.700 --> 00:01:08.733
+Here we can see that the chatbot responded
+with some reasons
+
+25
+00:01:08.733 --> 00:01:12.300
+to pick Alfredo's
+Pizza Cafe over Pizza by Alfredo.
+
+26
+00:01:12.900 --> 00:01:16.100
+But in our ideal world,
+we wouldn't answer a respond to,
+
+27
+00:01:16.100 --> 00:01:18.200
+you know, other customers,
+other potential
+
+28
+00:01:18.200 --> 00:01:19.900
+competitors by name at all.
+
+29
+00:01:19.900 --> 00:01:24.833
+Now let's look at how we can build
+a simple validator that uses a combination
+
+30
+00:01:24.833 --> 00:01:29.800
+of techniques to detect
+if there's any mentions of competitors in
+
+31
+00:01:29.800 --> 00:01:31.300
+any LLM text.
+
+32
+00:01:31.300 --> 00:01:32.500
+When you think about this problem,
+
+33
+00:01:32.500 --> 00:01:35.500
+you actually might think
+that you can do a simple word match,
+
+34
+00:01:35.733 --> 00:01:39.100
+but a lot of companies are actually
+referred to by multiple names.
+
+35
+00:01:39.100 --> 00:01:42.600
+So for example,
+you can think of GMC versus JPMorgan.
+
+36
+00:01:42.900 --> 00:01:46.600
+And it's typically pretty hard
+to enumerate all of the common names
+
+37
+00:01:46.600 --> 00:01:49.600
+that a competitor
+might be referred to as.
+
+38
+00:01:49.833 --> 00:01:54.300
+So what we end up doing is building this
+cascading approach to
+
+39
+00:01:54.300 --> 00:01:57.600
+detecting when a competitor is mentioned.
+
+40
+00:01:58.000 --> 00:01:59.633
+First, we check for an exact
+
+41
+00:01:59.633 --> 00:02:01.700
+match, and if we find an exact match
+
+42
+00:02:01.700 --> 00:02:05.233
+to one of our competitor names,
+then we immediately fail the validator.
+
+43
+00:02:05.800 --> 00:02:09.433
+If we don't find an exact match,
+however, we then go on to named Entity
+
+44
+00:02:09.433 --> 00:02:12.900
+Recognition, where we extract
+all of the named entities that are
+
+45
+00:02:12.900 --> 00:02:16.000
+mentioned in any given text to us.
+
+46
+00:02:16.500 --> 00:02:17.600
+And then we try to see
+
+47
+00:02:17.600 --> 00:02:20.033
+if the vector embeddings of those named entities
+
+48
+00:02:20.033 --> 00:02:22.633
+are similar
+to the embeddings of
+
+49
+00:02:22.633 --> 00:02:24.400
+our known competitors.
+
+50
+00:02:24.400 --> 00:02:27.400
+So the idea here would be
+the JPMC would have a very close
+
+51
+00:02:27.533 --> 00:02:29.700
+embedding as that of JPMorgan.
+
+52
+00:02:29.700 --> 00:02:31.500
+If we notice this behavior
+
+53
+00:02:31.500 --> 00:02:36.233
+and the similarities are greater
+than some threshold, then we again fail.
+
+54
+00:02:36.233 --> 00:02:39.000
+Depending on whatever
+competitors are detected.
+
+55
+00:02:39.000 --> 00:02:41.000
+And if not, then we end up passing
+
+56
+00:02:41.000 --> 00:02:41.800
+and determined
+
+57
+00:02:41.800 --> 00:02:44.500
+that there's no mentions of competitors
+in any text.
+
+58
+00:02:44.500 --> 00:02:47.000
+As we're setting this out,
+we're going to import a number of
+
+59
+00:02:47.000 --> 00:02:50.500
+standard machine learning libraries
+like Transformers and Sentence Transformers
+
+60
+00:02:50.700 --> 00:02:54.600
+Sklearn metrics and numpy, because we're
+going to end up using a bunch of these
+
+61
+00:02:54.600 --> 00:02:58.500
+foreign named entity extraction and vector
+similarity computation.
+
+62
+00:02:58.500 --> 00:02:59.733
+And then separately, we're
+
+63
+00:02:59.733 --> 00:03:03.300
+also going to initialize
+our named entity recognition pipeline.
+
+64
+00:03:03.633 --> 00:03:07.300
+We are going to use a simple Bert base
+tokenizer and
+
+65
+00:03:07.500 --> 00:03:09.500
+model that we're going to use as
+
+66
+00:03:09.500 --> 00:03:12.500
+part of our NER
+or named entity recognition pipeline.
+
+67
+00:03:12.533 --> 00:03:13.400
+Awesome. All right.
+
+68
+00:03:13.400 --> 00:03:17.100
+So with that out of the way,
+let's actually go into setting up
+
+69
+00:03:17.100 --> 00:03:20.300
+our competitor check validator.
+All right.
+
+70
+00:03:20.300 --> 00:03:22.933
+So we've been through this exercise
+a couple of times at this point.
+
+71
+00:03:22.933 --> 00:03:25.100
+We're just going to start
+by creating our
+
+72
+00:03:25.100 --> 00:03:28.033
+new competitor Check Mentions Validator.
+
+73
+00:03:28.033 --> 00:03:30.300
+And we're going to start out
+with an empty
+
+74
+00:03:30.300 --> 00:03:31.900
+initialization function.
+
+75
+00:03:31.900 --> 00:03:33.600
+And then also just going to set up
+
+76
+00:03:33.600 --> 00:03:36.500
+our validate function to start out with.
+
+77
+00:03:36.500 --> 00:03:39.533
+And as we know, a lot of the core logic
+
+78
+00:03:39.533 --> 00:03:43.333
+of our validator actually lives in
+
+79
+00:03:43.333 --> 00:03:45.800
+the validate function
+that we're going to end up using.
+
+80
+00:03:45.800 --> 00:03:46.233
+All right.
+
+81
+00:03:46.233 --> 00:03:48.933
+The first thing that we're going
+to do is check if there's an
+
+82
+00:03:48.933 --> 00:03:51.800
+exact match
+to any of our known competitors.
+
+83
+00:03:51.800 --> 00:03:53.200
+So in order to do this,
+
+84
+00:03:53.200 --> 00:03:57.233
+the first thing that we're going to do
+is actually taken some competitors
+
+85
+00:03:57.433 --> 00:04:01.300
+in our initialization function
+so that we know what to look for.
+
+86
+00:04:01.633 --> 00:04:03.600
+So let's add that here.
+
+87
+00:04:03.600 --> 00:04:06.300
+And then let's also assign it
+
+88
+00:04:08.100 --> 00:04:08.700
+as a class
+
+89
+00:04:08.700 --> 00:04:11.900
+variable, just so that
+the rest of our functions can access it.
+
+90
+00:04:12.300 --> 00:04:16.133
+And just for some utility
+let's also cast it to lowercase.
+
+91
+00:04:16.200 --> 00:04:18.400
+The second thing we need to do
+is implement this
+
+92
+00:04:18.400 --> 00:04:21.000
+exact match function.
+
+93
+00:04:21.000 --> 00:04:23.700
+So let us do that.
+
+94
+00:04:23.700 --> 00:04:25.233
+Over here.
+
+95
+00:04:25.233 --> 00:04:28.233
+So all this function is doing
+is taking some text.
+
+96
+00:04:28.500 --> 00:04:28.900
+And then
+
+97
+00:04:28.900 --> 00:04:33.700
+iterating over the list of competitors
+and seeing if the
+
+98
+00:04:33.700 --> 00:04:34.500
+competitor
+
+99
+00:04:34.500 --> 00:04:38.333
+word is present in the text
+that is given to us.
+
+100
+00:04:38.400 --> 00:04:40.633
+So this is very simple regex to see
+
+101
+00:04:40.633 --> 00:04:41.700
+if that competitor
+
+102
+00:04:41.700 --> 00:04:44.233
+word is present in the text
+that is given to us.
+
+103
+00:04:44.233 --> 00:04:47.700
+And because our validator logic lives
+
+104
+00:04:47.700 --> 00:04:51.600
+in the validate function,
+we are also going to add this in
+
+105
+00:04:51.600 --> 00:04:53.233
+our validate function over.
+
+106
+00:04:53.233 --> 00:04:57.200
+Here,
+where we call the exact match function,
+
+107
+00:04:57.200 --> 00:05:01.933
+which essentially returns
+which competitors were detected
+
+108
+00:05:01.933 --> 00:05:04.800
+in our text, and if there were any
+
+109
+00:05:04.800 --> 00:05:08.333
+exact matches found,
+we immediately fail the validator.
+
+110
+00:05:08.400 --> 00:05:08.900
+All right.
+
+111
+00:05:08.900 --> 00:05:11.933
+So this is the first stage
+of our cascading filter.
+
+112
+00:05:12.300 --> 00:05:14.400
+Let's go into the second stage that uses
+
+113
+00:05:14.400 --> 00:05:18.400
+NER followed by Similarity
+based thresholding.
+
+114
+00:05:18.800 --> 00:05:23.533
+So first let's implement
+the NER function that extracts entities.
+
+115
+00:05:23.533 --> 00:05:24.600
+So let's start
+
+116
+00:05:24.600 --> 00:05:27.500
+by doing that over here.
+
+117
+00:05:27.500 --> 00:05:28.300
+And what we've
+
+118
+00:05:28.300 --> 00:05:31.300
+copy-pasted in
+is this function that takes in some
+
+119
+00:05:31.300 --> 00:05:33.300
+text and then runs it through that
+
+120
+00:05:33.300 --> 00:05:34.433
+NER pipeline
+
+121
+00:05:34.433 --> 00:05:36.900
+that we've set up earlier. The results of
+
+122
+00:05:36.900 --> 00:05:39.800
+that NER pipeline are iterated over.
+
+123
+00:05:39.800 --> 00:05:40.900
+And then any time an
+
+124
+00:05:40.900 --> 00:05:43.900
+entity starts with B dash or with I dash,
+
+125
+00:05:44.200 --> 00:05:47.133
+we appended to our list of entities.
+
+126
+00:05:47.133 --> 00:05:50.300
+And then we do some cleanup here
+where we basically just remove like
+
+127
+00:05:50.333 --> 00:05:52.200
+some surrounding space and
+
+128
+00:05:52.200 --> 00:05:54.933
+other characters
+from around the detected entities.
+
+129
+00:05:56.233 --> 00:05:57.900
+So B and I
+
+130
+00:05:57.900 --> 00:06:01.700
+markers here just help us identify
+what the location
+
+131
+00:06:01.700 --> 00:06:05.600
+of the entities identified is
+and what their category is.
+
+132
+00:06:05.600 --> 00:06:09.800
+So this model also classifies
+the entities that it recognizes
+
+133
+00:06:09.800 --> 00:06:13.400
+into person, location, organization, etc...
+
+134
+00:06:13.900 --> 00:06:15.400
+However, for our purposes, we
+
+135
+00:06:15.400 --> 00:06:18.533
+actually don't really care about what
+the category of the
+
+136
+00:06:18.533 --> 00:06:21.500
+entity is since we do that afterwards
+when we
+
+137
+00:06:21.500 --> 00:06:24.000
+do the matching regardless. All right.
+
+138
+00:06:24.000 --> 00:06:25.433
+Now that we have our
+
+139
+00:06:25.433 --> 00:06:30.433
+entity extractor, let's make sure
+that this is also reflected.
+
+140
+00:06:31.333 --> 00:06:35.800
+First in our initialization function.
+We use the NER model here.
+
+141
+00:06:35.800 --> 00:06:40.433
+So let's make sure that this NER model
+is available as a class variable for us.
+
+142
+00:06:40.700 --> 00:06:44.200
+And secondly,
+let's make sure that our validate function
+
+143
+00:06:44.200 --> 00:06:47.400
+also calls the function
+that we just wrote.
+
+144
+00:06:47.900 --> 00:06:51.300
+Our final step is to perform a vector
+similarity match.
+
+145
+00:06:51.700 --> 00:06:54.700
+Where we look at the entities
+we extracted.
+
+146
+00:06:54.733 --> 00:06:57.000
+And we look at the
+
+147
+00:06:57.000 --> 00:06:57.700
+competitors
+
+148
+00:06:57.700 --> 00:07:01.633
+that were given to us
+and see how close their embeddings are.
+
+149
+00:07:01.733 --> 00:07:05.400
+So one of the first things we will need
+to do in order to use this is set up
+
+150
+00:07:05.400 --> 00:07:06.800
+an embedding model.
+
+151
+00:07:06.800 --> 00:07:09.933
+We've done this a couple of times before,
+but we just want to make sure
+
+152
+00:07:09.933 --> 00:07:13.600
+that this is available
+to us as a class variable.
+
+153
+00:07:13.600 --> 00:07:17.233
+And then secondly,
+just to make our life a little bit easier.
+
+154
+00:07:17.533 --> 00:07:19.600
+And do not have to do the embedding
+
+155
+00:07:19.600 --> 00:07:20.700
+over and over again.
+
+156
+00:07:20.700 --> 00:07:23.433
+We are just going to store pre-computed
+
+157
+00:07:23.433 --> 00:07:25.833
+embeddings of our competitor names.
+
+158
+00:07:25.833 --> 00:07:26.700
+All right.
+
+159
+00:07:26.700 --> 00:07:30.000
+Now that we have that done
+we come back to our vector
+
+160
+00:07:30.000 --> 00:07:31.833
+similarity match function
+
+161
+00:07:31.833 --> 00:07:36.200
+where we essentially iterate over the
+entities that we identified.
+
+162
+00:07:36.633 --> 00:07:38.033
+And then compute
+
+163
+00:07:38.033 --> 00:07:41.400
+the similarity of those entities with any
+
+164
+00:07:41.400 --> 00:07:43.233
+of our known competitors.
+
+165
+00:07:43.233 --> 00:07:44.633
+And if the similarity
+
+166
+00:07:44.633 --> 00:07:48.600
+is greater than a threshold,
+then we add it to a list of matches.
+
+167
+00:07:48.600 --> 00:07:52.800
+Now let's make sure that our validator
+logic also reflects this
+
+168
+00:07:52.800 --> 00:07:56.700
+by making sure that we call this vector
+similarity match function
+
+169
+00:07:57.000 --> 00:07:57.800
+with our
+
+170
+00:07:57.800 --> 00:07:59.500
+extracted entities.
+
+171
+00:07:59.500 --> 00:08:02.500
+Now, same as what we've done before.
+
+172
+00:08:02.500 --> 00:08:04.300
+If we detect any
+
+173
+00:08:04.300 --> 00:08:09.300
+competitors, we raise a fail result with
+the list of entities that we detected,
+
+174
+00:08:10.400 --> 00:08:14.733
+and if no entities were detected,
+only then do we pass a pass result.
+
+175
+00:08:14.800 --> 00:08:15.433
+Awesome.
+
+176
+00:08:15.433 --> 00:08:20.300
+Now let's actually download a version
+of the comparator check validator
+
+177
+00:08:20.300 --> 00:08:23.833
+from Guardrails Hub, which is a state
+of the art version of this validator.
+
+178
+00:08:24.600 --> 00:08:27.500
+And let's try running it
+as part of our guardrail server
+
+179
+00:08:27.500 --> 00:08:30.000
+as we've done
+through multiple lessons at this point.
+
+180
+00:08:30.000 --> 00:08:33.300
+What are we going to end up
+doing is swapping out our OpenAI
+
+181
+00:08:33.400 --> 00:08:34.533
+client
+
+182
+00:08:34.533 --> 00:08:37.200
+with this new guarded OpenAI client,
+which
+
+183
+00:08:37.200 --> 00:08:40.200
+uses a base
+URL that points to guardrail server.
+
+184
+00:08:40.500 --> 00:08:43.500
+And this guardrail server
+is just running the guard endpoint
+
+185
+00:08:43.733 --> 00:08:46.533
+with this validator
+that we downloaded from the hub.
+
+186
+00:08:46.533 --> 00:08:49.300
+Let us also create a version of our
+
+187
+00:08:49.300 --> 00:08:49.900
+RAG chatbot
+
+188
+00:08:49.900 --> 00:08:53.233
+that uses the new guarded client
+instead of the vanilla
+
+189
+00:08:53.233 --> 00:08:55.000
+OpenAI client. And now,
+
+190
+00:08:55.000 --> 00:08:59.800
+let's try running, the same prompt
+that we've seen earlier on this new
+
+191
+00:09:00.300 --> 00:09:01.400
+guarded client and
+
+192
+00:09:01.400 --> 00:09:03.200
+see how well it performs.
+
+193
+00:09:03.200 --> 00:09:07.900
+So as expected, we see that validation
+failed because Pizza by Alfredo
+
+194
+00:09:08.400 --> 00:09:11.233
+which is our competitor,
+was detected in the output.
+
+195
+00:09:11.233 --> 00:09:15.100
+And we've seen this in the previous
+performance of these failures as well.
+
+196
+00:09:15.533 --> 00:09:18.533
+So this helps us
+mitigate this specific failure.
+
+197
+00:09:18.600 --> 00:09:19.633
+And if you want you know,
+
+198
+00:09:19.633 --> 00:09:20.133
+once again,
+
+199
+00:09:20.133 --> 00:09:22.800
+you can ignore or you can not use
+
+200
+00:09:22.800 --> 00:09:25.733
+This specific validation error message
+
+201
+00:09:25.733 --> 00:09:29.900
+and instead use a more graceful error
+message that tells the user that
+
+202
+00:09:29.900 --> 00:09:33.933
+you won't be responding to their request
+by catching the exception that's raised.
+
