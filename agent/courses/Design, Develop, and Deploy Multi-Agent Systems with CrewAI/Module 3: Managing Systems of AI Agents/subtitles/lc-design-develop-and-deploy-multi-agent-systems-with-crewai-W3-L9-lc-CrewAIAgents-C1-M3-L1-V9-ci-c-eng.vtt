@@ -1,0 +1,510 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.734 --> 00:00:03.279
+Once your agents are in production, you want to make sure that they keep running,
+
+2
+00:00:03.279 --> 00:00:07.679
+and they don't break, and that you don't break them. If you're an engineer, you probably are
+
+3
+00:00:07.679 --> 00:00:13.920
+very familiar with CI and CD. So now we're going to talk about what that looks like for AI agents,
+
+4
+00:00:13.920 --> 00:00:18.639
+how you make sure that your agents, as you're improving them, are not breaking,
+
+5
+00:00:18.639 --> 00:00:23.520
+and they're running reliably after they go live. It's helpful to think about this the same way
+
+6
+00:00:23.520 --> 00:00:28.559
+that we think about CI/CD flows in more traditional development applications.
+
+7
+00:00:28.559 --> 00:00:34.639
+Let's go into that and see how CI/CD works for AI agents. We're going to talk about shipping
+
+8
+00:00:34.639 --> 00:00:40.400
+AI agents at scale next. Even though deployment is important, it's not the main challenge.
+
+9
+00:00:40.400 --> 00:00:45.200
+The real hurdle is keeping these agents running reliably after they go live.
+
+10
+00:00:45.200 --> 00:00:50.319
+So it's helpful to think about this the same way that engineers approach CI/CD flows,
+
+11
+00:00:50.319 --> 00:00:55.680
+for example. So some of the questions that you have going into this is things like,
+
+12
+00:00:55.680 --> 00:01:00.639
+how can I support new models? And this is important because there are so many models
+
+13
+00:01:00.639 --> 00:01:05.279
+that are being launched weekly, and so many new developments on the model strategies,
+
+14
+00:01:05.279 --> 00:01:10.800
+and variations, and fine tunes. So the ability to truly experiment with these different models
+
+15
+00:01:10.800 --> 00:01:15.760
+and try them out is something that can have a huge impact on how you build the systems.
+
+16
+00:01:15.760 --> 00:01:20.720
+But not only that, you also will be thinking about how the systems are evolving over time
+
+17
+00:01:20.720 --> 00:01:25.519
+to make sure that they're getting better, not worse, and to make sure they're still working
+
+18
+00:01:25.519 --> 00:01:30.400
+and don't start just breaking. So once the systems are live, you will constantly have
+
+19
+00:01:30.400 --> 00:01:34.800
+these questions about them. You wonder whether you're using the new or the cheaper and the
+
+20
+00:01:34.800 --> 00:01:39.360
+fastest model. You're wondering if these are working as expected. And when you start to
+
+21
+00:01:39.360 --> 00:01:44.160
+think about these challenges, things become more complex. It's important to approach the
+
+22
+00:01:44.160 --> 00:01:49.440
+production agents with deeper planning and consideration. So if you really think about
+
+23
+00:01:49.440 --> 00:01:55.279
+the process from going to actually figuring out a process that you want to automate, all the way
+
+24
+00:01:55.279 --> 00:02:01.120
+to have these agents monitor and deploy, initially, you want to start with just understanding the
+
+25
+00:02:01.120 --> 00:02:06.959
+problem. And I know this sounds like not a big aha moment, but let me tell you what.
+
+26
+00:02:06.959 --> 00:02:12.399
+Most of the companies out there, they're not failing because of the tech. The tech is there,
+
+27
+00:02:12.399 --> 00:02:16.960
+and the tech is quite impressive. They're failing because they're not really thinking about their
+
+28
+00:02:16.960 --> 00:02:22.000
+use cases. They're not really mapping their use cases. They're not thinking about measuring them.
+
+29
+00:02:22.000 --> 00:02:26.960
+And what is the definition of success for the use cases? And then for mapping the process,
+
+30
+00:02:26.960 --> 00:02:31.600
+you then want to implement a first version. And the idea here is moving extremely fast.
+
+31
+00:02:31.600 --> 00:02:37.679
+You want to get the zero to one win as fast as you can. And then you want to establish a valid
+
+32
+00:02:37.679 --> 00:02:42.880
+set. The idea from the first version to establishing the valid SAT is that you just don't
+
+33
+00:02:42.880 --> 00:02:48.639
+want to be an MVP. You want something that got things moving. Don't worry about perfection.
+
+34
+00:02:48.639 --> 00:02:54.160
+You're going to refine it later. But once you have that first version, you can start establishing
+
+35
+00:02:54.160 --> 00:02:59.919
+what is good and what is bad, what good looks like for that automation. And that will be your
+
+36
+00:02:59.919 --> 00:03:06.559
+validation set. So this will give you a clear baseline to measure whether your updates are
+
+37
+00:03:06.559 --> 00:03:12.559
+improving or degrading in performance. And when I talk about a valid set here, what I'm trying to do
+
+38
+00:03:12.559 --> 00:03:17.199
+is to establish a baseline that you can measure against. You need at some point doing your
+
+39
+00:03:17.199 --> 00:03:24.000
+implementation, have a set of use cases or a set of runs that you have done that establish what
+
+40
+00:03:24.000 --> 00:03:29.360
+good looks like. And the reason why that's important is that as you implement either guardrails
+
+41
+00:03:29.360 --> 00:03:36.160
+or changing the LLMs or training or testing, you need to have something that you can certainly
+
+42
+00:03:36.160 --> 00:03:41.360
+check against. You need to know if you're moving the needle, if you're actually driving improvements
+
+43
+00:03:41.360 --> 00:03:46.880
+or not. And the only way that you can do that is by establishing a baseline. So establishing a valid
+
+44
+00:03:46.880 --> 00:03:52.800
+set early on is important. And then updating that as you go, it's even more important so that you
+
+45
+00:03:52.800 --> 00:03:58.160
+make sure that as you change these things, they not only keep working, but they keep getting better.
+
+46
+00:03:58.160 --> 00:04:03.440
+And after setting up that validation set, then you can start implementing guardrails to ensure
+
+47
+00:04:03.440 --> 00:04:08.880
+that your agents are acting properly when some of these events occur. And that's where a lot of the
+
+48
+00:04:08.880 --> 00:04:13.520
+things that we saw come into play, not only the guardrails, but the testing, the training and
+
+49
+00:04:13.520 --> 00:04:19.040
+everything in between. But the key here is to establish this validation set early and implement
+
+50
+00:04:19.040 --> 00:04:24.959
+the guardrails and triggers after things are working and just maintain ongoing monitoring.
+
+51
+00:04:25.600 --> 00:04:31.920
+This cycle will help you build better versions faster, grounded in measurable progress against
+
+52
+00:04:31.920 --> 00:04:39.920
+your baseline. And when building this validation set, just make sure that you don't just store
+
+53
+00:04:39.920 --> 00:04:46.880
+prompts. You also record the actual metrics like the quality assessment, the runtime, the cost.
+
+54
+00:04:46.880 --> 00:04:52.320
+So collecting and analyzing this data over time can help you make informed decisions about
+
+55
+00:04:52.320 --> 00:04:56.239
+model selection, trade-offs and performance improvements. And that's why it's important
+
+56
+00:04:56.239 --> 00:05:01.440
+for you to think about that. Now, I do want to make sure that we are thinking about these things
+
+57
+00:05:01.440 --> 00:05:06.880
+right. You already noticed that there's two vectors of improvements that we can drive in here.
+
+58
+00:05:06.880 --> 00:05:11.359
+Through the process of building these agents, you do want to make sure that everything is properly
+
+59
+00:05:11.359 --> 00:05:16.239
+versioned and you clearly understand what is changing on every single version. So at
+
+60
+00:05:16.239 --> 00:05:22.000
+CrewAI, we focus heavily on separating the prompts where you have the roles, the goals,
+
+61
+00:05:22.000 --> 00:05:27.760
+the backstories, the descriptions and the expected outputs from the actual agent logic itself.
+
+62
+00:05:27.760 --> 00:05:33.519
+That way, by keeping the prompts separate, allows you to update independently from the code.
+
+63
+00:05:33.519 --> 00:05:38.959
+And since prompts are stored as YAML files, they are very easy to add and maintain, even by
+
+64
+00:05:38.959 --> 00:05:44.559
+non-technical team members. And you can also create repositories for these prompts to be reused across
+
+65
+00:05:44.559 --> 00:05:50.320
+different agents or projects or even use our agent repository to store the agents. We're going to
+
+66
+00:05:50.320 --> 00:05:55.839
+talk about that in a second. Now, for the agent logic, on the other hand, is more custom and
+
+67
+00:05:55.839 --> 00:06:01.760
+written in more traditional code, especially when you add tools and hooks and guardrails, even so much
+
+68
+00:06:01.760 --> 00:06:07.519
+of it can still be reused. So this separation of concerns make possible to reuse well-designed
+
+69
+00:06:07.519 --> 00:06:13.679
+agents, especially those with strong prompts and toolset across many tasks and use cases with
+
+70
+00:06:13.679 --> 00:06:19.040
+minimum modification. Now, let's say that you want to create your crew. We already kind of have seen
+
+71
+00:06:19.040 --> 00:06:25.600
+this a little bit, but you can actually use your CLI to create an entire structure for you. All you
+
+72
+00:06:25.600 --> 00:06:31.519
+got to do is write, crewai create crew and give a name to your crew. And then you can go into that folder
+
+73
+00:06:31.519 --> 00:06:36.239
+and you're going to find this entire folder structure for you. And you will see that your
+
+74
+00:06:36.239 --> 00:06:42.720
+agents and tasks are all mapped out to these YAML files that have the agents' roles, the goals,
+
+75
+00:06:42.720 --> 00:06:48.000
+the backstories and the tasks' descriptions and expected outputs. Let's say that you put a lot
+
+76
+00:06:48.000 --> 00:06:54.720
+of effort into an agent thinking the right tools, the right prompt, and it just works to the point
+
+77
+00:06:54.720 --> 00:07:01.200
+that you can reuse to do many tasks on many different use cases. Well, the good news is that
+
+78
+00:07:01.200 --> 00:07:06.079
+we actually offer you the ability to not only have this agent YAML files that you're going to be
+
+79
+00:07:06.079 --> 00:07:12.799
+using on your project, but also actually using them on your agent repository so that you can reuse
+
+80
+00:07:12.880 --> 00:07:19.920
+them across many use cases. So you can now go into and create these agents in your repository online
+
+81
+00:07:19.920 --> 00:07:25.600
+and reuse them locally. And you can do this for free. All you got to do is go through this and
+
+82
+00:07:25.600 --> 00:07:31.119
+create your agents and it's an entire UI dedicated for that. And once that you want to use it
+
+83
+00:07:31.119 --> 00:07:36.559
+personally on your local computer, you can load from that repository itself directly.
+
+84
+00:07:36.559 --> 00:07:42.559
+So this is very important because it allows you to have these agents and reuse them over time.
+
+85
+00:07:42.559 --> 00:07:48.959
+And the same thing is true for tools. With tools, you can have this one single repository where you
+
+86
+00:07:48.959 --> 00:07:55.679
+throw all of your tools in there, public or private, and you can reuse them across many use cases.
+
+87
+00:07:55.679 --> 00:08:01.679
+If you want to create a tool, all you got to do is, again, use that same CLI and type the command
+
+88
+00:08:01.679 --> 00:08:06.399
+crewai tool create and give your tool a name. From that point on, you're going to have a
+
+89
+00:08:06.399 --> 00:08:11.359
+structure of what a custom tool looks like, and you can modify it to do whatever you want.
+
+90
+00:08:11.359 --> 00:08:17.279
+It can connect to a specific system. It can connect to an external system. It can actually
+
+91
+00:08:17.279 --> 00:08:23.040
+build a video. Anything that you can think of, you can make into this tool. It's all regular Python
+
+92
+00:08:23.040 --> 00:08:28.959
+code. The moment that you run the publish command, now that tool is available, not only for other
+
+93
+00:08:28.959 --> 00:08:34.799
+people on your team to actually do crewai tool install and have access to that tool and reusing
+
+94
+00:08:34.799 --> 00:08:40.159
+that across many different use cases, but even on that no-code UI builder that we saw all the way
+
+95
+00:08:40.159 --> 00:08:45.679
+in the beginning of the course, you also have those tools available to you. So you can use this
+
+96
+00:08:45.679 --> 00:08:51.119
+tool repository to publish and share tools across your organization, giving everyone access to a
+
+97
+00:08:51.119 --> 00:08:56.400
+centralized internal library. And these tools can include custom code, MCP servers, or anything in
+
+98
+00:08:56.400 --> 00:09:02.000
+between. And this approach is exciting because it not only improves observability and metrics
+
+99
+00:09:02.000 --> 00:09:08.239
+at the crew and the use case level, but also creates reusable LEGO pieces that can be applied
+
+100
+00:09:08.239 --> 00:09:13.359
+across many different projects and workflows. Now, I do want to make sure that we're taking
+
+101
+00:09:13.359 --> 00:09:18.479
+one step back, and we're talking about these use cases, and it's important for us to not
+
+102
+00:09:18.479 --> 00:09:23.760
+overlook the planning stage. I briefly touched into that at the beginning of this lesson,
+
+103
+00:09:23.760 --> 00:09:30.320
+but I want to go back and close into this. Many people skip and go straight into writing code,
+
+104
+00:09:30.320 --> 00:09:35.280
+which can be exciting and produce very quick results, but carefully planning leads to so
+
+105
+00:09:35.280 --> 00:09:41.840
+much better outcomes. A common pitfall is failing to define success clearly and not breaking this
+
+106
+00:09:41.840 --> 00:09:47.359
+process into smaller, manageable chunks that can become individual tasks. Some teams also
+
+107
+00:09:47.359 --> 00:09:52.880
+forget to measure or evaluate the results because they never established those metrics in the first
+
+108
+00:09:52.880 --> 00:09:59.119
+place. And as you move towards production, take the time to plan thoughtfully so your system is
+
+109
+00:09:59.119 --> 00:10:04.880
+well-structured, measurable, and built to evolve effectively over time. So the four things you've
+
+110
+00:10:04.880 --> 00:10:10.400
+got to keep in mind is spend time on planning, have a clear definition of success, make sure
+
+111
+00:10:10.400 --> 00:10:14.400
+that you're breaking your process into smaller chunks, and make sure that you have a way to
+
+112
+00:10:14.400 --> 00:10:21.280
+measure and evaluate. We have learned so much in this module, all the way from collaboration to
+
+113
+00:10:21.280 --> 00:10:28.159
+agents, coordination, different patterns, building flows, implementing reasoning agents, training,
+
+114
+00:10:28.159 --> 00:10:34.080
+testing, structured output, and so much more. And there is so much more things that we can build now
+
+115
+00:10:34.080 --> 00:10:39.760
+that we have all these tools in our back pocket. Coming up, we will complete the graded quiz and
+
+116
+00:10:39.760 --> 00:10:45.119
+graded lab for this module, where you are going to create a code review flow using all the skills
+
+117
+00:10:45.119 --> 00:10:49.679
+that you have learned in this module. And it's going to be exciting because it's a very hands-on
+
+118
+00:10:49.760 --> 00:10:54.400
+use case that you as an engineer, I'm sure that can appreciate. And we're almost coming up at the
+
+119
+00:10:54.400 --> 00:10:59.119
+end of this course. So once that you're done, you see that in the next module, things are going to
+
+120
+00:10:59.119 --> 00:11:04.719
+go into the next level because we're going to talk about not only AI agents in the context of how you
+
+121
+00:11:04.719 --> 00:11:09.840
+build them, but on the actual business value. It's a very special module because I'm going to try
+
+122
+00:11:09.840 --> 00:11:15.919
+something different. I'm bringing in a group of companies that are building AI agents in production,
+
+123
+00:11:16.400 --> 00:11:22.320
+real practitioners that have hands-on experience, and they're leading some of their teams into this.
+
+124
+00:11:22.320 --> 00:11:26.880
+And I want you to hear from them as I talk with them, what are the challenges,
+
+125
+00:11:26.880 --> 00:11:30.799
+what are the things that are working for them, and what are the things they're having problems with?
+
+126
+00:11:30.799 --> 00:11:35.840
+And that's going to be very exciting. So I hope to see you in there right after your graded course.
+
+127
+00:11:35.840 --> 00:11:40.159
+Please stick with me. It's going to be very interesting. I'll catch you there in a second.

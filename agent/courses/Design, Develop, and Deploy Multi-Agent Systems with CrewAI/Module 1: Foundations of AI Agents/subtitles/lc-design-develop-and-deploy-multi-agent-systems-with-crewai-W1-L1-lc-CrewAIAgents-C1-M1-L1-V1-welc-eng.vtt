@@ -1,0 +1,326 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.765 --> 00:00:05.840
+Welcome to this course on multi-agent systems with CrewAI, where you learn to design, develop,
+
+2
+00:00:05.840 --> 00:00:11.840
+and deploy these powerful systems. This is built in collaboration with Joe Moura at CrewAI.
+
+3
+00:00:11.840 --> 00:00:16.479
+One of the most important skills in AI today is how to build agentic AI workflows,
+
+4
+00:00:16.479 --> 00:00:22.319
+and multi-agent systems, where you take a complex task and break it down into subtasks for different
+
+5
+00:00:22.319 --> 00:00:29.040
+specialized agents to execute, lets you very efficiently build fairly complex workflows.
+
+6
+00:00:29.040 --> 00:00:34.479
+In this course, you learn about the core fundamental thinking frameworks that helps you
+
+7
+00:00:34.479 --> 00:00:40.400
+approach complex tasks and how to break them down into multi-agent systems to look at exciting
+
+8
+00:00:40.400 --> 00:00:45.119
+examples, including code review, and building a deep researcher, and building a meeting
+
+9
+00:00:45.119 --> 00:00:50.799
+preparation assistant, and much more. Delighted to have Joe back with us here again to teach.
+
+10
+00:00:50.799 --> 00:00:54.159
+Thank you so much for having me. I'm so excited about this. And honestly,
+
+11
+00:00:54.159 --> 00:00:58.560
+there's a lot that we're going to go over this course. We're going to talk about how you can,
+
+12
+00:00:58.560 --> 00:01:03.040
+as an AI builder, use the CrewAI framework so that you're building something that is ready for
+
+13
+00:01:03.040 --> 00:01:07.279
+production eventually, once that you're ready to bring it there. But we're going to talk about
+
+14
+00:01:07.279 --> 00:01:12.959
+how you build them with agents and flows, how you track performance, how you implement memory,
+
+15
+00:01:12.959 --> 00:01:19.599
+how you control versions, monitor traces, and continuously improve throughout the agent loop.
+
+16
+00:01:19.599 --> 00:01:25.360
+We actually introduced a lot of features coming this course to enable low-level control,
+
+17
+00:01:25.360 --> 00:01:30.559
+so you can focus on the fun parts of building agents. So this course is not only about identifying
+
+18
+00:01:30.559 --> 00:01:35.919
+the use cases, but also building these agents and get to value as fast as you can. And that's
+
+19
+00:01:35.919 --> 00:01:41.680
+one of the reasons I'm so excited about this. One of the reasons I always enjoy talking to Joe
+
+20
+00:01:41.680 --> 00:01:47.120
+about agentic workflows is Joe is an early visionary that started building CrewAI, in which
+
+21
+00:01:47.120 --> 00:01:53.120
+I'm privileged to be a minor investor, started building CrewAI long before multi-agent systems
+
+22
+00:01:53.120 --> 00:01:59.120
+was popular. And what that means is I think Joe, more than the vast majority of humans on this planet,
+
+23
+00:01:59.120 --> 00:02:04.559
+has seen so many implementations, practical, valuable commercial implementations, at scale,
+
+24
+00:02:04.559 --> 00:02:10.320
+very valuable businesses. And so I know he's looking forward to sharing all those lessons
+
+25
+00:02:10.320 --> 00:02:16.160
+with you. So I think of the basic process of looking around your life, your work, to try to
+
+26
+00:02:16.160 --> 00:02:22.639
+identify what are the things that are amenable to rapid prototyping experimentation with a multi-agent
+
+27
+00:02:22.639 --> 00:02:29.279
+system. And then also how to use CrewAI, say, to quickly build a prototype and what are the tools,
+
+28
+00:02:29.279 --> 00:02:34.000
+Whether it's MCP servers, web search, all the way through to when you have something that works,
+
+29
+00:02:34.000 --> 00:02:40.080
+what are the lessons to take that prototype, which may run great on your laptop, to scale it to
+
+30
+00:02:40.080 --> 00:02:44.800
+thousands or tens of thousands or more users, hopefully without too much pain and too many
+
+31
+00:02:44.800 --> 00:02:49.759
+pitfalls along the way. A thousand percent. And I think you got the nail in the hand there, where
+
+32
+00:02:49.759 --> 00:02:54.639
+literally as you're building these use cases, what makes them interesting is the fact that
+
+33
+00:02:54.639 --> 00:03:00.000
+they're non-deterministic, is the fact that these agents can tap in so many different sources. So
+
+34
+00:03:00.000 --> 00:03:05.520
+they're not only using cognition, but they also have this ability to self-heal and to react at
+
+35
+00:03:05.520 --> 00:03:10.639
+anything that you throw at them at runtime. But that cannot come at a cost of not giving you
+
+36
+00:03:10.639 --> 00:03:15.520
+reliable, repeatable outputs. So that's something that you should watch for. So in this course,
+
+37
+00:03:15.520 --> 00:03:20.160
+you're going to learn how the building blocks for these multi-agent systems, including not only
+
+38
+00:03:20.160 --> 00:03:25.759
+agents, tasks, and crews, but you'll learn how to customize and optimize your agents with memory,
+
+39
+00:03:25.759 --> 00:03:33.039
+tools, including MCPs, execution hooks, and guardrails. You also learn how to add a layer
+
+40
+00:03:33.039 --> 00:03:39.919
+of low-level control with CrewAI flows and states that allows you to not only test your application
+
+41
+00:03:39.919 --> 00:03:46.399
+using metrics, but also inform you how to even train your agents using human feedback and improve
+
+42
+00:03:46.399 --> 00:03:51.759
+your application over time. And in the final module, you'll also hear from several companies
+
+43
+00:03:51.759 --> 00:03:56.559
+that have been using multi-agent systems and CrewAI in production. So even if this is your
+
+44
+00:03:56.559 --> 00:04:02.240
+first time working with agents or CrewAI, you'll get a lot of this course. And if you took our
+
+45
+00:04:02.240 --> 00:04:07.839
+earlier courses in partnership with DeepLearning.AI, I think of this like a phase three, where
+
+46
+00:04:07.839 --> 00:04:12.639
+you're building these things, not only for scale, but quality and reliability. And I'm very excited
+
+47
+00:04:12.639 --> 00:04:18.640
+about that. So one of the challenges that I know you spend a lot of time thinking about is reliability.
+
+48
+00:04:18.640 --> 00:04:24.160
+Very often, we can build a quick and dirty prototype for agent workflow. It works in demo state for
+
+49
+00:04:24.160 --> 00:04:29.760
+that one input we try on our laptop. Maybe even works well for 10 inputs. But then as you go from
+
+50
+00:04:29.760 --> 00:04:36.239
+10 different examples to 100 in production, to 1000, then does this mean that, well, it's 80%
+
+51
+00:04:36.239 --> 00:04:41.279
+reliable, it doesn't really work. But it turns out that for teams that know how to drive an agent
+
+52
+00:04:41.279 --> 00:04:46.959
+development process, this agents only work in demo, only works 80% of the time, there are lots of tools to
+
+53
+00:04:46.959 --> 00:04:51.920
+break through that. A thousand percent. And what we have seen is that there's a spectrum of things
+
+54
+00:04:51.920 --> 00:04:56.799
+that you can do in order to improve the agents, in order to improve the reliability that you're
+
+55
+00:04:56.799 --> 00:05:02.880
+getting. From using CrewAI training, to use guardrails, to use CrewAI testing, all the way to
+
+56
+00:05:02.880 --> 00:05:07.760
+actually fine tuning a model if you really want to go there. So all that goes into agents memory,
+
+57
+00:05:07.760 --> 00:05:12.320
+and we're going to talk all about this throughout the course. So it's very exciting. The genie is
+
+58
+00:05:12.320 --> 00:05:16.720
+not getting back in the bottle. If anything, people are going to use more agents every day.
+
+59
+00:05:16.720 --> 00:05:22.559
+But in order for that to happen, there needs to be at least three main things. One is, it needs to be
+
+60
+00:05:22.559 --> 00:05:27.519
+extremely easy to build, and we're going to talk about how you can easily get this agents build out.
+
+61
+00:05:27.519 --> 00:05:33.279
+It needs to be trustworthy, that goes back into this idea of reliable and repeatable outcomes,
+
+62
+00:05:33.839 --> 00:05:39.600
+and also needs to be manageable, so you can get to scale eventually. And the scale is not only about
+
+63
+00:05:40.160 --> 00:05:45.359
+running a million agents in an hour, it's about making sure that you're building this
+
+64
+00:05:45.359 --> 00:05:50.880
+building blocks that can be reused. So you're having your custom tools to be reused across
+
+65
+00:05:50.880 --> 00:05:55.600
+many use cases, or even your agents themselves. And that's very exciting about this course.
+
+66
+00:05:55.600 --> 00:06:01.040
+I find that having that discipline process, building your multi-agent system, and then
+
+67
+00:06:01.040 --> 00:06:06.000
+thinking through what are the observability mechanisms, so that you can figure out when
+
+68
+00:06:06.000 --> 00:06:11.679
+it's working, when it's not working. And then also to drive that disciplined process to repeatedly,
+
+69
+00:06:11.679 --> 00:06:16.000
+you know, quickly identify the errors, and then fix it with some of the tools, be it prompting,
+
+70
+00:06:16.000 --> 00:06:22.799
+fine-tuning, or something else. That is probably a more reliable recipe than most people realize,
+
+71
+00:06:22.799 --> 00:06:29.519
+which is why with this set of knowledge, it's actually not easy, but probably easier than
+
+72
+00:06:29.519 --> 00:06:36.079
+is widely appreciated to build pretty reliable multi-agent systems. Now there's a lot of buzz,
+
+73
+00:06:36.079 --> 00:06:41.600
+a lot of hype about agentic AI, and about multi-agent systems. And with all this buzz
+
+74
+00:06:41.600 --> 00:06:48.640
+and noise, what we wanted to do was get together to create a definitive course on how to use CrewAI
+
+75
+00:06:48.640 --> 00:06:54.959
+to build multi-agent systems, so that when you'll finish this course, you understand what are the
+
+76
+00:06:54.959 --> 00:06:59.839
+core building blocks, what are the mental frameworks, how to put them together, and then
+
+77
+00:06:59.839 --> 00:07:05.519
+also how to go all the way from prototyping to taking your multi-agent system to scale. And
+
+78
+00:07:05.519 --> 00:07:09.920
+this will be a very powerful skill that I'm confident will let you build a lot more stuff
+
+79
+00:07:09.920 --> 00:07:14.880
+than was possible before. And having known Joe for a while, I can promise that this course will
+
+80
+00:07:14.880 --> 00:07:21.760
+also be a lot of fun, and I'm excited to see what you build with this. So there's a lot to cover,
+
+81
+00:07:22.399 --> 00:07:25.279
+let's go on to the next video and get started.

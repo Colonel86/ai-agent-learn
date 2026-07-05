@@ -1,0 +1,218 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.180 --> 00:00:05.119
+One agent can be very powerful, but if you really think about it, the best way for you
+
+2
+00:00:05.119 --> 00:00:09.039
+to extract value of these agents is if you could get them to specialize into their own
+
+3
+00:00:09.039 --> 00:00:10.039
+thing.
+
+4
+00:00:10.039 --> 00:00:14.800
+So instead of one agent, you can have multiple agents, each agent specialized on something
+
+5
+00:00:14.800 --> 00:00:18.559
+with its own tools, its own knowledge, and its own prompt.
+
+6
+00:00:18.559 --> 00:00:20.159
+So let's look into that.
+
+7
+00:00:20.159 --> 00:00:24.879
+So in the previous lesson, you built your first agent, crew, and task.
+
+8
+00:00:24.879 --> 00:00:28.159
+So you already start to understand some of the primitives in here.
+
+9
+00:00:28.319 --> 00:00:32.240
+And this is something that you're going to see across the entire industry, whether you're
+
+10
+00:00:32.240 --> 00:00:37.279
+using crew AI or any other agent building tool out there, this idea of agents doing
+
+11
+00:00:37.279 --> 00:00:42.439
+work and agents being assigned to tasks is a common theme throughout the entire thing.
+
+12
+00:00:42.439 --> 00:00:47.119
+Now I do want to focus about not only that you can use one agent, but the fact that you
+
+13
+00:00:47.119 --> 00:00:49.360
+can use multi-agents as well.
+
+14
+00:00:49.360 --> 00:00:54.400
+And there is a balance in here on when you bring more agents and how many agents you
+
+15
+00:00:54.400 --> 00:00:55.400
+bring.
+
+16
+00:00:55.639 --> 00:01:01.759
+And the whole idea behind this is that multi-agents allow you to have more targeted agents and
+
+17
+00:01:01.759 --> 00:01:07.440
+it's through their combined effort that you get to more high complex use cases.
+
+18
+00:01:07.440 --> 00:01:13.120
+So if we look back at our use case matrix, for example, you will see that this idea of
+
+19
+00:01:13.120 --> 00:01:18.760
+high complexity and low precision, or even high complexity and high precision, usually
+
+20
+00:01:18.760 --> 00:01:24.160
+will require more agents to do it than one single agent, because you want to make sure that
+
+21
+00:01:24.160 --> 00:01:28.400
+you're dividing and conquering here, and you're setting up your agents, even to use
+
+22
+00:01:28.400 --> 00:01:34.040
+different LLMs if necessary, everything to benefit the best output that you can get.
+
+23
+00:01:34.040 --> 00:01:37.959
+So let's talk about what are we going to build in one of our next videos.
+
+24
+00:01:37.959 --> 00:01:43.239
+The use case that we're going to be building together is a deep research crew, basically
+
+25
+00:01:43.239 --> 00:01:47.760
+a group of agents that are able to do a deep research on a topic and report back.
+
+26
+00:01:47.760 --> 00:01:51.839
+So there's an initial topic that's going to pop in on one side, and then you're going
+
+27
+00:01:51.839 --> 00:01:53.760
+to have the report on the other side.
+
+28
+00:01:53.760 --> 00:01:57.879
+And the way that we're going to get it from topic to the report is by having a series
+
+29
+00:01:57.879 --> 00:02:01.559
+of four agents working in a sequential manner.
+
+30
+00:02:01.559 --> 00:02:05.919
+So the first task is going to be about breaking down the initial query.
+
+31
+00:02:05.919 --> 00:02:10.279
+So whatever topic we get, we want to make sure that we break that down into more manageable
+
+32
+00:02:10.279 --> 00:02:14.119
+chunks, and that will be a simpler planner agent.
+
+33
+00:02:14.119 --> 00:02:18.539
+But then we need more advanced agents going from there, because we will need to do some
+
+34
+00:02:18.539 --> 00:02:20.580
+investigation on that topic.
+
+35
+00:02:20.580 --> 00:02:25.699
+And that agent now will probably require some tools to be able to research the web and find
+
+36
+00:02:25.699 --> 00:02:29.779
+the information that it requires to build that report effectively.
+
+37
+00:02:29.779 --> 00:02:33.580
+We do want to make sure that that report is factually correct.
+
+38
+00:02:33.580 --> 00:02:39.500
+So we will have a separate agent to just fact check, it will cross-check the claims, make
+
+39
+00:02:39.500 --> 00:02:44.380
+sure that everything is valid, and minimize any hallucination that we might be getting.
+
+40
+00:02:44.380 --> 00:02:48.020
+And then the final agent is the one that is putting the report together.
+
+41
+00:02:48.020 --> 00:02:51.699
+It's bringing all this knowledge from the planning, the researching, and the fact checking
+
+42
+00:02:51.699 --> 00:02:56.779
+into one single cohesive report, so that we have something that is high quality at the
+
+43
+00:02:56.779 --> 00:02:57.779
+end.
+
+44
+00:02:57.779 --> 00:03:01.619
+And again, to keep this simple, we're just doing a sequential flow, where these agents
+
+45
+00:03:01.619 --> 00:03:06.160
+are working in a certain order, in order to bring us that final report.
+
+46
+00:03:06.160 --> 00:03:11.279
+But as you build these use cases, you might not always benefit off the sequential order.
+
+47
+00:03:11.279 --> 00:03:15.300
+You might actually want to explore, you might actually want to try different communication
+
+48
+00:03:15.300 --> 00:03:17.179
+styles between these agents.
+
+49
+00:03:17.339 --> 00:03:22.860
+And there's so many, you're going to find things like hierarchical, or hybrid, or parallel,
+
+50
+00:03:22.860 --> 00:03:27.820
+or even asynchronously, where you can have many agents working in parallel, and eventually
+
+51
+00:03:27.820 --> 00:03:30.399
+regrouping into one single agent.
+
+52
+00:03:30.399 --> 00:03:34.779
+But right now, I'm very excited to jump in the next video, so that we can start building
+
+53
+00:03:34.779 --> 00:03:35.779
+this out.
+
+54
+00:03:35.779 --> 00:03:36.940
+So you see me there in a second.

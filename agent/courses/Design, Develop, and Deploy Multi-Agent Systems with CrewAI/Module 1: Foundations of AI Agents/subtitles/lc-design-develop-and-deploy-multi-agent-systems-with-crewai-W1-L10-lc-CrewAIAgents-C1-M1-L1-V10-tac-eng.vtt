@@ -1,0 +1,298 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.986 --> 00:00:04.239
+So building these agents are very fun, and by now you've got a good hang of it.
+
+2
+00:00:04.239 --> 00:00:09.359
+But as you start to debug these agents, you're going to realize that a lot goes into observing
+
+3
+00:00:09.359 --> 00:00:14.960
+and optimizing to fully understand what is going on and making sure that you have a strategy around
+
+4
+00:00:14.960 --> 00:00:19.840
+that. So you can keep getting the system better over time, and you can fully understand what is
+
+5
+00:00:19.840 --> 00:00:23.360
+happening even when things go south. So let's look into that next.
+
+6
+00:00:24.079 --> 00:00:30.319
+We talked about the idea of running in human time and machine time, and the idea here is
+
+7
+00:00:30.319 --> 00:00:36.319
+just that executions are piling up. And the more executions you get, more you need to trust the
+
+8
+00:00:36.319 --> 00:00:42.880
+system. But in the end of the day, it's not only about the speed to value, but also how much you
+
+9
+00:00:42.880 --> 00:00:48.799
+trust those outputs so that you can actually turn it on to 11. And we talked about the different
+
+10
+00:00:48.799 --> 00:00:54.319
+ways that you can actually implement to steer your agents in a certain way. For example, a lot
+
+11
+00:00:54.319 --> 00:00:59.439
+of the context engineering techniques around the system prompts, the clear instructions, the role
+
+12
+00:00:59.439 --> 00:01:05.120
+playing, the memory, and the tools. And the good news is that a lot of that is already embedded
+
+13
+00:01:05.120 --> 00:01:10.959
+into CrewAI. But as you deploy these agents, you're going to find yourself having many questions,
+
+14
+00:01:10.959 --> 00:01:16.879
+especially as you're debugging. You're going to ask, well, why did my agent do X? Where did
+
+15
+00:01:16.879 --> 00:01:23.760
+this data actually come from? And what tools did my agent use? Those can be hard to track when you're
+
+16
+00:01:23.760 --> 00:01:29.440
+in the early stages of debugging and testing and rolling things out. And now these questions, you
+
+17
+00:01:29.440 --> 00:01:35.440
+need an answer to understand exactly how the system behaves and why it makes the choice it does.
+
+18
+00:01:36.000 --> 00:01:42.160
+Now, there are going to be a few things that are going to make your life way, way, way easier. And
+
+19
+00:01:42.160 --> 00:01:47.599
+the first thing that I want to point out is traces. For example, in CrewAI, whenever you run these
+
+20
+00:01:47.599 --> 00:01:53.599
+crews locally, you'll be prompted to look into your traces. And these traces are going to open
+
+21
+00:01:53.599 --> 00:02:00.239
+in a browser on CrewAI AMP. And in there, you're going to be able to see every single action your
+
+22
+00:02:00.239 --> 00:02:06.959
+agent took from the initial task to all the LLM calls to the tools being used and everything in
+
+23
+00:02:06.959 --> 00:02:12.880
+between. So you can not only see how long did it take, but you can expand on those and see what
+
+24
+00:02:12.880 --> 00:02:19.119
+exactly was the tool used, what was the input that was provided to that tool. And you can keep going.
+
+25
+00:02:19.119 --> 00:02:25.039
+You can even look at all the individual messages. When you run Crew on your own computer locally,
+
+26
+00:02:25.039 --> 00:02:29.919
+you're going to get some traces in your terminal directly. And that helps you understand what is
+
+27
+00:02:29.919 --> 00:02:34.960
+going on. But at the end of the execution, you always get that link for making sure that you
+
+28
+00:02:34.960 --> 00:02:40.160
+can see in an actual UI what is happening with your agents and you can actually monitor that.
+
+29
+00:02:40.160 --> 00:02:45.759
+We have been talking a lot about this idea of context engineering and prompting being part
+
+30
+00:02:45.759 --> 00:02:51.279
+of that context engineering. So we know that every agent, for example, has role, goals,
+
+31
+00:02:51.279 --> 00:02:57.039
+and backstory. And we know that every task has a description and expected output. Through updating
+
+32
+00:02:57.039 --> 00:03:02.639
+those, you actually have a lot of control on what gets sent into the model. But that's not the only
+
+33
+00:03:02.639 --> 00:03:08.240
+thing that you do, because prompting is only the tip of the iceberg. You actually can do Crew
+
+34
+00:03:08.240 --> 00:03:14.000
+testing. And testing is one of the ways that you get to understand what is happening to your agents
+
+35
+00:03:14.000 --> 00:03:19.600
+and what model works the best for you. It will get that one single agent definition and that one
+
+36
+00:03:19.600 --> 00:03:25.199
+single task definition that you have. It's going to play that against many different LLMs. And through
+
+37
+00:03:25.199 --> 00:03:31.199
+these different LLMs, it will have an LLM as a judge on every request, basically judging the
+
+38
+00:03:31.199 --> 00:03:36.960
+result that is coming out from the LLM. You're going to be able to compare what LLMs did the best
+
+39
+00:03:36.960 --> 00:03:44.160
+at that work and what LLMs got closer to finishing the task in a way that is reliable and that you
+
+40
+00:03:44.160 --> 00:03:50.800
+like. Now you get to choose the LLM based on the actual data instead of just vibing your way into
+
+41
+00:03:50.800 --> 00:03:56.559
+that. But testing only allows you to select a model. After you already have selected a model,
+
+42
+00:03:56.559 --> 00:04:02.639
+how do you get your agent to enforce a specific format or behavior? And that's where a new feature
+
+43
+00:04:02.639 --> 00:04:08.800
+comes in. Training. It's a very powerful technique. Training here is not training a larger language
+
+44
+00:04:08.800 --> 00:04:14.479
+model or fine tuning a model, which you can absolutely do. But it's a technique where your
+
+45
+00:04:14.479 --> 00:04:21.040
+agent does many executions of the task, gets your feedback and tries it again. And it updates its
+
+46
+00:04:21.200 --> 00:04:27.839
+internal memory on how to improve so it gets better over time. So in this case, the agent itself is
+
+47
+00:04:27.839 --> 00:04:35.119
+basically doing the task back and forth. But every time that it finishes it, it asks you as the human
+
+48
+00:04:35.119 --> 00:04:41.040
+a feedback, and whatever feedback you provide is translated into learnings that go into that agent
+
+49
+00:04:41.040 --> 00:04:48.160
+memory. So as this agent goes through and do future executions, that feedback gets injected
+
+50
+00:04:48.160 --> 00:04:53.839
+back into the agent prompting. So here you can see another way for you to also have an impact
+
+51
+00:04:53.839 --> 00:04:59.920
+on the context without necessarily only changing the task's descriptions or the agent definition.
+
+52
+00:04:59.920 --> 00:05:05.839
+And there is one extra way. And those are guardrails. Many production systems can benefit
+
+53
+00:05:05.839 --> 00:05:12.239
+from guardrails. And the idea of a guardrail is enforcing a particular behavior. So if you look
+
+54
+00:05:12.239 --> 00:05:16.399
+through all the different things that we're talking about, from testing to training to now
+
+55
+00:05:16.399 --> 00:05:21.600
+guardrails, you can see there is a common theme around making sure that you get your agents to
+
+56
+00:05:21.600 --> 00:05:27.359
+behave in a certain way. In guardrails, you can think about this as something like a gate
+
+57
+00:05:27.359 --> 00:05:32.559
+that sits between the agent and completing the task. So before the agent actually wraps up the
+
+58
+00:05:32.559 --> 00:05:38.000
+work and pass along the result, the agent will actually go through the guardrail. And this
+
+59
+00:05:38.000 --> 00:05:44.880
+guardrail can either be an LLM as a judge, or it can actually be a coding guardrail,
+
+60
+00:05:44.880 --> 00:05:51.839
+where you actually write code to check the output. The guardrail will then decide if the final output
+
+61
+00:05:51.839 --> 00:05:58.480
+is successful. If it is, it will let the response go through and give you its final answer. But if
+
+62
+00:05:58.480 --> 00:06:04.480
+it finds it lacking, it will then report it back to the agent with that piece of feedback. So the
+
+63
+00:06:04.480 --> 00:06:10.640
+agent can go take another stab at making that right. So let me give you a couple examples here.
+
+64
+00:06:10.640 --> 00:06:16.160
+Let's say that at the end of an execution, you just want to make sure that the final output is
+
+65
+00:06:16.160 --> 00:06:22.880
+less than 200 characters. Well, you can literally write a code guardrail for that, where you can
+
+66
+00:06:22.880 --> 00:06:29.040
+use regular Python code to count the number of characters, and if it's not less than 200, then
+
+67
+00:06:29.040 --> 00:06:34.640
+send it back to the agent to write it again. For the LLM as a judge, you can do other sorts of
+
+68
+00:06:34.640 --> 00:06:39.920
+checks that you won't be able to do with coding alone. Let's say, for example, that on top of being
+
+69
+00:06:39.920 --> 00:06:45.600
+less than 200 characters, you also want to make sure that it's positive. So you can use LLM as a
+
+70
+00:06:45.600 --> 00:06:54.640
+judge to ping another LLM to fact check if that is a positive output or not. Beyond testing, training,
+
+71
+00:06:54.640 --> 00:06:59.519
+guardrails, and context engineering, there is a lot of other options to improve your system's
+
+72
+00:06:59.519 --> 00:07:05.600
+performance, several of which we're going to be seeing in the coming modules. For now, follow me
+
+73
+00:07:05.600 --> 00:07:10.480
+to the next video to see what kinds of production use cases are the most successful
+
+74
+00:07:10.480 --> 00:07:14.160
+and most common, and we will see you there in just a second.

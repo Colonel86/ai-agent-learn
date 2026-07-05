@@ -1,0 +1,298 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.932 --> 00:00:04.079
+So what makes an AI agent intelligent? Let's think about it.
+
+2
+00:00:04.079 --> 00:00:08.239
+In the end of the day, building AI agents that go into production means that they give you
+
+3
+00:00:08.239 --> 00:00:13.199
+reliable and repeatable results. That means that you've got to think about the context engineering
+
+4
+00:00:13.199 --> 00:00:17.120
+that you're doing behind the scenes, all the information that you're providing to this model
+
+5
+00:00:17.120 --> 00:00:22.159
+on every single API call that you make. So let's look into that so that you can start
+
+6
+00:00:22.159 --> 00:00:27.200
+understanding more how you can optimize your agents for maximum output quality.
+
+7
+00:00:27.200 --> 00:00:32.159
+All right, so I'm very excited about this lesson because we're going to take a step back here to
+
+8
+00:00:32.159 --> 00:00:37.520
+understand better how large language models work in a nutshell, and how they compare to more
+
+9
+00:00:37.520 --> 00:00:43.840
+traditional AI systems. So at their core, the more traditional AI systems try to take sense of
+
+10
+00:00:43.840 --> 00:00:50.240
+inputs to predict output. So let's talk about a simple example here. Let's talk about a traditional
+
+11
+00:00:50.240 --> 00:00:55.759
+AI system that tries to predict whether it's going to rain or not. In order to do that,
+
+12
+00:00:55.759 --> 00:01:02.959
+it's going to use a few different data points, like location, or season, or temperature. And using
+
+13
+00:01:02.959 --> 00:01:07.839
+those features, we would then try to predict if it's going to rain or not. So a good example would
+
+14
+00:01:07.839 --> 00:01:15.279
+be Mumbai in the summer at 90 degrees Fahrenheit, let's say that it's not going to rain. But in
+
+15
+00:01:15.279 --> 00:01:22.400
+Taipei in the winter at 65 Fahrenheit, it is going to rain. So the way that these models work is that
+
+16
+00:01:22.400 --> 00:01:28.720
+you expose them to enough examples of locations, seasons, and temperatures, and it's going to start
+
+17
+00:01:28.720 --> 00:01:35.120
+to understand the correlation between all those features in order to create the prediction. So the
+
+18
+00:01:35.120 --> 00:01:41.839
+more examples that you expose this model to, and that's what we refer to as training, the more it
+
+19
+00:01:41.839 --> 00:01:48.480
+will start to understand the correlation between all the different features in the actual output.
+
+20
+00:01:49.040 --> 00:01:55.599
+So that in the future, if you show something that it hasn't seen yet, for example, Tokyo in the
+
+21
+00:01:55.599 --> 00:02:01.760
+summer at 85 degrees Fahrenheit, it will be able to predict if it's going to rain or not. The idea
+
+22
+00:02:01.760 --> 00:02:08.080
+here is that it's using these features in order to try to understand how they correlate with the
+
+23
+00:02:08.080 --> 00:02:14.960
+actual prediction. And this translates very well into LLMs. I know it's going to be a simplistic
+
+24
+00:02:14.960 --> 00:02:21.199
+comparison, but in LLMs, there's a lot of that that is also playing. It's a regular AI model.
+
+25
+00:02:21.199 --> 00:02:27.839
+But in this case, the features are all the words that you have typed so far. So when you go into
+
+26
+00:02:27.839 --> 00:02:34.880
+ChatGPT, for example, and you say, give me a stock report on Tesla, and that spits out an answer,
+
+27
+00:02:34.880 --> 00:02:41.759
+the way to think about it is that your prompt is actually the features that inform the prediction
+
+28
+00:02:41.759 --> 00:02:48.080
+that is the answer, meaning that you have a lot more control over the prediction, the answer that
+
+29
+00:02:48.080 --> 00:02:54.000
+you're getting, that you like to believe. So you can change the prompt to get a different response.
+
+30
+00:02:54.000 --> 00:02:59.919
+And that's, in a nutshell, what people have been referencing as prompting, is the ability to
+
+31
+00:02:59.919 --> 00:03:05.839
+understand how to form the sentences in a way that is steered the model to give you the best
+
+32
+00:03:05.839 --> 00:03:12.080
+answer possible. A good example that you can do yourself for prompt engineering is instead of
+
+33
+00:03:12.080 --> 00:03:19.600
+running this, you change the prompting to say, as an exceptional FINRA approved advisor, give me a
+
+34
+00:03:19.600 --> 00:03:25.759
+stock report on Tesla. So you can see that we added a few more words in here. And this is like
+
+35
+00:03:25.759 --> 00:03:31.600
+we have changed the season or that we have changed the location, the temperature. So now we're giving
+
+36
+00:03:31.600 --> 00:03:36.960
+different information that will actually drastically impact the prediction. So you get a
+
+37
+00:03:36.960 --> 00:03:42.880
+different answer. The intelligence of the systems comes from a massive amount of features that they
+
+38
+00:03:42.880 --> 00:03:48.960
+can take as input, and as many complex connections they can make between all those inputs to predict
+
+39
+00:03:48.960 --> 00:03:56.240
+what comes next. And the reason why this matters is when it goes into the LLM, heavily impacts
+
+40
+00:03:56.240 --> 00:04:03.520
+how it responds. And the ability to do that effectively is what makes great intelligent
+
+41
+00:04:03.520 --> 00:04:10.800
+agents. So let's take one step back. If you think about more traditional software, all the software
+
+42
+00:04:10.800 --> 00:04:16.480
+is strongly typed. What I mean by that is that you have a very good understanding on what is the data
+
+43
+00:04:16.480 --> 00:04:20.720
+coming in, what are the transformations that are happening, and what is the data coming out.
+
+44
+00:04:20.720 --> 00:04:26.559
+And that's why you can do things like testing, where you know that 2 plus 2 will always be 4.
+
+45
+00:04:26.559 --> 00:04:32.480
+Now when you think about agentic systems, they're non-deterministic, meaning that you don't know the
+
+46
+00:04:32.480 --> 00:04:38.160
+data coming in, the model itself is a black box, and you don't know what the data coming out will
+
+47
+00:04:38.160 --> 00:04:45.600
+be. Think about ChatGPT. You can go in there and you can type in the recipe for a cake or a PhD
+
+48
+00:04:45.600 --> 00:04:51.200
+thesis. Sometimes you won't know exactly what kind of data you're getting. And that's what makes the
+
+49
+00:04:51.200 --> 00:04:57.519
+beauty of it, but also plays a role on how much control you can add to the systems to make sure
+
+50
+00:04:57.519 --> 00:05:02.720
+that you're getting those reliable outputs. Let's say you're working with a crew that will be able
+
+51
+00:05:02.720 --> 00:05:09.359
+to create job listings. And the idea here is that this will be a crew that will help you research,
+
+52
+00:05:09.359 --> 00:05:15.760
+write a job description, and edit, make sure that it's top-notch. That crew will have three agents,
+
+53
+00:05:15.760 --> 00:05:22.480
+a research analyst, a writer, and an editor. And the idea here is that the research will take the
+
+54
+00:05:22.480 --> 00:05:28.480
+job role as an input and go do a research on the other job listings, see what skills are related to
+
+55
+00:05:28.480 --> 00:05:34.320
+that, what are competitors looking for. The writer will then take all that research and the job
+
+56
+00:05:34.320 --> 00:05:40.160
+specifications and actually write down the job description. And then the editor will review
+
+57
+00:05:40.160 --> 00:05:45.440
+everything and make sure that it matches your company style and your company culture. First,
+
+58
+00:05:45.440 --> 00:05:51.440
+let's talk about how context engineering allows you to steer this crew together, deciding what is
+
+59
+00:05:51.440 --> 00:05:58.399
+the best possible input for every single request. And the context engineering is all about optimizing
+
+60
+00:05:58.399 --> 00:06:05.359
+all those set of inputs to serve as features to get you the best output that you can.
+
+61
+00:06:05.359 --> 00:06:12.079
+So what goes into this context engineering? Well, first, this idea of the system prompts.
+
+62
+00:06:12.079 --> 00:06:16.799
+What are the prompts that are being sent? They're providing the guidance on how this LLM should
+
+63
+00:06:16.799 --> 00:06:24.000
+behave. Then second, clear instructions, especially explaining what is expected from these agents,
+
+64
+00:06:24.000 --> 00:06:29.119
+what a good definition of done is. Then three, you want to make sure that you get these agents
+
+65
+00:06:29.119 --> 00:06:35.200
+to role play. Because remember, the features that you're providing to these models will impact the
+
+66
+00:06:35.200 --> 00:06:40.799
+output that you're getting. So if you get these agents to play along a specific role, like what
+
+67
+00:06:40.799 --> 00:06:46.799
+we did with our FINRA approved stock advisor, you are going to get better responses out of these
+
+68
+00:06:46.799 --> 00:06:52.000
+agents as they impersonate a researcher, writer, and an editor. You also have memory here that will
+
+69
+00:06:52.000 --> 00:06:57.040
+play a role that will give these agents the capability to remember what they have done bad in
+
+70
+00:06:57.040 --> 00:07:01.600
+the past and what they have done right. And at the end, there is also the tools, all the things that
+
+71
+00:07:01.600 --> 00:07:07.440
+these agents will need in order to be able to do the research, scrap the web, write the thing, and
+
+72
+00:07:07.440 --> 00:07:12.720
+review it. I know this is a lot of information, but don't worry, because we're going to dig into
+
+73
+00:07:12.720 --> 00:07:18.480
+every single aspect down the road. So coming up in the next video, we're going to build our first
+
+74
+00:07:18.480 --> 00:07:24.559
+agent together to see some of the context engineering happening in real time. I'll see you there in a second.

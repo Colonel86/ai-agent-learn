@@ -1,0 +1,482 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.064 --> 00:00:05.239
+Now, let's build your first multi-agent system, and I'm very excited about this because you
+
+2
+00:00:05.239 --> 00:00:10.000
+already learned a lot of these concepts, and you already spent a lot of time planning about
+
+3
+00:00:10.000 --> 00:00:11.560
+these use cases.
+
+4
+00:00:11.560 --> 00:00:13.319
+Let's dive right into the code.
+
+5
+00:00:13.319 --> 00:00:18.040
+This is a deep research crew, and this is a crew that we're going to carry with us
+
+6
+00:00:18.040 --> 00:00:21.680
+throughout many lessons because we're going to keep making it better and improving it
+
+7
+00:00:21.680 --> 00:00:23.520
+with the things that we learn.
+
+8
+00:00:23.520 --> 00:00:29.680
+This crew will start with four agents, a research planner, an internet researcher, a fact checker,
+
+9
+00:00:29.680 --> 00:00:30.959
+and a report writer.
+
+10
+00:00:30.959 --> 00:00:36.479
+Together, these agents will perform a series of tasks sequentially to allow us to get to
+
+11
+00:00:36.479 --> 00:00:40.200
+an entire report on whatever we want to research about.
+
+12
+00:00:40.200 --> 00:00:44.119
+Now, there are tools that we're going to need to provide for the internet researcher
+
+13
+00:00:44.119 --> 00:00:48.720
+agent, and we're going to talk way more about tools down the road on future lessons.
+
+14
+00:00:48.720 --> 00:00:52.759
+For now, we're just going to use a tool that is pre-built, and eventually we're going
+
+15
+00:00:52.759 --> 00:00:57.119
+to get into even building our own custom tools, so you want to make sure that you stick around
+
+16
+00:00:57.119 --> 00:00:58.119
+for that.
+
+17
+00:00:58.240 --> 00:01:01.560
+Now let's go over to our notebook to make sure that we get our hands dirty.
+
+18
+00:01:01.560 --> 00:01:06.879
+So the first thing that we would do is import our main CrewAI classes, the agent, the task,
+
+19
+00:01:06.879 --> 00:01:07.879
+and the crew.
+
+20
+00:01:07.879 --> 00:01:11.400
+And these are the same classes that we used in our last notebook.
+
+21
+00:01:11.400 --> 00:01:16.519
+We also need, for the sake of getting our API keys for OpenAI in here, import a few
+
+22
+00:01:16.519 --> 00:01:19.680
+pieces of code to make our life a little easier.
+
+23
+00:01:19.680 --> 00:01:23.120
+And this is just boilerplate code that you can copy and paste, and it's all going to
+
+24
+00:01:23.120 --> 00:01:24.760
+work out for you.
+
+25
+00:01:24.760 --> 00:01:30.080
+I will invite you later at the end of this notebook to actually change the model and
+
+26
+00:01:30.080 --> 00:01:32.160
+see how that works for you.
+
+27
+00:01:32.160 --> 00:01:37.319
+Now, because we need to provide this agent with some sort of research tool so we can
+
+28
+00:01:37.319 --> 00:01:44.120
+gather its data, we will be using the Exa application to do web searching for us.
+
+29
+00:01:44.120 --> 00:01:49.080
+And again, don't get too hung up on this, because we will talk about tools at length
+
+30
+00:01:49.080 --> 00:01:51.360
+down the road in other lessons.
+
+31
+00:01:51.360 --> 00:01:56.120
+We just import those modules and we make sure that we configure them accordingly by
+
+32
+00:01:56.120 --> 00:02:02.080
+loading the key and creating an instance of the Exa search tool and creating an instance
+
+33
+00:02:02.080 --> 00:02:06.319
+of our scrape website tool that should work out of the gate.
+
+34
+00:02:06.319 --> 00:02:09.479
+Now let's jump into actually creating our agents.
+
+35
+00:02:09.479 --> 00:02:13.279
+The first agent that we're going to create is our research planner.
+
+36
+00:02:13.279 --> 00:02:19.279
+The idea here is that this agent is able to analyze the queries and break down into smaller,
+
+37
+00:02:19.279 --> 00:02:21.720
+more specific research topics.
+
+38
+00:02:21.720 --> 00:02:27.600
+The next agent right after this one is actually your research agent that will basically work
+
+39
+00:02:27.600 --> 00:02:32.559
+off the research planner and execute that plan into the research.
+
+40
+00:02:32.559 --> 00:02:37.520
+You can also see this very specific role, a very specific goal, and a very specific
+
+41
+00:02:37.520 --> 00:02:38.759
+backstory for that.
+
+42
+00:02:38.759 --> 00:02:43.720
+And you're going to see the same pattern happen to both our fact checker and reporter
+
+43
+00:02:43.720 --> 00:02:44.720
+agent.
+
+44
+00:02:44.720 --> 00:02:47.440
+So I'm going to just create them right away.
+
+45
+00:02:47.440 --> 00:02:52.160
+Another thing that I also want to call out is that both of these agents are using these
+
+46
+00:02:52.160 --> 00:02:55.440
+tools, the Exa tool and the scrape website tool.
+
+47
+00:02:55.440 --> 00:03:00.639
+Both our researcher and our fact checker are using the same subset of tools.
+
+48
+00:03:00.639 --> 00:03:04.399
+Now that we have our agents, we're going to move in into creating our tasks.
+
+49
+00:03:04.399 --> 00:03:09.580
+So we're going to start with our research plan task, and this task has been very specific
+
+50
+00:03:09.580 --> 00:03:12.240
+about what it wants it to do.
+
+51
+00:03:12.240 --> 00:03:17.399
+It wants the agent to, based off the user query, to research those topics.
+
+52
+00:03:17.399 --> 00:03:21.399
+It wants to understand what are the main questions and create the research plan.
+
+53
+00:03:21.399 --> 00:03:27.440
+And you can see here for the first time that we are interpolating some variables into this
+
+54
+00:03:27.440 --> 00:03:28.440
+task.
+
+55
+00:03:28.440 --> 00:03:33.440
+And this is important because as you run these agents, there will always be a component of
+
+56
+00:03:33.440 --> 00:03:38.320
+the user input, something that you're sending into this crew.
+
+57
+00:03:38.320 --> 00:03:43.479
+Whether there is a query, there is some sort of input that you want to be injected into
+
+58
+00:03:43.479 --> 00:03:44.479
+the agent.
+
+59
+00:03:44.559 --> 00:03:49.720
+And in this case, it's the user query that we're injecting right on from the first task
+
+60
+00:03:49.720 --> 00:03:54.639
+and it's going to basically inform the entire plan from this point forward.
+
+61
+00:03:54.639 --> 00:03:59.520
+Now if we look at the remainder of our tasks, you can see that we are basically using the
+
+62
+00:03:59.520 --> 00:04:03.399
+same standard that we applied so far for the other ones.
+
+63
+00:04:03.399 --> 00:04:08.679
+You can see we're using a lot of adjectives, for example, comprehensive and saying exactly
+
+64
+00:04:08.679 --> 00:04:14.080
+what we want to be included in there and what kind of like sources we want to be in there.
+
+65
+00:04:14.080 --> 00:04:18.640
+Now let's bring together the agents and the tasks into this crew so that we can actually
+
+66
+00:04:18.640 --> 00:04:19.640
+run this.
+
+67
+00:04:19.640 --> 00:04:24.200
+And this is exactly the same thing that we have done before, but now it's just more agents
+
+68
+00:04:24.200 --> 00:04:25.559
+and more tasks.
+
+69
+00:04:25.559 --> 00:04:30.000
+And remember the whole planning here is that these agents and tasks will be working in
+
+70
+00:04:30.000 --> 00:04:35.160
+a sequential fashion where one is going to take the output from the last.
+
+71
+00:04:35.160 --> 00:04:39.200
+That means that we're going to do the planning first, then gather the research based on the
+
+72
+00:04:39.200 --> 00:04:44.600
+planning, then verify that information and then writing the final report.
+
+73
+00:04:44.600 --> 00:04:48.040
+Now we still need to inject the user query into that.
+
+74
+00:04:48.040 --> 00:04:53.839
+So you can see in here that we just will have this one single query that is a string.
+
+75
+00:04:53.839 --> 00:04:57.880
+And again, I invite you to update this query later so that you can play around with different
+
+76
+00:04:57.880 --> 00:05:01.119
+topics and see what kind of answers you have.
+
+77
+00:05:01.119 --> 00:05:06.200
+But meanwhile, I'm just going to use this idea of evaluating the top five emerging AI
+
+78
+00:05:06.200 --> 00:05:09.480
+tools for automating competitive market analysis.
+
+79
+00:05:09.480 --> 00:05:13.920
+Now that we have this set up, what we can actually do is kick off our crew.
+
+80
+00:05:13.920 --> 00:05:18.119
+But differently than before, we're going to pass an input into that.
+
+81
+00:05:18.119 --> 00:05:23.399
+And this is where that interpolation magic is happening, where we're getting the user
+
+82
+00:05:23.399 --> 00:05:28.160
+query that we wrote on the cell above, and we're passing it to the crew.
+
+83
+00:05:28.160 --> 00:05:34.480
+And that will automatically interpolate that query into the tasks and agents in anywhere
+
+84
+00:05:34.480 --> 00:05:36.160
+that it's mentioned.
+
+85
+00:05:36.160 --> 00:05:41.640
+Now let's kick this off so that we can actually see the result and plot it out for us.
+
+86
+00:05:41.640 --> 00:05:46.619
+Now if we tag along this execution, we can see our researcher planner agent kick things
+
+87
+00:05:46.619 --> 00:05:51.880
+off and start creating the entire plan of what we need to find in terms of information
+
+88
+00:05:51.880 --> 00:05:53.500
+to create a report.
+
+89
+00:05:53.500 --> 00:05:57.519
+Now if you keep tagging along, things start to get even more interesting because when
+
+90
+00:05:57.519 --> 00:06:01.799
+you get to our internet researcher, this is the agent that actually can use tools.
+
+91
+00:06:02.079 --> 00:06:05.799
+And you can see in here that it's going to be using the Exa search tool.
+
+92
+00:06:05.799 --> 00:06:10.480
+And it's actually performing a search for emerging AI tools for the market analysis
+
+93
+00:06:10.480 --> 00:06:12.279
+in 2025.
+
+94
+00:06:12.279 --> 00:06:19.119
+You can actually see the tool output right under this, their URLs, the titles, the IDs,
+
+95
+00:06:19.119 --> 00:06:22.279
+and when these websites were actually published.
+
+96
+00:06:22.279 --> 00:06:27.480
+Now the internet researcher decides to scrape a specific website to gather more information
+
+97
+00:06:27.480 --> 00:06:28.799
+about one specific tool.
+
+98
+00:06:28.799 --> 00:06:32.839
+And we will do that for probably many of the websites that it's found.
+
+99
+00:06:32.839 --> 00:06:37.320
+As it scrapes this website, it creates a final answer and gives you an entire response on
+
+100
+00:06:37.320 --> 00:06:42.959
+what is all the different tools that it found and all the information that it has about
+
+101
+00:06:42.959 --> 00:06:43.959
+them.
+
+102
+00:06:43.959 --> 00:06:49.119
+I do invite you again, change the model and see how this impacts some of the outputs and
+
+103
+00:06:49.119 --> 00:06:51.720
+you're going to have a great time playing around.
+
+104
+00:06:51.720 --> 00:06:56.440
+If you keep scrolling down all the way to our fact checker agent, we can now see that
+
+105
+00:06:56.559 --> 00:07:01.760
+it's also doing searches, but it's doing searches more targeted to find features and pricing.
+
+106
+00:07:01.760 --> 00:07:06.119
+Make sure that it validates the information that it found out earlier and doing this for
+
+107
+00:07:06.119 --> 00:07:10.720
+all the different software that we found out, like Quantilope as well.
+
+108
+00:07:10.720 --> 00:07:14.839
+And all that will then go into this report that we're putting together.
+
+109
+00:07:14.839 --> 00:07:20.959
+The report writer finally gives a markdown file with the comprehensive research report
+
+110
+00:07:20.959 --> 00:07:26.799
+on the top five emerging AI tools for automating competitive analysis market in 2025.
+
+111
+00:07:26.799 --> 00:07:33.519
+And it goes over all the tools that we found from what seems to be Delve AI to Quantilope,
+
+112
+00:07:33.519 --> 00:07:41.040
+Citations, Crayon, and going into the details of each one and even mentioning specific websites
+
+113
+00:07:41.040 --> 00:07:43.559
+where it found information about those.
+
+114
+00:07:43.559 --> 00:07:48.600
+It also plots out a table for us, going over the features of each tool and showing the
+
+115
+00:07:48.600 --> 00:07:54.839
+potential limitations of them as well, including potential cost analysis and a few other things.
+
+116
+00:07:54.839 --> 00:07:59.880
+If you stick around for the next lesson, you're going to see that as we're learning more things,
+
+117
+00:07:59.880 --> 00:08:03.720
+we're actually going to bring them back into this use case and make this use case way more
+
+118
+00:08:03.720 --> 00:08:08.679
+complex, not only more complex, but way more reliable as well.
+
+119
+00:08:08.679 --> 00:08:11.000
+Talking about lessons, let's jump into our next one.
+
+120
+00:08:11.000 --> 00:08:12.519
+And I want to see you in there in a second.

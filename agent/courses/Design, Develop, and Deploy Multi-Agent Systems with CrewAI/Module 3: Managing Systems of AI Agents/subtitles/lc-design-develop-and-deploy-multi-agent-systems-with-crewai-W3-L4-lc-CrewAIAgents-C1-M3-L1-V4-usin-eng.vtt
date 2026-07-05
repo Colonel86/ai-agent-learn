@@ -1,0 +1,370 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.351 --> 00:00:03.400
+Now, there's a lot of agents being built across the world.
+
+2
+00:00:03.400 --> 00:00:05.199
+A lot of them are already online.
+
+3
+00:00:05.199 --> 00:00:09.279
+And sometimes you need your agents to collaborate with other agents in the web.
+
+4
+00:00:09.279 --> 00:00:13.520
+And A2A is a protocol that has been getting a lot of traction, and many people are starting
+
+5
+00:00:13.520 --> 00:00:14.520
+using it.
+
+6
+00:00:14.520 --> 00:00:15.880
+So let's take a look into that.
+
+7
+00:00:15.880 --> 00:00:21.920
+So as we talk about protocols before, when we discussed MCPs, there is a new protocol
+
+8
+00:00:21.920 --> 00:00:25.459
+that is coming up to allow agents to talk to other agents.
+
+9
+00:00:25.459 --> 00:00:29.000
+And that's important because we're talking about agents' communication.
+
+10
+00:00:29.000 --> 00:00:33.500
+With MCP, you give your agents the ability to call external tools.
+
+11
+00:00:33.500 --> 00:00:37.740
+And with A2A, you're giving your agents the ability to call external agents.
+
+12
+00:00:37.740 --> 00:00:39.580
+This is a brand new protocol.
+
+13
+00:00:39.580 --> 00:00:43.979
+It has not been around for long, but it is starting to get some traction.
+
+14
+00:00:43.979 --> 00:00:48.740
+And it's already supported by CrewAI and many other frameworks and vendors as well.
+
+15
+00:00:48.740 --> 00:00:54.459
+It's an open standard, the same way that MCP is, and it tries to anchor itself around
+
+16
+00:00:54.459 --> 00:00:57.419
+a few different key principles.
+
+17
+00:00:57.419 --> 00:01:02.000
+It has the idea of making things extremely simple, using the same idea of JSON-RPC and
+
+18
+00:01:02.000 --> 00:01:05.040
+SSE as MCP did.
+
+19
+00:01:05.040 --> 00:01:09.519
+And it tries to make sure that it follows strict guidelines for auth, security, and
+
+20
+00:01:09.519 --> 00:01:10.519
+monitoring.
+
+21
+00:01:10.519 --> 00:01:15.120
+The idea here is that you can have these executions happen and have this agent exchange messages
+
+22
+00:01:15.120 --> 00:01:21.459
+with each other, but not only giving them tasks, but also messages and artifacts.
+
+23
+00:01:21.459 --> 00:01:26.639
+So if you look at individual components of A2A, you're going to find that it's all about
+
+24
+00:01:26.639 --> 00:01:28.720
+these main pieces.
+
+25
+00:01:28.720 --> 00:01:34.400
+An agent card, and the idea here is basically identify the agent, its capabilities, what
+
+26
+00:01:34.400 --> 00:01:38.199
+it's able to do, any requirements that it might have.
+
+27
+00:01:38.199 --> 00:01:42.360
+For the task side, it's very similar to the way that we have tasks in Crew.
+
+28
+00:01:42.360 --> 00:01:46.199
+It's a stateful unit of work where you're delegating something that you expect this
+
+29
+00:01:46.199 --> 00:01:47.480
+agent to do.
+
+30
+00:01:47.480 --> 00:01:52.720
+The message is the interaction between these agents as they talk with each other.
+
+31
+00:01:52.720 --> 00:01:59.720
+And the artifact is the actual tangible output that was generated as a byproduct of the task
+
+32
+00:01:59.720 --> 00:02:01.199
+execution.
+
+33
+00:02:01.199 --> 00:02:05.839
+You can already see how it maps to a lot of the things that we talked in CrewAI up to
+
+34
+00:02:05.839 --> 00:02:11.520
+this point, and that justifies a lot of the traction that this A2A protocol has been getting.
+
+35
+00:02:11.520 --> 00:02:16.479
+The ability that creates this common layer that allows many different agents from different
+
+36
+00:02:16.479 --> 00:02:19.119
+technologies to talk to each other.
+
+37
+00:02:19.119 --> 00:02:24.080
+So I do want to make sure that I drive the difference here between MCP and A2A.
+
+38
+00:02:24.080 --> 00:02:31.360
+With MCP, you're allowing your LLMs or agents to connect to these external tools and stateless
+
+39
+00:02:31.360 --> 00:02:34.600
+datasets, for example, prompts and such.
+
+40
+00:02:34.600 --> 00:02:39.600
+And with A2A, what you're getting more is actually having one agent to trigger another
+
+41
+00:02:39.600 --> 00:02:40.600
+agent.
+
+42
+00:02:40.600 --> 00:02:44.240
+So they can not only talk to each other, but they can get the work done and eventually
+
+43
+00:02:44.240 --> 00:02:45.679
+report back.
+
+44
+00:02:45.720 --> 00:02:51.839
+So the key distinction here is that wrapping agents as tools fundamentally changes their
+
+45
+00:02:51.839 --> 00:02:52.839
+capabilities.
+
+46
+00:02:52.839 --> 00:02:59.000
+If you try to wrap an agent alone under MCP, that doesn't necessarily explore the full
+
+47
+00:02:59.000 --> 00:03:02.639
+extent to which you can actually use that agent.
+
+48
+00:03:02.639 --> 00:03:08.440
+And A2A is more thinking from the ground up to support agents natively instead of making
+
+49
+00:03:08.440 --> 00:03:10.240
+them as tools.
+
+50
+00:03:10.240 --> 00:03:14.440
+Both works, but A2As are definitely getting more traction nowadays.
+
+51
+00:03:14.440 --> 00:03:20.119
+Now the relationship of A2A complements MCP, so it's not like one or the other.
+
+52
+00:03:20.119 --> 00:03:24.839
+You probably will find yourself using both in a few use cases, depending on what kind
+
+53
+00:03:24.839 --> 00:03:27.360
+of external integrations you have.
+
+54
+00:03:27.360 --> 00:03:31.539
+So there are two integration approaches to use A2A with CrewAI.
+
+55
+00:03:31.539 --> 00:03:35.919
+The first one is by exposing CrewAI agents as A2A servers.
+
+56
+00:03:35.919 --> 00:03:40.039
+So you make your crew discoverable and callable by external agents.
+
+57
+00:03:40.039 --> 00:03:45.639
+And the other way is by consuming these external A2A agents as tools, enabling your crew agents
+
+58
+00:03:45.639 --> 00:03:49.759
+to delegate tasks to these other A2A compliant agents.
+
+59
+00:03:49.759 --> 00:03:51.720
+The first pattern is extremely simple.
+
+60
+00:03:51.720 --> 00:03:57.880
+You're basically wrapping up your crew behind an HTTP interface that speaks the A2A protocol.
+
+61
+00:03:57.880 --> 00:04:00.660
+So basically having an HTTP protocol.
+
+62
+00:04:00.660 --> 00:04:02.960
+And the architecture components are extremely straightforward.
+
+63
+00:04:02.960 --> 00:04:08.559
+It's using the same HTTP and JSON RPC structure that we talked about during MCP.
+
+64
+00:04:08.559 --> 00:04:14.119
+The second pattern is actually allowing your agents to call remote A2A agents from your
+
+65
+00:04:14.119 --> 00:04:15.600
+CrewAI workflow.
+
+66
+00:04:15.600 --> 00:04:20.119
+And that allows you to do it through a custom tool, where you can basically call an A2A
+
+67
+00:04:20.119 --> 00:04:21.119
+remote server.
+
+68
+00:04:21.119 --> 00:04:23.160
+And that is extremely straightforward.
+
+69
+00:04:23.160 --> 00:04:28.760
+Now the point that I want to drive across here with A2A is that, as you can see, the
+
+70
+00:04:28.760 --> 00:04:34.079
+industry is trying to get together and figure out what are the standards that we as an industry
+
+71
+00:04:34.079 --> 00:04:35.079
+wants to follow.
+
+72
+00:04:35.079 --> 00:04:37.119
+And there are many options right now.
+
+73
+00:04:37.119 --> 00:04:42.839
+It's an entire new industry and many companies and many developers and many teams are trying
+
+74
+00:04:42.839 --> 00:04:48.320
+to figure out the most responsible and efficient way to get these agents to talk to each other
+
+75
+00:04:48.320 --> 00:04:51.959
+and get these agents to use tools across the wire.
+
+76
+00:04:51.959 --> 00:04:56.760
+What you can find in A2A is a very premium protocol that has been scaling and getting
+
+77
+00:04:56.760 --> 00:05:01.720
+adoption in order to allow agents to talk with other agents on the internet.
+
+78
+00:05:01.720 --> 00:05:05.679
+It's still unclear whether there's going to be one single protocol that's going to rule
+
+79
+00:05:05.679 --> 00:05:07.399
+all the agents out there.
+
+80
+00:05:07.399 --> 00:05:12.119
+But A2A is definitely one example of one that is getting a lot of traction and that already
+
+81
+00:05:12.119 --> 00:05:14.200
+integrates and works with CrewAI.
+
+82
+00:05:14.200 --> 00:05:16.399
+And I want to make sure to highlight that.
+
+83
+00:05:16.399 --> 00:05:21.000
+Now we talked a lot about A2A in this video and we learned so much about it and how it
+
+84
+00:05:21.000 --> 00:05:23.000
+already works with CrewAI.
+
+85
+00:05:23.000 --> 00:05:26.600
+You're probably already starting to think about what agents you can actually connect
+
+86
+00:05:26.600 --> 00:05:27.600
+this into.
+
+87
+00:05:27.600 --> 00:05:29.000
+And this is very exciting.
+
+88
+00:05:29.000 --> 00:05:32.559
+Now I want to make sure that you keep engaged because in our next lesson, we're going to
+
+89
+00:05:32.559 --> 00:05:35.079
+go even deeper into a lot of these concepts that we're looking at.
+
+90
+00:05:35.079 --> 00:05:36.600
+I'm very excited about this.
+
+91
+00:05:36.600 --> 00:05:39.200
+So I want to make sure that you don't miss the next one.
+
+92
+00:05:39.200 --> 00:05:40.440
+I see you in there in a second.

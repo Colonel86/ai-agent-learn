@@ -1,0 +1,610 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.238 --> 00:00:04.639
+By now, you already know a lot about agents, you understand the agent loop, and how to
+
+2
+00:00:04.639 --> 00:00:07.960
+make them tick, and how to build something that is useful.
+
+3
+00:00:07.960 --> 00:00:11.399
+But making something easy to build is just part of that.
+
+4
+00:00:11.399 --> 00:00:15.439
+The other part is building something that you trust, something that gives you reliable
+
+5
+00:00:15.439 --> 00:00:17.319
+and repeatable outputs.
+
+6
+00:00:17.319 --> 00:00:20.639
+So in this video, we're going to talk about guardrails.
+
+7
+00:00:20.639 --> 00:00:24.840
+Guardrails are a cornerstone on how you can make these agents behave in a way that is
+
+8
+00:00:24.840 --> 00:00:26.159
+more predictable.
+
+9
+00:00:26.159 --> 00:00:30.799
+Remember, building agentic systems is so different than regular engineering.
+
+10
+00:00:30.799 --> 00:00:34.720
+Because in one, you're talking about a very strong type of software, and in the other,
+
+11
+00:00:34.720 --> 00:00:37.560
+you're talking about a non-deterministic software.
+
+12
+00:00:37.560 --> 00:00:42.159
+So guardrails play a huge role in here on how you can enforce these agents to behave
+
+13
+00:00:42.159 --> 00:00:43.159
+in different ways.
+
+14
+00:00:43.159 --> 00:00:44.759
+This is going to be very exciting.
+
+15
+00:00:44.759 --> 00:00:46.479
+Let's go into it.
+
+16
+00:00:46.479 --> 00:00:50.919
+Guardrails will allow you to add more deterministic control in your agents, and it's going to
+
+17
+00:00:50.919 --> 00:00:52.720
+allow you to do it in two ways.
+
+18
+00:00:52.720 --> 00:00:57.040
+You're going to use LLMs as a judge, or you're going to use deterministic code.
+
+19
+00:00:57.040 --> 00:01:02.400
+And we're going to talk about both, and how they play a role in our ReAct loop.
+
+20
+00:01:02.400 --> 00:01:07.000
+The next module, we're also going to talk about create-flows, which is basically the
+
+21
+00:01:07.000 --> 00:01:10.760
+outmost control if you want to go all the way into that.
+
+22
+00:01:10.760 --> 00:01:14.959
+But guardrails might just be able to solve most of our problems when you're trying to
+
+23
+00:01:14.959 --> 00:01:18.279
+enforce specific output guidelines.
+
+24
+00:01:18.279 --> 00:01:22.400
+We already have talked about this ReAct loop, which starts with the tasks and eventually
+
+25
+00:01:23.080 --> 00:01:26.239
+produces a series of actions and observations that lead to an answer.
+
+26
+00:01:26.239 --> 00:01:30.000
+And there is nothing deterministic about this process, and that is the problem.
+
+27
+00:01:30.000 --> 00:01:33.599
+For most use cases, they need very specific answers.
+
+28
+00:01:33.599 --> 00:01:38.360
+It's not necessarily that you want the same answer every time, but rather that you want
+
+29
+00:01:38.360 --> 00:01:40.839
+a reliable, repeatable outcome.
+
+30
+00:01:40.839 --> 00:01:46.000
+So the answer can be different, but it needs to be satisfactory every time you execute
+
+31
+00:01:46.000 --> 00:01:47.000
+it.
+
+32
+00:01:47.000 --> 00:01:52.319
+Now, we're already talking about this idea of a conversation and how your features and
+
+33
+00:01:52.319 --> 00:01:54.559
+prompting impact the systems.
+
+34
+00:01:54.559 --> 00:01:58.279
+And if you really think about it, these models are all about the masses and the prompts that
+
+35
+00:01:58.279 --> 00:01:59.839
+you're sending into them.
+
+36
+00:01:59.839 --> 00:02:05.639
+And it's in this mix of this agent's inner thought process that hallucinations might
+
+37
+00:02:05.639 --> 00:02:06.639
+happen.
+
+38
+00:02:06.639 --> 00:02:10.320
+And the models might come up with answers that are not necessarily correct, or they
+
+39
+00:02:10.320 --> 00:02:16.320
+start deviating a little bit from what you actually want, not only in terms of the content,
+
+40
+00:02:16.360 --> 00:02:19.440
+but also in terms of the format, or in terms of the style.
+
+41
+00:02:19.440 --> 00:02:25.600
+And that's where Guardrails can fit right in as a safe check, as a final guard to make
+
+42
+00:02:25.600 --> 00:02:28.559
+sure that the answer is satisfactory.
+
+43
+00:02:28.559 --> 00:02:33.919
+And later in Module 3, we're also going to talk about CrewAI Flows that I'm very excited
+
+44
+00:02:33.919 --> 00:02:40.679
+because Flows is the outmost way for you to build these control layers into your automations.
+
+45
+00:02:40.679 --> 00:02:46.000
+But Guardrails are amazing because they allow you to work with a lot of agency and still
+
+46
+00:02:46.000 --> 00:02:48.160
+enforce a specific output.
+
+47
+00:02:48.160 --> 00:02:52.960
+The idea here is that you can use a Guardrail to validate the actual answer, and then one
+
+48
+00:02:52.960 --> 00:02:55.119
+of two things can happen.
+
+49
+00:02:55.119 --> 00:02:58.000
+First, it doesn't pass that Guardrail.
+
+50
+00:02:58.000 --> 00:03:02.479
+So the answer doesn't meet whatever criteria you define it should do.
+
+51
+00:03:02.479 --> 00:03:05.320
+And it then goes back into the loop.
+
+52
+00:03:05.320 --> 00:03:11.000
+But the Guardrail can actually provide extra feedback on why the answer is wrong, as it's
+
+53
+00:03:11.000 --> 00:03:15.440
+injecting it back into the ReAct loop, so the agent can do better.
+
+54
+00:03:15.440 --> 00:03:20.440
+And then if the agent try another step at that, but now it passes, then the Guardrail
+
+55
+00:03:20.440 --> 00:03:25.119
+allows to go ahead in the next step and give you the actual answer.
+
+56
+00:03:25.119 --> 00:03:29.820
+So the cool thing about Guardrails is that they allow you to validate information midway
+
+57
+00:03:29.820 --> 00:03:33.600
+through a process because they operate at the task level.
+
+58
+00:03:33.600 --> 00:03:37.839
+And not only that, they also let you inject feedback back into the loop.
+
+59
+00:03:37.839 --> 00:03:43.360
+You can think this is a more deterministic human in the loop, where you also can have
+
+60
+00:03:43.360 --> 00:03:49.000
+not only your agents talk to a human in the loop for real, but now programmatically check
+
+61
+00:03:49.000 --> 00:03:50.000
+that output.
+
+62
+00:03:50.000 --> 00:03:54.080
+There are two kinds of Guardrails that you can use.
+
+63
+00:03:54.080 --> 00:04:00.880
+One is an LLM Guardrail, what is basically using another LLM as a judge, where you have
+
+64
+00:04:00.880 --> 00:04:08.479
+this LLM fact check or do something with that message in order to see if it's good or not.
+
+65
+00:04:08.479 --> 00:04:14.119
+And the other one is a Code Guardrail, where you can basically write actual code that will
+
+66
+00:04:14.119 --> 00:04:17.920
+validate to see if the answer is right or wrong.
+
+67
+00:04:17.920 --> 00:04:20.880
+And you can do both of those on CrewAI out of the box.
+
+68
+00:04:20.880 --> 00:04:26.559
+The LLM Guardrail is a little more loose because it depends on another LLM, but it's extremely
+
+69
+00:04:26.559 --> 00:04:28.079
+easy to build.
+
+70
+00:04:28.079 --> 00:04:32.920
+While the traditional Code Guardrail requires you to do some extra coding, but allows you
+
+71
+00:04:32.920 --> 00:04:35.399
+to be as specific as you want.
+
+72
+00:04:35.399 --> 00:04:40.040
+So if you think about the LLM Guardrail, what happens here is, as the agent gets the
+
+73
+00:04:40.040 --> 00:04:44.880
+final answer, it goes into this LLM Guardrail.
+
+74
+00:04:44.880 --> 00:04:50.799
+And then the Guardrail calls a separate LLM, checking if this answer is reasonable, given
+
+75
+00:04:50.799 --> 00:04:52.399
+some certain criteria.
+
+76
+00:04:52.399 --> 00:04:55.880
+And if it's not, then it goes back into the thought process.
+
+77
+00:04:55.880 --> 00:04:57.940
+And if it's good, it can move on.
+
+78
+00:04:57.940 --> 00:05:03.959
+An example here for the Code Guardrail would actually be something a little more deterministic,
+
+79
+00:05:03.959 --> 00:05:07.279
+like checking, for example, the answer length.
+
+80
+00:05:07.279 --> 00:05:10.600
+So you can check what is the answer and count the characters.
+
+81
+00:05:10.600 --> 00:05:15.519
+And if the characters are less than 200, because you have a hard requirement that needs to
+
+82
+00:05:15.519 --> 00:05:20.799
+be a short answer, then the code is good to go and the task is done.
+
+83
+00:05:20.799 --> 00:05:24.359
+But if it's not, it then sends it back to the ReAct loop.
+
+84
+00:05:24.359 --> 00:05:29.299
+So in here, you can see that with the Code Guardrails, you can be very specific and use
+
+85
+00:05:29.299 --> 00:05:32.480
+regular Python to implement these checks.
+
+86
+00:05:32.480 --> 00:05:38.079
+And with LLMs, you can just tell another LLM to fact check something or to do any sort
+
+87
+00:05:38.079 --> 00:05:41.000
+of other checks that the LLM might be able to.
+
+88
+00:05:41.000 --> 00:05:45.440
+The cool thing about this, it doesn't matter if you're using a Code Guardrail or if you're
+
+89
+00:05:45.440 --> 00:05:51.040
+using an LLM Guardrail, there is always some feedback on the reason why it didn't pass
+
+90
+00:05:51.040 --> 00:05:55.160
+that Guardrail that you can send back to the ReAct loop.
+
+91
+00:05:55.160 --> 00:06:00.440
+In the case of an LLM Guardrail, that will be automatically generated and send it back.
+
+92
+00:06:00.440 --> 00:06:06.000
+But in the case of a Code Guardrail, you can dynamically set what is the reason, telling
+
+93
+00:06:06.000 --> 00:06:10.399
+maybe this answer is too long, it needs to be only 200 characters long.
+
+94
+00:06:10.399 --> 00:06:15.359
+And that will send that information back into ReAct loop and allow your agent to take in
+
+95
+00:06:15.359 --> 00:06:21.079
+that information and try to rewrite that final answer or maybe take more actions in order
+
+96
+00:06:21.079 --> 00:06:24.959
+to achieve something that is acceptable by the Guardrail.
+
+97
+00:06:24.959 --> 00:06:28.679
+Let me show you some real quick code to show you how this works.
+
+98
+00:06:28.679 --> 00:06:34.799
+For a Code Guardrail, the way that you would do is just define a simple function in Python.
+
+99
+00:06:34.799 --> 00:06:40.640
+And that function will take an output as a string that will be basically its argument.
+
+100
+00:06:40.640 --> 00:06:45.119
+It's going to be what the agent is sending to this function to be validated.
+
+101
+00:06:45.119 --> 00:06:48.119
+Inside that function, you can do anything that you want.
+
+102
+00:06:48.119 --> 00:06:52.320
+In this case, we're keeping it simple and just checking if the word count is less than
+
+103
+00:06:52.320 --> 00:06:53.359
+200.
+
+104
+00:06:53.359 --> 00:06:58.760
+If that is true, that will allow your agent to progress on and give its final answer and
+
+105
+00:06:58.760 --> 00:07:00.839
+move on with the next one.
+
+106
+00:07:00.839 --> 00:07:07.200
+But if that is false, you can also include a reason in here on why it's not good.
+
+107
+00:07:07.200 --> 00:07:12.160
+And that information is going to be injected back into the agent to try it once more.
+
+108
+00:07:12.160 --> 00:07:16.880
+And in order for you to actually add that Guardrail to the agent itself, all you got
+
+109
+00:07:16.880 --> 00:07:22.279
+to do is add this new attribute to your task that is Guardrail.
+
+110
+00:07:22.279 --> 00:07:26.279
+And you can add multiple as well so that it takes an array as a value, meaning that
+
+111
+00:07:26.279 --> 00:07:28.959
+you can add many different Guardrails.
+
+112
+00:07:28.959 --> 00:07:35.420
+Not only a Code Guardrail, but an LLM Guardrail as well, or however many you want to be there.
+
+113
+00:07:35.420 --> 00:07:40.600
+Another way that you also want to think about getting better outcomes is by enforcing structured
+
+114
+00:07:40.600 --> 00:07:41.600
+outputs.
+
+115
+00:07:41.600 --> 00:07:46.059
+And that just allows you to make sure that whatever you're getting out of your agents
+
+116
+00:07:46.059 --> 00:07:50.440
+and crew, it's following a specific format that you expect.
+
+117
+00:07:50.600 --> 00:07:54.200
+And this can be super helpful, especially if you're planning to do something with that
+
+118
+00:07:54.200 --> 00:07:55.200
+data.
+
+119
+00:07:55.200 --> 00:07:59.359
+So if you're sending this data somewhere, like an external application, or if you're
+
+120
+00:07:59.359 --> 00:08:04.399
+trying to take an action based on this output, it might be better for you to understand what
+
+121
+00:08:04.399 --> 00:08:07.399
+exactly is the format that you're getting.
+
+122
+00:08:07.399 --> 00:08:12.880
+And you can use Pydantic here to actually enforce this format and making sure that the
+
+123
+00:08:12.880 --> 00:08:16.839
+output of the crew always map to what you need.
+
+124
+00:08:16.839 --> 00:08:21.519
+So one of the options that you have to enforce the particular format is to use a dedicated
+
+125
+00:08:21.519 --> 00:08:22.519
+formatter agent.
+
+126
+00:08:22.519 --> 00:08:28.279
+And this strategy is easier to test because it makes the formatting a specialized role.
+
+127
+00:08:28.279 --> 00:08:33.320
+The ultimate formatting enforcement is using Pydantic models though, where you can actually
+
+128
+00:08:33.320 --> 00:08:39.760
+use a separate LLM if you want to, just to do that structured function calling output.
+
+129
+00:08:39.760 --> 00:08:46.020
+So you can create your own class, for example, this user query class that uses Pydantic base
+
+130
+00:08:46.020 --> 00:08:50.460
+model to define a series of attributes for that class.
+
+131
+00:08:50.460 --> 00:08:55.659
+Then now you can actually pass that class as the example of the output that you want
+
+132
+00:08:55.659 --> 00:08:57.739
+to get from this agent.
+
+133
+00:08:57.739 --> 00:09:03.820
+And the agent will actually enforce to get that output out of the LLM, either by using
+
+134
+00:09:03.820 --> 00:09:09.820
+function calling, if that LLM has that available, or by asking it to return JSON in that specific
+
+135
+00:09:09.820 --> 00:09:12.539
+format and checking against that.
+
+136
+00:09:12.539 --> 00:09:17.820
+And the cool thing here is that you may choose to get either a Pydantic object instance at
+
+137
+00:09:17.820 --> 00:09:21.979
+the end of this, or the JSON structure for this object.
+
+138
+00:09:21.979 --> 00:09:26.460
+And you can specify that by setting either output Pydantic or output JSON.
+
+139
+00:09:26.460 --> 00:09:32.419
+And in that way, you make sure that you always get the same format output that you care about.
+
+140
+00:09:32.419 --> 00:09:36.059
+And then you can do whatever you want with that structured output.
+
+141
+00:09:36.059 --> 00:09:42.059
+So for example, in this user query example, you might want to push the text into a database,
+
+142
+00:09:42.059 --> 00:09:48.340
+but only if the confidence score is above five or seven or whatever it might be.
+
+143
+00:09:48.340 --> 00:09:53.260
+So you can see that by defining not only the object, but the types of the attributes that
+
+144
+00:09:53.260 --> 00:09:58.539
+you're getting, allows you now to use these attributes to do conditional logic, or many
+
+145
+00:09:58.539 --> 00:10:00.179
+other things.
+
+146
+00:10:00.179 --> 00:10:05.020
+For now, I'm very excited about the next topic, and that is execution hooks.
+
+147
+00:10:05.020 --> 00:10:10.500
+We very high level mentioning a few lessons ago, but now we're going to go deep into why
+
+148
+00:10:10.500 --> 00:10:13.460
+they exist and how you can use them.
+
+149
+00:10:13.460 --> 00:10:17.460
+Especially now that we're bringing all those things together, what is the reason why you
+
+150
+00:10:17.460 --> 00:10:22.140
+have hooks, and what are some of the interesting things that it will allow you to do for your
+
+151
+00:10:22.140 --> 00:10:23.340
+use cases.
+
+152
+00:10:23.340 --> 00:10:24.900
+So I'll see you out there in a second.

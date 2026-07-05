@@ -1,0 +1,252 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.642 --> 00:00:05.360
+Welcome to Module 2. Very excited to have you in here. In this module, we're going to start to get
+
+2
+00:00:05.360 --> 00:00:11.520
+deeper understanding on everything that we learned so far. So we're going to start by looking into
+
+3
+00:00:11.520 --> 00:00:17.120
+how these agents actually work. What is the agent loop that is happening behind the scenes?
+
+4
+00:00:17.120 --> 00:00:22.000
+How they make plans and they execute tasks and how they reflect on the outputs that they get.
+
+5
+00:00:22.000 --> 00:00:25.520
+This is going to be very exciting because now you're going to start to understanding
+
+6
+00:00:25.520 --> 00:00:30.319
+how they tick in a way that we haven't done before. So let's dive into the slides.
+
+7
+00:00:30.319 --> 00:00:36.240
+So we already have discussed crews and how multi-agents works and how you can get some of
+
+8
+00:00:36.240 --> 00:00:41.759
+them to work together to accomplish a task. And these agents can collaborate in so many different
+
+9
+00:00:41.759 --> 00:00:48.000
+ways for accomplish all sorts of activities. We're talking about research, content creation,
+
+10
+00:00:48.000 --> 00:00:52.880
+analysis, writing reports. There's many different ways that you can actually do it.
+
+11
+00:00:52.880 --> 00:00:58.959
+But for just one second, I want to zoom in into one specific agent and I want to talk about the
+
+12
+00:00:58.959 --> 00:01:06.160
+react loop. And that is basically what drives these agents. The ability to reason, to act,
+
+13
+00:01:06.160 --> 00:01:12.000
+and to go through this over and over again up to the point that they get to a conclusion or a final
+
+14
+00:01:12.000 --> 00:01:16.559
+output. So the LLMs will reason about the next steps. They're going to have some thought about
+
+15
+00:01:16.559 --> 00:01:22.239
+what to do next. Then potentially take an action and observe what is the output of that action.
+
+16
+00:01:22.239 --> 00:01:27.680
+And then either give it an answer or go back into the thought process to decide what it's going to
+
+17
+00:01:27.680 --> 00:01:34.319
+do next. So as it goes through the process of, for example, creating something or researching
+
+18
+00:01:34.319 --> 00:01:40.559
+something, it's going to decide, well, in order to go ahead, I will need to use a tool. And once they
+
+19
+00:01:40.559 --> 00:01:46.639
+get that information, it might understand that needs even more. So it goes back in the process
+
+20
+00:01:46.639 --> 00:01:53.599
+of choosing another tool to use. So this is the more standard run-of-the-mill react loop. Now,
+
+21
+00:01:53.599 --> 00:01:59.440
+there's many different steps that you can add in this loop as well. Many people and agents now
+
+22
+00:01:59.440 --> 00:02:06.239
+actually require a plan phase where you might want your agents to do some reasoning prior to start
+
+23
+00:02:06.239 --> 00:02:12.000
+executing. And that plan will then impact the things that's going to do next. This is known
+
+24
+00:02:12.000 --> 00:02:17.360
+for allowing agents to perform sometimes more complex work or more complex tasks as well.
+
+25
+00:02:17.360 --> 00:02:22.720
+So it could be a very interesting tactics. You can actually enable those on CrewAI by just
+
+26
+00:02:22.720 --> 00:02:28.639
+citing a flag reasoning to true as you're going to see in future examples. Now, not only that,
+
+27
+00:02:28.639 --> 00:02:34.080
+we talked a lot about memory and guardrails. So they play a role in here too. Basically,
+
+28
+00:02:34.080 --> 00:02:41.679
+the memory will be feeding information in and out of every single step. So every time that the agent
+
+29
+00:02:41.679 --> 00:02:47.360
+has some thought or some action, that will basically create memories that will be injected
+
+30
+00:02:47.360 --> 00:02:52.479
+back into the agent memory. But the same way, the agent will pull from its memory when it's
+
+31
+00:02:52.479 --> 00:02:59.360
+decided what needs to do next. And guardrails will then join in a later stage to prevent or
+
+32
+00:02:59.360 --> 00:03:05.199
+gate answers from getting out before they are actually complete and up to the standards of
+
+33
+00:03:05.199 --> 00:03:10.720
+your use case. So this is a very interesting example. And there's so many different things
+
+34
+00:03:10.720 --> 00:03:15.199
+that you can do in here and so many different variations of this loop that you can add.
+
+35
+00:03:15.199 --> 00:03:20.559
+But let's just stick with the ReAct loop for simplicity, so we can understand a little bit
+
+36
+00:03:20.559 --> 00:03:26.800
+more on what happens on these workflows. So you can have not only one agent doing this flow,
+
+37
+00:03:26.800 --> 00:03:32.559
+but multiple agents. So whenever we have our crew and each agent performing different tasks,
+
+38
+00:03:32.559 --> 00:03:37.199
+there are actually multiple react loops that are running on the background. And you can have that
+
+39
+00:03:37.199 --> 00:03:42.960
+react loop from one agent, then trigger three other new agents. So basically, it's more of a
+
+40
+00:03:42.960 --> 00:03:49.919
+manager agent that is delegating work to multiple others and not only deciding what to delegate
+
+41
+00:03:49.919 --> 00:03:56.399
+and how to delegate it, but then reviewing those results that are coming back and expecting that
+
+42
+00:03:56.399 --> 00:04:01.679
+these agents are going to perform these actions in parallel. And eventually, for example,
+
+43
+00:04:01.679 --> 00:04:07.039
+consolidating to one final agent. So in this example, you can have the initial agent is
+
+44
+00:04:07.039 --> 00:04:12.320
+delegating a series of tasks to the other agents, and then a final agent is going to do a reporting
+
+45
+00:04:12.320 --> 00:04:17.119
+on that. So it's bringing up all the information from those agents and the tasks that they
+
+46
+00:04:17.119 --> 00:04:22.959
+accomplished into their report. You might have noticed that we added a concept of before
+
+47
+00:04:22.959 --> 00:04:28.399
+and after hooks, and we will discuss those in the following lessons. But sometimes you need
+
+48
+00:04:28.399 --> 00:04:34.079
+these hooks to execute code either before or after the crew does its work. And this is going to
+
+49
+00:04:34.079 --> 00:04:40.959
+play a role on how you pull data from places or push data into places as well. In the end of the
+
+50
+00:04:40.959 --> 00:04:46.799
+day, we're spending a lot of time talking about controlling agents and how to provide deterministic
+
+51
+00:04:46.799 --> 00:04:54.079
+controls on these probabilistic systems that AI agents are. In the end of the day, we're covering
+
+52
+00:04:54.079 --> 00:04:59.359
+a few different things you can use. And right now, I'd love to dive more into three of them.
+
+53
+00:04:59.920 --> 00:05:06.720
+Memory that gets dynamically updated context to help your agents to learn better over time.
+
+54
+00:05:07.359 --> 00:05:14.799
+Guardrails that add either deterministic or probabilistic controls and checks on your output,
+
+55
+00:05:14.799 --> 00:05:21.279
+depending on whether you're using LLM as a judge or code guardrails. And hooks that allows you to
+
+56
+00:05:21.279 --> 00:05:27.519
+execute deterministic code either before or after agents. There's one topic that we're saving for the
+
+57
+00:05:27.519 --> 00:05:33.760
+next module that are flows that are basically the ultimate lever for control. But for now, I want to
+
+58
+00:05:33.760 --> 00:05:40.720
+talk about the street deterministic controls that you have so you can use them to provide your use
+
+59
+00:05:40.720 --> 00:05:46.880
+cases with a high degree of reliability than what you would have without them. So in your next
+
+60
+00:05:46.880 --> 00:05:51.600
+lesson, we're going to talk about memory specifically. It's a very exciting topic
+
+61
+00:05:51.600 --> 00:05:55.920
+because we're really going to dig into all the different kinds of memory and how that
+
+62
+00:05:55.920 --> 00:06:00.160
+works. So this is very exciting and I hope to see you in there right now.
+
+

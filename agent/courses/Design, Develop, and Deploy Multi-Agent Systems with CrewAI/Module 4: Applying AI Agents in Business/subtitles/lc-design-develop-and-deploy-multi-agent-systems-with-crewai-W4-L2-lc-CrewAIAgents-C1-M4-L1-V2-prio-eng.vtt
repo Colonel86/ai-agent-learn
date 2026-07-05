@@ -1,0 +1,418 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.694 --> 00:00:05.679
+Given everything that we learned so far, you are probably very excited about all the use cases and
+
+2
+00:00:05.679 --> 00:00:10.399
+how you can apply AI agents to your day-to-day. And even within your company and teams,
+
+3
+00:00:10.399 --> 00:00:15.600
+you might be talking about some of these use cases. But how do you prioritize these use cases?
+
+4
+00:00:15.600 --> 00:00:21.280
+How other companies have done this? And what are the commonalities in successful implementations,
+
+5
+00:00:21.280 --> 00:00:27.280
+even across different domains? So let's explore these drivers of success so that we understand
+
+6
+00:00:27.280 --> 00:00:33.279
+how you can apply that to your own use cases. You will learn how AI builders progress from zero to
+
+7
+00:00:33.279 --> 00:00:38.959
+one in agents adoption. And not only do that, but they do it in a way that's scalable. So let's
+
+8
+00:00:38.959 --> 00:00:44.240
+dive right in. So this module is all about what happens when companies are adopting AI agents.
+
+9
+00:00:44.240 --> 00:00:48.959
+So let's explore the drivers of successful multi-agent systems. What are the companies
+
+10
+00:00:48.959 --> 00:00:54.000
+that are doing successful use cases and deploying CrewAI successfully have in common?
+
+11
+00:00:54.000 --> 00:00:58.880
+You learn how teams progress from zero to one. And we're going to talk not only about that,
+
+12
+00:00:58.880 --> 00:01:05.440
+but how the AI agent adoption quickly spread within these teams across their organizations.
+
+13
+00:01:05.440 --> 00:01:10.639
+So there's a few common success patterns that we have identified. The first one is
+
+14
+00:01:10.639 --> 00:01:17.120
+high-frequency use cases typically make for very successful implementations. When agents run many
+
+15
+00:01:17.120 --> 00:01:23.040
+times per week or per month, they generate compounding returns on investment at scale.
+
+16
+00:01:23.040 --> 00:01:28.000
+That makes it easier for companies to decide to invest in these sorts of use cases. So you want
+
+17
+00:01:28.000 --> 00:01:32.959
+to make sure that you're looking for high-frequency use cases, at least to get some of these early
+
+18
+00:01:32.959 --> 00:01:39.440
+wins. The other common success pattern is this idea of a clear success criteria that you can
+
+19
+00:01:39.440 --> 00:01:44.559
+measure. And it's essential for you to understand what it is. And having this matrix defined early
+
+20
+00:01:44.559 --> 00:01:50.000
+on in the project really helps. So defining a consensus and having a consensus around
+
+21
+00:01:50.000 --> 00:01:54.959
+how it's going to be or what it's going to be, the evaluation criteria can really impact your use
+
+22
+00:01:54.959 --> 00:02:02.559
+cases. The other thing is this idea of a reasonable fallback paths, meaning that if it's necessary
+
+23
+00:02:02.559 --> 00:02:10.080
+either to go to a human-in-the-loop or having guardrails or LLM guardrails or use AI flows to
+
+24
+00:02:10.080 --> 00:02:15.360
+add more structure to your automation, which allows you to be more intentional about the fallbacks,
+
+25
+00:02:15.360 --> 00:02:20.720
+can have a huge impact. And it's also a pattern that we have noticed. And the final thing that I
+
+26
+00:02:20.720 --> 00:02:25.279
+want to make sure that I mention is this idea of the measuring outcomes. You do need traces,
+
+27
+00:02:25.279 --> 00:02:29.839
+observability and monitoring placed to track performance. And when these characteristics
+
+28
+00:02:29.839 --> 00:02:35.039
+are present in your use case, you're likely looking at a strong candidate for an AI agent,
+
+29
+00:02:35.039 --> 00:02:40.160
+assuming the use case actually benefits from agents in the first place, meaning that you should
+
+30
+00:02:40.160 --> 00:02:45.279
+be searching for a high-frequency use case where you can get a consensus on how you're going to
+
+31
+00:02:45.279 --> 00:02:51.759
+evaluate. You can map the reasonable fallback paths by using CrewAIAI flows or one of the other
+
+32
+00:02:51.759 --> 00:02:56.160
+features that we learned. You need to make sure that you're measuring the outcomes with some of
+
+33
+00:02:56.160 --> 00:03:02.080
+the things that we show you throughout the course. Now you do that, you do get amazing results.
+
+34
+00:03:02.800 --> 00:03:07.839
+There are certain companies out there, they're getting to 80 to over 90%
+
+35
+00:03:07.839 --> 00:03:13.759
+efficiency gains on some of these use cases. And these gains are possible. You can actually
+
+36
+00:03:13.759 --> 00:03:19.360
+achieve them. You must truly understand what you're optimizing though. Let's talk about how
+
+37
+00:03:19.360 --> 00:03:25.839
+you understand what you're optimizing for. Because we talked about a few use cases in our last lesson
+
+38
+00:03:25.839 --> 00:03:30.639
+and some teams optimize for efficiency gains while others optimize for generating revenue.
+
+39
+00:03:30.639 --> 00:03:36.399
+How you approach these different goals and what you measure in each case will be vastly different.
+
+40
+00:03:36.399 --> 00:03:43.119
+Let me actually show you an example, a real world example of how one of our customers adopted
+
+41
+00:03:43.119 --> 00:03:50.160
+CrewAI and how they did it. What they learned across the process, how fast they moved and what
+
+42
+00:03:50.160 --> 00:03:54.880
+that looked like for them. So this is going to reference something that we have seen before.
+
+43
+00:03:54.880 --> 00:04:01.679
+This company that initially engaged with us on that price ops use case and they got their first
+
+44
+00:04:01.679 --> 00:04:07.839
+use case live within weeks. You already know that this was basically a pricing operation for changing
+
+45
+00:04:07.839 --> 00:04:13.679
+prices, looking at coupons and discounts and they got amazing accuracy and amazing efficiency gains
+
+46
+00:04:13.679 --> 00:04:19.440
+from that. Now from that point on, we actually expanded to three new use cases and then we did
+
+47
+00:04:19.440 --> 00:04:25.920
+a co-joined use case roadmap. From that roadmap, we then expanded to five new use cases in one
+
+48
+00:04:25.920 --> 00:04:31.440
+single month with other business units. And that ended up leading to an expansion across many
+
+49
+00:04:31.440 --> 00:04:37.040
+different regions. And just for you to keep in mind, this was not all unicorns and rainbows.
+
+50
+00:04:37.040 --> 00:04:44.000
+When we first deployed their price ops use case, the accuracy was more around 60%. So there was a
+
+51
+00:04:44.000 --> 00:04:50.320
+few weeks where we were basically improving on that baseline, on that valid set that we have
+
+52
+00:04:50.320 --> 00:04:57.839
+to make sure that we got to that 97% accuracy. So this was a very remarkable point for us because
+
+53
+00:04:57.839 --> 00:05:03.920
+we got to understand and see, both us and the customer, what that actually looks like when you're
+
+54
+00:05:03.920 --> 00:05:10.880
+adopting these agents. And then if you look how this played out in how many agents they're running,
+
+55
+00:05:10.880 --> 00:05:16.399
+you can actually see from their first use case that they're casting to the initial scale that
+
+56
+00:05:16.399 --> 00:05:22.000
+they're adding into that, to the point that the word starts to getting out in the company, to the
+
+57
+00:05:22.000 --> 00:05:27.839
+point that they actually start to expand on their usage. We then deploy those five use cases in one
+
+58
+00:05:27.839 --> 00:05:32.480
+single month with them and eventually the implementation expanded globally across many
+
+59
+00:05:32.480 --> 00:05:38.959
+different regions to a master agreement service with them. And then this whole chart that is
+
+60
+00:05:38.959 --> 00:05:44.559
+looking beautiful up to this point becomes a flat line because they go from zero to a hundred
+
+61
+00:05:44.559 --> 00:05:50.880
+thousand executions in around 15 days. So the adoption pattern in this company is very interesting
+
+62
+00:05:50.880 --> 00:05:56.959
+to observe over time. If you see the number of pre-executions in the company, it starts very modestly.
+
+63
+00:05:56.959 --> 00:06:02.399
+And as the word starts to spread and you deploy more use cases, and you can start to see value,
+
+64
+00:06:02.399 --> 00:06:07.359
+and you can start to see patterns, and you can start to see people feeling invested into this,
+
+65
+00:06:07.359 --> 00:06:13.359
+the expansion and the adoption really gets momentum and starts to expand abruptly from there.
+
+66
+00:06:13.359 --> 00:06:17.920
+And this has been a very exciting use case to see and something that we're seeing across
+
+67
+00:06:17.920 --> 00:06:23.440
+different companies in shapes and forms. If you actually look at the industry right now,
+
+68
+00:06:23.440 --> 00:06:29.760
+I would say there's at least five different levels of the adoption life cycle. And I do want to call
+
+69
+00:06:29.760 --> 00:06:35.920
+it out that level five in here is very aspirational for bigger companies. Some of the new startups,
+
+70
+00:06:35.920 --> 00:06:40.559
+they might start as a level five, just because they're being built from the ground up for AI
+
+71
+00:06:40.559 --> 00:06:48.239
+agents. But many, many companies are actually in level one or two. And what we help them with is
+
+72
+00:06:48.239 --> 00:06:53.359
+bringing them from that all the way to level four and eventually getting them to level five as well.
+
+73
+00:06:53.359 --> 00:06:59.760
+But the idea here is that you got to start testing this out. You got to start to throwing things like
+
+74
+00:06:59.760 --> 00:07:05.519
+the wall. You got to start building these use cases. And as you do, you grow in conviction
+
+75
+00:07:05.519 --> 00:07:10.000
+and understanding of how these use cases can help you and how you can actually build it.
+
+76
+00:07:10.559 --> 00:07:16.880
+Now, I do want to make sure that I point out that, again, not everything is unicorn and rainbows.
+
+77
+00:07:16.880 --> 00:07:21.839
+And there is actually a few common failure patterns that happen as well. So let's talk
+
+78
+00:07:21.839 --> 00:07:29.440
+about those next. We have seen and learn where agents fail. And this usually happens when you
+
+79
+00:07:29.440 --> 00:07:36.160
+have ill-defined goals. The agents also can fail not only because you didn't find their goals
+
+80
+00:07:36.160 --> 00:07:42.160
+properly, but because it lacks the observability, meaning that you can't understand how your agents
+
+81
+00:07:42.160 --> 00:07:48.000
+are working or if they're working at all. Then it also has the problem that we already talked about,
+
+82
+00:07:48.000 --> 00:07:53.839
+that is the no clear definition of success or no clarity on how you're going to evaluate this.
+
+83
+00:07:54.399 --> 00:08:00.799
+And sometimes as a result of the unclear goals, there is no way to track or to proper monitor
+
+84
+00:08:00.799 --> 00:08:06.239
+the return on investment that you're doing on this one. And most importantly, there is no honor
+
+85
+00:08:06.320 --> 00:08:12.640
+for the integrations. There is no key person to keep things improving. There is no team that now
+
+86
+00:08:12.640 --> 00:08:18.320
+owns these implementations going forward. You can see many companies trying to define centers of
+
+87
+00:08:18.320 --> 00:08:24.079
+excellence or specific teams or having many teams pick and choose their own tools. And I'm not going
+
+88
+00:08:24.079 --> 00:08:29.040
+to say there's a right or wrong way of doing this, but you definitely want to make sure that there's
+
+89
+00:08:29.040 --> 00:08:35.599
+an accountability on who is pushing this initiative forward, who is driving, who is actually moving the
+
+90
+00:08:35.599 --> 00:08:41.119
+needle on this one. So if you are on a team that is trying to figure out how to get your own use
+
+91
+00:08:41.119 --> 00:08:47.039
+cases started and deployed, these are things that you should watch for. Make sure that you're not
+
+92
+00:08:47.039 --> 00:08:51.359
+falling into these traps. At the same time, understand that there is a process between
+
+93
+00:08:51.359 --> 00:08:57.119
+rolling out agents and improving them over time that leads to greater results. And I'm very excited
+
+94
+00:08:57.119 --> 00:09:03.840
+that we are getting the chance to talk about this, especially because if you do invest your time in
+
+95
+00:09:03.840 --> 00:09:08.640
+perfecting these use cases, you can achieve amazing results. But that requires you to put
+
+96
+00:09:08.640 --> 00:09:13.440
+some effort on that. Now, I want to make sure that we go into our next lesson. And I'm very excited
+
+97
+00:09:13.440 --> 00:09:18.880
+about that one as well, because we spent time on some of these companies and we're going to
+
+98
+00:09:18.880 --> 00:09:24.719
+actually bring these companies into the course. And I want to talk with them. I want to chat with
+
+99
+00:09:24.719 --> 00:09:29.760
+them about what they're actually doing with CrewAI and how they're building the AI agents.
+
+100
+00:09:29.760 --> 00:09:34.640
+They will help us understand how they achieve success and what struggles they faced and what
+
+101
+00:09:34.640 --> 00:09:38.960
+are the things that they're doing right. I want to make sure you're not only hearing from me,
+
+102
+00:09:38.960 --> 00:09:43.919
+but you're hearing directly from people that are building these agents and using your technology.
+
+103
+00:09:43.919 --> 00:09:47.440
+So I want to see you in the next lesson. This is going to be completely different from what
+
+104
+00:09:47.440 --> 00:09:52.559
+we have done so far. You don't want to miss this one out. So I'll see you there right now.

@@ -1,0 +1,754 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.298 --> 00:00:05.880
+Next, we're going to hear from Snyk. Snyk is a software company focused on security,
+
+2
+00:00:05.880 --> 00:00:12.119
+a platform that is serving over 2.5 million developers on making sure they are building
+
+3
+00:00:12.119 --> 00:00:17.719
+secure code. And they are using CrewAI to drive multi-agent automations of security
+
+4
+00:00:17.719 --> 00:00:23.520
+processes. And they're also integrating their own platform with CrewAI agents so that people
+
+5
+00:00:23.520 --> 00:00:29.959
+that are using Crews can make sure that their code is secure and ready for production.
+
+6
+00:00:29.959 --> 00:00:36.200
+They are making major strides and investments in multi-agent systems and how to track vulnerabilities
+
+7
+00:00:36.200 --> 00:00:42.040
+and security concerns on that new trend that is now powering the software industry. I'm
+
+8
+00:00:42.040 --> 00:00:45.520
+very excited to hear from them. So let's jump right into that.
+
+9
+00:00:45.520 --> 00:00:50.119
+Thank you so much for joining us. Very excited about this. We're trying to wrap things up
+
+10
+00:00:50.119 --> 00:00:54.840
+and talk with experts in the industry like ourselves about what are some of the things
+
+11
+00:00:54.840 --> 00:00:59.799
+that you're seeing from our perspective. And I think you have a unique perspective
+
+12
+00:00:59.799 --> 00:01:06.000
+in here because you worked with Snyk basically thinking about security for years. So I'd
+
+13
+00:01:06.000 --> 00:01:11.720
+love to ask you a few questions. And specifically, as the agentic space continues to evolve,
+
+14
+00:01:11.720 --> 00:01:16.440
+how important security is to the broader ecosystem in your take?
+
+15
+00:01:16.440 --> 00:01:21.919
+Well, yeah, first off, thanks for having me. Excited to be here. And yeah, I mean, at Snyk,
+
+16
+00:01:21.919 --> 00:01:26.800
+our entire business is really built around helping people build secure applications.
+
+17
+00:01:26.800 --> 00:01:31.000
+That's kind of what we do. And I think it's more important than ever now that we have
+
+18
+00:01:31.000 --> 00:01:36.080
+agentic systems like those built with Crew, which we are a huge fan of and me personally
+
+19
+00:01:36.080 --> 00:01:40.919
+use Crew all the time. It's great. But as you can probably imagine, for all of you students
+
+20
+00:01:40.919 --> 00:01:44.279
+who are going through the course right now, when you're building agentic systems, there's
+
+21
+00:01:44.279 --> 00:01:48.040
+a lot of things you have to keep in mind, right? So you might use a framework like Crew,
+
+22
+00:01:48.040 --> 00:01:52.160
+which is fantastic for organizing your agents and having them communicate with each other,
+
+23
+00:01:52.160 --> 00:01:56.480
+give them access to different tools and things like that, which is fantastic. But it does
+
+24
+00:01:56.480 --> 00:02:02.319
+open up all new types of risks to consider. So for example, when you have an agent doing
+
+25
+00:02:02.319 --> 00:02:06.800
+something and passing that information to another agent, you have to think through things
+
+26
+00:02:06.800 --> 00:02:12.639
+that before in the deterministic world were a little simpler. Like are there any things
+
+27
+00:02:12.639 --> 00:02:17.720
+this agent could do when combined with another agent that might cause problems?
+
+28
+00:02:17.720 --> 00:02:22.559
+In our space, we actually call this toxic flows. So one of the things we do at Snyk
+
+29
+00:02:22.559 --> 00:02:27.720
+is we have tools that will actually analyze your agents, your MCP servers, and all the
+
+30
+00:02:27.720 --> 00:02:33.679
+tools that you have hooked up into your applications. Look at the tool definitions and figure out
+
+31
+00:02:33.679 --> 00:02:39.000
+what each tool is doing, and then use generative AI on the backend to actually apply a bunch
+
+32
+00:02:39.000 --> 00:02:44.679
+of guardrails and filters to help better understand what type of risks could happen when certain
+
+33
+00:02:44.679 --> 00:02:49.399
+tools are exposed to certain agents. So that's just like one of the new types of security
+
+34
+00:02:49.399 --> 00:02:53.440
+things to consider. But obviously it's a very big field. There's a lot of things that go
+
+35
+00:02:53.440 --> 00:02:54.440
+into it.
+
+36
+00:02:54.440 --> 00:02:58.720
+No, but that is so interesting because again, I think that's where the experience comes
+
+37
+00:02:58.720 --> 00:03:03.000
+up. Like I imagine like what your folks are seeing out there in order to even think about
+
+38
+00:03:03.000 --> 00:03:06.679
+all these edge cases, right? What are some of the general kind of like key challenges
+
+39
+00:03:06.679 --> 00:03:11.919
+that your team is seeing when it comes to rolling out this workflow securely like that?
+
+40
+00:03:11.919 --> 00:03:17.440
+Yeah, there's a ton. So from our perspective as a security developer, security company,
+
+41
+00:03:17.440 --> 00:03:21.800
+we basically, the way that we kind of work, if you will, and I think this will help everyone
+
+42
+00:03:21.800 --> 00:03:25.520
+really understand the field a little bit better. We basically take a look at a few different
+
+43
+00:03:25.520 --> 00:03:30.320
+things to build out a security framework. So first of all, we take a look at the actual
+
+44
+00:03:30.320 --> 00:03:34.759
+code of your application. So for years and years now, we've had tools that do static
+
+45
+00:03:34.759 --> 00:03:40.039
+code analysis. So first of all, we'll actually analyze custom code you're building, and we'll
+
+46
+00:03:40.039 --> 00:03:45.039
+look for really obvious security issues, right? Like everybody is aware of things like
+
+47
+00:03:45.039 --> 00:03:50.759
+SQL injection attacks or cross-site scripting attacks. Those things can be easily detected
+
+48
+00:03:50.759 --> 00:03:55.320
+using deterministic logic, let's just say. So you don't actually need an LLM to detect
+
+49
+00:03:55.320 --> 00:04:00.279
+that. And they can be fixed in a very deterministic way because there's like 100% crystal clear
+
+50
+00:04:00.279 --> 00:04:04.919
+way of how to fix SQL injections. So those are like kind of solved problems. So static
+
+51
+00:04:04.919 --> 00:04:10.320
+analysis is like one part of the basic building blocks of modern application security. But
+
+52
+00:04:10.320 --> 00:04:14.240
+then on top of that, when you're talking about building more complex systems, things that
+
+53
+00:04:14.240 --> 00:04:18.359
+work autonomously, obviously, there's still a lot of unknowns. And so the way that we
+
+54
+00:04:18.359 --> 00:04:22.880
+work internally is we do two things. Like first of all, we stay on the lookout and we
+
+55
+00:04:22.880 --> 00:04:27.519
+actually have like a threat intelligence feed where it keeps us up to date when other companies
+
+56
+00:04:27.519 --> 00:04:32.679
+have interesting breaches and security incidents that involve agents. So every time there's
+
+57
+00:04:32.679 --> 00:04:37.760
+an incident like that becomes public, our security research team basically gets a notification
+
+58
+00:04:37.760 --> 00:04:42.040
+and it might link off to some GitHub article or some security researcher from a different
+
+59
+00:04:42.040 --> 00:04:46.799
+company. And we actually have a security researcher go through it and analyze it and say, oh,
+
+60
+00:04:46.799 --> 00:04:50.760
+this is actually a very interesting novel type of attack. Like, are there any things
+
+61
+00:04:50.760 --> 00:04:55.480
+we can learn from this as a security company that we can then help apply in our product
+
+62
+00:04:55.480 --> 00:05:01.959
+or in our own research to help customers build applications in a more safe way? That's actually
+
+63
+00:05:01.959 --> 00:05:05.679
+how we've done this for quite a while. So a lot of our products that we have out today,
+
+64
+00:05:05.679 --> 00:05:09.839
+like our MCP scanning tool, which looks for toxic flows and things like that, those were
+
+65
+00:05:09.839 --> 00:05:14.880
+initially inspired by novel breaches that we came across. We did a lot of research on
+
+66
+00:05:14.880 --> 00:05:19.040
+them and then found out, hey, this is actually something new that hasn't really been talked
+
+67
+00:05:19.040 --> 00:05:23.420
+about before. Let's build products around this, like let's build safeguards and educational
+
+68
+00:05:23.420 --> 00:05:27.160
+materials to make it easier for people to prevent this from happening in the future.
+
+69
+00:05:27.200 --> 00:05:32.519
+That's so interesting. And I think like one of those breaches was the big GitHub breach
+
+70
+00:05:32.519 --> 00:05:36.959
+that one of your teams actually was able to detect itself, right?
+
+71
+00:05:36.959 --> 00:05:41.359
+Yep, exactly. One of our researchers published some very interesting research earlier in
+
+72
+00:05:41.359 --> 00:05:46.600
+the year, which essentially found that GitHub was using large language models and doing
+
+73
+00:05:46.600 --> 00:05:52.559
+some autonomous stuff with GitHub issues. And basically by doing some fancy prompt injection
+
+74
+00:05:52.559 --> 00:05:57.239
+type stuff through a GitHub issue, attackers were able to leak sensitive information about
+
+75
+00:05:57.239 --> 00:06:03.160
+a repository. And so, you know, having like these kind of threat models in your mind as
+
+76
+00:06:03.160 --> 00:06:07.160
+you're going through and building stuff is just super useful. So what I would tell students
+
+77
+00:06:07.160 --> 00:06:11.600
+who are learning this stuff and building their first autonomous systems is as you're building
+
+78
+00:06:11.600 --> 00:06:14.600
+these things, in the back of your mind, it doesn't have to be something you're afraid
+
+79
+00:06:14.600 --> 00:06:18.339
+of, right? But like, just keep in mind, what are some of the things that could go wrong?
+
+80
+00:06:18.339 --> 00:06:22.160
+And then how would I address those things? And as long as you're proactively thinking
+
+81
+00:06:22.160 --> 00:06:27.679
+about those things, it puts you like, in the top 1% of development professionals, because
+
+82
+00:06:27.679 --> 00:06:30.399
+thinking about the risks and just keeping them in your mind and making sure you kind
+
+83
+00:06:30.399 --> 00:06:34.320
+of architect things in a nice way, is really one of the best things you can do, not only
+
+84
+00:06:34.320 --> 00:06:38.760
+for your application, but for your career, right? Like, having good security practices
+
+85
+00:06:38.760 --> 00:06:43.160
+and a good security mindset is just a critical part of being like a great engineer in, you
+
+86
+00:06:43.160 --> 00:06:44.440
+know, modern circles.
+
+87
+00:06:44.440 --> 00:06:50.160
+I like how you put it. It's like, it's a security mindset. If like, if you approach data from
+
+88
+00:06:50.160 --> 00:06:55.200
+the get-go, just as you're building, you're just asking yourself on every feature that
+
+89
+00:06:55.200 --> 00:06:59.880
+you do, what are the factors of attack that I might be exposing myself here and how I'm
+
+90
+00:06:59.880 --> 00:07:05.440
+trying to safeguard that. That alone's already like moves the needle, like most people don't.
+
+91
+00:07:05.440 --> 00:07:08.920
+So the fact that you as an engineer can actually think that way, I think that could actually
+
+92
+00:07:08.920 --> 00:07:14.799
+be a huge differentiator. So you brought up a few good points, right? Like AI generated
+
+93
+00:07:14.799 --> 00:07:19.160
+code, MCPs, another big one as well. How are some of the challenges that you're seeing
+
+94
+00:07:19.160 --> 00:07:24.640
+on people that are actually trying to plug this agents into existing DevOps or SecOps
+
+95
+00:07:24.640 --> 00:07:28.920
+pipelines? Is that something that people are struggling with? Or like, are people already
+
+96
+00:07:28.920 --> 00:07:29.920
+cracking that?
+
+97
+00:07:29.920 --> 00:07:34.200
+That's a very good question. I feel split in terms of answering this because on one
+
+98
+00:07:34.200 --> 00:07:39.399
+hand, I feel like it's never been easier to add agentic tools and functionality into your
+
+99
+00:07:39.399 --> 00:07:43.720
+application. So at Snyk, for example, I mean, our company has been around for quite a while
+
+100
+00:07:43.720 --> 00:07:48.119
+and we have lots of older projects that maybe internal projects haven't been maintained
+
+101
+00:07:48.119 --> 00:07:53.559
+in a while. And sometimes I'll literally just go in and like rewrite them using AI
+
+102
+00:07:53.559 --> 00:07:57.760
+or add in a bunch of new features into the pipeline. And I mean, with the tools we have
+
+103
+00:07:57.760 --> 00:08:01.839
+available today, like you're able to do it at a speed that I wouldn't even have thought
+
+104
+00:08:01.839 --> 00:08:06.119
+was possible like four years ago, you know, it's completely mind blowing. But at the same
+
+105
+00:08:06.119 --> 00:08:10.679
+time, it can also be really scary for people, which I think is the biggest concern, right?
+
+106
+00:08:10.679 --> 00:08:14.279
+Especially people in larger companies. I think the biggest concern that people have when
+
+107
+00:08:14.279 --> 00:08:19.000
+introducing these tools and these practices into their modern workplace is there's a little
+
+108
+00:08:19.000 --> 00:08:23.799
+bit of fear and uncertainty. You know, people are like, well, hey, if I put this agent here,
+
+109
+00:08:23.799 --> 00:08:27.959
+is it safe to use? Will this expose customer information somehow, right? And there's lots
+
+110
+00:08:27.959 --> 00:08:30.920
+of components that people are worried about.
+
+111
+00:08:30.920 --> 00:08:36.640
+Even take a very simple one. So from the very outset of generative AI becoming popular,
+
+112
+00:08:36.640 --> 00:08:40.719
+one of the most common things you heard in articles and internet posts and everything
+
+113
+00:08:40.880 --> 00:08:47.039
+was this fear of prompt injection. And prompt injection is still a big issue, and it's not
+
+114
+00:08:47.039 --> 00:08:54.520
+necessarily solved. Like there's no 100% foolproof way to fully solve prompt injection because
+
+115
+00:08:54.520 --> 00:08:59.359
+generative models, non-deterministic, and there's a lot of mystique in what happens
+
+116
+00:08:59.359 --> 00:09:03.460
+behind the scenes there. And so for each model, there might be different best practice ways
+
+117
+00:09:03.460 --> 00:09:09.640
+to avoid it, to remediate it. So maybe that means having other generative AI review prompts
+
+118
+00:09:09.640 --> 00:09:14.479
+and then try to see if there's anything suspicious in it. Maybe it means having some deterministic
+
+119
+00:09:14.479 --> 00:09:19.840
+logic in a scanning tool or security application that looks through it. Or maybe it means having
+
+120
+00:09:19.840 --> 00:09:25.039
+good runtime tooling and auditability so that when your agents and tools are actually doing
+
+121
+00:09:25.039 --> 00:09:31.280
+things, you can then have a human or an agent look back through the runtime history of what
+
+122
+00:09:31.280 --> 00:09:35.640
+these things are doing and look for suspicious patterns. So there's lots of ways to address
+
+123
+00:09:35.640 --> 00:09:40.440
+these things, but fundamentally, I think it goes back to just having a good security
+
+124
+00:09:40.440 --> 00:09:44.400
+mindset and being proactive with your engineering work.
+
+125
+00:09:44.400 --> 00:09:48.719
+That's such a good point. I agree with you. Yeah. Prompt injection, it's great that you
+
+126
+00:09:48.719 --> 00:09:53.559
+bring that back because a lot of people, again, it was a big thing where everyone was talking
+
+127
+00:09:53.559 --> 00:09:58.599
+about it. And now people are not talking about it as much, but the problem is not so. It's
+
+128
+00:09:58.599 --> 00:10:05.159
+very much still out there. You can find your LLMs to pick them up. You can try to proactively
+
+129
+00:10:05.159 --> 00:10:10.679
+prevent it. But at the end of the day, there's no 100% this is a guarantee. Enable this flag
+
+130
+00:10:10.679 --> 00:10:15.239
+and everything is taken care of for you. That makes me wonder, and I'd love to hear your
+
+131
+00:10:15.239 --> 00:10:20.679
+take on this. How do you see the relationship between autonomous AI and security? And I
+
+132
+00:10:20.679 --> 00:10:24.599
+know this is a hard one because the market's moving so fast, right? But how do you see
+
+133
+00:10:24.599 --> 00:10:29.159
+that combination evolving over the next three years?
+
+134
+00:10:29.159 --> 00:10:33.919
+I think a couple of things are really interesting. First of all, the pace of AI models just generally
+
+135
+00:10:33.960 --> 00:10:38.679
+improving is like astoundingly good. A lot of the software you get back from even a very
+
+136
+00:10:38.679 --> 00:10:43.119
+basic prompt without a lot of structure and things like that can be very good. So how
+
+137
+00:10:43.119 --> 00:10:47.640
+does security play into it? Well, I think we're getting close to a point where security
+
+138
+00:10:47.640 --> 00:10:54.039
+can become a fully autonomous thing. And what I mean by that is taking LLMs and agents and
+
+139
+00:10:54.039 --> 00:10:59.840
+non-deterministic applications and having them pair up with a deterministic security
+
+140
+00:10:59.840 --> 00:11:05.200
+scanning tool and something that can, with 100% certainty, tell you if there is an issue
+
+141
+00:11:05.200 --> 00:11:10.679
+here or if something bad has happened and using that as feedback for the agents to help
+
+142
+00:11:10.679 --> 00:11:17.280
+it improve and guide it. I think that is quickly becoming the winning strategy in our space.
+
+143
+00:11:17.280 --> 00:11:21.239
+So if you've ever played around with any of Snyk's tools, which you can use for free,
+
+144
+00:11:21.239 --> 00:11:26.119
+you can just go play around with it. But one of the things you'll notice is that if you're,
+
+145
+00:11:26.159 --> 00:11:31.200
+let's say, writing software using Cursor or something, right? You can take Snyk's tools,
+
+146
+00:11:31.200 --> 00:11:37.479
+you can plug them into your Cursor rules. And what will happen is as you are prompting
+
+147
+00:11:37.479 --> 00:11:42.599
+Cursor and asking it to build a new crew or build a new crew flow or something, right?
+
+148
+00:11:42.599 --> 00:11:48.200
+What will end up happening is each time Cursor adds some code to the project, it will use
+
+149
+00:11:48.200 --> 00:11:54.039
+Snyk behind the scenes to automatically scan and look for lots of common types of issues.
+
+150
+00:11:54.039 --> 00:12:00.119
+Take the context that Snyk provides and then have Cursor itself actually issue fixes and
+
+151
+00:12:00.119 --> 00:12:04.440
+then retest to make sure these issues are fixed. That creates this really interesting
+
+152
+00:12:04.440 --> 00:12:10.000
+autonomous loop, which we've seen really tremendous results from. And so in my mind, the way the
+
+153
+00:12:10.000 --> 00:12:14.479
+security space is kind of evolving in this autonomous future is it's becoming just an
+
+154
+00:12:14.479 --> 00:12:20.679
+iterative part of using generative AI in general. And my personal hope is that in the next three
+
+155
+00:12:20.679 --> 00:12:24.520
+years, we'll get to a point where your typical engineer won't even need to think about security
+
+156
+00:12:24.520 --> 00:12:29.400
+ever, right? Like, they'll just be able to say, hey, Cursor or Claude or whatever tool you're
+
+157
+00:12:29.400 --> 00:12:33.880
+using, build me this application. Security will kind of be handled behind the scenes with this
+
+158
+00:12:33.880 --> 00:12:39.239
+iterative process. And the end result is that us as users will have way better software and we
+
+159
+00:12:39.239 --> 00:12:41.799
+won't have to worry about things as much. And that's kind of the dream, I think.
+
+160
+00:12:41.799 --> 00:12:46.359
+I like that. Yeah, I got to say, yeah, you're absolutely right. If like these LLMs are getting
+
+161
+00:12:46.359 --> 00:12:50.280
+better and better in writing code, they should be getting better and better and also write code
+
+162
+00:12:50.280 --> 00:12:55.479
+to prevent and to fact check that code. So that's an interesting take. Before we go, I know that you
+
+163
+00:12:55.479 --> 00:12:59.559
+mentioned that you use CrewAI yourself. And I have been kind of like talking about CrewAI this
+
+164
+00:12:59.559 --> 00:13:04.039
+entire course, teaching people on how to use it. What is your take on the role that CrewAI is
+
+165
+00:13:04.039 --> 00:13:08.679
+playing on this ecosystem, how it's integrating? And I know that we have some partnerships going
+
+166
+00:13:08.679 --> 00:13:13.320
+on as well. What is your take on that? When you all first came out, I think I discovered you
+
+167
+00:13:13.320 --> 00:13:17.880
+through Hacker News at the time. And I was following along with your tutorials, building
+
+168
+00:13:17.880 --> 00:13:23.080
+some systems and doing some orchestration just in Python applications and really liked it. I think
+
+169
+00:13:23.080 --> 00:13:29.080
+one of the strengths you all have is a really crystal clear framework on the engineering side
+
+170
+00:13:29.080 --> 00:13:34.359
+to make it very repeatable and reliable how to build the agents. You know, like having the nice
+
+171
+00:13:34.359 --> 00:13:39.799
+like agent definitions in the YAML files, having the flows and the crews and the orchestration
+
+172
+00:13:39.799 --> 00:13:45.159
+components are really something that I think we take for granted now, which you all kind of
+
+173
+00:13:45.159 --> 00:13:49.640
+mainstreamed. So I'm a big fan of that. Like internally, it's neat. I actually build and run
+
+174
+00:13:49.640 --> 00:13:54.679
+a ton of projects, literally using crews in production. And they're fantastic. We use it
+
+175
+00:13:54.679 --> 00:14:00.520
+from everything for helping automate our employees' social media to helping build product messaging
+
+176
+00:14:00.520 --> 00:14:05.640
+frameworks and reference documentation for new products that we're launching. There is truly a
+
+177
+00:14:05.640 --> 00:14:11.239
+massive amount of automation that is powered by these tools internally. And they feel rock solid,
+
+178
+00:14:11.239 --> 00:14:15.239
+which is, I think, mainly due to the crew framework. So thanks for that.
+
+179
+00:14:15.880 --> 00:14:20.119
+Come on. Thank you. Thank you for using crew. If anything, I'm excited about how things are
+
+180
+00:14:20.119 --> 00:14:24.200
+going to look like moving forward. I think there's so much going on with agents. And hey,
+
+181
+00:14:24.200 --> 00:14:28.840
+I guess we're tagging along for the ride. Thank you so much, Random. I really appreciate the time.
+
+182
+00:14:28.840 --> 00:14:33.239
+Very excited to have you folks here and hopefully all the learners as well. I don't know if you have
+
+183
+00:14:33.239 --> 00:14:37.239
+any parting thoughts for all the learnings, but those are all the questions I had.
+
+184
+00:14:37.239 --> 00:14:41.080
+No, the only thing I want to say is for those of you taking the course, you're amazing.
+
+185
+00:14:41.559 --> 00:14:46.760
+Keep building. Have fun. That's what this is all about. Use AI to make your life more enjoyable,
+
+186
+00:14:46.760 --> 00:14:50.039
+and it certainly does that for me. So hopefully it does it for you as well.
+
+187
+00:14:50.039 --> 00:14:53.159
+I love that. Thank you so much, Randall. I'll catch you later. Have a good one.
+
+188
+00:14:53.880 --> 00:14:54.919
+Thank you.

@@ -1,0 +1,922 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.158 --> 00:00:02.000
+Next, we're going to hear from Weaviate.
+
+2
+00:00:02.000 --> 00:00:05.400
+Weaviate is an open source vector database.
+
+3
+00:00:05.400 --> 00:00:10.960
+They allow you to not only store information, but allow your agents to tap this information
+
+4
+00:00:10.960 --> 00:00:11.960
+themselves.
+
+5
+00:00:11.960 --> 00:00:17.920
+And some of their capabilities for searching can power amazing use cases when you need
+
+6
+00:00:17.920 --> 00:00:18.920
+vector search.
+
+7
+00:00:18.920 --> 00:00:23.440
+I want to make sure that we hear from them and their perspective as one of the leading
+
+8
+00:00:23.440 --> 00:00:25.840
+databases that are being adopted out there.
+
+9
+00:00:25.840 --> 00:00:26.840
+So let's jump into that.
+
+10
+00:00:27.159 --> 00:00:30.159
+Sebastian, thank you so much for being with us today.
+
+11
+00:00:30.159 --> 00:00:31.479
+I really appreciate it.
+
+12
+00:00:31.479 --> 00:00:35.959
+It's so cool that we get to have people from Weaviate joining us on this course.
+
+13
+00:00:35.959 --> 00:00:38.400
+So I have a few questions for you.
+
+14
+00:00:38.400 --> 00:00:44.919
+As the agentic space continues to evolve, how important is it to have this broader ecosystem
+
+15
+00:00:44.919 --> 00:00:50.240
+of tools and resources, including vector databases like Weaviate?
+
+16
+00:00:50.240 --> 00:00:55.799
+Yeah, I think this is absolutely critical because it's very much like you could have
+
+17
+00:00:55.799 --> 00:01:01.599
+a 10x developer that knows about absolutely everything, but then you rely on this single
+
+18
+00:01:01.599 --> 00:01:02.680
+point of failure.
+
+19
+00:01:02.680 --> 00:01:06.120
+But also, how far can the 10x developer go?
+
+20
+00:01:06.120 --> 00:01:10.879
+And then following the same analogies, if you have a very well-rounded team with maybe
+
+21
+00:01:10.879 --> 00:01:15.199
+even sometimes overlapping skills, etc., you can achieve a lot more.
+
+22
+00:01:15.199 --> 00:01:19.919
+And I think this translates really nicely into the AI ecosystem.
+
+23
+00:01:19.919 --> 00:01:22.919
+We can do so much more together, right?
+
+24
+00:01:22.959 --> 00:01:27.559
+And then if we wanted to do absolutely everything by ourselves, we would fail.
+
+25
+00:01:27.559 --> 00:01:32.919
+And this is the best thing because each of us can focus on the thing that we do best
+
+26
+00:01:32.919 --> 00:01:36.480
+while always also thinking, how can I integrate?
+
+27
+00:01:36.480 --> 00:01:37.480
+How can I connect?
+
+28
+00:01:37.480 --> 00:01:40.360
+How can I sync with all these other tools together?
+
+29
+00:01:40.360 --> 00:01:42.519
+And how can we work as an ecosystem?
+
+30
+00:01:42.519 --> 00:01:43.599
+And that's the thing.
+
+31
+00:01:43.599 --> 00:01:47.879
+We can work and play as a team because we all belong together.
+
+32
+00:01:47.879 --> 00:01:51.800
+We're not independent teams trying to win by ourselves.
+
+33
+00:01:51.800 --> 00:01:52.800
+I love that.
+
+34
+00:01:52.800 --> 00:01:53.800
+We all belong together.
+
+35
+00:01:53.800 --> 00:01:55.839
+I'm going to use this one a little more often.
+
+36
+00:01:55.839 --> 00:01:56.839
+It's a good one.
+
+37
+00:01:56.839 --> 00:02:02.839
+So specifically on the vector space, there's so much that people have been talking about.
+
+38
+00:02:02.839 --> 00:02:05.000
+Everyone has been doing RAG nowadays.
+
+39
+00:02:05.000 --> 00:02:10.639
+How do you see the role of vector knowledge evolving, especially around the idea of AI
+
+40
+00:02:10.639 --> 00:02:14.520
+agents now, and they becoming more and more autonomous?
+
+41
+00:02:14.520 --> 00:02:19.520
+The vector databases and the vector embeddings, they play a pretty critical role in all of
+
+42
+00:02:19.520 --> 00:02:20.520
+this.
+
+43
+00:02:20.960 --> 00:02:26.600
+If you have an agent that just relies on LLM, then you basically rely on a base of knowledge.
+
+44
+00:02:26.600 --> 00:02:31.639
+Well, if you work with a vector database, you kind of get access to data that is dynamic,
+
+45
+00:02:31.639 --> 00:02:34.800
+that can change within a millisecond.
+
+46
+00:02:34.800 --> 00:02:37.720
+And you always get information that is up to date.
+
+47
+00:02:37.720 --> 00:02:40.199
+The information is up to date, but also very relevant.
+
+48
+00:02:40.199 --> 00:02:42.720
+So you get only the information that is relevant.
+
+49
+00:02:42.720 --> 00:02:45.039
+The information then is a lot smaller.
+
+50
+00:02:45.119 --> 00:02:51.360
+So you're not sending a 100-page PDF to your LLM, but only the relevant parts.
+
+51
+00:02:51.360 --> 00:02:57.320
+The other thing is that also you get information that could be relevant to a specific user.
+
+52
+00:02:57.320 --> 00:03:01.960
+Maybe your agentic workflow is serving hundreds of thousands of people, each with their own
+
+53
+00:03:01.960 --> 00:03:03.440
+data, right?
+
+54
+00:03:03.440 --> 00:03:06.600
+You wouldn't have hundreds of thousands of LLMs per user, because that would be absolutely
+
+55
+00:03:06.600 --> 00:03:10.039
+crazy and it would take forever to update each of those.
+
+56
+00:03:10.039 --> 00:03:15.199
+The other thing is you could use various fragmentations, where you could kind of separate
+
+57
+00:03:15.199 --> 00:03:18.039
+into different tenants, the datasets.
+
+58
+00:03:18.039 --> 00:03:23.639
+And then I would never query your part of the data and you would never query mine.
+
+59
+00:03:23.639 --> 00:03:28.759
+So the databases can basically enhance the agents with more protections, more securities
+
+60
+00:03:28.759 --> 00:03:32.080
+that you would expect of a mature database, right?
+
+61
+00:03:32.080 --> 00:03:35.520
+There's the data that you want your agent to tap into.
+
+62
+00:03:35.520 --> 00:03:38.880
+And then you want to make sure that that data is fresh data.
+
+63
+00:03:39.039 --> 00:03:43.520
+There's a few options for that, but I don't think there's anything like a vector database
+
+64
+00:03:43.520 --> 00:03:46.440
+like Weaviate has that gives you all the controls.
+
+65
+00:03:46.440 --> 00:03:50.759
+Because it's not only that you want the most recent data, but you can control everything.
+
+66
+00:03:50.759 --> 00:03:52.520
+That is definitely exciting.
+
+67
+00:03:52.520 --> 00:03:58.559
+When you think about the new classes of applications, the use cases that now are possible by basically
+
+68
+00:03:58.559 --> 00:04:05.100
+tightly unifying your agent orchestration with the vector retrieval, is that something
+
+69
+00:04:05.179 --> 00:04:10.380
+that you hear a lot about, like specific use cases around agents with the vector retrievals
+
+70
+00:04:10.380 --> 00:04:11.979
+like close to each other?
+
+71
+00:04:11.979 --> 00:04:13.979
+And what would be some interesting ones?
+
+72
+00:04:13.979 --> 00:04:18.660
+I'm often thinking of like, what is it that we can stop from the database to give back
+
+73
+00:04:18.660 --> 00:04:20.019
+to the LLM?
+
+74
+00:04:20.019 --> 00:04:24.100
+And an example being actually more than a year ago, we rewrote some of our language
+
+75
+00:04:24.100 --> 00:04:25.100
+clients.
+
+76
+00:04:25.100 --> 00:04:29.420
+We changed completely the APIs in Python, in TypeScript and other languages.
+
+77
+00:04:29.420 --> 00:04:33.739
+And the struggle that we have today is that a lot of LLMs, they were trained with the
+
+78
+00:04:33.739 --> 00:04:35.459
+old APIs.
+
+79
+00:04:35.459 --> 00:04:39.679
+And then when somebody is trying to vibe code with Weaviate, they're getting the old code.
+
+80
+00:04:39.679 --> 00:04:42.820
+We don't want people to use the old code because the old code wasn't great, right?
+
+81
+00:04:42.820 --> 00:04:45.739
+The new one has got a great 10x.
+
+82
+00:04:45.739 --> 00:04:51.100
+So by doing it through a database, we could actually go say, hey, let's delete all the
+
+83
+00:04:51.100 --> 00:04:54.859
+records that talk about the old API and only use the new examples.
+
+84
+00:04:54.859 --> 00:05:00.140
+So not only can we actually add more information, but we can even restrict the information from
+
+85
+00:05:00.140 --> 00:05:04.420
+going like, hey, never show this part because we can delete it or filter it out.
+
+86
+00:05:04.420 --> 00:05:08.940
+Because to me, agents are almost like people that are out there to help you with the most
+
+87
+00:05:08.940 --> 00:05:13.100
+accurate information that is also relevant to your data, right?
+
+88
+00:05:13.100 --> 00:05:17.820
+So you don't want something that is just like, hey, here's an example of like a query in
+
+89
+00:05:17.820 --> 00:05:18.820
+Weaviate.
+
+90
+00:05:18.820 --> 00:05:20.859
+But you're like, oh, right, you have these three collections.
+
+91
+00:05:20.859 --> 00:05:24.540
+Here's how you query this specific collection with these specific properties.
+
+92
+00:05:24.540 --> 00:05:27.100
+And then that's kind of like really powerful.
+
+93
+00:05:27.100 --> 00:05:31.739
+Right now, it feels like people started understanding prompting and how that works and why that
+
+94
+00:05:31.739 --> 00:05:32.980
+is important.
+
+95
+00:05:32.980 --> 00:05:37.179
+But now, especially as people are going to agents where you have many API calls going
+
+96
+00:05:37.179 --> 00:05:42.059
+with the LLMs, the complex engineering has become something that is super important.
+
+97
+00:05:42.059 --> 00:05:46.739
+And we talk about that through the entire course, this idea that you need to optimize
+
+98
+00:05:46.739 --> 00:05:48.260
+as much as you can.
+
+99
+00:05:48.260 --> 00:05:53.940
+How should developers think about the role of a vector database in that complex engineering?
+
+100
+00:05:54.019 --> 00:05:58.260
+Honestly, think of it like, again, like agents are like people to me.
+
+101
+00:05:58.260 --> 00:06:02.579
+And then if you every single time send that 400 pages PDF to them and say like, hey, I
+
+102
+00:06:02.579 --> 00:06:03.980
+have this question.
+
+103
+00:06:03.980 --> 00:06:08.299
+And sometimes it could be something as simple as, you know, like, hey, how do I connect
+
+104
+00:06:08.299 --> 00:06:11.339
+to the database, which might be accessible on the first page.
+
+105
+00:06:11.339 --> 00:06:14.660
+But the thing is that the LLM will try to read the whole context, right?
+
+106
+00:06:14.660 --> 00:06:19.019
+So what you end up with is just something that is super slow and not very efficient.
+
+107
+00:06:19.019 --> 00:06:21.700
+And then you're going for an absolute overkill, right?
+
+108
+00:06:21.700 --> 00:06:26.100
+So I think for me, it's always about like, what is it that the agent needs?
+
+109
+00:06:26.100 --> 00:06:29.459
+What is that LLM needs to deliver on the task?
+
+110
+00:06:29.459 --> 00:06:30.459
+That's a good point.
+
+111
+00:06:30.459 --> 00:06:35.220
+Now talk about the challenges, like what are the common pitfalls or anti-patterns, for
+
+112
+00:06:35.220 --> 00:06:41.859
+example, when people are trying to bring vectors and vector search into this agents, like what
+
+113
+00:06:41.859 --> 00:06:46.100
+are the things that usually people do wrong and that they should watch for?
+
+114
+00:06:46.100 --> 00:06:52.140
+I think one of the things like it's a classical data problem of garbage in, garbage out.
+
+115
+00:06:52.140 --> 00:06:57.140
+Quite often like, yeah, embedding models are really good with unstructured data, but that
+
+116
+00:06:57.140 --> 00:07:02.420
+doesn't mean that the unstructured data needs to be garbage or completely a mess, right?
+
+117
+00:07:02.420 --> 00:07:06.220
+So quite often we don't think enough about this kind of stuff, right?
+
+118
+00:07:06.220 --> 00:07:10.980
+How about I create my vector embeddings based on specific fields?
+
+119
+00:07:10.980 --> 00:07:15.779
+Do you really need like the author's name or emails or all this other information?
+
+120
+00:07:15.779 --> 00:07:17.019
+Probably not, right?
+
+121
+00:07:17.019 --> 00:07:20.100
+So it's, again, like the problem of like less is more.
+
+122
+00:07:20.100 --> 00:07:26.299
+The other thing that I notice quite often is, well, vector embeddings are huge, right?
+
+123
+00:07:26.299 --> 00:07:30.660
+What about if you want to scale up and go into a billion objects and billion of those
+
+124
+00:07:30.660 --> 00:07:31.660
+vectors, right?
+
+125
+00:07:31.660 --> 00:07:35.140
+Like, I don't know if you can get that much RAM so easily or cheaply, right?
+
+126
+00:07:35.140 --> 00:07:36.619
+That's going to be expensive.
+
+127
+00:07:36.619 --> 00:07:42.220
+So that's kind of like one of the common pitfalls was like, well, you didn't assess the resources
+
+128
+00:07:42.220 --> 00:07:45.679
+that you need for the kind of queries that you need to wrap, right?
+
+129
+00:07:45.679 --> 00:07:48.600
+So there's a few things that you can do around that.
+
+130
+00:07:48.600 --> 00:07:54.079
+So you could actually reduce the size of your vectors to either reduce the number of dimensions,
+
+131
+00:07:54.079 --> 00:07:59.440
+or maybe you could change each dimension to something that is of size of one byte or like
+
+132
+00:07:59.440 --> 00:08:01.200
+a bit even.
+
+133
+00:08:01.200 --> 00:08:05.559
+And then with that, you could actually reduce the RAM needed, you know, to a quarter.
+
+134
+00:08:05.559 --> 00:08:07.279
+We actually have that built in into Weaviate.
+
+135
+00:08:07.279 --> 00:08:11.920
+It takes like two lines of code to enable quantization, but it's actually super powerful.
+
+136
+00:08:12.160 --> 00:08:18.440
+Recently, we actually released one called rotational quantization, RQ for short.
+
+137
+00:08:18.440 --> 00:08:23.959
+And we kind of thought that quantization would actually slow down the queries and etc.
+
+138
+00:08:23.959 --> 00:08:26.279
+Actually the opposite is true.
+
+139
+00:08:26.279 --> 00:08:32.599
+So the queries are faster and the recall when we measured versus just uncompressed vectors,
+
+140
+00:08:32.599 --> 00:08:35.520
+the difference was around like 0.01%.
+
+141
+00:08:35.520 --> 00:08:39.960
+So you could only notice the difference in kind of like a lab-like environment.
+
+142
+00:08:40.000 --> 00:08:42.440
+We're like, why not do it by default, right?
+
+143
+00:08:42.440 --> 00:08:43.440
+This is incredible.
+
+144
+00:08:43.440 --> 00:08:46.840
+So these are probably like two common pitfalls.
+
+145
+00:08:46.840 --> 00:08:51.400
+So like, you know, sending too much again when generating vector embeddings, because
+
+146
+00:08:51.400 --> 00:08:55.080
+and then not being precise about the use case that you're trying to serve.
+
+147
+00:08:55.080 --> 00:08:58.320
+And then the other one, like not thinking about like how big those vector embeddings
+
+148
+00:08:58.320 --> 00:09:01.039
+could be when you run the whole thing.
+
+149
+00:09:01.039 --> 00:09:02.039
+That's an interesting perspective.
+
+150
+00:09:02.039 --> 00:09:06.880
+And I think you folks as a vector database company, like you're in the middle of all
+
+151
+00:09:06.880 --> 00:09:07.880
+this revolution.
+
+152
+00:09:07.880 --> 00:09:11.960
+You're watching all those different kind of like sources, all those different companies.
+
+153
+00:09:11.960 --> 00:09:13.760
+You're seeing all the different frameworks.
+
+154
+00:09:13.760 --> 00:09:15.599
+You're seeing all the different agents.
+
+155
+00:09:15.599 --> 00:09:16.840
+What is your take on Crew?
+
+156
+00:09:16.840 --> 00:09:18.000
+What are you seeing out there?
+
+157
+00:09:18.000 --> 00:09:20.359
+How does Crew works with Weaviate?
+
+158
+00:09:20.359 --> 00:09:22.400
+Like share more with us with that.
+
+159
+00:09:22.400 --> 00:09:27.239
+So what I like about Crew and this is kind of like, we have that synergy between our teams.
+
+160
+00:09:27.239 --> 00:09:29.679
+You guys really think about developer experience, right?
+
+161
+00:09:29.679 --> 00:09:34.400
+Like I'm super passionate about developer experience, so for me, this already shows
+
+162
+00:09:34.400 --> 00:09:39.520
+like you care about those developers out there that are trying to build something.
+
+163
+00:09:39.520 --> 00:09:42.039
+And this is kind of like the same feedback we get as well.
+
+164
+00:09:42.039 --> 00:09:47.119
+Like when we tried Crew at some like workshops, et cetera, like this was always like, oh right.
+
+165
+00:09:47.119 --> 00:09:49.039
+Like I could follow like the first few steps.
+
+166
+00:09:49.039 --> 00:09:51.119
+I already knew what to do.
+
+167
+00:09:51.119 --> 00:09:55.760
+And then seemingly you guys have very similar idea of like speed to value, whereas like,
+
+168
+00:09:55.760 --> 00:09:58.320
+okay, I went through this like half an hour quick start.
+
+169
+00:09:58.320 --> 00:10:02.840
+I read through some examples, like, but there's also a very clear path of like, how do I go
+
+170
+00:10:02.840 --> 00:10:03.840
+to production?
+
+171
+00:10:03.840 --> 00:10:04.840
+Right.
+
+172
+00:10:04.840 --> 00:10:08.880
+And when something goes wrong, like you get like an error message that you can do something
+
+173
+00:10:08.880 --> 00:10:09.919
+about as well.
+
+174
+00:10:09.919 --> 00:10:13.840
+But there's some frameworks out there that like they change their syntax and APIs every
+
+175
+00:10:13.840 --> 00:10:15.719
+three months or whatever.
+
+176
+00:10:15.719 --> 00:10:18.359
+And that kills me every time because I was like, oh, right.
+
+177
+00:10:18.359 --> 00:10:22.119
+Like I want to show you, we did with this or the framework and it's like, oh, my demo
+
+178
+00:10:22.119 --> 00:10:23.119
+doesn't work.
+
+179
+00:10:23.119 --> 00:10:24.119
+Right.
+
+180
+00:10:24.119 --> 00:10:25.119
+I was like, what did you do?
+
+181
+00:10:25.119 --> 00:10:26.119
+Right.
+
+182
+00:10:26.119 --> 00:10:29.080
+Like, oh, I shouldn't have updated my NPM packages or Python libraries.
+
+183
+00:10:29.080 --> 00:10:31.559
+And then like with Crew, like I haven't had that issue yet, right?
+
+184
+00:10:31.559 --> 00:10:36.320
+Like, it's like you guys kind of like pretty responsible about it's like, I love a good
+
+185
+00:10:36.320 --> 00:10:40.400
+breaking change when there's like a really good reason, but don't do a breaking change
+
+186
+00:10:40.400 --> 00:10:43.280
+that destroys everything that I can't even connect to.
+
+187
+00:10:43.280 --> 00:10:44.280
+Right.
+
+188
+00:10:44.280 --> 00:10:49.960
+And I think this is the incredible thing because you care about us developers using your framework,
+
+189
+00:10:49.960 --> 00:10:53.200
+your APIs, and then the fact that I can read the code.
+
+190
+00:10:53.200 --> 00:10:54.200
+Right.
+
+191
+00:10:54.200 --> 00:10:55.200
+Nice.
+
+192
+00:10:55.200 --> 00:10:56.200
+I appreciate the nice words.
+
+193
+00:10:56.200 --> 00:10:57.200
+Thank you, Sebastian.
+
+194
+00:10:57.200 --> 00:10:58.960
+Is there anything that you want to leave our audience with?
+
+195
+00:10:58.960 --> 00:11:03.280
+I know that we talked a lot about many things, so I don't know if there's any kind of like
+
+196
+00:11:03.280 --> 00:11:06.119
+parts and thoughts that you want to leave the learners with.
+
+197
+00:11:06.119 --> 00:11:11.080
+For me, the biggest performance type that I care about is actually performance of the
+
+198
+00:11:11.080 --> 00:11:12.080
+developer.
+
+199
+00:11:12.080 --> 00:11:16.159
+The performance of like, hey, you are the person, like if I give you this set of tools,
+
+200
+00:11:16.159 --> 00:11:19.159
+how fast can you go and then deliver the solution?
+
+201
+00:11:19.159 --> 00:11:21.840
+I think this is absolutely super important.
+
+202
+00:11:21.840 --> 00:11:24.880
+And then in this AI ecosystem that we're working, right?
+
+203
+00:11:24.880 --> 00:11:29.840
+So always think of like the speak to values, like how fast you can get to the POC and how
+
+204
+00:11:29.840 --> 00:11:31.679
+fast can you go to production?
+
+205
+00:11:31.679 --> 00:11:34.960
+And also how fast can you like grow and scale?
+
+206
+00:11:34.960 --> 00:11:37.320
+Some solutions could be enterprise.
+
+207
+00:11:37.320 --> 00:11:40.200
+Some could be, you know, like open source projects.
+
+208
+00:11:40.200 --> 00:11:43.159
+Some could be just like something that you build for yourself.
+
+209
+00:11:43.159 --> 00:11:44.719
+It should be the same skill set.
+
+210
+00:11:44.719 --> 00:11:48.960
+There shouldn't be like a completely separate solution for enterprise and completely separate
+
+211
+00:11:48.960 --> 00:11:50.320
+for your pet projects.
+
+212
+00:11:51.159 --> 00:11:55.960
+Your set of skills and the solutions you build should be kind of like gathered together,
+
+213
+00:11:55.960 --> 00:11:58.640
+like I said, as one thing and as one skill set.
+
+214
+00:11:58.640 --> 00:12:00.559
+And that will make you super powerful.
+
+215
+00:12:00.559 --> 00:12:02.000
+And then, yeah, pick the right tool.
+
+216
+00:12:02.000 --> 00:12:06.880
+So you already have two of those, like CrewAI and Weaviate, you know, pick the other ones
+
+217
+00:12:06.880 --> 00:12:10.960
+and then take those that won't lock you in, you know, like they should lock you in because
+
+218
+00:12:10.960 --> 00:12:13.719
+you love them, not because you have no other choice.
+
+219
+00:12:13.719 --> 00:12:15.200
+So yeah, that's my point
+
+220
+00:12:15.200 --> 00:12:16.280
+I like that.
+
+221
+00:12:16.280 --> 00:12:17.640
+That's an interesting advice.
+
+222
+00:12:17.760 --> 00:12:20.320
+Sebastian, thank you so much for joining us for the course.
+
+223
+00:12:20.320 --> 00:12:21.320
+I really appreciate it.
+
+224
+00:12:21.320 --> 00:12:24.159
+And I'm sure that all the students do as well.
+
+225
+00:12:24.159 --> 00:12:25.159
+Perfect.
+
+226
+00:12:25.159 --> 00:12:26.159
+Thanks for having me.
+
+227
+00:12:26.159 --> 00:12:30.640
+And yeah, good luck everyone, like build some crazy good stuff.
+
+228
+00:12:30.640 --> 00:12:31.640
+Love that.
+
+229
+00:12:31.640 --> 00:12:32.640
+Have a good one.
+
+230
+00:12:32.640 --> 00:12:33.140
+Take care.

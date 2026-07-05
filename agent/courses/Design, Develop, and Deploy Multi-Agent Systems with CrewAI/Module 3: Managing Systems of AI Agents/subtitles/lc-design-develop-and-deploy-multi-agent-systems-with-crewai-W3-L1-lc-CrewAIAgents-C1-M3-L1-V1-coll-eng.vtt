@@ -1,0 +1,282 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.115 --> 00:00:03.000
+Welcome to Module 3. Congratulations on making it this far.
+
+2
+00:00:03.000 --> 00:00:06.000
+There's so much that you probably learned up to this point.
+
+3
+00:00:06.000 --> 00:00:08.000
+Now we're going to go even deeper.
+
+4
+00:00:08.000 --> 00:00:13.000
+You already have noticed how you can break things into different agents and different tasks.
+
+5
+00:00:13.000 --> 00:00:18.000
+But there's different ways that you get to control on how they collaborate and how they work together.
+
+6
+00:00:18.000 --> 00:00:20.000
+Let's look into that.
+
+7
+00:00:20.000 --> 00:00:26.000
+We already have talked about this idea that each agent is basically talking with its own LLM,
+
+8
+00:00:26.000 --> 00:00:29.000
+or using an LLM behind the scenes.
+
+9
+00:00:29.000 --> 00:00:36.000
+So all the different pieces, for example, the system prompts, the roles definitions, the chat history, all the data,
+
+10
+00:00:36.000 --> 00:00:43.000
+every LLM request is being optimized for the right mix of context that fits both the agent and the model itself.
+
+11
+00:00:43.000 --> 00:00:48.000
+Everything would fit into a nice little package that basically makes a successful request.
+
+12
+00:00:48.000 --> 00:00:53.000
+Now, as the agent keeps working on things, the context starts to grow.
+
+13
+00:00:53.000 --> 00:00:55.000
+So the scope starts to grow.
+
+14
+00:00:55.000 --> 00:01:00.000
+And you want to do more things, so you might start adding more tools and go with more complex tasks.
+
+15
+00:01:00.000 --> 00:01:08.000
+And that starts to increase the amount of options and ideas and past conversations that the LLM has access to.
+
+16
+00:01:08.000 --> 00:01:16.000
+And all that at some point will break the barrier of the context of the LLM, but not only the context itself,
+
+17
+00:01:16.000 --> 00:01:19.000
+but it's going to start to result on degraded performance.
+
+18
+00:01:19.000 --> 00:01:23.000
+Some of the necessary information might not fit into the LLM context.
+
+19
+00:01:23.000 --> 00:01:27.000
+Meanwhile, more and more irrelevant information is being included.
+
+20
+00:01:27.000 --> 00:01:31.000
+The agents start to grow out of scope and hallucinations start to happen.
+
+21
+00:01:31.000 --> 00:01:35.000
+So it becomes hard for the agent to decide what tools to use when.
+
+22
+00:01:35.000 --> 00:01:44.000
+So the big picture here is that as you expand an agent's role, you might end up reducing the output quality due to just less precise context control.
+
+23
+00:01:44.000 --> 00:01:51.000
+So there's a right combination of instead of having one agent do so many things, so many different tasks,
+
+24
+00:01:51.000 --> 00:02:00.000
+you actually have each agent do its own task with its own context, its own system prompt, and its own role-playing tactics.
+
+25
+00:02:00.000 --> 00:02:08.000
+By having multiple specialized agents instead of a one all-purpose agent, you end up breaking down the context
+
+26
+00:02:08.000 --> 00:02:13.000
+so that each agent just get what is relevant for its purpose and for its goal.
+
+27
+00:02:13.000 --> 00:02:18.000
+The sum of that results are going to be way better than having one single agent that does it all.
+
+28
+00:02:18.000 --> 00:02:26.000
+So if you put all of those outputs together, you will get a super high quality output that haven't been possible before.
+
+29
+00:02:26.000 --> 00:02:32.000
+I do want to make sure that I drive a point here, though, that the backend of your agentic system
+
+30
+00:02:32.000 --> 00:02:40.000
+and the fact this is broken down on multi-agents doesn't necessarily mean that the user experience needs to be the same.
+
+31
+00:02:40.000 --> 00:02:46.000
+The user experience might still be a conversational UI where it's talking with only one single agent.
+
+32
+00:02:46.000 --> 00:02:51.000
+But behind the scenes, there's going to be many agents that are going to be actually getting the work done.
+
+33
+00:02:51.000 --> 00:02:56.000
+So if you remember the way that we create agents in CrewAI, we will always have these three pieces.
+
+34
+00:02:56.000 --> 00:03:04.000
+And the idea here is that you're helping these agents adopt this persona by providing them very high quality input.
+
+35
+00:03:04.000 --> 00:03:10.000
+So if we look back at our example of the classical customer support use case,
+
+36
+00:03:11.000 --> 00:03:19.000
+those agents will be specialized into analyzing the tickets and serving knowledge and trying to resolve these tickets themselves if possible.
+
+37
+00:03:19.000 --> 00:03:25.000
+So, for example, one of these agents could be an engineer agent that tries to write code to fix the issue if it's a bug.
+
+38
+00:03:25.000 --> 00:03:34.000
+You can actually achieve some amazing results by just making sure that you clearly define the agents and what are their single purpose.
+
+39
+00:03:34.000 --> 00:03:40.000
+If I had to summarize this in one single sentence, I would say favor specialists over generalists.
+
+40
+00:03:40.000 --> 00:03:44.000
+Focused agents deliver more precise output.
+
+41
+00:03:44.000 --> 00:03:54.000
+A good example here is that you should name your agent a technical blog writer agent instead of a writer agent, for example, if the goal is to have a technical blog creation agent.
+
+42
+00:03:54.000 --> 00:04:01.000
+So you can see that you're specialized here in the role, but you're keeping versatile in the application.
+
+43
+00:04:01.000 --> 00:04:08.000
+Across the crew, you have complementary skills that will overall create a very high quality output on all dimensions.
+
+44
+00:04:08.000 --> 00:04:10.000
+And it's not only that.
+
+45
+00:04:10.000 --> 00:04:18.000
+There is another moving piece that you can choose that will customize your agents, and this is the idea of an LLM, the model that your agent's using.
+
+46
+00:04:18.000 --> 00:04:28.000
+And in here, you not only get the ability to choose the role, the goal, and the backstory, but you also get the ability to choose what model each agent will use.
+
+47
+00:04:29.000 --> 00:04:41.000
+So if you find, for example, that Claude does a better job writing technical blogs than gpt-4o, you can actually specify that that agent specifically will use that model.
+
+48
+00:04:41.000 --> 00:04:49.000
+So depending on what kind of role and goal each agent has, you might also want to choose the best LLM for that agent.
+
+49
+00:04:49.000 --> 00:04:52.000
+You're trying to balance the speed and quality.
+
+50
+00:04:52.000 --> 00:04:58.000
+Like smaller models are going to be cheaper and faster, so they will excel when you need speed.
+
+51
+00:04:58.000 --> 00:05:03.000
+But bigger models will have more capable reasoning, and they will follow instructions better.
+
+52
+00:05:03.000 --> 00:05:06.000
+Usually, they will also have bigger context windows.
+
+53
+00:05:06.000 --> 00:05:09.000
+So when quality matters to you, you might want to choose that.
+
+54
+00:05:09.000 --> 00:05:16.000
+And your crews might have a mix of agents that use these different models, and that's really one of the advantages of using CrewAI.
+
+55
+00:05:16.000 --> 00:05:20.000
+You'll see this coming up on how to experiment with these different LLMs.
+
+56
+00:05:21.000 --> 00:05:27.000
+But at the end of the day, you're always trying to make sure that regardless, you want to get consistency.
+
+57
+00:05:27.000 --> 00:05:30.000
+You want to make sure that you get reliable, repeatable results.
+
+58
+00:05:30.000 --> 00:05:40.000
+And in order to do that, you will need to plot it out and understand what is the right balance between quality and speed that gives you the right results that you want.
+
+59
+00:05:40.000 --> 00:05:47.000
+So if you're working with customer reviews and you want to write a response to your customers after you routed the issue to the right place,
+
+60
+00:05:47.000 --> 00:05:51.000
+you might choose a bigger model to get a really good response right.
+
+61
+00:05:51.000 --> 00:05:59.000
+Or if you're working on stock analysis, you might choose a smaller model to research and fetch web pages and pull out the right figures,
+
+62
+00:05:59.000 --> 00:06:02.000
+but a bigger model to work on the trading strategy.
+
+63
+00:06:02.000 --> 00:06:05.000
+So we have talked about so much in this lesson.
+
+64
+00:06:05.000 --> 00:06:10.000
+We talked about this idea of breaking down the work into multiple agents and multiple tasks,
+
+65
+00:06:10.000 --> 00:06:14.000
+and how that can lead you to even better results than having one single agent.
+
+66
+00:06:14.000 --> 00:06:21.000
+We talked about how you can optimize not only the role, the goal, and the backstory, but even the LLM that you're going to be using,
+
+67
+00:06:21.000 --> 00:06:25.000
+and that by using multiple providers, you can get a better result.
+
+68
+00:06:25.000 --> 00:06:31.000
+So in the next video, you will see the many different communication patterns that you can set up for your agents.
+
+69
+00:06:32.000 --> 00:06:36.000
+This is going to be a very interesting one, and it's going to probably unlock even more use cases for you.
+
+70
+00:06:36.000 --> 00:06:38.000
+So I see you there right now.

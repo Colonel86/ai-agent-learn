@@ -1,0 +1,286 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:05.553 --> 00:00:04.480
+So you probably already have some use cases top of mind on how you can use these AI agents
+
+2
+00:00:04.480 --> 00:00:08.800
+on your day-to-day, or your company, or your team. But there are so many use cases,
+
+3
+00:00:08.800 --> 00:00:13.760
+and not all use cases are made the same. How do you think about them? How do you measure them?
+
+4
+00:00:13.760 --> 00:00:19.440
+How do you think about complexity and precision, and how you choose what to build and how to build
+
+5
+00:00:19.440 --> 00:00:24.719
+it? So let's look into that right now. I really love this idea of a use case
+
+6
+00:00:24.719 --> 00:00:31.520
+matrix that allows you to think about where your use case really falls under. Is a use case that
+
+7
+00:00:31.520 --> 00:00:37.520
+favors more complexity or more precision? And by use case, I just mean a problem that you're
+
+8
+00:00:37.520 --> 00:00:43.520
+deciding if you want to apply agents to. Is an agent going to be the best way to solve this?
+
+9
+00:00:43.520 --> 00:00:48.319
+And remember, there is a spectrum here. So if you really think about these use cases,
+
+10
+00:00:48.319 --> 00:00:53.040
+you might actually have high complexity and high precision use cases like filling out
+
+11
+00:00:53.040 --> 00:00:58.720
+IRS forms. And we're actually working with a bank on helping build a use case around that.
+
+12
+00:00:58.720 --> 00:01:05.919
+And the form is 70 pages long and comes with a manual that is over 700 pages long. So very
+
+13
+00:01:05.919 --> 00:01:10.000
+complex, and you don't want to get that wrong. You want to make sure that it's very precise.
+
+14
+00:01:10.559 --> 00:01:17.120
+Now, you can also see high complexity, but low precision use cases. For example, creating content
+
+15
+00:01:17.120 --> 00:01:22.080
+where you want to make sure that you're creating great content, but there is more of a leeway on
+
+16
+00:01:22.080 --> 00:01:27.360
+how that content might be structured. So while agents can tackle use cases across all these
+
+17
+00:01:27.360 --> 00:01:33.279
+dimensions, you will find that the most valuable problems are high complexity and the quickest
+
+18
+00:01:33.279 --> 00:01:38.959
+wins are the low precisions. A good place to start in this is the high complexity,
+
+19
+00:01:38.959 --> 00:01:43.919
+low precision quadrant. And that's because you get a lot of value out of solving highly
+
+20
+00:01:43.919 --> 00:01:50.400
+complex tasks which agents excel at, but you get a quick win if your agents can get creative with
+
+21
+00:01:50.400 --> 00:01:54.879
+the output. Some companies will start one way and other companies are going to start another.
+
+22
+00:01:54.879 --> 00:01:59.440
+There is no right or wrong here. And you're going to learn all about this strategy in the coming
+
+23
+00:01:59.440 --> 00:02:03.440
+modules. But I just want to make sure that as you're going through your day-to-day, you're
+
+24
+00:02:03.440 --> 00:02:08.000
+really start to thinking about what are the use cases that you're seeing out there? What are the
+
+25
+00:02:08.000 --> 00:02:12.160
+things that's going to give the most return given the investment that you're going to make on it?
+
+26
+00:02:12.160 --> 00:02:16.000
+Now, it doesn't really matter what kind of use cases you're thinking about.
+
+27
+00:02:16.559 --> 00:02:21.039
+They're always going to be a spectrum of agency that you're going to be considering.
+
+28
+00:02:21.039 --> 00:02:27.679
+In one side, some use cases might only requiring an LLM. You can do one single call to a large
+
+29
+00:02:27.679 --> 00:02:32.639
+language model and get the information that you need. Other use cases might require you to build
+
+30
+00:02:32.639 --> 00:02:38.399
+one agent. And in other use cases, you might require an entire crew, a group of agents working
+
+31
+00:02:38.399 --> 00:02:45.360
+together, specialized, each one focused on its own thing. In one side, you're only using the LLM more
+
+32
+00:02:45.360 --> 00:02:50.880
+as a tool. So there's low agency in there. And then the other side where you have a crew with
+
+33
+00:02:50.880 --> 00:02:56.559
+many agents working together, you have a lot of agency where the agents are deciding what happens
+
+34
+00:02:56.559 --> 00:03:00.880
+across every different step. Now, in order to support this,
+
+35
+00:03:00.880 --> 00:03:06.320
+you got to acknowledge that sometimes you're going to want more control. And that's why in a crew,
+
+36
+00:03:06.320 --> 00:03:12.479
+you have two main abstractions to help you with this. You have crews that are optimized for more
+
+37
+00:03:12.479 --> 00:03:18.240
+agency, meaning that you can have these agents together working and they have memories and tools
+
+38
+00:03:18.240 --> 00:03:23.119
+and tasks, all things that we're going to talk about. And the meeting preparation crew that you
+
+39
+00:03:23.119 --> 00:03:28.559
+saw previously is a great use case for a crew instead of one single agent, for example.
+
+40
+00:03:28.559 --> 00:03:35.119
+But you also have crew AI flows. That is a very low level framework that gives you all the control
+
+41
+00:03:35.119 --> 00:03:40.639
+that you need to decide what happens in what order. So you can say, I want a function that is
+
+42
+00:03:40.639 --> 00:03:47.199
+just regular Python code to execute first. And then maybe I have one single LLM call and eventually
+
+43
+00:03:47.199 --> 00:03:52.880
+I might have an entire crew. But you get to choose what happens in what order with this very thin
+
+44
+00:03:52.880 --> 00:03:58.639
+layer that gives you all the control that you need. You previously saw that example of a crew
+
+45
+00:03:58.639 --> 00:04:03.440
+of agents working together to do a meeting prep use case. And that is a great example.
+
+46
+00:04:03.440 --> 00:04:08.479
+So I really want to make sure I show you what would be a great use case for a flow.
+
+47
+00:04:08.479 --> 00:04:14.160
+And it's going to be a conversational example. Let's say that you want to have an agentic system
+
+48
+00:04:14.160 --> 00:04:20.399
+that is a conversational experience that allows their employees to talk about some of their
+
+49
+00:04:20.399 --> 00:04:25.200
+benefits. There's a lot of different use cases that apply to this pattern. And this pattern
+
+50
+00:04:25.200 --> 00:04:31.040
+usually starts with a person that is activating the system through a conversation. So like a
+
+51
+00:04:31.040 --> 00:04:36.880
+regular chatbot. From this conversation, you're going to probably need to process that message.
+
+52
+00:04:36.880 --> 00:04:41.920
+And processing the message here doesn't really require a lot of agency. You don't need the agent
+
+53
+00:04:41.920 --> 00:04:47.760
+to do it. You don't need a crew to do it. You can just use one single LLM. So the LLM here is going
+
+54
+00:04:47.760 --> 00:04:54.480
+to just understanding if given the information in the context so far, if it requires to do something
+
+55
+00:04:54.480 --> 00:05:00.160
+else, or if it's ready to give an answer. If it's ready to give an answer, that can go right back
+
+56
+00:05:00.160 --> 00:05:06.079
+into the conversation. And that will feel like a regular chat. Now, if that LLM call indicates that
+
+57
+00:05:06.079 --> 00:05:11.359
+there's some further analysis that needs to happen. Again, in the example of a financial use
+
+58
+00:05:11.359 --> 00:05:17.839
+case, it might need to query data from a database. Or if it's a help desk use case, it might query
+
+59
+00:05:17.839 --> 00:05:24.000
+your internal system to check a little bit of the benefits involved on that. Well, that feels like an
+
+60
+00:05:24.000 --> 00:05:29.440
+entire crew. Because you can have many agents that will actually do the research. They will do the
+
+61
+00:05:29.440 --> 00:05:34.000
+querying. They'll make sure that everything is working right. They'll do an analysis. And in the
+
+62
+00:05:34.000 --> 00:05:40.000
+end, provide an answer back. So it still feels like that conversational. You can see how much
+
+63
+00:05:40.000 --> 00:05:45.760
+more control we have on what is happening. And that's why this is suitable for a crewAI flow.
+
+64
+00:05:45.760 --> 00:05:52.720
+Because you're controlling on what happens in what order. And just opt in on agency on when
+
+65
+00:05:52.720 --> 00:05:58.399
+and where you need it. In this case, on the analysis tab alone. And this is why the systems,
+
+66
+00:05:58.399 --> 00:06:02.799
+when they start to get complex, they start to look like. They start to look at this mix of
+
+67
+00:06:02.799 --> 00:06:08.000
+LLMs and agents and crews in a structured way that can unlock so many use cases.
+
+68
+00:06:08.640 --> 00:06:12.320
+Now, I want to make sure that we keep going. Because in the next one, we're going to talk
+
+69
+00:06:12.320 --> 00:06:18.000
+about the foundation of AI agents. And why are these agents actually intelligent? What makes
+
+70
+00:06:18.000 --> 00:06:22.480
+them tick? This is going to be a very interesting one. I know that you're going to love it. So
+
+71
+00:06:22.480 --> 00:06:24.799
+let's make sure that you jump right into that.

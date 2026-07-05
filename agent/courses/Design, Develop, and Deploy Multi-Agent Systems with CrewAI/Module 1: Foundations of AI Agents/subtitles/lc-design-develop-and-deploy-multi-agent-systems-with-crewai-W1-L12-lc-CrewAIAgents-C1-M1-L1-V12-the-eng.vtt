@@ -1,0 +1,394 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.372 --> 00:00:03.200
+We learned so much about AI agents up to this point.
+
+2
+00:00:03.200 --> 00:00:06.400
+We learned about how they work, what makes them intelligent,
+
+3
+00:00:06.400 --> 00:00:10.800
+the different components that goes into them, and we even built use cases together.
+
+4
+00:00:10.800 --> 00:00:14.720
+I now want to spend some time going over all these concepts and talking about
+
+5
+00:00:14.720 --> 00:00:19.760
+what the future looks like for AI agents, and how this might actually impact you,
+
+6
+00:00:19.760 --> 00:00:23.760
+and your company, and your team, and the technical decisions that you're making.
+
+7
+00:00:23.760 --> 00:00:24.799
+Let's go into the slides.
+
+8
+00:00:25.360 --> 00:00:32.240
+So there's one thing that's very clear, and that is AI agents are not going back.
+
+9
+00:00:32.240 --> 00:00:37.759
+If anything, we're already seeing huge changes on the way that companies are adopting these agents.
+
+10
+00:00:37.759 --> 00:00:43.119
+You go back a year ago, their adoption patterns for LLMs was very different.
+
+11
+00:00:43.119 --> 00:00:48.080
+It was an adoption that started from the edges, meaning someone in a department
+
+12
+00:00:48.080 --> 00:00:52.639
+start to use LLMs to do something for them, and they really like it.
+
+13
+00:00:52.639 --> 00:00:56.720
+But they didn't tell anyone about it, and that created a lot of problems.
+
+14
+00:00:56.720 --> 00:01:00.479
+One of those problems is that a high chance of information leak
+
+15
+00:01:00.479 --> 00:01:03.040
+that was not supposed to be sent to the LLM.
+
+16
+00:01:03.040 --> 00:01:07.760
+Also, a lot more ad hoc use cases, so it's not very easily replicable,
+
+17
+00:01:07.760 --> 00:01:11.519
+so that other people can do the same thing, and because of that,
+
+18
+00:01:11.519 --> 00:01:14.239
+the knowledge ended up to be very siloed.
+
+19
+00:01:14.239 --> 00:01:20.080
+So this shaped the adoption of LLMs to be a little more de-organized than what it could be,
+
+20
+00:01:20.080 --> 00:01:25.519
+and you saw many companies fighting that back and trying to establish specific teams
+
+21
+00:01:25.519 --> 00:01:28.080
+and specific centers of excellence.
+
+22
+00:01:28.080 --> 00:01:32.000
+Now, with AI agents, the adoption pattern is actually different.
+
+23
+00:01:32.000 --> 00:01:36.559
+We're seeing a central adoption where agents are being centrally deployed
+
+24
+00:01:36.559 --> 00:01:42.879
+by an enablement team that then goes into allowing other teams to do agents themselves,
+
+25
+00:01:42.879 --> 00:01:46.959
+and this guarantees there's a central control of what are the LLMs,
+
+26
+00:01:46.959 --> 00:01:48.720
+what are the integrations.
+
+27
+00:01:48.720 --> 00:01:53.519
+If there's any PII filtering or personal information needs to be removed,
+
+28
+00:01:53.519 --> 00:01:56.400
+they can also implement that in a central place.
+
+29
+00:01:56.400 --> 00:02:00.720
+They also get a control of what are their use cases and how they're going to be built out,
+
+30
+00:02:00.720 --> 00:02:03.680
+and then they can start to go into the other departments,
+
+31
+00:02:03.680 --> 00:02:09.199
+either technical or non-technical, depending if they want to code or no-code solutions,
+
+32
+00:02:09.199 --> 00:02:13.759
+and start enabling them on using CrewAI, either by Crew Studio
+
+33
+00:02:13.759 --> 00:02:18.559
+or by just using the CrewAI open source library to build these use cases.
+
+34
+00:02:18.559 --> 00:02:24.320
+So it's a very interesting change of pattern on how these companies are adopting agents,
+
+35
+00:02:24.320 --> 00:02:28.559
+and this idea of building reliable agents and this concept
+
+36
+00:02:28.559 --> 00:02:31.839
+basically floats around three main things.
+
+37
+00:02:31.839 --> 00:02:36.320
+One, being very easy to use, very easy to build,
+
+38
+00:02:36.320 --> 00:02:40.960
+either using code or no-code, this needs to be fast,
+
+39
+00:02:40.960 --> 00:02:43.919
+so you go from zero to one in record speed.
+
+40
+00:02:43.919 --> 00:02:47.759
+Then second is that you want to gather repeatable outcomes.
+
+41
+00:02:47.759 --> 00:02:52.960
+Again, if anything, we learn about how these are non-deterministic systems,
+
+42
+00:02:52.960 --> 00:02:56.559
+so you know that you won't have the same answer twice,
+
+43
+00:02:56.559 --> 00:02:59.679
+but you want to make sure that all answers are good.
+
+44
+00:02:59.679 --> 00:03:03.279
+And the final thing is this idea of scalable solutions,
+
+45
+00:03:03.279 --> 00:03:07.039
+what is not even only about running a million agents,
+
+46
+00:03:07.039 --> 00:03:10.960
+even though that is also included in there, but also how you do it,
+
+47
+00:03:10.960 --> 00:03:15.679
+how you make sure that your company or your team is not building the same agents twice,
+
+48
+00:03:15.679 --> 00:03:17.600
+or the same tool twice,
+
+49
+00:03:17.600 --> 00:03:22.080
+and that are reusing these building blocks across the entire company.
+
+50
+00:03:22.080 --> 00:03:26.639
+Now, it's interesting that on top of this idea of building these agents,
+
+51
+00:03:27.199 --> 00:03:30.800
+there is a stack that is forming around it,
+
+52
+00:03:30.800 --> 00:03:35.279
+and we can see this stack starting all the way on the data management level
+
+53
+00:03:35.279 --> 00:03:39.199
+and work its way to LLMs, agent orchestration,
+
+54
+00:03:39.199 --> 00:03:45.279
+agent memory, authentication and scoping, enterprise connectors, and agentic apps.
+
+55
+00:03:45.839 --> 00:03:47.919
+And there's so much going on in there.
+
+56
+00:03:47.919 --> 00:03:50.559
+We're not even talking about observability,
+
+57
+00:03:50.559 --> 00:03:54.960
+and a few other new categories like payments that are popping up here and there.
+
+58
+00:03:54.960 --> 00:04:00.559
+But the idea here is that companies understand that the agents will need to touch data,
+
+59
+00:04:00.559 --> 00:04:05.119
+whether that is Databricks, Snowflake, Redshift, or BigQuery,
+
+60
+00:04:05.119 --> 00:04:07.600
+there's going to be an element of agents touching that.
+
+61
+00:04:07.600 --> 00:04:10.960
+And on the LLMs, they also understand there are many LLMs,
+
+62
+00:04:10.960 --> 00:04:14.720
+and each model is going to have its own flavor and its own capability.
+
+63
+00:04:14.720 --> 00:04:18.079
+So you might want to use GPT-4o-mini for certain use cases,
+
+64
+00:04:18.079 --> 00:04:20.959
+or Claude sonnet 4 for other use cases.
+
+65
+00:04:20.959 --> 00:04:26.320
+On the orchestration, where it's basically our zone of genius in CrewAI,
+
+66
+00:04:26.320 --> 00:04:29.440
+you want to make sure that you have things that can run reliably,
+
+67
+00:04:29.440 --> 00:04:33.279
+and you got to see and observe and monitor it in a proper way.
+
+68
+00:04:33.279 --> 00:04:35.839
+But you also have authentications and the connectors,
+
+69
+00:04:35.839 --> 00:04:37.839
+and there's just a lot going on in there.
+
+70
+00:04:37.839 --> 00:04:44.399
+Now, independently of what a company chooses for each and every single piece of the stack,
+
+71
+00:04:44.399 --> 00:04:48.239
+there's always five things that every company thinks about.
+
+72
+00:04:48.239 --> 00:04:51.119
+And those things are interoperability,
+
+73
+00:04:51.119 --> 00:04:56.160
+the ability to use different providers and not get a vendor locked,
+
+74
+00:04:56.160 --> 00:05:00.720
+observability, the ability to clearly understand what your agent has done,
+
+75
+00:05:00.720 --> 00:05:05.119
+and what it has done that in that way, so you can trace it all back.
+
+76
+00:05:05.119 --> 00:05:09.200
+Then you have governance, ability to track the access to data,
+
+77
+00:05:09.200 --> 00:05:13.519
+and what kind of authentication and authorization systems you have in place
+
+78
+00:05:13.519 --> 00:05:18.559
+to make sure that you're still compliant with everything that you have internally.
+
+79
+00:05:18.559 --> 00:05:23.920
+Then you have evaluations, how you make sure that these things are performing up to speed
+
+80
+00:05:23.920 --> 00:05:26.239
+and up to the quality that you want.
+
+81
+00:05:26.239 --> 00:05:30.959
+So you guarantee that your agents are working and you're not breaking them over time.
+
+82
+00:05:30.959 --> 00:05:35.200
+And then you have a guardrails to help you get those more reliable, repeatable outcomes.
+
+83
+00:05:35.200 --> 00:05:39.519
+Those five things are things that every company out there are asking is about,
+
+84
+00:05:40.160 --> 00:05:43.119
+independently of what their stack looks like.
+
+85
+00:05:43.119 --> 00:05:46.480
+So in the end of the day, even on CrewAI itself,
+
+86
+00:05:46.480 --> 00:05:49.839
+we make sure that whatever you build on our platform,
+
+87
+00:05:49.839 --> 00:05:53.359
+you can also download as open source and run it anywhere.
+
+88
+00:05:53.359 --> 00:05:58.559
+Well, hopefully you're coming out of this lesson with so much that we have unpacked.
+
+89
+00:05:58.559 --> 00:06:01.760
+Having built potentially your first multi-agent systems,
+
+90
+00:06:01.760 --> 00:06:04.799
+understanding how to scale these systems to production,
+
+91
+00:06:04.799 --> 00:06:08.480
+and what use cases are proving to be the most valuable for businesses.
+
+92
+00:06:08.480 --> 00:06:13.200
+And now that you know all this, you're ready to go into our graded labs and graded quiz.
+
+93
+00:06:13.200 --> 00:06:17.600
+In the graded lab, you will implement a multi-agent automatic code review system,
+
+94
+00:06:17.600 --> 00:06:19.279
+and it's going to be awesome.
+
+95
+00:06:19.279 --> 00:06:22.640
+So once you're done, I see right away in your next module,
+
+96
+00:06:22.640 --> 00:06:26.720
+where we're going to get our hands dirty on how to implement tools,
+
+97
+00:06:26.720 --> 00:06:30.799
+guardrails, execution hooks, and MCP servers for your crew.
+
+98
+00:06:30.799 --> 00:06:33.839
+This is going to be super exciting. So I'll see you in there.

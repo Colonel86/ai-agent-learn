@@ -1,0 +1,570 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.373 --> 00:00:03.140
+Now, you're feeling pretty confident about your use cases.
+
+2
+00:00:03.140 --> 00:00:07.719
+You built your agents, you added hooks, you added guardrails, you applied a lot of the
+
+3
+00:00:07.719 --> 00:00:10.520
+things that we learned in this course.
+
+4
+00:00:10.520 --> 00:00:13.840
+Once that they actually go into production, the work doesn't stop.
+
+5
+00:00:13.840 --> 00:00:18.120
+You need to make sure that you are monitoring them, especially because once agents are running
+
+6
+00:00:18.120 --> 00:00:23.059
+into a high-scale environment, they're running at machine speed.
+
+7
+00:00:23.059 --> 00:00:27.360
+So you want to make sure that you have all the monitoring in place to observe how well
+
+8
+00:00:27.360 --> 00:00:28.360
+they are doing.
+
+9
+00:00:28.799 --> 00:00:32.520
+And we're going to talk about how you expose those metrics and how you can really see what
+
+10
+00:00:32.520 --> 00:00:37.560
+is going on in the system so that you can use those metrics to actually drive improvements.
+
+11
+00:00:37.560 --> 00:00:40.400
+CrewAI gives you a lot of tools in order to do that.
+
+12
+00:00:40.400 --> 00:00:42.560
+So let's start talking about those.
+
+13
+00:00:42.560 --> 00:00:46.439
+So we have been talking all about all these different features and all these different
+
+14
+00:00:46.439 --> 00:00:51.400
+ways that you can try to enforce behaviors and just make sure that you're getting reliable
+
+15
+00:00:51.400 --> 00:00:53.360
+outputs from your agents.
+
+16
+00:00:53.360 --> 00:00:58.279
+But in the end of the day, what reliable output means is that you're trying to build agents
+
+17
+00:00:58.279 --> 00:00:59.279
+that you trust.
+
+18
+00:00:59.279 --> 00:01:02.479
+And we touched into this briefly on the last lesson.
+
+19
+00:01:02.479 --> 00:01:06.440
+And building trustworthy agents requires several elements.
+
+20
+00:01:06.440 --> 00:01:11.440
+It requires the debuggability, for example, because you need to understand from the prototyping
+
+21
+00:01:11.440 --> 00:01:17.559
+stage what the agent is doing and how it reaches its conclusions and how it's making its choices.
+
+22
+00:01:17.559 --> 00:01:22.519
+So you get to understand better and have a more informed opinion on how you will change
+
+23
+00:01:22.519 --> 00:01:25.120
+it so it performs a little better.
+
+24
+00:01:25.120 --> 00:01:28.440
+Now you also need to make sure that you're monitoring its quality, ensuring that the
+
+25
+00:01:28.440 --> 00:01:33.360
+outputs are consistent, repeatable and free from hallucinations and aligned with whatever
+
+26
+00:01:33.360 --> 00:01:35.720
+desired format you have.
+
+27
+00:01:35.720 --> 00:01:40.959
+Data governance is also a big thing because it's essential for many of these companies
+
+28
+00:01:40.959 --> 00:01:47.279
+to be thinking and looking out to prevent PII or personal data from leaking and basically
+
+29
+00:01:47.279 --> 00:01:49.000
+filtering that out.
+
+30
+00:01:49.000 --> 00:01:53.319
+Not only to protect that information from being exposed externally, but a lot of times
+
+31
+00:01:53.440 --> 00:01:56.919
+to make sure they're not being exposed internally as well.
+
+32
+00:01:56.919 --> 00:02:02.440
+Data governance and PII protection or even personal information protection has grown
+
+33
+00:02:02.440 --> 00:02:08.679
+to be a major concern globally, not only in Europe, but in the U.S. and many other countries.
+
+34
+00:02:08.679 --> 00:02:12.199
+So you want to make sure that as you build these use cases, you're also thinking about
+
+35
+00:02:12.199 --> 00:02:15.960
+that, especially as you start to getting ready to move into production to make sure that
+
+36
+00:02:15.960 --> 00:02:19.800
+you're not exposing information that you don't want to.
+
+37
+00:02:19.800 --> 00:02:24.600
+Prompt injection is one of the techniques that have been the most exploited up to this
+
+38
+00:02:24.600 --> 00:02:27.399
+point on agents and LLMs.
+
+39
+00:02:27.399 --> 00:02:32.759
+The idea that someone can inject something into your prompts that will actually compromise
+
+40
+00:02:32.759 --> 00:02:39.479
+your use case or might result in security risks must be addressed as agents, especially those
+
+41
+00:02:39.479 --> 00:02:43.880
+that are generating code, can open up new attack vectors if they're not properly
+
+42
+00:02:43.880 --> 00:02:45.759
+sandboxed or validated.
+
+43
+00:02:45.759 --> 00:02:49.919
+And ultimately, you want to make sure that your agents are running at a scale that you
+
+44
+00:02:49.919 --> 00:02:51.119
+can trust them.
+
+45
+00:02:51.119 --> 00:02:56.080
+So not only on terms of the work that they're doing and the data that they have access,
+
+46
+00:02:56.080 --> 00:03:01.119
+but also that the entire infrastructure can take on the load or whatever it's necessary
+
+47
+00:03:01.119 --> 00:03:05.199
+to perform at the power of your use case needs.
+
+48
+00:03:05.199 --> 00:03:10.199
+These topics usually split into three boxes, though, if you think about all these different
+
+49
+00:03:10.199 --> 00:03:15.320
+things that we have been talking up to this point, though, they always go back into three
+
+50
+00:03:15.320 --> 00:03:21.000
+main boxes: observability, security and compliance.
+
+51
+00:03:21.000 --> 00:03:25.720
+A lot of the applicability and quality monitoring falls under observability.
+
+52
+00:03:25.720 --> 00:03:29.600
+So when you think about debugging, when you think about monitoring quality, when you think
+
+53
+00:03:29.600 --> 00:03:33.279
+about monitoring hallucinations, all falls under that.
+
+54
+00:03:33.279 --> 00:03:38.000
+Security will cover areas like code generation, checking for prompting injects, checking for
+
+55
+00:03:38.000 --> 00:03:39.880
+data governance.
+
+56
+00:03:39.880 --> 00:03:45.520
+There's a lot going on in that realm, especially now with the introduction of MCP servers.
+
+57
+00:03:45.520 --> 00:03:51.520
+And compliance will focus more on monitoring issues related to PII or personal information
+
+58
+00:03:51.520 --> 00:03:55.440
+or other compliance guidelines that a company might have.
+
+59
+00:03:55.440 --> 00:04:03.160
+But across all of those, the most important thing is being able to see and identify problems.
+
+60
+00:04:03.160 --> 00:04:06.119
+That is the underlying common thing among all of them.
+
+61
+00:04:06.360 --> 00:04:10.000
+It doesn't matter if you're doing that to protecting PII or if you're doing that to
+
+62
+00:04:10.000 --> 00:04:11.000
+monitor quality.
+
+63
+00:04:11.000 --> 00:04:17.559
+And as many engineers know, if you don't have visibility, like not having unit tests, you
+
+64
+00:04:17.559 --> 00:04:22.079
+will quickly lose confidence in what you're building, which will slow down your ability
+
+65
+00:04:22.079 --> 00:04:23.760
+to move fast.
+
+66
+00:04:23.760 --> 00:04:26.079
+So you can't fix what you can't see.
+
+67
+00:04:26.079 --> 00:04:32.399
+And that's why at CrewAI, we spend a lot of time making it easy for everyone to understand
+
+68
+00:04:32.399 --> 00:04:34.600
+what are the agents doing?
+
+69
+00:04:34.600 --> 00:04:39.079
+And you already have seen some of this in your terminal web to this point, in your logs.
+
+70
+00:04:39.079 --> 00:04:41.920
+And there is an even better way to dive even deeper.
+
+71
+00:04:41.920 --> 00:04:47.480
+You can view everything your agents are doing, whether crews or flows and even tool calls,
+
+72
+00:04:47.480 --> 00:04:50.200
+you can see what is happening behind the scenes.
+
+73
+00:04:50.200 --> 00:04:53.279
+And that is a feature that we call tracing.
+
+74
+00:04:53.279 --> 00:04:56.920
+There's a few different ways that you can tap into the data to understand what your
+
+75
+00:04:56.920 --> 00:04:57.920
+agents are doing.
+
+76
+00:04:57.920 --> 00:05:03.000
+One, we already have been using across the entire examples that we have built.
+
+77
+00:05:03.000 --> 00:05:08.040
+And that is basically setting that verbose mode to true on your agents.
+
+78
+00:05:08.040 --> 00:05:13.040
+What that will do is that will plot in your terminal, the entire chain of thought and
+
+79
+00:05:13.040 --> 00:05:16.739
+the entire series of actions that your agents are taking.
+
+80
+00:05:16.739 --> 00:05:22.959
+But if after creating your agents, you set up tracing to True into your crew, they're
+
+81
+00:05:22.959 --> 00:05:26.079
+going to get a next level view.
+
+82
+00:05:26.079 --> 00:05:32.720
+And that by basically enabling that one single flag to True, will now give you a final URL
+
+83
+00:05:32.720 --> 00:05:37.600
+at the end of your execution that you can immediately load in your browser and go deep
+
+84
+00:05:37.600 --> 00:05:41.079
+into observing every single step of your agents.
+
+85
+00:05:41.079 --> 00:05:47.040
+You're going to be able to see things broken down, not only by the agents and the individual
+
+86
+00:05:47.040 --> 00:05:53.600
+tasks that they are taking, but you can expand on that LLM call to see the actual response
+
+87
+00:05:53.600 --> 00:05:54.799
+that you got back.
+
+88
+00:05:54.799 --> 00:05:59.799
+And you can even go into the tools that are being used and see what and how these tools
+
+89
+00:05:59.799 --> 00:06:05.559
+are being used, all the way to the raw data that is being exchanged behind the scenes
+
+90
+00:06:05.559 --> 00:06:08.920
+between your agents and the LLMs.
+
+91
+00:06:08.920 --> 00:06:15.399
+This is such an immense value for someone on the prototyping stage, so they fully understand
+
+92
+00:06:15.399 --> 00:06:16.399
+what is happening.
+
+93
+00:06:16.399 --> 00:06:20.920
+And it's also great for debugging in case you end up having an edge case where something
+
+94
+00:06:20.920 --> 00:06:25.399
+breaks or goes south, and you need to trace it back to understand how you got into that
+
+95
+00:06:25.399 --> 00:06:26.880
+weird stage.
+
+96
+00:06:26.959 --> 00:06:31.480
+Now, I want to make sure that we're taking one step back and also talking about once
+
+97
+00:06:31.480 --> 00:06:38.399
+that you're running thousands of agents at time, how do you keep track of that?
+
+98
+00:06:38.399 --> 00:06:42.160
+Production agents operate at a machine speed.
+
+99
+00:06:42.160 --> 00:06:47.760
+What I mean by that is that it's not something that a human speed can observe necessarily
+
+100
+00:06:47.760 --> 00:06:49.399
+at the same time.
+
+101
+00:06:49.399 --> 00:06:56.959
+So observability becomes more reactive, and proactive alerting becomes a way larger priority.
+
+102
+00:06:56.959 --> 00:07:02.119
+And in order to do that, we also give you some features like crew quality sampling,
+
+103
+00:07:02.119 --> 00:07:08.040
+where you can set how much sampling you want to do, what percentage of your total executions
+
+104
+00:07:08.040 --> 00:07:14.320
+will be used to create a quality score and then automatically hallucination score for
+
+105
+00:07:14.320 --> 00:07:15.559
+your crew.
+
+106
+00:07:15.559 --> 00:07:20.359
+And once that we have set this up, you're going to have an entire chart plot up for
+
+107
+00:07:20.359 --> 00:07:21.359
+you.
+
+108
+00:07:21.359 --> 00:07:22.440
+And I know there's a lot going on in here.
+
+109
+00:07:22.440 --> 00:07:24.359
+So let's dive into this for a second.
+
+110
+00:07:24.359 --> 00:07:27.019
+On the X axis, you have time.
+
+111
+00:07:27.019 --> 00:07:31.640
+So across many different executions, across many different days, you can see how your
+
+112
+00:07:31.640 --> 00:07:32.640
+agents are doing.
+
+113
+00:07:32.640 --> 00:07:35.760
+And on the Y axis, you have a few different options.
+
+114
+00:07:35.760 --> 00:07:40.600
+You can see not only the average prompt tokens that they're using, but also what is the
+
+115
+00:07:40.600 --> 00:07:45.540
+average score that they are getting, and what is the hallucination score that they are getting.
+
+116
+00:07:45.540 --> 00:07:50.260
+So in the end of the day, we're using the collective data out of your agentic executions
+
+117
+00:07:50.260 --> 00:07:55.459
+between the actual output and the expected output in all the different actions that your
+
+118
+00:07:55.459 --> 00:08:02.040
+agents take to give you an overall 10000 foot level view of everything that is happening
+
+119
+00:08:02.040 --> 00:08:03.980
+with your agentic system.
+
+120
+00:08:03.980 --> 00:08:09.140
+By looking at this chart, you should be able to quickly grasp if there are any deviations
+
+121
+00:08:09.140 --> 00:08:13.899
+in terms of either quality or hallucination, and if that traces back to any specific changes
+
+122
+00:08:13.899 --> 00:08:14.899
+that you might have done.
+
+123
+00:08:15.260 --> 00:08:19.260
+And this is very exciting, but it's also just the tip of the iceberg.
+
+124
+00:08:19.260 --> 00:08:23.540
+There are many other tools out there that allows you to take this so much further into
+
+125
+00:08:23.540 --> 00:08:24.899
+observability.
+
+126
+00:08:24.899 --> 00:08:29.779
+So you might want to look, for example, at cutting edge tools like Arize or Galileo or
+
+127
+00:08:29.779 --> 00:08:35.460
+many other observability tools that can actually check deep on your agents to see how they're
+
+128
+00:08:35.460 --> 00:08:36.979
+doing and how they are performing.
+
+129
+00:08:36.979 --> 00:08:41.619
+And they have way more specific alerts around your specific use cases.
+
+130
+00:08:41.619 --> 00:08:45.659
+We definitely vouch for many different tools that are out there, and those tools come top
+
+131
+00:08:45.659 --> 00:08:46.659
+of mind.
+
+132
+00:08:46.659 --> 00:08:51.419
+Now, in the next video, we're going to start talking a little bit about how you go even
+
+133
+00:08:51.419 --> 00:08:53.059
+further in that direction.
+
+134
+00:08:53.059 --> 00:08:57.380
+Was that you're actually getting into shipping, assuming that you trust these agents,
+
+135
+00:08:57.380 --> 00:09:00.659
+How do you make sure that you keep trusting them over time?
+
+136
+00:09:00.659 --> 00:09:04.820
+How do you make sure that they are not breaking as you keep adding new features to them?
+
+137
+00:09:04.820 --> 00:09:06.580
+That's going to be a very exciting topic.
+
+138
+00:09:06.580 --> 00:09:08.059
+So I hope to see you in there.
+
+139
+00:09:08.059 --> 00:09:11.059
+I hope you have really enjoyed the course up to this point.
+
+140
+00:09:11.500 --> 00:09:12.500
+We're going into the tail end.
+
+141
+00:09:12.500 --> 00:09:13.500
+It's going to be very exciting.
+
+142
+00:09:13.500 --> 00:09:15.940
+I'll catch you in the next lesson in a second.

@@ -1,0 +1,290 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.394 --> 00:00:04.639
+By now, you already understand a lot about these systems, but how you run the systems
+
+2
+00:00:04.639 --> 00:00:05.639
+at scale?
+
+3
+00:00:05.639 --> 00:00:10.079
+And more important than that, what are the actual use cases that are working out in the
+
+4
+00:00:10.079 --> 00:00:11.079
+wild?
+
+5
+00:00:11.079 --> 00:00:15.319
+What are the use cases that the business are actually getting results from?
+
+6
+00:00:15.319 --> 00:00:16.799
+So let's dive into that.
+
+7
+00:00:16.799 --> 00:00:19.819
+Now let's talk about the production use cases.
+
+8
+00:00:19.819 --> 00:00:25.760
+In some of these use cases out there, we are seeing 80 to 97% efficiency gains.
+
+9
+00:00:25.760 --> 00:00:28.639
+What if you ask me is insane.
+
+10
+00:00:28.639 --> 00:00:31.659
+And efficiency here can be measured in so many ways.
+
+11
+00:00:31.659 --> 00:00:35.279
+Some companies will measure it by comparing how much time they used to spend on this task
+
+12
+00:00:35.279 --> 00:00:39.639
+before and how much time they are spending now after implementing agents.
+
+13
+00:00:39.639 --> 00:00:43.520
+So let me talk about one specific real-world use case.
+
+14
+00:00:43.520 --> 00:00:49.299
+So this is an actual real Fortune 500 company that is a consumer-packed goods company.
+
+15
+00:00:49.299 --> 00:00:54.720
+So think of a company that sells chips, vitamins, instant noodles, or beer, something you can
+
+16
+00:00:54.720 --> 00:00:56.560
+buy from the supermarket.
+
+17
+00:00:56.560 --> 00:01:02.720
+And their initial use case is very interesting, is what people would call RevOps.
+
+18
+00:01:02.720 --> 00:01:06.139
+So basically, operations on the revenue side.
+
+19
+00:01:06.139 --> 00:01:12.120
+In that case, the problem that they were trying to solve is how they can approve price changes
+
+20
+00:01:12.120 --> 00:01:14.720
+faster than what they have historically done.
+
+21
+00:01:14.720 --> 00:01:17.760
+And this is a process that requires a lot of manual approval.
+
+22
+00:01:17.760 --> 00:01:23.059
+Like people need to check price of the competitors, people need to check marketplaces.
+
+23
+00:01:23.059 --> 00:01:28.860
+So in this use case, everything starts with an update request that would then go into
+
+24
+00:01:28.860 --> 00:01:30.779
+a SharePoint database.
+
+25
+00:01:30.779 --> 00:01:35.379
+And the agents will be able to retrieve that information in order to decide whether they
+
+26
+00:01:35.379 --> 00:01:37.260
+approve this change or not.
+
+27
+00:01:37.260 --> 00:01:42.260
+To do it, these agents will do a series of checks, checking the competitors' prices,
+
+28
+00:01:42.260 --> 00:01:44.459
+the marketplaces' prices.
+
+29
+00:01:44.459 --> 00:01:50.000
+They're going to validate the values and a few ground rules, including what is the center
+
+30
+00:01:50.000 --> 00:01:53.599
+of cost, who's paying for this discount.
+
+31
+00:01:53.599 --> 00:01:57.559
+And if everything looks right, they're going to approve and broadcast this value, what
+
+32
+00:01:57.559 --> 00:02:01.080
+is actually going to impact the end value of the product.
+
+33
+00:02:01.080 --> 00:02:06.760
+Now, if at any point something falls short, maybe the price that is going to be updated
+
+34
+00:02:06.760 --> 00:02:08.800
+doesn't check against the competitors.
+
+35
+00:02:08.800 --> 00:02:13.800
+Well, now these agents can reach out for extra validation from humans.
+
+36
+00:02:13.800 --> 00:02:18.520
+So they ping the person in Slack with extra questions so that they can get all the validation
+
+37
+00:02:18.520 --> 00:02:21.720
+information that they need before approving this request.
+
+38
+00:02:21.720 --> 00:02:27.039
+It's an extremely interesting use case, and you can see how something like this, if
+
+39
+00:02:27.039 --> 00:02:33.320
+automated properly, can save hundreds of hours in a week for a company that is operating
+
+40
+00:02:33.320 --> 00:02:34.639
+at a global level.
+
+41
+00:02:34.639 --> 00:02:37.559
+This was a great initial use case for this company.
+
+42
+00:02:37.559 --> 00:02:42.080
+They reached out to us, and they had this use case, and we got the use case live within
+
+43
+00:02:42.080 --> 00:02:43.479
+weeks.
+
+44
+00:02:43.479 --> 00:02:52.559
+After some optimizations, this use case alone got them 94% efficiency gains and 97% accuracy.
+
+45
+00:02:52.559 --> 00:02:57.600
+Accuracy here was measured by comparing what humans were doing before, and the decision
+
+46
+00:02:57.600 --> 00:03:02.600
+that the agents took during the same period of time, so that we could have a one-to-one
+
+47
+00:03:02.600 --> 00:03:03.600
+comparison.
+
+48
+00:03:03.600 --> 00:03:06.960
+And the reason why I'm bringing this up is in here you can have a little bit of a
+
+49
+00:03:06.960 --> 00:03:11.639
+blueprint on how you can do this yourself on your own company or your own team.
+
+50
+00:03:11.800 --> 00:03:16.800
+If you expand beyond this company, you're going to find out there's many top verticals.
+
+51
+00:03:16.800 --> 00:03:24.279
+We're seeing companies on high-tech or consulting, telecom, finance, customer service, insurance,
+
+52
+00:03:24.279 --> 00:03:26.320
+a lot across the board.
+
+53
+00:03:26.320 --> 00:03:29.399
+They're benefiting off these use cases.
+
+54
+00:03:29.399 --> 00:03:35.320
+And I want to talk about not only some of these top verticals, but within these verticals,
+
+55
+00:03:35.320 --> 00:03:38.199
+what are the specific functional areas?
+
+56
+00:03:38.199 --> 00:03:43.080
+You're going to see a lot of sales and marketing automation, a lot of developer automation,
+
+57
+00:03:43.080 --> 00:03:49.160
+a lot of cybersecurity, supply chain, pricing, and people management.
+
+58
+00:03:49.160 --> 00:03:54.279
+In the end of the day, after everything that we talked about, you can see that giving it
+
+59
+00:03:54.279 --> 00:04:00.320
+some thinking prior around the output quality that you want to get, around what is the best
+
+60
+00:04:00.320 --> 00:04:04.240
+way for these agents to collaborate with each other, around how you're going to measure
+
+61
+00:04:04.320 --> 00:04:08.759
+the performance and how you're going to make sure that you're testing that against different
+
+62
+00:04:08.759 --> 00:04:14.600
+models and then how you're scaling this, how you're putting the right guardrails and how
+
+63
+00:04:14.600 --> 00:04:20.480
+you're adding the end observability and tracing to make sure that you get the best outputs
+
+64
+00:04:20.480 --> 00:04:22.000
+that you can have.
+
+65
+00:04:22.000 --> 00:04:28.320
+So what I really want to drive across is that spending time on thinking about the design
+
+66
+00:04:28.320 --> 00:04:32.000
+will really help you achieve better results at the end.
+
+67
+00:04:32.000 --> 00:04:33.720
+And that's very important.
+
+68
+00:04:33.720 --> 00:04:39.279
+So now that you have seen the major considerations in taking a multi-agent system into production,
+
+69
+00:04:39.279 --> 00:04:44.079
+I will invite you to follow me to the next video where we'll talk about the AI agent
+
+70
+00:04:44.079 --> 00:04:49.239
+revolution and why it's happening now and how you can help build it.
+
+71
+00:04:49.239 --> 00:04:50.239
+You don't want to miss that one.
+
+72
+00:04:50.239 --> 00:04:51.720
+I'll see you in there in a second.

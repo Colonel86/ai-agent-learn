@@ -1,0 +1,190 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.772 --> 00:00:08.000
+By now, you already get that these agents are very powerful, and they're good at making decisions on the fly and reacting to anything that you throw at them.
+
+2
+00:00:08.000 --> 00:00:17.000
+But sometimes you want more control. Sometimes you want to make sure that you execute actual code either prior or after these agents are executed.
+
+3
+00:00:17.000 --> 00:00:20.000
+And this is where execution hooks come in.
+
+4
+00:00:20.000 --> 00:00:33.000
+It allows you to write code that is going to run right before your agents start doing work, or right after, and use that information either to input data into the agents or to take data out of these agents and send them somewhere else.
+
+5
+00:00:33.000 --> 00:00:38.000
+This is a very interesting technique and can play a huge role depending on your use case.
+
+6
+00:00:38.000 --> 00:00:40.000
+So let me show you how it's done.
+
+7
+00:00:40.000 --> 00:00:43.000
+So by now, you're getting very proficient with crews.
+
+8
+00:00:43.000 --> 00:00:55.000
+And you probably already identified that whenever you have a crew, you might want to have something to happen right before it starts doing its work or right after it's done with its work.
+
+9
+00:00:55.000 --> 00:00:57.000
+And that can be so many different things.
+
+10
+00:00:57.000 --> 00:01:03.000
+A lot of times it is loading data from somewhere or loading data off to somewhere.
+
+11
+00:01:03.000 --> 00:01:07.000
+And you might want to use that data to change some of the information.
+
+12
+00:01:07.000 --> 00:01:17.000
+So in most cases, you might want to have this something happen that modifies the inputs that goes into the agent or modifies the outputs that are going out of your crew.
+
+13
+00:01:17.000 --> 00:01:23.000
+So you might want to change this information in certain ways or combine it with something else before you start your workflow.
+
+14
+00:01:23.000 --> 00:01:30.000
+And by the end of the workflow, you might want to push that final result such as into Salesforce or another system or even your email.
+
+15
+00:01:31.000 --> 00:01:33.000
+And that's where Hooks comes in.
+
+16
+00:01:33.000 --> 00:01:39.000
+Because either before or after Hooks will allow you to write code that you want to be executed right in there.
+
+17
+00:01:39.000 --> 00:01:48.000
+It's almost like an easy step before you go all the way into a flow where you already start to bring in some actual coding into your agents.
+
+18
+00:01:48.000 --> 00:01:58.000
+So a before Hook, for example, might be fetching input data or cleaning input data, checking for PII or personal information and make sure that it's scraped those out.
+
+19
+00:01:58.000 --> 00:02:11.000
+While after Hooks will be validating some of these outputs, will be moderating content, might be also doing things like removing PII or even just logging outputs somewhere so that you can inspect them later.
+
+20
+00:02:11.000 --> 00:02:15.000
+A good example of a pre-Hook function would be something like this.
+
+21
+00:02:15.000 --> 00:02:21.000
+Let's say that part of the inputs is a phone number and you want to make sure that you're formatting it right.
+
+22
+00:02:21.000 --> 00:02:32.000
+So what you do in here is you extract this information and use regular Python to basically break it down in a very specific format and then reintroduce that into the inputs.
+
+23
+00:02:32.000 --> 00:02:40.000
+So that's something that you can do to make sure that the data going into the crew and into your agents is properly formatted.
+
+24
+00:02:40.000 --> 00:02:46.000
+And this is an example of what would be a good post-Hook function where now you're getting the outputs.
+
+25
+00:02:46.000 --> 00:02:52.000
+And let's say that the output now also includes a phone number, but you want to hide that away.
+
+26
+00:02:52.000 --> 00:02:58.000
+So you might basically implement something that hides the few numbers and only show the final four numbers.
+
+27
+00:02:58.000 --> 00:03:04.000
+So obfuscating part of that output and then you're returning that output forward.
+
+28
+00:03:04.000 --> 00:03:14.000
+Now, if you want to add those pre-Hooks and these post-Hooks into your tasks, all you got to do in the code is add these two new attributes, a pre-Hook and a post-Hook.
+
+29
+00:03:14.000 --> 00:03:27.000
+And you can see that both of them take arrays as values, meaning that you can add many different hooks either to be run before or after the execution, allowing you to have a lot of control into that.
+
+30
+00:03:27.000 --> 00:03:39.000
+So in the end of the day, you can see how hooks either before or after hooks can actually play a huge role on helping you build reliable systems.
+
+31
+00:03:39.000 --> 00:03:47.000
+If there's one thing that you are going to hear me referencing over and over is that in order for the systems to get into production, they need to be reliable.
+
+32
+00:03:47.000 --> 00:03:53.000
+You can definitely build them extremely easily with Crew, both with no code and pro code.
+
+33
+00:03:53.000 --> 00:04:02.000
+But when you get to ship them, you want to make sure that you are giving outputs that are consistent and they're filtering out any information that is going in or out.
+
+34
+00:04:02.000 --> 00:04:10.000
+So in the end of the day, a lot of the focus on hooks is around this idea of building reliable systems.
+
+35
+00:04:10.000 --> 00:04:17.000
+Now, the utmost control that you can gather with CrewAI is when you go to CrewAI Flows.
+
+36
+00:04:17.000 --> 00:04:20.000
+And we're going to talk a lot about that in Module 3.
+
+37
+00:04:20.000 --> 00:04:32.000
+And the idea here is that flows will allow you to merge actual code with either one single LLM calls, one single agent or an entire crew together.
+
+38
+00:04:32.000 --> 00:04:36.000
+That is the ultimate backbone that can bring everything together.
+
+39
+00:04:36.000 --> 00:04:40.000
+And we're going to dive deep into Flows in the few lessons ahead.
+
+40
+00:04:40.000 --> 00:04:46.000
+And I'm already start to putting some of this context and some of these concepts together for you.
+
+41
+00:04:46.000 --> 00:04:57.000
+Flows can be extremely powerful because they allow you to create very simple automations with no LLMs at all, or build things that are much more complex, like what we have seen here.
+
+42
+00:04:57.000 --> 00:05:04.000
+I hope you've enjoyed this so far, because in our next lesson, we're going to talk about how agents use external tools.
+
+43
+00:05:04.000 --> 00:05:11.000
+And tools are the corner piece on how your agents get work done, because they allow your agents to do so much.
+
+44
+00:05:11.000 --> 00:05:14.000
+They're going to be able to tap into external sources.
+
+45
+00:05:14.000 --> 00:05:18.000
+They're going to be able to push external data and take actions in different systems.
+
+46
+00:05:18.000 --> 00:05:21.000
+So I'm sure that you're going to have a great time with that.
+
+47
+00:05:21.000 --> 00:05:24.000
+You don't want to miss that one out. So let's jump right into that.

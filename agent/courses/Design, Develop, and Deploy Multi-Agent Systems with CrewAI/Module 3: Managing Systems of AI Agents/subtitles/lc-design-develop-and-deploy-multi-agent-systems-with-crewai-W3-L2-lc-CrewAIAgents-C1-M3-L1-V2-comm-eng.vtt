@@ -1,0 +1,398 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.076 --> 00:00:04.000
+Now that we learned about collaboration, let's talk about communication.
+
+2
+00:00:04.000 --> 00:00:08.640
+And what I mean by that is there is no one-size-fits-all for multi-agent systems.
+
+3
+00:00:08.640 --> 00:00:13.600
+As any technical system out there, it takes you to really think about the architecture.
+
+4
+00:00:13.600 --> 00:00:16.319
+This is going to be very exciting, so let's jump right into that.
+
+5
+00:00:16.879 --> 00:00:22.159
+So you already have seen how much you can build with a single agent or even with multi-agents.
+
+6
+00:00:22.159 --> 00:00:26.639
+And we talked about how much control you have when you're trying to set all the different
+
+7
+00:00:26.639 --> 00:00:30.479
+aspects of these agents and even what LLMs they're going to be using.
+
+8
+00:00:30.479 --> 00:00:34.880
+But one challenge with the multi-agent systems is that you have to define on how they will
+
+9
+00:00:34.880 --> 00:00:38.720
+collaborate with each other. And that can really get interesting.
+
+10
+00:00:38.720 --> 00:00:42.959
+Now, if you look at the default behavior in CrewAI, it's that the agents will work in a
+
+11
+00:00:42.959 --> 00:00:47.599
+sequentially manner. And that means that you define your agents, and the tasks will define
+
+12
+00:00:47.599 --> 00:00:52.720
+what orders things are going to be processed. A good example here might be stock trading
+
+13
+00:00:52.720 --> 00:00:57.439
+analysis, where you have an initial agent picking up a stock, a second agent that is
+
+14
+00:00:57.439 --> 00:01:01.759
+then given that pick is doing a deep research and extracting a bunch of information, and
+
+15
+00:01:01.759 --> 00:01:04.559
+then a final agent that is putting a report together.
+
+16
+00:01:04.559 --> 00:01:09.599
+So in this case, one task's output feeds into the next task that is going on.
+
+17
+00:01:09.599 --> 00:01:14.160
+So in addition to this sequential flow, you can also enable these agents to delegate work
+
+18
+00:01:14.160 --> 00:01:17.040
+among themselves and ask questions to each other.
+
+19
+00:01:17.040 --> 00:01:22.239
+So if at any point in time, for example, the last reporting agent has a question about
+
+20
+00:01:22.239 --> 00:01:27.599
+why was this ticker actually picked, you can ask back to the initial agent why there
+
+21
+00:01:27.599 --> 00:01:33.680
+was a reason around that. Now, the idea here is that throughout this execution, each agent's
+
+22
+00:01:33.680 --> 00:01:38.800
+task served as context for the next one. So it means that it's going to be injected
+
+23
+00:01:38.800 --> 00:01:43.919
+into the prompt that goes into the next agent. Now, sometimes you want to have a little more
+
+24
+00:01:43.919 --> 00:01:48.400
+control than that, and you want to make sure that you're feeding one task and one agent
+
+25
+00:01:48.400 --> 00:01:53.919
+with the outputs of many different tasks. And here would be a good example for that,
+
+26
+00:01:53.919 --> 00:01:58.720
+a coding crew. So these are agents that are meant to be creating software.
+
+27
+00:01:58.720 --> 00:02:04.239
+So you might have an initial planner agent and a tester agent and then a coder agent.
+
+28
+00:02:04.239 --> 00:02:09.600
+So the planner will think about the spec and how it can actually achieve that final goal.
+
+29
+00:02:09.600 --> 00:02:13.919
+And the tester agent would then take that plan and use that to write some series of
+
+30
+00:02:13.919 --> 00:02:18.720
+unit tasks. But the coder is the agent that is actually getting a lot of this work done,
+
+31
+00:02:18.720 --> 00:02:24.080
+but it needs access to both the plan itself and the tasks.
+
+32
+00:02:24.080 --> 00:02:29.039
+And the cool thing about this is that this is extremely easy to do in CrewAI.
+
+33
+00:02:29.039 --> 00:02:34.639
+As you can see, if you have a plan task and you have a testing task that also has its own
+
+34
+00:02:34.639 --> 00:02:39.919
+description and expected output, you can see that for the testing task, we're being a little more
+
+35
+00:02:39.919 --> 00:02:47.199
+verbose than necessary and just indicating that the context for this task is the output of the
+
+36
+00:02:47.199 --> 00:02:54.720
+plan task. And that is the default behavior in CrewAI. But then you can also get this final
+
+37
+00:02:54.720 --> 00:03:00.639
+task that is creating the app. And this final task is now bringing together the results of
+
+38
+00:03:00.639 --> 00:03:05.039
+both of those tasks, both the plan and the testing. And you can pinpoint that
+
+39
+00:03:05.039 --> 00:03:11.440
+but that final context argument in there. Now, sequential is just the tip of the iceberg.
+
+40
+00:03:11.440 --> 00:03:16.639
+There's so many more other processes. Parallel processing is another option in here.
+
+41
+00:03:16.639 --> 00:03:20.240
+Of course, you don't need to stick with sequential for all the use cases.
+
+42
+00:03:20.240 --> 00:03:25.759
+So in parallel, you might have many agents that are working at the same time doing their own task.
+
+43
+00:03:25.759 --> 00:03:30.160
+So they might pass test results among themselves as they progress through.
+
+44
+00:03:30.160 --> 00:03:34.240
+But the idea here is that they have the ability to get work done in parallel.
+
+45
+00:03:34.240 --> 00:03:39.520
+So it reduces the latency drastically and how fast you can get your final output.
+
+46
+00:03:40.080 --> 00:03:45.440
+You can also use a hierarchical process where you have one single agent that is delegating work to
+
+47
+00:03:45.440 --> 00:03:51.440
+others. And you have this kind of manager agent that will not only delegate work, but it will
+
+48
+00:03:51.440 --> 00:03:57.839
+also review the work once it's done. So this first agent is basically the boss of this other agent
+
+49
+00:03:57.839 --> 00:04:03.039
+and is deciding who does what and then checks the output to make sure that it's up to par
+
+50
+00:04:03.039 --> 00:04:08.399
+and ask them to do better in case it's not. This strategy can increase the processing time
+
+51
+00:04:08.399 --> 00:04:14.960
+somewhat because you have extra LLM calls. But despite of the back and forth communication by
+
+52
+00:04:14.960 --> 00:04:19.359
+design, it's very useful if you're trying to get something a little more tricky done.
+
+53
+00:04:20.000 --> 00:04:25.839
+In the end of the day, independently of the process that you choose, either sequential or
+
+54
+00:04:25.839 --> 00:04:31.920
+parallel or hierarchical, there's always a memory layer that is present in every crew.
+
+55
+00:04:31.920 --> 00:04:36.320
+And this memory layer is composed of the three memory types that we already talked on the
+
+56
+00:04:36.320 --> 00:04:41.920
+previous module, short term, long term, and the entity memory. And I want to spend some time
+
+57
+00:04:41.920 --> 00:04:46.480
+talking about how they impact the agent communication themselves. The short term
+
+58
+00:04:46.480 --> 00:04:52.559
+memory is very ephemeral, meaning that it's cleared after every crew execution. The idea
+
+59
+00:04:52.559 --> 00:04:58.399
+here is that all agents in the crew contribute to and share the same short memory storage.
+
+60
+00:04:58.399 --> 00:05:04.160
+So the agents automatically access this short memory as part of CrewAI's context management,
+
+61
+00:05:04.160 --> 00:05:08.239
+so they know what other agents have been working on and if there's any relevant
+
+62
+00:05:08.239 --> 00:05:13.600
+information that they could use from there. Just keep in mind that during parallel execution,
+
+63
+00:05:13.600 --> 00:05:18.959
+any given agent might not be done with their tasks at any given time, so its output might
+
+64
+00:05:18.959 --> 00:05:23.920
+not be on the shared short term memory yet. Now, if you think about the long term memory,
+
+65
+00:05:23.920 --> 00:05:30.320
+this is also shared, but this is more persistent. Agents will use this memory across many different
+
+66
+00:05:30.320 --> 00:05:36.640
+executions. So these agents will self-critique as they go and as they finish their tasks and
+
+67
+00:05:36.640 --> 00:05:42.480
+learn from each other's mistakes. So if one agent makes a mistake, the other agents can also use
+
+68
+00:05:42.480 --> 00:05:49.040
+and learn from by tapping into this long term memory. And entity memory works similarly, where
+
+69
+00:05:49.040 --> 00:05:55.119
+crews don't have to learn about the same objects, people, or places over and over again, because as
+
+70
+00:05:55.119 --> 00:06:01.760
+they do, they write into that entity memory that they can all tap into. So if one agent learns
+
+71
+00:06:01.760 --> 00:06:07.760
+about a particular person that it has done research on, for example, other agents can see that and
+
+72
+00:06:07.760 --> 00:06:13.119
+won't ask it to research that person again if they can just retrieve it from the entity memory.
+
+73
+00:06:13.679 --> 00:06:20.160
+I do want to highlight that among the communication patterns, there are some common coordination issues
+
+74
+00:06:20.160 --> 00:06:25.040
+that you should be watching for when building your own use cases. And there is basically a couple that
+
+75
+00:06:25.040 --> 00:06:32.480
+we see quite a lot. One is doing redundant work, where agents overlap and perform the same tasks
+
+76
+00:06:32.480 --> 00:06:38.239
+or very similar tasks using the same tools and running the same searches, leading to a lot of
+
+77
+00:06:38.239 --> 00:06:44.640
+inefficiency. So if the agents are stepping on each other's toes, you should tighten the scope of each
+
+78
+00:06:44.640 --> 00:06:50.640
+task so they don't overlap. And you can also try starting with a parallel process and then moving
+
+79
+00:06:50.640 --> 00:06:56.079
+into complexity to a hierarchical when needed. I definitely have seen the sequential process get
+
+80
+00:06:56.079 --> 00:07:02.880
+most of the work done. Another issue arises when you have a very slow series of chains of these
+
+81
+00:07:02.880 --> 00:07:09.679
+high latency step-by-step decision makings. This often happens when you add more agents and tasks
+
+82
+00:07:09.679 --> 00:07:15.440
+without distinguishing what can run concurrently versus what can run sequentially, which slows down
+
+83
+00:07:15.440 --> 00:07:21.119
+the whole automation process. And that's because you're making your agents depend on tasks that are
+
+84
+00:07:21.119 --> 00:07:26.399
+happening earlier when they might not even necessarily need the results of those tasks to do
+
+85
+00:07:26.399 --> 00:07:32.000
+their jobs. So to avoid this, make sure that you identify the tasks that can run asynchronously
+
+86
+00:07:32.000 --> 00:07:37.359
+and mark them with the async_execution equals True. And that will make sure that all those
+
+87
+00:07:37.359 --> 00:07:42.799
+executions are done in parallel. And if you want to refer back to those tasks outputs, you can then
+
+88
+00:07:42.799 --> 00:07:48.799
+use the context argument, as we saw early, to basically bring that context into the different
+
+89
+00:07:48.799 --> 00:07:56.079
+tasks. Now let's zoom out for a second. You really have so many options. We're talking about sequential,
+
+90
+00:07:56.079 --> 00:08:00.799
+we're talking about hierarchical, you're talking about more of a hybrid approach where one agent
+
+91
+00:08:00.799 --> 00:08:05.600
+is sending tasks to many agents, and then the context is bringing that back into one single
+
+92
+00:08:05.600 --> 00:08:10.720
+agent. We're talking about asynchronous execution by doing these things in parallel. There's just
+
+93
+00:08:10.720 --> 00:08:16.000
+a lot of things going on in there. So there are really so many different ways you can piece
+
+94
+00:08:16.000 --> 00:08:20.799
+together these systems and allows you to define not only how your agents work together, but how
+
+95
+00:08:20.799 --> 00:08:25.839
+much information they exchange with each other. So they have a really granular control over the
+
+96
+00:08:25.839 --> 00:08:31.519
+context that each agent has for completing its own task. In the next one, I'm going to have
+
+97
+00:08:31.519 --> 00:08:36.559
+something very exciting to share, because we're going to implement some of these new coordination
+
+98
+00:08:36.559 --> 00:08:42.080
+patterns using the CrewAI CLI, which is one of my favorite tools, by the way. So I'm extremely
+
+99
+00:08:42.080 --> 00:08:45.520
+excited about that one, and I want to see you in there right now.

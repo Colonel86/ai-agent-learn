@@ -1,0 +1,194 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.650 --> 00:00:04.639
+Welcome to the first module of this course. I'm so excited to have you. We're going to talk about
+
+2
+00:00:04.639 --> 00:00:09.520
+everything about AI agents. We're going to learn how to build them from prototypes and all the way
+
+3
+00:00:09.520 --> 00:00:13.840
+to production. It's going to be super exciting and you're going to learn everything that you need.
+
+4
+00:00:13.840 --> 00:00:16.959
+So let's jump right into it so we can start learning about it.
+
+5
+00:00:16.959 --> 00:00:20.319
+So here's what you can expect from this course. We have a lot to cover.
+
+6
+00:00:20.319 --> 00:00:25.120
+You're going to learn how to build your first multi-agent system and improve it.
+
+7
+00:00:25.200 --> 00:00:30.079
+But not only build it, you're going to learn how to manage AI agents at different scales,
+
+8
+00:00:30.079 --> 00:00:34.240
+from starting it small to expand it and getting into a production stage.
+
+9
+00:00:34.240 --> 00:00:39.680
+We're also going to talk about evaluation and how you measure an agentic system's performance.
+
+10
+00:00:39.680 --> 00:00:45.759
+But we don't stop there. We're going to talk about exploring this idea of a new technology stack
+
+11
+00:00:45.759 --> 00:00:51.680
+that is forming around this agent. I want to focus on some of the bigger, more impactful use cases
+
+12
+00:00:51.680 --> 00:00:56.400
+and what is working on the real world. What are the things that companies are actually doing
+
+13
+00:00:56.400 --> 00:01:00.319
+and how that is flying. And then in the end, we're going to wrap it up. We're going to apply
+
+14
+00:01:00.319 --> 00:01:04.879
+these principles in your career. How everything that you're going to learn in this course goes
+
+15
+00:01:04.879 --> 00:01:09.440
+back into use cases that you can build yourself. So I'm very excited about this.
+
+16
+00:01:10.000 --> 00:01:15.279
+So a lot of the focus on this course is going to be around how you think about these agents
+
+17
+00:01:15.279 --> 00:01:21.199
+conceptually, but then how you prototype them in a way that allows you to get into production.
+
+18
+00:01:21.199 --> 00:01:27.519
+And when you create an idea of a use case, the concept of that idea is also extremely simple,
+
+19
+00:01:27.519 --> 00:01:33.680
+but the distance between that and the prototype is so wild. And then when you get into the
+
+20
+00:01:33.680 --> 00:01:39.680
+production, that is even wider. Now for you to get from that initial concept and to implement
+
+21
+00:01:39.680 --> 00:01:44.319
+not only the use case itself, but all the balances and checks and the monitoring and
+
+22
+00:01:44.319 --> 00:01:49.680
+the observability. If you don't really think through this from the get-go, you might end
+
+23
+00:01:49.680 --> 00:01:55.040
+up having issues later down the road. Now, before we keep going, let's take a look at what a fully
+
+24
+00:01:55.040 --> 00:02:00.959
+fledged production crew looks like. More important, one that you would be able to build yourself at
+
+25
+00:02:00.959 --> 00:02:06.480
+the end of this course and that could help you on your day to day. Let's think about this use case
+
+26
+00:02:06.480 --> 00:02:10.720
+as you getting prepared for a meeting. You're going to meet with someone, might be a sales
+
+27
+00:02:10.720 --> 00:02:14.639
+meeting, might be a partnership meeting, but you're going to have to prepare yourself.
+
+28
+00:02:14.639 --> 00:02:18.479
+Why not use agents for that? Let's say that you're meeting with me and you want to learn
+
+29
+00:02:18.479 --> 00:02:22.960
+more about myself and making sure that you have everything together and ready to go for when we
+
+30
+00:02:22.960 --> 00:02:27.600
+meet. Well, you can basically put my email in here and kick off your group of agents and they
+
+31
+00:02:27.600 --> 00:02:34.240
+will get all the research done for you. On the research side, you can see that it found all the
+
+32
+00:02:34.240 --> 00:02:38.399
+information about me. The fact that I have a lot of years and experience in engineering,
+
+33
+00:02:38.399 --> 00:02:41.919
+some of the company, some of the articles that I have contributed for.
+
+34
+00:02:42.240 --> 00:02:47.199
+On the email side, it saw any emails I exchanged with myself in this case
+
+35
+00:02:47.199 --> 00:02:48.960
+and information that might be in there.
+
+36
+00:02:52.000 --> 00:02:57.119
+And then it puts together this final meeting report, getting me ready to go into this meeting
+
+37
+00:02:57.119 --> 00:03:03.360
+with the confidence that I'm fully prepared for whatever happens. Now, this is more of a simple
+
+38
+00:03:03.360 --> 00:03:07.520
+use case, but there's way more complex use cases that we're going to be talking and building
+
+39
+00:03:07.520 --> 00:03:12.479
+together in this course. And in this first module, I want to just frame a little bit on what you can
+
+40
+00:03:12.479 --> 00:03:18.320
+expect. The first thing is talking about what actually are AI agents. What are the key components
+
+41
+00:03:18.320 --> 00:03:25.600
+of an AI agent? We're going to talk about LLMs, tasks, agents, crews, and flows. How you think
+
+42
+00:03:25.600 --> 00:03:30.399
+about agency and how you think about control and bridging the gap between the concept,
+
+43
+00:03:30.399 --> 00:03:35.520
+prototype, and production. All that while focusing on real world use cases,
+
+44
+00:03:35.520 --> 00:03:41.279
+for AI agents in action and the core production pillars for agents at scale.
+
+45
+00:03:41.279 --> 00:03:46.080
+And in the end, we want to make sure that we are putting this through the lens and the context
+
+46
+00:03:46.080 --> 00:03:51.839
+of this new idea of a technology stack that is coming together for agentic systems. I'm very
+
+47
+00:03:51.839 --> 00:03:56.720
+excited to go over module one with you. So let's not lose any time and jump right into that.
+
+48
+00:03:56.720 --> 00:03:58.479
+I will see you in there in a second.

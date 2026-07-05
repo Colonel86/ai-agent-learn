@@ -1,0 +1,862 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:05.252 --> 00:00:04.000
+Now, I want to make sure that we talk with people that are building AI agents in the
+
+2
+00:00:04.000 --> 00:00:05.000
+real world.
+
+3
+00:00:05.000 --> 00:00:09.560
+I want to talk about how these people are using CrewAI to build these agents, what
+
+4
+00:00:09.560 --> 00:00:13.800
+are the things they're finding exciting about, what are the things they're having challenges
+
+5
+00:00:13.800 --> 00:00:16.280
+with, and everything in between.
+
+6
+00:00:16.280 --> 00:00:20.040
+So in this lesson, we're going to chat with these people, they're leading these projects
+
+7
+00:00:20.040 --> 00:00:24.479
+and making huge strides on the adoption of AI agents in their companies, and actually
+
+8
+00:00:24.479 --> 00:00:26.559
+getting amazing results.
+
+9
+00:00:26.559 --> 00:00:31.159
+So let's make sure that we dive into this so we get to know more about how they're expanding
+
+10
+00:00:31.159 --> 00:00:35.759
+their usage, how they're finding new opportunities, and what are some of the lessons that they
+
+11
+00:00:35.759 --> 00:00:39.439
+learn that you might be able to apply to your own use cases.
+
+12
+00:00:39.439 --> 00:00:41.500
+So let's join that conversation.
+
+13
+00:00:41.500 --> 00:00:43.880
+Now you're going to hear from Exa.
+
+14
+00:00:43.880 --> 00:00:46.959
+Exa is a major partner for CrewAI.
+
+15
+00:00:46.959 --> 00:00:53.759
+Exa is going into the search space, building their own searching engine, optimized for
+
+16
+00:00:53.759 --> 00:01:00.479
+AI and AI agents, making it easier for people building use cases to get the right data on
+
+17
+00:01:00.479 --> 00:01:04.160
+the right time, exactly how they need it.
+
+18
+00:01:04.160 --> 00:01:09.239
+Exa integrates with CrewAI on an official integration that we have built and you have
+
+19
+00:01:09.239 --> 00:01:12.319
+been using through the entirety of this course.
+
+20
+00:01:12.319 --> 00:01:17.680
+It processes millions of requests a month for AI developers, many of those powered by
+
+21
+00:01:17.680 --> 00:01:19.319
+CrewAI agents.
+
+22
+00:01:19.319 --> 00:01:24.639
+And enables agents to access real-time information through semantic search.
+
+23
+00:01:24.639 --> 00:01:29.599
+So let's hear from Jeffrey, one of their co-founders, on how they're thinking about
+
+24
+00:01:29.599 --> 00:01:34.199
+AI agents and specifically how they're feeling about their role that CrewAI is playing
+
+25
+00:01:34.199 --> 00:01:35.199
+into the space.
+
+26
+00:01:35.199 --> 00:01:38.480
+Jeff, thank you so much for sparing the time to be with us today.
+
+27
+00:01:38.480 --> 00:01:41.239
+I know that it's very exciting to talk about AI agents.
+
+28
+00:01:41.239 --> 00:01:43.440
+There's so much that is happening right now.
+
+29
+00:01:43.440 --> 00:01:49.080
+So as the agenda in space continues to evolve, how important it is from your perspective
+
+30
+00:01:49.120 --> 00:01:55.160
+and what you're seeing, this broad ecosystem of tools and resources to keep expanding,
+
+31
+00:01:55.160 --> 00:01:56.160
+let's say.
+
+32
+00:01:56.160 --> 00:01:59.839
+I think that it's been really incredible what's happened in the last year.
+
+33
+00:01:59.839 --> 00:02:04.559
+Basically, at one point in the past, the LLMs were only, at one point, they were really,
+
+34
+00:02:04.559 --> 00:02:06.239
+really bad at using tools.
+
+35
+00:02:06.239 --> 00:02:08.520
+And then they got kind of okay at using tools.
+
+36
+00:02:08.520 --> 00:02:10.800
+And now they're really, really good at using tools, right?
+
+37
+00:02:10.800 --> 00:02:14.839
+Like Claude 4.5 sonnet and GPT-5 Codex, like they're just amazing.
+
+38
+00:02:14.839 --> 00:02:19.559
+The LLMs, if they don't have any interesting data put into them, or if they cannot engage
+
+39
+00:02:19.559 --> 00:02:23.440
+with the external world, it's like if you're a human and you're in a room and you don't
+
+40
+00:02:23.440 --> 00:02:26.600
+have a computer, you don't have anything available to you, you're just kind of sitting there.
+
+41
+00:02:26.600 --> 00:02:29.039
+And you're smart, you have a brain, but you're just sitting there.
+
+42
+00:02:29.039 --> 00:02:33.880
+And so fundamentally, it's critical for LLMs to be able to engage with the external world,
+
+43
+00:02:33.880 --> 00:02:36.039
+read information, and also write information.
+
+44
+00:02:36.039 --> 00:02:39.119
+At least from my understanding of what the AI labs that are working on and what kinds
+
+45
+00:02:39.119 --> 00:02:43.960
+of capabilities they want to be enabling in the coming years, it's largely focused on
+
+46
+00:02:44.080 --> 00:02:45.880
+tool use, external data stuff.
+
+47
+00:02:45.880 --> 00:02:48.479
+You know, a thousand percent, and it's fun that you put this.
+
+48
+00:02:48.479 --> 00:02:53.279
+I was actually talking with Andrew about this as we were recording this course, and he mentioned
+
+49
+00:02:53.279 --> 00:03:00.199
+that like you go back 2024, what feels like a decade ago in AI times, and these models,
+
+50
+00:03:00.199 --> 00:03:02.320
+like they really, they were not that good.
+
+51
+00:03:02.320 --> 00:03:06.759
+Like there was so much scaffolding that you had to put just to make sure that they would
+
+52
+00:03:06.759 --> 00:03:08.039
+behave in a certain way.
+
+53
+00:03:08.039 --> 00:03:11.720
+You had to describe every single step to have all the control.
+
+54
+00:03:11.720 --> 00:03:15.559
+And now that models are getting better and better and using these tools and all that,
+
+55
+00:03:15.559 --> 00:03:20.080
+it's really causing people to remove a lot of that scaffolding and doubling down a little
+
+56
+00:03:20.080 --> 00:03:22.080
+more on the agency side of things.
+
+57
+00:03:22.080 --> 00:03:26.600
+So how do you see specifically with Exa, because you have this very interesting perspective
+
+58
+00:03:26.600 --> 00:03:31.440
+on real-time web search, and that unlocks so many different use cases, right?
+
+59
+00:03:31.440 --> 00:03:35.839
+These agents can do so much if they type in the real data and write data at the right
+
+60
+00:03:35.839 --> 00:03:36.839
+time.
+
+61
+00:03:37.080 --> 00:03:41.759
+So how do you see these autonomous agents now evolving, given that they're getting access
+
+62
+00:03:41.759 --> 00:03:44.919
+and being paired to these real-time web search APIs?
+
+63
+00:03:44.919 --> 00:03:50.240
+So when GPT 3.5, if you gave it a few thousand tokens and told it, hey, answer this question
+
+64
+00:03:50.240 --> 00:03:54.559
+from this webpage, like 30% of the time it would hallucinate.
+
+65
+00:03:54.559 --> 00:03:57.320
+Like it would just tell you like the wrong answer from the webpage, right?
+
+66
+00:03:57.320 --> 00:04:02.199
+And then at a certain point, maybe this is like GPT-4, it started to hallucinate a lot
+
+67
+00:04:02.199 --> 00:04:03.279
+less.
+
+68
+00:04:03.279 --> 00:04:07.160
+But still, if you gave it like multiple options, like, you know, hey, give it like two tools
+
+69
+00:04:07.160 --> 00:04:09.720
+to use or something, it's still not going to perform well.
+
+70
+00:04:09.720 --> 00:04:15.360
+And then now, you can build complex agents with access to say, you know, a dozen tools
+
+71
+00:04:15.360 --> 00:04:18.480
+and combine the use of the tools in all sorts of crazy ways.
+
+72
+00:04:18.480 --> 00:04:19.839
+For instance, that's what Claude Code does, right?
+
+73
+00:04:19.839 --> 00:04:22.000
+Like Claude Code has like 10000 tokens worth of tools.
+
+74
+00:04:22.000 --> 00:04:26.720
+It's the file grab tool and it has a web search tool, it has all these things, and it's able
+
+75
+00:04:26.720 --> 00:04:31.399
+to chain these tools together and produce really useful outputs.
+
+76
+00:04:31.399 --> 00:04:35.040
+Web search is just a fundamentally important part of that tool chain because the large
+
+77
+00:04:35.040 --> 00:04:38.440
+language models fundamentally, they're not search engines, right?
+
+78
+00:04:38.440 --> 00:04:41.519
+They know a lot of stuff, but it's just because it's just the stuff they've memorized and
+
+79
+00:04:41.519 --> 00:04:42.519
+sometimes they hallucinate.
+
+80
+00:04:42.519 --> 00:04:44.720
+So they depend on tools, including web search.
+
+81
+00:04:44.720 --> 00:04:45.720
+Yeah.
+
+82
+00:04:45.720 --> 00:04:49.600
+And I think you have a good point because it's not only the ability to web search, right?
+
+83
+00:04:49.600 --> 00:04:53.839
+Your point on hallucination is almost like grounding its answers, right?
+
+84
+00:04:53.839 --> 00:04:58.000
+And the fact that you now can give this ability for these agents to like not only give you
+
+85
+00:04:58.000 --> 00:05:02.239
+an answer, but fact check themselves or make sure they're working with the latest data
+
+86
+00:05:02.239 --> 00:05:05.279
+and they're finding everything that they need to check all the boxes.
+
+87
+00:05:05.279 --> 00:05:07.920
+I think that's something interesting.
+
+88
+00:05:07.920 --> 00:05:13.279
+Is there any specific and like use cases that you have seen around this idea of like, hey,
+
+89
+00:05:13.279 --> 00:05:19.399
+this is where grounding in real data and updated from real time web data really makes a huge
+
+90
+00:05:19.399 --> 00:05:20.399
+difference.
+
+91
+00:05:20.399 --> 00:05:22.640
+And what are those use cases that are seeing out there?
+
+92
+00:05:22.640 --> 00:05:23.640
+Okay.
+
+93
+00:05:23.640 --> 00:05:26.399
+So let's just think about like what LLMs haven't memorized, right?
+
+94
+00:05:26.399 --> 00:05:29.600
+So like one is recent things, right?
+
+95
+00:05:29.600 --> 00:05:33.519
+So so if you're if you're asking LLM, like what happened today in the world, it's not
+
+96
+00:05:33.519 --> 00:05:35.640
+going to anything unless it looks up information.
+
+97
+00:05:35.640 --> 00:05:37.320
+The second is long tail information.
+
+98
+00:05:37.320 --> 00:05:42.079
+So like, for instance, say you're like an AI to go market tool, you're building like a sales
+
+99
+00:05:42.079 --> 00:05:47.519
+prospecting tool or something like the LLMs just haven't memorized like a list of 1000
+
+100
+00:05:47.519 --> 00:05:51.600
+biotech companies or like 1000 AI startups or something, right?
+
+101
+00:05:51.600 --> 00:05:53.239
+This is just information it doesn't know.
+
+102
+00:05:53.239 --> 00:05:56.799
+And so, you know, there's a long tail of information that's not super common that everybody
+
+103
+00:05:56.799 --> 00:05:57.799
+just knows.
+
+104
+00:05:57.799 --> 00:05:58.799
+Like, you know, Stripe, right?
+
+105
+00:05:58.799 --> 00:06:02.720
+But it doesn't know, like the latest YC company that was working on payments.
+
+106
+00:06:02.720 --> 00:06:05.079
+And so it needs to look things up in these cases.
+
+107
+00:06:05.079 --> 00:06:08.160
+And then finally, I think one really interesting thing that we've been focusing on Exa a
+
+108
+00:06:08.160 --> 00:06:12.559
+lot is actually coding, like a huge limitation of the LMS right now is that they can code
+
+109
+00:06:12.559 --> 00:06:14.600
+really, really well for things they've memorized, right?
+
+110
+00:06:14.600 --> 00:06:19.679
+Like next JS, they can write perfect next JS, they can write perfect express, like whatever.
+
+111
+00:06:19.679 --> 00:06:24.239
+But, you know, say that like last week, OpenAI released, you know, agents SDK, and then also
+
+112
+00:06:24.239 --> 00:06:25.239
+a few other SDKs.
+
+113
+00:06:25.239 --> 00:06:28.920
+Well, these LLMs, even OpenAI's own LLMs don't know anything about these SDKs.
+
+114
+00:06:28.920 --> 00:06:32.799
+And so we fundamentally need to do web search to find out information about how to code.
+
+115
+00:06:32.799 --> 00:06:35.959
+And so we actually launched something called ExaCode a few weeks ago, which is, for instance,
+
+116
+00:06:35.959 --> 00:06:38.399
+like a coding agent specific search.
+
+117
+00:06:38.399 --> 00:06:39.399
+I love that.
+
+118
+00:06:39.399 --> 00:06:40.399
+And it's funny that you mentioned that.
+
+119
+00:06:40.399 --> 00:06:45.000
+That's one of the major use cases we have with PwC, one of our customers, where they
+
+120
+00:06:45.000 --> 00:06:51.920
+want this model to basically do ABAP and APEX, so SAP and Salesforce coding.
+
+121
+00:06:51.920 --> 00:06:57.559
+And this model, I mean, there is no sum about it, but not about the PwC way of doing so,
+
+122
+00:06:57.559 --> 00:06:58.559
+right?
+
+123
+00:06:58.559 --> 00:07:02.320
+Or the conventions that they have viewed across many build outs from this application.
+
+124
+00:07:02.320 --> 00:07:04.079
+So yeah, that's a great use case.
+
+125
+00:07:04.079 --> 00:07:07.799
+I mean, coding is not the first thing that would come to mind for most people when thinking
+
+126
+00:07:07.799 --> 00:07:08.799
+about this.
+
+127
+00:07:08.799 --> 00:07:09.799
+But you're right.
+
+128
+00:07:09.799 --> 00:07:14.160
+Like if you're not using next JS, like what probably these LLMs know a lot about, you need
+
+129
+00:07:14.160 --> 00:07:16.559
+to tap into like real grounded data.
+
+130
+00:07:16.559 --> 00:07:17.559
+That's great.
+
+131
+00:07:17.559 --> 00:07:21.839
+From a technical perspective, like what do you think is the biggest friction points and
+
+132
+00:07:21.839 --> 00:07:26.839
+like people are really trying to like adding these embedding searches or doing crawling
+
+133
+00:07:26.839 --> 00:07:29.279
+or whatever it needs to get into that data.
+
+134
+00:07:29.279 --> 00:07:32.760
+Like do you think that the tooling side of it spit you it out?
+
+135
+00:07:32.760 --> 00:07:37.799
+Or do you think like it's like the quality of the outputs or like what do you think is
+
+136
+00:07:37.799 --> 00:07:40.959
+the main kind of like thing that is getting in the way nowadays?
+
+137
+00:07:40.959 --> 00:07:45.720
+I think the one correct answer to what is limiting the agents from using like search
+
+138
+00:07:45.720 --> 00:07:49.839
+tools and crawling tools and whatever is context window management, like context engineering.
+
+139
+00:07:49.839 --> 00:07:55.760
+And so like today, if you are using a lot of these like tools that are like sort of
+
+140
+00:07:55.760 --> 00:08:00.320
+popular, what happens is like, for instance, today, if Claude Code uses this native fetch
+
+141
+00:08:00.320 --> 00:08:06.119
+tool instead of using Exa MCP for web search, it downloads like files that are like hundreds
+
+142
+00:08:06.119 --> 00:08:10.119
+of kilobytes and just completely floods the context window.
+
+143
+00:08:10.119 --> 00:08:13.420
+And I think that people kind of have maybe forgotten how fragile the context windows
+
+144
+00:08:13.420 --> 00:08:14.959
+are because the models feel smaller.
+
+145
+00:08:14.959 --> 00:08:19.239
+And then it's like when the model stops working, you're kind of like, oh, OK, it didn't work.
+
+146
+00:08:19.239 --> 00:08:20.239
+Maybe I'll try again.
+
+147
+00:08:20.239 --> 00:08:21.239
+Right.
+
+148
+00:08:21.239 --> 00:08:24.600
+But like really, the models just start not performing well with the latest models and
+
+149
+00:08:24.600 --> 00:08:28.359
+the most powerful models, even at like the tens of thousands of tokens level.
+
+150
+00:08:28.359 --> 00:08:34.799
+And so if you flood a context window with like 10000 tokens of like raw HTML or something
+
+151
+00:08:34.799 --> 00:08:37.039
+like it's not going to perform well.
+
+152
+00:08:37.039 --> 00:08:42.599
+And so I think it's really critical for these tools to kind of do some of the token efficiency
+
+153
+00:08:42.599 --> 00:08:44.080
+steps on their own.
+
+154
+00:08:44.080 --> 00:08:48.880
+And so, for example, ExaCode has a philosophy where we always try to return you just a few
+
+155
+00:08:48.880 --> 00:08:50.039
+hundred tokens.
+
+156
+00:08:50.039 --> 00:08:55.140
+We actually try to just return code examples because code examples are the most dense representation
+
+157
+00:08:55.140 --> 00:08:59.119
+token wise of what you need to know to do your coding task.
+
+158
+00:08:59.119 --> 00:09:00.840
+And if not, then we pull documentation.
+
+159
+00:09:00.840 --> 00:09:03.520
+But even then we try to keep it to low thousands of tokens.
+
+160
+00:09:03.520 --> 00:09:04.880
+And this goes for any tool that you're creating.
+
+161
+00:09:04.880 --> 00:09:08.320
+Like if you're like ingesting like gigantic documents somewhere, it's going to flood the
+
+162
+00:09:08.320 --> 00:09:09.520
+context window.
+
+163
+00:09:09.520 --> 00:09:11.479
+So maybe you have to use sub-agents or something, right?
+
+164
+00:09:11.479 --> 00:09:14.520
+Like, for instance, Claude Code has sub-agents now, which is like super cool.
+
+165
+00:09:14.520 --> 00:09:15.520
+That's a good point.
+
+166
+00:09:15.520 --> 00:09:18.960
+I think like it's funny you go back into like Google when Google was the de facto way that
+
+167
+00:09:18.960 --> 00:09:20.479
+people are searching things.
+
+168
+00:09:20.479 --> 00:09:21.479
+Right.
+
+169
+00:09:21.479 --> 00:09:25.359
+And there was this metric of like, oh, we want to be the website where people spend
+
+170
+00:09:25.359 --> 00:09:26.919
+the last time on.
+
+171
+00:09:26.919 --> 00:09:30.320
+We're like, well, all the other websites building to like optimize the engagement time.
+
+172
+00:09:30.320 --> 00:09:34.739
+They just want to be that quick bridge that you find everything that you want super fast.
+
+173
+00:09:34.739 --> 00:09:38.900
+It feels like what you're telling me is that on the new age where like Exa now is being
+
+174
+00:09:38.900 --> 00:09:44.539
+like a huge provider for these searches for agents or new version of that is I will return
+
+175
+00:09:44.539 --> 00:09:47.940
+the most amount of information, the last amount of tokens as I can.
+
+176
+00:09:47.940 --> 00:09:52.859
+So like really getting the most bang for your buck, not only in terms of money, but like
+
+177
+00:09:52.859 --> 00:09:54.460
+in the context window, right?
+
+178
+00:09:54.460 --> 00:09:57.619
+Because in the end of the day, the context engineering is actually something that you
+
+179
+00:09:57.619 --> 00:09:58.739
+really got to consider.
+
+180
+00:09:58.739 --> 00:10:01.460
+Like these things are still AI models at the end of the day.
+
+181
+00:10:01.460 --> 00:10:03.380
+It's like garbage in, garbage out.
+
+182
+00:10:03.380 --> 00:10:07.299
+So the ability for you to do effective context management can have a good impact.
+
+183
+00:10:07.299 --> 00:10:09.340
+Well, I know that we're closing at time.
+
+184
+00:10:09.340 --> 00:10:11.859
+I do have one final question.
+
+185
+00:10:11.859 --> 00:10:15.659
+Any takes on kind of like what we have seen with CrewAI and Exa out there, any specific use
+
+186
+00:10:15.659 --> 00:10:19.580
+cases that you have heard about or things that you have found interesting or any takes
+
+187
+00:10:19.580 --> 00:10:24.580
+on kind of like the AI agent space as abroad and kind of like how things are going?
+
+188
+00:10:24.580 --> 00:10:30.239
+Products and frameworks that are maximally flexible, given the increasing capabilities
+
+189
+00:10:30.239 --> 00:10:32.500
+of the large language models are increasingly important.
+
+190
+00:10:32.619 --> 00:10:36.700
+So I think that like where I've seen really cool use cases involving CrewAI and Exa is like,
+
+191
+00:10:36.700 --> 00:10:38.659
+I think both CrewAI and Exa have this philosophy.
+
+192
+00:10:38.659 --> 00:10:41.419
+It's like, hey, like you have a really smart LLM, right?
+
+193
+00:10:41.419 --> 00:10:45.659
+Give as much power to the LLM to be intelligent and do things.
+
+194
+00:10:45.659 --> 00:10:46.659
+Try to leave it alone, right?
+
+195
+00:10:46.659 --> 00:10:51.299
+Like build, build nice things for it to use, but don't like interfere and like try to guide,
+
+196
+00:10:51.299 --> 00:10:53.619
+like try to control it in this very specific way.
+
+197
+00:10:53.619 --> 00:10:56.859
+And so all the coolest things I see built on Exa is just like, hey, like, you know, you
+
+198
+00:10:56.859 --> 00:11:01.780
+could use some sort of product out there that kind of has some very like narrowly defined
+
+199
+00:11:01.780 --> 00:11:02.780
+use case or something.
+
+200
+00:11:02.780 --> 00:11:05.340
+And maybe you're trying to build something for yourself that's like that, but like give
+
+201
+00:11:05.340 --> 00:11:09.460
+power to the LLM and like let it breathe and like use things flexibly.
+
+202
+00:11:09.460 --> 00:11:10.460
+Yeah.
+
+203
+00:11:10.460 --> 00:11:11.460
+I love that.
+
+204
+00:11:11.460 --> 00:11:12.460
+Give power to the LLM.
+
+205
+00:11:12.460 --> 00:11:13.460
+I'm going to use more of that.
+
+206
+00:11:13.460 --> 00:11:14.460
+Jeff, thank you so much.
+
+207
+00:11:14.460 --> 00:11:15.859
+I really appreciate you spending time with us today.
+
+208
+00:11:15.859 --> 00:11:19.979
+This was extremely helpful and I'm sure that people are super excited about everything
+
+209
+00:11:19.979 --> 00:11:22.140
+that they use Exa for in this course.
+
+210
+00:11:22.140 --> 00:11:24.739
+I'm sure they're going to be using it even more after this.
+
+211
+00:11:24.739 --> 00:11:25.739
+For sure.
+
+212
+00:11:25.739 --> 00:11:26.739
+Yeah.
+
+213
+00:11:26.739 --> 00:11:27.739
+Thanks so much for having me, Joe.
+
+214
+00:11:27.739 --> 00:11:28.739
+It was nice.
+
+215
+00:11:28.739 --> 00:11:28.739
+

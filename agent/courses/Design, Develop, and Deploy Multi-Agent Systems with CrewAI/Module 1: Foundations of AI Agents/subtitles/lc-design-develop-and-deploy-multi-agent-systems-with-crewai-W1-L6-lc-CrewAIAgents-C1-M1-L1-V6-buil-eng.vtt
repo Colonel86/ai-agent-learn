@@ -1,0 +1,490 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.632 --> 00:00:01.919
+Now, let's get our hands dirty.
+
+2
+00:00:01.919 --> 00:00:04.599
+Let's actually build your first AI agent.
+
+3
+00:00:04.599 --> 00:00:08.840
+So in this video, you will learn how to use the context engineering that we talked about
+
+4
+00:00:08.840 --> 00:00:11.239
+to construct the best possible agents that you can.
+
+5
+00:00:11.239 --> 00:00:15.760
+And you're going to apply the same principles on all use cases that you build, independently
+
+6
+00:00:15.760 --> 00:00:19.020
+of using CrewAI or any other thing out there.
+
+7
+00:00:19.020 --> 00:00:23.219
+This same principles applies to how you build agents in any place.
+
+8
+00:00:23.219 --> 00:00:25.459
+So let's look into that right now.
+
+9
+00:00:25.459 --> 00:00:29.760
+So I want to make sure that we're thinking about this and I provide you with some advice.
+
+10
+00:00:29.760 --> 00:00:33.639
+And the idea here is that it's an 80-20% rule.
+
+11
+00:00:33.639 --> 00:00:36.639
+You should focus more on the tasks than on the agents.
+
+12
+00:00:36.639 --> 00:00:40.840
+Not saying that the agents themselves are not important, but what we have found out
+
+13
+00:00:40.840 --> 00:00:47.639
+through many use cases is that working more on the tasks and providing clear tasks usually
+
+14
+00:00:47.639 --> 00:00:51.040
+drive most of the impact on the actual output.
+
+15
+00:00:51.040 --> 00:00:54.599
+Once that you get your task right, you start focusing on the agent a little bit.
+
+16
+00:00:54.599 --> 00:00:59.080
+And we're going to see that in a moment, this agent can be reused quite frequently.
+
+17
+00:00:59.080 --> 00:01:04.080
+And the task that the agents do, if they're poorly defined, they can actually make the
+
+18
+00:01:04.080 --> 00:01:06.519
+agent underperform quite a lot.
+
+19
+00:01:06.519 --> 00:01:12.080
+So I would say that my main advice is that you should actually think like a manager.
+
+20
+00:01:12.080 --> 00:01:17.160
+And I know this sounds funny, but most of the managers turned out to be amazing agent
+
+21
+00:01:17.160 --> 00:01:18.160
+creators.
+
+22
+00:01:18.160 --> 00:01:22.760
+And the reason behind that is because not only when they're thinking about agents,
+
+23
+00:01:22.760 --> 00:01:27.160
+they're actually thinking about who they hire for doing this.
+
+24
+00:01:27.160 --> 00:01:31.000
+What is the person that I would hire for getting this job done?
+
+25
+00:01:31.000 --> 00:01:34.800
+And when they're thinking about the tasks, they're not only thinking about what this
+
+26
+00:01:34.800 --> 00:01:40.080
+agent should do, but they have a very clear understanding of the importance of setting
+
+27
+00:01:40.080 --> 00:01:42.879
+the expectation of what a success looks like.
+
+28
+00:01:42.879 --> 00:01:46.319
+So let's talk about tasks a little more deeply for a second.
+
+29
+00:01:46.319 --> 00:01:49.959
+Tasks are meant to be single purpose and single output.
+
+30
+00:01:49.959 --> 00:01:55.720
+And they do that by basically focusing on two attributes, the description and the expected
+
+31
+00:01:55.720 --> 00:01:56.720
+output.
+
+32
+00:01:57.279 --> 00:02:02.199
+The description describes what needs to be accomplished and the expected output describes
+
+33
+00:02:02.199 --> 00:02:08.199
+not only what the format you want, but what success looks like, what the output should
+
+34
+00:02:08.199 --> 00:02:14.240
+be, how it should be formatted, how it should sound, how positive it should be.
+
+35
+00:02:14.240 --> 00:02:19.559
+And remember, both the description and the expected output will play roles in here on
+
+36
+00:02:19.559 --> 00:02:24.360
+the context engineering side of things, because we're going to use those on different moments
+
+37
+00:02:24.479 --> 00:02:30.199
+for system prompts or the role playing or writing to memory, or when the agents kind
+
+38
+00:02:30.199 --> 00:02:36.160
+of self-critiquing based on the actual result, it will be looking back into the expected
+
+39
+00:02:36.160 --> 00:02:40.639
+output to see how that maps to its final result.
+
+40
+00:02:40.639 --> 00:02:46.520
+And remember that as we're building those, those tasks will be assigned to agents, either
+
+41
+00:02:46.520 --> 00:02:50.960
+if you're doing one single agent or if you're doing many agents together.
+
+42
+00:02:50.960 --> 00:02:55.039
+for, what we're going to build next, that's actually what we're doing, assigning tasks
+
+43
+00:02:55.039 --> 00:02:56.039
+to agents.
+
+44
+00:02:56.039 --> 00:02:58.960
+Now, let's talk about agents for one hot second.
+
+45
+00:02:58.960 --> 00:03:01.320
+And in agents, there's three main components.
+
+46
+00:03:01.320 --> 00:03:05.080
+We talked about them already, the role, the goal, and the backstory.
+
+47
+00:03:05.080 --> 00:03:10.399
+The role, as much as you can, should be a real word job title or should convey very
+
+48
+00:03:10.399 --> 00:03:14.839
+specifically what you want this LLM to role play as.
+
+49
+00:03:14.839 --> 00:03:20.240
+The goal is what is this agent final goal throughout many different tasks that it could
+
+50
+00:03:20.240 --> 00:03:26.160
+do, what good looks like for it, what are the things they actually pursue when doing
+
+51
+00:03:26.160 --> 00:03:28.720
+every single task that's assigned to it.
+
+52
+00:03:28.720 --> 00:03:34.000
+And the backstory is where you can go a little crazy on the expertise, the working style,
+
+53
+00:03:34.000 --> 00:03:39.639
+the values, whatever that you want to throw in there to contribute for the role playing
+
+54
+00:03:39.639 --> 00:03:43.199
+to make sure that you get the expected output that you want.
+
+55
+00:03:43.199 --> 00:03:47.399
+Now let's jump in the notebook to take a look on how these tasks and agents come together
+
+56
+00:03:47.399 --> 00:03:49.759
+and build our first crew.
+
+57
+00:03:49.759 --> 00:03:55.119
+And the first thing that you want to do is to import CrewAI's three main building
+
+58
+00:03:55.119 --> 00:03:58.759
+blocks, the task, the agents, and the crew.
+
+59
+00:03:58.759 --> 00:04:02.779
+And it's as simple as just importing those classes the same way that you would do for
+
+60
+00:04:02.779 --> 00:04:05.039
+any other Python code.
+
+61
+00:04:05.039 --> 00:04:09.360
+Now after this code is important, you're ready to start building your agents.
+
+62
+00:04:09.360 --> 00:04:15.139
+Let me show an example of what not a great agent and task actually looks like.
+
+63
+00:04:15.139 --> 00:04:19.519
+Let's say that we want to create a content creator assistant, something to help us create
+
+64
+00:04:19.519 --> 00:04:24.880
+YouTube shorts, for example, interesting videos that have between 30 to 45 seconds
+
+65
+00:04:24.880 --> 00:04:25.880
+long.
+
+66
+00:04:25.880 --> 00:04:31.600
+Well, I could create my agent by giving it a simple role, like content creator assistant,
+
+67
+00:04:31.600 --> 00:04:36.200
+and I could give it a very short goal, just saying like, come up with video ideas, and
+
+68
+00:04:36.200 --> 00:04:41.440
+a very lame backstory, someone who has a lot of experience creating video content and specifying
+
+69
+00:04:41.440 --> 00:04:43.640
+the specific model that it's using.
+
+70
+00:04:43.640 --> 00:04:48.880
+The same way, the task that I want this agent to perform could be something that I wouldn't
+
+71
+00:04:48.880 --> 00:04:51.040
+spend too much time thinking about.
+
+72
+00:04:51.040 --> 00:04:57.559
+And I just type it away by saying that this only objective is to come up with five new
+
+73
+00:04:57.559 --> 00:05:02.480
+video ideas, and the expected output should be at list of those ideas.
+
+74
+00:05:02.480 --> 00:05:06.559
+And then I assign this task to the agent that we would have just created.
+
+75
+00:05:06.559 --> 00:05:12.760
+Now I can bring these agents and task together into one crew so that we have all that together
+
+76
+00:05:12.760 --> 00:05:13.760
+and ready to go.
+
+77
+00:05:14.079 --> 00:05:20.200
+And all that I need to do is basically call crew.kickoff to get the actual output, and
+
+78
+00:05:20.200 --> 00:05:24.399
+then print whatever is the final output of this agents.
+
+79
+00:05:24.399 --> 00:05:29.440
+You can see how I didn't really give a lot of information for this agent, and it doesn't
+
+80
+00:05:29.440 --> 00:05:32.600
+even know that it's actually doing this for YouTube.
+
+81
+00:05:32.600 --> 00:05:37.500
+So in the end of the day, this is not a very really though out agent.
+
+82
+00:05:37.500 --> 00:05:43.239
+Now if you actually run this crew with this agent and task as is, you'll see that the
+
+83
+00:05:43.239 --> 00:05:45.959
+result is actually going to be a little poor.
+
+84
+00:05:45.959 --> 00:05:52.079
+And here you can see that it basically gave me straight away five ideas of what it could
+
+85
+00:05:52.079 --> 00:05:53.079
+do.
+
+86
+00:05:53.079 --> 00:05:58.119
+The idea of 24 livings like a minimalist, the evolution of dance and trends over the
+
+87
+00:05:58.119 --> 00:06:03.519
+years, virtual reality, cooking, world cuisine, and natural resilience.
+
+88
+00:06:03.519 --> 00:06:08.600
+But it has no understanding that this is a very short video and not a documentary style
+
+89
+00:06:08.600 --> 00:06:09.600
+video.
+
+90
+00:06:09.600 --> 00:06:13.519
+And that it is meant for YouTube and that it could be optimizing that video in so many
+
+91
+00:06:13.519 --> 00:06:16.399
+ways for that specific algorithm.
+
+92
+00:06:16.399 --> 00:06:20.799
+Now I want to show you the opposite, what a good example looks like.
+
+93
+00:06:20.799 --> 00:06:26.480
+So for your agent, the role is going to be very specific, a YouTube Shorts micro history
+
+94
+00:06:26.480 --> 00:06:27.480
+strategist.
+
+95
+00:06:27.480 --> 00:06:32.239
+And you can see that the whole goal is to plan for one week's length of high retention
+
+96
+00:06:32.239 --> 00:06:33.880
+YouTube Shorts.
+
+97
+00:06:33.880 --> 00:06:38.700
+Look at how much more information is going into this and think about what we talked early
+
+98
+00:06:38.799 --> 00:06:43.779
+on our lessons about how the information that you're putting into the LLM actually serve
+
+99
+00:06:43.779 --> 00:06:47.859
+as features that will inform the output that you're getting.
+
+100
+00:06:47.859 --> 00:06:52.619
+And for the task, we're actually going to take it to the next level by being very descriptive
+
+101
+00:06:52.619 --> 00:06:57.579
+about what we actually want to be done and what is the expected output that we want to
+
+102
+00:06:57.579 --> 00:06:59.059
+have out of this.
+
+103
+00:06:59.059 --> 00:07:03.339
+And you can see that in here we're going the extra mile and even asking for a specific
+
+104
+00:07:03.339 --> 00:07:04.940
+JSON output.
+
+105
+00:07:04.940 --> 00:07:09.179
+So we get exactly a format that we want that we can use it.
+
+106
+00:07:09.179 --> 00:07:13.779
+Now we can put this agent and task together in a crew and we can kick it off and you will
+
+107
+00:07:13.779 --> 00:07:19.260
+see the vast difference between what we had before and this new definition.
+
+108
+00:07:19.260 --> 00:07:20.700
+Let's just run this.
+
+109
+00:07:20.700 --> 00:07:25.420
+So in here we can tag along some of these logs and you can actually see your agent going
+
+110
+00:07:25.420 --> 00:07:28.959
+on perform the task and giving you your final answer.
+
+111
+00:07:28.959 --> 00:07:34.820
+And the final answer is exactly the JSON that we're looking for with a title, a hook main,
+
+112
+00:07:34.820 --> 00:07:39.500
+an alternative hook, visuals, tags, and even a call to action.
+
+113
+00:07:39.500 --> 00:07:43.980
+And if you go in the end here, you can see the entire thing printed out for us.
+
+114
+00:07:43.980 --> 00:07:49.179
+Now you can see how vastly different results you get from actually spending time thinking
+
+115
+00:07:49.179 --> 00:07:51.260
+about your agents and tasks.
+
+116
+00:07:51.260 --> 00:07:57.179
+And this is just one isolated example of how that plays out on an individual agent level.
+
+117
+00:07:57.179 --> 00:08:02.559
+This use case could be expanded with many other agents to create entire crew content
+
+118
+00:08:02.559 --> 00:08:07.880
+and production, like drafting scripts, doing deeper research, thinking about marketing
+
+119
+00:08:07.880 --> 00:08:12.760
+ideas and how we can actually post about this on other social networks.
+
+120
+00:08:12.760 --> 00:08:16.880
+There's a lot of different ways that we can actually expand on this, but for now, we're
+
+121
+00:08:16.880 --> 00:08:21.079
+going to keep at this so that we can go and jump into our next lesson.
+
+122
+00:08:21.079 --> 00:08:22.679
+And I see you there in a second.

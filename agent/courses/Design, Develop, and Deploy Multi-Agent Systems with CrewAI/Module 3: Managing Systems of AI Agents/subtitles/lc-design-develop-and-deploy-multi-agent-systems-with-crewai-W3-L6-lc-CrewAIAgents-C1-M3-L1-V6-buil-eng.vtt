@@ -1,0 +1,1706 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.211 --> 00:00:05.519
+By now, you probably already understand how important and how powerful flows can be.
+
+2
+00:00:06.079 --> 00:00:09.359
+So I want to make sure that you get to put this into use.
+
+3
+00:00:09.359 --> 00:00:13.840
+Let's update our deep research crew to make it into a deep research flow,
+
+4
+00:00:13.840 --> 00:00:19.120
+so we can actually put all the learnings and make this use case so much more powerful.
+
+5
+00:00:19.120 --> 00:00:22.799
+You're going to understand how that unlocks other use cases as well.
+
+6
+00:00:22.799 --> 00:00:24.159
+So let's dive into that.
+
+7
+00:00:24.719 --> 00:00:27.040
+I'm very excited about this notebook.
+
+8
+00:00:27.040 --> 00:00:28.879
+One, it is our final notebook.
+
+9
+00:00:28.879 --> 00:00:33.040
+So this is the ultimate version of our deep research crew,
+
+10
+00:00:33.040 --> 00:00:37.119
+meaning that we're going to apply everything that we have learned so far
+
+11
+00:00:37.119 --> 00:00:42.479
+up to this point into this one single use case to see how complex we can get it to be.
+
+12
+00:00:42.479 --> 00:00:45.360
+And the other thing that makes me super excited about it as well
+
+13
+00:00:45.360 --> 00:00:48.799
+is the fact that we're bringing flows into the mix.
+
+14
+00:00:48.799 --> 00:00:54.799
+So we're going to transform what used to be our crew into an entire CrewAI flow now.
+
+15
+00:00:54.799 --> 00:00:57.279
+And just to remember where we left off,
+
+16
+00:00:57.279 --> 00:01:02.880
+we end up with our research crew being a hybrid approach where you had a research planner
+
+17
+00:01:02.880 --> 00:01:07.360
+that would do an entire hypothesis on how he would break up our questions
+
+18
+00:01:07.360 --> 00:01:09.120
+and what are the things that we should research.
+
+19
+00:01:09.680 --> 00:01:11.839
+That would trigger two different tasks.
+
+20
+00:01:11.839 --> 00:01:16.720
+One to research a main topic, another one to research a secondary topic,
+
+21
+00:01:16.720 --> 00:01:20.239
+but only one agent would be doing those same tasks.
+
+22
+00:01:20.239 --> 00:01:24.239
+And then that would go into fact checking where the same thing would happen.
+
+23
+00:01:24.239 --> 00:01:28.080
+One agent would be doing the two fact checking as well for us.
+
+24
+00:01:28.080 --> 00:01:31.760
+And then from that point, everything would collapse back
+
+25
+00:01:31.760 --> 00:01:35.839
+into writing a final report with our final report agent.
+
+26
+00:01:35.839 --> 00:01:39.279
+So this is where we left when we last talked about this.
+
+27
+00:01:39.279 --> 00:01:43.199
+And we're using the guardrails, the custom tools and the memories,
+
+28
+00:01:43.199 --> 00:01:45.519
+everything that we have learned into this.
+
+29
+00:01:45.519 --> 00:01:49.919
+But now we're taking it to the next level by using Crew AI Flows.
+
+30
+00:01:50.639 --> 00:01:53.839
+So the idea of our crew, it still exists in there.
+
+31
+00:01:53.839 --> 00:01:56.559
+And that still runs the same way that it used to.
+
+32
+00:01:56.559 --> 00:01:59.760
+We're not changing anything about it up to this point.
+
+33
+00:01:59.760 --> 00:02:03.199
+But we are changing the way that we get to that process.
+
+34
+00:02:03.199 --> 00:02:06.239
+So now the user will be able to start the conversation
+
+35
+00:02:06.239 --> 00:02:09.520
+being vocal about what it wants to learn about.
+
+36
+00:02:09.520 --> 00:02:11.199
+And this can be literally anything.
+
+37
+00:02:11.199 --> 00:02:15.279
+The user can just say hello, or it can say anything else.
+
+38
+00:02:15.279 --> 00:02:19.360
+Maybe he wants to learn about the origin of the universe or whatever it might be.
+
+39
+00:02:19.360 --> 00:02:23.679
+And from this point on, we're going to do one single ad hoc LLM call.
+
+40
+00:02:23.679 --> 00:02:28.080
+That we try to make a decision whether we need to trigger a research or not.
+
+41
+00:02:28.080 --> 00:02:30.559
+And if we don't need to trigger a research,
+
+42
+00:02:30.559 --> 00:02:34.720
+we're just going to generate an answer to the LLM and return that answer right away.
+
+43
+00:02:35.360 --> 00:02:41.279
+Now, if we do want to do the research that will execute and trigger our entire crew,
+
+44
+00:02:41.279 --> 00:02:46.559
+that will then ask for clarifying questions and give a final summary
+
+45
+00:02:46.559 --> 00:02:49.360
+that will return that answer back to us.
+
+46
+00:02:49.360 --> 00:02:53.360
+So you can see how this now is a little more complex.
+
+47
+00:02:53.360 --> 00:02:59.039
+But also allow us to have way more control over what is happening and when it's happening.
+
+48
+00:02:59.039 --> 00:03:03.679
+And what I'm very excited about this is that this is extremely easy to build.
+
+49
+00:03:03.679 --> 00:03:06.720
+Because flows is just a very thin layer.
+
+50
+00:03:06.720 --> 00:03:09.600
+It just gives you the bare minimum to make sure that you get
+
+51
+00:03:09.600 --> 00:03:12.160
+everything that you need to build these automations
+
+52
+00:03:12.160 --> 00:03:15.919
+by using a series of decorators that make your life super easy.
+
+53
+00:03:15.919 --> 00:03:19.839
+So I'm very excited to get our hands dirty and see what that looks like.
+
+54
+00:03:19.839 --> 00:03:21.520
+So let's jump into that right away.
+
+55
+00:03:22.080 --> 00:03:26.800
+The first thing that I want to call out here is that for you to create initial flow,
+
+56
+00:03:26.800 --> 00:03:28.960
+if you want to start a new project after this,
+
+57
+00:03:28.960 --> 00:03:32.559
+or if you want to start to get the initial structure done for you,
+
+58
+00:03:32.559 --> 00:03:38.479
+all you got to do is using the CrewAI CLI and type crewai create flow.
+
+59
+00:03:38.479 --> 00:03:40.240
+And you can give your flow a name.
+
+60
+00:03:40.240 --> 00:03:44.160
+So in this case, I would do just a task flow here to showcase.
+
+61
+00:03:44.720 --> 00:03:50.320
+Once that you create this, it will create the entire scaffold and folder structure for you,
+
+62
+00:03:50.320 --> 00:03:52.399
+setting up everything that you need.
+
+63
+00:03:52.399 --> 00:03:55.759
+And if you go into that folder, as we can do right now,
+
+64
+00:03:55.759 --> 00:03:57.440
+you can actually see what that looks like.
+
+65
+00:03:58.160 --> 00:04:02.960
+So it will have not only a regular pyproject and readme file and .env,
+
+66
+00:04:02.960 --> 00:04:06.479
+but we'll have an src and a test folder.
+
+67
+00:04:06.479 --> 00:04:11.039
+And if you go into that SRC folder, you're going to find our flow.
+
+68
+00:04:11.039 --> 00:04:16.160
+In that flow, you're going to have a main.py file that holds the code for your flow.
+
+69
+00:04:16.160 --> 00:04:19.839
+And you also have a crews folder and a tools folder.
+
+70
+00:04:19.839 --> 00:04:24.640
+The crews folder will have any crews that you might want to use with this.
+
+71
+00:04:24.640 --> 00:04:29.440
+In your tools folder, the same way we'll have all the tools that you might want to reuse
+
+72
+00:04:29.440 --> 00:04:33.119
+across many crews that are part of this flow.
+
+73
+00:04:33.119 --> 00:04:36.320
+In our example, we're just going to have one crew in the flow,
+
+74
+00:04:36.320 --> 00:04:39.359
+but you can build this flow to be as complex as you want.
+
+75
+00:04:39.359 --> 00:04:42.959
+Remember, the idea here is opt-in agency,
+
+76
+00:04:42.959 --> 00:04:46.720
+meaning that the flow just give you that backbone structure
+
+77
+00:04:46.720 --> 00:04:50.399
+and you decide when and how much agency you want to bring
+
+78
+00:04:50.399 --> 00:04:54.399
+from one single LLM call all the way to an entire crew.
+
+79
+00:04:54.399 --> 00:04:56.799
+And the idea here is just to give you a structure
+
+80
+00:04:56.799 --> 00:05:01.279
+for you to have these reusable components that you can use while you're building your flow.
+
+81
+00:05:01.920 --> 00:05:04.320
+Now, if you look at the main file,
+
+82
+00:05:04.320 --> 00:05:07.279
+I want to highlight a little bit on what this actually looks like.
+
+83
+00:05:08.000 --> 00:05:13.760
+So if you open the main file for this test crew that we just created with this test flow,
+
+84
+00:05:13.760 --> 00:05:16.239
+you can see that it comes with an example,
+
+85
+00:05:16.239 --> 00:05:21.679
+just to showcase a little bit on how this works by having a poem flow and a poem state.
+
+86
+00:05:22.239 --> 00:05:27.119
+The poem flow uses a decorator that we just talked about in the lesson.
+
+87
+00:05:27.119 --> 00:05:31.440
+It has an initial start decorator that indicates that this is the first function
+
+88
+00:05:31.440 --> 00:05:34.079
+that will be executed in this crew.
+
+89
+00:05:34.079 --> 00:05:37.600
+And it's just generating a number between one and five.
+
+90
+00:05:37.600 --> 00:05:41.359
+Then you can see that there is a generate poem function
+
+91
+00:05:41.359 --> 00:05:43.359
+that has a listen decorator,
+
+92
+00:05:43.359 --> 00:05:46.480
+and that is actually listening for our last function.
+
+93
+00:05:47.119 --> 00:05:52.079
+So that means that as soon as the generate sentence count function is done,
+
+94
+00:05:52.079 --> 00:05:57.040
+it will emit an event that will be picked up by the generated poem.
+
+95
+00:05:57.040 --> 00:06:00.239
+And the generate poem would then execute its code
+
+96
+00:06:00.239 --> 00:06:05.119
+and actually calls an entire crew that gets the number of sentences
+
+97
+00:06:05.119 --> 00:06:07.119
+for creating a poem that is that long.
+
+98
+00:06:07.760 --> 00:06:11.279
+And then again, you can see the listen decorator here being used again,
+
+99
+00:06:11.279 --> 00:06:15.519
+but this time listening to the end of the generate poem function
+
+100
+00:06:15.519 --> 00:06:17.679
+that would be the ending of the crew,
+
+101
+00:06:17.679 --> 00:06:23.440
+and then executing the save poem function that will save that into a file.
+
+102
+00:06:23.440 --> 00:06:25.600
+Again, this is more of a simple use case,
+
+103
+00:06:25.600 --> 00:06:28.959
+but it helps to highlight how you can build a flow
+
+104
+00:06:28.959 --> 00:06:32.880
+and how simple it is to get this decorators going.
+
+105
+00:06:32.880 --> 00:06:37.359
+Now, I want us to go into a regular setting for a deep research flow.
+
+106
+00:06:37.359 --> 00:06:41.279
+You already have that entire folder and files structured for you.
+
+107
+00:06:41.279 --> 00:06:45.679
+So let's go into that so that you can actually see what that looks like in practice.
+
+108
+00:06:46.320 --> 00:06:46.720
+All right.
+
+109
+00:06:46.720 --> 00:06:50.640
+So if we go into our folder structure, as you can see in here,
+
+110
+00:06:50.640 --> 00:06:53.440
+we're going to find the same setting that we just looked at
+
+111
+00:06:53.440 --> 00:06:55.440
+and the new flow that we created.
+
+112
+00:06:55.440 --> 00:06:59.440
+And if we go into the SRC and deep research flow folder,
+
+113
+00:06:59.440 --> 00:07:03.359
+you're going to find the main file, the crews and the tools folder.
+
+114
+00:07:03.359 --> 00:07:06.480
+We already moved the entire project into this structure.
+
+115
+00:07:06.480 --> 00:07:08.799
+So if you look into the tools folder,
+
+116
+00:07:08.799 --> 00:07:12.079
+you will see your chart generator tool right in there.
+
+117
+00:07:12.079 --> 00:07:14.720
+And if you go into our crews folder,
+
+118
+00:07:14.720 --> 00:07:18.000
+you will see our deep research crew right in there,
+
+119
+00:07:18.000 --> 00:07:22.640
+the way that we used to have it with its guardrails, agents, and tasks.
+
+120
+00:07:22.640 --> 00:07:24.880
+Everything is configured for us.
+
+121
+00:07:24.880 --> 00:07:29.200
+Now, let's look at the main file that actually holds the flow,
+
+122
+00:07:29.200 --> 00:07:33.200
+that is inside ourr SRC deep research flow folder.
+
+123
+00:07:33.200 --> 00:07:35.760
+So if you open that main file,
+
+124
+00:07:35.760 --> 00:07:38.160
+you will see that we create the flow state.
+
+125
+00:07:38.799 --> 00:07:42.399
+This is the state that is going to be shared across the entire flow.
+
+126
+00:07:42.399 --> 00:07:45.200
+So as all the functions are being executed,
+
+127
+00:07:45.200 --> 00:07:50.559
+we're going to be populating this data so we can exchange data between the functions.
+
+128
+00:07:50.559 --> 00:07:56.880
+So we can read and write into the state at any point during the flow execution.
+
+129
+00:07:56.880 --> 00:07:59.440
+Another interesting thing that I want to pinpoint
+
+130
+00:07:59.440 --> 00:08:03.200
+is that we're importing this persist decorator.
+
+131
+00:08:03.200 --> 00:08:07.119
+And that's a new decorator that I want to highlight into this code real quick.
+
+132
+00:08:07.119 --> 00:08:14.000
+What it does is it persists the state and every function state after flow.
+
+133
+00:08:14.000 --> 00:08:18.399
+So every function that gets executed by the end of that,
+
+134
+00:08:18.399 --> 00:08:21.760
+it saves that state into your local database.
+
+135
+00:08:21.760 --> 00:08:24.480
+So it can reuse that state later
+
+136
+00:08:24.480 --> 00:08:28.720
+if you trigger the same flow with that same ID once again,
+
+137
+00:08:29.279 --> 00:08:35.119
+meaning that you can use that state to persist data across many different executions.
+
+138
+00:08:35.679 --> 00:08:41.440
+So let's now go into our actual flow where we have the persist decorator
+
+139
+00:08:41.440 --> 00:08:44.640
+and where we're not only inheriting from the flow class,
+
+140
+00:08:44.640 --> 00:08:48.159
+but we're being very clear that it's using the research state.
+
+141
+00:08:48.719 --> 00:08:53.359
+Our first function is exactly the one that we showed on the slides just a second ago,
+
+142
+00:08:53.359 --> 00:08:58.640
+where we have the start conversation function that is annotated with the start decorator.
+
+143
+00:08:58.640 --> 00:09:00.880
+And here you can see that we do some prints,
+
+144
+00:09:00.880 --> 00:09:04.400
+just that we can see that in the terminal when we execute that in a second.
+
+145
+00:09:05.039 --> 00:09:08.400
+We check if there was a query before this.
+
+146
+00:09:08.400 --> 00:09:11.919
+And this just means that if we executed this flow before,
+
+147
+00:09:11.919 --> 00:09:14.080
+because we are persisting the state,
+
+148
+00:09:14.080 --> 00:09:17.599
+and you're going to see that once that we actually run it in the terminal.
+
+149
+00:09:17.599 --> 00:09:22.400
+And if there was a state before, meaning that we executed this flow before,
+
+150
+00:09:22.400 --> 00:09:26.320
+it's going to tell us what was the last thing that we researched about,
+
+151
+00:09:26.320 --> 00:09:28.960
+because that will be stored in the state.
+
+152
+00:09:28.960 --> 00:09:32.799
+I want to stop here real quick to explain how useful this can be.
+
+153
+00:09:32.799 --> 00:09:38.000
+Let's say that you're creating a flow that will handle many turns of conversations,
+
+154
+00:09:38.000 --> 00:09:40.000
+where whenever you run the flow,
+
+155
+00:09:40.000 --> 00:09:45.200
+you want that same conversation to keep going and that same data to be in there.
+
+156
+00:09:45.200 --> 00:09:48.239
+Maybe you want to make sure that this flow remembers
+
+157
+00:09:48.239 --> 00:09:52.880
+every single research that it has ever made as you go talk with it.
+
+158
+00:09:52.880 --> 00:09:57.760
+Well, if you want to do that, you could actually create a variable in the state
+
+159
+00:09:57.760 --> 00:09:59.840
+that will hold all that data.
+
+160
+00:09:59.840 --> 00:10:02.559
+And as long as you're persisting that data,
+
+161
+00:10:02.559 --> 00:10:07.919
+you will always be able to load it back up when you run the flow again,
+
+162
+00:10:07.919 --> 00:10:10.799
+as long as you're passing the same flow ID.
+
+163
+00:10:10.799 --> 00:10:12.960
+We're going to see that in practice in a second.
+
+164
+00:10:12.960 --> 00:10:14.559
+So don't be scared away.
+
+165
+00:10:14.559 --> 00:10:16.479
+We're going to show you how that actually works.
+
+166
+00:10:16.960 --> 00:10:20.159
+After this initial function, where we ask the customer
+
+167
+00:10:20.159 --> 00:10:22.400
+what it is that it wants to know about,
+
+168
+00:10:22.400 --> 00:10:25.840
+we then go into the analyze query function.
+
+169
+00:10:25.840 --> 00:10:28.000
+And this is using the router annotator,
+
+170
+00:10:28.000 --> 00:10:32.159
+the same way that we saw in the slides just in the previous lesson.
+
+171
+00:10:32.719 --> 00:10:37.200
+So this indicates to the flow that in here there's going to be a fork on the road,
+
+172
+00:10:37.840 --> 00:10:41.119
+meaning that depending on the output of this function,
+
+173
+00:10:41.119 --> 00:10:45.200
+the flow will send to either one or another function.
+
+174
+00:10:45.200 --> 00:10:48.159
+And this analyzing query function will be executed
+
+175
+00:10:48.159 --> 00:10:51.359
+as soon as the start conversation function is done.
+
+176
+00:10:52.000 --> 00:10:56.080
+So in here, you can see that the analyze query does one simple thing.
+
+177
+00:10:56.080 --> 00:11:03.200
+It basically calls gpt-4o-mini to decide whether it should just give a simple answer
+
+178
+00:11:03.200 --> 00:11:08.000
+or if it will be required to do a deep research into a topic.
+
+179
+00:11:08.000 --> 00:11:11.520
+And depending on whether it will do research or not,
+
+180
+00:11:11.520 --> 00:11:14.559
+it will either emit a research event
+
+181
+00:11:14.559 --> 00:11:16.960
+or it will emit a simple event.
+
+182
+00:11:17.520 --> 00:11:21.280
+And you can see on our next function, the simple answer,
+
+183
+00:11:21.280 --> 00:11:23.840
+that if a simple event is emitted,
+
+184
+00:11:23.840 --> 00:11:26.640
+then there is a listen decorator for that,
+
+185
+00:11:26.640 --> 00:11:29.200
+and the simple function will be executed.
+
+186
+00:11:29.200 --> 00:11:32.559
+And this function then just do one single LLM call
+
+187
+00:11:32.559 --> 00:11:35.039
+and pushes that answer back into the state.
+
+188
+00:11:35.599 --> 00:11:38.080
+If it emits a research event,
+
+189
+00:11:38.080 --> 00:11:40.960
+then we have this clarify query function
+
+190
+00:11:40.960 --> 00:11:44.960
+that will actually ask the user for a clarifying question,
+
+191
+00:11:44.960 --> 00:11:50.000
+whether he wants to know something more specific about what it's asking about.
+
+192
+00:11:50.000 --> 00:11:52.719
+So if it does need a clarifying question,
+
+193
+00:11:52.719 --> 00:11:55.280
+then the user gets the opportunity to add
+
+194
+00:11:55.280 --> 00:11:59.280
+what is the additional context in there that it wants to research about.
+
+195
+00:11:59.840 --> 00:12:01.520
+After the research is done,
+
+196
+00:12:01.520 --> 00:12:06.479
+we can see that the execute search is now listening to the clarifying query.
+
+197
+00:12:07.039 --> 00:12:09.200
+And this is we're getting towards the end of the flow.
+
+198
+00:12:09.200 --> 00:12:11.760
+So bear with me for just one extra second here.
+
+199
+00:12:11.760 --> 00:12:12.960
+But this is getting interesting
+
+200
+00:12:12.960 --> 00:12:15.919
+because it's in here that we're going to load our crew.
+
+201
+00:12:15.919 --> 00:12:18.320
+And you can see that we're loading the same crew
+
+202
+00:12:18.320 --> 00:12:21.200
+that we built on the last notebook,
+
+203
+00:12:21.200 --> 00:12:23.679
+the parallel deep research crew.
+
+204
+00:12:23.679 --> 00:12:26.400
+But now the user query is dynamic.
+
+205
+00:12:26.400 --> 00:12:28.559
+We're loading that from the state
+
+206
+00:12:28.559 --> 00:12:33.359
+from what the user inputted early on the other functions that we executed.
+
+207
+00:12:33.359 --> 00:12:35.359
+And then after this query is done,
+
+208
+00:12:35.359 --> 00:12:39.520
+you can see that the research report is saved into the state as well.
+
+209
+00:12:39.520 --> 00:12:42.159
+And then we go into our final function,
+
+210
+00:12:42.159 --> 00:12:45.359
+that is the save report and summarize,
+
+211
+00:12:45.359 --> 00:12:47.039
+where basically we're going to make sure
+
+212
+00:12:47.039 --> 00:12:52.000
+that we are saving the report on this research report markdown file.
+
+213
+00:12:52.000 --> 00:12:56.479
+We're doing one final LLM call to summarize the content of the report.
+
+214
+00:12:56.479 --> 00:13:00.880
+And then we go into the save and report and summarize function,
+
+215
+00:13:00.880 --> 00:13:03.919
+where we have another listening decorator
+
+216
+00:13:03.919 --> 00:13:06.799
+that is basically waiting for the research to be done.
+
+217
+00:13:06.799 --> 00:13:11.039
+It's going to save the result into this research report markdown file
+
+218
+00:13:11.039 --> 00:13:16.719
+and do one single LLM call asking for it to summarize the final report
+
+219
+00:13:16.719 --> 00:13:20.159
+that will be shown into the state as well as a final answer.
+
+220
+00:13:20.799 --> 00:13:26.559
+And after this, you can see that our final function is the return final answer.
+
+221
+00:13:27.119 --> 00:13:30.400
+And this function is listening for multiple events.
+
+222
+00:13:30.400 --> 00:13:34.559
+So it will listen for either the simple answer event
+
+223
+00:13:34.559 --> 00:13:37.919
+or the save report and summarize event.
+
+224
+00:13:37.919 --> 00:13:40.960
+So going back all the way to the beginning of our flow,
+
+225
+00:13:40.960 --> 00:13:47.039
+if the initial LLM call deemed that it was not required to do a deep research,
+
+226
+00:13:47.039 --> 00:13:49.679
+this will automatically kick off this function.
+
+227
+00:13:50.320 --> 00:13:53.599
+If it deemed that it was necessary to do a deep research,
+
+228
+00:13:53.599 --> 00:13:55.520
+that would go through all the different steps
+
+229
+00:13:55.520 --> 00:13:57.440
+that we went over up to this point
+
+230
+00:13:57.440 --> 00:14:00.320
+and eventually get into this final answer function.
+
+231
+00:14:00.880 --> 00:14:05.280
+And this final answer function basically print out what is the final answer,
+
+232
+00:14:05.280 --> 00:14:08.640
+whether it's a simple or it's the result of our summary,
+
+233
+00:14:08.640 --> 00:14:10.400
+and then the entire flow is done.
+
+234
+00:14:11.200 --> 00:14:15.039
+So you can see that this is just 140 lines of code.
+
+235
+00:14:15.039 --> 00:14:19.840
+We're just using decorators to control the entire order of the execution.
+
+236
+00:14:19.840 --> 00:14:24.559
+And we choose for one specific area of this flow
+
+237
+00:14:24.559 --> 00:14:28.799
+to over-index on agency, but have an entire crew in there
+
+238
+00:14:28.799 --> 00:14:32.479
+that's going to be doing the research, plotting the charts,
+
+239
+00:14:32.479 --> 00:14:36.719
+bringing everything that we need into this one single final report.
+
+240
+00:14:36.719 --> 00:14:40.400
+So this is a great example of how you can actually use flows
+
+241
+00:14:40.400 --> 00:14:46.479
+and intertwine them with crews, agents, or LLMs in order to get better answers.
+
+242
+00:14:47.119 --> 00:14:48.799
+If you keep scrolling back in here,
+
+243
+00:14:48.799 --> 00:14:51.760
+you will find this kickoff and this plot functions.
+
+244
+00:14:51.760 --> 00:14:55.200
+And those are boilerplate functions that are going to be injected
+
+245
+00:14:55.200 --> 00:14:57.679
+into your flow as soon as you create them.
+
+246
+00:14:57.679 --> 00:15:00.239
+One is responsible for actually running the flow,
+
+247
+00:15:00.239 --> 00:15:03.039
+where we actually are forcing one ID.
+
+248
+00:15:03.039 --> 00:15:07.599
+If you don't force one, this will automatically be generated for you.
+
+249
+00:15:07.599 --> 00:15:12.559
+But in this case, we're forcing so that every run uses the same ID
+
+250
+00:15:12.559 --> 00:15:16.400
+so that we can always load that persistent state.
+
+251
+00:15:16.400 --> 00:15:19.280
+And the other function is that plot function
+
+252
+00:15:19.280 --> 00:15:23.039
+that is basically plotting a visual of the flow for us.
+
+253
+00:15:23.039 --> 00:15:24.880
+And we're going to run that in a second.
+
+254
+00:15:25.440 --> 00:15:27.520
+So this is a very interesting file.
+
+255
+00:15:27.520 --> 00:15:30.000
+I would recommend you spend some time on this.
+
+256
+00:15:30.000 --> 00:15:32.159
+Again, I know it's a lot to cover,
+
+257
+00:15:32.159 --> 00:15:35.280
+but I would definitely recommend that you go through this flow.
+
+258
+00:15:35.280 --> 00:15:38.320
+You try to understand how these decorators are being used.
+
+259
+00:15:38.320 --> 00:15:41.760
+Feel free to add new steps or remove steps.
+
+260
+00:15:41.760 --> 00:15:45.440
+And you're going to be able to visualize this once that we plot it.
+
+261
+00:15:45.440 --> 00:15:49.440
+And that will allow you to also run even more different scenarios
+
+262
+00:15:49.440 --> 00:15:52.000
+and cover for more different edge cases.
+
+263
+00:15:52.000 --> 00:15:55.440
+It could be very interesting to see how complex you can get this to be
+
+264
+00:15:55.440 --> 00:15:57.679
+or how simpler you can make this.
+
+265
+00:15:57.679 --> 00:15:59.919
+You have all the building blocks that you need
+
+266
+00:15:59.919 --> 00:16:01.760
+to build the flows that you want.
+
+267
+00:16:01.760 --> 00:16:05.359
+It's just a matter of how you're going to use these functions together
+
+268
+00:16:05.359 --> 00:16:07.280
+and these decorators together.
+
+269
+00:16:07.280 --> 00:16:10.880
+Well, let's do something to running this crewai plot command
+
+270
+00:16:10.880 --> 00:16:13.599
+so that we can actually visualize what we're working with.
+
+271
+00:16:14.320 --> 00:16:18.880
+For you to plot the actual flow, you can go back into a terminal,
+
+272
+00:16:18.880 --> 00:16:21.679
+go into the root folder of your project.
+
+273
+00:16:21.679 --> 00:16:26.400
+And now you're going to do is crewai flow plot.
+
+274
+00:16:26.400 --> 00:16:31.119
+And that will automatically create an HTML file for you
+
+275
+00:16:31.119 --> 00:16:34.159
+with the entire visual of your flow.
+
+276
+00:16:34.159 --> 00:16:37.280
+So you can visualize this at any point in time.
+
+277
+00:16:37.280 --> 00:16:39.200
+And this can be extremely useful,
+
+278
+00:16:39.200 --> 00:16:41.919
+especially for automatic generating docs
+
+279
+00:16:41.919 --> 00:16:45.119
+or as you change your flow to visualize
+
+280
+00:16:45.119 --> 00:16:48.400
+how that actually impacts the behavior of the thing.
+
+281
+00:16:48.400 --> 00:16:52.559
+So if you go into our main folder, you can actually open that file now.
+
+282
+00:16:52.559 --> 00:16:57.039
+And that will basically load the flow visual for you.
+
+283
+00:16:57.039 --> 00:17:01.039
+And we can see how this works is the same way that we talked before.
+
+284
+00:17:01.039 --> 00:17:03.359
+There's a start conversation function
+
+285
+00:17:03.359 --> 00:17:06.079
+that will trigger an analyze query function
+
+286
+00:17:06.079 --> 00:17:10.319
+that is a router that will either send a clarifying question
+
+287
+00:17:10.319 --> 00:17:12.479
+or simple answer.
+
+288
+00:17:12.479 --> 00:17:14.239
+If it's ready to give a simple answer,
+
+289
+00:17:14.239 --> 00:17:16.640
+it's going to return the answer right away.
+
+290
+00:17:16.640 --> 00:17:22.239
+Otherwise, it will trigger an entire crew that will execute a research.
+
+291
+00:17:22.239 --> 00:17:26.079
+It will then save that as a report and summarize it for you
+
+292
+00:17:26.079 --> 00:17:29.280
+and then return the summary as a final answer.
+
+293
+00:17:29.280 --> 00:17:31.359
+So again, as you go into this main file,
+
+294
+00:17:31.359 --> 00:17:33.280
+and as you change your flow,
+
+295
+00:17:33.280 --> 00:17:35.599
+try to go into the terminal and plot it again
+
+296
+00:17:35.599 --> 00:17:38.560
+so that you can see visually what that's looking like
+
+297
+00:17:38.560 --> 00:17:41.839
+and how your code changes are actually impacting the behavior.
+
+298
+00:17:41.839 --> 00:17:44.079
+This can be extremely fun to watch.
+
+299
+00:17:44.079 --> 00:17:46.479
+Now, why don't we run this flow for the first time
+
+300
+00:17:46.479 --> 00:17:49.280
+with just a simple query to see how it goes.
+
+301
+00:17:49.839 --> 00:17:54.079
+To run your flow, all you got to do is just run crewai run.
+
+302
+00:17:54.079 --> 00:17:56.719
+That will automatically run the flow for you.
+
+303
+00:17:56.719 --> 00:18:01.119
+And the first thing that it will do is actually ask you for that query.
+
+304
+00:18:01.119 --> 00:18:03.119
+And you can tag along the logs in here.
+
+305
+00:18:04.160 --> 00:18:06.479
+So it's going to ask you what you'd like to know.
+
+306
+00:18:06.560 --> 00:18:08.719
+In that case, we're just going to say hello.
+
+307
+00:18:08.719 --> 00:18:10.479
+We're going to keep things simple.
+
+308
+00:18:10.479 --> 00:18:14.000
+So if I type hello and we tag along the logs,
+
+309
+00:18:14.000 --> 00:18:15.760
+you can see everything that is happening.
+
+310
+00:18:15.760 --> 00:18:18.000
+It's analyzing the query complexity.
+
+311
+00:18:18.000 --> 00:18:20.560
+It detected that this is a very simple query
+
+312
+00:18:20.560 --> 00:18:22.239
+because we're just saying hello.
+
+313
+00:18:22.239 --> 00:18:24.319
+So we decide to generate a direct answer.
+
+314
+00:18:24.880 --> 00:18:27.119
+So the final answer in here is,
+
+315
+00:18:27.119 --> 00:18:28.800
+if our query is hello,
+
+316
+00:18:28.800 --> 00:18:31.599
+it just answered as a regular LLM would.
+
+317
+00:18:31.599 --> 00:18:33.280
+Hello, how can I assist you today?
+
+318
+00:18:33.280 --> 00:18:35.920
+If you have any questions or information specific topic,
+
+319
+00:18:36.000 --> 00:18:37.040
+feel free to ask.
+
+320
+00:18:37.760 --> 00:18:39.359
+And then the entire flow is done.
+
+321
+00:18:39.359 --> 00:18:41.920
+We can see here all the different steps that it took
+
+322
+00:18:41.920 --> 00:18:44.719
+from starting the conversation to analyzing the query
+
+323
+00:18:44.719 --> 00:18:47.839
+to triggering a simple answering and then returning it for us.
+
+324
+00:18:48.479 --> 00:18:50.800
+Now, if we run this flow again,
+
+325
+00:18:50.800 --> 00:18:52.959
+one thing that you will notice is that
+
+326
+00:18:52.959 --> 00:18:56.319
+it will automatically have on its state
+
+327
+00:18:56.319 --> 00:18:58.239
+our final user query.
+
+328
+00:18:58.239 --> 00:19:00.719
+And it's going to print that over for us.
+
+329
+00:19:00.719 --> 00:19:02.800
+So you can see in here that it says,
+
+330
+00:19:02.880 --> 00:19:06.959
+I remember last time you want to talk to know about hello
+
+331
+00:19:06.959 --> 00:19:09.119
+because that's the thing that we send it.
+
+332
+00:19:09.119 --> 00:19:11.439
+So here is just to showcase the example
+
+333
+00:19:11.439 --> 00:19:13.920
+of how you can use that persist feature
+
+334
+00:19:13.920 --> 00:19:15.520
+to persist the state
+
+335
+00:19:15.520 --> 00:19:19.680
+and how that allows you to over many executions
+
+336
+00:19:19.680 --> 00:19:21.760
+being able to reload that state
+
+337
+00:19:21.760 --> 00:19:24.319
+and reuse it over and over again.
+
+338
+00:19:24.319 --> 00:19:26.160
+So if you want this to be, for example,
+
+339
+00:19:26.719 --> 00:19:30.239
+deployed as a long-term conversational flow,
+
+340
+00:19:30.239 --> 00:19:33.520
+you can actually achieve that by using this state.
+
+341
+00:19:33.520 --> 00:19:36.160
+But this time, let's ask something more complex.
+
+342
+00:19:36.160 --> 00:19:38.560
+Let's ask about the origin of the universe.
+
+343
+00:19:39.199 --> 00:19:41.439
+So you can tag along the execution here
+
+344
+00:19:41.439 --> 00:19:43.359
+and you can see that as it analyzes
+
+345
+00:19:43.359 --> 00:19:45.119
+the complexity of the query,
+
+346
+00:19:45.119 --> 00:19:48.400
+it actually detects this is a very complex question.
+
+347
+00:19:48.400 --> 00:19:50.160
+So it decides that it will need to trigger
+
+348
+00:19:50.160 --> 00:19:51.680
+a research process.
+
+349
+00:19:51.680 --> 00:19:54.079
+So first thing that it does is trying to understand
+
+350
+00:19:54.079 --> 00:19:56.800
+if it needs to ask any clarifying questions or not.
+
+351
+00:19:56.800 --> 00:19:57.920
+And in this case,
+
+352
+00:19:57.920 --> 00:20:00.479
+it does find that it's needing some clarification
+
+353
+00:20:00.479 --> 00:20:02.479
+and asks me back a question.
+
+354
+00:20:02.479 --> 00:20:05.680
+What specific aspects of the origin of the universe
+
+355
+00:20:05.680 --> 00:20:06.719
+are interested?
+
+356
+00:20:06.719 --> 00:20:09.359
+For example, are you looking for scientific theories
+
+357
+00:20:09.359 --> 00:20:11.199
+or historical perspectives?
+
+358
+00:20:11.199 --> 00:20:13.760
+And I'm going to say all about it.
+
+359
+00:20:16.160 --> 00:20:19.680
+Now, you can see that we said all about it here
+
+360
+00:20:19.680 --> 00:20:22.560
+and that get marked as additional context.
+
+361
+00:20:22.560 --> 00:20:25.199
+And now that is going into the next function
+
+362
+00:20:25.199 --> 00:20:27.119
+that is executing research.
+
+363
+00:20:27.199 --> 00:20:29.439
+And that is triggering our crew again,
+
+364
+00:20:29.439 --> 00:20:31.920
+the same crew that we had up to this point.
+
+365
+00:20:31.920 --> 00:20:34.880
+And you can see that this crew is using the memory,
+
+366
+00:20:34.880 --> 00:20:37.760
+the long-term, the short-term, the entity memory,
+
+367
+00:20:37.760 --> 00:20:41.199
+and going over the entire thing to get it done for us.
+
+368
+00:20:41.199 --> 00:20:43.359
+In the same way, your researcher planner
+
+369
+00:20:43.359 --> 00:20:46.400
+is researching all the options of what we have.
+
+370
+00:20:46.400 --> 00:20:48.640
+What are the main topics that we want to cover?
+
+371
+00:20:48.640 --> 00:20:51.520
+What are the secondary topics that we want to cover?
+
+372
+00:20:51.520 --> 00:20:53.439
+And that will go through entire process
+
+373
+00:20:53.439 --> 00:20:55.280
+that we had with the crew before.
+
+374
+00:20:55.280 --> 00:20:58.160
+So let's fast forward and tag along the execution.
+
+375
+00:20:59.439 --> 00:21:00.719
+As you can see in here,
+
+376
+00:21:00.719 --> 00:21:03.280
+the same way that we had in our crew before,
+
+377
+00:21:03.280 --> 00:21:06.079
+both tasks are being performed in parallel,
+
+378
+00:21:06.079 --> 00:21:09.199
+both the main and the secondary topics research.
+
+379
+00:21:09.199 --> 00:21:12.319
+So nothing changed in terms of how our crew used to work
+
+380
+00:21:12.319 --> 00:21:13.760
+to how it's working now.
+
+381
+00:21:13.760 --> 00:21:16.719
+We just added that in a more complex scenario
+
+382
+00:21:16.719 --> 00:21:20.400
+of an entire flow controlling how this automation will work.
+
+383
+00:21:21.199 --> 00:21:23.839
+Now, if you check this out, we still get the final report,
+
+384
+00:21:23.839 --> 00:21:25.520
+the same way that we're getting it before,
+
+385
+00:21:25.520 --> 00:21:28.000
+with this active summary, the detailed findings.
+
+386
+00:21:28.000 --> 00:21:30.719
+Again, everything that we learned to this point
+
+387
+00:21:30.719 --> 00:21:33.119
+and that we built across all the notebooks
+
+388
+00:21:33.119 --> 00:21:34.719
+are still being applied here.
+
+389
+00:21:34.719 --> 00:21:37.680
+If anything, we're getting it to the next level.
+
+390
+00:21:37.680 --> 00:21:41.199
+But now you can see that that is just one step of the flow.
+
+391
+00:21:41.199 --> 00:21:44.319
+At the end of the day, completes the research successfully,
+
+392
+00:21:44.319 --> 00:21:47.359
+saves the report, and then give us a final answer.
+
+393
+00:21:47.359 --> 00:21:49.119
+Given our original query,
+
+394
+00:21:49.119 --> 00:21:52.239
+it automatically summarizes the entire report
+
+395
+00:21:52.239 --> 00:21:54.880
+and highlights that the full report has been saved
+
+396
+00:21:54.880 --> 00:21:56.959
+to research report markdown file.
+
+397
+00:21:56.959 --> 00:21:59.680
+So we can always go back and actually see that.
+
+398
+00:21:59.680 --> 00:22:02.560
+And there you go, our entire flow is done.
+
+399
+00:22:02.560 --> 00:22:05.359
+So in that way, we're able to actually run
+
+400
+00:22:05.359 --> 00:22:08.640
+the entire flow end-to-end from starting a conversation,
+
+401
+00:22:08.640 --> 00:22:11.040
+analyzing a query, qualifying the query,
+
+402
+00:22:11.040 --> 00:22:14.079
+executing the research, saving the report,
+
+403
+00:22:14.079 --> 00:22:16.000
+and then returning the final answer.
+
+404
+00:22:16.000 --> 00:22:18.719
+So we test both paths of our flow
+
+405
+00:22:18.719 --> 00:22:20.719
+and everything is running great.
+
+406
+00:22:20.719 --> 00:22:22.560
+We're seeing a big pattern here
+
+407
+00:22:22.560 --> 00:22:24.880
+between people merging flows with crews
+
+408
+00:22:24.880 --> 00:22:26.800
+in order to get better results.
+
+409
+00:22:26.800 --> 00:22:29.199
+And flows are so easy to build
+
+410
+00:22:29.199 --> 00:22:30.959
+because they're just a thin layer
+
+411
+00:22:30.959 --> 00:22:33.599
+to give you that control that you want
+
+412
+00:22:33.599 --> 00:22:35.680
+that provides you just enough
+
+413
+00:22:35.680 --> 00:22:37.520
+to build powerful automations
+
+414
+00:22:37.520 --> 00:22:39.439
+and decide when you want to bring
+
+415
+00:22:39.439 --> 00:22:42.640
+just one single LLM to an entire crew.
+
+416
+00:22:42.640 --> 00:22:45.760
+And I would say there is a lot more that we can do,
+
+417
+00:22:45.760 --> 00:22:48.000
+even given the things that we learned.
+
+418
+00:22:48.000 --> 00:22:52.000
+So I would challenge you, use training and use testing
+
+419
+00:22:52.000 --> 00:22:54.640
+and try to get this crew to behave in a different way
+
+420
+00:22:54.640 --> 00:22:57.359
+or try to add extra steps on your flow.
+
+421
+00:22:57.359 --> 00:22:59.199
+I just want to make sure that you get the hang
+
+422
+00:22:59.199 --> 00:23:00.640
+of trying these things out
+
+423
+00:23:00.640 --> 00:23:03.040
+and familiarize yourself with these concepts
+
+424
+00:23:03.040 --> 00:23:05.520
+before you get to build your own use cases.
+
+425
+00:23:05.520 --> 00:23:06.959
+So make sure to have some fun
+
+426
+00:23:06.959 --> 00:23:10.000
+and let's jump into the next lesson right away.

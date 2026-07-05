@@ -1,0 +1,460 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.636 --> 00:00:04.480
+In this video, we're going to talk about a really hot topic right now, and that is MCP.
+
+2
+00:00:04.480 --> 00:00:10.159
+You probably have heard about MCP already. It's a new protocol that is meant to help companies
+
+3
+00:00:10.159 --> 00:00:16.000
+expose tools to agents in the internet. And that's great because it allows you to use these tools to
+
+4
+00:00:16.000 --> 00:00:21.440
+build all sorts of use cases. So in this video, we're going to learn everything about how you
+
+5
+00:00:21.440 --> 00:00:27.600
+can actually use MCP servers so that your agents can talk with the external world and use these
+
+6
+00:00:27.680 --> 00:00:33.279
+tools to build many different use cases. Let's dive into that and see everything that is going
+
+7
+00:00:33.279 --> 00:00:39.680
+on with MCP and AI agents. In this video, we're going to talk about the Model Context Protocol,
+
+8
+00:00:39.680 --> 00:00:45.119
+also known as MCP. And we're going to go over what it is and how it works and some of the
+
+9
+00:00:45.119 --> 00:00:51.520
+considerations you should think about before adopting it. MCP can be extremely powerful,
+
+10
+00:00:51.520 --> 00:00:56.400
+and it's an important tool in your agents stack. But it's important that you understand what is
+
+11
+00:00:56.400 --> 00:01:02.319
+actually happening behind the scenes. When you think about protocols for AI,
+
+12
+00:01:02.319 --> 00:01:07.760
+there's a reason why we're seeing so many people thinking about these things and specifically
+
+13
+00:01:07.760 --> 00:01:14.400
+adopting MCP as a tool. And some of the things in here is a lot of these tools and a lot of
+
+14
+00:01:14.400 --> 00:01:20.800
+these pre-existing systems have different ways to be exposed. If you think about it,
+
+15
+00:01:20.800 --> 00:01:26.080
+some of these apps will expose their applications as OAuth integrations.
+
+16
+00:01:26.080 --> 00:01:33.599
+Other will use regular APIs. Other might use sockets. There's so many different ways and
+
+17
+00:01:33.599 --> 00:01:39.519
+patterns that might end up getting in the way of you actually getting the systems up and running
+
+18
+00:01:39.519 --> 00:01:44.800
+because you can get stuck into integration land just building these integrations without actually
+
+19
+00:01:44.800 --> 00:01:49.519
+accomplishing something meaningful. These integrations also end up requiring a lot of
+
+20
+00:01:49.519 --> 00:01:54.160
+bespoke adapters so that you make sure that you're using the right ones in the right ways.
+
+21
+00:01:54.720 --> 00:02:00.879
+And it becomes very difficult to share tools among agents, especially because when you move
+
+22
+00:02:00.879 --> 00:02:05.519
+from one agent to the other, from tool to the other, the way that you get to use them become
+
+23
+00:02:05.519 --> 00:02:11.440
+extremely different. And even if you think about it, historically, there has been entire companies
+
+24
+00:02:11.440 --> 00:02:17.679
+that were built from the ground up around fixing these problems, like Zapier, If This Then That,
+
+25
+00:02:17.679 --> 00:02:24.559
+and Make, where their main business strategy is managing and building that glue layer between all
+
+26
+00:02:24.559 --> 00:02:29.119
+these integrations for you. So this fragmentation actually makes it harder for people building
+
+27
+00:02:29.119 --> 00:02:34.880
+integrations and even harder for customers that rely on those. And that's the main reason why
+
+28
+00:02:34.880 --> 00:02:43.119
+MCP and protocols as a whole has been such a topic for AI. With MCP, and I want to spend some time
+
+29
+00:02:43.119 --> 00:02:49.600
+here diving into this, you get the opportunity to give your agents access to an entire new array of
+
+30
+00:02:49.600 --> 00:02:57.839
+tools. But what is MCP? MCP is an open protocol developed by the community and started by Anthropic.
+
+31
+00:02:57.839 --> 00:03:04.240
+And the whole idea is, again, create a common layer and a common agreement on how agents get
+
+32
+00:03:04.240 --> 00:03:10.880
+access to tools and resources and prompts. And MCP is getting fairly well known, especially because
+
+33
+00:03:10.880 --> 00:03:17.199
+it's built on top of things that were already very successful. So when using MCPs, you can have
+
+34
+00:03:17.199 --> 00:03:24.320
+your agent actually calling an MCP client that will then route it to an MCP server that will get
+
+35
+00:03:24.320 --> 00:03:30.720
+you access to a tool on the other side. So the thing about MCPs and CrewAI is that you don't
+
+36
+00:03:30.720 --> 00:03:35.600
+need to worry about setting up the client or the server. It's extremely easy to do. All you got to
+
+37
+00:03:35.600 --> 00:03:42.160
+do is you get up your agent and you point it up to a specific MCP server. And based off that, the
+
+38
+00:03:42.160 --> 00:03:47.440
+agent can now get exposed to all the different resources that that server has to offer. So all
+
+39
+00:03:47.440 --> 00:03:52.960
+you got to do is know the specific server configuration and what protocol to use and set
+
+40
+00:03:52.960 --> 00:03:59.119
+that up on your crew or on your agent. And the agent will now be able to tap into all those things
+
+41
+00:03:59.119 --> 00:04:05.119
+and use them during their execution. And the idea here is that all happens behind an open protocol
+
+42
+00:04:05.199 --> 00:04:12.479
+for tools that everyone knows about. Everything using JSON RPC 2.0 under the hood. And this idea
+
+43
+00:04:12.479 --> 00:04:18.480
+of a client and server architecture allows you to build one single layer to connect all these things
+
+44
+00:04:18.480 --> 00:04:24.239
+together. And you might be wondering, well, why should I care about it if maybe the integrations
+
+45
+00:04:24.239 --> 00:04:29.679
+that I have don't require that level of complexity just yet? And that is because as you expand your
+
+46
+00:04:29.679 --> 00:04:35.839
+use cases, building all sorts of connections to different servers and different applications
+
+47
+00:04:35.839 --> 00:04:41.920
+can actually be very taxing and getting in the way. Now, if we all agree as a community on one
+
+48
+00:04:41.920 --> 00:04:47.920
+single pattern, standardize on that pattern will give you access to more integrations and allow
+
+49
+00:04:47.920 --> 00:04:54.799
+you to move in faster. So you can think about a world with file MCP as an MxN, kind of like
+
+50
+00:04:54.799 --> 00:05:00.720
+complexity notation, where to integrate our solution with the tools, you have to write every
+
+51
+00:05:00.720 --> 00:05:07.839
+single custom connectors if they don't exist just yet. Now, a word with MCP, you can connect to any
+
+52
+00:05:07.839 --> 00:05:15.359
+tools that follows the protocol. So that's a more M+N abstraction. And that allows you to move
+
+53
+00:05:15.359 --> 00:05:20.720
+way faster, especially as you add more tools into your back pocket. Now, what are some of
+
+54
+00:05:20.720 --> 00:05:28.000
+these components of MCPs? Well, there's three primitives. There's tools, prompts, and resources.
+
+55
+00:05:28.000 --> 00:05:33.920
+And then there's ways that you expose or that you transport this data. And the three ways that you
+
+56
+00:05:33.920 --> 00:05:41.760
+have to do it is Standard IO, SSE, and Streamable HTTP. In the end of the day, they are just
+
+57
+00:05:41.760 --> 00:05:48.399
+different ways that you can access those servers and call those tools. What really matters is the
+
+58
+00:05:48.480 --> 00:05:55.200
+format that you're using when doing so. So CrewAI actually supports MCPs natively.
+
+59
+00:05:55.200 --> 00:06:02.320
+So agents both inside and outside of crews can use MCP servers, allowing them to basically filter
+
+60
+00:06:02.320 --> 00:06:09.679
+and aggregate these tools when they're running. Now, crews themselves can also become MCP servers.
+
+61
+00:06:09.679 --> 00:06:15.600
+When you deploy a crew on CrewAI AMP, you can automatically export that as a server,
+
+62
+00:06:15.600 --> 00:06:20.640
+allowing them to be used by other agents themselves as if they were tools themselves.
+
+63
+00:06:21.279 --> 00:06:28.640
+Now, a good example to talk about this would be the Box MCP. Box has developed an MCP server,
+
+64
+00:06:28.640 --> 00:06:34.160
+making some of its features available for agents. So if you're running an agent using Crew AI,
+
+65
+00:06:34.160 --> 00:06:39.760
+you can actually connect to Box easily by declaring how you want your agent to do it
+
+66
+00:06:39.760 --> 00:06:45.760
+and what protocols you want to use. And you can do this on the agent level or inside the crew
+
+67
+00:06:45.760 --> 00:06:51.839
+with the agents. It's extremely simple to use and requires you to install just a specific extension
+
+68
+00:06:51.839 --> 00:06:57.279
+from AI tools with certain dependencies to set up your servers. And you can set that up into the
+
+69
+00:06:57.279 --> 00:07:03.200
+agent level or inside the crew that has all the agents. It's extremely simple to use. And once
+
+70
+00:07:03.200 --> 00:07:08.160
+that you have everything set up, it's as simple as wrapping your agents definitions with an MCP
+
+71
+00:07:08.160 --> 00:07:13.839
+server adapter or giving your agents access to those MCP tools. And this means that your agents
+
+72
+00:07:13.839 --> 00:07:20.399
+can now automatically tap into those integrations and automatically tap into those actions and
+
+73
+00:07:20.399 --> 00:07:26.399
+features that Box is exposing during their execution. So, for example, a task around
+
+74
+00:07:26.399 --> 00:07:31.519
+extracting a specific phrase from a file, what is one of the features that Box exposed,
+
+75
+00:07:31.519 --> 00:07:36.880
+can be something that an agent use in order to extract information to build a final report.
+
+76
+00:07:36.880 --> 00:07:42.640
+And that can be extremely simple. So here's an example on how you can use the MCP servers. All
+
+77
+00:07:42.640 --> 00:07:48.480
+you got to do is import the MCP server adapter. You will set up your server attributes. So what
+
+78
+00:07:48.480 --> 00:07:55.119
+is the URL? What is the transport layer that you want to use? And you wrap your agent on that block
+
+79
+00:07:55.119 --> 00:08:01.600
+or your crew on that block. You can actually pass those tools into the agent as if you're using
+
+80
+00:08:01.600 --> 00:08:07.119
+regular tools. So by doing that, you are automatically exposing your agents to everything
+
+81
+00:08:07.119 --> 00:08:12.320
+that is available in their server. And as you can tell in here, within that block, you can filter
+
+82
+00:08:12.320 --> 00:08:16.959
+out some MCP tools if you really want to go that route. And that will allow you to be even more
+
+83
+00:08:16.959 --> 00:08:24.640
+specific about exactly what you want to happen. Now, I do want to preface some of this MCP features
+
+84
+00:08:24.640 --> 00:08:31.279
+with some safeguards, because before using any MCP server, you want to make sure that you trust it.
+
+85
+00:08:31.679 --> 00:08:38.640
+And this is a good disclaimer, because this is an entire new protocol that is not battle-tested
+
+86
+00:08:38.640 --> 00:08:44.400
+for many years. What it means is that there's many people that are now trying to break it.
+
+87
+00:08:44.400 --> 00:08:49.119
+And there are a few things that have proven to be concern for people who are not familiar with
+
+88
+00:08:49.119 --> 00:08:54.960
+protocols in general. Now, all of these issues are being addressed very quickly. But I do want
+
+89
+00:08:54.960 --> 00:09:00.400
+to make sure that you trust the server before you use it. Remember that these servers are
+
+90
+00:09:00.400 --> 00:09:04.799
+returning information that goes through your agents and LLMs, which creates the ability for
+
+91
+00:09:04.799 --> 00:09:10.400
+them to inject prompts. So they can return information to try to do prompt injection
+
+92
+00:09:10.400 --> 00:09:15.359
+into your agents. And the transport itself can be vulnerable. So you want to make sure that
+
+93
+00:09:15.359 --> 00:09:21.840
+they're properly secured. So make sure that the SSE transports are very properly secured.
+
+94
+00:09:21.840 --> 00:09:28.239
+Always validate the origin headers on any incoming SSE connections. And avoid inviting servers to
+
+95
+00:09:28.239 --> 00:09:35.280
+all interfaces locally. Bind only to local hosts if necessary. And remember to implement proper
+
+96
+00:09:35.280 --> 00:09:43.440
+authentication for all SSE connections. Without these protections, attackers could use DNS rebinding
+
+97
+00:09:43.440 --> 00:09:49.359
+to interact with the local MCP servers from remote websites. So just be on the watchful for that,
+
+98
+00:09:49.359 --> 00:09:56.080
+as you're adopting some of this cutting-edge technology. Now, the outlook on MCP is remarkable
+
+99
+00:09:56.080 --> 00:10:02.159
+and it's interesting. It allows you to reuse tools across frameworks and agents. It gives you a
+
+100
+00:10:02.159 --> 00:10:08.960
+standard in terms of integrations for large organizations and allows you to even expose your
+
+101
+00:10:08.960 --> 00:10:16.719
+own crews as a service. There is, of course, an overhead on small and local scripts right now
+
+102
+00:10:16.719 --> 00:10:22.320
+that this helps you to address. So there is a lot that MCP has going on its favor.
+
+103
+00:10:22.320 --> 00:10:28.320
+So despite of these concerns, MCP really shines in specific conditions and it's great for reusing
+
+104
+00:10:28.320 --> 00:10:34.479
+these tools. Now, we have talked about so many things in this module. We talked about tools
+
+105
+00:10:34.479 --> 00:10:40.559
+repositories. We talked about MCPs. So I think it's the right time to talk about how we can build these
+
+106
+00:10:40.559 --> 00:10:47.440
+agents in a way that have not been able to do before. And I want to do that by building agents
+
+107
+00:10:47.440 --> 00:10:53.679
+with a no-code UI. And that's something that benefits not only people that don't know how to
+
+108
+00:10:53.679 --> 00:11:00.320
+code, but also benefits people that are engineers but wants to move faster. So they get their first
+
+109
+00:11:00.320 --> 00:11:05.520
+build out of crew out of the ground extremely quickly and then they can iterate on that very
+
+110
+00:11:05.520 --> 00:11:11.840
+fast. I'm very excited about what I'm going to show you in the next lesson. It's literally insane
+
+111
+00:11:11.840 --> 00:11:18.400
+how easy it is to build some of these agents with absolutely no code at all and how complex they can
+
+112
+00:11:18.400 --> 00:11:24.640
+be. They can even write custom tools themselves or integrate with extremely complex apps. So make
+
+113
+00:11:24.640 --> 00:11:29.760
+sure that you stay in tune for the next video because it's going to go very deep into building
+
+114
+00:11:29.760 --> 00:11:35.840
+agents with no code and I'm very excited about that. I'll see you right there in a second.
+
+

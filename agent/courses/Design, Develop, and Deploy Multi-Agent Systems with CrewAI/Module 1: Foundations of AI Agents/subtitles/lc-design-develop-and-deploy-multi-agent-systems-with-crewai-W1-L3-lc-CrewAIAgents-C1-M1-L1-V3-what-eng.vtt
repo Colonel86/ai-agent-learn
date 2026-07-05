@@ -1,0 +1,246 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.169 --> 00:00:04.320
+What are AI agents? You might have your own definition. So I want to make sure that we
+
+2
+00:00:04.320 --> 00:00:09.600
+talk about all the different options, what AI agents actually are, and how they work.
+
+3
+00:00:09.600 --> 00:00:13.920
+So in this lesson, we're going to talk about all the ins and outs of these agents
+
+4
+00:00:13.920 --> 00:00:17.040
+and how they tick. So let's look into that right now.
+
+5
+00:00:17.040 --> 00:00:20.559
+There's so much being said about AI agents, but before we dive in,
+
+6
+00:00:20.559 --> 00:00:25.040
+let's just agree on the definition. And the way that I would put it is that an AI agent is a
+
+7
+00:00:25.040 --> 00:00:29.680
+system that can decide what happens next in order to accomplish a goal.
+
+8
+00:00:29.680 --> 00:00:35.919
+Let's dive into that. At their core, all agents start with an LLM, a large language model. And
+
+9
+00:00:35.919 --> 00:00:41.840
+throughout this course, you will see how to add all kinds of tools and guardrails and controls
+
+10
+00:00:41.840 --> 00:00:47.680
+that make the LLM behave as an agent. Now, these LLMs are great at creating content.
+
+11
+00:00:47.680 --> 00:00:52.240
+If you go and ask them to write an email, they will do it for you. And if you ask them to make
+
+12
+00:00:52.240 --> 00:00:57.119
+it funnier, they will at least give it a try. But it's more interesting if you actually give
+
+13
+00:00:57.119 --> 00:01:02.000
+them options. One that is maybe a little more serious, another one that's a little different.
+
+14
+00:01:02.000 --> 00:01:08.160
+And now the LLM will get to choose and will tell you version A is better because A, B or C,
+
+15
+00:01:08.160 --> 00:01:13.760
+or version B is better because 1, 2 or 3. So in the end of the day, this ability of
+
+16
+00:01:13.760 --> 00:01:18.080
+making reasonable choices that we have been referring as cognition,
+
+17
+00:01:18.080 --> 00:01:21.839
+that allow these models to choose what email is better.
+
+18
+00:01:21.839 --> 00:01:26.800
+Now, if you forget emails for a second, and instead we start talking about a business goal,
+
+19
+00:01:26.879 --> 00:01:32.959
+an objective, and the LLM is actually deciding what steps to take in order to accomplish that,
+
+20
+00:01:32.959 --> 00:01:39.919
+that's basically when we stop having a chat and now the AI is controlling the application flow,
+
+21
+00:01:39.919 --> 00:01:45.199
+where these LLMs are making these choices in order to accomplish the final goal that you set up for
+
+22
+00:01:45.199 --> 00:01:51.040
+them. But you might be wondering, why do I care about this? And the reason why you should care
+
+23
+00:01:51.040 --> 00:01:57.680
+about AI agents is because we're talking about automations in the end of the day, and automations
+
+24
+00:01:57.680 --> 00:02:03.839
+that were not possible before. In particular, it allows you to build this very sophisticated
+
+25
+00:02:03.839 --> 00:02:10.080
+and flexible automations. So let's look at one example of a use case for a customer support
+
+26
+00:02:10.080 --> 00:02:16.479
+chatbot to compare the old school style of automation with an AI agent style of today.
+
+27
+00:02:16.479 --> 00:02:22.320
+When you think about an automation like how they used to, you usually have all these different
+
+28
+00:02:22.320 --> 00:02:28.960
+branches that you map to and from. So in this case, you have a point A that is a customer input,
+
+29
+00:02:28.960 --> 00:02:36.000
+and that takes you to a point B that is showing helping articles. But this is not only one edge.
+
+30
+00:02:36.000 --> 00:02:41.119
+As you start to think about this use case, you start to realize there's a lot more going on in
+
+31
+00:02:41.119 --> 00:02:48.479
+there. So point C appears, and now you've got to check the user login status. Then point D appears
+
+32
+00:02:48.479 --> 00:02:53.919
+where you need to see if they actually can access purchases. And you might add other points of
+
+33
+00:02:53.919 --> 00:03:01.360
+escalations. So you can see how busy this can get as you add all these different points. So in more
+
+34
+00:03:01.360 --> 00:03:07.199
+traditional automation, you have to map all the different edges and connections in order to make
+
+35
+00:03:07.199 --> 00:03:12.399
+sure that you have something that works. And what happens if you miss one? Then it breaks,
+
+36
+00:03:12.399 --> 00:03:18.720
+then it doesn't work. Now, if you think about AI agents, you can do something else entirely.
+
+37
+00:03:18.720 --> 00:03:24.160
+The agent got to decide based on the customer input what it's going to do in what order.
+
+38
+00:03:24.160 --> 00:03:30.720
+So it might decide to show articles right away and later check for login status and eventually
+
+39
+00:03:30.720 --> 00:03:37.279
+escalate. So you can see all the different options and the agent gets to choose how to navigate them
+
+40
+00:03:37.279 --> 00:03:42.800
+the same way that it was choosing which mail was better before. And there's a few things that you
+
+41
+00:03:42.800 --> 00:03:49.039
+get from this. One of those is this ability of cognition. So the agent's choosing. The other is
+
+42
+00:03:49.039 --> 00:03:54.559
+this idea of real-time reacting to whatever you throw into that. So depending on the customer
+
+43
+00:03:54.559 --> 00:04:00.160
+input, whatever it might be, the agent will decide what is the most appropriate next step.
+
+44
+00:04:00.720 --> 00:04:07.919
+Then is this idea of self-healing, meaning that what happens if the check login status fails?
+
+45
+00:04:07.919 --> 00:04:14.399
+It might find a way to work around, use another API, maybe do another step. And the self-improving
+
+46
+00:04:14.399 --> 00:04:19.679
+comes from this idea of these agents making sure that they are learning of what they are doing.
+
+47
+00:04:19.679 --> 00:04:25.440
+So as they do more examples and more use cases and more run, they learn about what works and
+
+48
+00:04:25.440 --> 00:04:30.399
+what it doesn't so that it reinforced that behavior. And that's something else that you
+
+49
+00:04:30.399 --> 00:04:36.640
+don't get from more traditional automation. So in the end of the day, if you really zoom out,
+
+50
+00:04:36.640 --> 00:04:43.040
+the two main things that are driving agentic automation and agentic systems, one is the
+
+51
+00:04:43.040 --> 00:04:49.040
+ability to create, run an email, create an image, whatever it might be. And the other one is this
+
+52
+00:04:49.040 --> 00:04:55.200
+ability to decide what tools to use, what data to use, how to recover from a failure.
+
+53
+00:04:55.839 --> 00:05:02.640
+In the end of the day, for these agents to be scalable, they need to be reliable. So it's easy
+
+54
+00:05:02.640 --> 00:05:09.839
+to build, it's trustworthy, and it's manageable. If customer support fails to serve a user request
+
+55
+00:05:09.839 --> 00:05:15.200
+most of the time, or if it provides refunds to customers that aren't actually eligible,
+
+56
+00:05:15.200 --> 00:05:19.920
+then it's not going to be very useful for a company. So a big focus on this course is how
+
+57
+00:05:19.920 --> 00:05:25.200
+you can design the system so they provide high quality outputs. And we're going to go into that
+
+58
+00:05:25.200 --> 00:05:30.959
+pretty soon. As you work with AI agents more and more, you will notice that not all use cases are
+
+59
+00:05:30.959 --> 00:05:36.640
+created equal. And some use cases are better for agents than others. Let's go on our next video
+
+60
+00:05:36.640 --> 00:05:42.559
+where you see how to figure out the best use cases for AI agents. You don't want to miss that one.
+
+61
+00:05:42.559 --> 00:05:44.239
+So I'll see you right there.

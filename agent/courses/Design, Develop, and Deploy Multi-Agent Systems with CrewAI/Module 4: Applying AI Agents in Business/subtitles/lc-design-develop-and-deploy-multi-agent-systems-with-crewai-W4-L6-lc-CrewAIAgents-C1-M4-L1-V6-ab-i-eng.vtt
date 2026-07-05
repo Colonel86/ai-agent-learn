@@ -1,0 +1,962 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.428 --> 00:00:03.559
+Next up, you're going to hear about ABInBev.
+
+2
+00:00:03.559 --> 00:00:08.800
+They own over 500 iconic brands across the globe.
+
+3
+00:00:08.800 --> 00:00:15.039
+They are the world's largest beverage company, and they're using CrewAI for multi-agent systems
+
+4
+00:00:15.039 --> 00:00:21.799
+across their entire business, from their commercial digital platform, all the way to automating
+
+5
+00:00:21.799 --> 00:00:23.959
+back-office use cases.
+
+6
+00:00:23.959 --> 00:00:29.920
+They're a massive company with a lot of potential for using AI agents, and a huge partner of
+
+7
+00:00:29.920 --> 00:00:35.479
+us in this journey to reinvent the workforce by using AI agents, and you're going to hear
+
+8
+00:00:35.479 --> 00:00:36.959
+from them next.
+
+9
+00:00:36.959 --> 00:00:38.360
+So let's jump into that one.
+
+10
+00:00:38.360 --> 00:00:39.360
+Hey there, Daniel.
+
+11
+00:00:39.360 --> 00:00:41.639
+Thank you so much for coming in today.
+
+12
+00:00:41.639 --> 00:00:42.639
+I'm very excited.
+
+13
+00:00:42.639 --> 00:00:47.040
+I mean, people have been hearing me talking about agents and just learning all the things,
+
+14
+00:00:47.040 --> 00:00:50.720
+the ins and outs, and how to view them, how to test them, and everything in between.
+
+15
+00:00:50.720 --> 00:00:55.279
+And the reason I'm so excited to have you specifically on this is because you're on
+
+16
+00:00:55.279 --> 00:00:56.279
+the other side.
+
+17
+00:00:56.279 --> 00:00:58.200
+You're one of the companies that are building.
+
+18
+00:00:58.200 --> 00:01:04.000
+When you folks decided to explore AI agents, what were some of the main challenges that
+
+19
+00:01:04.000 --> 00:01:05.000
+kind of led to that?
+
+20
+00:01:05.000 --> 00:01:09.239
+What made you think about, well, maybe we should do AI agents?
+
+21
+00:01:09.239 --> 00:01:14.400
+Super happy to be here with you today because, you know, we are big fans of CrewAI, and
+
+22
+00:01:14.400 --> 00:01:19.120
+CrewAI has been our big partners in this journey since the beginning.
+
+23
+00:01:19.120 --> 00:01:25.599
+I think just to start, João, so we started using CrewAI first with the open source version,
+
+24
+00:01:25.599 --> 00:01:28.599
+and I think there's an important caveat here.
+
+25
+00:01:28.599 --> 00:01:34.160
+CrewAI actually helped us on building our strategy for agents because at the beginning,
+
+26
+00:01:34.160 --> 00:01:39.879
+we were like more trying to understand and to learn how it's going to be now the processes,
+
+27
+00:01:39.879 --> 00:01:42.639
+agentic oriented, I would say, right?
+
+28
+00:01:42.639 --> 00:01:48.519
+And this concept of the crews and the flows was something that helped us a lot and actually
+
+29
+00:01:48.519 --> 00:01:53.680
+create an internal framework that now is helping us on mapping the processes, which brings
+
+30
+00:01:53.680 --> 00:01:55.279
+me to the answer of your question.
+
+31
+00:01:55.959 --> 00:02:01.120
+I think the processes are the biggest challenge that we have on how can we actually get the
+
+32
+00:02:01.120 --> 00:02:07.519
+process mapped on a way that we can translate into, first, what are the actions that must
+
+33
+00:02:07.519 --> 00:02:08.520
+be taken?
+
+34
+00:02:08.520 --> 00:02:12.320
+And then what are the agents that we need to create and what are the tools that those
+
+35
+00:02:12.320 --> 00:02:15.279
+agents must use to take those actions?
+
+36
+00:02:15.279 --> 00:02:23.639
+So far, I think this shift on translating our processes into this view of crews, flows,
+
+37
+00:02:23.639 --> 00:02:28.919
+workflows has been something that has been very helpful for us so far.
+
+38
+00:02:28.919 --> 00:02:32.960
+And I know that you folks already have some use cases live and have even bigger things
+
+39
+00:02:32.960 --> 00:02:34.520
+planned for the future.
+
+40
+00:02:34.520 --> 00:02:38.559
+What are some of the early impacts that you're seeing on deploying these agents?
+
+41
+00:02:38.559 --> 00:02:43.520
+Yes, I think first, the productivity on developing the agents.
+
+42
+00:02:43.520 --> 00:02:48.679
+At the beginning, to be honest, I think we struggled, but because of the lack of knowledge
+
+43
+00:02:48.679 --> 00:02:50.279
+of our teams, right?
+
+44
+00:02:50.279 --> 00:02:55.080
+So I think at the beginning, we were struggling on how to build the agents, what is the best
+
+45
+00:02:55.080 --> 00:03:01.479
+way to build the architecture for the agents, and also integrating into our systems.
+
+46
+00:03:01.479 --> 00:03:07.279
+Because one thing that was super important for us was to not create new systems, right?
+
+47
+00:03:07.279 --> 00:03:13.479
+So we really wanted to embed the agents into the existing ones, because then we can actually
+
+48
+00:03:13.479 --> 00:03:17.440
+transform and get the efficiencies into the processes.
+
+49
+00:03:17.440 --> 00:03:22.559
+So I think from the technical perspective, we had a lot of productivity gains in terms
+
+50
+00:03:22.559 --> 00:03:24.639
+of overtime, right?
+
+51
+00:03:24.639 --> 00:03:30.639
+Because when we got proficiency on building the agents using CrewAI, then it's been fast,
+
+52
+00:03:30.639 --> 00:03:31.639
+man.
+
+53
+00:03:31.639 --> 00:03:37.020
+And after we got into the enterprise version and started to use the studio, even the business
+
+54
+00:03:37.020 --> 00:03:40.080
+folks have been using CrewAI now.
+
+55
+00:03:40.080 --> 00:03:44.880
+And man, to be honest, my life has been turned into a crew life here, right?
+
+56
+00:03:44.880 --> 00:03:50.600
+Because as everyone is using CrewAI, not only the tech folks, but also the business
+
+57
+00:03:50.600 --> 00:03:55.679
+folks, at the end of the day, this is very good for us because we believe in creating
+
+58
+00:03:55.679 --> 00:03:57.300
+this network, right?
+
+59
+00:03:57.300 --> 00:04:02.199
+So if we can create an agent and then this agent can be replicated, we use it across
+
+60
+00:04:02.199 --> 00:04:07.919
+the functions, across the internal teams, and also between businesses and tech teams,
+
+61
+00:04:07.919 --> 00:04:09.860
+then we can achieve productivity, right?
+
+62
+00:04:09.860 --> 00:04:13.800
+So this is something that has been very, very powerful for us.
+
+63
+00:04:13.800 --> 00:04:17.839
+So what you're saying is like, I want to embed these agents into existing systems so
+
+64
+00:04:17.839 --> 00:04:19.380
+it's easy for me to distribute.
+
+65
+00:04:19.380 --> 00:04:21.799
+So people already are using and they don't even notice.
+
+66
+00:04:21.799 --> 00:04:23.200
+It just gets better.
+
+67
+00:04:23.200 --> 00:04:25.660
+And by doing that, it makes it easier for them to adopt.
+
+68
+00:04:25.660 --> 00:04:26.660
+And that's one part.
+
+69
+00:04:26.660 --> 00:04:30.600
+But the other part that you mentioned is this idea of like, well, we need to have this repository,
+
+70
+00:04:30.600 --> 00:04:31.600
+right?
+
+71
+00:04:31.600 --> 00:04:33.399
+We want to make sure they're not doing the same things twice.
+
+72
+00:04:33.399 --> 00:04:37.959
+We want to do once and then roll it out globally, make sure that we're using across all the
+
+73
+00:04:37.959 --> 00:04:39.299
+different units.
+
+74
+00:04:39.299 --> 00:04:42.760
+That is a very interesting take, and I'm glad to hear that we're helping with that.
+
+75
+00:04:42.760 --> 00:04:44.040
+Now let's talk about the challenges.
+
+76
+00:04:44.040 --> 00:04:45.040
+What do you think?
+
+77
+00:04:45.040 --> 00:04:48.359
+You mentioned like getting the team educated was a challenge at first.
+
+78
+00:04:48.359 --> 00:04:51.880
+Is there anything else that comes at point and how did you fix that?
+
+79
+00:04:51.880 --> 00:04:52.880
+Yes.
+
+80
+00:04:52.880 --> 00:04:57.799
+Getting the team up to speed was a big challenge for us, and I'd like to highlight here the
+
+81
+00:04:57.799 --> 00:05:00.760
+way that we have been, because it's already ongoing, right?
+
+82
+00:05:00.760 --> 00:05:05.079
+The way that we have been doing the workshops and the training sessions across the globe.
+
+83
+00:05:05.079 --> 00:05:09.679
+And for us, this is something that is actually big, because we're talking more or less about
+
+84
+00:05:09.679 --> 00:05:12.799
+40 countries, right, that we are expanding.
+
+85
+00:05:12.799 --> 00:05:18.640
+So for those who doesn't know, ABInBev, we have around six zones, which is our compositions
+
+86
+00:05:18.640 --> 00:05:19.640
+of countries.
+
+87
+00:05:19.640 --> 00:05:25.839
+Out of the six zones, I think now we have three to four already using CrewAI and expanding.
+
+88
+00:05:25.839 --> 00:05:30.679
+We're going to reach all the six zones using CrewAI by the mid next year.
+
+89
+00:05:30.679 --> 00:05:34.160
+But one of the biggest challenges were to scale, right?
+
+90
+00:05:34.160 --> 00:05:39.239
+Because then when we got CrewAI up and running, then we need to train the teams.
+
+91
+00:05:39.239 --> 00:05:42.519
+I used to call this internally as our pre-season.
+
+92
+00:05:42.519 --> 00:05:47.720
+We need to run the pre-season with the team first, then we go to the tournament, right?
+
+93
+00:05:47.720 --> 00:05:52.559
+So that's more or less the framework that we created, partnering with you guys.
+
+94
+00:05:52.559 --> 00:05:59.239
+We created internal training sessions, training our teams in our internal platforms and tools
+
+95
+00:05:59.239 --> 00:06:01.519
+right after that on CrewAI.
+
+96
+00:06:01.519 --> 00:06:05.880
+Speaking about the technical challenges, I think scale is the biggest challenge, man,
+
+97
+00:06:05.880 --> 00:06:10.040
+especially for us because we are so fragmented across the globe.
+
+98
+00:06:10.040 --> 00:06:16.119
+But on the flip side, the challenge, the use cases are almost the same thing across the
+
+99
+00:06:16.119 --> 00:06:17.119
+globe.
+
+100
+00:06:17.119 --> 00:06:22.720
+Because if you talk about supply chain or even procurement or logistics, the challenges
+
+101
+00:06:22.720 --> 00:06:24.440
+are more or less the same thing.
+
+102
+00:06:24.440 --> 00:06:27.799
+Because at the end of the day, we have different systems across the globe.
+
+103
+00:06:27.799 --> 00:06:32.119
+So this is also another big challenge for us.
+
+104
+00:06:32.119 --> 00:06:37.040
+Because if we think on ERPs, internal systems, even payroll, right, which is something that
+
+105
+00:06:37.040 --> 00:06:44.200
+has been building agents to automate a lot of our tasks, man, we have at least more than
+
+106
+00:06:44.200 --> 00:06:47.320
+15 different payroll systems across the globe.
+
+107
+00:06:47.320 --> 00:06:52.600
+So this is a big challenge because we can replicate the template of the agent, I would
+
+108
+00:06:52.600 --> 00:06:53.600
+say, right?
+
+109
+00:06:53.600 --> 00:06:55.880
+Internally, we have been calling those agent templates.
+
+110
+00:06:55.880 --> 00:06:58.279
+But we can replicate the template.
+
+111
+00:06:58.279 --> 00:07:03.119
+But at the end of the day, we have something that are specific per country, right?
+
+112
+00:07:03.119 --> 00:07:09.160
+So this is a big challenge because when you talk about, for example, MCP or connection
+
+113
+00:07:09.160 --> 00:07:14.279
+with tools, so we can't just build one MCP server that's going to cover everything in
+
+114
+00:07:14.279 --> 00:07:16.480
+the payroll domain, right?
+
+115
+00:07:16.480 --> 00:07:20.880
+So we need to build some things that can be scaled across the globe.
+
+116
+00:07:20.880 --> 00:07:24.399
+This is a huge and massive engineering work.
+
+117
+00:07:24.399 --> 00:07:30.440
+But also if, as we are leveraging crew and having the same agentic framework being used
+
+118
+00:07:30.440 --> 00:07:36.519
+by the whole company, then it's much easier for us to scale the agents across the globe.
+
+119
+00:07:36.519 --> 00:07:39.660
+But this is something that has been very good for us, right?
+
+120
+00:07:39.660 --> 00:07:42.160
+But it wasn't our first catch, right?
+
+121
+00:07:42.160 --> 00:07:45.200
+So it came with the mistakes that we made at beginning.
+
+122
+00:07:45.200 --> 00:07:47.640
+So far now, I think we found a path.
+
+123
+00:07:47.640 --> 00:07:51.540
+Like a lot of these companies, they're trying to get efficiency gains.
+
+124
+00:07:51.540 --> 00:07:55.059
+And the way that you get efficiency gains is like how you manage to train your team
+
+125
+00:07:55.059 --> 00:07:59.019
+at scale to start using and deploying and building this.
+
+126
+00:07:59.019 --> 00:08:00.579
+That is a very interesting take.
+
+127
+00:08:00.579 --> 00:08:03.500
+And you mentioned about CPG as an industry.
+
+128
+00:08:03.500 --> 00:08:08.540
+To talk more about that, it seems that across the entire different sectors and business
+
+129
+00:08:08.540 --> 00:08:11.540
+units, there's a lot of commonalities going on.
+
+130
+00:08:11.540 --> 00:08:16.980
+What do you think are some of like the critical considerations for these companies on CPG
+
+131
+00:08:16.980 --> 00:08:21.779
+that are trying to understand how to apply AI agents into their day-to-day?
+
+132
+00:08:21.779 --> 00:08:26.220
+One of our biggest learnings is to go deep, right?
+
+133
+00:08:26.220 --> 00:08:28.980
+Try not to go so wide and go deep.
+
+134
+00:08:28.980 --> 00:08:33.940
+I would say, for example, that we defined a few priorities in terms of processes that
+
+135
+00:08:33.940 --> 00:08:35.460
+we may want to transform.
+
+136
+00:08:35.460 --> 00:08:41.460
+Because when you talk about CPGs companies, usually you are talking about big operations,
+
+137
+00:08:41.460 --> 00:08:42.460
+right?
+
+138
+00:08:42.460 --> 00:08:49.739
+Heavy operations, logistics, distribution centers, in our case breweries, huge sales
+
+139
+00:08:49.739 --> 00:08:50.739
+operations.
+
+140
+00:08:50.739 --> 00:08:53.539
+So we have people spread across the globe.
+
+141
+00:08:53.539 --> 00:08:58.380
+So it's very difficult when you think on how can we transform the processes so far.
+
+142
+00:08:58.380 --> 00:09:02.979
+Of course, we have business services centers, which makes our lives much easier when we
+
+143
+00:09:02.979 --> 00:09:06.219
+want, for example, to focus in a few streams.
+
+144
+00:09:06.219 --> 00:09:11.820
+But at the end of the day, taking a decision on going deeper, deep in one process, it's
+
+145
+00:09:11.820 --> 00:09:13.940
+been a big difference for us.
+
+146
+00:09:13.940 --> 00:09:19.979
+So in our case, we try to tackle the ones that we have a certain level of knowledge
+
+147
+00:09:19.979 --> 00:09:24.460
+and we can actually map the process end-to-end.
+
+148
+00:09:24.460 --> 00:09:30.080
+After that, we evaluate, for example, the maturity level of the technology, right?
+
+149
+00:09:30.080 --> 00:09:35.780
+So for example, if you don't have digitalized systems in this stream, people are using Excel,
+
+150
+00:09:35.780 --> 00:09:36.780
+I would say, right?
+
+151
+00:09:36.780 --> 00:09:40.900
+Which is pretty common across all the companies in the globe.
+
+152
+00:09:40.979 --> 00:09:46.380
+And it's going to be slightly different from actually integrating the agents into existing
+
+153
+00:09:46.380 --> 00:09:47.380
+systems.
+
+154
+00:09:47.380 --> 00:09:53.020
+So different discussion, different tech approach, different way on mapping the process.
+
+155
+00:09:53.020 --> 00:09:57.940
+So we consider a few factors on evaluating on how to scale.
+
+156
+00:09:57.940 --> 00:10:03.820
+But at this moment, we prioritize more things that we can control internally.
+
+157
+00:10:03.820 --> 00:10:11.580
+I would say, for example, functions like legal, finance, not so much sales, but things
+
+158
+00:10:11.580 --> 00:10:17.179
+that we can actually control end-to-end, different from sales distribution.
+
+159
+00:10:17.179 --> 00:10:22.179
+For example, that we depend on our partners in the field, which is going to be much more
+
+160
+00:10:22.179 --> 00:10:25.000
+complex to implement things in there.
+
+161
+00:10:25.000 --> 00:10:30.299
+But the functions that we have control end-to-end were our decision to get started.
+
+162
+00:10:30.299 --> 00:10:35.260
+I would say that in terms of the challenge, the technical challenge, because now we are
+
+163
+00:10:35.260 --> 00:10:41.539
+sharp on using CrewAI, I think the biggest challenge now is more on mapping the processes
+
+164
+00:10:41.539 --> 00:10:47.659
+and actually designing how it's going to be the agentic flow for those processes.
+
+165
+00:10:47.659 --> 00:10:54.179
+And on the flip side, to not actually try to create a lot of unnecessary complexity,
+
+166
+00:10:54.179 --> 00:10:55.179
+right?
+
+167
+00:10:55.179 --> 00:10:57.299
+Because sometimes this happens, you know, right?
+
+168
+00:10:57.299 --> 00:11:02.460
+So the engineers got excited with the technology and they tried to create things that are not
+
+169
+00:11:02.460 --> 00:11:04.260
+actually needed.
+
+170
+00:11:04.260 --> 00:11:09.859
+You go into any company, as you said, they will have some similar pieces on the stack, right?
+
+171
+00:11:09.859 --> 00:11:14.380
+There's always like a data management, and then you also have ERPs, CRMs, you need to
+
+172
+00:11:14.380 --> 00:11:16.020
+integrate with all of those.
+
+173
+00:11:16.020 --> 00:11:19.979
+How you're thinking about that and navigating that, because I know that's something that
+
+174
+00:11:19.979 --> 00:11:23.380
+every company is thinking, especially when they're considering other options.
+
+175
+00:11:23.619 --> 00:11:28.580
+Yeah, this is very challenging because in our case, we, for example, are parallel running
+
+176
+00:11:28.580 --> 00:11:33.619
+big programs for digitalizing some processes, right?
+
+177
+00:11:33.619 --> 00:11:37.380
+So everything is different when you look across the globe.
+
+178
+00:11:37.380 --> 00:11:42.780
+So that's why I think the agents can play a big role, because I think if you compare
+
+179
+00:11:42.780 --> 00:11:49.219
+to the past, where I think almost 15 years ago, when we got the API gateways, right?
+
+180
+00:11:49.219 --> 00:11:54.659
+So all of the companies that have been trying to start their digital transformation journey,
+
+181
+00:11:54.659 --> 00:11:58.059
+the API gateways played a key role, right?
+
+182
+00:11:58.059 --> 00:12:03.500
+Because you have a big legacy here, but in a way you must deal with this legacy, but
+
+183
+00:12:03.500 --> 00:12:07.539
+you need to actually to build the progress, you need to build the future, right?
+
+184
+00:12:07.539 --> 00:12:11.619
+So I can compare now the agents that we are building.
+
+185
+00:12:11.619 --> 00:12:18.340
+So this whole agentic strategy powered by, in our case, CrewAI plus our internal tools,
+
+186
+00:12:18.340 --> 00:12:22.580
+but also with this new flow with the API gateways in the past, right?
+
+187
+00:12:22.580 --> 00:12:29.020
+I think it's more or less the similar situation, but right now we have GenAI, right?
+
+188
+00:12:29.020 --> 00:12:38.020
+So we have the LLMs powering this process, which man, makes us 10, 12, 50 times more
+
+189
+00:12:38.020 --> 00:12:39.659
+productive than in the past.
+
+190
+00:12:39.659 --> 00:12:40.659
+I love that.
+
+191
+00:12:40.659 --> 00:12:42.059
+And yeah, I think you got something right.
+
+192
+00:12:42.059 --> 00:12:45.940
+That's absolutely correct, because what I have heard from other companies, right, is
+
+193
+00:12:45.940 --> 00:12:47.900
+they learn from their mistakes, right?
+
+194
+00:12:47.900 --> 00:12:51.099
+They have seen what works and that worked in the past, and they got burned in certain
+
+195
+00:12:51.099 --> 00:12:52.539
+movements that they did.
+
+196
+00:12:52.539 --> 00:12:55.979
+They got vendor locks in certain places, so they're being very mindful about it going
+
+197
+00:12:55.979 --> 00:13:00.979
+into this, knowing they want to move fast, they need to get results, they see the potential.
+
+198
+00:13:00.979 --> 00:13:04.340
+And for the ones that are getting use cases like that, like yourself, you're seeing the
+
+199
+00:13:04.340 --> 00:13:06.500
+results and you're doubling down, right?
+
+200
+00:13:06.500 --> 00:13:09.979
+But they also want to make sure that they want to keep things as flexible as they can,
+
+201
+00:13:09.979 --> 00:13:11.780
+because the market's moving so fast.
+
+202
+00:13:11.780 --> 00:13:15.380
+A new model comes up, you want to be able to use that on your use cases.
+
+203
+00:13:15.380 --> 00:13:17.739
+A new offering comes up, you need to be able to integrate it.
+
+204
+00:13:17.739 --> 00:13:19.179
+There's a lot going on.
+
+205
+00:13:19.179 --> 00:13:22.340
+I really appreciate you having the time to share and talking with us today.
+
+206
+00:13:22.340 --> 00:13:27.299
+I know that you're super busy, like changing ABInBev from within, and that's exciting.
+
+207
+00:13:27.299 --> 00:13:30.460
+I don't know if you have any parting thoughts or anything that you want to tell for the
+
+208
+00:13:30.460 --> 00:13:34.619
+students that have been tagging along up to this point, but I do want to thank you for
+
+209
+00:13:34.619 --> 00:13:35.619
+making yourself available.
+
+210
+00:13:35.619 --> 00:13:36.619
+No, man.
+
+211
+00:13:36.619 --> 00:13:37.979
+Thank you for inviting me.
+
+212
+00:13:37.979 --> 00:13:42.780
+I think that's important to spend this time spreading the word, right?
+
+213
+00:13:42.780 --> 00:13:44.419
+I think it's super important.
+
+214
+00:13:44.419 --> 00:13:50.219
+As a final thought, João, I think one of the biggest learnings for us was exactly,
+
+215
+00:13:50.219 --> 00:13:52.340
+and I think it connects to the course, right?
+
+216
+00:13:52.340 --> 00:13:55.659
+So do a good pre-season, right?
+
+217
+00:13:55.659 --> 00:13:57.780
+So it made a big difference for us.
+
+218
+00:13:57.780 --> 00:14:02.539
+That's why I believe this course is going to be very helpful for everyone which is considering
+
+219
+00:14:02.539 --> 00:14:04.179
+using CrewAI.
+
+220
+00:14:04.179 --> 00:14:11.539
+And my last takeaway is right now, with so many things coming up in the AI space, in
+
+221
+00:14:11.539 --> 00:14:17.820
+the market, I think it's good for us, people that are taking the technical decisions with
+
+222
+00:14:17.820 --> 00:14:24.020
+the companies, to double down with some technologies and actually to make sure that we can build
+
+223
+00:14:24.020 --> 00:14:25.940
+some things that can scale.
+
+224
+00:14:25.940 --> 00:14:32.659
+And for that, I think the way that you guys designed the whole framework, man, it's very
+
+225
+00:14:32.659 --> 00:14:33.780
+powerful, right?
+
+226
+00:14:33.780 --> 00:14:40.979
+So first, let's do a good precision, and second, let's double down at least in one good technology
+
+227
+00:14:40.979 --> 00:14:44.059
+that connects into our ecosystem.
+
+228
+00:14:44.059 --> 00:14:46.260
+Because of that, we can make things scale.
+
+229
+00:14:46.260 --> 00:14:49.619
+So those were my takeaways for this conversation.
+
+230
+00:14:49.619 --> 00:14:50.619
+Great advice.
+
+231
+00:14:50.619 --> 00:14:52.099
+You did a killer pre-season.
+
+232
+00:14:52.099 --> 00:14:54.020
+I love the games that are going on.
+
+233
+00:14:54.020 --> 00:14:55.780
+I'm excited for the Super Bowl.
+
+234
+00:14:55.780 --> 00:14:56.780
+That's it.
+
+235
+00:14:56.780 --> 00:14:57.780
+That's what I want to see.
+
+236
+00:14:57.780 --> 00:14:58.780
+Thank you so much, Daniel.
+
+237
+00:14:58.780 --> 00:14:59.780
+I really appreciate the time.
+
+238
+00:14:59.780 --> 00:15:00.780
+This was amazing.
+
+239
+00:15:00.780 --> 00:15:01.780
+Thank you so much.
+
+240
+00:15:01.780 --> 00:15:03.140
+Thank you, João.

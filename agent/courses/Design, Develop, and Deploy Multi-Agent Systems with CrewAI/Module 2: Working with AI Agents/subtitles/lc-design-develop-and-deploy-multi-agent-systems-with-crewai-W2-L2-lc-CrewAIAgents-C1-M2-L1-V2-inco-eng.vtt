@@ -1,0 +1,335 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.738 --> 00:00:04.559
+There's so many things that make these AI agents a truly incredible technology,
+
+2
+00:00:04.559 --> 00:00:09.680
+but one of those is the ability for them to self-heal and to get better over time.
+
+3
+00:00:09.680 --> 00:00:14.560
+What means that these agents need to have memory? They need to learn what they're doing right,
+
+4
+00:00:14.560 --> 00:00:17.920
+what they're doing wrong, what they should do different in the future.
+
+5
+00:00:17.920 --> 00:00:22.239
+So in this lesson, we're going to talk about everything related to memory,
+
+6
+00:00:22.239 --> 00:00:27.040
+how they share knowledge with each other, what are the different places that memory can come from.
+
+7
+00:00:27.120 --> 00:00:30.159
+It's going to be a very exciting lesson. It's going to unlock a lot of potential
+
+8
+00:00:30.159 --> 00:00:33.200
+for your own use cases. So let's dive right in.
+
+9
+00:00:33.200 --> 00:00:37.360
+In CrewAI and most agent implementations, you will find a few different types of memory.
+
+10
+00:00:37.360 --> 00:00:41.599
+But in CrewAI, there's three specific types of memory that are super important.
+
+11
+00:00:41.599 --> 00:00:45.040
+Short-term memory, long-term memory, and entity memory.
+
+12
+00:00:45.040 --> 00:00:51.040
+Short-term memory is meant to help agents exchange information beyond the added context.
+
+13
+00:00:51.040 --> 00:00:55.360
+And what that means is that agents, as they go through their tasks and actions,
+
+14
+00:00:55.360 --> 00:00:59.119
+they will write in that memory and allow other agents to read off that.
+
+15
+00:00:59.759 --> 00:01:04.160
+Long-term memory, on the other side, is meant to help these agents self-reflect
+
+16
+00:01:04.160 --> 00:01:09.199
+to understand the ways for improving over time. So as these agents get done with their tasks,
+
+17
+00:01:09.199 --> 00:01:13.120
+they will compare the actual output with the expected output,
+
+18
+00:01:13.120 --> 00:01:19.279
+extract learnings, and store data for later usage. So when they run the same tasks again,
+
+19
+00:01:19.279 --> 00:01:23.519
+they can understand what are the things that they did well and they could do more of,
+
+20
+00:01:23.519 --> 00:01:28.639
+or things that they should do less of. And you also have entity memory that helps
+
+21
+00:01:28.639 --> 00:01:34.800
+these agents remember things, recognizable companies, products, processes, and etc.,
+
+22
+00:01:34.800 --> 00:01:39.120
+along with their descriptions. An example of what an entity memory
+
+23
+00:01:39.120 --> 00:01:45.199
+might be encompassed of is this idea of persons, organizations, and locations.
+
+24
+00:01:45.199 --> 00:01:50.879
+So it starts to learn all these different things and store them so it doesn't need to infer or
+
+25
+00:01:50.879 --> 00:01:55.839
+learn what they are later down the road. If you want to enable memory for your agents,
+
+26
+00:01:55.839 --> 00:02:00.559
+all you've got to do is turn one flag on, and that is the memory flag, to true
+
+27
+00:02:00.559 --> 00:02:06.480
+under your crew instance. And that will allow all your agents to start to use these memories.
+
+28
+00:02:06.480 --> 00:02:12.399
+And the way that it works is that if we go back into our ReAct loop, you can actually see that
+
+29
+00:02:12.399 --> 00:02:18.800
+now all those three different databases for long, short, and entity memory are going to be feeding
+
+30
+00:02:18.800 --> 00:02:25.600
+information into the thought process so that the agents know more about not only what can do better,
+
+31
+00:02:25.600 --> 00:02:29.759
+but the things that it's talking about and things that other agents might be doing.
+
+32
+00:02:29.759 --> 00:02:35.759
+And then once the agent's done with the answer, a new step's added at the end that basically
+
+33
+00:02:35.759 --> 00:02:42.080
+add the reflections that can inject memory back into those databases that are going to be used
+
+34
+00:02:42.080 --> 00:02:47.839
+later. Not only that, but you also have a way to generate memories for the agents
+
+35
+00:02:47.839 --> 00:02:53.600
+yourself. And the way that you can do it is by using CrewAI training. And CrewAI training
+
+36
+00:02:53.600 --> 00:02:58.639
+is something that you run in our terminal that will, at the end of the execution, prompt you
+
+37
+00:02:58.639 --> 00:03:04.399
+to give the agent feedback. And that feedback will be used then to generate memories that are
+
+38
+00:03:04.399 --> 00:03:10.000
+going to be injected back into those databases. And now that will again be injected back into
+
+39
+00:03:10.000 --> 00:03:15.360
+the thought process as this agent runs in the future. So in the end of the day, the cool thing about
+
+40
+00:03:15.360 --> 00:03:22.399
+memory is that there's two types or two ways of you generating them. One is by just going through
+
+41
+00:03:22.399 --> 00:03:28.720
+the motions of executions and that getting injected into those memory databases. And the other one is
+
+42
+00:03:28.720 --> 00:03:34.000
+training with the human feedback, where you are providing clear guidance on what are the things
+
+43
+00:03:34.000 --> 00:03:38.320
+that the agents are doing right and what are the things that agents are doing wrong. And that is
+
+44
+00:03:38.320 --> 00:03:43.199
+then generating memories. At some point, especially as you play around with memories, you might find
+
+45
+00:03:43.199 --> 00:03:48.320
+yourself trying to understand how you reset those memories. Well, the good thing is all you got to
+
+46
+00:03:48.320 --> 00:03:53.839
+do is run this one single command called CrewAI reset memories, and that will automatically clear
+
+47
+00:03:53.839 --> 00:03:59.039
+them up for you. And you can start recreating them from the get go, either by executing these agents
+
+48
+00:03:59.039 --> 00:04:04.800
+or providing them with feedback. Now, whether you're generating memories or training with feedback,
+
+49
+00:04:04.800 --> 00:04:11.199
+the additional context can have measurable impact into the agent performance because it's going to
+
+50
+00:04:11.199 --> 00:04:17.920
+help controlling things like behavior or format or style. So if during a feedback session you tell
+
+51
+00:04:17.920 --> 00:04:22.880
+your agents that you want the answers to always be markdown, it's actually going to create a
+
+52
+00:04:22.880 --> 00:04:28.320
+memory about that. And now that instruction is going to be automatically added to every agent
+
+53
+00:04:28.320 --> 00:04:35.679
+execution in that way, forcing a specific format. Or if you want it to be super funny about it,
+
+54
+00:04:35.679 --> 00:04:41.200
+that will create a memory that will then be injected, forcing a specific style. So you can
+
+55
+00:04:41.200 --> 00:04:48.079
+see here how memory can actually be a very strong and important way for you to control more about
+
+56
+00:04:48.079 --> 00:04:53.760
+how your agents work and how they get work done. Now, memory is not the only way for you controlling
+
+57
+00:04:53.760 --> 00:04:59.760
+your agents. With memory, you understand that the data gets selectively added to the context during
+
+58
+00:04:59.760 --> 00:05:05.839
+the runtime, and it gets updated by either human feedback or by having an internal LLM as a judge.
+
+59
+00:05:06.399 --> 00:05:12.559
+And then you have knowledge. And knowledge is data that also gets selectively added,
+
+60
+00:05:12.559 --> 00:05:18.799
+but it's pre-added to your agent. What it means is that that is not dynamically generated.
+
+61
+00:05:18.799 --> 00:05:24.799
+So if you have a specific source of data, something that you want your agent to be aware of
+
+62
+00:05:24.799 --> 00:05:30.320
+as it goes about running these tasks, you can preload that knowledge into the agent,
+
+63
+00:05:30.320 --> 00:05:34.640
+and that will be selectively used as the agent goes through the execution.
+
+64
+00:05:35.200 --> 00:05:42.799
+So these sources of knowledge can be, for example, text files, either raw text or PDF documents,
+
+65
+00:05:42.799 --> 00:05:48.959
+or might also be structured data like CSV files or Excel spreadsheets or even JSON documents.
+
+66
+00:05:49.519 --> 00:05:53.839
+In the end of the day, feeding this data into your agents is extremely easy.
+
+67
+00:05:53.839 --> 00:05:59.760
+All you got to do is load this content, and then depending on the sort of knowledge, the sort of
+
+68
+00:05:59.760 --> 00:06:04.959
+type you have for knowledge, you will use different classes to embed that into your agent.
+
+69
+00:06:05.519 --> 00:06:10.880
+And from that point on, you can now make sure that your agent has those sources within it,
+
+70
+00:06:11.440 --> 00:06:17.760
+meaning that during the ReAct loop, the agent now will be able to grab selective pieces of
+
+71
+00:06:17.760 --> 00:06:21.839
+information out of that knowledge in order to give you a proper answer.
+
+72
+00:06:21.839 --> 00:06:27.440
+And that is an extremely helpful way for you to include extra information into your agent
+
+73
+00:06:27.440 --> 00:06:33.359
+that you want to make sure that is persisted throughout any execution that it does in the future.
+
+74
+00:06:33.359 --> 00:06:38.640
+So again, knowledge is a different kind of memory. It's kind of like a special kind of memory
+
+75
+00:06:38.640 --> 00:06:44.079
+that is basically being fed directly by you, the user. And the idea is that between memory
+
+76
+00:06:44.079 --> 00:06:48.720
+and knowledge, it gives you a way to control these agents to enforce certain patterns.
+
+77
+00:06:48.720 --> 00:06:53.119
+And you can do this either by having them improve themselves over time or by you giving
+
+78
+00:06:53.119 --> 00:06:59.359
+feedback to them or providing and pre-feeding them with this knowledge prior executions.
+
+79
+00:06:59.359 --> 00:07:03.200
+All those options work. Now, memory is extremely interesting,
+
+80
+00:07:03.200 --> 00:07:07.119
+but I'm very interested in what we're going to talk about in the next lesson,
+
+81
+00:07:07.119 --> 00:07:12.559
+and that is guardrails. Guardrails give you the possibility to do more deterministic controls
+
+82
+00:07:12.559 --> 00:07:18.079
+than memory and knowledge. So I'm very excited about this. We're going to dive into guardrails,
+
+83
+00:07:18.079 --> 00:07:22.480
+how they work and how they can help you. So I'm going to see you in there in a second.
+

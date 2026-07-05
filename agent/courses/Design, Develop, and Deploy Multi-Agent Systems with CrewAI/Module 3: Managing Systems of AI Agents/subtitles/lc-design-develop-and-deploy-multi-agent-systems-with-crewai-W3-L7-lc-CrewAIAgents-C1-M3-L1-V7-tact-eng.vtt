@@ -1,0 +1,614 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.795 --> 00:00:04.719
+You have learned so much through this course. I bet you're probably excited to get all these
+
+2
+00:00:04.719 --> 00:00:10.960
+systems into production. But now I want to focus on all the things that goes into making sure that
+
+3
+00:00:10.960 --> 00:00:17.280
+these systems run in a reliable way. So this video is going to be packed with tips and tricks and
+
+4
+00:00:17.280 --> 00:00:22.319
+actually nailing down that reliability to make sure that your crew is running in the best possible
+
+5
+00:00:22.319 --> 00:00:27.920
+quality, from testing to training to code execution to reasoning agents and so much more.
+
+6
+00:00:27.920 --> 00:00:32.959
+And here's where we started talking about reliability and repeatability. And this is
+
+7
+00:00:32.959 --> 00:00:38.799
+everything in production. So let's talk about tactics for getting your agents into production.
+
+8
+00:00:38.799 --> 00:00:43.279
+So by now, if you have followed the lessons in the Jupyter Notebooks, you should be super
+
+9
+00:00:43.279 --> 00:00:48.319
+comfortable building agents. And you can create them in Jupyter Notebooks, through a CLI in your
+
+10
+00:00:48.319 --> 00:00:54.000
+computer, or even using the CrewAI platform with Crew Studio. But the question here is whether you
+
+11
+00:00:54.000 --> 00:01:02.880
+can run them reliably. How consistently they produce good results of 100 runs. And more
+
+12
+00:01:02.880 --> 00:01:09.839
+important, in the end, it's all about trust. Can you trust these agents? Can you confidently
+
+13
+00:01:09.839 --> 00:01:15.040
+build and deploy these agents into production, knowing that they're going to work? And if you
+
+14
+00:01:15.040 --> 00:01:20.239
+don't, well, then you have a problem. But we want to make sure that we fix that. So how you build
+
+15
+00:01:20.239 --> 00:01:24.879
+agents that you trust? If you really want to get into a position where you can trust it, and where
+
+16
+00:01:24.879 --> 00:01:30.239
+you can stand by its results, that's where a lot of the things that we talked about early on, come
+
+17
+00:01:30.239 --> 00:01:37.040
+together at one. The ability for you to bring some deterministic controls to the agentic systems is
+
+18
+00:01:37.040 --> 00:01:42.480
+what is going to allow you to give them reliable, repeatable outcomes. And therefore, agents that
+
+19
+00:01:42.480 --> 00:01:47.919
+you can trust as well. Some of these controls you're already familiar with, for example,
+
+20
+00:01:47.919 --> 00:01:52.800
+flows that we just talked about a few lessons ago, that you can use to add an entire backbone
+
+21
+00:01:52.800 --> 00:01:57.839
+and structure for your agents. Or guardrails that we also talked about a few lessons ago,
+
+22
+00:01:57.839 --> 00:02:03.680
+so you can check specific outputs. And those two, we already have talked about very deeply.
+
+23
+00:02:04.239 --> 00:02:09.360
+So there's still a few others that we can use that we didn't touch, and that might be worth flagging.
+
+24
+00:02:09.360 --> 00:02:14.000
+For example, reasoning agents, where you force your agents to do a reasoning step,
+
+25
+00:02:14.000 --> 00:02:18.160
+where they think about the plan that they will follow once they actually start
+
+26
+00:02:18.160 --> 00:02:24.479
+doing the tasks. Or human-in-the-loop oversight, where you can ask your agents to check back with
+
+27
+00:02:24.479 --> 00:02:30.000
+you before they call the work done, so you can provide extra feedback to them in case they need
+
+28
+00:02:30.000 --> 00:02:36.240
+to do anything more. You also have testing, where you can compare many different LLMs to decide
+
+29
+00:02:36.240 --> 00:02:42.240
+what is the best LLM for you, in terms of quality and speed and everything in between.
+
+30
+00:02:42.240 --> 00:02:47.119
+And also training, where you want to make sure that you're trying to enforce a specific format
+
+31
+00:02:47.119 --> 00:02:53.279
+into your agent's behavior, so you train them to behave in a certain way by forcing memories into
+
+32
+00:02:53.279 --> 00:02:58.320
+them. And we're going to talk about that in a second. I also want to flag structured output
+
+33
+00:02:58.320 --> 00:03:04.720
+as a way to enforce a specific outcome, and safe code execution. Now, again, there's a lot
+
+34
+00:03:04.720 --> 00:03:08.639
+of things in here that we haven't talked about yet, and I want to make sure that we spend some
+
+35
+00:03:08.639 --> 00:03:14.080
+time with them. So let's kick things off with reasoning agents. How do you add reasoning for
+
+36
+00:03:14.080 --> 00:03:21.039
+your agents? Basically requiring them to do some pre-planning. All you got to do is turn one single
+
+37
+00:03:21.039 --> 00:03:26.479
+flag into your agent, and what the agent is going to do now is, before it takes an action, before it
+
+38
+00:03:26.479 --> 00:03:32.479
+tries to complete any task, it will actually think through the steps that it should take to get that
+
+39
+00:03:32.479 --> 00:03:38.800
+work done. So by doing that, it will draft and self-check a plan, and you can limit the number
+
+40
+00:03:38.800 --> 00:03:44.800
+of iterations in there, all the way to getting something satisfactory, so that it then proceeds
+
+41
+00:03:44.800 --> 00:03:50.720
+into actually performing the work, and following the plan that initially draft. So enabling this,
+
+42
+00:03:50.720 --> 00:03:55.679
+as you can see in here, is extremely easy. All you got to do is turning one flag, called reasoning,
+
+43
+00:03:55.679 --> 00:04:00.240
+to true, and then it will automatically turn it on the reasoning step for your agent,
+
+44
+00:04:00.240 --> 00:04:05.679
+but then you also can set the max reasoning attempts, that define how many times your
+
+45
+00:04:05.679 --> 00:04:11.279
+agents can try to create this plan before it actually kicks things off. So this is a very
+
+46
+00:04:11.279 --> 00:04:16.480
+easy way for you to guarantee that your agents are doing some extra thinking before it actually
+
+47
+00:04:16.480 --> 00:04:22.959
+gets the work done, and can lead to better outputs depending on their use case. Now let's talk about
+
+48
+00:04:22.959 --> 00:04:28.880
+human loop. We already talked about guardrails in the previous module, but I want to talk about the
+
+49
+00:04:28.880 --> 00:04:36.320
+ultimate guardrail. The ability to have a human, you, to basically verify and check and validate
+
+50
+00:04:36.320 --> 00:04:42.799
+if that output is actually good or bad, and give feedback to the agent in the process of doing so.
+
+51
+00:04:42.799 --> 00:04:47.760
+So the way that this works is like, as soon as an agent finishes a task, before it actually calls
+
+52
+00:04:47.760 --> 00:04:53.359
+the work done, it will ask you for an input, whether it's doing good or bad, and whether you
+
+53
+00:04:53.440 --> 00:04:59.279
+like the work that it has done. And you can provide this extra feedback, and based on this feedback,
+
+54
+00:04:59.279 --> 00:05:05.920
+it will then go back into doing the work again. So an example of what this will look like,
+
+55
+00:05:05.920 --> 00:05:10.720
+is that at the end of the execution, you're going to have a prompt like this in your terminal,
+
+56
+00:05:10.720 --> 00:05:16.320
+asking you to provide feedback, whether you can type something out, asking you to do more or less,
+
+57
+00:05:16.320 --> 00:05:21.600
+or you can just not type anything, and the agent will assume that everything is good to go.
+
+58
+00:05:21.600 --> 00:05:26.720
+But in this example, we can say, well, maybe it's returning a list of 10 things, but you actually
+
+59
+00:05:26.720 --> 00:05:33.040
+want 15 instead. You can literally type it out, let's do 15 items instead, and that will send
+
+60
+00:05:33.040 --> 00:05:37.920
+that information back to the agent, that is going to redo its work to make sure that it's fulfilling
+
+61
+00:05:37.920 --> 00:05:43.839
+your feedback, and asking you again to sanity check it before it's done. So you can see how
+
+62
+00:05:43.839 --> 00:05:50.000
+human the loop can be extremely helpful, especially if you want to guarantee a certain oversight of
+
+63
+00:05:50.000 --> 00:05:55.200
+this agent. And when you deploy these agents, especially if you're using CrewAI, this human
+
+64
+00:05:55.200 --> 00:06:01.760
+the loop logic actually becomes an API, and this API allows you to integrate this with external
+
+65
+00:06:01.760 --> 00:06:06.799
+systems that you might have. So you won't need to have people plugged into terminals, they can
+
+66
+00:06:06.799 --> 00:06:13.679
+actually be adding this feedback to Slack, or Teams, or any other communication patterns that you might
+
+67
+00:06:13.679 --> 00:06:20.799
+be using. Now, we also want to talk about how you train your crew. And training here means that
+
+68
+00:06:20.799 --> 00:06:26.320
+through an interactive process of giving them feedback, they're creating memories of the things
+
+69
+00:06:26.320 --> 00:06:31.359
+they're doing right, and the things they're doing wrong, they're going to be reused later throughout
+
+70
+00:06:31.359 --> 00:06:37.040
+all the executions to make sure that they follow that standard. This is extremely interesting. So
+
+71
+00:06:37.040 --> 00:06:42.880
+in training, just to recap what you saw in the first module of this course, these agents will run
+
+72
+00:06:42.880 --> 00:06:50.640
+as normal, but they will stop after its initial output to ask you for feedback. And when they do,
+
+73
+00:06:50.640 --> 00:06:56.559
+they will try to use that feedback to improve its answer, and then generating learnings based
+
+74
+00:06:56.559 --> 00:07:03.119
+off that, that will go in its memory. So on each iteration, the system records for every agent in
+
+75
+00:07:03.119 --> 00:07:08.799
+the crew, what was the initial output of the agent, what was the actual human feedback that
+
+76
+00:07:08.799 --> 00:07:14.399
+you gave it, and what was the improved output, and what are the things that it did along the way.
+
+77
+00:07:14.399 --> 00:07:19.519
+So you can see that in the conclusion of the training, and how this feedback is consolidated
+
+78
+00:07:19.519 --> 00:07:26.799
+per agent, it now becomes a source of interesting suggestions that are clear, actionable instructions
+
+79
+00:07:26.799 --> 00:07:32.320
+distilled from your feedback, and the difference between the initial and improved outputs.
+
+80
+00:07:32.320 --> 00:07:39.279
+Together with a quality score for every single memory generated. So then during a normal execution,
+
+81
+00:07:39.279 --> 00:07:44.640
+each agent will load its consolidated suggestions as part of its context to make sure that it's
+
+82
+00:07:44.640 --> 00:07:50.959
+taking that into account. So you're going to have a physical file in your file system now storing
+
+83
+00:07:50.959 --> 00:07:56.239
+the suggestions, the quality, and the final summary for you. So how you got to do to kick
+
+84
+00:07:56.239 --> 00:08:02.880
+off training is basically either running CrewAI train on your terminal by using the CrewAI CLI,
+
+85
+00:08:02.880 --> 00:08:09.200
+or you can also use the train function in Python that will automatically kick off that training
+
+86
+00:08:09.200 --> 00:08:14.399
+process for you. And when you do that, you're going to see that execution happening and the
+
+87
+00:08:14.399 --> 00:08:19.440
+feedback prompting coming up. And at the end, you're going to realize how much of a better
+
+88
+00:08:19.440 --> 00:08:26.160
+agent you have by just letting those a few runs based off your feedback. Now, I also want to make
+
+89
+00:08:26.160 --> 00:08:32.400
+sure that you have the right tools to help you choose the right LLM for each agent. So in addition
+
+90
+00:08:32.400 --> 00:08:38.080
+to training, you may also want to test your crews and flows to see how they're performing to get
+
+91
+00:08:38.080 --> 00:08:44.719
+some metrics around if they're doing well or not, and even compare a few different LLMs. So in testing
+
+92
+00:08:44.719 --> 00:08:52.000
+your AI agent will run the same task, but many times for a number of the execution. And you can
+
+93
+00:08:52.000 --> 00:08:58.640
+also specify a specific LLM that you might want to use as a judge. That LLM can be the same one
+
+94
+00:08:58.640 --> 00:09:04.000
+that you're using for the actual task, or it might be a different LLM that you want to actually judge
+
+95
+00:09:04.000 --> 00:09:11.039
+this request. In the end of the day, what that will create is a series of plots around quality
+
+96
+00:09:11.039 --> 00:09:17.039
+for each one of those tasks. And you can trigger this off by either using the CLI, where all you
+
+97
+00:09:17.039 --> 00:09:22.719
+got to do is write crewai create a task on your terminal, or you can also use Python for that using the
+
+98
+00:09:22.719 --> 00:09:28.960
+task function. And what is going to happen there behind the scenes is that the crew and the agents
+
+99
+00:09:28.960 --> 00:09:34.960
+will perform all their tasks, then the output of those tasks and the expected output of those
+
+100
+00:09:34.960 --> 00:09:42.960
+tasks will go to a judge LLM, and the judge LLM will score those tasks on a 0 to 10 value,
+
+101
+00:09:43.599 --> 00:09:50.640
+telling you how good that is and how well the actual task output maps to the expected output
+
+102
+00:09:50.640 --> 00:09:56.320
+that you define on the task itself. So here you can see that it's broken down across two different
+
+103
+00:09:56.320 --> 00:10:04.880
+tasks and what was the actual score based off the result for each task for three runs with an average
+
+104
+00:10:04.880 --> 00:10:11.760
+at the end that includes not only how good it was, but also how long it took to run those tasks.
+
+105
+00:10:12.320 --> 00:10:18.640
+And this can be extremely powerful, especially because as you change your agents, as you change
+
+106
+00:10:18.640 --> 00:10:24.799
+your tasks, and as you change the LLMs that you're using, you want to have a way to compare a little
+
+107
+00:10:24.799 --> 00:10:30.960
+bit of apples to apples to understand if you're moving the needle and drive things forward as you
+
+108
+00:10:30.960 --> 00:10:36.559
+do these changes. So in this case, you can see that the crew run three times and you can see that
+
+109
+00:10:36.640 --> 00:10:43.840
+each execution time varied between 40 to 59 seconds and you also get an average output from
+
+110
+00:10:43.840 --> 00:10:48.960
+there. So now you can judge yourself whether that score is good enough for your use case or if you
+
+111
+00:10:48.960 --> 00:10:54.000
+need a different strategy to improve. Then you can choose among the many strategies that you have
+
+112
+00:10:54.000 --> 00:11:00.000
+learned so far in this course, including training and reasoning agents and improving your context
+
+113
+00:11:00.000 --> 00:11:06.080
+or even choosing different processes to see how that impacts the actual output of your crew.
+
+114
+00:11:06.799 --> 00:11:12.159
+Now we have covered a lot of ground in terms of how you can get a better output,
+
+115
+00:11:12.159 --> 00:11:18.080
+but there's one thing that we didn't talk about and that is safe code execution. And the reason
+
+116
+00:11:18.080 --> 00:11:23.599
+why I want to talk about this now is because code execution can be so powerful for agents.
+
+117
+00:11:23.599 --> 00:11:28.880
+It's the ultimate tool because it allows them to do anything. They can write code to do anything
+
+118
+00:11:28.880 --> 00:11:34.960
+that they want. They can write code, for example, to generate charts. They can write code to generate
+
+119
+00:11:34.960 --> 00:11:39.919
+markdown files. There's a lot of different things that it can do once these agents go into coding
+
+120
+00:11:39.919 --> 00:11:47.280
+mode and agents are especially good and LLMs are especially good at coding. So there's a few ways
+
+121
+00:11:47.280 --> 00:11:52.799
+that you can enable safe coding execution for your agent and there is many tools out there that also
+
+122
+00:11:52.799 --> 00:11:57.440
+allow your agents to do coding if you want to. The one thing that you got to be mindful though
+
+123
+00:11:57.440 --> 00:12:02.400
+is that once that these agents are getting into code, the sky's the limit. There's a lot that
+
+124
+00:12:02.400 --> 00:12:06.559
+they can do. So you want to make sure that you're doing things in a way that feels safe
+
+125
+00:12:06.559 --> 00:12:12.799
+and you're only going into coding if you actually need to. Most of these agents can actually use
+
+126
+00:12:12.799 --> 00:12:17.679
+custom tools that you have built before and we have learned about to get a lot of this work done
+
+127
+00:12:17.679 --> 00:12:22.320
+so they might not necessarily need to tap into code. But if you do want to,
+
+128
+00:12:22.320 --> 00:12:29.119
+we have a code interpreter tool that is automatically embedded into your agents.
+
+129
+00:12:29.119 --> 00:12:35.200
+So CrewAI offers you a few options to set that up, including the safe execution mode. And you
+
+130
+00:12:35.200 --> 00:12:40.479
+can enable and disable this code execution so you don't need to worry about your agents
+
+131
+00:12:40.479 --> 00:12:46.080
+automatically writing code unless you enable them. And if you're doing a safe way, other code is
+
+132
+00:12:46.080 --> 00:12:52.159
+going to run into a container using a docker image. So you have a bunch of options in here as
+
+133
+00:12:52.159 --> 00:12:57.280
+well. If you look at the code, you can see that enabling the code execution is extremely easy.
+
+134
+00:12:57.280 --> 00:13:03.119
+All you got to do to enable these for agents is basically set that allow code execution attribute
+
+135
+00:13:03.119 --> 00:13:09.440
+to true and now your agents are able to code if they are required to do so. And then you can also
+
+136
+00:13:09.440 --> 00:13:14.799
+set the code execution mode where you can set that up to safe to make sure that it's running that code
+
+137
+00:13:14.799 --> 00:13:20.000
+in a containerized manner. So it's all happening in a way that it's isolated from your computer
+
+138
+00:13:20.000 --> 00:13:26.880
+and therefore more safe. Now, reliable agents are just accurate. They need to be predictable,
+
+139
+00:13:26.880 --> 00:13:33.200
+measurable and recoverable. And that was a lot of information that we just covered. So I'm glad
+
+140
+00:13:33.200 --> 00:13:40.159
+that you stuck with me. Between guardrails, LLMs, code-based reasoning, human-in-the-loop,
+
+141
+00:13:40.159 --> 00:13:46.320
+pre and post hooks and flows, you have many tools to control your agents now to ensure
+
+142
+00:13:46.320 --> 00:13:52.640
+desirable outcomes. And reliable agents, again, they don't need to just be accurate. They do need
+
+143
+00:13:52.640 --> 00:13:58.640
+to be recoverable and measurable as well. So as you develop agents, focus on using these features
+
+144
+00:13:58.640 --> 00:14:04.719
+to consistently achieve good outputs even in parameters change or unexpected inputs might
+
+145
+00:14:04.719 --> 00:14:10.000
+occur. Now, after you have built your agents and you got into a place where you're confident about
+
+146
+00:14:10.000 --> 00:14:14.400
+the way that they are working and they're working a smooth way and you're ready to move into
+
+147
+00:14:14.400 --> 00:14:20.719
+production, the first thing that you start to think about is how you actually track and monitor your
+
+148
+00:14:20.719 --> 00:14:26.719
+crew. How to make sure that its performance stay high and latency stay low. How do you make sure
+
+149
+00:14:26.719 --> 00:14:32.400
+that you're tracking hallucination and therefore, by the combination of all these things, make sure
+
+150
+00:14:32.400 --> 00:14:37.840
+that the users of this are actually having a good experience. In the next video, we're going to talk
+
+151
+00:14:37.840 --> 00:14:43.039
+all about monitoring and observability for agentic systems. So you need to follow me there because
+
+152
+00:14:43.039 --> 00:14:47.440
+we're going to talk so much about these things and that can make a huge difference once you
+
+153
+00:14:47.440 --> 00:14:51.520
+actually bring these things in production. I will see you right there in a second.

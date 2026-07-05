@@ -1,0 +1,686 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.417 --> 00:00:05.119
+Welcome to the last module of this course, and it is super exciting, because up to this point,
+
+2
+00:00:05.119 --> 00:00:09.279
+we talked about so many things about AI agents, and you learned a lot about it.
+
+3
+00:00:09.279 --> 00:00:13.520
+But now we're going to talk about the future and what is ahead for AI agents.
+
+4
+00:00:13.520 --> 00:00:18.559
+Together, we will study some practical real-world applications and what to expect in the coming
+
+5
+00:00:18.559 --> 00:00:23.040
+years. But before we speak with some of these people and these companies that are actually
+
+6
+00:00:23.040 --> 00:00:28.799
+building AI agents in production, let's explore how teams and organizations are actually using
+
+7
+00:00:28.799 --> 00:00:33.119
+AI agents in their domains. This is going to be a very exciting module, so make sure
+
+8
+00:00:33.119 --> 00:00:38.639
+that you stick around, and let's dive right in. In this video, we'll explore how organizations
+
+9
+00:00:38.639 --> 00:00:44.880
+are actually using AI agents across many applications domains. But let me kick off with
+
+10
+00:00:44.880 --> 00:00:52.159
+one thing, and that is the genie is not getting back into the bottle. And what I mean by that
+
+11
+00:00:52.159 --> 00:00:59.520
+is there is no world where these agents are not going to be used more and more into the future.
+
+12
+00:01:00.080 --> 00:01:06.480
+If you think about it, this is just the beginning of what the new workforce will look like.
+
+13
+00:01:06.480 --> 00:01:12.800
+AI agents will only improve from this point forward, and there is no scenario where organizations will
+
+14
+00:01:12.800 --> 00:01:20.239
+stop using AI agents in the future. So the idea of automating and automations leveraging AI will
+
+15
+00:01:20.239 --> 00:01:26.160
+continue to evolve and improve. Once you accept this reality, you see opportunities for AI agents
+
+16
+00:01:26.160 --> 00:01:31.919
+across many areas, and AI agents themselves have tremendous potential to impact how we work
+
+17
+00:01:31.919 --> 00:01:37.839
+and how effectively we operate and how we conduct our business. If you really think about the sorts
+
+18
+00:01:37.839 --> 00:01:44.400
+of use cases that we're talking about in this course, they range from end-to-end processes,
+
+19
+00:01:44.400 --> 00:01:51.279
+like transformational processes that go across different business units. There's large in scope,
+
+20
+00:01:51.279 --> 00:01:56.800
+there's multiple stakeholders and long horizons. And then there is also a lot of the day-to-day
+
+21
+00:01:56.800 --> 00:02:03.279
+automations, like our meeting prep example, something that helps me get my work done faster.
+
+22
+00:02:03.279 --> 00:02:07.680
+And I want to discuss the different types of automations and use cases that we can see in
+
+23
+00:02:07.680 --> 00:02:12.880
+the market. So these two clusters are very important because whether they are going to
+
+24
+00:02:12.880 --> 00:02:20.720
+take shape or forms of internal automations or operational automations or even decision making,
+
+25
+00:02:20.720 --> 00:02:27.520
+what really matters is that this involves complex workflows that can drive real value.
+
+26
+00:02:28.080 --> 00:02:33.440
+So when you think about the end-to-end sort of applications and automations, we're talking about
+
+27
+00:02:33.440 --> 00:02:39.759
+tasks that used to take many weeks and now only takes a few days, hours, or sometimes even minutes.
+
+28
+00:02:40.320 --> 00:02:46.559
+Examples might include back office work or some front office operations. These automations start
+
+29
+00:02:46.559 --> 00:02:52.160
+with agents and end with agents. They often span multiple business units. They might have humans
+
+30
+00:02:52.160 --> 00:02:57.919
+in the loop in the middle. They are more complex to build and they require a certain level of precision,
+
+31
+00:02:57.919 --> 00:03:02.479
+but they do bring a lot of value with them. The day-to-day is more of the individual
+
+32
+00:03:02.479 --> 00:03:06.800
+optimizations that we're talking about, right? It makes you more productive, but they're easier to
+
+33
+00:03:06.800 --> 00:03:12.080
+build. So you get a lot faster value from them. Examples including not only the preparing for
+
+34
+00:03:12.080 --> 00:03:18.559
+meeting, but also things like generating report or automating specific job tasks. While individual
+
+35
+00:03:18.559 --> 00:03:25.759
+in scope, these day-to-day automations do pile up and pile up into an amazing and sizable impact
+
+36
+00:03:25.759 --> 00:03:30.639
+once adopted across an organization. So these automations can be extremely helpful
+
+37
+00:03:30.639 --> 00:03:35.279
+and improve efficiency at the end of the day. If you look across the board, you're going to
+
+38
+00:03:35.279 --> 00:03:43.440
+find a few brand new cutting edge use cases, like what people are calling RPA, basically replacing
+
+39
+00:03:43.440 --> 00:03:50.240
+robotic process automation with agent process automation. You're also going to see agents being
+
+40
+00:03:50.240 --> 00:03:58.320
+used for new agentic ETL pipelines, whereas you're ingesting data, you have agents inferring new data
+
+41
+00:03:58.320 --> 00:04:04.559
+based on that or modifying that data on the fly. And you also will have some agentic native features,
+
+42
+00:04:04.559 --> 00:04:08.960
+basically new features into this product that allows your product to do things that were not
+
+43
+00:04:08.960 --> 00:04:14.720
+possible before. Now, if you look at the top verticals, you're going to see there is many
+
+44
+00:04:14.720 --> 00:04:19.839
+different businesses that can actually benefit from these agents, from financial services to
+
+45
+00:04:19.839 --> 00:04:25.519
+health and life sciences, to insurances, or high-tech companies, media and entertainment,
+
+46
+00:04:25.519 --> 00:04:31.920
+or customer services, CPGs, consultings and telecoms. Those are just the top nine that
+
+47
+00:04:31.920 --> 00:04:37.119
+we're seeing using the agents the most nowadays. And there's a lot going on among all of them.
+
+48
+00:04:37.119 --> 00:04:42.480
+But within these companies, you're going to find many functional areas or horizontals within these
+
+49
+00:04:42.480 --> 00:04:46.959
+companies on what use cases they're doing and what they're trying to do with agents.
+
+50
+00:04:46.959 --> 00:04:51.760
+We are seeing a trend on sales and marketing use cases, but also developer automation,
+
+51
+00:04:51.760 --> 00:04:58.320
+cybersecurity, supply chain, pricing use cases, and people management. So when you look across
+
+52
+00:04:58.320 --> 00:05:05.040
+the board, what you see is an immense landscape of opportunities for building these sorts of use
+
+53
+00:05:05.040 --> 00:05:10.559
+cases across different companies and across different horizontals within those companies.
+
+54
+00:05:11.119 --> 00:05:16.160
+And this will help you understand what resources to pull as you're thinking about your own use
+
+55
+00:05:16.160 --> 00:05:21.519
+cases, whether you're building end-to-end automations or day-to-day use cases, you can
+
+56
+00:05:21.519 --> 00:05:27.040
+see how those maps to some of the ones that are being used the most out there. This brings us back
+
+57
+00:05:27.040 --> 00:05:33.200
+into our use case matrix that we talked on the beginning of this course, where you think about
+
+58
+00:05:33.200 --> 00:05:40.160
+the complexity and the precision credence of your use cases. A few lessons ago, we talked about this
+
+59
+00:05:40.160 --> 00:05:46.239
+framework and given how important it is, I decided to bring it back. As you think about your use case
+
+60
+00:05:46.239 --> 00:05:50.480
+and how AI agents are performing actions in business today, you need to understand where
+
+61
+00:05:50.480 --> 00:05:55.119
+your use case falls in this framework. And remember, you can have high complexity and
+
+62
+00:05:55.119 --> 00:06:00.559
+high precision all the way to low complexity and low precision and everything in between.
+
+63
+00:06:00.559 --> 00:06:05.200
+There's no right or wrong position on this framework. It just helps you understand what
+
+64
+00:06:05.200 --> 00:06:09.119
+is the effort and how much you're going to need to put into this in order to get the value that
+
+65
+00:06:09.119 --> 00:06:15.200
+you need. So low complexity and low precision use cases can save significant time and have a huge
+
+66
+00:06:15.200 --> 00:06:20.079
+impact on your organization. And the key is understanding where your specific use case falls.
+
+67
+00:06:20.079 --> 00:06:26.399
+Doesn't matter if it's low or high. Now, I want to walk you through several specific
+
+68
+00:06:26.399 --> 00:06:32.399
+real use cases from companies that are working with CrewAI. And through these examples,
+
+69
+00:06:32.399 --> 00:06:37.920
+we will see different levels of complexity, different distributions, and examples of both
+
+70
+00:06:37.920 --> 00:06:45.040
+end-to-end and day-to-day automations. And that will make extremely tangible for you what is the
+
+71
+00:06:45.040 --> 00:06:51.839
+value of some of these use cases once that we're talking about running them for real businesses.
+
+72
+00:06:51.839 --> 00:06:56.320
+And this might inform some of your decisions. So you want to make sure that you stay tuned into
+
+73
+00:06:56.320 --> 00:07:04.160
+this. I want to kick us off with a financial institution. This is a global 500 institution,
+
+74
+00:07:04.160 --> 00:07:13.119
+a large bank, and they decided to focus on their KYC process. KYC stands for Know Your Customer.
+
+75
+00:07:13.119 --> 00:07:18.480
+This is a process that involves collecting information about a customer and prospective
+
+76
+00:07:18.480 --> 00:07:25.679
+customers. It requires an intensive research and categorization to understand each and specific
+
+77
+00:07:25.679 --> 00:07:32.160
+individual. And a bank needs to do that in order to make sure that it's providing this individual
+
+78
+00:07:32.160 --> 00:07:37.920
+with the right products and services. So this financial institution used CrewAI to automate
+
+79
+00:07:37.920 --> 00:07:45.200
+their process. And they got a few very interesting surprises. The first one is that the initial
+
+80
+00:07:45.200 --> 00:07:50.720
+report that they had the agents produce was actually more accurate than the first draft from
+
+81
+00:07:50.720 --> 00:07:58.799
+humans. And parts of the process that used to take one week of work now are taking 15 to 30 minutes.
+
+82
+00:07:59.519 --> 00:08:07.279
+In total, there was a 4x reduction in the time to perform the overall onboarding of the Know Your
+
+83
+00:08:07.279 --> 00:08:12.880
+Customer due diligence. Where all these agents are now doing the research, they're pulling the
+
+84
+00:08:12.880 --> 00:08:19.440
+tax returns, they're validating that data against APIs and other financial institutions before
+
+85
+00:08:19.440 --> 00:08:25.600
+approving or not approving. And this has a huge impact on the bottom line for large organizations
+
+86
+00:08:25.600 --> 00:08:31.279
+like this. This is an end-to-end automation process, as you can tell. It's focused on reducing
+
+87
+00:08:31.279 --> 00:08:36.559
+the time and increasing efficiency. So it's all about efficiency gains. It demonstrates that
+
+88
+00:08:36.559 --> 00:08:42.000
+highly regulated business can benefit from automation like this, as long as they're being
+
+89
+00:08:42.000 --> 00:08:47.039
+viewed from the ground up to make sure that they support governance. And they're focused on use
+
+90
+00:08:47.039 --> 00:08:53.119
+cases where they can move fast to get early wins before start to scaling things up. Now, I want to
+
+91
+00:08:53.119 --> 00:09:01.359
+change gears for a second because our next use case is a global Fortune 500 CPG. And CPG stands
+
+92
+00:09:01.359 --> 00:09:06.400
+for Consumer Packed Goods. We talked about that in the past as well. This is one of the industries
+
+93
+00:09:06.400 --> 00:09:11.520
+where we're seeing a lot of potential for agents. These are companies that make products that you
+
+94
+00:09:11.520 --> 00:09:18.080
+can buy in supermarkets and stores, such as beverage snacks or consumer items. These companies
+
+95
+00:09:18.080 --> 00:09:24.559
+set out to improve their refund process. So whenever a customer found something missing or
+
+96
+00:09:24.559 --> 00:09:30.320
+something wrong with their product and they want to ask for their money back. As you can think,
+
+97
+00:09:30.320 --> 00:09:35.039
+this is a very frustrating place for the customer to be. And if anything, they want to get that
+
+98
+00:09:35.039 --> 00:09:41.599
+resolved as quick as possible. But due to legislation, this company needs to do a bunch of
+
+99
+00:09:41.599 --> 00:09:46.880
+checks. They want to make sure they're not falling for a trick, that the product is actually wrong.
+
+100
+00:09:46.880 --> 00:09:52.559
+So there's an entire process that goes into validate not only that person's credentials
+
+101
+00:09:52.559 --> 00:09:57.919
+and that person's history, but a lot of the internal process around that product as well.
+
+102
+00:09:57.919 --> 00:10:03.039
+So in order to do that, they decided to automate the entire refund process to use AI Agents with
+
+103
+00:10:03.039 --> 00:10:09.520
+CrewAI. And they're able to reduce the time to process refund requests quite abruptly,
+
+104
+00:10:09.520 --> 00:10:15.679
+replacing highly manual processes involving multiple teams, taking the whole thing down
+
+105
+00:10:15.679 --> 00:10:22.000
+from three days to just under 10 minutes. This creates a very interesting return on investment
+
+106
+00:10:22.000 --> 00:10:27.440
+for a company like this. And you can see that this is another example of an end-to-end automation.
+
+107
+00:10:27.440 --> 00:10:33.679
+But more scoped down for a specific process. And again, another back-office automation use case,
+
+108
+00:10:33.679 --> 00:10:39.440
+as we're seeing many of those. Now, I do want to bring a third use case. And this one is different
+
+109
+00:10:39.440 --> 00:10:45.039
+because this is not about efficiency gains. This is about revenue generation. And I'm very excited
+
+110
+00:10:45.039 --> 00:10:50.719
+about this one. This is a global 1000 company, meaning that it's one of the 1000 biggest
+
+111
+00:10:50.719 --> 00:10:55.840
+companies in the world. And it's a telecommunication company. And they decided to take a completely
+
+112
+00:10:55.840 --> 00:11:00.400
+different approach into that. As I told you, instead of focusing on efficient gangs, they start
+
+113
+00:11:00.400 --> 00:11:07.200
+to wonder what kind of lines of businesses they could explore. Where before, there would require
+
+114
+00:11:07.200 --> 00:11:12.960
+a huge investment to make sure that they can explore this as an actual idea. But now, by
+
+115
+00:11:12.960 --> 00:11:18.479
+leveraging agents, they can actually test these concepts on a more controlled environment and
+
+116
+00:11:18.479 --> 00:11:25.119
+eventually put more money into that. So they decided to use agents to analyze their customer
+
+117
+00:11:25.119 --> 00:11:31.359
+behavior and data. If the customer is a prepaid phone or postpaid phone and all the data that
+
+118
+00:11:31.359 --> 00:11:38.320
+they have on that specific customer. And by using agents to analyze that behavior, find what patterns
+
+119
+00:11:38.320 --> 00:11:44.559
+this customer had and use that to give them a certain credit score. And by having this credit
+
+120
+00:11:44.559 --> 00:11:50.559
+score, they could start a new line of business offering money lending. And because all this
+
+121
+00:11:50.640 --> 00:11:56.479
+is using agents, they can have the money on the customer's bank account within two days from the
+
+122
+00:11:56.479 --> 00:12:02.000
+request because everything is as automated as it can be. And the way that they did this is that by
+
+123
+00:12:02.000 --> 00:12:07.599
+analyzing the customer's spending patterns, for example, their phone usage, and used agents to
+
+124
+00:12:07.599 --> 00:12:13.039
+process that at scale, they learned there's a high correlation between the patterns that they found
+
+125
+00:12:13.039 --> 00:12:17.760
+and what they believe their credit worthiness would be. And they achieved remarkable success
+
+126
+00:12:17.760 --> 00:12:22.719
+into that, spending not as much money as they would if they actually wanted to kick off this
+
+127
+00:12:22.719 --> 00:12:28.080
+as an entire line of business with no agents at all. So here you can see this is a completely
+
+128
+00:12:28.080 --> 00:12:33.840
+different use case. It's more of a revenue generating use case instead of like a efficiency
+
+129
+00:12:33.840 --> 00:12:40.239
+gain. And it is very interesting. Now, beyond this, there's more things that we want to talk
+
+130
+00:12:40.239 --> 00:12:45.919
+about. And that is how the adoption lifecycle of these agents has changed throughout the last
+
+131
+00:12:45.919 --> 00:12:52.239
+couple of years. If you go back, it's almost like we had a few different phases, and the market has
+
+132
+00:12:52.239 --> 00:12:57.039
+been transitioning and evolving continuously. So organizations are becoming better educated,
+
+133
+00:12:57.039 --> 00:13:01.679
+more sophisticated in understanding how agents can help their business, and they have several
+
+134
+00:13:01.679 --> 00:13:08.880
+distinct phases placed out. So at first, you go back two years ago, you saw companies doing a lot
+
+135
+00:13:08.880 --> 00:13:15.760
+of chatbots. And these chatbots were very much a general purpose bot. They had what you would call
+
+136
+00:13:15.760 --> 00:13:21.760
+a single agent behind them, just using common knowledge, somewhat interactive, but very much
+
+137
+00:13:21.760 --> 00:13:26.799
+focused on just chatting use cases, either internally or externally. These are not something
+
+138
+00:13:26.799 --> 00:13:33.599
+that emerged right after ChatGPT. These chatbots have been around for over a decade. Then we saw
+
+139
+00:13:33.599 --> 00:13:40.239
+a second phase. And the second phase was co-pilots. So more recently, we're seeing more of this idea
+
+140
+00:13:40.320 --> 00:13:48.000
+of AI assistants or AI co-pilots, where you might have one agent, or maybe it might feel like many
+
+141
+00:13:48.000 --> 00:13:54.320
+agents, there's some delegation happening, there's more specific domain knowledge, either through
+
+142
+00:13:54.320 --> 00:14:00.479
+integrating RAG, or it's more interactive. But the idea here is that many companies are now adopting
+
+143
+00:14:00.479 --> 00:14:05.919
+this pattern to help on different things, from coding, to writing documents, and a few other
+
+144
+00:14:05.919 --> 00:14:11.520
+things in between. And now we're getting into this third phase, where you actually start to see
+
+145
+00:14:11.520 --> 00:14:17.520
+agent workflows take on the main stage. And this is the newest and the most cutting edge phase,
+
+146
+00:14:17.520 --> 00:14:22.640
+where you see multiple agents working together collaboratively. And these include process
+
+147
+00:14:22.640 --> 00:14:29.520
+specifics or task specific agents, but also include more broader agents as well, and integrating with
+
+148
+00:14:29.520 --> 00:14:34.400
+many tools, including MCP, as we mentioned, and memory systems as well. So this can be
+
+149
+00:14:34.400 --> 00:14:40.000
+triggered automatically or individually, and there's a stronger focus on not only efficiency,
+
+150
+00:14:40.000 --> 00:14:46.080
+but as we just saw, also revenue generating use cases, opening up for so many more opportunities.
+
+151
+00:14:46.640 --> 00:14:51.919
+Now, independently of how you're choosing to build your agentic workflows, if there's
+
+152
+00:14:51.919 --> 00:14:58.799
+one thing that you got to take from this, is that whatever you do, it needs to be extremely easy
+
+153
+00:14:58.799 --> 00:15:06.000
+to build and run. So you can either use code or no code to do it, but you do it in a way that
+
+154
+00:15:06.000 --> 00:15:11.919
+will help you build fast, so gets you to value. And it's to be trusted, so you can actually rely
+
+155
+00:15:11.919 --> 00:15:18.080
+on the outputs. So the traces needs to be there, the training should be there, the guardrails needs
+
+156
+00:15:18.080 --> 00:15:24.239
+to be there, choosing the right models needs to be there. And not only that, it also needs to be
+
+157
+00:15:24.239 --> 00:15:29.679
+scalable. And the scalable here doesn't mean necessarily running a million agents in a month,
+
+158
+00:15:29.679 --> 00:15:34.559
+what we have a few customers that are doing, but it also means building them in a way that is
+
+159
+00:15:34.559 --> 00:15:41.359
+reusable. And this idea of Lego blocks, Lego pieces that you can reuse either through agents
+
+160
+00:15:41.359 --> 00:15:48.159
+or through tools or anything in between. If you take a step back, these are basically the three pillars
+
+161
+00:15:48.159 --> 00:15:53.919
+that need to be top of mind as you go to build these use cases. And this is the foundational
+
+162
+00:15:53.919 --> 00:15:59.840
+of what we build in CrewAI as well. I'm very excited that we got to cover so many stuff up
+
+163
+00:15:59.840 --> 00:16:05.280
+to this point. And hopefully on this final module, as you're getting into the nuts and bolts of these
+
+164
+00:16:05.280 --> 00:16:12.640
+AI agents, we start to understand better how they can not only serve you, but how you actually should
+
+165
+00:16:12.640 --> 00:16:17.599
+be thinking about these use cases. And one of the main things that if you make sure that you get it
+
+166
+00:16:17.599 --> 00:16:22.239
+right from the get-go, they're going to help you across your entire journey. I'm very excited for
+
+167
+00:16:22.239 --> 00:16:27.280
+the next lesson. We'll examine the patterns between successful implementations. We'll
+
+168
+00:16:27.280 --> 00:16:32.239
+explore adoption patterns within these companies and what they look like when they're adopting
+
+169
+00:16:32.239 --> 00:16:37.520
+these technologies. And I'm very excited about that because you might find an opportunity to
+
+170
+00:16:37.520 --> 00:16:43.119
+see how that can apply to your own company, your own team or your own use cases. So you don't want
+
+171
+00:16:43.119 --> 00:16:45.359
+to miss that out and you'll see them there in a second.

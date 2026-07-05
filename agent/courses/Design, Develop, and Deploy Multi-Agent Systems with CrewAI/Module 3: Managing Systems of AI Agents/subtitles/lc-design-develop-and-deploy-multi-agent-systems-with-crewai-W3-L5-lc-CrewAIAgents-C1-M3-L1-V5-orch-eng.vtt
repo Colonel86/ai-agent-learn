@@ -1,0 +1,1066 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.967 --> 00:00:05.000
+Very exciting topic now. We're going to talk about CrewAI flows and agents.
+
+2
+00:00:05.000 --> 00:00:10.000
+And this is important because when you go into the wild, the actual use cases,
+
+3
+00:00:10.000 --> 00:00:14.000
+usually they live in the spectrum. And we're going to talk about that in a second.
+
+4
+00:00:14.000 --> 00:00:19.000
+But this spectrum goes from less agency, where you want more control,
+
+5
+00:00:19.000 --> 00:00:23.000
+into more agency, where you want the agents to figure out as they go.
+
+6
+00:00:23.000 --> 00:00:27.000
+But the important thing about flows here is that it's a very thin,
+
+7
+00:00:27.000 --> 00:00:33.000
+low-level layer that gives you all the control that you need to decide what happens in what order.
+
+8
+00:00:33.000 --> 00:00:36.000
+And then you can opt in how much agency you want.
+
+9
+00:00:36.000 --> 00:00:41.000
+This is a very exciting topic, and it's going to be a huge unlock for many use cases,
+
+10
+00:00:41.000 --> 00:00:46.000
+especially the use cases that require more precision. So let's look into that right now.
+
+11
+00:00:46.000 --> 00:00:50.000
+So up to this point, we have been talking a lot about agents themselves,
+
+12
+00:00:50.000 --> 00:00:54.000
+but there are other mental models for agentic systems.
+
+13
+00:00:54.000 --> 00:00:59.000
+Generally, AI agents are understood through three main mental models,
+
+14
+00:00:59.000 --> 00:01:05.000
+graphs, events, and agents. And up to this point, agents have been very exciting for us,
+
+15
+00:01:05.000 --> 00:01:07.000
+and we have seen how powerful they can be.
+
+16
+00:01:07.000 --> 00:01:12.000
+Another mental model for agentic systems that has been picking up is this idea of graphs,
+
+17
+00:01:12.000 --> 00:01:17.000
+where they work with more traditional graph architectures, like nodes and edges.
+
+18
+00:01:17.000 --> 00:01:21.000
+But the adoption has been a little slower, and friction has been a little higher,
+
+19
+00:01:21.000 --> 00:01:25.000
+since there are many concepts and graphs that are harder to grasp,
+
+20
+00:01:25.000 --> 00:01:28.000
+and not many people get exposed to those on a day-to-day basis.
+
+21
+00:01:28.000 --> 00:01:32.000
+And then there is the events mental model that is gaining a lot of popularity,
+
+22
+00:01:32.000 --> 00:01:36.000
+because it resembles more familiar PubSub patterns common on the web,
+
+23
+00:01:36.000 --> 00:01:40.000
+like most people have been developing web apps up to this point.
+
+24
+00:01:40.000 --> 00:01:44.000
+So it makes it a little easier for most people to grasp these concepts
+
+25
+00:01:44.000 --> 00:01:46.000
+and get up and running and productive with that.
+
+26
+00:01:47.000 --> 00:01:52.000
+Independently of what the mental model that you are using, they all share some patterns
+
+27
+00:01:52.000 --> 00:01:58.000
+and they all share some common ground around using the LLMs and deciding when to use the LLMs,
+
+28
+00:01:58.000 --> 00:02:02.000
+and trying to be very smart about what kind of context you are adding into them.
+
+29
+00:02:02.000 --> 00:02:07.000
+Given these trends, most people, and CrewAI in particular, are focusing on the events
+
+30
+00:02:07.000 --> 00:02:10.000
+and the agents model when implementing agentic systems.
+
+31
+00:02:10.000 --> 00:02:15.000
+And we have talked a lot about agents and how you can view them and crews now,
+
+32
+00:02:15.000 --> 00:02:16.000
+and that has been very exciting.
+
+33
+00:02:16.000 --> 00:02:21.000
+I wanted to move into focusing a little more on the events-based structure,
+
+34
+00:02:21.000 --> 00:02:26.000
+and how that mental model applies, and how you can use that not only stand-alone,
+
+35
+00:02:26.000 --> 00:02:31.000
+but with agents and with crews, and how powerful that can be.
+
+36
+00:02:31.000 --> 00:02:34.000
+We're seeing now millions of executions of flows a day
+
+37
+00:02:34.000 --> 00:02:39.000
+by using these combinations of CrewAI flows with agents.
+
+38
+00:02:39.000 --> 00:02:41.000
+So let's dive into that.
+
+39
+00:02:41.000 --> 00:02:44.000
+Flows are a very modular orchestration layer.
+
+40
+00:02:44.000 --> 00:02:48.000
+Think about it as a backbone of what you want your agents and your crews to be.
+
+41
+00:02:48.000 --> 00:02:52.000
+And what that means is that it allows you to define on a very low level
+
+42
+00:02:52.000 --> 00:02:55.000
+everything that you want to happen in what order.
+
+43
+00:02:55.000 --> 00:02:59.000
+And there's a few different pieces that you can bring into your flows.
+
+44
+00:02:59.000 --> 00:03:03.000
+You can bring LLMs, you can bring regular Python code,
+
+45
+00:03:03.000 --> 00:03:08.000
+you can bring one single agent using memory and guardrails, for example,
+
+46
+00:03:08.000 --> 00:03:10.000
+or you can bring an entire crew.
+
+47
+00:03:10.000 --> 00:03:14.000
+So in the end of the day, you can bring the entire set of things
+
+48
+00:03:14.000 --> 00:03:17.000
+that we learned up to this point inside the flow,
+
+49
+00:03:17.000 --> 00:03:20.000
+and the flow will provide you with the backbone and the structure
+
+50
+00:03:20.000 --> 00:03:24.000
+to define what is going to be executed in what order.
+
+51
+00:03:24.000 --> 00:03:26.000
+You can see how powerful that can be,
+
+52
+00:03:26.000 --> 00:03:31.000
+especially when you want to control a lot of these flows as they get more complex.
+
+53
+00:03:31.000 --> 00:03:35.000
+So a good example of a flow could be something like this.
+
+54
+00:03:35.000 --> 00:03:38.000
+You might have initial code that is being executed,
+
+55
+00:03:38.000 --> 00:03:41.000
+And this code might pull data from somewhere or check a specific behavior.
+
+56
+00:03:41.000 --> 00:03:43.000
+This is just regular Python.
+
+57
+00:03:43.000 --> 00:03:47.000
+But then from that code, you're going to have it to do two things in parallel.
+
+58
+00:03:47.000 --> 00:03:52.000
+You might want to have that information to flow into a single LLM call.
+
+59
+00:03:52.000 --> 00:03:54.000
+And this LLM can be doing anything.
+
+60
+00:03:54.000 --> 00:03:57.000
+It can be filtering out information or extracting context
+
+61
+00:03:57.000 --> 00:04:01.000
+or making decisions whether it has all the information it needs or not.
+
+62
+00:04:01.000 --> 00:04:04.000
+And meanwhile, we can also have an agent working alone.
+
+63
+00:04:04.000 --> 00:04:07.000
+And this single agent will do something with that information.
+
+64
+00:04:07.000 --> 00:04:10.000
+They might have a memory, they might have guardrails,
+
+65
+00:04:10.000 --> 00:04:13.000
+they might be producing some sort of output that you want.
+
+66
+00:04:13.000 --> 00:04:18.000
+But from that parallel execution, you can then go back into one single function,
+
+67
+00:04:18.000 --> 00:04:21.000
+and that's where you're going to have more code happening.
+
+68
+00:04:21.000 --> 00:04:24.000
+And this code will do something with that information,
+
+69
+00:04:24.000 --> 00:04:27.000
+and then it might trigger two different things.
+
+70
+00:04:27.000 --> 00:04:32.000
+Maybe it logs something into a specific database so that you can monitor that later
+
+71
+00:04:32.000 --> 00:04:35.000
+and kicks off an entire crew as a next step.
+
+72
+00:04:35.000 --> 00:04:42.000
+So you can see here how through code and LLM and agents and crews,
+
+73
+00:04:42.000 --> 00:04:44.000
+it gives you a lot of control.
+
+74
+00:04:44.000 --> 00:04:50.000
+In this example, you can see how flows become this automated control layer
+
+75
+00:04:50.000 --> 00:04:55.000
+and the backbone that is defining what is happening throughout the execution.
+
+76
+00:04:55.000 --> 00:04:58.000
+Again, it's a very low-level orchestration framework
+
+77
+00:04:58.000 --> 00:05:01.000
+that gives you the complete control of what is going to happen
+
+78
+00:05:01.000 --> 00:05:06.000
+and allows you to decide how much agency you want to bring into our automation.
+
+79
+00:05:06.000 --> 00:05:09.000
+Throughout this execution, you not only control the order,
+
+80
+00:05:09.000 --> 00:05:14.000
+but you also have a state that is shared among the entire flow.
+
+81
+00:05:14.000 --> 00:05:17.000
+And that means that throughout the different code blocks
+
+82
+00:05:17.000 --> 00:05:20.000
+and throughout the different functions and LLM calls,
+
+83
+00:05:20.000 --> 00:05:25.000
+you can actually put things into that state that you're going to be reusing later on.
+
+84
+00:05:25.000 --> 00:05:30.000
+So as this event is happening, you can choose to use this state appropriately
+
+85
+00:05:30.000 --> 00:05:34.000
+to make sure that you get all the information that you need where it needs to be.
+
+86
+00:05:34.000 --> 00:05:37.000
+So at the end of the day, if we take one step back,
+
+87
+00:05:37.000 --> 00:05:43.000
+what we're seeing is there are two different complementing ways to build agentic systems.
+
+88
+00:05:43.000 --> 00:05:48.000
+One that is more optimized for agency, where you have agents, tools, and tasks,
+
+89
+00:05:48.000 --> 00:05:51.000
+and memory, and everything that we have seen up to this point.
+
+90
+00:05:51.000 --> 00:05:55.000
+And you're optimizing for these agents to just figure it out as they go.
+
+91
+00:05:55.000 --> 00:06:01.000
+And on the other one, you're seeing flows that provides you this backbone of structure
+
+92
+00:06:01.000 --> 00:06:06.000
+where you can still bring agents, LLMs, and entire crews into,
+
+93
+00:06:06.000 --> 00:06:09.000
+but now you've got way more control on how you set it up.
+
+94
+00:06:09.000 --> 00:06:13.000
+So they each have their situations where they shine.
+
+95
+00:06:13.000 --> 00:06:17.000
+Crews who have a lot of more collaborative agents, so they are more autonomous and dynamic,
+
+96
+00:06:17.000 --> 00:06:20.000
+they're better for exploratory and less deterministic tasks.
+
+97
+00:06:21.000 --> 00:06:26.000
+So if you want to write a screenplay, or create a marketing strategy, or ideate for a landing page,
+
+98
+00:06:26.000 --> 00:06:28.000
+crews are great at that.
+
+99
+00:06:28.000 --> 00:06:32.000
+On the other hand, flows are more low-level, event-driven control layer.
+
+100
+00:06:32.000 --> 00:06:36.000
+And they are really ideal for structured, repeatable steps with a tight control,
+
+101
+00:06:36.000 --> 00:06:40.000
+so you might have auto-respond to an email, for example,
+
+102
+00:06:40.000 --> 00:06:44.000
+or triggering and receiving an email that you might want to run some code blocks,
+
+103
+00:06:44.000 --> 00:06:48.000
+and even a crew to respond to that email, depending on what is on it or not.
+
+104
+00:06:48.000 --> 00:06:51.000
+Or it might be great as a meeting assistant,
+
+105
+00:06:51.000 --> 00:06:55.000
+where the meeting assistant might be triggered when you save a meeting notes doc,
+
+106
+00:06:55.000 --> 00:06:59.000
+and then from there generate tasks for the transcript using a crew,
+
+107
+00:06:59.000 --> 00:07:04.000
+and those tasks then go into Trello or being sent into Slack just using traditional code.
+
+108
+00:07:04.000 --> 00:07:09.000
+So again, the sky is the limit when you're talking about how you can tangle these two together
+
+109
+00:07:09.000 --> 00:07:11.000
+to create very complex use cases.
+
+110
+00:07:11.000 --> 00:07:17.000
+A growing pattern among both enterprise and individual engineers that we have been seeing
+
+111
+00:07:17.000 --> 00:07:21.000
+is this idea of opt-in agency model,
+
+112
+00:07:21.000 --> 00:07:26.000
+also what I like to call the minimum that I can get away with approach.
+
+113
+00:07:26.000 --> 00:07:31.000
+It follows the long-standing engineering principle of keep things simple.
+
+114
+00:07:31.000 --> 00:07:36.000
+This idea is to start with a structured backbone, such as CrewAIFlows,
+
+115
+00:07:36.000 --> 00:07:42.000
+and then add agency only where and when it's needed at each step.
+
+116
+00:07:42.000 --> 00:07:46.000
+So if a code solves a particular problem on its own,
+
+117
+00:07:46.000 --> 00:07:51.000
+you don't need to introduce the cost and the latency and even the potential complications
+
+118
+00:07:51.000 --> 00:07:53.000
+of an LLM or even an agent.
+
+119
+00:07:53.000 --> 00:07:58.000
+So you should reserve agents and crews for the complex tasks that they are meant for
+
+120
+00:07:58.000 --> 00:08:00.000
+where they can actually add value.
+
+121
+00:08:00.000 --> 00:08:05.000
+And only then, if you do need an LLM, you can start with just one single LLM call
+
+122
+00:08:05.000 --> 00:08:09.000
+and eventually get into an agent or an entire crew.
+
+123
+00:08:10.000 --> 00:08:15.000
+So there's a lot of different ways where you can choose how much agency you bring into your flow
+
+124
+00:08:15.000 --> 00:08:20.000
+and that allows you to make sure that you're being very effective and efficient
+
+125
+00:08:20.000 --> 00:08:21.000
+on what you're building.
+
+126
+00:08:21.000 --> 00:08:24.000
+So let's take a look at how we structure a real-life flow.
+
+127
+00:08:24.000 --> 00:08:28.000
+In this flow, you have a start conversation function.
+
+128
+00:08:28.000 --> 00:08:32.000
+And once that conversation starts, it will trigger a router function.
+
+129
+00:08:32.000 --> 00:08:36.000
+And that router function is basically doing one single LLM request
+
+130
+00:08:36.000 --> 00:08:39.000
+to decide whether it does a deep research or not.
+
+131
+00:08:39.000 --> 00:08:42.000
+Let's say that this conversation has been going on for a while.
+
+132
+00:08:42.000 --> 00:08:47.000
+And due to that, the agent and the LLM has already a lot of context.
+
+133
+00:08:47.000 --> 00:08:50.000
+So there's a lot of messages in the state of this flow.
+
+134
+00:08:50.000 --> 00:08:54.000
+Meaning that it doesn't necessarily need to trigger a new research
+
+135
+00:08:54.000 --> 00:08:57.000
+because it already has all the answers in its context.
+
+136
+00:08:57.000 --> 00:09:00.000
+So it can just go straight into an answer function.
+
+137
+00:09:00.000 --> 00:09:04.000
+Then we do another LLM call and get back to you with an answer.
+
+138
+00:09:04.000 --> 00:09:08.000
+Now, what if you have to trigger an entire deep research?
+
+139
+00:09:08.000 --> 00:09:13.000
+Well, then that goes into a research function that will have an entire crew into that.
+
+140
+00:09:13.000 --> 00:09:17.000
+And that crew will basically behave the same way that we have seen up to this point.
+
+141
+00:09:17.000 --> 00:09:21.000
+Where it's going to go out and actually do the research and scrape pages
+
+142
+00:09:21.000 --> 00:09:26.000
+and put together a final report that will later be used to give you back your answer.
+
+143
+00:09:26.000 --> 00:09:30.000
+So if you really look into flows, it has a set of building blocks
+
+144
+00:09:30.000 --> 00:09:33.000
+that allows you to build this very complex use case.
+
+145
+00:09:33.000 --> 00:09:37.000
+And they're very simple building blocks because this is just a very thin layer.
+
+146
+00:09:37.000 --> 00:09:40.000
+And we're going to talk about the three major building blocks here.
+
+147
+00:09:40.000 --> 00:09:43.000
+The start, the listen, and the router.
+
+148
+00:09:43.000 --> 00:09:48.000
+And all of those are just decorators that you can annotate your functions with.
+
+149
+00:09:48.000 --> 00:09:51.000
+So the first one is the start decorator.
+
+150
+00:09:51.000 --> 00:09:55.000
+And that just marks what is going to be the first function that is going to be executed.
+
+151
+00:09:55.000 --> 00:09:58.000
+The other one is the listen decorator.
+
+152
+00:09:58.000 --> 00:10:04.000
+And that basically marks the function that is going to be executed once another function is done.
+
+153
+00:10:04.000 --> 00:10:10.000
+And then you also have the router decorator that defines this is going to be a conditional function.
+
+154
+00:10:10.000 --> 00:10:17.000
+Where it's going to route requests in different ways depending on what happens inside the function itself.
+
+155
+00:10:17.000 --> 00:10:23.000
+With these three very simple building blocks alone, there is so much you can do.
+
+156
+00:10:23.000 --> 00:10:28.000
+And as we can put more blocks together, and we're going to talk about them in a second,
+
+157
+00:10:28.000 --> 00:10:30.000
+you will see how you can do so much more.
+
+158
+00:10:30.000 --> 00:10:35.000
+So here's an example of a very simple flow that leverages all these building blocks.
+
+159
+00:10:35.000 --> 00:10:40.000
+All you got to do is import those decorators from early on.
+
+160
+00:10:40.000 --> 00:10:43.000
+So in this case, we're just importing listen and start.
+
+161
+00:10:43.000 --> 00:10:46.000
+And you can see that this is regular Python.
+
+162
+00:10:46.000 --> 00:10:49.000
+So it's a very Pythonic way to do things.
+
+163
+00:10:49.000 --> 00:10:55.000
+Where you're just writing down your functions and you're using these decorators to annotate your functions.
+
+164
+00:10:55.000 --> 00:11:02.000
+So we're using the start decorator here to flag the first function as being the starting point of the flow.
+
+165
+00:11:02.000 --> 00:11:09.000
+And then you also have the listen decorator that is basically listening to the start conversation function.
+
+166
+00:11:09.000 --> 00:11:17.000
+And once that function is done, then it will call the trigger research function that we're annotating with the listen decorator.
+
+167
+00:11:17.000 --> 00:11:27.000
+So you can see here how simple it is for you to just use start and listen to actually set up all the set of chain of events that you want to happen.
+
+168
+00:11:27.000 --> 00:11:30.000
+And there's so much more than you can do beyond this basic flow.
+
+169
+00:11:30.000 --> 00:11:38.000
+So if you look at some examples here real quick, you can see how the combination of these patterns can build something truly interesting.
+
+170
+00:11:38.000 --> 00:11:45.000
+So you can have a first function that is using the start decorator that then triggers two other functions.
+
+171
+00:11:45.000 --> 00:11:48.000
+They're listening to the same first function.
+
+172
+00:11:48.000 --> 00:11:55.000
+So in that way, you can have the second and the third function run in parallel by just using these decorators.
+
+173
+00:11:55.000 --> 00:11:58.000
+And then the rest of your flow just keeps going on.
+
+174
+00:11:58.000 --> 00:12:01.000
+But there's a lot of more patterns in there as well.
+
+175
+00:12:01.000 --> 00:12:10.000
+For example, you could make sure that you didn't have a for function that only gets executed when the second and the third function finishes.
+
+176
+00:12:10.000 --> 00:12:14.000
+So when both are done, then that for function will be executed.
+
+177
+00:12:14.000 --> 00:12:20.000
+So in here, we're using a combination of the listen decorator with the end annotation as well.
+
+178
+00:12:20.000 --> 00:12:22.000
+And you see how we can do that in code.
+
+179
+00:12:22.000 --> 00:12:24.000
+It's extremely simple.
+
+180
+00:12:24.000 --> 00:12:26.000
+But you don't need to end there.
+
+181
+00:12:26.000 --> 00:12:35.000
+You can actually have the same for function now set up to be executed either when the second or the third function is done.
+
+182
+00:12:35.000 --> 00:12:38.000
+So it's another layer on how you can actually set it up.
+
+183
+00:12:38.000 --> 00:12:40.000
+And there's even more ways.
+
+184
+00:12:40.000 --> 00:12:50.000
+For example, if we start to use the router decorator, now we can have this second function to trigger either a third one or a fourth one.
+
+185
+00:12:50.000 --> 00:12:55.000
+So look at all these different combinations and all these abstractions.
+
+186
+00:12:55.000 --> 00:12:57.000
+I know they can be a little hard to visualize.
+
+187
+00:12:57.000 --> 00:13:04.000
+But when you reply them to a real use case, they add so much clarity and they allow you to do so much more.
+
+188
+00:13:04.000 --> 00:13:13.000
+So let's go back into that example that we talked about before of the conversation with a crew, the deep research use case for flows.
+
+189
+00:13:13.000 --> 00:13:15.000
+And I want to go over this real quick.
+
+190
+00:13:15.000 --> 00:13:25.000
+So the starting conversation function would be using the start decorator in this case, indicating that this is where the whole flow starts.
+
+191
+00:13:25.000 --> 00:13:35.000
+The trigger deep research would be the router decorator that is deciding on whether it's going to send a request in one way or another, depending on what happens inside that function.
+
+192
+00:13:35.000 --> 00:13:37.000
+And here we're doing an LLM call.
+
+193
+00:13:37.000 --> 00:13:43.000
+We could be using a function call, for example, from the LLM to decide whether we go one route or the other.
+
+194
+00:13:43.000 --> 00:13:49.000
+Now, if we go one route for the answer, well, that's going to be listening to a specific one side of the router.
+
+195
+00:13:49.000 --> 00:13:53.000
+Or if we go with the research, that's going to be listening to another side of the router.
+
+196
+00:13:53.000 --> 00:13:55.000
+And we're going to see how to do that in a second.
+
+197
+00:13:55.000 --> 00:14:00.000
+But the cool thing is that as you build these things and as you build this entire workflow,
+
+198
+00:14:00.000 --> 00:14:08.000
+CrewAI allows you to automatically plot this out so you can actually have a visual cue.
+
+199
+00:14:08.000 --> 00:14:13.000
+You can have the entire visual system mapped out for you based on your code.
+
+200
+00:14:13.000 --> 00:14:19.000
+So that makes documentation so much easier and allows you to understand everything that is happening inside your flow.
+
+201
+00:14:19.000 --> 00:14:26.000
+All you got to do is go into the CrewAI CLI and type CrewAI flow plot.
+
+202
+00:14:26.000 --> 00:14:33.000
+And what that will do is that will automatically look at all your functions and all your decorators and annotation patterns.
+
+203
+00:14:33.000 --> 00:14:35.000
+It's going to plot that out for you.
+
+204
+00:14:36.000 --> 00:14:42.000
+And that allows you, again, to automatically generate these diagrams to help you not only understanding what is happening,
+
+205
+00:14:42.000 --> 00:14:45.000
+but also make sure that you can document this.
+
+206
+00:14:45.000 --> 00:14:50.000
+Crews and flows can get very complex, especially when you're just staring at the code all day.
+
+207
+00:14:50.000 --> 00:14:55.000
+So this really helps you see what is going on and spotting issues with your process.
+
+208
+00:14:55.000 --> 00:15:01.000
+So here is an example of a deep research hack, but actually mapped out by the CrewAI flow.
+
+209
+00:15:02.000 --> 00:15:06.000
+You can see here the getUserMessage as the initial starting function,
+
+210
+00:15:06.000 --> 00:15:12.000
+then going into a router function that will either go into answering or clarifying.
+
+211
+00:15:12.000 --> 00:15:19.000
+And clarifying here is asking extra questions to the user in order to understand how deep it should research
+
+212
+00:15:19.000 --> 00:15:22.000
+and how it should focus its deep research.
+
+213
+00:15:22.000 --> 00:15:28.000
+And then after that is done, it goes into a crew function that actually does the entire research for you
+
+214
+00:15:28.000 --> 00:15:31.000
+using the regular crew pattern that we have seen before,
+
+215
+00:15:31.000 --> 00:15:37.000
+that then goes into a generateReport function at the end that triggers back into the answer.
+
+216
+00:15:37.000 --> 00:15:43.000
+So in here you have a very easy to parse visual model of your entire code
+
+217
+00:15:43.000 --> 00:15:47.000
+so that you understand what is happening and what each function is responsible for.
+
+218
+00:15:47.000 --> 00:15:53.000
+And this is something that I'm so excited about because as an engineer myself make my life so much easier.
+
+219
+00:15:54.000 --> 00:15:59.000
+So if you want to start with a flow on your own and create an entire folder structure,
+
+220
+00:15:59.000 --> 00:16:02.000
+you actually have one simple command that you can use.
+
+221
+00:16:02.000 --> 00:16:05.000
+And that is CrewAI createFlow.
+
+222
+00:16:05.000 --> 00:16:09.000
+All you got to do is type that into your terminal and give your flow a name
+
+223
+00:16:09.000 --> 00:16:14.000
+and that will automatically create the entire project for you.
+
+224
+00:16:14.000 --> 00:16:17.000
+And let's go over that folder structure just for one second.
+
+225
+00:16:17.000 --> 00:16:24.000
+You can see in here that this is just a regular Python project using PyProject to define its versions and dependencies.
+
+226
+00:16:24.000 --> 00:16:30.000
+And you can see that it's structured the host first directory to support your flow.
+
+227
+00:16:30.000 --> 00:16:36.000
+So you're going to have one folder specific for crews, where in this case we have a research crew in there.
+
+228
+00:16:36.000 --> 00:16:42.000
+And you have a specific folder for tools that can be reused across the entire crews.
+
+229
+00:16:42.000 --> 00:16:48.000
+And your actually flow will leave in that main.py file where you can actually encode all your functions in there.
+
+230
+00:16:48.000 --> 00:16:51.000
+And again, you can split this into different files if you want to.
+
+231
+00:16:51.000 --> 00:16:56.000
+In the end of the day, flow is such a thin layer that it's all regular Python.
+
+232
+00:16:56.000 --> 00:17:05.000
+So you can break things apart in any way that pleases you to make sure that this is something that is easily maintainable for you and for your team.
+
+233
+00:17:05.000 --> 00:17:12.000
+Another very interesting thing about flows is that every flow has its own state and state management logic.
+
+234
+00:17:12.000 --> 00:17:17.000
+And for the sake of comparison here, you can just think about this as being like a database.
+
+235
+00:17:17.000 --> 00:17:21.000
+Where you can store anything during the flow execution in there.
+
+236
+00:17:21.000 --> 00:17:27.000
+So let's say that from the start, from the first function, you produce some sort of data.
+
+237
+00:17:27.000 --> 00:17:33.000
+Either by doing the LLM calls or by executing codes or maybe the final output of your crews or an agent.
+
+238
+00:17:33.000 --> 00:17:36.000
+And you want to store that somewhere to be used later.
+
+239
+00:17:36.000 --> 00:17:43.000
+You can just write that into your flow state and eventually in other functions you can read that out.
+
+240
+00:17:43.000 --> 00:17:52.000
+So that allows you to have this one shared pocket of data that during a flow execution you can write things in and read things from.
+
+241
+00:17:52.000 --> 00:18:01.000
+And that gives you so much flexibility on how you share all this data among the different functions as they get executed.
+
+242
+00:18:02.000 --> 00:18:06.000
+But not only that, you can also persist that state.
+
+243
+00:18:06.000 --> 00:18:08.000
+So that is stored in an actual database.
+
+244
+00:18:08.000 --> 00:18:17.000
+So if you ever run that flow again, that state gets automatically preloaded from where it was saved and you can kick things off from where you started.
+
+245
+00:18:17.000 --> 00:18:25.000
+And in order to do that, you can do something as simple as annotating the entire flow with a persist decorator.
+
+246
+00:18:25.000 --> 00:18:32.000
+And that will automatically make sure that it's storing that into a local database for you when you're running this on your own computer.
+
+247
+00:18:32.000 --> 00:18:39.000
+So you can think about how important this is because in our early example about the deep research conversation,
+
+248
+00:18:39.000 --> 00:18:52.000
+as we send new messages, we want to make sure that we're persisting the entire messages and the outputs into this one single state that we can reuse as the conversation goes through.
+
+249
+00:18:52.000 --> 00:18:57.000
+So there's an actual conversational history as the flow gets executed.
+
+250
+00:18:57.000 --> 00:19:06.000
+So every time that we run the flow from the top, it automatically preloads all the conversations up to this point and allows you to just keep chatting with that.
+
+251
+00:19:06.000 --> 00:19:17.000
+And again, that information can not only be used through all the functions, but it's also being used now across many flows executions because it's actually being persisted and preloaded.
+
+252
+00:19:18.000 --> 00:19:26.000
+And a very cool thing is that as checkpoints, you can not only persist the entire state of the flow of the end of every single function,
+
+253
+00:19:26.000 --> 00:19:35.000
+but you can be as granular as you want by going per function and defining on each function what are the functions that should actually persist the state.
+
+254
+00:19:35.000 --> 00:19:45.000
+All you got to do is actually use this persist decorator to annotate every function that you want that by the end of that function to persist that state in the database as it is.
+
+255
+00:19:46.000 --> 00:19:53.000
+And whatever one is the final version of that state, that is going to be automatically reloaded on your new execution of our flow.
+
+256
+00:19:53.000 --> 00:19:56.000
+And you can still overwrite some of that if you want to.
+
+257
+00:19:56.000 --> 00:20:00.000
+And we're going to see an example of that in a second once that we actually get our hands dirty.
+
+258
+00:20:00.000 --> 00:20:05.000
+So I don't know about you, but flows feel so incredibly useful.
+
+259
+00:20:05.000 --> 00:20:09.000
+And frankly, I'm seeing a lot of people using them on the day to day.
+
+260
+00:20:09.000 --> 00:20:14.000
+And that has been their choosing way to move some of these use cases into a production environment.
+
+261
+00:20:14.000 --> 00:20:19.000
+Because it allows you to really set this structure and have as many control as you want.
+
+262
+00:20:19.000 --> 00:20:28.000
+And by applying this opt-in agency model, decide how much agency and how much intelligence you want to add into your automation.
+
+263
+00:20:28.000 --> 00:20:33.000
+That said, they need to be designed well to work properly and they need to be built reliably.
+
+264
+00:20:33.000 --> 00:20:38.000
+So in the next video, we're actually going to get our hands dirty and build this entire flow ourselves.
+
+265
+00:20:38.000 --> 00:20:42.000
+I'm very excited about this. It's going to look awesome and you're going to love it.
+
+266
+00:20:42.000 --> 00:20:44.000
+So let's jump right in there.

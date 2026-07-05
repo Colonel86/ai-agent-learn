@@ -1,0 +1,290 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:03.892 --> 00:00:05.039
+I'm so excited about this video because in this video we're going to take a huge leap.
+
+2
+00:00:05.840 --> 00:00:12.000
+We're going to go from code to no code. We're going to be able to build agents by just
+
+3
+00:00:12.000 --> 00:00:16.799
+prompting our way into that, and that's going to be very exciting because one thing that you're
+
+4
+00:00:16.799 --> 00:00:22.079
+going to learn is that it doesn't need to be one or the other. You can do both. You can start by
+
+5
+00:00:22.079 --> 00:00:27.760
+using no code and prompting your way into a use case, and eventually you can export that as code
+
+6
+00:00:27.760 --> 00:00:33.360
+and keep changing it in Python. So this is very exciting because it allows you to use the same
+
+7
+00:00:33.360 --> 00:00:39.119
+open source library in two different new ways. Let's jump in straight into our platform to build
+
+8
+00:00:39.119 --> 00:00:44.240
+this live, and at the end we're going to download our code so that we can learn how we can keep
+
+9
+00:00:44.240 --> 00:00:49.279
+modifying it even further to make it even more complete. But it's going to make a huge difference
+
+10
+00:00:49.279 --> 00:00:55.200
+on how fast you can move and how easy you can get from zero to one and to the value that you're
+
+11
+00:00:55.200 --> 00:01:00.799
+trying to get. So let's go into that right now. Let me cut straight to the chase and we can jump
+
+12
+00:01:00.799 --> 00:01:06.319
+into our platform to build it live, and this is completely free and I hope you have a blast with
+
+13
+00:01:06.319 --> 00:01:10.879
+that. And at the end we're going to make sure that we download the code so that you can also keep
+
+14
+00:01:10.879 --> 00:01:17.760
+modifying it via code if you want as well. So let's start building it live. All right, so all you got
+
+15
+00:01:17.760 --> 00:01:24.080
+to do is go into app.crewai.com and this is exactly the first screen that you want to see. And you can
+
+16
+00:01:24.080 --> 00:01:29.440
+click on sign up here to create a new account where you can put your name and your email as
+
+17
+00:01:29.440 --> 00:01:34.000
+well. Once that you have created your account this is the first thing that you're going to see. And
+
+18
+00:01:34.000 --> 00:01:40.400
+in here you can already start building your use case by just literally chatting with it. So let's
+
+19
+00:01:40.400 --> 00:01:46.559
+try to do a simple one just so that we understand how capable is this system. I'm going to do something
+
+20
+00:01:46.559 --> 00:01:52.720
+that it's very useful for many sales teams out there and that any company could benefit from.
+
+21
+00:01:52.720 --> 00:01:58.319
+It's kind of like preparing for sales or a pre-meeting use case. It's not the most complex
+
+22
+00:01:58.319 --> 00:02:03.839
+use case out there but I think it's easy enough that we understand it and helps to showcase how
+
+23
+00:02:03.839 --> 00:02:10.080
+powerful this can be. So let me just type it out and the prompt I'm going to be using here is given
+
+24
+00:02:10.080 --> 00:02:17.679
+someone's email, let's deeply research them and their company and then cross that with any relevant
+
+25
+00:02:17.679 --> 00:02:24.720
+data from HubSpot and also check any emails we exchanged with each other in Gmail so you can get
+
+26
+00:02:24.720 --> 00:02:30.559
+me a final report on an initial sales call. Again there's quite a few typos in there but the model
+
+27
+00:02:30.559 --> 00:02:36.399
+should be able to handle it. So I'm just going to press enter. Now you get into Studio and we can
+
+28
+00:02:36.399 --> 00:02:40.960
+follow the tutorial a little bit so that you can understand more what we're seeing here. There's a
+
+29
+00:02:40.960 --> 00:02:46.639
+chat on the left that allows you to chat your way into an automation. On the right you can drag and
+
+30
+00:02:46.639 --> 00:02:51.520
+drop some of these components as well so if you want to build yourself you can always do that.
+
+31
+00:02:51.520 --> 00:02:56.960
+And on the top you get the ability to run these automations or even watching some of the logs.
+
+32
+00:02:57.759 --> 00:03:03.360
+Now if you look what is happening in here and we can close the tab just to make it easier.
+
+33
+00:03:03.360 --> 00:03:08.639
+You can see that the agent has already started to work and is already creating all the different
+
+34
+00:03:08.639 --> 00:03:15.119
+agents for us with all the different tools. So this first agent can search the internet and read
+
+35
+00:03:15.119 --> 00:03:21.919
+website content. The second one can research HubSpot. This third one can look at Gmail and you can see
+
+36
+00:03:21.919 --> 00:03:28.160
+that all that is already built out for me. This is a brand new account. I didn't have to do any custom
+
+37
+00:03:28.160 --> 00:03:35.119
+setup. Now yes, HubSpot and Gmail will require me to authenticate with them so I can just click in
+
+38
+00:03:35.119 --> 00:03:40.880
+here and take care of that. But that's roughly how easy it is to build some of these automations
+
+39
+00:03:40.880 --> 00:03:46.960
+nowadays. And now it's basically going over and making sure that everything works validating for
+
+40
+00:03:46.960 --> 00:03:53.600
+you creating a proper name and making sure that this is good to go. We do see that we are missing
+
+41
+00:03:53.600 --> 00:03:59.600
+some of the integrations right here but we have a suggestion step to run the automation itself and we
+
+42
+00:03:59.600 --> 00:04:06.240
+can click on this one it's going to basically ask who is this email. For the sake of like just
+
+43
+00:04:06.240 --> 00:04:13.199
+entertaining even though I haven't connected my Gmail or HubSpot I will tap my email. So like I
+
+44
+00:04:13.199 --> 00:04:19.040
+was supposed to be meeting with myself and we can see the first agent and like the work that it's
+
+45
+00:04:19.040 --> 00:04:25.679
+doing in that way. Now if you want to you can just sit in here and see some of these tasks progress
+
+46
+00:04:25.679 --> 00:04:31.200
+and you can see that in a second this is going to show that this first task and agent is now busy
+
+47
+00:04:31.200 --> 00:04:37.839
+and running. But a more interesting sitting in here is you can go into executions and now you
+
+48
+00:04:37.839 --> 00:04:44.320
+can have all the individual traces of everything that is going on. For every single LLM call you
+
+49
+00:04:44.320 --> 00:04:51.040
+can see all the inner prompts of what is happening in there. You can see the raw data behind those.
+
+50
+00:04:51.040 --> 00:04:55.920
+You can see the tools usage and you can see all the results that are coming from that
+
+51
+00:04:55.920 --> 00:05:01.760
+and even the websites that it's scraping all the way to its final answer and just keep moving on.
+
+52
+00:05:02.480 --> 00:05:09.119
+If you go back to the visual editor you can also click in here to see a final task output where you
+
+53
+00:05:09.119 --> 00:05:14.399
+can see that it researched me, it found that I'm the founder and CEO of CrewAI ,found a bunch of
+
+54
+00:05:14.399 --> 00:05:19.839
+information around my background my LinkedIn profile and many information about the company
+
+55
+00:05:19.839 --> 00:05:26.720
+as well including recent developments including a partnership that we have with PWC and many more.
+
+56
+00:05:26.720 --> 00:05:32.959
+So this is fairly interesting and now you can see how easy it was for us to put something like this
+
+57
+00:05:32.959 --> 00:05:37.920
+together and you can do so much more. This is just scratching the surface of the kind of
+
+58
+00:05:37.920 --> 00:05:42.880
+automations that you can do. Keep in mind that again you're not limited to chatting alone. You
+
+59
+00:05:42.880 --> 00:05:51.920
+can always drag and drop your own custom agents tasks and also tools yourself and connect them in
+
+60
+00:05:51.920 --> 00:05:57.359
+any way that you would like. So I would definitely recommend you to check this out because this can
+
+61
+00:05:57.359 --> 00:06:04.640
+be extremely easy to set things up. And another cool thing about it is assuming that you have
+
+62
+00:06:04.640 --> 00:06:11.359
+everything set up just right you can always download this back. So if I basically remove
+
+63
+00:06:11.359 --> 00:06:16.559
+some of those things that are not supposed to be here for example this agent that is not connected
+
+64
+00:06:16.559 --> 00:06:24.880
+to anything and also the tool that is not connected to anything in here I now can just download this
+
+65
+00:06:24.880 --> 00:06:32.160
+entire thing as a code. So by clicking the download button in here I will get a zip file with the
+
+66
+00:06:32.160 --> 00:06:38.559
+entire code so I can keep modifying it. So this is actually a super powerful tool not only because
+
+67
+00:06:38.559 --> 00:06:44.799
+it allows non-technical people and engineers to build automations but because it helps engineers
+
+68
+00:06:44.799 --> 00:06:50.399
+to build faster and get to value faster because now you don't need to do all that boiler plating
+
+69
+00:06:50.399 --> 00:06:57.040
+and you can basically fast track into initial MVP that you can then improve further. All right
+
+70
+00:06:57.040 --> 00:07:01.519
+I will leave it there because I want to make sure that we keep going there's so much more that we
+
+71
+00:07:01.519 --> 00:07:08.000
+want to cover. If you want to try studio you can go into app.crewai.com and I see you in the next
+
+72
+00:07:08.000 --> 00:07:10.000
+lesson in just a second.

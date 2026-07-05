@@ -1,0 +1,210 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:04.011 --> 00:00:04.000
+By now, you're already very proficient on building some of these use cases, right?
+
+2
+00:00:04.000 --> 00:00:09.000
+You'll learn a lot about how these systems work and what the different components are.
+
+3
+00:00:09.000 --> 00:00:14.000
+That said, the gap between building things as a prototype and getting into production is huge.
+
+4
+00:00:14.000 --> 00:00:16.000
+There's a lot going on in there.
+
+5
+00:00:16.000 --> 00:00:23.000
+So now we're going to start to dive into what actually means to take one of these systems into a production environment.
+
+6
+00:00:23.000 --> 00:00:24.000
+Let's go into the slides.
+
+7
+00:00:24.000 --> 00:00:28.000
+A lot of these companies and teams that are building these AI agent systems,
+
+8
+00:00:28.000 --> 00:00:36.000
+they're now getting to a point where they're moving out of a prototyping stage and going into fully-fledged production use cases.
+
+9
+00:00:36.000 --> 00:00:40.000
+What can be very hard to do if you're not building this the right way?
+
+10
+00:00:40.000 --> 00:00:47.000
+One of the biggest jumps is that as a prototype, you're often running these agents as a one-off automation.
+
+11
+00:00:47.000 --> 00:00:53.000
+So, for example, you saw the crew that we built early that helps you organize and prepare for meetings.
+
+12
+00:00:53.000 --> 00:01:01.000
+We could do another use case where it summarizes transcripts with action items and help you draft emails, for example, as next steps.
+
+13
+00:01:01.000 --> 00:01:06.000
+So in the prototype stage, that crew might be triggered manually by you when you're having a meeting.
+
+14
+00:01:06.000 --> 00:01:08.000
+You run that crew and you get the results.
+
+15
+00:01:08.000 --> 00:01:14.000
+Or you might have deployed this to run for, say, your engineering team at a small scale.
+
+16
+00:01:14.000 --> 00:01:18.000
+But the thing is, once you turn this on to a lab and you turn this to an entire company,
+
+17
+00:01:18.000 --> 00:01:22.000
+you're moving away from human time to machine time.
+
+18
+00:01:22.000 --> 00:01:26.000
+So in human time, you have fewer users, fewer executions.
+
+19
+00:01:26.000 --> 00:01:28.000
+It's very easy to monitor and fix.
+
+20
+00:01:28.000 --> 00:01:35.000
+When we're talking about machine time, we're talking about thousands of users, hundreds of thousands of executions.
+
+21
+00:01:35.000 --> 00:01:42.000
+What makes it very difficult to monitor and fix at a scale if you didn't put some thought into this early on.
+
+22
+00:01:42.000 --> 00:01:47.000
+When you just have a few crew executions in a day, maybe a couple dozen in a day,
+
+23
+00:01:47.000 --> 00:01:53.000
+it's pretty easy to understand the traces and understand where the problem is and how you fix it.
+
+24
+00:01:53.000 --> 00:01:58.000
+And you're probably also working with a small set of relatively proficient users.
+
+25
+00:01:58.000 --> 00:02:01.000
+If it's just you, that's even easier.
+
+26
+00:02:01.000 --> 00:02:09.000
+But as you scale to hundreds, thousands or even hundreds of thousands of executions, you can't monitor those ad hoc anymore.
+
+27
+00:02:09.000 --> 00:02:13.000
+So you need to make sure that the vulnerabilities don't start to pile up.
+
+28
+00:02:14.000 --> 00:02:16.000
+So that's what I mean by machine time.
+
+29
+00:02:16.000 --> 00:02:22.000
+The agents that are getting now into this very fast paced environment, doing many executions,
+
+30
+00:02:22.000 --> 00:02:27.000
+and you still need to be able to track their performance in some way, shape or form.
+
+31
+00:02:27.000 --> 00:02:31.000
+So there's two kind of metrics that you really care about in here.
+
+32
+00:02:31.000 --> 00:02:34.000
+One is zoom in metrics.
+
+33
+00:02:34.000 --> 00:02:41.000
+And that means the ability to debug, to reproduce errors, checking traces, prompts, tokens.
+
+34
+00:02:41.000 --> 00:02:48.000
+It's all about zooming in to one specific execution and being able to trace it and understand everything that is going on with that.
+
+35
+00:02:48.000 --> 00:02:50.000
+The other one is zoom out metrics.
+
+36
+00:02:50.000 --> 00:02:59.000
+And those metrics will be more around using LLM-as-a-judge, checking for quality, hallucinations, ROI or success metrics.
+
+37
+00:02:59.000 --> 00:03:07.000
+The idea here is that you might be able to look at some zoom in metrics for ad hoc debugging.
+
+38
+00:03:07.000 --> 00:03:16.000
+But once that you're running these things at a larger scale, you want to make sure that you have the systems in place to check for quality as a whole for the entire system.
+
+39
+00:03:16.000 --> 00:03:21.000
+So this is very exciting, but I also want to spend some time talking about the pitfalls.
+
+40
+00:03:21.000 --> 00:03:23.000
+What are the things that go wrong?
+
+41
+00:03:23.000 --> 00:03:26.000
+And this is interesting because the tech is there.
+
+42
+00:03:26.000 --> 00:03:30.000
+You have so many powerful models out there right now.
+
+43
+00:03:30.000 --> 00:03:37.000
+And with some of the features that we have shown and the ones that we're going to show ahead, you have so much that you can build already.
+
+44
+00:03:37.000 --> 00:03:50.000
+If anything, what we're finding out is that most of the companies and the teams that are struggling with getting the systems in production, they're having pitfalls on their process, not on their tech.
+
+45
+00:03:50.000 --> 00:04:03.000
+So they're not spending enough time planning these use cases, for example, or they don't have a clear definition of success or not breaking the process into smaller chunks so that you can have many agents use it.
+
+46
+00:04:03.000 --> 00:04:09.000
+And even if they do have a clear definition of success, then they're not measuring or evaluating it.
+
+47
+00:04:09.000 --> 00:04:11.000
+And that's an entire new problem.
+
+48
+00:04:12.000 --> 00:04:21.000
+The idea that you deploy these things and you can't tell if they're actually adding value to you or not, it's something that will hinder your ability to make further investments.
+
+49
+00:04:21.000 --> 00:04:26.000
+And as you improve those systems, you need to be able to tell if you're trending in the right direction.
+
+50
+00:04:26.000 --> 00:04:34.000
+So now that you know some of the challenges of these production systems, it's important that you understand how to actually address those.
+
+51
+00:04:34.000 --> 00:04:42.000
+So in the next video, you see many different tactics you have with CrewAI to debug, observe and optimize your multi-agent systems.
+
+52
+00:04:42.000 --> 00:04:49.000
+So you want to make sure that you don't miss the next lesson, because that's going to be a cornerstone on some of the new examples further ahead.

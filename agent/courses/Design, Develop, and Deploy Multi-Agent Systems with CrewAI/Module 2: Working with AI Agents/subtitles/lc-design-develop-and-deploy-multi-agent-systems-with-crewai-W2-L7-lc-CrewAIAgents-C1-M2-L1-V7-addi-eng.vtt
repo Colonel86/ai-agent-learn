@@ -1,0 +1,526 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:02.125 --> 00:00:04.800
+We learned so much about tools. Now let's make sure that we get that and apply it to our deep
+
+2
+00:00:04.800 --> 00:00:10.319
+research crew, and you will see how much powerful that will get it. We're going to be able to do way
+
+3
+00:00:10.319 --> 00:00:15.600
+more, and this is very exciting. So let's jump right in. All right, so for this Jupyter Notebook,
+
+4
+00:00:15.600 --> 00:00:20.479
+we're going to use a custom tool for the first time. This is going to be very exciting because
+
+5
+00:00:20.479 --> 00:00:26.319
+we're going to start to understand how you can add any capabilities to your agents through custom
+
+6
+00:00:26.319 --> 00:00:31.600
+tools. You can literally use custom tools to connect to external systems, internal systems,
+
+7
+00:00:31.600 --> 00:00:36.400
+called databases, or any sorts of APIs that you might have. So there's a lot that you can do on
+
+8
+00:00:36.400 --> 00:00:42.639
+that one. For this one, what we will do is actually create a custom tool that allows your final agent
+
+9
+00:00:42.639 --> 00:00:48.799
+to plot a chart. That means that it's going to use the information that it gathers for the report
+
+10
+00:00:48.799 --> 00:00:54.080
+to actually plot some sort of visual that it can embed into the markdown that is going to be the
+
+11
+00:00:54.080 --> 00:00:59.759
+final report. So this idea of this custom tool is to allow your report to be a little more richer,
+
+12
+00:00:59.759 --> 00:01:05.839
+to have more information, and do that by leveraging the regular Python libraries like seaborn and
+
+13
+00:01:05.839 --> 00:01:11.760
+matplotlib. So you'll see in this lesson how we're going to enable the reporter write agent
+
+14
+00:01:11.760 --> 00:01:17.599
+to use custom tools to actually build those charts and then embed them into the final report. This is
+
+15
+00:01:17.599 --> 00:01:21.919
+going to be a very exciting one, so let's jump right into that. All right, so now we're going
+
+16
+00:01:21.919 --> 00:01:28.319
+to improve our deep research crew, but we're going to add custom tools to that. I'm very excited
+
+17
+00:01:28.319 --> 00:01:33.599
+about this one because we're going to start to see how custom tools can allow your agent to do so
+
+18
+00:01:33.599 --> 00:01:38.879
+much more stuff. And to kick things off, we're going to start as simple as we have done so far,
+
+19
+00:01:38.879 --> 00:01:43.839
+where we're just copying and importing all the different classes. So the agent, the task, and
+
+20
+00:01:43.839 --> 00:01:49.199
+the crew class. We're also importing the access search tool again, and the scrape website too,
+
+21
+00:01:49.199 --> 00:01:54.959
+and then just loading all the API keys in there. So this should be enough to get us started. And
+
+22
+00:01:54.959 --> 00:02:00.000
+the next thing that I want to do is actually create our custom tool. But before we create it,
+
+23
+00:02:00.000 --> 00:02:06.319
+let's just revisit what exactly a custom tool looks like. So a custom tool is created by using
+
+24
+00:02:06.319 --> 00:02:12.559
+the base tool class, so we want to make sure that we import that. And then after we do, your custom
+
+25
+00:02:12.559 --> 00:02:20.080
+tool can look as simple as just this, where you have your class name, and you have your name and
+
+26
+00:02:20.080 --> 00:02:25.679
+description, and some of the schema. So if we take a look at this, we can see that this is extremely
+
+27
+00:02:25.679 --> 00:02:31.600
+simple and straight to the point. And you can add all your logic under this run function, where you
+
+28
+00:02:31.600 --> 00:02:36.399
+can do anything you want in here. You can connect to an API, you can connect with an external system,
+
+29
+00:02:36.399 --> 00:02:41.279
+and just make sure that you return a string at the end that will be the final tool result.
+
+30
+00:02:41.360 --> 00:02:46.000
+All right, so now that we understand what is the structure for our custom tool,
+
+31
+00:02:46.000 --> 00:02:51.279
+let's make sure that we create our own. And this custom tool is going to be about plotting custom
+
+32
+00:02:51.279 --> 00:02:56.800
+seaborn charts. So let me make sure that I paste it in here. If you are familiar with Python,
+
+33
+00:02:56.800 --> 00:03:02.240
+you probably know about these libraries already. Both seaborn and matplotlib are well-known
+
+34
+00:03:02.240 --> 00:03:08.240
+libraries for creating custom charts in Python. And this is basically a custom plot tool that
+
+35
+00:03:08.240 --> 00:03:14.320
+allows the agent to create custom plots. It has some instructions on how to use it. And if you go
+
+36
+00:03:14.320 --> 00:03:21.039
+into a run definition, you can see what exactly it does. It uses a single LLM call to extract
+
+37
+00:03:21.039 --> 00:03:26.960
+information from the arguments that it's getting, and then use that to actually plot an entire
+
+38
+00:03:26.960 --> 00:03:32.800
+seaborn chart, and provides that image back into our agent so that it can incorporate that
+
+39
+00:03:32.800 --> 00:03:37.520
+into the final result. So we want to make sure that we provide this tool to our agents,
+
+40
+00:03:37.520 --> 00:03:43.279
+so we get more rich visuals on our report as well. Very excited about this one. So let's create
+
+41
+00:03:43.279 --> 00:03:48.639
+this tool and move on into setting up Exa. All right, so now we're going to create the instances
+
+42
+00:03:48.639 --> 00:03:54.559
+for our Exa and our Scrape website tool, just making sure that we have those two tools ready
+
+43
+00:03:54.559 --> 00:04:00.240
+to go and we can assign them to our agents. Now let's create the instances of our Exa search tool
+
+44
+00:04:00.240 --> 00:04:05.520
+and our Scrape website tool. And by now, you're more familiar with this idea and the concept of
+
+45
+00:04:05.520 --> 00:04:11.119
+tools themselves as a way to allow your agents to interact with external or internal systems.
+
+46
+00:04:11.119 --> 00:04:15.839
+And remember, these tools can take a lot of different shapes and forms. We're using here a
+
+47
+00:04:15.839 --> 00:04:21.279
+couple of tools that are pre-built by Crew AI, and you can basically deploy them into your agents and
+
+48
+00:04:21.279 --> 00:04:26.959
+they're good to go. But you're also creating your own custom tool. We also will talk about how you
+
+49
+00:04:26.959 --> 00:04:32.399
+can use MCPs as tools eventually, and I'm very excited about that in one of the future lessons.
+
+50
+00:04:32.399 --> 00:04:37.279
+But the idea here is that through tools, you're allowing your agents to actually tap into the
+
+51
+00:04:37.279 --> 00:04:42.720
+external world, either by pulling information out of that or pushing information into that,
+
+52
+00:04:42.720 --> 00:04:48.480
+or even taking actions in other systems. So what we're doing here is tapping into the Exa API
+
+53
+00:04:48.480 --> 00:04:53.760
+to do searching on the Internet and using the Scrape website tool to actually access some of
+
+54
+00:04:53.760 --> 00:04:58.559
+these websites and pull information out of them. And the reason why we're doing this setup where
+
+55
+00:04:58.559 --> 00:05:04.720
+we're setting a specific Exa-based URL is just due to the internal environment in Deep Learning
+
+56
+00:05:04.720 --> 00:05:09.359
+AI that we're using. For most of the use cases, if you're using this on your own computer, for
+
+57
+00:05:09.359 --> 00:05:14.399
+example, in your own terminal, you won't necessarily need to do that. Other than setting up your
+
+58
+00:05:14.399 --> 00:05:19.679
+environment variable for your Exa API key, you should be good to go. All right, so now that we're
+
+59
+00:05:19.679 --> 00:05:25.839
+doing this, let's load our agency YAML file and make sure that we create all our agents. So this is the
+
+60
+00:05:25.839 --> 00:05:30.720
+same thing that we did last time. There's nothing fancy happening in here. The idea is basically
+
+61
+00:05:30.720 --> 00:05:36.320
+loading all those prompts from the YAML files and using them to instantiate all of our agents.
+
+62
+00:05:36.320 --> 00:05:41.679
+Again, super straightforward. The whole idea here is, again, to have some separation of concerns
+
+63
+00:05:41.679 --> 00:05:46.559
+where you have your prompts, your agents definitions, your task definitions in a separate file,
+
+64
+00:05:46.559 --> 00:05:52.880
+then your agents and tasks themselves. Keep in mind that we're still keeping the same features
+
+65
+00:05:52.880 --> 00:05:58.160
+that we have used up to this point, including the guardrail that we implemented in the last
+
+66
+00:05:58.160 --> 00:06:03.920
+notebook. So we want to make sure that we bring that guardrail in here to check that the final
+
+67
+00:06:03.920 --> 00:06:09.119
+output and the final report includes a summary section, a recommendation sections, and a citation
+
+68
+00:06:09.119 --> 00:06:15.040
+sections. One thing that I also want to pinpoint is the fact that on our report writer agent,
+
+69
+00:06:15.040 --> 00:06:20.399
+we're assigning our custom tool to that agent. And here you can see how we're actually doing it.
+
+70
+00:06:20.399 --> 00:06:25.519
+We're basically creating an instance of that tool that we just created a couple cells above.
+
+71
+00:06:25.519 --> 00:06:30.399
+And this is as simple as that. All you got to do once that you create your custom tool is to assign
+
+72
+00:06:30.399 --> 00:06:35.200
+that to an agent and your agents good to go. We're going to talk eventually in future lessons,
+
+73
+00:06:35.200 --> 00:06:40.239
+how you make sure that you can distribute your tools across many different crews and many
+
+74
+00:06:40.239 --> 00:06:44.959
+different agents in a way that's easier for you to maintain and you can get other people in your
+
+75
+00:06:44.959 --> 00:06:49.920
+teams to use it. But for now, all you got to worry about is just that you need to create one instance
+
+76
+00:06:49.920 --> 00:06:54.320
+and give that to your agent, and it's good to go. Now what we're going to do next is actually
+
+77
+00:06:54.320 --> 00:06:58.480
+creating our tasks. And it's very similar to the way that we set up our agents where we're now
+
+78
+00:06:58.480 --> 00:07:03.279
+loading these tasks from a yaml file, and using data to instantiate all the different versions
+
+79
+00:07:03.279 --> 00:07:07.839
+of the tasks. Again, keep in mind that we're still keeping the same structure that we had
+
+80
+00:07:07.839 --> 00:07:13.519
+on our previous notebook, where we still have that right report guardrail writing here to make sure
+
+81
+00:07:13.519 --> 00:07:18.000
+that we're checking the final report before we actually call it done. So let's just create this.
+
+82
+00:07:18.559 --> 00:07:23.359
+The other thing that we're still bringing from the last notebook is the ability to save the final
+
+83
+00:07:23.359 --> 00:07:28.720
+report as a file. And it's going to be an after hook as well. So we're keeping that unchanged.
+
+84
+00:07:28.720 --> 00:07:33.440
+Let's just make sure that we create that function so that we can use it. And now it's as simple as
+
+85
+00:07:33.440 --> 00:07:38.720
+bringing that entire group of agents and tasks together in one single crew. And you can see that
+
+86
+00:07:38.720 --> 00:07:44.079
+we're still using the memory and we're still setting up that after kickoff callback as well.
+
+87
+00:07:44.079 --> 00:07:48.640
+And now that this is created, all that is left for us to do is to actually kick off the crew
+
+88
+00:07:48.640 --> 00:07:53.760
+and tag along the results. And now that we have our inputs, all we got to do is actually kick off
+
+89
+00:07:53.760 --> 00:08:00.079
+the crew and see how good of a result we actually get from this. So let's go into that. Alright,
+
+90
+00:08:00.079 --> 00:08:05.920
+so now if we tag along the execution, we can see that the same flow still works. And again,
+
+91
+00:08:05.920 --> 00:08:10.559
+we're trying to keep things simple in here just to make sure that we get to show you how you can
+
+92
+00:08:10.640 --> 00:08:15.440
+implement some of these concepts that we're learning as we learn them into our crew. But
+
+93
+00:08:15.440 --> 00:08:19.600
+at the end of this, you're going to see that throughout all the lessons, we're going to be
+
+94
+00:08:19.600 --> 00:08:24.959
+able to do something very powerful. For now, it's just a stick of adding this custom tool and see
+
+95
+00:08:24.959 --> 00:08:30.720
+how things work. And you can see that the research planner is still doing its main work. It's trying
+
+96
+00:08:30.720 --> 00:08:36.479
+to find an angle on how to find out these tools and what to research about them. From that point
+
+97
+00:08:36.479 --> 00:08:41.119
+on, you can see that the internet researcher kicks off. It's using the access search tool again
+
+98
+00:08:41.119 --> 00:08:46.799
+to find all the information and based on the data in the websites that it's finding, then moves into
+
+99
+00:08:46.799 --> 00:08:52.239
+scraping those websites to make sure it gets all the information that it needs. Now, at the end of
+
+100
+00:08:52.239 --> 00:08:57.919
+this, it puts together an early draft of what the report could be with information about all these
+
+101
+00:08:57.919 --> 00:09:04.559
+companies that then moves into our next the fact checker agent. Now, we can skip that for now and
+
+102
+00:09:04.559 --> 00:09:10.239
+just jump straight into our final report just to look at how that looks. So if you actually look at
+
+103
+00:09:10.239 --> 00:09:15.280
+the report right in here, it's interesting because it gets all the information from the fact checker,
+
+104
+00:09:15.280 --> 00:09:21.039
+but it now uses our custom tool to create custom plots. And you can see that it's sharing some
+
+105
+00:09:21.039 --> 00:09:28.159
+information and that is then plotting one specific PNG file and that will be injected into the final
+
+106
+00:09:28.159 --> 00:09:35.200
+report. Then the same report writer agent builds the entire report and actually embeds that image
+
+107
+00:09:35.200 --> 00:09:41.039
+in there. You can see here in visual data representation. But then the guardrail kicks in
+
+108
+00:09:41.039 --> 00:09:46.159
+and notice there's missing an insights block and then the agent needs to go back to edit.
+
+109
+00:09:46.719 --> 00:09:52.159
+From that point on, the agent decides to plot a different chart and as it wraps its report again,
+
+110
+00:09:52.159 --> 00:09:58.559
+the guardrail picks up that's missing a citations block. So the agent goes back into add there. So
+
+111
+00:09:58.559 --> 00:10:02.799
+here you can see all the different pieces that we're talking about coming together from the
+
+112
+00:10:02.799 --> 00:10:08.320
+custom tools to the actual guardrails and everything in between coming together to build
+
+113
+00:10:08.320 --> 00:10:13.760
+this final report. Now, if we keep scrolling down, we actually do get this final report and we can
+
+114
+00:10:13.760 --> 00:10:20.159
+actually plot it out because remember, we are saving that as a markdown file using an afterhook.
+
+115
+00:10:20.159 --> 00:10:27.039
+So I can actually go into a new cell and just plot out that a research report and we get to
+
+116
+00:10:27.039 --> 00:10:32.400
+see the entire thing. So you can tag along all the report, you can see the emerging tools that
+
+117
+00:10:32.400 --> 00:10:37.520
+it found out about it, you can see the features and limitations and then even the chart that it
+
+118
+00:10:37.520 --> 00:10:43.599
+was able to plot with basically the monthly AI cost for these tools. And this is so exciting
+
+119
+00:10:43.599 --> 00:10:49.039
+that the fact that you can have these agents do any sort of research for you. Remember, we
+
+120
+00:10:49.039 --> 00:10:55.039
+added the input here that we want to research about this AI tools, but we could have this crew to
+
+121
+00:10:55.039 --> 00:11:01.440
+research on anything. If anything, I encourage you to go back and change the input query in this
+
+122
+00:11:01.440 --> 00:11:06.559
+notebook so that you can get this crew to run again and to build all sorts of different reports
+
+123
+00:11:06.559 --> 00:11:12.080
+from different topics. Feel free to start moving things around, changing the models, changing the
+
+124
+00:11:12.080 --> 00:11:17.840
+tools and just try your hand into this so that you grasp these concepts. The one thing that I do want
+
+125
+00:11:17.840 --> 00:11:23.840
+to call out though is you can see the progressive improvement that this crew is getting over time.
+
+126
+00:11:23.840 --> 00:11:28.799
+So far, we have starting with a very simple setup and we're slowly adding these new features.
+
+127
+00:11:28.799 --> 00:11:33.520
+And as we go through the next lessons, we're going to add more and more features to make sure
+
+128
+00:11:33.520 --> 00:11:39.119
+this report is actually grounded on the truth and that it follows a specific format and is exactly
+
+129
+00:11:39.119 --> 00:11:43.119
+what I want to get out of this. So this is going to be very exciting. You don't want to miss this
+
+130
+00:11:43.119 --> 00:11:47.440
+out, especially given some of the things that we're going to learn in our next lesson. So I
+
+131
+00:11:47.440 --> 00:11:49.760
+want to see you in there right there in a second.
