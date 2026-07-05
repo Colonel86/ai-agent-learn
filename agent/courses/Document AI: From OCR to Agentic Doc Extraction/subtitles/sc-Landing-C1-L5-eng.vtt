@@ -1,0 +1,1042 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.001 --> 00:00:06.001
+Documents do not always present information in a strictly top-to-bottom, left-to-right order.
+
+2
+00:00:06.973 --> 00:00:09.776
+In this lesson, you will learn how to
+
+3
+00:00:09.776 --> 00:00:12.579
+use models like LayoutReader to detect text ordering.
+
+4
+00:00:13.380 --> 00:00:17.884
+After identifying a document's layout and locating and ordering the text,
+
+5
+00:00:18.184 --> 00:00:20.353
+you will use a VLM to
+
+6
+00:00:20.353 --> 00:00:22.889
+develop a holistic understanding of the document.
+
+7
+00:00:23.456 --> 00:00:25.558
+Okay, let's get to it.
+
+8
+00:00:25.658 --> 00:00:28.762
+In lesson two, Andrea walked us through the evolution of OCR,
+
+9
+00:00:28.862 --> 00:00:32.866
+from traditional engines like Tesseract to modern deep learning systems.
+
+10
+00:00:32.966 --> 00:00:35.068
+Now that we understand how text is extracted,
+
+11
+00:00:35.168 --> 00:00:37.170
+we're ready for the next challenge:
+
+12
+00:00:37.270 --> 00:00:39.372
+documents with complex layouts.
+
+13
+00:00:39.472 --> 00:00:41.775
+We'll start by grounding ourselves in what
+
+14
+00:00:41.775 --> 00:00:44.077
+layout detection and reading order actually mean,
+
+15
+00:00:44.177 --> 00:00:47.047
+and why they matter so much for document intelligence.
+
+16
+00:00:47.147 --> 00:00:50.750
+Then, we'll look at how modern systems try to solve these problems
+
+17
+00:00:50.850 --> 00:00:54.354
+using learning-based approaches instead of simple heuristics.
+
+18
+00:00:55.021 --> 00:00:57.524
+cover real-world challenges, dealing with forms,
+
+19
+00:00:57.524 --> 00:00:59.826
+tables, figures, handwriting,
+
+20
+00:00:59.826 --> 00:01:03.830
+and multilingual documents and how they can be solved with specialized models.
+
+21
+00:01:03.830 --> 00:01:07.934
+From there, we'll introduce Vision-Language Models and talk about how they differ
+
+22
+00:01:07.934 --> 00:01:10.537
+from traditional language-only models.
+
+23
+00:01:10.537 --> 00:01:14.040
+Finally, we'll discuss how you can combine these techniques
+
+24
+00:01:14.040 --> 00:01:17.243
+into a hybrid architecture that you'll implement in the lab.
+
+25
+00:01:17.243 --> 00:01:19.813
+Let's begin with the pipeline that many teams
+
+26
+00:01:19.813 --> 00:01:21.915
+and organizations still rely on today.
+
+27
+00:01:21.915 --> 00:01:24.517
+First, you extract the text from the document.
+
+28
+00:01:25.085 --> 00:01:26.920
+Then you pass that text into
+
+29
+00:01:26.920 --> 00:01:29.089
+a language model and ask it questions.
+
+30
+00:01:29.456 --> 00:01:32.859
+On the surface, this feels reasonable, simple, even elegant.
+
+31
+00:01:33.293 --> 00:01:36.696
+But the problem is that most text extraction can be destructive.
+
+32
+00:01:37.297 --> 00:01:39.999
+The moment we flatten a document, structure is lost.
+
+33
+00:01:40.066 --> 00:01:42.368
+columns and rows get mixed together,
+
+34
+00:01:42.368 --> 00:01:45.071
+tables become meaningless floating text blobs.
+
+35
+00:01:45.071 --> 00:01:47.173
+Captions detached from figures,
+
+36
+00:01:47.173 --> 00:01:49.676
+and reading order becomes unpredictable.
+
+37
+00:01:50.076 --> 00:01:52.879
+For complex documents, financial reports,
+
+38
+00:01:52.879 --> 00:01:54.981
+research papers, and legal contracts.
+
+39
+00:01:55.281 --> 00:02:00.281
+OCR plus an LLM simply doesn't have enough context to reason correctly.
+
+40
+00:02:00.820 --> 00:02:03.456
+Layout detection or Document Layout Analysis is
+
+41
+00:02:03.456 --> 00:02:06.126
+the first step toward fixing that problem.
+
+42
+00:02:06.526 --> 00:02:09.796
+Rather than treating a document as a corpus of raw text,
+
+43
+00:02:10.130 --> 00:02:13.800
+layout detection identifies meaningful regions on the page
+
+44
+00:02:14.100 --> 00:02:17.103
+and figures out where they are and what they represent.
+
+45
+00:02:17.403 --> 00:02:22.308
+It distinguishes between paragraphs, tables, figures, headers, footers, and
+
+46
+00:02:22.342 --> 00:02:26.346
+captions. In other words, we're no longer just extracting content,
+
+47
+00:02:26.346 --> 00:02:28.848
+we're understanding the structure of the document.
+
+48
+00:02:28.848 --> 00:02:31.151
+This turns out to be incredibly important.
+
+49
+00:02:31.151 --> 00:02:34.154
+Preserving layout prevents different sections of text
+
+50
+00:02:34.154 --> 00:02:36.356
+from getting mixed together and convoluted.
+
+51
+00:02:36.356 --> 00:02:39.859
+It preserves the narrative flow in multi-column documents.
+
+52
+00:02:39.859 --> 00:02:42.862
+It allows you to target specific parts of a page
+
+53
+00:02:42.862 --> 00:02:46.366
+like totals in a table or key fields in a form.
+
+54
+00:02:46.366 --> 00:02:49.169
+The core idea here is simple but powerful.
+
+55
+00:02:49.702 --> 00:02:52.505
+layout is important. Once you throw it away,
+
+56
+00:02:52.505 --> 00:02:55.508
+understanding becomes fragile and error prone.
+
+57
+00:02:56.109 --> 00:02:58.411
+If you look at real world documents, such
+
+58
+00:02:58.411 --> 00:03:01.014
+as the ones you've seen in the previous lab,
+
+59
+00:03:01.014 --> 00:03:03.016
+they're rarely just blocks of text.
+
+60
+00:03:03.016 --> 00:03:06.419
+They include columns, tables, charts, images,
+
+61
+00:03:06.419 --> 00:03:10.523
+captions, headers, footers, stamps, and annotations.
+
+62
+00:03:11.024 --> 00:03:13.793
+When you explicitly detect and label these components,
+
+63
+00:03:13.793 --> 00:03:17.197
+downstream models know what kind of information they're looking at
+
+64
+00:03:17.197 --> 00:03:19.399
+before they try to reason over them.
+
+65
+00:03:19.599 --> 00:03:22.202
+Once we know what's on the page and where it is,
+
+66
+00:03:22.402 --> 00:03:24.904
+the next question is how should it be read.
+
+67
+00:03:25.305 --> 00:03:27.207
+Layout tells us where things are.
+
+68
+00:03:27.473 --> 00:03:29.509
+Reading order tells us in what
+
+69
+00:03:29.509 --> 00:03:31.878
+sequence a human would actually read them.
+
+70
+00:03:32.378 --> 00:03:36.449
+This matters enormously in multi-column layouts or documents
+
+71
+00:03:36.449 --> 00:03:38.451
+with floating figures and captions.
+
+72
+00:03:38.952 --> 00:03:40.954
+Without a reliable reading order,
+
+73
+00:03:40.954 --> 00:03:44.257
+even a clean layout still leaves room for ambiguity.
+
+74
+00:03:44.557 --> 00:03:47.126
+Historically, reading order was handled with rules.
+
+75
+00:03:47.627 --> 00:03:50.330
+You would sort regions top to bottom, left to right,
+
+76
+00:03:50.630 --> 00:03:54.033
+maybe apply an X-Y cut algorithm and hope for the best.
+
+77
+00:03:54.234 --> 00:03:56.135
+This works for very clean documents,
+
+78
+00:03:56.336 --> 00:03:59.739
+but breaks down immediately for anything real and complex.
+
+79
+00:04:00.139 --> 00:04:02.942
+Any columns, sidebars, or floating elements,
+
+80
+00:04:03.343 --> 00:04:05.945
+and those heuristics start producing nonsense.
+
+81
+00:04:06.246 --> 00:04:08.047
+That changed with LayoutReader.
+
+82
+00:04:08.147 --> 00:04:11.951
+Instead of rules, it's a learned model trained on ReadingBank dataset
+
+83
+00:04:12.051 --> 00:04:16.055
+over 500,000 annotated pages with correct reading sequences.
+
+84
+00:04:16.356 --> 00:04:19.359
+Each word gets represented as a tuple
+
+85
+00:04:19.459 --> 00:04:22.061
+containing the word itself and its apparent index.
+
+86
+00:04:22.262 --> 00:04:24.631
+Along with layout features, word color,
+
+87
+00:04:24.731 --> 00:04:26.933
+bounding box coordinates, width, and height.
+
+88
+00:04:27.033 --> 00:04:28.635
+The model learns to predict
+
+89
+00:04:28.735 --> 00:04:32.405
+the correct reading order from these visual and spatial features.
+
+90
+00:04:32.705 --> 00:04:34.907
+This handles complex layouts, multi-column structures,
+
+91
+00:04:35.208 --> 00:04:38.211
+and irregular reading flows
+
+92
+00:04:38.311 --> 00:04:40.413
+that rules-based system can't manage.
+
+93
+00:04:40.713 --> 00:04:42.915
+Let's look at how LayoutReader actually works.
+
+94
+00:04:43.416 --> 00:04:46.519
+The architecture is a sequence-to-sequence model
+
+95
+00:04:46.619 --> 00:04:48.921
+using LayoutLM as its encoder.
+
+96
+00:04:49.289 --> 00:04:52.792
+LayoutLM was developed by Microsoft in 2020
+
+97
+00:04:53.293 --> 00:04:56.496
+and combines text, layout, and visual information.
+
+98
+00:04:56.929 --> 00:05:00.433
+The purpose is to predict the correct reading order of words
+
+99
+00:05:00.433 --> 00:05:02.335
+or text lines in a document.
+
+100
+00:05:02.635 --> 00:05:05.438
+The process takes OCR-produced bounding boxes,
+
+101
+00:05:05.438 --> 00:05:07.340
+for example from PaddleOCR,
+
+102
+00:05:07.740 --> 00:05:10.743
+and rearranges the document's token sequence
+
+103
+00:05:10.743 --> 00:05:13.146
+to reconstruct a human-readable reading order.
+
+104
+00:05:13.246 --> 00:05:14.947
+The model was trained on ReadingBank,
+
+105
+00:05:14.947 --> 00:05:19.452
+a benchmark data set Microsoft created specifically for this task.
+
+106
+00:05:19.919 --> 00:05:22.922
+It contains 500,000 document images
+
+107
+00:05:22.922 --> 00:05:25.725
+annotated for reading order. You can see the diversity
+
+108
+00:05:25.725 --> 00:05:28.928
+Research papers with multi-column layouts,
+
+109
+00:05:29.329 --> 00:05:31.497
+scientific documents with mixed structures,
+
+110
+00:05:31.898 --> 00:05:34.500
+and financial documents with tables and lists.
+
+111
+00:05:34.901 --> 00:05:38.504
+It guessed the correct reading sequence despite their varying layouts.
+
+112
+00:05:38.905 --> 00:05:42.208
+Now, let's talk about why OCR and reading order is not enough.
+
+113
+00:05:42.508 --> 00:05:47.213
+Reading order detection depends entirely on the input quality from the OCR.
+
+114
+00:05:47.714 --> 00:05:49.515
+But here is the fundamental limitation.
+
+115
+00:05:49.916 --> 00:05:51.517
+OCR only captures text.
+
+116
+00:05:51.918 --> 00:05:54.220
+It misses visual information, images,
+
+117
+00:05:54.487 --> 00:05:58.291
+charts, diagrams, spatial relationships, and visual context.
+
+118
+00:05:58.691 --> 00:06:02.395
+So even with perfect reading order, you're working with incomplete information.
+
+119
+00:06:02.995 --> 00:06:04.831
+So, what does this look like
+
+120
+00:06:04.831 --> 00:06:06.999
+in practice? You'll see these challenges repeatedly.
+
+121
+00:06:07.400 --> 00:06:10.503
+Misaligned forms, complex tables, handwriting,
+
+122
+00:06:10.903 --> 00:06:15.475
+multilingual documents, and figures that require interpretation rather than transcription.
+
+123
+00:06:15.775 --> 00:06:19.278
+These are exactly the points where OCR-based pipelines fall apart.
+
+124
+00:06:19.579 --> 00:06:22.882
+And you've already encountered some of these issues directly in the lab.
+
+125
+00:06:23.282 --> 00:06:26.753
+Forms are a perfect example of why this is hard.
+
+126
+00:06:27.053 --> 00:06:30.056
+The core challenge is associating labels with values,
+
+127
+00:06:30.256 --> 00:06:32.258
+especially when they're not adjacent.
+
+128
+00:06:32.458 --> 00:06:34.460
+You have a few possible approaches.
+
+129
+00:06:34.560 --> 00:06:37.263
+Template-based extraction using fixed coordinates,
+
+130
+00:06:37.363 --> 00:06:40.066
+which is fast, but inflexible when layouts change.
+
+131
+00:06:40.166 --> 00:06:42.535
+Flexible key-value pair detection, using rules
+
+132
+00:06:42.535 --> 00:06:45.271
+or ML based on proximity and content,
+
+133
+00:06:45.371 --> 00:06:47.473
+or fine-tune transformers like
+
+134
+00:06:47.507 --> 00:06:50.309
+LayoutLM, trained on datasets like FUNSD
+
+135
+00:06:50.309 --> 00:06:52.412
+that learn these relationships automatically.
+
+136
+00:06:52.712 --> 00:06:54.414
+And you still need computer vision
+
+137
+00:06:54.714 --> 00:06:57.417
+for non-text elements like checkbox states.
+
+138
+00:06:58.184 --> 00:07:00.686
+Solving this requires combining layout understanding
+
+139
+00:07:00.686 --> 00:07:03.189
+with semantic reasoning and visual detection.
+
+140
+00:07:03.589 --> 00:07:05.892
+Tables are another notorious failure point.
+
+141
+00:07:06.392 --> 00:07:08.494
+Traditional OCR destroys table integrity
+
+142
+00:07:08.494 --> 00:07:11.297
+by flattening rows and column relationships.
+
+143
+00:07:11.731 --> 00:07:14.233
+Once structure is lost, numbers stop making sense.
+
+144
+00:07:14.534 --> 00:07:16.235
+Modern models tackle this differently.
+
+145
+00:07:16.335 --> 00:07:19.639
+Table Transformer uses object detection to find tables,
+
+146
+00:07:19.939 --> 00:07:22.942
+rows, and columns as distinct objects.
+
+147
+00:07:23.242 --> 00:07:26.145
+TableFormer takes an image-to-sequence approach,
+
+148
+00:07:26.245 --> 00:07:29.248
+translating table images directly to HTML.
+
+149
+00:07:29.549 --> 00:07:33.252
+TABLET uses split-and-merge for large, dense tables.
+
+150
+00:07:33.352 --> 00:07:34.921
+The output can be CSV,
+
+151
+00:07:34.987 --> 00:07:37.790
+JSON, HTML, or Pandas DataFrame.
+
+152
+00:07:37.890 --> 00:07:40.793
+so we can reason over data instead of text blobs.
+
+153
+00:07:40.993 --> 00:07:44.964
+Handwriting and multilingual documents represent two more failure modes.
+
+154
+00:07:45.164 --> 00:07:48.768
+Standard OCR trained on printed text fails on handwriting.
+
+155
+00:07:48.968 --> 00:07:51.270
+Due to varied styles, cursives,
+
+156
+00:07:51.370 --> 00:07:54.774
+inconsistent character formation, all break the model.
+
+157
+00:07:54.974 --> 00:07:57.977
+Intelligent Character Recognition or ICR.
+
+158
+00:07:58.211 --> 00:08:01.414
+is a specialized model trained on handwritten data sets
+
+159
+00:08:01.414 --> 00:08:04.717
+and uses CNN+RNN architectures
+
+160
+00:08:04.717 --> 00:08:07.720
+for sequence modeling and character-level predictions.
+
+161
+00:08:07.720 --> 00:08:10.423
+Multilingual documents bring different challenges,
+
+162
+00:08:10.423 --> 00:08:13.025
+non-standard characters, unique fonts,
+
+163
+00:08:13.025 --> 00:08:14.627
+and alternate reading directions.
+
+164
+00:08:15.094 --> 00:08:17.096
+right-to-left for Arabic,
+
+165
+00:08:17.196 --> 00:08:19.198
+vertical text in East Asian languages.
+
+166
+00:08:19.298 --> 00:08:21.400
+This requires robust multilingual models
+
+167
+00:08:21.501 --> 00:08:23.603
+with automatic language detection,
+
+168
+00:08:23.903 --> 00:08:25.905
+language-specific OCR engines,
+
+169
+00:08:26.105 --> 00:08:28.107
+script detection and routing,
+
+170
+00:08:28.207 --> 00:08:30.610
+as well as reading order adaptation per language.
+
+171
+00:08:30.977 --> 00:08:35.548
+These specialized models have been the workhorses of Document AI for years.
+
+172
+00:08:35.848 --> 00:08:38.351
+Each refined to excel at a specific task.
+
+173
+00:08:38.551 --> 00:08:42.755
+But recently, a new paradigm has emerged, Vision-Language Models.
+
+174
+00:08:42.955 --> 00:08:47.760
+These represent a fundamental shift from specialized tools to general purpose intelligence
+
+175
+00:08:47.760 --> 00:08:50.062
+that can handle all these tasks and more.
+
+176
+00:08:50.363 --> 00:08:53.366
+So what is a Vision-Language Model? Traditional LLMs
+
+177
+00:08:53.399 --> 00:08:55.601
+purely over text tokens.
+
+178
+00:08:55.701 --> 00:08:57.904
+VLMs unify vision and language,
+
+179
+00:08:58.004 --> 00:09:00.907
+processing images and text simultaneously
+
+180
+00:09:01.007 --> 00:09:03.009
+to form a shared semantic representation.
+
+181
+00:09:03.109 --> 00:09:06.512
+This allows models to reason about what's happening in the visual scene,
+
+182
+00:09:06.612 --> 00:09:08.614
+not just what words appear.
+
+183
+00:09:08.714 --> 00:09:10.917
+Let's discuss what changes when we move
+
+184
+00:09:10.917 --> 00:09:13.119
+from an LLM to a Vision-Language Model.
+
+185
+00:09:13.219 --> 00:09:15.821
+On the left is a regular LLM.
+
+186
+00:09:15.855 --> 00:09:19.258
+It takes text tokens as input, goes through the transformer,
+
+187
+00:09:19.258 --> 00:09:20.960
+and you get a text output.
+
+188
+00:09:20.960 --> 00:09:23.963
+Everything the model understands comes from text alone.
+
+189
+00:09:23.963 --> 00:09:26.265
+On the right is a Vision-Language Model.
+
+190
+00:09:26.265 --> 00:09:28.668
+The input is Image + Text.
+
+191
+00:09:29.068 --> 00:09:31.971
+Before anything reaches the language model,
+
+192
+00:09:31.971 --> 00:09:35.975
+the visual input has to be translated into something the LLM understands
+
+193
+00:09:35.975 --> 00:09:37.977
+using a Vision Encoder.
+
+194
+00:09:37.977 --> 00:09:39.946
+Then it produces the text output.
+
+195
+00:09:39.946 --> 00:09:42.448
+That's what the three components below represent.
+
+196
+00:09:42.448 --> 00:09:44.450
+First is the Vision Encoder.
+
+197
+00:09:44.450 --> 00:09:46.452
+Models like CLIP or SigLIP
+
+198
+00:09:46.452 --> 00:09:48.654
+convert pixels into visual vectors.
+
+199
+00:09:48.721 --> 00:09:50.823
+Second is the Projector.
+
+200
+00:09:50.823 --> 00:09:53.726
+This translation layer converts visual vectors
+
+201
+00:09:53.726 --> 00:09:56.228
+into token embeddings the LLM can process.
+
+202
+00:09:56.429 --> 00:09:58.431
+Third, the LLM backbone.
+
+203
+00:09:58.531 --> 00:10:02.234
+At this point, a standard LLM reasons over those visual tokens
+
+204
+00:10:02.234 --> 00:10:04.337
+and produces text output.
+
+205
+00:10:04.537 --> 00:10:06.238
+The key takeaway is simple.
+
+206
+00:10:06.238 --> 00:10:07.940
+A VLM is still an LLM
+
+207
+00:10:08.407 --> 00:10:10.509
+but with a vision stack in front of it.
+
+208
+00:10:11.210 --> 00:10:14.714
+can see images, but how well it understands documents
+
+209
+00:10:15.014 --> 00:10:19.318
+still depends on how structure, layout, and reading order are handled.
+
+210
+00:10:19.919 --> 00:10:21.721
+Vision language models are powerful,
+
+211
+00:10:21.921 --> 00:10:23.990
+but they're not a complete solution on their own.
+
+212
+00:10:24.223 --> 00:10:25.992
+So if you give a VLM a
+
+213
+00:10:26.192 --> 00:10:30.296
+visually rich document all at once, VLMs can struggle.
+
+214
+00:10:30.596 --> 00:10:32.898
+They hallucinate when visual cues are missing
+
+215
+00:10:33.032 --> 00:10:36.535
+or ambiguous. They lack deterministic grounding,
+
+216
+00:10:36.535 --> 00:10:39.038
+meaning they can't reliably tie their answers back
+
+217
+00:10:39.038 --> 00:10:41.340
+to specific regions of the page.
+
+218
+00:10:41.540 --> 00:10:43.242
+They struggle with nested layouts,
+
+219
+00:10:43.442 --> 00:10:45.845
+multi-page structure and small text.
+
+220
+00:10:46.045 --> 00:10:48.447
+VLMs excel when paired with structure,
+
+221
+00:10:48.447 --> 00:10:50.950
+but they can't replace the structural reasoning
+
+222
+00:10:50.950 --> 00:10:53.152
+required for real-world document tasks.
+
+223
+00:10:53.386 --> 00:10:58.386
+One possible solution is to combine layout detection with VLM reasoning.
+
+224
+00:10:59.191 --> 00:11:03.295
+The Layout Analysis we discussed earlier provides the structure foundation,
+
+225
+00:11:03.396 --> 00:11:06.899
+identifying reading order, document regions, and their type.
+
+226
+00:11:07.199 --> 00:11:09.068
+This structure information can then
+
+227
+00:11:09.068 --> 00:11:11.170
+decide how you process each region.
+
+228
+00:11:11.470 --> 00:11:15.574
+Charts and visualizations might go to a VLM with a targeted prompt.
+
+229
+00:11:15.841 --> 00:11:18.544
+Tables could use either a VLM
+
+230
+00:11:18.544 --> 00:11:21.547
+or a specialized Transformer depending on the complexity.
+
+231
+00:11:21.847 --> 00:11:24.250
+Text regions might use traditional OCR.
+
+232
+00:11:24.717 --> 00:11:26.919
+or VLM based extraction.
+
+233
+00:11:27.520 --> 00:11:31.624
+In conclusion, layout detection provides the deterministic grounding,
+
+234
+00:11:31.824 --> 00:11:36.529
+while the VLMs handle the elements that benefit from visual reasoning.
+
+235
+00:11:36.729 --> 00:11:40.533
+One way to orchestrate this workflow is through an agentic framework.
+
+236
+00:11:40.733 --> 00:11:44.136
+In the lab, you will implement a pipeline that demonstrates this.
+
+237
+00:11:44.537 --> 00:11:46.672
+Starting with an input document, you
+
+238
+00:11:46.672 --> 00:11:49.141
+will extract and order text using PaddleOCR.
+
+239
+00:11:49.442 --> 00:11:51.777
+This gives you all the OCR text
+
+240
+00:11:51.777 --> 00:11:54.146
+along with Bounding Boxes and Confidence Scores.
+
+241
+00:11:54.346 --> 00:11:56.048
+You will then use LayoutReader
+
+242
+00:11:56.282 --> 00:11:58.284
+to reorder the extracted text.
+
+243
+00:11:58.784 --> 00:12:02.855
+You'll also run region detection using PaddleOCR's LayoutDetect
+
+244
+00:12:03.055 --> 00:12:06.459
+to identify tables, charts, and text blocks.
+
+245
+00:12:06.959 --> 00:12:08.861
+You'll provide all the context above,
+
+246
+00:12:08.861 --> 00:12:11.063
+the OCR text in the correct order.
+
+247
+00:12:11.397 --> 00:12:13.599
+region IDs and chunk types
+
+248
+00:12:13.599 --> 00:12:15.601
+as context for a LangChain Agent.
+
+249
+00:12:15.601 --> 00:12:19.205
+The agent will have access to two specialized tools.
+
+250
+00:12:19.205 --> 00:12:23.209
+Analyze chart to send cropped chart images to a VLM,
+
+251
+00:12:23.209 --> 00:12:27.213
+to extract chart type, axes, data points, and trends.
+
+252
+00:12:27.213 --> 00:12:29.915
+Analyze table does the same for tables.
+
+253
+00:12:30.316 --> 00:12:33.986
+extracting headers, rows, values, and notes.
+
+254
+00:12:34.487 --> 00:12:36.088
+Based on the user's question,
+
+255
+00:12:36.322 --> 00:12:39.892
+the agent can decide which region needs VLM analysis
+
+256
+00:12:40.192 --> 00:12:43.129
+and which tools to invoke. So, let's get to it.
+
+257
+00:12:43.295 --> 00:12:45.064
+By the end of the lab, you'll
+
+258
+00:12:45.064 --> 00:12:46.832
+see exactly how these pieces work together
+
+259
+00:12:47.133 --> 00:12:49.435
+and how this sets the foundation for ADE
+
+260
+00:12:49.769 --> 00:12:51.570
+in the next lesson with Andrea.

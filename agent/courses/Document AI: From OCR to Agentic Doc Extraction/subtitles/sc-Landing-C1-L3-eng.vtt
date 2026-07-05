@@ -1,0 +1,614 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.401 --> 00:00:04.471
+In this lesson, you'll learn how OCR has evolved over time,
+
+2
+00:00:04.971 --> 00:00:08.174
+from early approaches relying on the shapes of letters
+
+3
+00:00:08.475 --> 00:00:10.477
+to modern deep learning systems.
+
+4
+00:00:11.177 --> 00:00:14.180
+In the lab, you'll use one such deep learning algorithm
+
+5
+00:00:14.481 --> 00:00:16.983
+to run a detection and recognition pipeline
+
+6
+00:00:17.183 --> 00:00:19.786
+on documents with real world messiness.
+
+7
+00:00:20.754 --> 00:00:23.456
+You'll get to see the improvements that deep learning brings,
+
+8
+00:00:24.057 --> 00:00:26.760
+while bumping into new challenges related to document layouts
+
+9
+00:00:27.027 --> 00:00:31.131
+and reading order. Okay, let's go. Welcome back, everyone.
+
+10
+00:00:31.531 --> 00:00:35.735
+In lesson one, we focused on simple document processing systems.
+
+11
+00:00:36.236 --> 00:00:40.440
+Parsing, OCR, and then adding an agentic brain on top.
+
+12
+00:00:40.974 --> 00:00:45.145
+In lesson two, four decades of OCR evolution,
+
+13
+00:00:45.345 --> 00:00:47.447
+we're going to zoom in on OCR itself
+
+14
+00:00:47.647 --> 00:00:50.250
+and look at how it's evolved over time.
+
+15
+00:00:50.750 --> 00:00:53.453
+Now, we cannot possibly cover every advance,
+
+16
+00:00:53.853 --> 00:00:56.556
+every researcher, and every important paper.
+
+17
+00:00:57.157 --> 00:00:59.759
+So we're going to focus the backstory on
+
+18
+00:00:59.859 --> 00:01:03.263
+two technologies that are representative of their eras.
+
+19
+00:01:03.463 --> 00:01:06.166
+Those are Tesseract and PaddleOCR.
+
+20
+00:01:06.766 --> 00:01:09.269
+Have you heard of them? Have you used them?
+
+21
+00:01:09.569 --> 00:01:11.871
+They may not be what you think they are
+
+22
+00:01:11.871 --> 00:01:14.274
+because they too have evolved over time.
+
+23
+00:01:14.974 --> 00:01:17.977
+Let's start by placing Tesseract and PaddleOCR
+
+24
+00:01:18.278 --> 00:01:20.280
+into their corresponding eras.
+
+25
+00:01:21.081 --> 00:01:23.283
+Tesseract stands for the traditional,
+
+26
+00:01:23.683 --> 00:01:25.985
+procedural computer vision approach.
+
+27
+00:01:26.486 --> 00:01:30.590
+Lots of hand engineering, lots of steps, lots of rules.
+
+28
+00:01:30.890 --> 00:01:34.694
+PaddleOCR is representative of the Deep Learning era.
+
+29
+00:01:35.195 --> 00:01:37.397
+It uses neural networks end-to-end
+
+30
+00:01:37.697 --> 00:01:39.699
+for detection and recognition.
+
+31
+00:01:40.500 --> 00:01:44.704
+And the shift from Tesseract style to PaddleOCR style systems
+
+32
+00:01:45.405 --> 00:01:47.674
+really mirrors the broader shift in AI
+
+33
+00:01:47.874 --> 00:01:51.678
+from carefully designed pipelines with handcrafted features
+
+34
+00:01:52.112 --> 00:01:56.516
+to data-driven trainable models that learn directly from examples.
+
+35
+00:01:57.117 --> 00:02:00.520
+If you're interested in the full story, check out the suggested reading.
+
+36
+00:02:01.421 --> 00:02:04.524
+Now, you already had a chance to use Tesseract in lab one.
+
+37
+00:02:05.024 --> 00:02:07.327
+But here's a little bit more of the backstory.
+
+38
+00:02:07.927 --> 00:02:10.530
+And the story matters because this was state-of-the-art
+
+39
+00:02:10.930 --> 00:02:12.932
+as recently as 20 years ago.
+
+40
+00:02:13.600 --> 00:02:15.902
+The rigid sequence of line finding,
+
+41
+00:02:15.902 --> 00:02:18.204
+word recognition, character classification
+
+42
+00:02:18.605 --> 00:02:20.473
+is still what comes to mind
+
+43
+00:02:20.473 --> 00:02:22.609
+when you say OCR to many people,
+
+44
+00:02:22.609 --> 00:02:25.211
+especially outside the technology domain.
+
+45
+00:02:25.912 --> 00:02:27.914
+So, a couple of things to know about Tesseract.
+
+46
+00:02:28.615 --> 00:02:32.218
+It was proprietary to Hewlett Packard for the 80s and 90s
+
+47
+00:02:32.418 --> 00:02:34.921
+and then was released as open source in 2005
+
+48
+00:02:35.922 --> 00:02:37.624
+and has since been maintained by Google.
+
+49
+00:02:38.324 --> 00:02:40.193
+In lab one, when you use
+
+50
+00:02:40.193 --> 00:02:42.428
+Tesseract, you were actually using version 5.
+
+51
+00:02:42.795 --> 00:02:47.795
+Now Tesseract still performs well on clean printed documents such as books.
+
+52
+00:02:48.401 --> 00:02:49.903
+But you should think of a
+
+53
+00:02:49.903 --> 00:02:51.604
+novel that has no pictures in it,
+
+54
+00:02:51.604 --> 00:02:54.807
+not something like a physics textbook with a bunch of diagrams.
+
+55
+00:02:55.408 --> 00:02:59.612
+It supports many languages and it can run on resource constrained systems
+
+56
+00:02:59.612 --> 00:03:01.614
+because it only needs a CPU.
+
+57
+00:03:02.715 --> 00:03:05.418
+You already saw some of the limitations in lab one.
+
+58
+00:03:05.718 --> 00:03:09.022
+Any sort of text-in-the-wild that isn't nice black and white
+
+59
+00:03:09.222 --> 00:03:11.724
+and straight lines is going to be a problem.
+
+60
+00:03:12.392 --> 00:03:16.196
+So for the history buffs out there and for you visual learners,
+
+61
+00:03:16.396 --> 00:03:18.398
+take a look at some of these examples
+
+62
+00:03:18.598 --> 00:03:21.901
+that were embedded in the 2017 Tesseract paper.
+
+63
+00:03:23.002 --> 00:03:27.540
+Notice how the figures really demonstrate this hand engineering
+
+64
+00:03:27.840 --> 00:03:31.844
+of understanding the shapes and spacing of individual letters.
+
+65
+00:03:32.145 --> 00:03:34.147
+We're going to move on from Tesseract now,
+
+66
+00:03:34.747 --> 00:03:36.749
+and it's important to note that
+
+67
+00:03:36.749 --> 00:03:39.118
+although this was the earliest OCR approach,
+
+68
+00:03:39.519 --> 00:03:42.222
+you should not think of it as foundational technology.
+
+69
+00:03:42.722 --> 00:03:44.624
+What comes next in the next
+
+70
+00:03:44.624 --> 00:03:46.826
+era is actually an entirely new approach.
+
+71
+00:03:47.193 --> 00:03:49.529
+So, stated another way, the deep learning
+
+72
+00:03:49.529 --> 00:03:51.864
+approaches that we're about to look at
+
+73
+00:03:52.165 --> 00:03:56.569
+do not build on the code or the architectural concepts from Tesseract.
+
+74
+00:03:57.270 --> 00:03:59.172
+So, enter the deep learning era.
+
+75
+00:03:59.572 --> 00:04:01.274
+Starting around 2015,
+
+76
+00:04:01.274 --> 00:04:05.078
+the deep learning approach to OCR really becomes the new standard.
+
+77
+00:04:05.478 --> 00:04:08.481
+And the OCR problem is broken into two stages,
+
+78
+00:04:08.581 --> 00:04:11.084
+and those can now be optimized separately.
+
+79
+00:04:11.184 --> 00:04:14.287
+That makes the overall process much more modular.
+
+80
+00:04:14.988 --> 00:04:17.223
+The first is Text Detection. Find all
+
+81
+00:04:17.223 --> 00:04:19.459
+of the regions that contain the text.
+
+82
+00:04:20.260 --> 00:04:22.061
+And the second is Text Recognition.
+
+83
+00:04:22.161 --> 00:04:24.964
+Read the content of each text region.
+
+84
+00:04:25.732 --> 00:04:28.334
+So in today's lab for lesson two,
+
+85
+00:04:28.534 --> 00:04:31.838
+you're going to use PaddleOCR developed by Baidu.
+
+86
+00:04:32.038 --> 00:04:34.841
+It's one such deep learning OCR system,
+
+87
+00:04:34.941 --> 00:04:37.944
+and it's open source with fairly broad adoption.
+
+88
+00:04:38.244 --> 00:04:41.948
+As of 2025, PaddleOCR is on version 3.
+
+89
+00:04:42.181 --> 00:04:45.852
+And in version three, the text detection comes from DBNet,
+
+90
+00:04:46.052 --> 00:04:49.956
+which stands for differential binarization network.
+
+91
+00:04:50.156 --> 00:04:53.459
+And the text recognition comes from SVTR,
+
+92
+00:04:53.660 --> 00:04:57.263
+which stands for Short Vision Transformer Recognizer.
+
+93
+00:04:57.797 --> 00:05:01.701
+Now, a couple notable strengths include its handling of complex,
+
+94
+00:05:02.201 --> 00:05:03.903
+irregular, and curved text,
+
+95
+00:05:04.404 --> 00:05:07.106
+high efficiency when accelerated by GPUs,
+
+96
+00:05:07.407 --> 00:05:09.709
+and several lightweight deployment options.
+
+97
+00:05:10.143 --> 00:05:13.046
+This is the architecture diagram that accompanies
+
+98
+00:05:13.046 --> 00:05:15.948
+the 2025 paper called PaddleOCR 3.0
+
+99
+00:05:15.948 --> 00:05:20.053
+technical report linked at the bottom.
+
+100
+00:05:20.053 --> 00:05:22.955
+Within this illustration, notice the gray box
+
+101
+00:05:22.955 --> 00:05:27.260
+for the text detection module ending in _det.
+
+102
+00:05:28.194 --> 00:05:32.198
+And then the text recognition module ending in _rec.
+
+103
+00:05:33.132 --> 00:05:37.070
+Surrounding those two, notice the Preprocessing on the left
+
+104
+00:05:37.370 --> 00:05:39.505
+and the line orientation in the center.
+
+105
+00:05:39.972 --> 00:05:43.576
+Now, follow with your eyes the input image on the left.
+
+106
+00:05:44.177 --> 00:05:46.479
+It kind of looks like a lotion bottle to me.
+
+107
+00:05:47.480 --> 00:05:50.450
+First, the whole input is rotated counterclockwise.
+
+108
+00:05:51.117 --> 00:05:53.720
+And then all the text areas are detected
+
+109
+00:05:53.920 --> 00:05:56.422
+and you see some red rectangles overlaid.
+
+110
+00:05:57.523 --> 00:06:01.728
+One of those rectangles is actually on top of the lotion bottle
+
+111
+00:06:01.828 --> 00:06:04.130
+and is rotated relative to the other lines,
+
+112
+00:06:04.230 --> 00:06:05.832
+so that needs to be corrected.
+
+113
+00:06:06.733 --> 00:06:10.136
+And then finally, the text within the box is recognized
+
+114
+00:06:10.136 --> 00:06:13.005
+and returned to the user. Compared to
+
+115
+00:06:13.005 --> 00:06:15.842
+the old pipelines, you can really see
+
+116
+00:06:15.842 --> 00:06:18.845
+how much of the complexity is now handled by learned models
+
+117
+00:06:18.845 --> 00:06:20.546
+rather than by fixed rules.
+
+118
+00:06:21.047 --> 00:06:24.851
+Since this is a course about building document intelligence pipelines,
+
+119
+00:06:24.951 --> 00:06:28.221
+let's touch on when you should build with each of these tools.
+
+120
+00:06:28.721 --> 00:06:30.523
+And let's just go row by row.
+
+121
+00:06:30.623 --> 00:06:32.925
+So, I think we've already covered the
+
+122
+00:06:32.925 --> 00:06:35.528
+Core Approach and the underlying technology for each.
+
+123
+00:06:36.028 --> 00:06:39.232
+Good news is the licensing here, they're both Open-source.
+
+124
+00:06:39.632 --> 00:06:42.435
+As far as best fit use cases,
+
+125
+00:06:42.435 --> 00:06:46.139
+Tesseract is really going to be ideal for document scanning.
+
+126
+00:06:46.439 --> 00:06:48.141
+Think really about books.
+
+127
+00:06:48.441 --> 00:06:51.411
+Anytime that you've got black on white text
+
+128
+00:06:51.411 --> 00:06:53.613
+and the layout is fairly regular.
+
+129
+00:06:54.113 --> 00:06:58.518
+PaddleOCR is going to perform better with some real-world use cases.
+
+130
+00:06:58.518 --> 00:07:01.354
+It's going to be able to handle signage
+
+131
+00:07:01.354 --> 00:07:04.223
+and receipts and complex layouts in the content.
+
+132
+00:07:04.624 --> 00:07:07.927
+As far as which particular languages and tools,
+
+133
+00:07:07.927 --> 00:07:10.296
+both of them support a wide range of tools,
+
+134
+00:07:10.296 --> 00:07:13.199
+including Latin and non-Latin characters,
+
+135
+00:07:13.199 --> 00:07:16.302
+and they both have easy integrations with Python.
+
+136
+00:07:16.903 --> 00:07:21.507
+As far as deployment options, think of Tesseract as fairly lightweight
+
+137
+00:07:21.707 --> 00:07:24.811
+versus being part of the PaddleOCR framework
+
+138
+00:07:25.111 --> 00:07:28.014
+is really much more of a complete toolkit.
+
+139
+00:07:28.781 --> 00:07:31.851
+To wrap up the slide portion of this lesson,
+
+140
+00:07:32.251 --> 00:07:35.555
+it's important to acknowledge that both Tesseract and PaddleOCR
+
+141
+00:07:35.655 --> 00:07:38.958
+really stand for an era of OCR development.
+
+142
+00:07:39.659 --> 00:07:42.862
+There are many other OCR solutions to choose from
+
+143
+00:07:42.862 --> 00:07:45.465
+and these are simply two among many.
+
+144
+00:07:46.065 --> 00:07:47.967
+And in lesson four, we're going
+
+145
+00:07:47.967 --> 00:07:50.169
+to introduce yet another one not listed,
+
+146
+00:07:50.570 --> 00:07:52.672
+which belongs in the agentic era.
+
+147
+00:07:53.172 --> 00:07:55.374
+So it's lab time again.
+
+148
+00:07:55.575 --> 00:07:58.578
+In this lab, you'll get hands-on with PaddleOCR,
+
+149
+00:07:58.678 --> 00:08:01.581
+and by the end of the lab, you should feel comfortable
+
+150
+00:08:01.681 --> 00:08:04.784
+with running PaddleOCR on your own images,
+
+151
+00:08:04.984 --> 00:08:06.986
+interpreting its outputs,
+
+152
+00:08:07.086 --> 00:08:09.989
+and thinking about how to plug it into larger document processing
+
+153
+00:08:10.089 --> 00:08:12.058
+or agentic systems.

@@ -1,0 +1,54 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.567 --> 00:00:03.970
+In this course, you learned about agentic document processing,
+
+2
+00:00:04.471 --> 00:00:06.973
+enabling you to parse and extract information
+
+3
+00:00:06.973 --> 00:00:08.775
+from files like PDFs.
+
+4
+00:00:09.476 --> 00:00:12.779
+You explored how to convert images to text through OCR,
+
+5
+00:00:13.480 --> 00:00:15.482
+analyze layout with bounding boxes,
+
+6
+00:00:15.782 --> 00:00:18.485
+and logically order recognizable chunks.
+
+7
+00:00:19.185 --> 00:00:22.489
+You also employed VLMs to understand text in context.
+
+8
+00:00:23.156 --> 00:00:27.961
+Using ADE, a vision-first agentic approach to document understanding,
+
+9
+00:00:28.161 --> 00:00:31.664
+you processed complex documents and built a RAG application
+
+10
+00:00:31.664 --> 00:00:34.667
+for answering questions about unstructured files.
+
+11
+00:00:35.368 --> 00:00:37.470
+Finally, you explored moving your application
+
+12
+00:00:37.470 --> 00:00:39.973
+to the cloud and making it event-driven.
+
+13
+00:00:40.673 --> 00:00:43.343
+I'm looking forward to seeing what you'll build on your own.

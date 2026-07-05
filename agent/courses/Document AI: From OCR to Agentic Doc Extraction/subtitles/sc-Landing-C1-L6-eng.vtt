@@ -1,0 +1,1130 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.800 --> 00:00:02.802
+Welcome to Lab 3.
+
+2
+00:00:02.902 --> 00:00:05.805
+We're now ready to build an intelligent document analysis agent
+
+3
+00:00:06.006 --> 00:00:09.909
+that combines OCR, layout detection, and VLM tools.
+
+4
+00:00:10.110 --> 00:00:12.078
+You'll follow an agentic approach,
+
+5
+00:00:12.212 --> 00:00:15.582
+which allows you to recognize different content types automatically,
+
+6
+00:00:15.782 --> 00:00:17.884
+apply the right tools for each content type,
+
+7
+00:00:18.084 --> 00:00:20.887
+and combine insights into coherent answers.
+
+8
+00:00:21.187 --> 00:00:23.590
+This is similar to how a human analyst
+
+9
+00:00:23.690 --> 00:00:25.492
+would approach a complex report,
+
+10
+00:00:25.492 --> 00:00:27.594
+scanning the structure first,
+
+11
+00:00:27.594 --> 00:00:30.797
+then diving deep into specific sections as needed.
+
+12
+00:00:31.097 --> 00:00:33.366
+The overall pipeline will have three components.
+
+13
+00:00:33.666 --> 00:00:35.268
+First, text extraction.
+
+14
+00:00:35.468 --> 00:00:37.971
+We'll use PaddleOCR for text extraction
+
+15
+00:00:38.271 --> 00:00:40.273
+and LayoutLM for reading order.
+
+16
+00:00:40.573 --> 00:00:42.275
+Second, layout detection.
+
+17
+00:00:42.375 --> 00:00:46.279
+PaddleOCR layout detection to detect tables, charts, and regions.
+
+18
+00:00:46.679 --> 00:00:48.481
+Third, agentic processing.
+
+19
+00:00:48.681 --> 00:00:51.985
+We'll use a LangChain agent with two specialized tools.
+
+20
+00:00:51.985 --> 00:00:56.189
+AnalyzeChart, a VLM-based chart figure analysis.
+
+21
+00:00:56.189 --> 00:00:59.192
+AnalyzeTable, a VLM table extraction.
+
+22
+00:00:59.492 --> 00:01:02.495
+Let's begin by loading the environment variables
+
+23
+00:01:02.495 --> 00:01:04.497
+from a .env file.
+
+24
+00:01:04.697 --> 00:01:08.201
+This file contains the API key for OpenAI,
+
+25
+00:01:08.201 --> 00:01:11.204
+which we will need later when we define the agent.
+
+26
+00:01:11.905 --> 00:01:15.108
+Next, we import the essential libraries for our pipeline.
+
+27
+00:01:15.708 --> 00:01:18.511
+PIL for loading and manipulating images,
+
+28
+00:01:18.711 --> 00:01:21.781
+cv2 from OpenCV for image processing
+
+29
+00:01:21.781 --> 00:01:23.483
+and drawing bounding boxes,
+
+30
+00:01:23.683 --> 00:01:26.386
+matplotlib for visualizing the result.
+
+31
+00:01:26.886 --> 00:01:30.690
+numpy for numerical operations on image arrays,
+
+32
+00:01:31.091 --> 00:01:34.094
+dataclass, Python's built-in decorator
+
+33
+00:01:34.394 --> 00:01:36.696
+for creating clean data structures.
+
+34
+00:01:37.197 --> 00:01:41.000
+typing for type hints that make our code more readable.
+
+35
+00:01:41.901 --> 00:01:43.937
+With our environment set up, let's dive
+
+36
+00:01:43.937 --> 00:01:46.005
+into the first stage of our pipeline:
+
+37
+00:01:46.106 --> 00:01:48.208
+extracting text from the document
+
+38
+00:01:48.308 --> 00:01:51.711
+and determining the correct reading order using LayoutLM.
+
+39
+00:01:52.712 --> 00:01:56.382
+First, we create a PaddleOCR instance configured for English text.
+
+40
+00:01:57.083 --> 00:01:59.185
+Then we load our sample document,
+
+41
+00:01:59.185 --> 00:02:03.656
+which is the same economics report you've seen in the previous lab.
+
+42
+00:02:03.857 --> 00:02:06.960
+Now, let's run the OCR engine on our document.
+
+43
+00:02:07.660 --> 00:02:09.662
+As you've already seen in the previous lab,
+
+44
+00:02:09.863 --> 00:02:12.866
+the OCR engine returns three key pieces of information
+
+45
+00:02:12.866 --> 00:02:16.870
+for each detected region: the recognized text strings,
+
+46
+00:02:17.070 --> 00:02:20.273
+the confidence score, and bounding box coordinates.
+
+47
+00:02:20.473 --> 00:02:22.575
+Visual verification is important.
+
+48
+00:02:23.276 --> 00:02:27.280
+Here, we draw green bounding boxes around each detected text region.
+
+49
+00:02:27.981 --> 00:02:30.316
+This helps us confirm that OCR is
+
+50
+00:02:30.316 --> 00:02:32.986
+correctly identifying all text areas in the document.
+
+51
+00:02:33.686 --> 00:02:35.288
+Notice how each line of text,
+
+52
+00:02:35.488 --> 00:02:38.658
+table cell, and label gets its own bounding box.
+
+53
+00:02:39.192 --> 00:02:42.795
+Raw OCR output is just list of values.
+
+54
+00:02:42.996 --> 00:02:45.698
+To make our code cleaner and more maintainable,
+
+55
+00:02:45.798 --> 00:02:48.601
+we create an OCR region data class.
+
+56
+00:02:48.801 --> 00:02:52.305
+This gives us a clean type structure for each text region
+
+57
+00:02:52.405 --> 00:02:55.909
+and a convenient bounding box XY XY property
+
+58
+00:02:56.009 --> 00:02:59.012
+that converts the four corner polygon to a simple
+
+59
+00:02:59.112 --> 00:03:02.115
+X1 Y1 X2 Y2 format.
+
+60
+00:03:02.849 --> 00:03:06.653
+This structure format will be used throughout the rest of our pipeline.
+
+61
+00:03:07.153 --> 00:03:09.656
+Now that we have the raw OCR output,
+
+62
+00:03:09.656 --> 00:03:12.358
+we need to determine the correct reading order.
+
+63
+00:03:12.659 --> 00:03:16.863
+Let's use LayoutReader based on LayoutLMv3 for this task.
+
+64
+00:03:17.363 --> 00:03:20.667
+Let's load the pre-trained LayoutReader model from Hugging Face.
+
+65
+00:03:21.367 --> 00:03:24.671
+This model takes bounding box coordinates as input
+
+66
+00:03:24.671 --> 00:03:27.640
+and predicts the reading order position for each box.
+
+67
+00:03:28.241 --> 00:03:31.644
+The model has been trained to understand common document layouts
+
+68
+00:03:31.945 --> 00:03:36.649
+including single column, multi-column, tables, and mixed layouts.
+
+69
+00:03:37.050 --> 00:03:39.219
+With the model loaded, let's define
+
+70
+00:03:39.219 --> 00:03:41.754
+the core function for reading order detection.
+
+71
+00:03:42.021 --> 00:03:44.524
+Here is what it does step by step.
+
+72
+00:03:44.824 --> 00:03:47.126
+First, we calculate the image dimensions.
+
+73
+00:03:47.527 --> 00:03:52.232
+We estimate the image size from the bounding boxes with 10% padding.
+
+74
+00:03:52.532 --> 00:03:54.834
+Second, we normalize the coordinates.
+
+75
+00:03:55.268 --> 00:03:59.072
+LayoutLM expects coordinates in a 0 to 1000 range.
+
+76
+00:03:59.472 --> 00:04:01.274
+So we scale our bounding boxes.
+
+77
+00:04:01.975 --> 00:04:03.776
+Third, we prepare the inputs.
+
+78
+00:04:04.077 --> 00:04:07.080
+We convert to the format that the transformer expects.
+
+79
+00:04:07.780 --> 00:04:11.284
+Fourth, we run inference and get the model's prediction.
+
+80
+00:04:12.185 --> 00:04:14.287
+Last but not least, we parse the results.
+
+81
+00:04:14.687 --> 00:04:17.890
+We extract the reading order from the model's output logits.
+
+82
+00:04:18.491 --> 00:04:20.827
+The result is a list that tells us
+
+83
+00:04:20.827 --> 00:04:23.196
+the reading order for each OCR text region.
+
+84
+00:04:23.463 --> 00:04:25.565
+Let's see the reading order in action.
+
+85
+00:04:26.266 --> 00:04:29.669
+This visualization overlays numbers on each text region,
+
+86
+00:04:29.969 --> 00:04:32.672
+showing the sequence in which they should be read.
+
+87
+00:04:33.273 --> 00:04:35.975
+The numbers in red indicate the reading position.
+
+88
+00:04:36.376 --> 00:04:39.946
+Notice the logical flow. Title first, then the content.
+
+89
+00:04:40.280 --> 00:04:43.283
+following the natural way a human would read the document.
+
+90
+00:04:43.883 --> 00:04:46.886
+Of course, it's not perfect with some jumping around,
+
+91
+00:04:47.287 --> 00:04:49.088
+and this shows some of the
+
+92
+00:04:49.088 --> 00:04:51.190
+limitations you may face with this approach.
+
+93
+00:04:51.591 --> 00:04:53.660
+And depending on the complexity, you may
+
+94
+00:04:53.660 --> 00:04:55.695
+have to fine-tune your own layout model
+
+95
+00:04:55.795 --> 00:04:57.497
+for chunking and reading order.
+
+96
+00:04:57.730 --> 00:05:00.733
+which can be hard to develop, scale, and maintain.
+
+97
+00:05:01.200 --> 00:05:04.337
+Finally, let's combine our OCR text with the reading order
+
+98
+00:05:04.337 --> 00:05:06.739
+to produce properly sequenced text.
+
+99
+00:05:07.173 --> 00:05:09.709
+This function pairs each OCR region
+
+100
+00:05:09.709 --> 00:05:11.577
+with the corresponding reading position.
+
+101
+00:05:12.211 --> 00:05:14.814
+Then, it sorts all regions by their position.
+
+102
+00:05:15.148 --> 00:05:18.651
+and returns a list of dictionaries with position, text,
+
+103
+00:05:18.951 --> 00:05:21.054
+confidence, and bounding box info.
+
+104
+00:05:21.754 --> 00:05:24.957
+This ordered text will become part of our agent's context,
+
+105
+00:05:25.458 --> 00:05:27.393
+allowing it to understand the document
+
+106
+00:05:27.393 --> 00:05:29.662
+content without needing to call a VLM
+
+107
+00:05:29.962 --> 00:05:31.964
+for basic text questions.
+
+108
+00:05:32.265 --> 00:05:34.367
+Now that we can extract and order text,
+
+109
+00:05:34.367 --> 00:05:38.237
+we need to understand what types of content exist in the document.
+
+110
+00:05:38.738 --> 00:05:40.840
+This is where layout detection comes in.
+
+111
+00:05:41.040 --> 00:05:42.642
+As you've seen in the previous lab,
+
+112
+00:05:42.742 --> 00:05:46.245
+PaddleOCR provides a separate LayoutDetection class
+
+113
+00:05:46.245 --> 00:05:49.248
+specifically for identifying document structure.
+
+114
+00:05:49.649 --> 00:05:51.751
+Let's initialize it now.
+
+115
+00:05:51.851 --> 00:05:54.153
+Next, we define the process_document function
+
+116
+00:05:54.220 --> 00:05:58.524
+to run layout detection and return a list of detected regions.
+
+117
+00:05:58.725 --> 00:06:00.827
+Each region includes the label,
+
+118
+00:06:01.127 --> 00:06:05.832
+the type of content, like text, table, chart, figure, etc.
+
+119
+00:06:06.132 --> 00:06:09.135
+The score, confidence score for the detection.
+
+120
+00:06:09.469 --> 00:06:13.573
+bbox, bounding box coordinates in XYXY format.
+
+121
+00:06:13.973 --> 00:06:16.976
+Let's take a closer look at the top five detected regions.
+
+122
+00:06:17.377 --> 00:06:19.479
+Notice the different content types.
+
+123
+00:06:19.679 --> 00:06:22.782
+You have text blocks, chart, and paragraph title.
+
+124
+00:06:23.282 --> 00:06:25.385
+Similar to our OCR results,
+
+125
+00:06:25.485 --> 00:06:27.787
+let's create a LayoutRegion dataclass
+
+126
+00:06:27.887 --> 00:06:29.889
+for clean data handling.
+
+127
+00:06:30.490 --> 00:06:32.792
+Each region will get a unique ID
+
+128
+00:06:32.892 --> 00:06:35.762
+that our tools need to reference specific regions.
+
+129
+00:06:36.396 --> 00:06:38.498
+Then we'll loop through each result
+
+130
+00:06:38.498 --> 00:06:40.400
+and store it in a structured format.
+
+131
+00:06:40.800 --> 00:06:44.303
+Now let's visualize all the layout regions with color-coded boxes.
+
+132
+00:06:44.804 --> 00:06:46.606
+Each region type gets a unique color.
+
+133
+00:06:47.073 --> 00:06:51.177
+and we display the region ID, type, and confidence score.
+
+134
+00:06:51.577 --> 00:06:54.881
+As you can see, we identified titles, tables,
+
+135
+00:06:54.981 --> 00:06:56.983
+charts, and bodies of text.
+
+136
+00:06:57.283 --> 00:06:59.085
+With our layout regions identified, we
+
+137
+00:06:59.085 --> 00:07:01.187
+need to prepare them for the agent.
+
+138
+00:07:01.487 --> 00:07:03.990
+For our agent to analyze a chart or table,
+
+139
+00:07:04.090 --> 00:07:06.993
+we need to send a cropped region to the VLM.
+
+140
+00:07:07.293 --> 00:07:11.364
+This approach has several benefits. First is focused analysis.
+
+141
+00:07:11.631 --> 00:07:14.834
+The VLM only sees the relevant content.
+
+142
+00:07:15.034 --> 00:07:17.036
+Second is reduced noise.
+
+143
+00:07:17.236 --> 00:07:19.238
+Surrounding text does not interfere.
+
+144
+00:07:19.439 --> 00:07:21.441
+Third is lower costs.
+
+145
+00:07:21.541 --> 00:07:23.943
+Smaller images mean lower API cost.
+
+146
+00:07:24.343 --> 00:07:27.814
+Now let's crop each region using the crop_region function.
+
+147
+00:07:28.214 --> 00:07:31.517
+We also convert images to base64 encoding,
+
+148
+00:07:31.717 --> 00:07:34.220
+which is the format vision APIs expect.
+
+149
+00:07:34.821 --> 00:07:37.824
+Then let's load the image and use these two functions
+
+150
+00:07:38.024 --> 00:07:42.528
+to create a dictionary containing information for each cropped region.
+
+151
+00:07:43.129 --> 00:07:45.431
+Keep in mind that even though VLMs are powerful,
+
+152
+00:07:46.132 --> 00:07:50.136
+they're not great at localization. This approach may help improve accuracy,
+
+153
+00:07:50.436 --> 00:07:53.840
+but you'll need to fine-tune your prompts for various edge cases.
+
+154
+00:07:54.173 --> 00:07:56.742
+to deal with greater complexities and variants.
+
+155
+00:07:57.243 --> 00:07:59.745
+Let's display all the crop regions to see
+
+156
+00:08:00.046 --> 00:08:02.648
+what content the agent will have access to.
+
+157
+00:08:03.049 --> 00:08:06.352
+Each region is labeled with its ID and type.
+
+158
+00:08:06.953 --> 00:08:09.021
+Now that we have the text
+
+159
+00:08:09.021 --> 00:08:11.457
+extracted and ordered, and the layout detected,
+
+160
+00:08:11.457 --> 00:08:14.260
+We can start building our agent, starting with the tools.
+
+161
+00:08:14.861 --> 00:08:17.430
+We'll create two specialized tools, each designed
+
+162
+00:08:17.430 --> 00:08:19.966
+for a specific type of content analysis.
+
+163
+00:08:20.466 --> 00:08:25.466
+AnalyzeChart uses a vision language model to interpret charts and figures.
+
+164
+00:08:25.972 --> 00:08:27.974
+AnalyzeTable, also uses
+
+165
+00:08:28.007 --> 00:08:31.410
+the VLM to extract structured data from tables.
+
+166
+00:08:31.711 --> 00:08:35.014
+By creating specialized tools, we can use optimized prompts
+
+167
+00:08:35.014 --> 00:08:37.049
+for each content type and return
+
+168
+00:08:37.049 --> 00:08:39.418
+structured JSON that is easy to process.
+
+169
+00:08:39.819 --> 00:08:44.323
+For VLM, we will use gpt-4o-mini from OpenAI.
+
+170
+00:08:44.557 --> 00:08:47.159
+Next, let's define the prompts for each tool.
+
+171
+00:08:47.560 --> 00:08:50.363
+The prompts we use are critical for getting useful,
+
+172
+00:08:50.363 --> 00:08:52.331
+structured output from the VLM.
+
+173
+00:08:52.732 --> 00:08:54.734
+Each prompt will have three components.
+
+174
+00:08:55.167 --> 00:08:57.169
+First, we'll define the role.
+
+175
+00:08:57.270 --> 00:09:00.172
+In this case, you are a chart analysis specialist.
+
+176
+00:09:00.273 --> 00:09:02.675
+Second, we'll define what to extract.
+
+177
+00:09:02.775 --> 00:09:06.178
+specific fields like chart type, axes, and data points.
+
+178
+00:09:06.379 --> 00:09:10.983
+Then we'll provide a JSON template to ensure consistent output format.
+
+179
+00:09:11.384 --> 00:09:14.020
+Well-defined prompts will help ensure the VLM
+
+180
+00:09:14.020 --> 00:09:16.656
+returns data our agent can reliably use.
+
+181
+00:09:16.956 --> 00:09:19.659
+We'll use the same logic for the second prompt.
+
+182
+00:09:19.725 --> 00:09:22.528
+Before creating our tools, let's define a utility function
+
+183
+00:09:22.528 --> 00:09:26.933
+that handles the mechanics of calling the VLM with an image.
+
+184
+00:09:27.533 --> 00:09:31.537
+It creates a multimodal message containing both the text prompt
+
+185
+00:09:31.537 --> 00:09:33.940
+and the base64 encoded image.
+
+186
+00:09:34.240 --> 00:09:36.242
+Then returns the model's response.
+
+187
+00:09:36.742 --> 00:09:38.945
+The @tool decorator from LangChain
+
+188
+00:09:38.945 --> 00:09:42.214
+transforms our function into an agent usable tool.
+
+189
+00:09:42.915 --> 00:09:44.517
+It takes in the region_id,
+
+190
+00:09:44.717 --> 00:09:48.521
+checks if the region exists using the dictionary of regions.
+
+191
+00:09:48.521 --> 00:09:50.723
+we just created, get the region data,
+
+192
+00:09:50.723 --> 00:09:54.327
+and then passes the cropped image in base64
+
+193
+00:09:54.327 --> 00:09:56.829
+and the corresponding prompt to the VLM.
+
+194
+00:09:57.129 --> 00:10:01.133
+Following the same pattern, let's create our second tool for table extraction.
+
+195
+00:10:01.634 --> 00:10:04.537
+It uses the table-specific prompt to guide the VLM
+
+196
+00:10:04.537 --> 00:10:06.739
+in extracting structured data
+
+197
+00:10:06.739 --> 00:10:09.141
+with proper headers and row organization.
+
+198
+00:10:09.542 --> 00:10:12.144
+Before integrating our tools into the agent,
+
+199
+00:10:12.144 --> 00:10:14.046
+let's test them individually.
+
+200
+00:10:14.046 --> 00:10:17.350
+This verifies that the VLM connection works and our prompts
+
+201
+00:10:17.350 --> 00:10:21.387
+produce useful output. We'll find the first chart region and analyze it.
+
+202
+00:10:21.787 --> 00:10:25.291
+Notice that the data points are close but not 100% accurate.
+
+203
+00:10:25.691 --> 00:10:27.927
+This is due to a lack of
+
+204
+00:10:27.927 --> 00:10:30.496
+visual reasoning and localization capabilities I mentioned earlier.
+
+205
+00:10:30.997 --> 00:10:32.898
+Similarly, let's test the table tool.
+
+206
+00:10:33.199 --> 00:10:35.401
+This tool does a decent job of
+
+207
+00:10:35.401 --> 00:10:37.603
+extracting the information from this simple table.
+
+208
+00:10:38.104 --> 00:10:42.475
+However, as complexity grows, the agent may have a harder time localizing,
+
+209
+00:10:42.975 --> 00:10:45.778
+extracting, and may be prone to hallucination.
+
+210
+00:10:46.145 --> 00:10:48.247
+With our tools tested and working,
+
+211
+00:10:48.247 --> 00:10:51.751
+we're ready to build the agent that will orchestrate everything.
+
+212
+00:10:52.051 --> 00:10:53.653
+So how does the agent work?
+
+213
+00:10:54.053 --> 00:10:57.156
+First, the agent will receive a question about the document.
+
+214
+00:10:57.556 --> 00:10:59.659
+Second, it reads the system prompt
+
+215
+00:10:59.659 --> 00:11:02.928
+containing all OCR text and the layout info.
+
+216
+00:11:03.329 --> 00:11:06.132
+Third, it will decide whether or not
+
+217
+00:11:06.132 --> 00:11:09.101
+it can answer from text alone or need to use a tool.
+
+218
+00:11:09.301 --> 00:11:12.805
+Fourth, for visual content, like charts and tables,
+
+219
+00:11:13.105 --> 00:11:15.107
+it will call the appropriate tool.
+
+220
+00:11:15.207 --> 00:11:18.310
+And last but not least, it will combine all the information
+
+221
+00:11:18.310 --> 00:11:20.513
+into a coherent response.
+
+222
+00:11:21.013 --> 00:11:25.017
+Before building the agent, let's verify that our data structures are ready.
+
+223
+00:11:25.117 --> 00:11:27.920
+We need both the ordered text from the OCR
+
+224
+00:11:27.920 --> 00:11:29.522
+plus the LayoutLM.
+
+225
+00:11:29.789 --> 00:11:32.591
+and the layout regions from layout detection.
+
+226
+00:11:32.992 --> 00:11:35.594
+Now, let's prepare the context for our agent.
+
+227
+00:11:35.995 --> 00:11:38.597
+The agent needs a well-formatted system prompt.
+
+228
+00:11:38.798 --> 00:11:43.002
+So these helper functions convert our data structures into readable text
+
+229
+00:11:43.002 --> 00:11:44.603
+as strings.
+
+230
+00:11:44.804 --> 00:11:49.175
+The formatted context serves as the agent's memory of the document.
+
+231
+00:11:49.675 --> 00:11:51.777
+Now we construct the system prompt,
+
+232
+00:11:51.977 --> 00:11:54.580
+which is the foundation of our agent's behavior.
+
+233
+00:11:54.847 --> 00:11:56.849
+It contains the role definition,
+
+234
+00:11:56.949 --> 00:12:00.352
+in this case you are a document intelligence agent,
+
+235
+00:12:00.653 --> 00:12:04.123
+the document context, all OCR text in reading order,
+
+236
+00:12:04.523 --> 00:12:07.626
+the layout information, region types and IDs,
+
+237
+00:12:07.927 --> 00:12:10.329
+tool descriptions, when to use each tool.
+
+238
+00:12:10.596 --> 00:12:14.400
+and the instructions, how to handle different content types.
+
+239
+00:12:14.800 --> 00:12:16.802
+Finally, let's put it all together.
+
+240
+00:12:17.103 --> 00:12:20.806
+We'll use LangChain's create_tool_calling_agent to build our agent.
+
+241
+00:12:21.407 --> 00:12:23.109
+This involves tools list,
+
+242
+00:12:23.509 --> 00:12:26.412
+our AnalyzeChart and AnalyzeTable functions.
+
+243
+00:12:26.612 --> 00:12:30.082
+The LLM, gpt-4o-mini for cost efficiency.
+
+244
+00:12:30.382 --> 00:12:33.385
+The prompt template, which combines system prompt,
+
+245
+00:12:33.786 --> 00:12:36.088
+user input, and scratchpad.
+
+246
+00:12:36.522 --> 00:12:39.125
+Then, we'll create an agent that can call tools.
+
+247
+00:12:39.825 --> 00:12:42.828
+Last but not least, we'll set up the AgentExecutor
+
+248
+00:12:42.828 --> 00:12:46.298
+to run the tool-enabled loop. We'll set verbose=True,
+
+249
+00:12:46.632 --> 00:12:49.902
+which is a setting that lets us see the agent's reasoning process.
+
+250
+00:12:50.503 --> 00:12:53.105
+With our agent assembled, let's put it to the test.
+
+251
+00:12:53.539 --> 00:12:56.342
+First, we'll ask a general question about the document.
+
+252
+00:12:56.542 --> 00:12:59.545
+This should be answerable from the OCR text alone,
+
+253
+00:12:59.612 --> 00:13:01.347
+without calling any tools.
+
+254
+00:13:01.747 --> 00:13:04.750
+Watch how the agent uses its context to respond.
+
+255
+00:13:05.484 --> 00:13:08.988
+Now let's ask the agent to extract table data.
+
+256
+00:13:09.388 --> 00:13:11.690
+Watch how it identifies the table region
+
+257
+00:13:11.690 --> 00:13:15.494
+and calls the AnalyzeTable tool to get the structured data.
+
+258
+00:13:15.995 --> 00:13:18.697
+The verbose output shows the agent's reasoning
+
+259
+00:13:18.998 --> 00:13:21.300
+or quote-unquote thinking process.
+
+260
+00:13:21.734 --> 00:13:25.037
+For our final test, let's ask about the chart.
+
+261
+00:13:25.738 --> 00:13:27.940
+This agent will use the AnalyzeChart tool
+
+262
+00:13:28.240 --> 00:13:31.243
+to extract visual information about the trends.
+
+263
+00:13:31.911 --> 00:13:36.348
+and data points that cannot be determined from OCR text alone.
+
+264
+00:13:36.749 --> 00:13:39.518
+And that's it. In this lab, we
+
+265
+00:13:39.518 --> 00:13:42.288
+built a complete agentic document intelligence pipeline
+
+266
+00:13:42.521 --> 00:13:46.725
+that combines multiple AI technologies to understand complex documents.
+
+267
+00:13:47.159 --> 00:13:49.829
+Together, these components form a hybrid system
+
+268
+00:13:50.062 --> 00:13:52.798
+that can deeply understand more complex reports,
+
+269
+00:13:53.032 --> 00:13:57.603
+tables, figures, multi-column layouts, captions, and narrative flow.
+
+270
+00:13:58.470 --> 00:14:01.774
+However, as documents become more diverse and more variable,
+
+271
+00:14:01.774 --> 00:14:04.643
+these multi-agent pipelines can begin to break down.
+
+272
+00:14:04.944 --> 00:14:06.712
+It becomes hard to maintain,
+
+273
+00:14:06.812 --> 00:14:10.082
+brittle across edge cases, and difficult to scale
+
+274
+00:14:10.082 --> 00:14:12.451
+because each component must be tuned,
+
+275
+00:14:12.551 --> 00:14:14.887
+monitored, and orchestrated manually.
+
+276
+00:14:15.287 --> 00:14:18.657
+In the next lesson, Andrea will introduce LandingAI's
+
+277
+00:14:18.657 --> 00:14:20.860
+agentic document extraction,
+
+278
+00:14:20.860 --> 00:14:25.164
+which unifies all the essential steps for document understanding,
+
+279
+00:14:25.164 --> 00:14:27.666
+layout analysis, text extraction,
+
+280
+00:14:27.666 --> 00:14:31.170
+region segmentation, reading order reconstruction,
+
+281
+00:14:31.170 --> 00:14:35.174
+multimodal reasoning, and schema-based field extraction
+
+282
+00:14:35.174 --> 00:14:39.745
+into a single coordinated agentic workflow. See you all there.

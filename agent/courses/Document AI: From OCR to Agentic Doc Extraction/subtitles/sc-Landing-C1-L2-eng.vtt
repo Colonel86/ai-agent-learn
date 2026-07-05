@@ -1,0 +1,1030 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.100 --> 00:00:02.402
+All right. Now that we cover the concepts
+
+2
+00:00:02.402 --> 00:00:04.671
+and the slides, let's get our hands dirty.
+
+3
+00:00:04.771 --> 00:00:09.175
+We're going to build a simple but powerful document processing agent.
+
+4
+00:00:09.676 --> 00:00:13.179
+The goal here isn't to build a perfect production system.
+
+5
+00:00:13.580 --> 00:00:15.982
+It's to see how OCR, set of rules,
+
+6
+00:00:15.982 --> 00:00:19.185
+and LLM-based reasoning all fit together.
+
+7
+00:00:19.586 --> 00:00:23.089
+Here we import all the packages of our system.
+
+8
+00:00:24.591 --> 00:00:26.793
+PIL for loading images,
+
+9
+00:00:27.594 --> 00:00:29.396
+pytesseract for OCR,
+
+10
+00:00:29.796 --> 00:00:32.799
+langchain and tools for agent scaffolding.
+
+11
+00:00:33.800 --> 00:00:36.903
+and OpenAI models, prompt templates,
+
+12
+00:00:37.804 --> 00:00:41.007
+AgentExecutor that runs the full ReAct loop.
+
+13
+00:00:41.274 --> 00:00:43.543
+Here is where you can turn OCR
+
+14
+00:00:43.543 --> 00:00:46.079
+into an actual tool the agent can call.
+
+15
+00:00:46.546 --> 00:00:51.546
+This function takes an image path, uses Tesseract to extract text,
+
+16
+00:00:52.485 --> 00:00:56.189
+and returns the result. The @tool decorator
+
+17
+00:00:56.289 --> 00:01:00.593
+turns this into something the agent can recognize and call by name.
+
+18
+00:01:00.994 --> 00:01:04.397
+During the agent loop, the LLM will literally decide,
+
+19
+00:01:05.198 --> 00:01:07.000
+I need to read the document first,
+
+20
+00:01:07.500 --> 00:01:12.005
+calls OCR tool, gets the text and continues reasoning.
+
+21
+00:01:12.806 --> 00:01:15.075
+You will see later the agent's reasoning
+
+22
+00:01:15.175 --> 00:01:17.677
+is only as good as the inputs it receives.
+
+23
+00:01:18.344 --> 00:01:20.447
+Here is the first test image,
+
+24
+00:01:20.647 --> 00:01:23.149
+a nice clean digital invoice.
+
+25
+00:01:23.850 --> 00:01:26.252
+This is the ideal case for OCR.
+
+26
+00:01:26.653 --> 00:01:29.956
+Perfect lighting, crisp fonts, no handwriting.
+
+27
+00:01:30.056 --> 00:01:33.626
+no shadows. This is where traditional OCR shines.
+
+28
+00:01:34.227 --> 00:01:36.029
+Take a second look at this. In
+
+29
+00:01:36.029 --> 00:01:38.064
+your mind, how would you extract the text
+
+30
+00:01:38.098 --> 00:01:41.367
+and the total value? If you're writing a script.
+
+31
+00:01:41.968 --> 00:01:45.472
+regex or regular expressions or rules.
+
+32
+00:01:45.972 --> 00:01:47.974
+Let's see what happens.
+
+33
+00:01:48.475 --> 00:01:51.478
+Now we run the OCR tool on the invoice.
+
+34
+00:01:51.778 --> 00:01:54.781
+This output is exactly what you would get
+
+35
+00:01:54.881 --> 00:01:57.050
+if you piped the image through Tesseract.
+
+36
+00:01:57.083 --> 00:01:59.285
+raw text, no structure,
+
+37
+00:01:59.586 --> 00:02:01.688
+no meaning, and no understanding.
+
+38
+00:02:02.088 --> 00:02:04.090
+And this is why everything downstream,
+
+39
+00:02:04.390 --> 00:02:07.594
+regular expression, ML models, extraction
+
+40
+00:02:07.594 --> 00:02:09.696
+is often very brittle.
+
+41
+00:02:10.597 --> 00:02:14.200
+Here is the moment where classic rule-based systems start to break.
+
+42
+00:02:14.367 --> 00:02:17.937
+We write a simple regex for tax and total.
+
+43
+00:02:18.838 --> 00:02:23.076
+Let's see what happens. It misses the tax line entirely,
+
+44
+00:02:23.343 --> 00:02:25.178
+and it grabs the wrong total.
+
+45
+00:02:25.645 --> 00:02:27.847
+it grabs the subtotal first.
+
+46
+00:02:28.448 --> 00:02:30.650
+And this isn't a bug in our regex.
+
+47
+00:02:31.117 --> 00:02:34.120
+This is a fundamental flaw of rules interacting
+
+48
+00:02:34.220 --> 00:02:36.122
+with noisy OCR data.
+
+49
+00:02:36.422 --> 00:02:38.925
+Regex doesn't equal understanding.
+
+50
+00:02:39.425 --> 00:02:43.930
+This is how most legacy intelligent document processing systems
+
+51
+00:02:43.930 --> 00:02:45.932
+fail silently in production.
+
+52
+00:02:47.100 --> 00:02:49.435
+Let's look at how the regex is set up
+
+53
+00:02:49.736 --> 00:02:51.604
+for tax and total match.
+
+54
+00:02:51.704 --> 00:02:54.674
+It's looking for the words tax and total
+
+55
+00:02:54.874 --> 00:02:59.078
+followed by spacing and a dollar sign and a set of numbers.
+
+56
+00:02:59.746 --> 00:03:02.015
+and it's reading the OCR output text.
+
+57
+00:03:02.749 --> 00:03:04.083
+If we go back to the document,
+
+58
+00:03:04.083 --> 00:03:05.451
+you can see that the word total
+
+59
+00:03:05.685 --> 00:03:09.122
+comes up multiple times as subtotal and total,
+
+60
+00:03:09.489 --> 00:03:13.126
+and the tax has an at symbol instead of just
+
+61
+00:03:13.593 --> 00:03:17.397
+spaces which can throw off the document.
+
+62
+00:03:17.597 --> 00:03:21.367
+And if you are processing millions and billions of invoices
+
+63
+00:03:21.367 --> 00:03:25.071
+per year from different vendors that can have different structures.
+
+64
+00:03:25.071 --> 00:03:30.071
+You can see how using something like regex can break very quickly.
+
+65
+00:03:30.743 --> 00:03:32.845
+So, what went wrong?
+
+66
+00:03:32.845 --> 00:03:35.648
+Our regex search for tax failed
+
+67
+00:03:35.648 --> 00:03:40.286
+because the OCR output had tax at, not just tax.
+
+68
+00:03:40.753 --> 00:03:44.924
+Similarly, the regex initially matched the subtotal as the total
+
+69
+00:03:44.924 --> 00:03:47.994
+because it appeared earlier and fit the pattern.
+
+70
+00:03:48.428 --> 00:03:50.530
+before the actual total.
+
+71
+00:03:50.730 --> 00:03:53.433
+You can clearly see the limitation of regex
+
+72
+00:03:53.433 --> 00:03:56.536
+on OCR text. It is very brittle.
+
+73
+00:03:56.736 --> 00:04:01.241
+It depends heavily on the exact wording and layout.
+
+74
+00:04:01.641 --> 00:04:04.043
+Regex has no semantic understanding.
+
+75
+00:04:04.244 --> 00:04:08.248
+It doesn't know that tax refers to a tax line.
+
+76
+00:04:08.748 --> 00:04:13.052
+So the main takeaway is that OCR alone gives you raw text.
+
+77
+00:04:13.353 --> 00:04:16.055
+Regex provides some set of rules,
+
+78
+00:04:16.356 --> 00:04:18.858
+but neither actually understands the meaning.
+
+79
+00:04:19.125 --> 00:04:22.228
+That's where LLMs and agents come in.
+
+80
+00:04:23.029 --> 00:04:25.031
+Here is where we build our agent,
+
+81
+00:04:25.231 --> 00:04:27.133
+and there are three key components.
+
+82
+00:04:27.433 --> 00:04:29.636
+The LLM, which is the brain,
+
+83
+00:04:29.936 --> 00:04:32.138
+and we're using gpt-5-mini here,
+
+84
+00:04:32.238 --> 00:04:35.141
+so I'll go ahead and upload my API key.
+
+85
+00:04:35.441 --> 00:04:38.311
+Second is OCR or eyes, which we defined earlier,
+
+86
+00:04:38.444 --> 00:04:41.314
+and we'll set up the OpenAI GPT model.
+
+87
+00:04:41.848 --> 00:04:45.151
+And then, lastly, all the tools that agents can use.
+
+88
+00:04:45.652 --> 00:04:47.487
+It tells the agent what tool
+
+89
+00:04:47.487 --> 00:04:49.622
+it has and how to use them.
+
+90
+00:04:50.323 --> 00:04:52.625
+This is the essence of the ReAct framework.
+
+91
+00:04:53.026 --> 00:04:56.129
+Think, act, observe, and think again.
+
+92
+00:04:57.297 --> 00:05:00.500
+Here we're creating the agent using the ReAct framework.
+
+93
+00:05:00.700 --> 00:05:03.102
+We're passing the llm, the set of tools,
+
+94
+00:05:03.403 --> 00:05:05.405
+and the prompt we defined above.
+
+95
+00:05:06.306 --> 00:05:08.608
+Then we need an AgentExecutor object
+
+96
+00:05:08.808 --> 00:05:12.312
+to run the tool-enabled loop using LangChain.
+
+97
+00:05:13.179 --> 00:05:16.783
+When we ask the agent to extract the text and total,
+
+98
+00:05:17.483 --> 00:05:19.485
+something magical happens.
+
+99
+00:05:19.786 --> 00:05:21.954
+It recognizes that it needs OCR,
+
+100
+00:05:22.155 --> 00:05:24.157
+so it calls the OCR tool.
+
+101
+00:05:24.657 --> 00:05:28.461
+It reads semantically and returns structured JSON.
+
+102
+00:05:28.828 --> 00:05:32.231
+no regex, no rules, and no templates.
+
+103
+00:05:32.832 --> 00:05:36.636
+And this is why agentic systems are replacing static
+
+104
+00:05:36.836 --> 00:05:40.340
+intelligent document processing or IDP pipelines.
+
+105
+00:05:41.474 --> 00:05:45.178
+As you can see, the agent returned structured JSON
+
+106
+00:05:45.778 --> 00:05:48.014
+and it picked up the right tax
+
+107
+00:05:48.014 --> 00:05:50.283
+and the total instead of the subtotal.
+
+108
+00:05:50.883 --> 00:05:52.719
+So you didn't have to create
+
+109
+00:05:52.719 --> 00:05:54.887
+any rules or templates to achieve this.
+
+110
+00:05:55.154 --> 00:05:58.024
+With the comprehension capabilities of LLMs,
+
+111
+00:05:58.358 --> 00:06:01.861
+the agent is able to extract the information correctly
+
+112
+00:06:01.861 --> 00:06:05.465
+based on the parsed result of the OCR tool.
+
+113
+00:06:06.332 --> 00:06:09.235
+Our earlier example worked well because the invoice
+
+114
+00:06:09.235 --> 00:06:12.739
+had a clean layout and high text quality.
+
+115
+00:06:13.239 --> 00:06:16.042
+But real-world documents aren't always so kind.
+
+116
+00:06:16.242 --> 00:06:19.045
+Let's explore what happens when the input gets messier.
+
+117
+00:06:19.846 --> 00:06:23.649
+Here is a table from the attention is all you need paper.
+
+118
+00:06:24.250 --> 00:06:26.552
+Tables are notoriously difficult for OCR.
+
+119
+00:06:27.153 --> 00:06:30.423
+They require spatial alignment and column reconstruction,
+
+120
+00:06:31.023 --> 00:06:33.426
+something Tesseract was never designed to do.
+
+121
+00:06:34.026 --> 00:06:36.429
+For this table, there are no clear lines
+
+122
+00:06:36.429 --> 00:06:39.132
+that separate each columns and row.
+
+123
+00:06:39.699 --> 00:06:42.802
+There are empty cells and scientific numbers,
+
+124
+00:06:42.902 --> 00:06:46.706
+which can throw off conventional OCR tools like Tesseract.
+
+125
+00:06:47.273 --> 00:06:49.575
+So let's give the agent a new task.
+
+126
+00:06:49.976 --> 00:06:52.979
+I want it to extract the training cost and FLOPs
+
+127
+00:06:53.479 --> 00:06:55.681
+for English to German translation
+
+128
+00:06:56.082 --> 00:07:00.086
+for all methods from the table using the OCR tool.
+
+129
+00:07:00.853 --> 00:07:04.056
+I also wanted to return the result as a list
+
+130
+00:07:04.056 --> 00:07:07.260
+with model name and its training cost.
+
+131
+00:07:07.660 --> 00:07:09.562
+So we wanted to extract the value
+
+132
+00:07:09.562 --> 00:07:11.464
+from this particular column here.
+
+133
+00:07:11.964 --> 00:07:15.168
+First, let's get the raw OCR output.
+
+134
+00:07:15.768 --> 00:07:18.171
+Then, we will use the invoke function
+
+135
+00:07:18.171 --> 00:07:21.774
+with a dictionary input for the agent_executor.
+
+136
+00:07:22.475 --> 00:07:24.877
+and we'll display the results side by side.
+
+137
+00:07:25.678 --> 00:07:28.581
+So this is the raw output of the OCR.
+
+138
+00:07:29.982 --> 00:07:31.984
+And once it's done running,
+
+139
+00:07:32.285 --> 00:07:35.688
+you have the output from the agent itself.
+
+140
+00:07:37.123 --> 00:07:39.725
+Here we print both the OCR output
+
+141
+00:07:39.926 --> 00:07:42.895
+and the output from the LLM and the agent.
+
+142
+00:07:43.496 --> 00:07:45.198
+Let's look at the OCR output.
+
+143
+00:07:45.398 --> 00:07:46.999
+It is absolutely chaotic.
+
+144
+00:07:47.300 --> 00:07:49.502
+exponents become apostrophes,
+
+145
+00:07:49.502 --> 00:07:52.104
+decimals have become exclamation points,
+
+146
+00:07:52.104 --> 00:07:53.806
+columns are shifted.
+
+147
+00:07:54.307 --> 00:07:57.810
+But the agent still attempts a best effort interpretation.
+
+148
+00:07:58.110 --> 00:08:00.112
+And this is what LLMs do really well.
+
+149
+00:08:00.513 --> 00:08:02.315
+They try to understand intent
+
+150
+00:08:02.815 --> 00:08:05.084
+even when the input is degraded.
+
+151
+00:08:05.651 --> 00:08:08.354
+Even if the OCR output was imperfect,
+
+152
+00:08:08.955 --> 00:08:11.023
+the LLM was able to get to
+
+153
+00:08:11.023 --> 00:08:13.359
+the right conclusion on some of the cases.
+
+154
+00:08:14.060 --> 00:08:16.863
+If you look at the ByteNet and the training cost,
+
+155
+00:08:17.163 --> 00:08:18.965
+you can see that it's empty.
+
+156
+00:08:19.665 --> 00:08:22.768
+And even though the OCR output didn't preserve the
+
+157
+00:08:23.302 --> 00:08:26.105
+table structure, it was able to understand
+
+158
+00:08:26.105 --> 00:08:28.107
+that there was no value present
+
+159
+00:08:28.107 --> 00:08:29.809
+for this particular model.
+
+160
+00:08:30.510 --> 00:08:31.878
+If you look at the second
+
+161
+00:08:31.878 --> 00:08:33.513
+row, it was supposed to be empty,
+
+162
+00:08:33.513 --> 00:08:35.515
+but it picked up a different value
+
+163
+00:08:35.515 --> 00:08:37.517
+from a different column incorrectly.
+
+164
+00:08:38.050 --> 00:08:40.152
+If you look at the actual value itself,
+
+165
+00:08:40.253 --> 00:08:44.857
+it was supposed to be 1.0 times 10 to the 20th power,
+
+166
+00:08:44.957 --> 00:08:48.060
+whereas the OCR read that as 1.0
+
+167
+00:08:48.160 --> 00:08:52.565
+minus 107 degrees, which is incorrect.
+
+168
+00:08:54.066 --> 00:08:56.569
+Let's walk through another example and try
+
+169
+00:08:56.569 --> 00:08:59.071
+to push OCR beyond its breaking point,
+
+170
+00:08:59.305 --> 00:09:01.407
+handwriting.
+
+171
+00:09:01.507 --> 00:09:04.110
+So this is a document that we're analyzing.
+
+172
+00:09:04.210 --> 00:09:06.412
+It's a fill in the blanks exercise for
+
+173
+00:09:06.412 --> 00:09:08.881
+a student named John Smith. And you can see
+
+174
+00:09:09.315 --> 00:09:12.818
+The answer is that he submitted for these sentences.
+
+175
+00:09:13.119 --> 00:09:16.489
+I am an honest person. I am going to school.
+
+176
+00:09:16.789 --> 00:09:20.092
+They is dancing, which we know is grammatically incorrect.
+
+177
+00:09:20.860 --> 00:09:22.528
+Now, let's look at the task
+
+178
+00:09:22.528 --> 00:09:24.463
+that we're asking the agent to do.
+
+179
+00:09:24.864 --> 00:09:29.335
+We are asking it to process the document 'fill_in_the_blanks.jpg'
+
+180
+00:09:29.569 --> 00:09:34.569
+using the OCR tool and extract the following information in JSON format.
+
+181
+00:09:35.141 --> 00:09:37.043
+First, I want the student name,
+
+182
+00:09:37.143 --> 00:09:40.446
+then I want the student answer to all the ten questions.
+
+183
+00:09:41.247 --> 00:09:44.650
+So I will run the agent again
+
+184
+00:09:45.751 --> 00:09:49.956
+and pass in the document. So let's look at the output.
+
+185
+00:09:50.056 --> 00:09:52.558
+The raw OCR output, as you can see,
+
+186
+00:09:52.558 --> 00:09:55.061
+was not able to capture the student name.
+
+187
+00:09:55.461 --> 00:09:58.931
+And the fill in the blank answers are completely incorrect.
+
+188
+00:10:00.232 --> 00:10:02.234
+Instead of am, it read Aum.
+
+189
+00:10:02.935 --> 00:10:05.438
+Some numbers are recognized as letters,
+
+190
+00:10:06.138 --> 00:10:09.241
+and for answer nine, instead of they is dancing,
+
+191
+00:10:09.742 --> 00:10:12.244
+they picked up 1% for whatever reason.
+
+192
+00:10:13.145 --> 00:10:16.749
+If you look at the LLM result, it was able to assume
+
+193
+00:10:16.749 --> 00:10:20.453
+and come up with the right answers for some of the questions.
+
+194
+00:10:20.853 --> 00:10:23.756
+And if you look at question nine, instead of picking up
+
+195
+00:10:23.756 --> 00:10:27.059
+the actual answer by the student, which was is,
+
+196
+00:10:28.327 --> 00:10:30.563
+it overcorrected and
+
+197
+00:10:30.563 --> 00:10:32.064
+came up with are as the
+
+198
+00:10:32.064 --> 00:10:33.799
+answer, which is not what we want.
+
+199
+00:10:34.467 --> 00:10:38.004
+Now let's look at a third example, a picture of a receipt.
+
+200
+00:10:38.571 --> 00:10:41.107
+Receipts as you know, are extremely messy.
+
+201
+00:10:41.741 --> 00:10:44.644
+It can be low resolution with thermal printing,
+
+202
+00:10:45.344 --> 00:10:48.047
+it can have misaligned text and shadows.
+
+203
+00:10:48.614 --> 00:10:50.616
+Let's give the agent a new task.
+
+204
+00:10:50.916 --> 00:10:54.920
+I want it to process the receipt document, the JPEG,
+
+205
+00:10:55.321 --> 00:10:58.324
+and evaluate whether or not the total is correct.
+
+206
+00:10:59.592 --> 00:11:02.895
+Now let's compare the OCR output to the actual receipt.
+
+207
+00:11:03.496 --> 00:11:06.999
+You can see that it produces a small numerical error
+
+208
+00:11:07.800 --> 00:11:12.004
+and how the agent attempts to reason through the inconsistencies.
+
+209
+00:11:12.705 --> 00:11:15.307
+If you look at the first line item for the food,
+
+210
+00:11:15.908 --> 00:11:19.311
+the actual value is $7.95, but the OCR
+
+211
+00:11:20.346 --> 00:11:23.349
+misinterpreted that as $7.99,
+
+212
+00:11:23.649 --> 00:11:26.152
+which should throw off the total calculation.
+
+213
+00:11:27.953 --> 00:11:29.622
+If we look at the LLM result,
+
+214
+00:11:29.855 --> 00:11:31.857
+it's reading through all the line item
+
+215
+00:11:32.124 --> 00:11:34.326
+provided by the OCR tool.
+
+216
+00:11:35.027 --> 00:11:36.862
+And it even picks up that some
+
+217
+00:11:36.862 --> 00:11:38.731
+of them are a little bit unclear.
+
+218
+00:11:39.131 --> 00:11:41.734
+and it goes through the calculation to
+
+219
+00:11:42.034 --> 00:11:45.938
+get the sum of all three items listed on the receipt.
+
+220
+00:11:46.639 --> 00:11:48.941
+And then it compares it to the actual total
+
+221
+00:11:49.341 --> 00:11:51.477
+and comes to the conclusion that
+
+222
+00:11:51.477 --> 00:11:53.946
+the total does not add up correctly.
+
+223
+00:11:54.947 --> 00:11:57.950
+The reasoning is solid, but the answer is incorrect.
+
+224
+00:11:58.250 --> 00:12:00.453
+And that is because the OCR tool
+
+225
+00:12:00.453 --> 00:12:02.655
+didn't capture the numbers accurately.
+
+226
+00:12:03.055 --> 00:12:05.157
+So here's what we covered during the lab.
+
+227
+00:12:05.458 --> 00:12:08.661
+OCR is great at reading, but terrible at understanding.
+
+228
+00:12:09.462 --> 00:12:12.064
+It performs very well on clean printed text,
+
+229
+00:12:12.064 --> 00:12:14.567
+providing accurate document parsing.
+
+230
+00:12:15.468 --> 00:12:18.838
+However, it struggles with complex tables and handwriting.
+
+231
+00:12:19.371 --> 00:12:21.574
+it can read characters
+
+232
+00:12:21.574 --> 00:12:24.176
+but doesn't truly understand structure or meaning.
+
+233
+00:12:24.877 --> 00:12:26.479
+And Regex breaks easily
+
+234
+00:12:26.479 --> 00:12:29.181
+when OCR output changes even slightly.
+
+235
+00:12:30.783 --> 00:12:33.486
+Adding an LLM layer with an agent
+
+236
+00:12:33.486 --> 00:12:35.287
+introduces understanding,
+
+237
+00:12:35.287 --> 00:12:38.090
+which makes information extraction
+
+238
+00:12:38.090 --> 00:12:40.092
+and interpretation more effective.
+
+239
+00:12:42.228 --> 00:12:44.830
+Agents combine tools and reasoning,
+
+240
+00:12:45.231 --> 00:12:48.834
+giving us the foundation for modern document systems.
+
+241
+00:12:49.635 --> 00:12:52.438
+Real world document understanding requires
+
+242
+00:12:52.538 --> 00:12:54.540
+OCR, layout detection,
+
+243
+00:12:54.940 --> 00:12:57.743
+vision language models, agentic workflows,
+
+244
+00:12:57.743 --> 00:13:00.746
+and grounding and validation loops.
+
+245
+00:13:01.714 --> 00:13:03.716
+All right, that wraps up lesson one.
+
+246
+00:13:04.116 --> 00:13:08.120
+You've now seen how basic document processing systems work.
+
+247
+00:13:08.721 --> 00:13:10.723
+How OCR fits in,
+
+248
+00:13:10.723 --> 00:13:13.425
+and how we can layer agentic reasoning on top
+
+249
+00:13:13.425 --> 00:13:15.928
+make these systems far more intelligent.
+
+250
+00:13:16.328 --> 00:13:20.199
+For our next lesson, Andrea will take us deeper into
+
+251
+00:13:20.199 --> 00:13:22.835
+the foundation of all these concepts.
+
+252
+00:13:23.736 --> 00:13:27.306
+Lesson two, four decades of OCR evolution,
+
+253
+00:13:27.306 --> 00:13:31.110
+will explore how OCR itself has transformed over the years.
+
+254
+00:13:31.544 --> 00:13:34.046
+from classic engines like Tesseract
+
+255
+00:13:34.046 --> 00:13:37.850
+to modern deep learning approaches like PaddleOCR.
+
+256
+00:13:37.850 --> 00:13:39.852
+And why that evolution matters
+
+257
+00:13:39.852 --> 00:13:42.054
+for real-world document workflows.

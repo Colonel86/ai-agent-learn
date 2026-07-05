@@ -1,0 +1,1379 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.800 --> 00:00:04.971
+So first a little bit of setup for our modern OCR stack.
+
+2
+00:00:05.372 --> 00:00:09.376
+We're going to import PIL for images, OpenCV and numpy
+
+3
+00:00:09.576 --> 00:00:12.178
+for image processing, matplotlib for plotting,
+
+4
+00:00:12.579 --> 00:00:15.582
+and of course PaddleOCR from PaddleOCR.
+
+5
+00:00:16.149 --> 00:00:17.951
+This cell is importing the API
+
+6
+00:00:17.951 --> 00:00:20.053
+key that we'll need for the agent,
+
+7
+00:00:20.253 --> 00:00:22.255
+very similar to the previous lab.
+
+8
+00:00:22.856 --> 00:00:25.225
+Having completed our setup, let's get into it.
+
+9
+00:00:25.425 --> 00:00:28.328
+All right, so here we create a PaddleOCR object
+
+10
+00:00:28.528 --> 00:00:31.031
+with the language specified as English.
+
+11
+00:00:31.364 --> 00:00:34.868
+And notice that the two models from the architecture diagram
+
+12
+00:00:35.035 --> 00:00:37.537
+from the slides are represented here.
+
+13
+00:00:37.837 --> 00:00:42.142
+So here's that _DET text detector model,
+
+14
+00:00:42.342 --> 00:00:45.845
+and here's the _REC recognition model.
+
+15
+00:00:47.213 --> 00:00:50.116
+Now, you won't actually call these models sequentially.
+
+16
+00:00:50.216 --> 00:00:53.119
+PaddleOCR is going to handle all of the pre-processing
+
+17
+00:00:53.219 --> 00:00:56.222
+and calling these models all as one pipeline.
+
+18
+00:00:56.723 --> 00:00:59.692
+This receipt image will look familiar from lab one.
+
+19
+00:01:00.260 --> 00:01:02.262
+This cell runs the OCR.
+
+20
+00:01:02.862 --> 00:01:05.765
+The result will be a list where each item
+
+21
+00:01:05.865 --> 00:01:07.867
+corresponds to a processed page.
+
+22
+00:01:08.268 --> 00:01:10.270
+So for a single page image,
+
+23
+00:01:10.270 --> 00:01:12.572
+it's only going to contain one dictionary.
+
+24
+00:01:13.339 --> 00:01:15.508
+So this cell is going to print
+
+25
+00:01:15.508 --> 00:01:17.644
+some of the contents of result zero.
+
+26
+00:01:18.344 --> 00:01:20.947
+Specifically the text that was recognized,
+
+27
+00:01:21.948 --> 00:01:24.451
+the confidence score associated with that
+
+28
+00:01:25.318 --> 00:01:27.520
+and the bounding box coordinates.
+
+29
+00:01:28.121 --> 00:01:31.024
+And as we scroll down, we'll see all of the text
+
+30
+00:01:31.024 --> 00:01:33.526
+that was recognized across the entire receipt.
+
+31
+00:01:34.828 --> 00:01:36.529
+All right, before we execute this
+
+32
+00:01:36.529 --> 00:01:38.531
+cell, let me explain what to expect.
+
+33
+00:01:39.332 --> 00:01:42.202
+Recall from the architecture diagram that the pipeline
+
+34
+00:01:42.502 --> 00:01:45.505
+also pre-processes the image where necessary.
+
+35
+00:01:45.905 --> 00:01:48.808
+And it can correct rotational issues
+
+36
+00:01:48.808 --> 00:01:51.010
+or deskew or unwarp the image.
+
+37
+00:01:51.544 --> 00:01:55.748
+So what we're going to see now is actually
+the pre-processed image
+
+38
+00:01:55.748 --> 00:01:59.252
+with the bounding box and the text recognition overlaid.
+
+39
+00:01:59.752 --> 00:02:02.055
+So let's go ahead and request the image.
+
+40
+00:02:03.156 --> 00:02:06.659
+and then execute another cell where we can view it
+
+41
+00:02:07.060 --> 00:02:09.062
+with all of those items overlaid.
+
+42
+00:02:09.963 --> 00:02:12.966
+Now, if you compare this image carefully to the original,
+
+43
+00:02:13.366 --> 00:02:16.169
+you'll actually see that some of the background is removed
+
+44
+00:02:16.469 --> 00:02:18.771
+and there is a slight rotation clockwise
+
+45
+00:02:18.972 --> 00:02:21.374
+to make it a little bit more horizontal.
+
+46
+00:02:22.609 --> 00:02:26.312
+And then the code draws the bounding boxes on the processed image
+
+47
+00:02:26.412 --> 00:02:28.715
+and places the recognized text on the top.
+
+48
+00:02:29.415 --> 00:02:32.018
+So why repeat an example such as this one?
+
+49
+00:02:32.285 --> 00:02:34.787
+Well, notice the addition of the bounding boxes.
+
+50
+00:02:34.787 --> 00:02:37.090
+We now have localization information
+
+51
+00:02:37.090 --> 00:02:39.092
+about where in the receipt
+
+52
+00:02:39.092 --> 00:02:41.794
+a particular text field is found.
+
+53
+00:02:42.295 --> 00:02:45.064
+And also notice that we are getting the value correct.
+
+54
+00:02:45.064 --> 00:02:48.067
+Previously this 795 was incorrect.
+
+55
+00:02:48.635 --> 00:02:52.138
+All right, so now we're going to turn PaddleOCR into a tool
+
+56
+00:02:52.138 --> 00:02:54.240
+that can be used with an agent.
+
+57
+00:02:55.141 --> 00:02:57.443
+This will be very similar to lab one.
+
+58
+00:02:58.144 --> 00:03:01.548
+So this long function, we're setting this up as a tool,
+
+59
+00:03:02.115 --> 00:03:05.919
+and here the result is going to be coming from the PaddleOCR,
+
+60
+00:03:06.419 --> 00:03:08.221
+and much of the rest is the same.
+
+61
+00:03:08.521 --> 00:03:11.024
+We're going to be printing out the text
+
+62
+00:03:11.024 --> 00:03:13.726
+and the boxes and the confidence scores
+
+63
+00:03:13.726 --> 00:03:16.029
+as we saw in the prior example.
+
+64
+00:03:17.030 --> 00:03:19.032
+All right, having defined that function,
+
+65
+00:03:19.032 --> 00:03:22.335
+we'll now specify that that function is the tool
+
+66
+00:03:22.335 --> 00:03:25.038
+that will be available to the agent.
+
+67
+00:03:25.738 --> 00:03:27.040
+The rest of this is going
+
+68
+00:03:27.040 --> 00:03:28.541
+to be the same as lesson one,
+
+69
+00:03:28.741 --> 00:03:32.345
+and note that we're using gpt-5-mini as our LLM.
+
+70
+00:03:34.047 --> 00:03:36.316
+This task should look familiar as well.
+
+71
+00:03:36.416 --> 00:03:38.218
+We're going to use the receipt
+
+72
+00:03:38.218 --> 00:03:40.320
+and evaluate that the total is correct.
+
+73
+00:03:40.787 --> 00:03:42.889
+So, as I scroll down here,
+
+74
+00:03:42.889 --> 00:03:46.292
+of course we see the PaddleOCR output here in the turquoise,
+
+75
+00:03:46.292 --> 00:03:48.995
+the green output is coming from the LLM.
+
+76
+00:03:49.596 --> 00:03:52.599
+The task again was to perform some basic addition,
+
+77
+00:03:52.599 --> 00:03:55.001
+and because the inputs are correct,
+
+78
+00:03:55.001 --> 00:03:58.605
+then the addition has a much greater chance of being correct,
+
+79
+00:03:58.605 --> 00:04:00.573
+and we do get the correct total.
+
+80
+00:04:01.241 --> 00:04:04.043
+So this example really shows how a combination
+
+81
+00:04:04.143 --> 00:04:06.746
+of PaddleOCR and an LLM
+
+82
+00:04:06.846 --> 00:04:09.349
+can handle a real world receipt.
+
+83
+00:04:10.149 --> 00:04:13.152
+Remember the Table exercise and the student Handwriting,
+
+84
+00:04:13.253 --> 00:04:15.255
+we're going to do those two next.
+
+85
+00:04:15.521 --> 00:04:17.624
+We're going to define another helper function.
+
+86
+00:04:17.824 --> 00:04:19.826
+There's actually nothing new to see here.
+
+87
+00:04:20.026 --> 00:04:23.029
+So the OCR result is still coming from PaddleOCR.
+
+88
+00:04:23.329 --> 00:04:25.732
+We've still got some printed output.
+
+89
+00:04:26.332 --> 00:04:30.136
+We're still working with the post-processed image,
+
+90
+00:04:30.536 --> 00:04:31.904
+and then we're going to be
+
+91
+00:04:31.904 --> 00:04:33.539
+doing some annotations on top of that
+
+92
+00:04:33.539 --> 00:04:35.541
+using the bounding box coordinates.
+
+93
+00:04:35.842 --> 00:04:38.544
+But now it's wrapped into one function called run_ocr,
+
+94
+00:04:38.845 --> 00:04:42.148
+and you'll see this one repeatedly through the rest of the lesson.
+
+95
+00:04:42.482 --> 00:04:45.885
+All right, so let's apply all of that to the table.
+
+96
+00:04:46.886 --> 00:04:48.788
+This is a reminder of what it looks like.
+
+97
+00:04:49.689 --> 00:04:54.294
+And our second chunk of output is the PaddleOCR printed information.
+
+98
+00:04:54.494 --> 00:04:58.598
+Again, we've got the recognized text, confidence score, and bounding boxes.
+
+99
+00:04:59.098 --> 00:05:03.970
+Scrolling on past that, we have the actual overlaid bounding boxes
+
+100
+00:05:04.070 --> 00:05:06.372
+with the recognized text in blue.
+
+101
+00:05:07.273 --> 00:05:09.876
+So, as you visually inspect this,
+
+102
+00:05:10.076 --> 00:05:12.879
+you may detect one or more OCR errors.
+
+103
+00:05:13.579 --> 00:05:16.883
+And the first one that I see actually continues
+
+104
+00:05:16.883 --> 00:05:18.985
+with the treatment of the exponential notation.
+
+105
+00:05:19.585 --> 00:05:21.387
+We had problems with this previously.
+
+106
+00:05:21.754 --> 00:05:24.157
+The 10th to the 20th over here
+
+107
+00:05:24.457 --> 00:05:26.859
+is recognized as 1020,
+
+108
+00:05:27.360 --> 00:05:30.463
+and that's like a billion billions difference from the real answer.
+
+109
+00:05:31.064 --> 00:05:33.132
+So it also seems like most of
+
+110
+00:05:33.132 --> 00:05:35.168
+the exponents are recognized in this way.
+
+111
+00:05:35.902 --> 00:05:38.504
+But let's go ahead and power forward.
+
+112
+00:05:39.205 --> 00:05:43.209
+We'll give the agent the task of again extracting the flops
+
+113
+00:05:43.509 --> 00:05:48.509
+from the English to German, noted as EN-DE column in the table.
+
+114
+00:05:50.883 --> 00:05:53.086
+All right, let's scroll through this output.
+
+115
+00:05:53.486 --> 00:05:56.189
+Again, the turquoise is coming from PaddleOCR.
+
+116
+00:05:57.790 --> 00:05:59.892
+The green is coming from the LLM.
+
+117
+00:06:00.393 --> 00:06:03.196
+And then in our function we also asked for
+
+118
+00:06:03.196 --> 00:06:05.398
+this printed result down at the bottom.
+
+119
+00:06:06.899 --> 00:06:09.902
+So you can do the visual inspection for yourself
+
+120
+00:06:09.902 --> 00:06:13.206
+or you can trust me that this is actually fully correct.
+
+121
+00:06:13.573 --> 00:06:16.576
+And let me draw your attention to two aspects
+
+122
+00:06:16.676 --> 00:06:19.379
+that were incorrect in the previous run.
+
+123
+00:06:20.546 --> 00:06:22.548
+So this ByteNet
+
+124
+00:06:22.648 --> 00:06:24.951
+and this Deep-Att
+
+125
+00:06:25.051 --> 00:06:27.754
+are correctly noted as not found,
+
+126
+00:06:27.854 --> 00:06:31.057
+because they are blank areas in the original table.
+
+127
+00:06:31.457 --> 00:06:35.261
+And fortunately, our scientific notation has been corrected.
+
+128
+00:06:35.661 --> 00:06:38.297
+Instead of 1020, this is now
+
+129
+00:06:38.297 --> 00:06:41.367
+reported as 10 to the 20th power.
+
+130
+00:06:42.268 --> 00:06:45.071
+And how is that possible? This actually
+
+131
+00:06:45.071 --> 00:06:47.907
+nicely demonstrates the reasoning power of LLMs
+
+132
+00:06:47.907 --> 00:06:50.610
+because for something like FLOPs,
+
+133
+00:06:50.610 --> 00:06:53.913
+which stands for the floating point operations,
+
+134
+00:06:53.913 --> 00:06:57.617
+it simply doesn't make sense for the result to be 10 20.
+
+135
+00:06:57.617 --> 00:07:00.286
+It needs to be a much larger number.
+
+136
+00:07:00.286 --> 00:07:03.289
+So the agent has been able to apply reasoning
+
+137
+00:07:03.289 --> 00:07:06.292
+to the OCR output and remedy that situation.
+
+138
+00:07:07.493 --> 00:07:10.496
+Let's see if we can also remedy the issue
+
+139
+00:07:10.596 --> 00:07:13.199
+with the student handwritten grammar exercise.
+
+140
+00:07:13.599 --> 00:07:15.802
+Here's a reminder of what it looks like.
+
+141
+00:07:17.103 --> 00:07:19.505
+Let's take a look at the output
+
+142
+00:07:19.605 --> 00:07:21.908
+and notice at the top here that the name is John Smith
+
+143
+00:07:22.008 --> 00:07:24.811
+and it seems pretty legible to me.
+
+144
+00:07:25.478 --> 00:07:29.782
+But the student name here is detected as Myar
+
+145
+00:07:30.183 --> 00:07:32.485
+and I'm not even going to try to say that.
+
+146
+00:07:32.785 --> 00:07:34.787
+But it's clearly not John Smith.
+
+147
+00:07:35.321 --> 00:07:39.091
+Let's scroll down to the overlaid bounding boxes
+
+148
+00:07:39.492 --> 00:07:41.794
+and call attention to a few other things.
+
+149
+00:07:42.795 --> 00:07:46.098
+So question number one is very clearly I am,
+
+150
+00:07:46.499 --> 00:07:50.503
+but in the text recognition, I think we're getting I underscore
+
+151
+00:07:50.803 --> 00:07:52.872
+and then this looks like a u
+
+152
+00:07:52.872 --> 00:07:54.907
+a n to me. So that's not
+
+153
+00:07:55.107 --> 00:07:58.978
+good. Number two, you know, we've got an extra underscore in here.
+
+154
+00:07:58.978 --> 00:08:01.180
+We could probably clean that up in post-processing,
+
+155
+00:08:01.180 --> 00:08:02.815
+but it would certainly be nice
+
+156
+00:08:02.815 --> 00:08:04.684
+if it was accurate from the beginning.
+
+157
+00:08:05.184 --> 00:08:07.353
+And for item number nine, we
+
+158
+00:08:07.353 --> 00:08:09.889
+are able to recognize this person's handwriting
+
+159
+00:08:09.889 --> 00:08:13.993
+as is, which is an improvement over the Tesseract performance.
+
+160
+00:08:14.894 --> 00:08:17.096
+So now let's give the agent the task
+
+161
+00:08:17.096 --> 00:08:20.366
+of extracting the student responses as JSON
+
+162
+00:08:20.766 --> 00:08:23.169
+and notice that the task instructs
+
+163
+00:08:23.569 --> 00:08:26.072
+do not correct any grammatical errors.
+
+164
+00:08:26.739 --> 00:08:30.543
+All right, let's scroll down to the responses
+
+165
+00:08:31.244 --> 00:08:35.548
+and we'll actually just skip right ahead to the LLM response here.
+
+166
+00:08:36.749 --> 00:08:40.553
+So, question one here is somewhat nonsensical.
+
+167
+00:08:41.254 --> 00:08:44.557
+And we've already noticed that the name is completely messed up.
+
+168
+00:08:44.957 --> 00:08:46.959
+But there's some good news here too.
+
+169
+00:08:47.260 --> 00:08:49.562
+So the JSON formatting is correct.
+
+170
+00:08:49.762 --> 00:08:54.233
+That's some good news and the incorrect grammatical answer
+
+171
+00:08:55.034 --> 00:08:57.803
+has stayed true to the student's original response.
+
+172
+00:08:58.204 --> 00:09:00.439
+Again, this was a grammar worksheet,
+
+173
+00:09:00.439 --> 00:09:03.976
+and so we don't want the LLM overwriting the student's response.
+
+174
+00:09:04.977 --> 00:09:07.513
+So to wrap up this section,
+
+175
+00:09:07.513 --> 00:09:10.483
+we've repeated three exercises from lesson one.
+
+176
+00:09:11.284 --> 00:09:14.654
+And recall from the PyTesseract architecture diagram
+
+177
+00:09:15.254 --> 00:09:18.958
+that there is a detection stage and a recognition stage.
+
+178
+00:09:19.325 --> 00:09:23.329
+So the detection is what's giving us the bounding boxes,
+
+179
+00:09:23.329 --> 00:09:28.134
+and that is clearly helping with the understanding of the overall document.
+
+180
+00:09:28.134 --> 00:09:31.137
+And the recognition here is also better.
+
+181
+00:09:31.137 --> 00:09:34.340
+There are fewer actual character-level mistakes
+
+182
+00:09:34.340 --> 00:09:37.343
+in terms of transcribing or recognizing the text.
+
+183
+00:09:37.343 --> 00:09:41.847
+So definitely performing better on these identical examples.
+
+184
+00:09:42.381 --> 00:09:45.184
+And now we'll move on to some more difficult examples
+
+185
+00:09:45.885 --> 00:09:47.887
+to expose some weaknesses.
+
+186
+00:09:48.387 --> 00:09:51.591
+So in this section, we're going to look at three new examples
+
+187
+00:09:51.591 --> 00:09:55.895
+and we have specifically selected them to expose some weaknesses.
+
+188
+00:09:56.195 --> 00:09:58.397
+But these are things that you need to be aware of
+
+189
+00:09:58.397 --> 00:10:00.199
+if you're building with PaddleOCR.
+
+190
+00:10:00.600 --> 00:10:02.702
+So this is a new example.
+
+191
+00:10:02.702 --> 00:10:04.604
+It's called report.png
+
+192
+00:10:04.604 --> 00:10:07.506
+and it appears to be an interior page
+
+193
+00:10:07.506 --> 00:10:10.209
+from a report about the US economy.
+
+194
+00:10:10.843 --> 00:10:12.845
+At the top there's a table,
+
+195
+00:10:12.845 --> 00:10:15.147
+the center has some basic text,
+
+196
+00:10:15.648 --> 00:10:17.850
+and at the bottom there's a line chart
+
+197
+00:10:17.850 --> 00:10:20.152
+with a caption to the left.
+
+198
+00:10:20.853 --> 00:10:23.456
+Let's take a look at how PaddleOCR
+
+199
+00:10:23.456 --> 00:10:25.458
+has extracted this document.
+
+200
+00:10:26.459 --> 00:10:30.463
+So at first glance, the table output actually looks quite good
+
+201
+00:10:30.630 --> 00:10:33.132
+and the text is fairly straightforward.
+
+202
+00:10:33.299 --> 00:10:35.501
+But let's take a look at this line chart.
+
+203
+00:10:36.502 --> 00:10:38.804
+So there's no box around the whole thing.
+
+204
+00:10:39.105 --> 00:10:41.240
+So that's my first clue that it's
+
+205
+00:10:41.240 --> 00:10:43.376
+not being recognized as a single unit.
+
+206
+00:10:43.743 --> 00:10:45.645
+But there are boxes around some
+
+207
+00:10:45.645 --> 00:10:47.847
+of the X and Y axis labels,
+
+208
+00:10:48.147 --> 00:10:52.351
+such as this 0, -2, -4, -6.
+
+209
+00:10:52.752 --> 00:10:55.655
+And these are now completely out of context,
+
+210
+00:10:55.955 --> 00:10:58.658
+which we can see if we scroll back up.
+
+211
+00:10:59.959 --> 00:11:02.461
+So indeed, here's that zero,
+
+212
+00:11:02.461 --> 00:11:05.765
+completely disconnected from this -2,
+
+213
+00:11:05.765 --> 00:11:09.769
+separated by some other content and then -4.
+
+214
+00:11:09.769 --> 00:11:13.773
+So there's really no way of understanding that these were Y-axis labels
+
+215
+00:11:13.773 --> 00:11:17.777
+or that they actually belonged to a chart which was ignored completely.
+
+216
+00:11:18.244 --> 00:11:20.546
+So we've exposed one weakness.
+
+217
+00:11:21.547 --> 00:11:26.252
+All right, let's take a look at article.jpg. What does this contain?
+
+218
+00:11:26.752 --> 00:11:30.056
+This looks like it's the front page of an academic article
+
+219
+00:11:30.056 --> 00:11:32.058
+about teeth.
+
+220
+00:11:32.658 --> 00:11:35.261
+Okay, so what do we notice about this article?
+
+221
+00:11:35.761 --> 00:11:38.431
+So there are multiple columns of text here.
+
+222
+00:11:38.431 --> 00:11:41.734
+So at the top of the article, there's kind of two columns.
+
+223
+00:11:41.734 --> 00:11:44.437
+We've got the abstract next to this call out.
+
+224
+00:11:44.670 --> 00:11:46.539
+And then the body of course
+
+225
+00:11:46.539 --> 00:11:48.741
+is presented as three columns of text,
+
+226
+00:11:48.841 --> 00:11:51.444
+which is kind of interrupted by this table.
+
+227
+00:11:51.844 --> 00:11:55.548
+So, let's scroll down to view the bounding box output
+
+228
+00:11:55.648 --> 00:11:59.251
+and see how well it does with this multi-column document.
+
+229
+00:12:00.286 --> 00:12:02.588
+All right, there's a lot of boxes here,
+
+230
+00:12:02.888 --> 00:12:05.091
+but I'm just going to draw your attention
+
+231
+00:12:05.091 --> 00:12:07.093
+to the first and second column.
+
+232
+00:12:07.593 --> 00:12:09.895
+And of course, the reading order here,
+
+233
+00:12:09.895 --> 00:12:12.898
+you would read it in most of the westernised countries
+
+234
+00:12:12.898 --> 00:12:16.602
+that undertake oral health surveys, right?
+
+235
+00:12:16.869 --> 00:12:20.272
+So we would be reading all the way down the left-hand column.
+
+236
+00:12:20.673 --> 00:12:23.476
+But in the OCR, we're actually going to see
+
+237
+00:12:23.776 --> 00:12:26.979
+reading straight across if you're following my mouse.
+
+238
+00:12:27.580 --> 00:12:30.583
+So it would be in most of the westernized countries
+
+239
+00:12:30.883 --> 00:12:33.786
+that system based on some of the interview,
+
+240
+00:12:34.286 --> 00:12:36.589
+which of course makes absolutely no sense
+
+241
+00:12:36.889 --> 00:12:39.291
+and manages to garble the entire article
+
+242
+00:12:39.592 --> 00:12:41.894
+if you continue that way for, you know,
+
+243
+00:12:41.894 --> 00:12:43.896
+another 10, 15 pages.
+
+244
+00:12:45.297 --> 00:12:48.634
+So what we've learned about PaddleOCR is that it is not able
+
+245
+00:12:48.701 --> 00:12:52.238
+to handle these multi-column layouts
+
+246
+00:12:52.304 --> 00:12:54.907
+and runs the risk of garbling your text
+
+247
+00:12:55.007 --> 00:12:58.210
+if this is a layout that's part of your document.
+
+248
+00:12:58.978 --> 00:13:02.481
+So we've surfaced these weaknesses around layout,
+
+249
+00:13:02.681 --> 00:13:07.153
+and we're starting to realize that layout-aware text detection
+
+250
+00:13:07.153 --> 00:13:12.057
+is really going to be at the cornerstone of accurate real-world OCR
+
+251
+00:13:12.057 --> 00:13:15.161
+because of course, layouts like this are very common.
+
+252
+00:13:15.861 --> 00:13:19.165
+But the PaddleOCR model doesn't have vision.
+
+253
+00:13:19.465 --> 00:13:21.867
+We actually are going to need some sort of vision model
+
+254
+00:13:22.168 --> 00:13:23.869
+for more complex documents.
+
+255
+00:13:24.570 --> 00:13:28.174
+So good news, PaddleOCR actually does have its own version
+
+256
+00:13:28.274 --> 00:13:30.976
+of Layout Detection. And as we mentioned
+
+257
+00:13:30.976 --> 00:13:34.480
+before, it has been going through active development
+
+258
+00:13:34.880 --> 00:13:37.483
+and we haven't been using the Layout Detection previously.
+
+259
+00:13:37.983 --> 00:13:40.986
+So here's our chance to import that and start to use it
+
+260
+00:13:40.986 --> 00:13:45.791
+in conjunction with the text detection and recognition.
+
+261
+00:13:46.292 --> 00:13:50.095
+So here we will initialize that LayoutDetection model.
+
+262
+00:13:51.096 --> 00:13:54.099
+So we'll define a new function called process_document
+
+263
+00:13:54.800 --> 00:13:58.504
+and we'll send our image to this layout_engine.
+
+264
+00:13:59.338 --> 00:14:03.142
+And as part of the response, we'll get back the label,
+
+265
+00:14:03.342 --> 00:14:06.145
+the score, and the bounding boxes.
+
+266
+00:14:06.812 --> 00:14:10.115
+So the score and the bounding boxes we've seen before,
+
+267
+00:14:10.216 --> 00:14:13.118
+but now we're going to get a label for that region.
+
+268
+00:14:14.119 --> 00:14:16.422
+And that'll make more sense once you see it.
+
+269
+00:14:17.823 --> 00:14:20.326
+All right, let's apply process_document
+
+270
+00:14:20.426 --> 00:14:24.129
+to that interior page from the report on the US economy.
+
+271
+00:14:24.563 --> 00:14:27.166
+Hopefully now the meaning of label is more clear.
+
+272
+00:14:27.466 --> 00:14:30.369
+We're getting back things such as text, chart,
+
+273
+00:14:30.569 --> 00:14:33.772
+paragraph_title, or number, or even footer.
+
+274
+00:14:34.173 --> 00:14:37.476
+So this is identifying the different regions on the document
+
+275
+00:14:37.476 --> 00:14:39.678
+and labeling them for what they are.
+
+276
+00:14:41.480 --> 00:14:43.148
+And the purpose of this long
+
+277
+00:14:43.148 --> 00:14:45.117
+function is just to aid in visualization.
+
+278
+00:14:46.819 --> 00:14:49.922
+So let's look again at that economic report,
+
+279
+00:14:49.922 --> 00:14:52.391
+but now with the layout detection overlaid.
+
+280
+00:14:53.225 --> 00:14:55.794
+Let's take a look at things here.
+
+281
+00:14:56.161 --> 00:14:57.796
+I'm seeing several text blocks.
+
+282
+00:14:57.997 --> 00:14:59.698
+I'm seeing a paragraph title.
+
+283
+00:14:59.899 --> 00:15:02.034
+I'm seeing a table up here,
+
+284
+00:15:02.034 --> 00:15:05.004
+and very importantly, I'm seeing a chart
+
+285
+00:15:05.004 --> 00:15:07.706
+and an entire bounding box around that chart.
+
+286
+00:15:08.007 --> 00:15:11.110
+And then also small details such as number and footer.
+
+287
+00:15:11.477 --> 00:15:14.280
+But the layout model really now has identified
+
+288
+00:15:14.380 --> 00:15:17.249
+the major regions of this document correctly.
+
+289
+00:15:18.250 --> 00:15:21.954
+And now you'll do the same thing with the article about teeth.
+
+290
+00:15:23.055 --> 00:15:25.257
+So as I'm visually taking this in,
+
+291
+00:15:25.457 --> 00:15:27.660
+I'm seeing labels that I've seen before,
+
+292
+00:15:27.860 --> 00:15:30.362
+such as text and paragraph_title.
+
+293
+00:15:30.663 --> 00:15:34.266
+I'm seeing a few new ones, such as doc_title and abstract.
+
+294
+00:15:34.466 --> 00:15:37.469
+I'm seeing high confidence scores associated with those.
+
+295
+00:15:38.003 --> 00:15:41.807
+And then as I scroll down, seeing some footnote
+
+296
+00:15:42.007 --> 00:15:44.510
+and footer and also table.
+
+297
+00:15:45.010 --> 00:15:48.814
+But I will note that the table to me is one table,
+
+298
+00:15:49.014 --> 00:15:53.485
+and it's being recognized here as two tables with slightly lower confidence.
+
+299
+00:15:53.919 --> 00:15:55.721
+But all in all, the layout
+
+300
+00:15:55.721 --> 00:15:57.823
+model is now really going to help
+
+301
+00:15:57.923 --> 00:15:59.725
+keep this text together.
+
+302
+00:16:00.125 --> 00:16:02.127
+So we no longer have the problem
+
+303
+00:16:02.428 --> 00:16:05.230
+of continuing from the word that to the word system
+
+304
+00:16:05.764 --> 00:16:08.767
+because this entire text block is going to indicate
+
+305
+00:16:08.767 --> 00:16:11.870
+that the word after that is undertake.
+
+306
+00:16:12.638 --> 00:16:13.839
+So let's see how far we
+
+307
+00:16:13.839 --> 00:16:15.240
+can push this with one more example.
+
+308
+00:16:16.575 --> 00:16:18.777
+This one is a bank statement,
+
+309
+00:16:18.777 --> 00:16:21.680
+and typically when dealing with bank statements,
+
+310
+00:16:21.680 --> 00:16:23.682
+the ultimate downstream use case
+
+311
+00:16:23.682 --> 00:16:25.351
+is to extract a certain number
+
+312
+00:16:25.351 --> 00:16:27.286
+of key value pairs out of it.
+
+313
+00:16:27.953 --> 00:16:31.890
+And I'm actually seeing the same challenge with the table.
+
+314
+00:16:32.291 --> 00:16:35.561
+In this case, this is all being detected as one large table,
+
+315
+00:16:35.961 --> 00:16:38.464
+but for me, you know, with my human vision
+
+316
+00:16:38.764 --> 00:16:41.867
+and human experience looking at bank statements,
+
+317
+00:16:42.067 --> 00:16:44.970
+can actually tell that the headers should have been right here.
+
+318
+00:16:45.070 --> 00:16:48.574
+Date, Description, Category, Amount, and Balance.
+
+319
+00:16:49.108 --> 00:16:52.611
+That's actually the table break and the table headers.
+
+320
+00:16:52.911 --> 00:16:56.315
+Everything up above could be interpreted as a table,
+
+321
+00:16:56.615 --> 00:16:59.618
+but it should definitely be a separate table from the one below.
+
+322
+00:16:59.985 --> 00:17:02.788
+So there's definitely still some weaknesses here.
+
+323
+00:17:03.489 --> 00:17:05.524
+Oddly in this example, the small
+
+324
+00:17:05.524 --> 00:17:07.893
+text at the bottom is entirely ignored,
+
+325
+00:17:08.494 --> 00:17:10.696
+and sometimes that's where a legal footnote
+
+326
+00:17:10.796 --> 00:17:13.098
+or other important information might appear.
+
+327
+00:17:13.465 --> 00:17:16.635
+All right, so that brings us to the end of lab two.
+
+328
+00:17:16.935 --> 00:17:20.239
+And let me recap a few of the main takeaways.
+
+329
+00:17:20.439 --> 00:17:24.643
+So PaddleOCR is from the Deep Learning OCR era.
+
+330
+00:17:24.877 --> 00:17:28.414
+And it's clearly a strong engine that beats traditional OCR
+
+331
+00:17:28.814 --> 00:17:30.716
+on many of these real-world images.
+
+332
+00:17:31.216 --> 00:17:35.587
+But it still mostly thinks in terms of individual lines of text.
+
+333
+00:17:36.822 --> 00:17:38.824
+Then we added the layout detection,
+
+334
+00:17:38.924 --> 00:17:41.527
+and that gave you some of this region level structure.
+
+335
+00:17:41.727 --> 00:17:44.329
+So where are the paragraphs, the tables and the figures,
+
+336
+00:17:44.630 --> 00:17:47.132
+but it's still not full semantic understanding.
+
+337
+00:17:47.733 --> 00:17:51.837
+And it doesn't really represent the way that humans see documents.
+
+338
+00:17:52.538 --> 00:17:55.941
+And humans really operate very much on a visual system.
+
+339
+00:17:56.542 --> 00:17:59.945
+So we'll continue to bring more of these concepts from vision
+
+340
+00:18:00.245 --> 00:18:02.147
+as we move forward in the course.
+
+341
+00:18:02.581 --> 00:18:05.184
+In the next lesson, we'll hand it back to David,
+
+342
+00:18:05.184 --> 00:18:08.187
+and he'll double click on some of these concepts
+
+343
+00:18:08.187 --> 00:18:10.389
+around layout and reading order
+
+344
+00:18:10.389 --> 00:18:14.059
+in a lesson called layout detection and reading order.

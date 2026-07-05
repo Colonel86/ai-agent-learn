@@ -1,0 +1,466 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.067 --> 00:00:04.471
+In this lesson, you'll use the agentic document extraction framework
+
+2
+00:00:04.471 --> 00:00:06.873
+from LandingAI to parse documents
+
+3
+00:00:06.873 --> 00:00:09.175
+and extract key-value pairs
+
+4
+00:00:09.175 --> 00:00:11.277
+without using character recognition,
+
+5
+00:00:11.277 --> 00:00:14.581
+layout analysis, or vision language models.
+
+6
+00:00:14.881 --> 00:00:18.651
+In the lab, you'll use ADE to parse complex documents
+
+7
+00:00:18.651 --> 00:00:21.654
+and build a pipeline to parse mixed documents.
+
+8
+00:00:22.355 --> 00:00:24.357
+All right, let's have some fun.
+
+9
+00:00:24.357 --> 00:00:28.361
+This lesson is named a single API for agentic document extraction.
+
+10
+00:00:28.762 --> 00:00:30.864
+So why did we choose that name?
+
+11
+00:00:31.031 --> 00:00:33.833
+It's really a very apt description
+
+12
+00:00:33.833 --> 00:00:36.236
+of LandingAI's Agentic Document Extraction.
+
+13
+00:00:36.736 --> 00:00:39.439
+Much of the complexity you've seen in prior lessons
+
+14
+00:00:39.439 --> 00:00:42.242
+is now replaced by a single API.
+
+15
+00:00:42.675 --> 00:00:45.178
+So what are we going to cover in this lesson?
+
+16
+00:00:46.179 --> 00:00:49.482
+After providing an overview of Agentic Document Extraction,
+
+17
+00:00:49.582 --> 00:00:52.185
+we'll look at the two primary use cases,
+
+18
+00:00:52.585 --> 00:00:54.687
+field extraction and RAG.
+
+19
+00:00:55.255 --> 00:00:57.657
+Then I'll share some of the
+
+20
+00:00:57.657 --> 00:01:00.460
+key technology differentiators that make ADE special.
+
+21
+00:01:01.061 --> 00:01:03.063
+We'll look at one relevant benchmark,
+
+22
+00:01:03.463 --> 00:01:06.066
+and then I'll set you up with some basics for getting started
+
+23
+00:01:06.433 --> 00:01:08.735
+before you embark on the lab exercises.
+
+24
+00:01:09.436 --> 00:01:12.739
+In my role as an applied AI engineer at LandingAI,
+
+25
+00:01:13.139 --> 00:01:17.243
+I have the pleasure of helping our users build document intelligence pipelines
+
+26
+00:01:17.544 --> 00:01:19.646
+around agentic document extraction.
+
+27
+00:01:19.879 --> 00:01:23.383
+And I'll refer to it often by its acronym ADE.
+
+28
+00:01:24.184 --> 00:01:27.287
+As this graphic suggests, ADE is an API
+
+29
+00:01:27.387 --> 00:01:29.989
+that converts input documents, presentations,
+
+30
+00:01:30.090 --> 00:01:32.692
+images, and even spreadsheets
+
+31
+00:01:32.792 --> 00:01:35.695
+into well-structured Markdown and JSON.
+
+32
+00:01:35.962 --> 00:01:38.765
+Our users include students, solopreneurs,
+
+33
+00:01:38.798 --> 00:01:42.469
+small businesses, and large enterprises around the world.
+
+34
+00:01:42.969 --> 00:01:45.171
+What are some of the key use cases?
+
+35
+00:01:45.271 --> 00:01:49.476
+The first is field extraction, also known as key-value pair extraction.
+
+36
+00:01:50.176 --> 00:01:53.480
+Users who receive a lot of user-supplied documents
+
+37
+00:01:53.480 --> 00:01:58.184
+need the ability to extract specific information from those documents.
+
+38
+00:01:58.384 --> 00:02:00.887
+and the ability to trace that back to the original.
+
+39
+00:02:01.588 --> 00:02:04.090
+The second major use case is RAG,
+
+40
+00:02:04.491 --> 00:02:08.962
+or building knowledge assistants that understand the underlying content.
+
+41
+00:02:09.429 --> 00:02:12.031
+Users who prepare documents for RAG
+
+42
+00:02:12.031 --> 00:02:14.334
+need the ability to understand content
+
+43
+00:02:14.334 --> 00:02:17.637
+that also contains tables, figures, flowcharts,
+
+44
+00:02:17.637 --> 00:02:20.640
+and the ability to trace those all back to the original.
+
+45
+00:02:21.141 --> 00:02:23.143
+So, how does it work?
+
+46
+00:02:23.176 --> 00:02:27.447
+ADE is not an incremental step over what existed previously.
+
+47
+00:02:28.148 --> 00:02:33.052
+Rather, it's a novel approach to document AI, pioneered by our engineers.
+
+48
+00:02:33.653 --> 00:02:37.957
+It's part of the agentic era with a Vision-First, Data-Centric approach.
+
+49
+00:02:38.358 --> 00:02:40.326
+And these are the three pillars of ADE:
+
+50
+00:02:40.393 --> 00:02:42.929
+Vision-First, Data-Centric, and Agentic.
+
+51
+00:02:43.363 --> 00:02:45.565
+So, what do we mean by each of these?
+
+52
+00:02:46.065 --> 00:02:49.569
+Vision-First means that we treat documents as visual objects
+
+53
+00:02:49.936 --> 00:02:54.541
+where the meaning is encoded in the layout, structure, and spatial relationships.
+
+54
+00:02:54.941 --> 00:02:59.045
+Data-Centric means training on the highest quality curated data.
+
+55
+00:02:59.445 --> 00:03:01.714
+We believe that the right data is
+
+56
+00:03:01.714 --> 00:03:03.950
+as important as the right model architecture.
+
+57
+00:03:04.450 --> 00:03:09.450
+And finally, Agentic. Delivering systems that plan, decide, act, and verify
+
+58
+00:03:10.156 --> 00:03:12.559
+until the response meets quality thresholds.
+
+59
+00:03:13.059 --> 00:03:15.862
+So this graphic really drives home the point
+
+60
+00:03:15.862 --> 00:03:18.164
+that vision is foundational to ADE.
+
+61
+00:03:18.565 --> 00:03:22.969
+LandingAI brings years of vision expertise to the problem of document AI.
+
+62
+00:03:23.469 --> 00:03:28.274
+The foundation layer at the bottom is state-of-the-art, Document-Native Vision Models
+
+63
+00:03:28.875 --> 00:03:30.877
+that have been trained to see documents
+
+64
+00:03:30.877 --> 00:03:34.147
+the way that humans see them. And built on that foundation
+
+65
+00:03:34.147 --> 00:03:37.550
+are intelligent agents to handle Parsing &amp; Routing.
+
+66
+00:03:37.750 --> 00:03:39.919
+Separate chunks such as text, tables
+
+67
+00:03:39.919 --> 00:03:42.455
+and figures all follow a separate pathway.
+
+68
+00:03:42.655 --> 00:03:45.458
+And finally, the AGENTS &amp; APPS layer on top.
+
+69
+00:03:45.658 --> 00:03:48.361
+This layer focuses on what users really want
+
+70
+00:03:48.561 --> 00:03:50.730
+in a document processing pipeline,
+
+71
+00:03:50.964 --> 00:03:54.734
+delivering features such as field extraction and document splitting.
+
+72
+00:03:55.235 --> 00:03:58.004
+And those foundational vision models from the prior slide
+
+73
+00:03:58.037 --> 00:04:02.041
+are part of the growing Document Pre-trained Transformer family,
+
+74
+00:04:02.408 --> 00:04:04.010
+or DPT for short.
+
+75
+00:04:04.510 --> 00:04:07.013
+As of this recording, you can choose from DPT-1,
+
+76
+00:04:07.313 --> 00:04:10.016
+DPT-2, and DPT-2-mini.
+
+77
+00:04:10.416 --> 00:04:13.119
+All of them return high-quality document parsing,
+
+78
+00:04:13.620 --> 00:04:16.723
+including reading order detection, layout detection,
+
+79
+00:04:17.023 --> 00:04:19.425
+text recognition, and figure captioning.
+
+80
+00:04:19.926 --> 00:04:22.362
+So how well do these DPTs
+
+81
+00:04:22.762 --> 00:04:25.098
+at the core of ADE perform?
+
+82
+00:04:25.598 --> 00:04:28.801
+Well, ADE actually exceeds human performance
+
+83
+00:04:28.901 --> 00:04:31.137
+on the DocVQA benchmark set.
+
+84
+00:04:31.638 --> 00:04:34.140
+And as presented in the table on the right,
+
+85
+00:04:34.340 --> 00:04:36.909
+at 99.15% accuracy,
+
+86
+00:04:37.310 --> 00:04:39.946
+it also exceeds all other published models.
+
+87
+00:04:40.413 --> 00:04:43.616
+I'll draw attention to the blog post announcing these results,
+
+88
+00:04:43.616 --> 00:04:48.021
+which has a wonderful interactive document gallery for you to explore.
+
+89
+00:04:48.321 --> 00:04:50.623
+If you aren't familiar with DocVQA,
+
+90
+00:04:50.823 --> 00:04:54.827
+it's question and answering benchmark of real scanned documents
+
+91
+00:04:54.927 --> 00:04:58.131
+that comes from the UCSF Industry Documents Library.
+
+92
+00:04:58.231 --> 00:05:01.434
+This slide shows as an example down in the lower right,
+
+93
+00:05:01.534 --> 00:05:03.703
+the question to be answered is what
+
+94
+00:05:03.703 --> 00:05:06.239
+is the home telephone number of the individual?
+
+95
+00:05:06.606 --> 00:05:09.409
+And that answer can be found in the handwritten section
+
+96
+00:05:09.409 --> 00:05:11.210
+in the green bounding box.
+
+97
+00:05:11.811 --> 00:05:14.514
+So that brings us to the question, how do I use it?
+
+98
+00:05:15.014 --> 00:05:18.418
+This is a screenshot from the ADE visual playground.
+
+99
+00:05:18.751 --> 00:05:22.255
+ADE offers Parse, Split, and Extract separately,
+
+100
+00:05:22.655 --> 00:05:27.060
+which you can flexibly combine when developing your document processing pipeline.
+
+101
+00:05:27.560 --> 00:05:31.364
+Development options include the visual playground for drag and drop.
+
+102
+00:05:31.397 --> 00:05:33.499
+the REST API
+
+103
+00:05:33.499 --> 00:05:35.902
+and the Python and Typescript libraries.
+
+104
+00:05:36.202 --> 00:05:38.204
+In the lab that follows,
+
+105
+00:05:38.204 --> 00:05:39.872
+you'll only use the Python library
+
+106
+00:05:39.872 --> 00:05:41.874
+and the Parse and Extract APIs.
+
+107
+00:05:42.208 --> 00:05:44.977
+So be aware that Split is also available
+
+108
+00:05:44.977 --> 00:05:47.380
+for splitting apart huge PDFs.
+
+109
+00:05:47.780 --> 00:05:50.983
+And Parse Jobs is available for very large documents.
+
+110
+00:05:50.983 --> 00:05:53.586
+Think, you know, hundreds to thousands of pages.
+
+111
+00:05:53.986 --> 00:05:55.988
+And to use ADE outside of the course,
+
+112
+00:05:56.389 --> 00:05:58.191
+you'll need your own API key.
+
+113
+00:05:58.691 --> 00:06:01.994
+You can generate a free key and get some initial free credits
+
+114
+00:06:02.195 --> 00:06:03.996
+at va.landing.ai.
+
+115
+00:06:04.797 --> 00:06:06.799
+And now it's lab time again.
+
+116
+00:06:07.200 --> 00:06:10.002
+Join me for three hands-on exercises.

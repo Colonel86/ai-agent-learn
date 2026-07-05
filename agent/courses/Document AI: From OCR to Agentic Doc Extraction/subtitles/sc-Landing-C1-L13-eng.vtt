@@ -1,0 +1,1402 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.867 --> 00:00:02.869
+Welcome to the final lab in this course.
+
+2
+00:00:03.003 --> 00:00:05.905
+In this lab, you'll build a complete document intelligence pipeline
+
+3
+00:00:06.006 --> 00:00:08.274
+with LandingAI ADE on AWS
+
+4
+00:00:08.475 --> 00:00:12.779
+that combines automated document parsing with a conversational AI agent.
+
+5
+00:00:13.179 --> 00:00:16.483
+Just a quick note, this lab assumes basic familiarity with AWS.
+
+6
+00:00:16.583 --> 00:00:19.085
+However, if you're new to AWS,
+
+7
+00:00:19.185 --> 00:00:22.088
+You can follow along with the explanations to understand
+
+8
+00:00:22.088 --> 00:00:24.691
+how production-ready document pipelines are built.
+
+9
+00:00:24.991 --> 00:00:26.359
+All lab files are available in
+
+10
+00:00:26.359 --> 00:00:27.994
+the reading item that follows this lab.
+
+11
+00:00:28.194 --> 00:00:30.096
+Before diving into the implementation,
+
+12
+00:00:30.196 --> 00:00:32.399
+let's review the architecture we'll be building.
+
+13
+00:00:32.799 --> 00:00:35.402
+You already seen this diagram in the previous video,
+
+14
+00:00:36.002 --> 00:00:38.071
+but here's how the data flows through the system.
+
+15
+00:00:38.371 --> 00:00:40.573
+First, a user uploads a PDF
+
+16
+00:00:40.573 --> 00:00:42.776
+to the S3 bucket's input folder.
+
+17
+00:00:42.776 --> 00:00:45.378
+Second, S3 automatically triggers the Lambda function
+
+18
+00:00:45.378 --> 00:00:47.480
+when a new file arrives.
+
+19
+00:00:47.480 --> 00:00:50.383
+Third, Lambda uses LandingAI ADE
+
+20
+00:00:50.383 --> 00:00:52.986
+to parse the PDF into structured markdown.
+
+21
+00:00:52.986 --> 00:00:54.888
+Fourth, the parsed markdown,
+
+22
+00:00:54.888 --> 00:00:56.589
+visual grounding data,
+
+23
+00:00:56.589 --> 00:00:59.893
+and individual chunks are saved to the S3 output folder.
+
+24
+00:00:59.893 --> 00:01:02.195
+Fifth, Bedrock Knowledge Base
+
+25
+00:01:02.195 --> 00:01:04.397
+indexes the documents for semantic search.
+
+26
+00:01:04.964 --> 00:01:08.768
+And last but not least, users ask questions to the Strands agent,
+
+27
+00:01:08.768 --> 00:01:10.870
+which has memory to maintain context.
+
+28
+00:01:11.071 --> 00:01:12.872
+There are some prerequisites to the lab.
+
+29
+00:01:12.972 --> 00:01:14.808
+This lab assumes there are an
+
+30
+00:01:14.808 --> 00:01:16.976
+S3 bucket with input and output folders,
+
+31
+00:01:17.077 --> 00:01:19.679
+and a Bedrock knowledge base connected to the
+
+32
+00:01:19.679 --> 00:01:22.282
+output medical chunks folder of the S3 bucket.
+
+33
+00:01:22.482 --> 00:01:25.085
+We'll include links on how to create an AWS account,
+
+34
+00:01:25.085 --> 00:01:27.754
+set up these resources and learn the basics of AWS
+
+35
+00:01:27.754 --> 00:01:30.156
+if you'd like to try the lab yourself.
+
+36
+00:01:30.356 --> 00:01:33.560
+Let's start by installing the packages we'll need throughout the lab.
+
+37
+00:01:33.560 --> 00:01:36.763
+boto3 is the official AWS SDK for Python.
+
+38
+00:01:36.763 --> 00:01:40.567
+This lets you interact with AWS services programmatically,
+
+39
+00:01:40.567 --> 00:01:42.669
+such as creating a Lambda function,
+
+40
+00:01:42.669 --> 00:01:45.138
+uploading, downloading files from the S3 buckets
+
+41
+00:01:45.138 --> 00:01:48.341
+from a notebook environment instead of the AWS console.
+
+42
+00:01:48.741 --> 00:01:52.946
+python-dotenv loads secrets from a .env file.
+
+43
+00:01:53.346 --> 00:01:57.450
+Pillow annotates PDF pages with highlights for visual grounding.
+
+44
+00:01:57.550 --> 00:02:00.920
+PyMuPDF renders PDF pages as images,
+
+45
+00:02:01.421 --> 00:02:03.323
+and for AWS agent services,
+
+46
+00:02:03.923 --> 00:02:07.327
+bedrock-agentcore provides memory management for agents
+
+47
+00:02:07.827 --> 00:02:11.331
+and strands-agents is a framework for building the AI agent.
+
+48
+00:02:11.731 --> 00:02:13.867
+With the packages installed, let's load
+
+49
+00:02:13.867 --> 00:02:16.336
+our environment variables from the .env file.
+
+50
+00:02:16.736 --> 00:02:18.838
+This file contains sensitive credentials so we
+
+51
+00:02:18.838 --> 00:02:20.940
+don't want to hardcode in our notebook.
+
+52
+00:02:21.141 --> 00:02:24.344
+Here is an example .env file you can use as a template.
+
+53
+00:02:24.711 --> 00:02:27.514
+Now that our environment is configured,
+
+54
+00:02:27.514 --> 00:02:28.815
+we need to set up connections
+
+55
+00:02:28.815 --> 00:02:30.316
+to the AWS services we'll be using.
+
+56
+00:02:30.517 --> 00:02:34.921
+The boto3 library provides this capability through clients. Here's how it works.
+
+57
+00:02:35.121 --> 00:02:39.125
+First, we create a boto3 session that manages the AWS credentials.
+
+58
+00:02:39.325 --> 00:02:41.427
+From the session, we create a client for
+
+59
+00:02:41.427 --> 00:02:43.530
+each AWS service we want to interact with.
+
+60
+00:02:43.630 --> 00:02:46.499
+And we'll create clients for the following services.
+
+61
+00:02:46.499 --> 00:02:50.937
+s3_client uploads PDFs, download outputs, and manage buckets.
+
+62
+00:02:51.070 --> 00:02:55.942
+lambda_client deploys Lambda functions, update code, and configure triggers.
+
+63
+00:02:56.109 --> 00:03:00.446
+IAM client creates roles with proper permissions for the Lambda function.
+
+64
+00:03:00.813 --> 00:03:05.813
+logs client uses CloudWatch logs to monitor Lambda execution and debug.
+
+65
+00:03:06.186 --> 00:03:11.186
+bedrock_agent_runtime client queries knowledge bases for document search,
+
+66
+00:03:11.191 --> 00:03:14.394
+and bedrock_runtime client calls Claude models directly.
+
+67
+00:03:14.394 --> 00:03:17.697
+With our AWS clients ready, we can now build the complete pipeline.
+
+68
+00:03:17.697 --> 00:03:20.200
+Here's the roadmap for what we will accomplish.
+
+69
+00:03:20.200 --> 00:03:24.204
+Part one, setting up the Lambda Function, steps three through five.
+
+70
+00:03:24.204 --> 00:03:26.706
+We'll set up the Lambda Function in three steps.
+
+71
+00:03:26.940 --> 00:03:29.742
+First, package the code by bundling the Python file
+
+72
+00:03:29.742 --> 00:03:32.145
+and dependencies into a zip folder.
+
+73
+00:03:32.445 --> 00:03:34.847
+Second, create a role by defining permissions
+
+74
+00:03:35.148 --> 00:03:37.150
+that allow Lambda to access S3
+
+75
+00:03:37.450 --> 00:03:39.152
+for downloading and uploading files.
+
+76
+00:03:39.652 --> 00:03:43.790
+Third, deploy the function by uploading the package to AWS Lambda.
+
+77
+00:03:44.090 --> 00:03:46.159
+Part two, setting up the trigger. Step six.
+
+78
+00:03:46.459 --> 00:03:50.430
+Next, we'll configure S3 to automatically invoke our Lambda function
+
+79
+00:03:50.430 --> 00:03:53.399
+whenever new files are uploaded to the input folder.
+
+80
+00:03:53.600 --> 00:03:56.636
+Part three, building the agent. Step 7 through 12.
+
+81
+00:03:56.836 --> 00:03:59.405
+Finally, we'll upload medical research papers,
+
+82
+00:03:59.405 --> 00:04:02.442
+ingest the parsed documents into the Bedrock Knowledge Base,
+
+83
+00:04:02.442 --> 00:04:05.411
+and build an intelligent agent using Strands Agent.
+
+84
+00:04:05.912 --> 00:04:08.648
+To keep this notebook focused on the core concepts,
+
+85
+00:04:08.748 --> 00:04:12.051
+We've created helper functions in lambda_helpers.py.
+
+86
+00:04:12.051 --> 00:04:15.455
+These functions handle the lower level AWS operations.
+
+87
+00:04:15.455 --> 00:04:18.057
+I'll explain the logic of each helper function
+
+88
+00:04:18.057 --> 00:04:19.859
+as we use them throughout the lab.
+
+89
+00:04:19.859 --> 00:04:22.462
+Step three, creating the deployment package.
+
+90
+00:04:22.462 --> 00:04:24.864
+So, what is a Lambda deployment package?
+
+91
+00:04:24.864 --> 00:04:26.866
+To create an AWS Lambda function,
+
+92
+00:04:26.866 --> 00:04:28.768
+you need to bundle your source code
+
+93
+00:04:28.768 --> 00:04:31.070
+and all its dependencies into a zip file.
+
+94
+00:04:31.070 --> 00:04:34.540
+This package contains everything Lambda needs to run your code.
+
+95
+00:04:34.540 --> 00:04:37.744
+Your source code in ade_s3_handler.py
+
+96
+00:04:37.877 --> 00:04:39.946
+contains the ADE parsing logic that
+
+97
+00:04:39.946 --> 00:04:42.382
+executes when the Lambda function is invoked.
+
+98
+00:04:42.649 --> 00:04:46.552
+and installed dependencies. All pip packages your source code imports.
+
+99
+00:04:46.653 --> 00:04:48.855
+And here's what the package structure looks like.
+
+100
+00:04:49.055 --> 00:04:52.558
+For creating the package, we'll use the create_deployment_package
+
+101
+00:04:52.659 --> 00:04:54.560
+helper function to build this package.
+
+102
+00:04:54.861 --> 00:04:56.663
+And it takes four parameters.
+
+103
+00:04:56.863 --> 00:05:00.066
+The source_files, the Python files containing our code,
+
+104
+00:05:00.266 --> 00:05:03.469
+requirements, the pip packages our code depends on,
+
+105
+00:05:03.770 --> 00:05:06.472
+output_zip, the name for the output zip file.
+
+106
+00:05:06.973 --> 00:05:11.010
+and the package directory, a temporary directory for building the package.
+
+107
+00:05:11.477 --> 00:05:14.981
+Behind the scenes, this helper function creates a temporary directory,
+
+108
+00:05:15.181 --> 00:05:17.984
+installs packages using pip into that directory,
+
+109
+00:05:18.284 --> 00:05:21.187
+copies your source code files to the temporary directory,
+
+110
+00:05:21.487 --> 00:05:24.590
+creates the zip file from everything in that directory,
+
+111
+00:05:24.590 --> 00:05:26.492
+and cleans up the temporary directory.
+
+112
+00:05:26.793 --> 00:05:29.796
+Before we move to the next step, let's understand the code
+
+113
+00:05:29.796 --> 00:05:31.798
+that runs inside of Lambda.
+
+114
+00:05:31.798 --> 00:05:34.300
+This diagram shows the complete flow.
+
+115
+00:05:34.300 --> 00:05:36.803
+Feel free to explore the source code if you want more details.
+
+116
+00:05:36.803 --> 00:05:38.838
+Here's what happens step by step.
+
+117
+00:05:38.838 --> 00:05:40.940
+First event is received.
+
+118
+00:05:40.940 --> 00:05:44.344
+When a PDF file is uploaded to the S3 input folder,
+
+119
+00:05:44.344 --> 00:05:46.646
+an S3 event triggers the Lambda function.
+
+120
+00:05:46.646 --> 00:05:50.650
+Second, the ADE handler function extracts the file key from the event.
+
+121
+00:05:50.850 --> 00:05:53.853
+Third, the handler checks that is a PDF file.
+
+122
+00:05:54.320 --> 00:05:57.824
+skips the folders and verifies the output doesn't already exist.
+
+123
+00:05:58.124 --> 00:06:01.527
+Fourth, the PDF is downloaded to Lambda's temporary directory.
+
+124
+00:06:01.828 --> 00:06:04.831
+Fifth, the PDF is sent to the ADE API,
+
+125
+00:06:05.131 --> 00:06:09.836
+which parses it and returns markdown text as well as the chunks.
+
+126
+00:06:09.836 --> 00:06:11.904
+Six, the results are uploaded to
+
+127
+00:06:11.904 --> 00:06:14.307
+the S3 output folder in three formats.
+
+128
+00:06:14.707 --> 00:06:16.809
+A markdown file for the parsed content,
+
+129
+00:06:17.110 --> 00:06:20.713
+a JSON file containing chunk information for visual grounding,
+
+130
+00:06:21.013 --> 00:06:25.318
+and individual chunk JSON files for optimized knowledge base indexing.
+
+131
+00:06:25.718 --> 00:06:28.321
+Let me help you understand what each output file contains.
+
+132
+00:06:28.721 --> 00:06:32.125
+For example, if you upload input medical
+
+133
+00:06:32.492 --> 00:06:34.494
+research_paper.pdf
+
+134
+00:06:34.494 --> 00:06:36.229
+Here's what you have in the
+
+135
+00:06:36.229 --> 00:06:38.297
+S3 bucket output folder after ADE process.
+
+136
+00:06:38.598 --> 00:06:43.369
+The markdown is the complete document in readable format containing anchor tags,
+
+137
+00:06:43.369 --> 00:06:45.471
+linking text to chunk IDs.
+
+138
+00:06:45.972 --> 00:06:48.241
+Grounding JSON is a single file containing
+
+139
+00:06:48.241 --> 00:06:50.476
+all chunks with their bounding box coordinates,
+
+140
+00:06:50.877 --> 00:06:54.680
+as well as other metadata like chunk type and page numbers.
+
+141
+00:06:55.148 --> 00:06:58.418
+Individual chunk JSON is one file per chunk,
+
+142
+00:06:58.751 --> 00:07:00.953
+optimized for vector database ingestion.
+
+143
+00:07:01.421 --> 00:07:03.456
+Each file is self-contained with text,
+
+144
+00:07:03.756 --> 00:07:05.858
+location, and source metadata.
+
+145
+00:07:06.192 --> 00:07:08.161
+Similar to the previous lab,
+
+146
+00:07:08.161 --> 00:07:09.962
+since we're implementing a RAG pipeline,
+
+147
+00:07:09.962 --> 00:07:13.366
+we'll focus on using only output medical chunks.
+
+148
+00:07:13.366 --> 00:07:16.169
+For Bedrock Knowledge Base indexing
+
+149
+00:07:16.169 --> 00:07:18.171
+and for generating the annotated images.
+
+150
+00:07:18.471 --> 00:07:21.674
+Also, we'll generate the embeddings from each individual chunk.
+
+151
+00:07:21.974 --> 00:07:24.377
+The other folders can be used for different experiments
+
+152
+00:07:24.377 --> 00:07:26.179
+and downstream use cases.
+
+153
+00:07:26.479 --> 00:07:28.381
+Step four, creating the IAM Role.
+
+154
+00:07:28.681 --> 00:07:30.883
+What is an IAM role? Lambda function
+
+155
+00:07:31.117 --> 00:07:35.621
+run in isolated containers that have no inherent permissions by default.
+
+156
+00:07:35.822 --> 00:07:38.324
+They can't access any AWS resources.
+
+157
+00:07:38.624 --> 00:07:40.927
+An IAM role grants the function permission
+
+158
+00:07:40.927 --> 00:07:44.630
+to access specific AWS services using temporary credentials.
+
+159
+00:07:44.931 --> 00:07:48.835
+For creating the role, we'll use the create_or_update_lambda_role
+
+160
+00:07:48.835 --> 00:07:50.570
+helper function to create a role
+
+161
+00:07:50.570 --> 00:07:52.638
+with the permissions our Lambda function needs.
+
+162
+00:07:53.339 --> 00:07:55.341
+The roles include these permissions.
+
+163
+00:07:55.475 --> 00:07:57.777
+For S3 permission, s3:GetObject,
+
+164
+00:07:57.777 --> 00:08:00.079
+s3:PutObject, and s3:HeadObject,
+
+165
+00:08:00.379 --> 00:08:02.982
+which help read PDFs from the input folder,
+
+166
+00:08:03.382 --> 00:08:05.485
+write markdown files to the output folder,
+
+167
+00:08:05.885 --> 00:08:09.188
+and check if output folder already exists, respectively.
+
+168
+00:08:09.589 --> 00:08:12.892
+For logs, creates a CloudWatch log group for this function,
+
+169
+00:08:13.192 --> 00:08:16.963
+create log stream, creates a log stream for each execution,
+
+170
+00:08:17.263 --> 00:08:18.865
+and logs:PutLogEvents
+
+171
+00:08:19.098 --> 00:08:21.868
+help write log entries for debugging.
+
+172
+00:08:22.268 --> 00:08:24.871
+Step five, deploying the Lambda function.
+
+173
+00:08:25.271 --> 00:08:27.173
+Now we have both pieces we need,
+
+174
+00:08:27.273 --> 00:08:29.575
+the deployment package, which is our code,
+
+175
+00:08:29.976 --> 00:08:31.878
+and the IAM role, our permissions.
+
+176
+00:08:32.278 --> 00:08:36.582
+Let's deploy the Lambda function using the deploy_lambda_function helper,
+
+177
+00:08:36.682 --> 00:08:40.686
+which expects the function name, the location of the zip file,
+
+178
+00:08:40.786 --> 00:08:42.889
+and the IAM role for Lambda.
+
+179
+00:08:43.089 --> 00:08:44.891
+The deployment includes additional important
+
+180
+00:08:44.891 --> 00:08:46.893
+run configuration options.
+
+181
+00:08:46.893 --> 00:08:49.695
+The environment variables are configuration values
+
+182
+00:08:49.695 --> 00:08:51.397
+our code can access at runtime.
+
+183
+00:08:51.397 --> 00:08:53.866
+Timeout, maximum execution time,
+
+184
+00:08:53.866 --> 00:08:56.269
+set to 900 seconds or 15 minutes
+
+185
+00:08:56.269 --> 00:08:58.671
+for processing larger PDFs.
+
+186
+00:08:58.671 --> 00:09:00.873
+Memory size, amount of RAM allocated.
+
+187
+00:09:00.873 --> 00:09:03.776
+We'll set it to 1,024 megabytes.
+
+188
+00:09:04.410 --> 00:09:06.712
+Step six, setting up the S3 trigger.
+
+189
+00:09:07.213 --> 00:09:08.915
+Our Lambda function is deployed,
+
+190
+00:09:09.115 --> 00:09:10.816
+but it won't automatically run yet.
+
+191
+00:09:11.017 --> 00:09:13.419
+We need to tell S3 to trigger the Lambda function
+
+192
+00:09:13.519 --> 00:09:15.187
+whenever new files are uploaded.
+
+193
+00:09:15.588 --> 00:09:17.390
+S3 can send events to Lambda
+
+194
+00:09:17.890 --> 00:09:20.192
+when objects are created, modified, or deleted.
+
+195
+00:09:20.593 --> 00:09:22.595
+We'll configure it to invoke our function
+
+196
+00:09:22.695 --> 00:09:24.697
+specifically when files are uploaded to the
+
+197
+00:09:24.697 --> 00:09:26.799
+input folder.
+
+198
+00:09:26.799 --> 00:09:29.302
+The setup_s3_trigger helper handles this configuration.
+
+199
+00:09:29.702 --> 00:09:32.505
+Step seven, uploading documents for processing.
+
+200
+00:09:32.505 --> 00:09:34.507
+The infrastructure is now ready.
+
+201
+00:09:34.507 --> 00:09:36.142
+Now let's upload our medical PDF
+
+202
+00:09:36.142 --> 00:09:38.010
+documents and watch the pipeline in action.
+
+203
+00:09:38.210 --> 00:09:42.214
+This diagram shows how PDF files flow from your local medical folder
+
+204
+00:09:42.214 --> 00:09:44.717
+to the S3 input bucket.
+
+205
+00:09:45.017 --> 00:09:47.920
+The Lambda function, which is triggered automatically,
+
+206
+00:09:48.220 --> 00:09:50.823
+processes each PDF using ADE
+
+207
+00:09:51.123 --> 00:09:53.826
+and produces three types of output files.
+
+208
+00:09:54.126 --> 00:09:56.629
+We'll use the upload_folder_to_s3 helper
+
+209
+00:09:56.829 --> 00:09:58.831
+to upload our local documents.
+
+210
+00:09:58.998 --> 00:10:01.567
+While the Lambda function processes our documents,
+
+211
+00:10:01.667 --> 00:10:03.769
+we can monitor its progress in real time.
+
+212
+00:10:04.170 --> 00:10:06.772
+This helper function watches CloudWatch logs
+
+213
+00:10:06.973 --> 00:10:08.774
+to display the processing status.
+
+214
+00:10:08.975 --> 00:10:12.178
+Lambda automatically writes logs, we just need to read them.
+
+215
+00:10:12.378 --> 00:10:15.181
+To stop monitoring, press the escape button
+
+216
+00:10:15.181 --> 00:10:16.882
+followed by double clicking i.
+
+217
+00:10:17.149 --> 00:10:19.251
+You have the option to show all output files,
+
+218
+00:10:19.251 --> 00:10:21.454
+but for the video, we'll just press no.
+
+219
+00:10:21.887 --> 00:10:24.890
+Step eight, connecting to the Bedrock Knowledge Base.
+
+220
+00:10:25.391 --> 00:10:27.793
+Our documents are now parsed and stored in S3.
+
+221
+00:10:28.094 --> 00:10:30.496
+The next step is to make them searchable
+
+222
+00:10:30.596 --> 00:10:32.898
+by ingesting them into the Bedrock Knowledge Base,
+
+223
+00:10:32.999 --> 00:10:35.701
+a vector database that enables semantic search.
+
+224
+00:10:36.202 --> 00:10:39.972
+First, let's verify that our knowledge base is available and properly configured.
+
+225
+00:10:40.373 --> 00:10:42.675
+We'll use the Bedrock agent client
+
+226
+00:10:42.775 --> 00:10:45.077
+to list all knowledge bases and their data sources.
+
+227
+00:10:45.277 --> 00:10:48.080
+Note that the knowledge base was pre-configured
+
+228
+00:10:48.180 --> 00:10:50.583
+in the AWS console to point to our S3.
+
+229
+00:10:50.583 --> 00:10:53.686
+output medical chunks folder as the data source.
+
+230
+00:10:53.886 --> 00:10:56.389
+Use Amazon Titan for creating vector embeddings
+
+231
+00:10:56.389 --> 00:11:00.760
+and storing vectors in OpenSearch Serverless for fast similarity search.
+
+232
+00:11:01.260 --> 00:11:03.062
+This information is not printed here,
+
+233
+00:11:03.062 --> 00:11:04.697
+but I wanted to let you know
+
+234
+00:11:04.697 --> 00:11:06.565
+about the configurations we use in this lab.
+
+235
+00:11:07.066 --> 00:11:10.369
+Step nine, ingesting documents into the Knowledge Base.
+
+236
+00:11:10.469 --> 00:11:14.173
+Now let's sync the parsed documents from S3 into the Knowledge Base.
+
+237
+00:11:14.473 --> 00:11:16.375
+This process is called ingestion.
+
+238
+00:11:16.575 --> 00:11:19.278
+So what happens during ingestion? First, the knowledge
+
+239
+00:11:19.278 --> 00:11:21.881
+base reads all new or modified JSON
+
+240
+00:11:21.881 --> 00:11:24.450
+files from the S3 output medical_chunks folder.
+
+241
+00:11:24.850 --> 00:11:27.286
+Second, it creates vector embeddings for each chunk.
+
+242
+00:11:27.620 --> 00:11:31.123
+Third, these vectors are stored in the database for fast similarity search.
+
+243
+00:11:31.490 --> 00:11:33.159
+Once the ingestion is complete,
+
+244
+00:11:33.259 --> 00:11:35.895
+we can query the Knowledge Base with natural language questions,
+
+245
+00:11:36.195 --> 00:11:38.664
+and it will find the most relevant document section.
+
+246
+00:11:38.998 --> 00:11:42.868
+The start_ingestion_job API kicks off asynchronous processing.
+
+247
+00:11:43.069 --> 00:11:45.271
+It immediately returns the job ID and
+
+248
+00:11:45.271 --> 00:11:47.473
+the actual work happening in the background.
+
+249
+00:11:47.940 --> 00:11:51.243
+Step 10: Creating the search tool with Visual Grounding.
+
+250
+00:11:51.544 --> 00:11:54.046
+With our documents indexed in the knowledge base,
+
+251
+00:11:54.146 --> 00:11:56.649
+we can now create a search tool for our agent.
+
+252
+00:11:56.849 --> 00:12:00.453
+But we're going to add something special, LandingAI's Visual Grounding.
+
+253
+00:12:00.853 --> 00:12:03.456
+The next cell shows the code for our search tool.
+
+254
+00:12:03.656 --> 00:12:06.759
+Notice that it's decorated with @strands.tool,
+
+255
+00:12:06.859 --> 00:12:09.061
+which makes it callable by our agent.
+
+256
+00:12:09.462 --> 00:12:12.364
+The logic in this code is illustrated in this visual diagram.
+
+257
+00:12:12.765 --> 00:12:16.335
+Let me walk you through the logic. The tool follows this pattern.
+
+258
+00:12:16.335 --> 00:12:20.639
+When a user submits a query, like what helps with cold symptoms,
+
+259
+00:12:20.639 --> 00:12:24.810
+First, Bedrock retrieves by querying the knowledge base using hybrid search,
+
+260
+00:12:24.810 --> 00:12:27.613
+combining keyword matching and semantic similarity.
+
+261
+00:12:27.613 --> 00:12:29.815
+Second, for each result,
+
+262
+00:12:29.815 --> 00:12:31.684
+it will check if this is
+
+263
+00:12:31.684 --> 00:12:33.819
+a chunk JSON file from medical_chunks folder.
+
+264
+00:12:33.819 --> 00:12:36.822
+Third, it will parse chunk JSON to get the metadata,
+
+265
+00:12:36.822 --> 00:12:40.326
+like chunk_id, chunk_type, page, and bounding boxes.
+
+266
+00:12:40.693 --> 00:12:44.096
+Then, it will dynamically generate a cropped chunked image.
+
+267
+00:12:44.296 --> 00:12:48.501
+and upload the cropped image to S3 and return a presigned URL.
+
+268
+00:12:48.701 --> 00:12:50.903
+Last but not least, the agent will
+
+269
+00:12:50.903 --> 00:12:53.105
+format the response, give you the source,
+
+270
+00:12:53.305 --> 00:12:55.875
+the chunk ID, page, chunk type,
+
+271
+00:12:55.875 --> 00:12:58.911
+crop chunked image URL, and the content.
+
+272
+00:12:59.278 --> 00:13:02.882
+Before creating the agent, let's verify that our search tool works correctly.
+
+273
+00:13:03.082 --> 00:13:06.685
+This simple test queries the knowledge base and shows the first result.
+
+274
+00:13:07.052 --> 00:13:09.255
+Let's search common cold symptoms.
+
+275
+00:13:10.055 --> 00:13:12.958
+You can see that the knowledge base search is working correctly.
+
+276
+00:13:13.259 --> 00:13:15.261
+We can now print these test results.
+
+277
+00:13:15.661 --> 00:13:17.663
+And when you click on the presigned URL,
+
+278
+00:13:17.863 --> 00:13:20.466
+you can see the chunk image that
+
+279
+00:13:20.466 --> 00:13:23.068
+was dynamically created for traceability and auditability.
+
+280
+00:13:23.469 --> 00:13:27.973
+This could be incorporated into your RPA system or any downstream application
+
+281
+00:13:28.274 --> 00:13:32.077
+for heavily regulated organizations and high-risk operations.
+
+282
+00:13:32.545 --> 00:13:35.347
+Step 11, creating memory for the agent.
+
+283
+00:13:36.048 --> 00:13:37.650
+Our search tool is working.
+
+284
+00:13:37.750 --> 00:13:39.852
+Now, let's create memory for our agent
+
+285
+00:13:39.952 --> 00:13:41.654
+so it can remember conversations
+
+286
+00:13:41.754 --> 00:13:43.856
+and learn user preferences over time.
+
+287
+00:13:44.256 --> 00:13:46.058
+AWS Bedrock Agent Core
+
+288
+00:13:46.158 --> 00:13:47.960
+provides three memory strategies,
+
+289
+00:13:48.060 --> 00:13:49.862
+each serving a different purpose.
+
+290
+00:13:50.062 --> 00:13:51.864
+Summary, summarizes past
+
+291
+00:13:51.897 --> 00:13:55.734
+sessions. User Preference learns user preferences over time,
+
+292
+00:13:56.202 --> 00:13:58.404
+and Semantic extracts and stores facts.
+
+293
+00:13:58.804 --> 00:14:00.906
+We'll configure all three strategies
+
+294
+00:14:00.906 --> 00:14:03.709
+to give our agent comprehensive memory capabilities.
+
+295
+00:14:04.076 --> 00:14:06.078
+We'll first check whether or not
+
+296
+00:14:06.078 --> 00:14:08.080
+there are memories created already for the agent.
+
+297
+00:14:08.681 --> 00:14:10.883
+Otherwise, we'll create a new memory.
+
+298
+00:14:11.217 --> 00:14:15.020
+After creating the memory, we need to set up a session manager
+
+299
+00:14:15.020 --> 00:14:17.523
+that organizes information for each conversation.
+
+300
+00:14:17.923 --> 00:14:20.326
+Each conversation needs two identifiers.
+
+301
+00:14:20.526 --> 00:14:22.728
+Actor ID, who is using the agent,
+
+302
+00:14:22.728 --> 00:14:25.431
+which enables personalization across sessions.
+
+303
+00:14:25.731 --> 00:14:29.635
+The session ID, a unique identifier for this specific conversation.
+
+304
+00:14:30.135 --> 00:14:32.137
+Step 12, creating the Strands agent.
+
+305
+00:14:32.538 --> 00:14:34.740
+We now have all the components ready,
+
+306
+00:14:34.740 --> 00:14:37.543
+a search tool with visual grounding and memory
+
+307
+00:14:37.543 --> 00:14:40.045
+for maintaining context across conversations.
+
+308
+00:14:40.246 --> 00:14:43.349
+Let's bring everything together into a Strands agent.
+
+309
+00:14:43.649 --> 00:14:46.352
+The agent is configured with the model,
+
+310
+00:14:46.452 --> 00:14:49.555
+Claude via Bedrock as the underlying LLM.
+
+311
+00:14:49.755 --> 00:14:54.755
+the system_prompt, which are instructions that define the agent's personality and behavior.
+
+312
+00:14:54.994 --> 00:14:57.997
+the session_manager, memory for remembering preferences,
+
+313
+00:14:58.497 --> 00:15:00.566
+historical summaries, and facts.
+
+314
+00:15:00.966 --> 00:15:04.570
+Tools, the search knowledge base function we created earlier.
+
+315
+00:15:04.970 --> 00:15:07.773
+Notice how the system prompt explicitly instructs the agent
+
+316
+00:15:07.973 --> 00:15:09.775
+to include visual grounding information,
+
+317
+00:15:10.175 --> 00:15:12.278
+like page numbers, location coordinates,
+
+318
+00:15:12.878 --> 00:15:15.281
+and annotated images in its responses.
+
+319
+00:15:15.748 --> 00:15:17.950
+Step 13, the interactive chat.
+
+320
+00:15:18.651 --> 00:15:20.753
+Your medical document agent is now ready.
+
+321
+00:15:20.786 --> 00:15:22.855
+Let's start an interactive chat session.
+
+322
+00:15:22.955 --> 00:15:26.759
+Let's start with how effective is Vitamin C for treating colds?
+
+323
+00:15:27.092 --> 00:15:30.296
+So, here it shows that it used the tool search_knowledge_base
+
+324
+00:15:30.496 --> 00:15:33.699
+and it returned a list of symptoms and the source of information
+
+325
+00:15:33.799 --> 00:15:36.168
+where we can find the annotated image.
+
+326
+00:15:36.669 --> 00:15:39.872
+I will now tell it that I prefer short answers then exit.
+
+327
+00:15:42.474 --> 00:15:44.777
+Let's run it again and ask the same question.
+
+328
+00:15:45.778 --> 00:15:48.280
+You can see that it returned more
+
+329
+00:15:48.280 --> 00:15:50.783
+concise answers based on my previous preference.
+
+330
+00:15:51.283 --> 00:15:54.086
+To exit, type exit, quit, or bye.
+
+331
+00:15:54.653 --> 00:15:56.855
+Congratulations on completing this lab.
+
+332
+00:15:56.855 --> 00:15:59.458
+You've built a complete, production-ready
+
+333
+00:15:59.458 --> 00:16:03.028
+document intelligence pipeline that includes these key components.
+
+334
+00:16:03.429 --> 00:16:05.030
+Automated Document Processing.
+
+335
+00:16:05.331 --> 00:16:07.833
+Lambda functions that automatically parse PDFs
+
+336
+00:16:07.833 --> 00:16:10.936
+when uploaded to S3. Semantic Search.
+
+337
+00:16:11.036 --> 00:16:12.938
+Bedrock Knowledge Base for intelligent
+
+338
+00:16:13.205 --> 00:16:15.207
+document retrieval, Visual Grounding,
+
+339
+00:16:15.207 --> 00:16:19.912
+traceable answers with exact page locations and highlighted images,
+
+340
+00:16:19.912 --> 00:16:24.912
+Conversational Memory, an agent that remembers preferences and conversation history,
+
+341
+00:16:25.217 --> 00:16:27.419
+and Individual Chunk Storage.
+
+342
+00:16:27.419 --> 00:16:31.223
+Optimized chunk files for better Knowledge Base indexing.
+
+343
+00:16:31.790 --> 00:16:33.359
+You can now extend this pipeline
+
+344
+00:16:33.359 --> 00:16:35.194
+to handle other document types like Excel,
+
+345
+00:16:35.594 --> 00:16:37.596
+PowerPoint, and even images.
+
+346
+00:16:38.097 --> 00:16:39.798
+Add more tools to your agent,
+
+347
+00:16:40.099 --> 00:16:43.569
+or integrate with other AWS services as your needs grow.
+
+348
+00:16:43.869 --> 00:16:46.572
+Thank you all for your time, curiosity, and engagement.
+
+349
+00:16:46.972 --> 00:16:48.774
+We're so excited to see what you
+
+350
+00:16:48.774 --> 00:16:50.743
+will create next. We'll see you next time.

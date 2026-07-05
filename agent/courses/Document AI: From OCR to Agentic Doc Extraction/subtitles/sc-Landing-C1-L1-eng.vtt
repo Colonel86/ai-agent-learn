@@ -1,0 +1,690 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.101 --> 00:00:03.670
+In this lesson, you'll learn how to parse documents
+
+2
+00:00:03.670 --> 00:00:05.972
+using optical character recognition
+
+3
+00:00:06.272 --> 00:00:09.476
+and how to integrate its results into agentic workflows.
+
+4
+00:00:10.043 --> 00:00:14.047
+You'll build an agent to parse text from documents using OCR,
+
+5
+00:00:14.347 --> 00:00:17.851
+and then extract information from the text using LLMs.
+
+6
+00:00:18.351 --> 00:00:22.055
+Along the way, you'll identify cases like handwriting, tables,
+
+7
+00:00:22.555 --> 00:00:25.859
+and scanned images that make these steps really challenging.
+
+8
+00:00:26.493 --> 00:00:31.197
+Let's dive in. Today is lesson one, document processing basics.
+
+9
+00:00:31.498 --> 00:00:34.801
+We're going to start simple today, but everything we cover is foundational
+
+10
+00:00:34.801 --> 00:00:39.205
+to the production grade systems used by enterprises and developers today,
+
+11
+00:00:39.506 --> 00:00:41.908
+which we will cover in subsequent lessons.
+
+12
+00:00:42.375 --> 00:00:44.477
+So here's the agenda for today.
+
+13
+00:00:44.577 --> 00:00:47.080
+Processing what it is and why it matters.
+
+14
+00:00:47.180 --> 00:00:49.582
+Parsing, extracting and output formats,
+
+15
+00:00:49.682 --> 00:00:52.285
+JSON, Markdown, and how they are used.
+
+16
+00:00:52.385 --> 00:00:54.888
+OCR, how it works under the hood
+
+17
+00:00:54.988 --> 00:00:58.291
+and its workflow and limitations where it can break.
+
+18
+00:00:58.391 --> 00:01:00.994
+Agentic AI and the ReAct framework.
+
+19
+00:01:01.361 --> 00:01:03.863
+adding a brain on top of OCR,
+
+20
+00:01:04.064 --> 00:01:06.966
+and we'll review some practical demos and failure modes
+
+21
+00:01:07.267 --> 00:01:09.669
+and what still challenges real systems.
+
+22
+00:01:10.170 --> 00:01:11.538
+And after all that, we'll roll
+
+23
+00:01:11.538 --> 00:01:13.173
+up our sleeves and do some coding
+
+24
+00:01:13.273 --> 00:01:16.176
+where you'll build your first simple document agent.
+
+25
+00:01:16.576 --> 00:01:20.080
+You'll notice this is a bottom-up journey from pixels, text,
+
+26
+00:01:20.346 --> 00:01:22.348
+to structure and then reasoning.
+
+27
+00:01:22.849 --> 00:01:24.551
+Let's ground this in the real world
+
+28
+00:01:24.551 --> 00:01:26.252
+pain these systems are meant to solve.
+
+29
+00:01:26.553 --> 00:01:29.856
+Modern organizations are flooded with digital documents,
+
+30
+00:01:30.256 --> 00:01:32.959
+invoices, receipts, contracts and reports.
+
+31
+00:01:33.660 --> 00:01:37.564
+These documents live in a massive digital filing cabinet,
+
+32
+00:01:37.864 --> 00:01:41.968
+usually as PDFs, PowerPoints, Word docs, or even images.
+
+33
+00:01:42.335 --> 00:01:44.504
+They're built for human eyes, not machines,
+
+34
+00:01:44.504 --> 00:01:48.508
+which means the information is hard to search, hard to analyze,
+
+35
+00:01:48.508 --> 00:01:51.111
+and of course, hard to automate.
+
+36
+00:01:51.111 --> 00:01:54.314
+If your data is trapped inside unstructured documents,
+
+37
+00:01:54.314 --> 00:01:57.817
+someone has to manually open, read, and retype it
+
+38
+00:01:57.817 --> 00:02:01.121
+into a different system, which does not scale.
+
+39
+00:02:01.788 --> 00:02:04.591
+So if we want to use this information in analytics,
+
+40
+00:02:04.591 --> 00:02:07.293
+automation, or AI, we need to convert
+
+41
+00:02:07.293 --> 00:02:09.963
+unstructured documents into structured,
+
+42
+00:02:09.963 --> 00:02:11.965
+machine-readable data.
+
+43
+00:02:12.265 --> 00:02:14.267
+So, what does a solution look like?
+
+44
+00:02:14.267 --> 00:02:16.970
+Document processing is turning unstructured documents
+
+45
+00:02:16.970 --> 00:02:19.772
+into structured, machine-readable data,
+
+46
+00:02:19.772 --> 00:02:21.975
+typically JSON or Markdown.
+
+47
+00:02:22.275 --> 00:02:24.277
+It's more than just grabbing text.
+
+48
+00:02:24.277 --> 00:02:26.479
+Parsing must understand what pieces of text
+
+49
+00:02:26.479 --> 00:02:28.681
+actually mean, how they're related,
+
+50
+00:02:28.982 --> 00:02:32.285
+and how to organize them into predictable structure.
+
+51
+00:02:32.452 --> 00:02:33.953
+If you're parsing an invoice, you
+
+52
+00:02:33.953 --> 00:02:35.655
+don't just want a blob of text.
+
+53
+00:02:35.955 --> 00:02:38.324
+You want to extract the vendor name,
+
+54
+00:02:38.324 --> 00:02:40.660
+invoice date, total amount, and line items.
+
+55
+00:02:40.960 --> 00:02:43.663
+Extracting assumes text is already machine-readable.
+
+56
+00:02:43.963 --> 00:02:46.266
+But if your document is a scan or a photo,
+
+57
+00:02:46.466 --> 00:02:48.668
+the computer sees only image pixels.
+
+58
+00:02:48.968 --> 00:02:51.171
+So before extracting can happen, we
+
+59
+00:02:51.171 --> 00:02:53.873
+need OCR to turn pixels into text.
+
+60
+00:02:54.174 --> 00:02:55.942
+How do we represent the output?
+
+61
+00:02:56.142 --> 00:02:59.145
+Parsing and extracting typically produce two useful formats.
+
+62
+00:02:59.445 --> 00:03:01.447
+First is Markdown or HTML,
+
+63
+00:03:01.748 --> 00:03:05.151
+which is designed for humans like us and LLMs.
+
+64
+00:03:05.652 --> 00:03:09.355
+This preserves structures like headers, tables, and lists,
+
+65
+00:03:09.656 --> 00:03:13.660
+and is perfect for feeding into LLMs or showing to end users.
+
+66
+00:03:13.860 --> 00:03:15.862
+Second is JSON for machine
+
+67
+00:03:15.862 --> 00:03:17.964
+and APIs. It is hierarchical,
+
+68
+00:03:17.964 --> 00:03:19.933
+easy to traverse programmatically,
+
+69
+00:03:19.933 --> 00:03:22.635
+and perfect for downstream pipelines and applications.
+
+70
+00:03:23.036 --> 00:03:25.638
+So remember, JSON is for machines,
+
+71
+00:03:25.638 --> 00:03:29.642
+Markdown or HTML is for humans and LLMs.
+
+72
+00:03:29.842 --> 00:03:33.646
+Good rule of thumb, if you're thinking about analytics or databases,
+
+73
+00:03:33.846 --> 00:03:35.848
+JSON is a great option.
+
+74
+00:03:36.049 --> 00:03:38.651
+and if you're thinking about building a RAG solution
+
+75
+00:03:38.651 --> 00:03:40.353
+or a chat user interface,
+
+76
+00:03:40.553 --> 00:03:43.756
+Markdown or HTML could be a great option.
+
+77
+00:03:44.123 --> 00:03:46.426
+But all of this assumes we already have the text.
+
+78
+00:03:46.526 --> 00:03:48.828
+What if all we have is just pixels?
+
+79
+00:03:49.329 --> 00:03:52.332
+OCR or optical character recognition
+
+80
+00:03:52.332 --> 00:03:55.535
+is the technology that takes an image of text
+
+81
+00:03:55.735 --> 00:03:58.738
+and converts it into machine-readable text.
+
+82
+00:03:59.105 --> 00:04:01.107
+It typically works in two steps.
+
+83
+00:04:01.507 --> 00:04:03.176
+First is image cleanup,
+
+84
+00:04:03.176 --> 00:04:06.980
+so deskewing, denoising, or contrast adjustment.
+
+85
+00:04:07.380 --> 00:04:09.983
+Then, text recognition. Pattern matching.
+
+86
+00:04:10.183 --> 00:04:12.885
+Does this shape look like an eight or a B?
+
+87
+00:04:13.886 --> 00:04:17.090
+Once it recognizes the text, it will produce editable text
+
+88
+00:04:17.590 --> 00:04:20.893
+as a digital output or a searchable PDF.
+
+89
+00:04:21.594 --> 00:04:25.198
+But we also need to be honest about what OCR cannot do.
+
+90
+00:04:25.798 --> 00:04:29.802
+OCR is really great at reading clean documents,
+
+91
+00:04:30.103 --> 00:04:34.207
+but it does not understand structure, meaning, or relationships.
+
+92
+00:04:34.741 --> 00:04:37.944
+After OCR, you typically get a wall of text.
+
+93
+00:04:38.244 --> 00:04:41.247
+If you want to find totals, extract tables,
+
+94
+00:04:41.547 --> 00:04:44.851
+identify headings, and classify documents
+
+95
+00:04:45.151 --> 00:04:47.453
+you need intelligence on top of OCR.
+
+96
+00:04:47.654 --> 00:04:51.758
+You can think of OCR as the eyes, but not the brain.
+
+97
+00:04:52.158 --> 00:04:56.162
+And beyond its lack of understanding, it could also just fail.
+
+98
+00:04:56.763 --> 00:04:58.765
+OCR breaks in predictable ways.
+
+99
+00:04:59.065 --> 00:05:03.236
+Poor image quality, blurry photos, shadows, and noise.
+
+100
+00:05:03.636 --> 00:05:05.638
+Complex layouts and skews,
+
+101
+00:05:05.738 --> 00:05:08.341
+so multi-column text, nested tables,
+
+102
+00:05:08.508 --> 00:05:13.313
+And of course non-standard text like handwriting, stamps, stylized fonts.
+
+103
+00:05:13.713 --> 00:05:18.017
+These failures cascade down into parsing and extraction errors.
+
+104
+00:05:18.318 --> 00:05:20.119
+So OCR is necessary
+
+105
+00:05:20.119 --> 00:05:23.923
+but nowhere near sufficient for full document understanding.
+
+106
+00:05:24.624 --> 00:05:27.927
+So if you've ever tried to OCR a picture of a receipt
+
+107
+00:05:28.027 --> 00:05:30.463
+taken in a dim restaurant, you've probably
+
+108
+00:05:30.463 --> 00:05:32.899
+experienced all three failure modes at once.
+
+109
+00:05:33.499 --> 00:05:35.768
+All of this leads to a key idea.
+
+110
+00:05:36.069 --> 00:05:38.671
+Processing is not the same as understanding.
+
+111
+00:05:38.971 --> 00:05:41.974
+OCR can read characters, but it doesn't comprehend them.
+
+112
+00:05:42.275 --> 00:05:45.578
+It doesn't know what is a header versus a value.
+
+113
+00:05:46.112 --> 00:05:48.214
+which number is the total
+
+114
+00:05:48.715 --> 00:05:51.617
+or whether text belongs in a table or a footnote.
+
+115
+00:05:52.618 --> 00:05:55.922
+OCR gives you perception, pixels to character,
+
+116
+00:05:55.922 --> 00:05:57.623
+but no cognitive layer.
+
+117
+00:05:58.124 --> 00:06:02.128
+To turn that wall of text into meaningful, structured data,
+
+118
+00:06:02.128 --> 00:06:05.932
+we need a brain. And that's where agentic AI comes in.
+
+119
+00:06:06.366 --> 00:06:09.902
+Agentic AI adds the missing cognitive layer.
+
+120
+00:06:10.336 --> 00:06:12.438
+An agent is an autonomous system
+
+121
+00:06:12.438 --> 00:06:14.474
+that can perceive its environment,
+
+122
+00:06:14.474 --> 00:06:17.643
+reason about goals, and take certain actions.
+
+123
+00:06:18.211 --> 00:06:20.380
+In document processing specifically,
+
+124
+00:06:20.780 --> 00:06:23.783
+the agent reads the document via OCR if needed,
+
+125
+00:06:24.384 --> 00:06:26.185
+thinks about what the user asked,
+
+126
+00:06:26.586 --> 00:06:28.187
+chooses which tools to call,
+
+127
+00:06:28.488 --> 00:06:30.690
+and iterates until it reaches the goal.
+
+128
+00:06:31.090 --> 00:06:34.193
+If the OCR is the eyes, the agent is the brain.
+
+129
+00:06:34.694 --> 00:06:36.996
+And rule-based pipelines can collapse
+
+130
+00:06:36.996 --> 00:06:38.698
+the moment you hit an edge case,
+
+131
+00:06:39.098 --> 00:06:41.401
+whereas agents can reason through them.
+
+132
+00:06:41.801 --> 00:06:44.604
+So what does an agentic system look like under the hood?
+
+133
+00:06:44.604 --> 00:06:47.607
+Agentic document systems typically have three parts.
+
+134
+00:06:47.607 --> 00:06:50.610
+The brain, using an LLM,
+
+135
+00:06:50.610 --> 00:06:54.614
+which is responsible for reasoning, planning, and decision making.
+
+136
+00:06:55.047 --> 00:06:57.016
+the eyes or OCR,
+
+137
+00:06:57.417 --> 00:07:00.420
+which converts visual content into text.
+
+138
+00:07:00.820 --> 00:07:04.123
+And the hands, or the tools that agents can use.
+
+139
+00:07:04.524 --> 00:07:06.726
+APIs, database lookups,
+
+140
+00:07:07.326 --> 00:07:09.929
+file operations and function calls.
+
+141
+00:07:10.263 --> 00:07:14.066
+And when all these three things are wired together,
+
+142
+00:07:14.066 --> 00:07:17.036
+you can say find the total amount on this invoice.
+
+143
+00:07:17.737 --> 00:07:21.040
+Then the agent will decide to run OCR,
+
+144
+00:07:21.040 --> 00:07:25.044
+inspect the text, locate the total and return the answer.
+
+145
+00:07:25.411 --> 00:07:28.915
+You don't have to hardcode every step or every edge case.
+
+146
+00:07:30.316 --> 00:07:33.119
+This mental model, brain, eyes, and hands,
+
+147
+00:07:33.119 --> 00:07:38.119
+will appear again and again in subsequent labs and lessons.
+
+148
+00:07:39.459 --> 00:07:43.162
+But how does the agent think, not just once, but step-by-step.
+
+149
+00:07:43.463 --> 00:07:45.765
+The ReAct, reason and act framework
+
+150
+00:07:45.865 --> 00:07:48.067
+describes how agents think.
+
+151
+00:07:48.868 --> 00:07:51.170
+First is thought. What do I need to do next?
+
+152
+00:07:51.838 --> 00:07:53.940
+Then it will take a certain action,
+
+153
+00:07:54.140 --> 00:07:57.643
+choose and call a set of tools that it needs.
+
+154
+00:07:58.044 --> 00:08:00.246
+And once this is done, it will go through
+
+155
+00:08:00.346 --> 00:08:03.049
+an observation process to examine the result
+
+156
+00:08:03.816 --> 00:08:08.020
+and repeat. Think, act, observe, and think again.
+
+157
+00:08:08.521 --> 00:08:12.024
+This loop gives agents agency, adaptability,
+
+158
+00:08:12.325 --> 00:08:14.527
+and the ability to correct mistakes.
+
+159
+00:08:15.328 --> 00:08:20.328
+Most modern agentic frameworks are built on some variation of ReAct.
+
+160
+00:08:20.867 --> 00:08:24.470
+And of course, one major benefit is that it's debuggable.
+
+161
+00:08:24.770 --> 00:08:27.740
+You can literally read the agent's thoughts and tool calls.
+
+162
+00:08:28.441 --> 00:08:31.244
+All right, that's enough theory, let's build something.
+
+163
+00:08:31.544 --> 00:08:33.646
+Now it's lab time.
+
+164
+00:08:33.646 --> 00:08:35.848
+We're going to take everything we covered on the slides,
+
+165
+00:08:35.848 --> 00:08:38.551
+parsing, OCR, and agentic reasoning,
+
+166
+00:08:38.551 --> 00:08:41.320
+and build a simple document agent together.
+
+167
+00:08:41.854 --> 00:08:44.156
+By the end of the lab, you'll have an agent
+
+168
+00:08:44.156 --> 00:08:45.825
+that can read a document,
+
+169
+00:08:45.825 --> 00:08:47.627
+use OCR as a tool,
+
+170
+00:08:47.627 --> 00:08:49.829
+extract structured information.
+
+171
+00:08:49.829 --> 00:08:51.831
+And don't worry if this is your first time,
+
+172
+00:08:51.831 --> 00:08:55.034
+we'll go step by step. Let's switch to the notebook.

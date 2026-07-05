@@ -1,0 +1,1030 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.769
+All right, we're back with the continuation of Lab 4.
+
+2
+00:00:03.269 --> 00:00:05.772
+Our setup will be identical to the previous notebook.
+
+3
+00:00:06.172 --> 00:00:10.477
+Across those first four cells, we've imported some general data science libraries,
+
+4
+00:00:10.877 --> 00:00:12.879
+set up LandingAI's ADE,
+
+5
+00:00:13.480 --> 00:00:15.782
+loaded the API key from the environment variable,
+
+6
+00:00:15.982 --> 00:00:17.584
+and we're ready to go.
+
+7
+00:00:17.584 --> 00:00:20.387
+As before, we'll import some helper functions
+
+8
+00:00:20.387 --> 00:00:23.289
+which you can examine separately in the helper file.
+
+9
+00:00:23.289 --> 00:00:25.792
+In exercise three, you'll assume the role
+
+10
+00:00:25.792 --> 00:00:27.994
+of a person who works at a bank
+
+11
+00:00:27.994 --> 00:00:30.397
+and is reviewing loan applications.
+
+12
+00:00:30.397 --> 00:00:33.400
+And we'll develop a fairly realistic
+
+13
+00:00:33.400 --> 00:00:35.502
+full document processing pipeline.
+
+14
+00:00:35.502 --> 00:00:37.604
+If you've ever applied for a loan,
+
+15
+00:00:37.604 --> 00:00:41.107
+you were probably asked to upload various financial documents.
+
+16
+00:00:41.107 --> 00:00:44.411
+You probably supplied some sort of income statement
+
+17
+00:00:44.411 --> 00:00:46.079
+such as a pay stub.
+
+18
+00:00:46.079 --> 00:00:47.847
+some sort of tax form showing
+
+19
+00:00:47.847 --> 00:00:49.916
+your total income from the year before.
+
+20
+00:00:50.417 --> 00:00:52.585
+Maybe a bank statement or an investment statement
+
+21
+00:00:52.685 --> 00:00:54.487
+to show the value of your assets,
+
+22
+00:00:54.687 --> 00:00:57.891
+and probably also some sort of government-issued ID.
+
+23
+00:00:58.391 --> 00:01:01.594
+Now, the challenge for the bank receiving all of those documents
+
+24
+00:01:01.895 --> 00:01:04.597
+is that they may have all sorts of crazy names.
+
+25
+00:01:04.898 --> 00:01:08.401
+It might be upload A, might be image 456.
+
+26
+00:01:08.902 --> 00:01:12.505
+They need to understand what is this document that you uploaded,
+
+27
+00:01:12.705 --> 00:01:14.774
+and then they need to pull out the
+
+28
+00:01:14.774 --> 00:01:16.810
+key value pairs that they're actually interested in,
+
+29
+00:01:16.810 --> 00:01:18.812
+such as that total asset value.
+
+30
+00:01:18.912 --> 00:01:21.614
+So that's the processing pipeline we're going to build here.
+
+31
+00:01:21.915 --> 00:01:24.050
+We're going to have a user
+
+32
+00:01:24.050 --> 00:01:26.519
+upload multiple mixed documents of unknown types.
+
+33
+00:01:26.719 --> 00:01:30.723
+We're going to parse all of them, understand what they are,
+
+34
+00:01:30.790 --> 00:01:34.861
+extract key value pairs from them and then run some verification.
+
+35
+00:01:34.961 --> 00:01:37.030
+And we're going to do all of
+
+36
+00:01:37.030 --> 00:01:39.065
+this using ADE as our main API.
+
+37
+00:01:39.265 --> 00:01:42.969
+So, let's do it. First, preview the documents that have been supplied.
+
+38
+00:01:43.169 --> 00:01:45.438
+To do that, we'll create a function
+
+39
+00:01:45.438 --> 00:01:47.674
+that displays everything in a particular directory.
+
+40
+00:01:48.274 --> 00:01:50.443
+So before I execute this cell, I'll warn
+
+41
+00:01:50.443 --> 00:01:52.879
+you that these documents are all from different people.
+
+42
+00:01:53.179 --> 00:01:55.381
+This is not actually a complete
+
+43
+00:01:55.548 --> 00:01:58.751
+loan kits because we had to work with sample documents
+
+44
+00:01:58.751 --> 00:02:01.154
+that are anonymized from the internet.
+
+45
+00:02:01.754 --> 00:02:03.556
+So here's upload A PDF,
+
+46
+00:02:03.556 --> 00:02:06.059
+looks to be a Fidelity investment statement.
+
+47
+00:02:06.459 --> 00:02:09.462
+upload B looks like a payroll statement.
+
+48
+00:02:10.163 --> 00:02:13.266
+upload C, first glance looks like a bank statement.
+
+49
+00:02:13.967 --> 00:02:15.935
+upload D looks like a passport,
+
+50
+00:02:16.336 --> 00:02:19.639
+and upload E looks like a US W-2 form.
+
+51
+00:02:20.340 --> 00:02:22.408
+And of course, I recognize all
+
+52
+00:02:22.408 --> 00:02:24.811
+of these instantly with my human vision.
+
+53
+00:02:25.111 --> 00:02:27.380
+But how is a document processing pipeline
+
+54
+00:02:27.380 --> 00:02:29.916
+going to understand these in the same way?
+
+55
+00:02:30.416 --> 00:02:34.621
+Recall that all the documents came in with names such as uploadA.
+
+56
+00:02:34.721 --> 00:02:36.823
+So we will need to categorize them.
+
+57
+00:02:36.856 --> 00:02:40.660
+And to do that, we'll be using the extract API from ADE
+
+58
+00:02:41.060 --> 00:02:43.663
+with a pydantic JSON schema.
+
+59
+00:02:43.863 --> 00:02:46.032
+Now, this schema looks a little bit
+
+60
+00:02:46.032 --> 00:02:48.168
+different than the schema from exercise one,
+
+61
+00:02:48.368 --> 00:02:51.371
+because we're using pydantic rather than JSON.
+
+62
+00:02:51.671 --> 00:02:55.375
+These are the two options that ADE accepts as an input.
+
+63
+00:02:55.775 --> 00:02:58.311
+Here we find a class DocumentType
+
+64
+00:02:58.311 --> 00:03:01.114
+where we enumerate the five types that we're expecting
+
+65
+00:03:01.114 --> 00:03:05.018
+and provide a rich description of what each might look like.
+
+66
+00:03:05.618 --> 00:03:08.721
+And then a class DocType to bring that all together.
+
+67
+00:03:09.222 --> 00:03:11.724
+Now we'll proceed to again use pydantic
+
+68
+00:03:11.724 --> 00:03:15.128
+to define document-specific extraction schemas.
+
+69
+00:03:15.562 --> 00:03:17.363
+What do we want from the pay stub?
+
+70
+00:03:17.764 --> 00:03:19.566
+What do we want out of the investment statement?
+
+71
+00:03:19.966 --> 00:03:21.267
+What do we want out of the
+
+72
+00:03:21.267 --> 00:03:22.769
+bank statement? and so on and so forth.
+
+73
+00:03:23.369 --> 00:03:27.540
+In this cell, we have five different document-specific Pydantic schemas.
+
+74
+00:03:27.740 --> 00:03:29.742
+Let's just take a look at one or two of them.
+
+75
+00:03:30.343 --> 00:03:32.345
+So, in the class for the IDSchema,
+
+76
+00:03:32.545 --> 00:03:35.348
+we're expecting some sort of government-issued ID,
+
+77
+00:03:35.548 --> 00:03:37.750
+such as a driver's license or a passport.
+
+78
+00:03:38.151 --> 00:03:40.753
+That should definitely contain the full name of the person.
+
+79
+00:03:41.154 --> 00:03:45.058
+It should have the state or country issuing the identification.
+
+80
+00:03:45.358 --> 00:03:49.329
+It should have issue_date and some sort of unique identifier.
+
+81
+00:03:49.529 --> 00:03:52.131
+So these were the four strings that we're looking for
+
+82
+00:03:52.232 --> 00:03:55.535
+in the field extraction step from the ID document.
+
+83
+00:03:56.035 --> 00:03:58.137
+The W-2 is a US tax form
+
+84
+00:03:58.238 --> 00:04:00.340
+that is issued at the end of the year.
+
+85
+00:04:00.740 --> 00:04:03.243
+So here we would be expecting the employee_name,
+
+86
+00:04:03.743 --> 00:04:07.046
+the employer_name, the year that it was issued for,
+
+87
+00:04:07.447 --> 00:04:09.315
+and box one wages refers
+
+88
+00:04:09.315 --> 00:04:12.418
+to the total amount that that person earned in that year.
+
+89
+00:04:12.819 --> 00:04:15.121
+Here we've got one integer and one float.
+
+90
+00:04:15.321 --> 00:04:17.624
+You can review the other schemas on your own time.
+
+91
+00:04:18.024 --> 00:04:21.094
+Down at the bottom of the cell, notice that we are mapping
+
+92
+00:04:21.294 --> 00:04:25.098
+the schemas to a shorthand name that we can use later.
+
+93
+00:04:25.598 --> 00:04:29.102
+This cell uses a function provided by Landing AI
+
+94
+00:04:29.302 --> 00:04:32.105
+to convert the pydantic schema to JSON.
+
+95
+00:04:32.372 --> 00:04:37.372
+Recall that both JSON and Pydantic are accepted for defining your schema,
+
+96
+00:04:37.577 --> 00:04:40.380
+but under the hood, we will convert Pydantic to JSON
+
+97
+00:04:40.380 --> 00:04:42.882
+before we pass it to the extract API.
+
+98
+00:04:43.182 --> 00:04:45.518
+Now we have all the components in
+
+99
+00:04:45.518 --> 00:04:48.187
+place to do the parsing and the categorization.
+
+100
+00:04:48.187 --> 00:04:49.689
+Let's take a look at the code
+
+101
+00:04:49.689 --> 00:04:51.190
+in this cell before we execute it.
+
+102
+00:04:51.357 --> 00:04:55.161
+We're going to be processing all of the documents in the input_folder.
+
+103
+00:04:55.161 --> 00:04:57.563
+We'll be sending them to the parse API.
+
+104
+00:04:57.563 --> 00:05:00.366
+We'll be using dpt-2-latest.
+
+105
+00:05:00.366 --> 00:05:03.169
+And then this parameter is new.
+
+106
+00:05:03.169 --> 00:05:07.874
+We're actually asking for a markdown response for each individual page
+
+107
+00:05:07.874 --> 00:05:10.176
+rather than for the document as a whole.
+
+108
+00:05:10.343 --> 00:05:14.347
+So for example, if the investment statement had 11 pages,
+
+109
+00:05:14.447 --> 00:05:17.150
+we would actually get back 11 different markdowns.
+
+110
+00:05:17.250 --> 00:05:21.354
+The reason for that is that in order to identify the document,
+
+111
+00:05:21.454 --> 00:05:23.556
+we often only need the first page.
+
+112
+00:05:23.656 --> 00:05:25.925
+So the identification step will just
+
+113
+00:05:25.925 --> 00:05:28.561
+use the first page of the markdown.
+
+114
+00:05:28.861 --> 00:05:32.365
+Here in step two, we're calling the extract API.
+
+115
+00:05:32.665 --> 00:05:35.568
+We're using the doc type JSON that we defined earlier
+
+116
+00:05:35.668 --> 00:05:37.970
+and we're sending the first page markdown.
+
+117
+00:05:38.371 --> 00:05:40.373
+So, let's go ahead and do that now.
+
+118
+00:05:40.473 --> 00:05:42.775
+The way that I've written this code,
+
+119
+00:05:42.775 --> 00:05:45.078
+it's actually sending each document in series,
+
+120
+00:05:45.178 --> 00:05:48.381
+but there are many options for parallelizing this workload
+
+121
+00:05:48.481 --> 00:05:50.783
+that will make the entire process go faster.
+
+122
+00:05:51.250 --> 00:05:53.753
+We can look at the results as they come back.
+
+123
+00:05:54.020 --> 00:05:57.323
+UploadC has been identified as a bank statement.
+
+124
+00:05:57.824 --> 00:06:00.727
+UploadA is an investment statement.
+
+125
+00:06:01.427 --> 00:06:03.329
+E looks to be the W-2.
+
+126
+00:06:04.330 --> 00:06:07.033
+UploadD is the identification document,
+
+127
+00:06:07.734 --> 00:06:10.236
+and B is the pay stub. Fantastic.
+
+128
+00:06:11.170 --> 00:06:14.774
+At this point, we have markdown corresponding to all five documents,
+
+129
+00:06:15.375 --> 00:06:17.076
+and we know what type it is.
+
+130
+00:06:17.477 --> 00:06:19.879
+So we're ready to apply the correct schema
+
+131
+00:06:19.879 --> 00:06:21.881
+to the correct type of document
+
+132
+00:06:22.281 --> 00:06:24.484
+and extract those key value pairs.
+
+133
+00:06:24.650 --> 00:06:27.854
+Let's take a look at this cell before we execute it.
+
+134
+00:06:28.254 --> 00:06:31.457
+First we create a dictionary to store the extraction results.
+
+135
+00:06:31.758 --> 00:06:34.427
+Then for each document, we want to look
+
+136
+00:06:34.427 --> 00:06:37.463
+up the appropriate schema that goes along with it
+
+137
+00:06:37.463 --> 00:06:39.165
+based on its document type.
+
+138
+00:06:39.565 --> 00:06:41.868
+Then we'll send the correct schema along
+
+139
+00:06:41.868 --> 00:06:44.137
+with the markdown to the extract API.
+
+140
+00:06:44.804 --> 00:06:48.007
+Finally, we'll store all of the results as they come back,
+
+141
+00:06:48.307 --> 00:06:52.111
+focusing on the extractions themselves and the extraction metadata,
+
+142
+00:06:52.311 --> 00:06:53.880
+where we'll find the visual groundings.
+
+143
+00:06:53.880 --> 00:06:55.715
+Let's go ahead and do that now.
+
+144
+00:06:56.015 --> 00:07:00.920
+Among all this output, recall that uploadD was the identification document.
+
+145
+00:07:01.053 --> 00:07:04.357
+It was a passport issued by the country of Japan
+
+146
+00:07:04.557 --> 00:07:07.660
+with an issue date March 24th, 2025.
+
+147
+00:07:08.060 --> 00:07:11.063
+And recall that uploadE was the tax form
+
+148
+00:07:11.764 --> 00:07:13.966
+John Doe who earned
+
+149
+00:07:14.267 --> 00:07:16.536
+two thousand three hundred and twenty three dollars
+
+150
+00:07:16.736 --> 00:07:19.839
+in the year 2024. This is all looking good.
+
+151
+00:07:19.872 --> 00:07:22.875
+The top part of the output has the extractions themselves,
+
+152
+00:07:23.376 --> 00:07:26.379
+and below you start to see the extraction metadata
+
+153
+00:07:26.679 --> 00:07:29.182
+where you have these long chunk IDs,
+
+154
+00:07:29.482 --> 00:07:32.385
+which we covered in lesson one to kind of understand
+
+155
+00:07:32.685 --> 00:07:35.855
+how to connect the chunk ID back to the original document.
+
+156
+00:07:36.322 --> 00:07:39.125
+Let's do some visualizations of those parsing results
+
+157
+00:07:39.125 --> 00:07:41.727
+with the bounding boxes overlaid.
+
+158
+00:07:41.727 --> 00:07:44.630
+This is very similar to what we did in lesson one.
+
+159
+00:07:44.630 --> 00:07:46.966
+Here we're actually going to save each
+
+160
+00:07:46.966 --> 00:07:49.335
+of the five as an annotated image
+
+161
+00:07:49.335 --> 00:07:51.604
+and then we'll actually view those images.
+
+162
+00:07:51.604 --> 00:07:55.608
+Here we have the annotated bank statement, which was upload C.
+
+163
+00:07:55.608 --> 00:07:58.244
+See several text chunks, two major table
+
+164
+00:07:58.244 --> 00:08:01.214
+chunks, and all of the cell level grounding.
+
+165
+00:08:01.747 --> 00:08:03.649
+And let's look at one more.
+
+166
+00:08:04.550 --> 00:08:06.352
+Here's the W-2 statement.
+
+167
+00:08:06.452 --> 00:08:09.355
+You can see the year is nice and prominent,
+
+168
+00:08:09.455 --> 00:08:12.658
+and the wages up here 2323 in box one.
+
+169
+00:08:13.159 --> 00:08:15.695
+If you're building a document processing system,
+
+170
+00:08:15.695 --> 00:08:17.697
+say with human in the loop,
+
+171
+00:08:17.697 --> 00:08:20.700
+it can be really helpful to draw the human's eyes
+
+172
+00:08:20.700 --> 00:08:24.370
+to the specific fields where those extracted values were found.
+
+173
+00:08:24.704 --> 00:08:27.006
+Here we loop through all of the documents again,
+
+174
+00:08:27.006 --> 00:08:31.310
+but we only annotate the specific fields that appear in the schema.
+
+175
+00:08:31.911 --> 00:08:33.613
+Let's take a look at uploadC,
+
+176
+00:08:33.613 --> 00:08:35.615
+which should be the bank statement.
+
+177
+00:08:35.915 --> 00:08:38.117
+and indeed now the eye is really drawn to
+
+178
+00:08:38.117 --> 00:08:41.020
+where the name appears, where the total balance appears,
+
+179
+00:08:41.020 --> 00:08:43.623
+and where the statement date appears.
+
+180
+00:08:43.823 --> 00:08:46.626
+So going back to our scenario of being the person
+
+181
+00:08:46.626 --> 00:08:49.328
+who's receiving all of these loan documents,
+
+182
+00:08:49.629 --> 00:08:52.331
+we're going to want to create some sort of final summary
+
+183
+00:08:52.331 --> 00:08:55.334
+that represents everything that the person has provided.
+
+184
+00:08:55.835 --> 00:08:58.638
+So in this block of code, we're going to go through
+
+185
+00:08:58.638 --> 00:09:00.640
+all of those previous document_extractions
+
+186
+00:09:00.640 --> 00:09:03.643
+and we're going to create a table with five columns
+
+187
+00:09:03.643 --> 00:09:05.645
+as a Pandas data frame.
+
+188
+00:09:05.811 --> 00:09:07.580
+All right, this is a pretty nice
+
+189
+00:09:07.580 --> 00:09:09.315
+summary of what the person has provided.
+
+190
+00:09:09.715 --> 00:09:12.818
+We've got the folder corresponding to that applicant,
+
+191
+00:09:13.019 --> 00:09:16.522
+the name of the document, the type that it was categorized as,
+
+192
+00:09:16.722 --> 00:09:18.624
+the field that was requested,
+
+193
+00:09:18.724 --> 00:09:22.828
+and offscreen here, the field value. Let's take a look at those,
+
+194
+00:09:23.129 --> 00:09:26.899
+pretty good. This would definitely save you a ton of time
+
+195
+00:09:26.999 --> 00:09:29.702
+versus opening all of these documents individually
+
+196
+00:09:29.802 --> 00:09:32.405
+and visually hunting for this information
+
+197
+00:09:32.505 --> 00:09:36.008
+and then typing it into some sort of user interface.
+
+198
+00:09:36.409 --> 00:09:38.911
+So, as we mentioned previously,
+
+199
+00:09:38.911 --> 00:09:41.414
+the names on these documents do not match.
+
+200
+00:09:41.914 --> 00:09:44.417
+But that would actually be a key responsibility
+
+201
+00:09:44.417 --> 00:09:47.620
+of the person receiving all of these documents.
+
+202
+00:09:47.920 --> 00:09:51.424
+They need to check that these assets actually belong to the person
+
+203
+00:09:51.924 --> 00:09:54.427
+who applied for the loan, or that this identification
+
+204
+00:09:54.427 --> 00:09:57.930
+actually belongs to the person who applied for the loan,
+
+205
+00:09:58.230 --> 00:10:01.233
+and you haven't just uploaded your next-door neighbor's documents.
+
+206
+00:10:01.734 --> 00:10:04.370
+So, here's a nice example of validation
+
+207
+00:10:04.370 --> 00:10:08.541
+to check whether the name fields across all of these documents match
+
+208
+00:10:08.541 --> 00:10:10.943
+and quickly surface if they do not.
+
+209
+00:10:11.544 --> 00:10:13.512
+You can imagine now sending a trigger
+
+210
+00:10:13.512 --> 00:10:15.915
+or an alert email back to the applicant
+
+211
+00:10:16.215 --> 00:10:18.517
+saying, these documents don't match,
+
+212
+00:10:18.718 --> 00:10:22.355
+please check your work. Here's another validation example.
+
+213
+00:10:22.855 --> 00:10:26.826
+Typically when applying for a loan, you need to provide recent documents.
+
+214
+00:10:27.326 --> 00:10:29.695
+And so it may be appropriate to actually check
+
+215
+00:10:29.695 --> 00:10:32.331
+that all of these documents are from the same year.
+
+216
+00:10:32.832 --> 00:10:35.334
+The rest of this code really just focuses
+
+217
+00:10:35.334 --> 00:10:38.137
+on pulling the year out of other formatted dates.
+
+218
+00:10:38.571 --> 00:10:40.773
+And again, because they're demonstration documents,
+
+219
+00:10:41.073 --> 00:10:43.376
+there's some old ones that snuck in here.
+
+220
+00:10:43.776 --> 00:10:45.878
+They are definitely not all from the current year.
+
+221
+00:10:46.579 --> 00:10:48.080
+So, you're probably getting the hang of
+
+222
+00:10:48.080 --> 00:10:49.582
+this, but just to round it out,
+
+223
+00:10:49.782 --> 00:10:51.784
+let's sum all of the bank balances
+
+224
+00:10:52.084 --> 00:10:55.087
+and all the investment balances to understand this person's
+
+225
+00:10:55.388 --> 00:10:57.490
+total assets. In our example,
+
+226
+00:10:57.490 --> 00:11:01.060
+there was just one bank statement and one investment statement.
+
+227
+00:11:01.260 --> 00:11:04.263
+But imagine if that person had their assets spread all over
+
+228
+00:11:04.463 --> 00:11:07.266
+and they had uploaded 10 different bank statements.
+
+229
+00:11:07.667 --> 00:11:09.835
+This would at least bring together all
+
+230
+00:11:09.835 --> 00:11:11.971
+of the assets into one final number.
+
+231
+00:11:12.171 --> 00:11:15.374
+So that brings us to the end of exercise three.
+
+232
+00:11:15.875 --> 00:11:18.177
+In this exercise, you have authenticated
+
+233
+00:11:18.177 --> 00:11:20.179
+with the ADE API,
+
+234
+00:11:20.980 --> 00:11:23.482
+categorized a mixture of financial documents,
+
+235
+00:11:23.916 --> 00:11:27.820
+parsed those documents and extracted their layout and content,
+
+236
+00:11:28.054 --> 00:11:32.458
+defined custom Pydantic schemas corresponding to different document types,
+
+237
+00:11:32.725 --> 00:11:35.728
+then extracted structured data with visual grounding.
+
+238
+00:11:36.095 --> 00:11:38.197
+visualize those results
+
+239
+00:11:38.197 --> 00:11:41.300
+and finally define custom validation logic
+
+240
+00:11:41.300 --> 00:11:44.904
+to spot check documentation gaps and errors.
+
+241
+00:11:45.304 --> 00:11:47.139
+This also brings us to the
+
+242
+00:11:47.139 --> 00:11:49.308
+end of lesson four and lab four.
+
+243
+00:11:49.709 --> 00:11:54.013
+Now you have hands-on experience using a single agentic API
+
+244
+00:11:54.013 --> 00:11:58.284
+that understands your documents without further instructions from the user.
+
+245
+00:11:58.651 --> 00:12:00.753
+ADE from LandingAI
+
+246
+00:12:00.753 --> 00:12:03.556
+really allows you to focus on your use case
+
+247
+00:12:03.556 --> 00:12:06.859
+rather than on low-level document parsing tasks.
+
+248
+00:12:07.159 --> 00:12:09.161
+It's inherently agentic design,
+
+249
+00:12:09.161 --> 00:12:12.465
+grounded in a vision-first model architecture,
+
+250
+00:12:12.465 --> 00:12:14.667
+allows it to understand any input
+
+251
+00:12:14.667 --> 00:12:17.269
+with any layout in any language.
+
+252
+00:12:17.570 --> 00:12:19.872
+If you want to try more for yourself,
+
+253
+00:12:19.872 --> 00:12:24.176
+get your own API key at va.landing.ai.
+
+254
+00:12:24.477 --> 00:12:28.080
+We'll even throw in a thousand free credits to start with.
+
+255
+00:12:28.080 --> 00:12:30.282
+Next up in lesson five,
+
+256
+00:12:30.282 --> 00:12:32.084
+we'll hand it back over to David
+
+257
+00:12:32.084 --> 00:12:35.087
+to go through agentic document extraction for RAG.

@@ -1,0 +1,1170 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.867 --> 00:00:04.471
+Having learned how to parse and extract information from your files,
+
+2
+00:00:04.671 --> 00:00:07.807
+you'll now learn how to answer questions about these files.
+
+3
+00:00:08.375 --> 00:00:12.679
+In this lesson, you'll build a RAG application to query your PDFs.
+
+4
+00:00:13.346 --> 00:00:15.782
+You'll first use ADE to parse the documents.
+
+5
+00:00:16.082 --> 00:00:18.885
+Then store the parsed chunks in a vector database
+
+6
+00:00:19.085 --> 00:00:22.088
+and retrieve them to answer questions about your documents.
+
+7
+00:00:22.689 --> 00:00:25.158
+Let's dive in.
+
+8
+00:00:25.191 --> 00:00:28.161
+Up to now, we've been learning about document AI,
+
+9
+00:00:28.194 --> 00:00:31.164
+why OCR fails, how to best utilize layout,
+
+10
+00:00:31.197 --> 00:00:33.066
+and why reading order matters.
+
+11
+00:00:33.133 --> 00:00:36.603
+and how LandingAI's agentic document extraction gives us clean,
+
+12
+00:00:36.603 --> 00:00:39.606
+grounded output by combining all the complexities
+
+13
+00:00:39.606 --> 00:00:42.108
+of document processing in a single
+
+14
+00:00:42.108 --> 00:00:44.110
+unified workflow.
+
+15
+00:00:44.411 --> 00:00:46.613
+So now the obvious question is,
+
+16
+00:00:46.613 --> 00:00:48.615
+what do we do with all this structured data?
+
+17
+00:00:48.615 --> 00:00:51.618
+One possible answer is building real systems.
+
+18
+00:00:51.918 --> 00:00:54.120
+Specifically, we'll build a
+
+19
+00:00:54.120 --> 00:00:57.323
+Retrieval-Augmented Generation pipeline or a RAG system
+
+20
+00:00:57.624 --> 00:01:01.694
+that turns a 74-page financial filing into a
+
+21
+00:01:01.694 --> 00:01:04.497
+living breathing document and a queryable knowledge base.
+
+22
+00:01:04.798 --> 00:01:09.502
+This is the same architectural pattern powering modern document QA systems
+
+23
+00:01:09.502 --> 00:01:12.906
+in production today across all industries and verticals.
+
+24
+00:01:13.206 --> 00:01:15.208
+Let's frame this in a real scenario.
+
+25
+00:01:15.508 --> 00:01:18.511
+Imagine you're building an internal platform for a hedge fund.
+
+26
+00:01:18.812 --> 00:01:22.515
+Your analysts have SEC filings like this Apple 10-K.
+
+27
+00:01:22.515 --> 00:01:25.919
+It contains detailed financial and business information
+
+28
+00:01:25.919 --> 00:01:28.221
+that publicly traded companies must disclose
+
+29
+00:01:28.221 --> 00:01:30.323
+to the security and exchange commission.
+
+30
+00:01:31.091 --> 00:01:34.094
+The analysts want to upload the files to the platform
+
+31
+00:01:34.194 --> 00:01:37.797
+and ask questions like, what was Apple's net sales in 2023?
+
+32
+00:01:38.098 --> 00:01:40.033
+What are the biggest business risks?
+
+33
+00:01:40.033 --> 00:01:42.302
+How did the services revenue trend year-over-year?
+
+34
+00:01:42.602 --> 00:01:45.505
+The information they need is in the document, somewhere.
+
+35
+00:01:46.005 --> 00:01:48.208
+Maybe in a table on page 28,
+
+36
+00:01:48.508 --> 00:01:50.710
+maybe in a footnote on page 45,
+
+37
+00:01:51.010 --> 00:01:53.446
+or spread across three different risk
+
+38
+00:01:53.446 --> 00:01:56.316
+disclosures on pages 12, 15, and 18.
+
+39
+00:01:56.716 --> 00:01:58.718
+Now, why does traditional keyword
+
+40
+00:01:58.885 --> 00:02:02.088
+search fail here? First is Semantic mismatch.
+
+41
+00:02:02.088 --> 00:02:04.691
+If an analyst searches for revenue,
+
+42
+00:02:04.691 --> 00:02:07.494
+but if the document uses phrases like net sales,
+
+43
+00:02:07.494 --> 00:02:09.896
+traditional search would return nothing.
+
+44
+00:02:09.896 --> 00:02:13.700
+The concepts are identical, but the words don't match exactly.
+
+45
+00:02:13.700 --> 00:02:16.102
+Second is Context blindness.
+
+46
+00:02:16.102 --> 00:02:19.906
+The word revenue may appear 75 times in this document.
+
+47
+00:02:19.906 --> 00:02:22.008
+And if you want to know which
+
+48
+00:02:22.008 --> 00:02:24.077
+mention is relevant to the analyst's question,
+
+49
+00:02:24.077 --> 00:02:27.280
+keyword search can't tell without additional guidance.
+
+50
+00:02:27.480 --> 00:02:29.582
+And this isn't scalable.
+
+51
+00:02:29.582 --> 00:02:32.285
+Third is fragmentation. Information is scattered.
+
+52
+00:02:32.285 --> 00:02:35.288
+To fully answer the question, what are the risks,
+
+53
+00:02:35.288 --> 00:02:38.291
+you need to synthesize content from multiple pages.
+
+54
+00:02:38.291 --> 00:02:41.294
+Traditional search can't do that. You need semantic understanding.
+
+55
+00:02:41.294 --> 00:02:43.496
+You also need context-aware retrieval,
+
+56
+00:02:43.496 --> 00:02:45.231
+which means you need a system
+
+57
+00:02:45.231 --> 00:02:47.267
+that understands what the user is asking,
+
+58
+00:02:47.267 --> 00:02:50.670
+not just matches strings. This is where RAG comes in,
+
+59
+00:02:50.670 --> 00:02:53.273
+which is what you will build in the lab for this lesson.
+
+60
+00:02:53.273 --> 00:02:56.075
+So what is RAG and why does it matter?
+
+61
+00:02:56.075 --> 00:02:59.579
+RAG, or retrieval-augmented generation, is the architecture behind
+
+62
+00:02:59.579 --> 00:03:03.283
+nearly every modern document Q&amp;A system today.
+
+63
+00:03:03.583 --> 00:03:06.286
+The pipeline has six steps across three core phases.
+
+64
+00:03:06.586 --> 00:03:08.288
+First is preprocessing phase.
+
+65
+00:03:08.588 --> 00:03:10.590
+You parse, embed, then store.
+
+66
+00:03:10.890 --> 00:03:15.562
+Parsing takes raw documents and parse and extract clean, structured text.
+
+67
+00:03:15.862 --> 00:03:18.331
+This is where ADE comes in. Clean
+
+68
+00:03:18.331 --> 00:03:20.767
+input is critical. Garbage in, garbage out.
+
+69
+00:03:20.767 --> 00:03:24.571
+If your parsing is noisy with OCR errors and mangled tables
+
+70
+00:03:24.571 --> 00:03:27.574
+that you saw in previous lessons, everything downstream suffers.
+
+71
+00:03:27.874 --> 00:03:30.577
+Embedding converts parsed content
+
+72
+00:03:30.577 --> 00:03:33.580
+into embeddings or vectors that capture semantic meaning.
+
+73
+00:03:33.980 --> 00:03:36.549
+Storing saves these vectors
+
+74
+00:03:36.549 --> 00:03:39.252
+in a vector database optimized for similarity search.
+
+75
+00:03:39.552 --> 00:03:42.755
+You will use ChromaDB, a local, open-source option
+
+76
+00:03:42.755 --> 00:03:45.258
+perfect for development and learning.
+
+77
+00:03:45.458 --> 00:03:48.962
+Second is the retrieval phase. Query and retrieve.
+
+78
+00:03:48.962 --> 00:03:52.465
+Querying embeds the user's question, searches through the database
+
+79
+00:03:52.465 --> 00:03:56.669
+to find the top-ranking vectors as measured by similarity,
+
+80
+00:03:56.669 --> 00:03:59.739
+in other words, the most similar vectors to the query.
+
+81
+00:03:59.739 --> 00:04:03.943
+Retrieving filters out any vectors whose similarity might be too low,
+
+82
+00:04:03.943 --> 00:04:06.946
+then fetches the rest. Third is the generation phase.
+
+83
+00:04:07.347 --> 00:04:09.949
+It feeds the retrieve content as context
+
+84
+00:04:09.949 --> 00:04:12.151
+to a language model to generate
+
+85
+00:04:12.151 --> 00:04:15.154
+a natural language answer with the corresponding
+
+86
+00:04:15.154 --> 00:04:18.424
+retrieve content for grounding and verification.
+
+87
+00:04:18.625 --> 00:04:21.327
+This is critical for heavily regulated organizations
+
+88
+00:04:21.327 --> 00:04:23.830
+or HROs like financial services,
+
+89
+00:04:23.830 --> 00:04:26.132
+healthcare, and life sciences.
+
+90
+00:04:26.332 --> 00:04:29.235
+Now here's a key insight that ties back everything you've
+
+91
+00:04:29.802 --> 00:04:32.038
+ADE's clean grounded output
+
+92
+00:04:32.038 --> 00:04:35.308
+and phase one is what makes this entire pipeline possible.
+
+93
+00:04:35.708 --> 00:04:37.510
+If your parsing is unreliable
+
+94
+00:04:37.510 --> 00:04:40.813
+and if you're feeding the system distorted OCR outputs
+
+95
+00:04:40.813 --> 00:04:45.118
+or missing tables, charts, and graphs with visual storytelling,
+
+96
+00:04:45.418 --> 00:04:48.521
+no amount of clever embeddings, prompt engineering,
+
+97
+00:04:48.521 --> 00:04:50.823
+or sophisticated retrieval will save you.
+
+98
+00:04:51.124 --> 00:04:54.994
+By the end of this lesson's lab, you will understand how ADE
+
+99
+00:04:54.994 --> 00:04:57.897
+output flows directly into a RAG system,
+
+100
+00:04:58.331 --> 00:05:01.934
+build a local RAG pipeline using ChromaDB
+
+101
+00:05:01.934 --> 00:05:04.804
+and embeddings generated by an OpenAI model,
+
+102
+00:05:05.071 --> 00:05:08.875
+run semantic search, not keyword search, over real documents,
+
+103
+00:05:09.108 --> 00:05:12.812
+verify every result visually using grounding images.
+
+104
+00:05:13.112 --> 00:05:17.116
+Then be fully prepared to scale and deploy this system to AWS.
+
+105
+00:05:17.317 --> 00:05:19.352
+We'll cover this in lesson six. So you
+
+106
+00:05:19.352 --> 00:05:21.387
+may be wondering, why are we building locally?
+
+107
+00:05:21.721 --> 00:05:24.824
+Why not jump straight to AWS for a real production system?
+
+108
+00:05:25.024 --> 00:05:27.193
+That's a great question. And there are three reasons.
+
+109
+00:05:27.393 --> 00:05:29.429
+number one is faster iteration.
+
+110
+00:05:29.729 --> 00:05:33.866
+You can change code, rerun a cell, see results in two seconds
+
+111
+00:05:34.033 --> 00:05:36.502
+with no deployment overhead, no debugging.
+
+112
+00:05:36.803 --> 00:05:38.504
+When you're learning, speed matters.
+
+113
+00:05:38.805 --> 00:05:40.540
+Reason number two is lower cost.
+
+114
+00:05:40.740 --> 00:05:43.142
+Experimenting locally is essentially free,
+
+115
+00:05:43.543 --> 00:05:45.645
+after the initial API calls.
+
+116
+00:05:45.645 --> 00:05:48.648
+You're not burning cloud compute credits while you learn and debug.
+
+117
+00:05:48.948 --> 00:05:50.850
+Reason three is clearer learning.
+
+118
+00:05:51.050 --> 00:05:54.354
+You can strip away the cloud complexity to focus
+
+119
+00:05:54.354 --> 00:05:56.956
+purely on the RAG mechanics and data flow.
+
+120
+00:05:57.457 --> 00:06:00.360
+In lesson six, we'll take this exact logic
+
+121
+00:06:00.360 --> 00:06:01.961
+and productionize it on AWS.
+
+122
+00:06:02.328 --> 00:06:04.330
+Same data flow at cloud scale.
+
+123
+00:06:04.530 --> 00:06:06.833
+But you'll build the foundation in this lab.
+
+124
+00:06:07.133 --> 00:06:09.635
+In particular, here's what you'll use in the lab.
+
+125
+00:06:09.769 --> 00:06:12.972
+The input will be Apple's 10-K from the previous fiscal year,
+
+126
+00:06:13.172 --> 00:06:16.275
+a 74-page PDF of dense financial reporting,
+
+127
+00:06:16.476 --> 00:06:19.278
+which is a real document with real-world complexity.
+
+128
+00:06:19.579 --> 00:06:22.248
+The parser, ADE API from LandingAI.
+
+129
+00:06:22.548 --> 00:06:24.550
+The outputs are provided to you,
+
+130
+00:06:24.751 --> 00:06:26.753
+so you won't be doing the parsing step.
+
+131
+00:06:26.953 --> 00:06:29.956
+This process was well covered in the previous lesson with Andrea.
+
+132
+00:06:30.256 --> 00:06:34.560
+The output, markdown text plus JSON chunks with metadata.
+
+133
+00:06:34.761 --> 00:06:38.164
+Clean, structured data ready for embedding.
+
+134
+00:06:38.164 --> 00:06:42.468
+Embeddings will be generated using OpenAI's Text Embedding 3 Small model.
+
+135
+00:06:42.769 --> 00:06:45.471
+We're using their API for convenience,
+
+136
+00:06:45.471 --> 00:06:48.775
+but you could swap it out for any open source alternatives.
+
+137
+00:06:49.475 --> 00:06:51.978
+Vector database, ChromaDB running locally
+
+138
+00:06:51.978 --> 00:06:54.781
+in the lab environment with persistent storage.
+
+139
+00:06:54.981 --> 00:06:56.916
+Let's start with the first step
+
+140
+00:06:56.916 --> 00:06:59.185
+of the pre-processing phase, parsing with ADE.
+
+141
+00:06:59.786 --> 00:07:02.188
+When you parse a document with ADE,
+
+142
+00:07:02.188 --> 00:07:04.690
+You will get back a ParseResponse object.
+
+143
+00:07:05.091 --> 00:07:06.692
+Let's break down its structure.
+
+144
+00:07:06.893 --> 00:07:10.997
+At the top, you have parse_result.splits, which is a list.
+
+145
+00:07:11.197 --> 00:07:15.701
+One split per page when you pass the split equals page parameter.
+
+146
+00:07:16.002 --> 00:07:18.404
+Each split has two key attributes.
+
+147
+00:07:18.805 --> 00:07:22.008
+First is the .markdown. This is the clean
+
+148
+00:07:22.041 --> 00:07:24.544
+markdown text extracted from that page.
+
+149
+00:07:24.844 --> 00:07:27.814
+Tables become markdown tables with pipes and dashes.
+
+150
+00:07:28.014 --> 00:07:30.817
+Headings become markdown headings with hash symbols.
+
+151
+00:07:31.217 --> 00:07:33.519
+It's human readable, structured text,
+
+152
+00:07:33.820 --> 00:07:36.522
+not a wall of unformatted OCR mess.
+
+153
+00:07:36.823 --> 00:07:39.826
+It's also LLM ready for downstream use cases.
+
+154
+00:07:40.226 --> 00:07:41.828
+Second is .chunks
+
+155
+00:07:41.861 --> 00:07:43.863
+This is a list of chunk IDs.
+
+156
+00:07:43.963 --> 00:07:46.666
+Each chunk is a piece of content on the page.
+
+157
+00:07:47.066 --> 00:07:50.770
+A paragraph, a table, a figure, or a caption.
+
+158
+00:07:51.070 --> 00:07:53.372
+For each chunk, you also have metadata.
+
+159
+00:07:53.773 --> 00:07:58.344
+chunk_id, a UUID that uniquely identifies this piece of content.
+
+160
+00:07:58.744 --> 00:08:01.047
+The text, the extracted content itself.
+
+161
+00:08:01.347 --> 00:08:04.050
+chunk_type, which tells you what kind of content this is.
+
+162
+00:08:04.450 --> 00:08:09.450
+text, tables, figures, attestation, logo, etc. bbox.
+
+163
+00:08:09.489 --> 00:08:13.893
+Bounding box coordinates showing exactly where on the page this chunk appeared.
+
+164
+00:08:14.293 --> 00:08:16.796
+page. Page number where the chunk appears.
+
+165
+00:08:17.096 --> 00:08:20.900
+And importantly, for every chunk, you can generate a grounding image,
+
+166
+00:08:20.900 --> 00:08:23.302
+a visual crop from the original PDF.
+
+167
+00:08:23.703 --> 00:08:27.507
+This gives you the ability to debug when you're building your pipeline,
+
+168
+00:08:27.507 --> 00:08:31.277
+and you can visually verify that extraction worked correctly. No guessing.
+
+169
+00:08:31.477 --> 00:08:34.380
+You can build trust when your system tells a user
+
+170
+00:08:34.380 --> 00:08:37.083
+net sales were 383 billion dollars.
+
+171
+00:08:37.116 --> 00:08:40.219
+You can show them the exact table the information came from.
+
+172
+00:08:40.520 --> 00:08:42.121
+They can see with their own eyes,
+
+173
+00:08:42.121 --> 00:08:44.624
+which builds massive confidence in your system.
+
+174
+00:08:44.924 --> 00:08:48.928
+Compliance. In regulated industries like finance, healthcare, and legal,
+
+175
+00:08:49.128 --> 00:08:51.130
+you need to prove where information came from.
+
+176
+00:08:51.330 --> 00:08:54.934
+Grounding images give you that audit trail. No hallucinations.
+
+177
+00:08:55.334 --> 00:08:58.938
+Since you've already seen how to call the parse API with Andrea,
+
+178
+00:08:59.038 --> 00:09:00.940
+we'll skip this step in the lab.
+
+179
+00:09:01.107 --> 00:09:04.310
+You'll be directly provided with these ADE outputs.
+
+180
+00:09:04.744 --> 00:09:07.246
+The next step in preprocessing
+
+181
+00:09:07.246 --> 00:09:09.549
+is to embed the text of each ADE's chunk.
+
+182
+00:09:09.549 --> 00:09:11.450
+You will transform each chunk's text
+
+183
+00:09:11.450 --> 00:09:13.653
+into an embedding vector of size 1536.
+
+184
+00:09:15.254 --> 00:09:19.759
+Each embedding vector will mathematically encode the meaning of the parsed text
+
+185
+00:09:19.759 --> 00:09:23.663
+so that semantically similar text gets a similar vector.
+
+186
+00:09:24.063 --> 00:09:25.464
+So when you ask a question about
+
+187
+00:09:25.464 --> 00:09:26.866
+your document, you can retrieve the chunks
+
+188
+00:09:26.866 --> 00:09:30.970
+that have embeddings similar to the embeddings of your question.
+
+189
+00:09:30.970 --> 00:09:33.739
+This is called chunk level embedding.
+
+190
+00:09:33.739 --> 00:09:36.208
+The other option is to do Page-Level embedding,
+
+191
+00:09:36.208 --> 00:09:38.911
+meaning you embed the entire text of a page.
+
+192
+00:09:38.911 --> 00:09:40.613
+Let's understand the tradeoffs.
+
+193
+00:09:40.613 --> 00:09:43.916
+In practice, Page-Level is simple to implement,
+
+194
+00:09:43.916 --> 00:09:47.219
+fewer embeddings, faster database build,
+
+195
+00:09:47.219 --> 00:09:50.623
+and it can be effective for broad questions and shorter documents.
+
+196
+00:09:50.623 --> 00:09:53.626
+Chunk-Level provides more precise retrieval,
+
+197
+00:09:53.626 --> 00:09:56.228
+exact table, paragraph matching,
+
+198
+00:09:56.228 --> 00:09:59.932
+more granular context, and is better for focused questions.
+
+199
+00:10:00.099 --> 00:10:02.101
+with complex documents.
+
+200
+00:10:02.101 --> 00:10:04.904
+And with ADE, we can even give you cell level groundings
+
+201
+00:10:04.904 --> 00:10:06.706
+for complex tables.
+
+202
+00:10:07.306 --> 00:10:09.108
+In the lab, you'll use chunk level approach,
+
+203
+00:10:09.108 --> 00:10:12.478
+but in production, you can tune this based on your use case.
+
+204
+00:10:12.878 --> 00:10:14.880
+The last step in preprocessing
+
+205
+00:10:14.880 --> 00:10:17.283
+is to store the vectors in a vector database.
+
+206
+00:10:17.283 --> 00:10:21.087
+We're using ChromaDB because it's ideal for learning and prototyping.
+
+207
+00:10:21.487 --> 00:10:23.289
+You have one-line install,
+
+208
+00:10:23.289 --> 00:10:27.760
+persistent storage, since ChromaDB saves your vectors into your disk.
+
+209
+00:10:27.760 --> 00:10:30.162
+automatically. If you close your notebook and come
+
+210
+00:10:30.162 --> 00:10:32.565
+back tomorrow, your data will still be there.
+
+211
+00:10:32.665 --> 00:10:36.569
+You don't have to re-embed everything. This is crucial for efficient iteration.
+
+212
+00:10:36.969 --> 00:10:41.969
+Fast Similarity Search. ChromaDB uses HNSW indexing under the hood.
+
+213
+00:10:42.274 --> 00:10:44.944
+Hierarchical Navigable Small World graphs.
+
+214
+00:10:45.044 --> 00:10:49.248
+This is a state-of-the-art algorithm for approximate nearest neighbor search.
+
+215
+00:10:49.548 --> 00:10:53.552
+Queries return in milliseconds, even with thousands of vectors.
+
+216
+00:10:53.753 --> 00:10:55.421
+You'll have same API locally
+
+217
+00:10:55.421 --> 00:10:59.225
+and in production. ChromaDB has a client server mode.
+
+218
+00:10:59.225 --> 00:11:02.328
+The same API you use locally works in production
+
+219
+00:11:02.328 --> 00:11:04.330
+with a remote ChromaDB server.
+
+220
+00:11:04.330 --> 00:11:07.633
+This is huge. No mental model shift when you scale.
+
+221
+00:11:07.633 --> 00:11:10.336
+And finally, rich metadata support.
+
+222
+00:11:10.336 --> 00:11:14.240
+For each chunk, you can store metadata that can help with filtering.
+
+223
+00:11:14.840 --> 00:11:16.942
+allowing you to retrieve items
+
+224
+00:11:16.942 --> 00:11:20.146
+based on specific criteria within their metadata.
+
+225
+00:11:20.613 --> 00:11:23.082
+In the lab, you'll store the chunk_type, page
+
+226
+00:11:23.082 --> 00:11:26.619
+number, and the coordinates of the bounding boxes
+
+227
+00:11:26.619 --> 00:11:28.187
+as metadata for each chunk.
+
+228
+00:11:28.187 --> 00:11:29.755
+When you add a chunk to
+
+229
+00:11:29.755 --> 00:11:31.590
+ChromaDB, you need to specify an ID.
+
+230
+00:11:31.791 --> 00:11:35.294
+You use the exact chunk ID that is provided from ADE.
+
+231
+00:11:35.795 --> 00:11:38.898
+Note that in lesson six, we'll swap this for AWS Bedrock
+
+232
+00:11:38.898 --> 00:11:41.901
+Knowledge Base, but the concept stays identical.
+
+233
+00:11:42.101 --> 00:11:44.103
+After you set up the vector database,
+
+234
+00:11:44.103 --> 00:11:47.306
+you'll write a function that you'll use in the retrieval step.
+
+235
+00:11:47.506 --> 00:11:50.609
+Let's walk through exactly what happens when you run it.
+
+236
+00:11:50.776 --> 00:11:54.113
+for what was Apple's net sales in 2023?
+
+237
+00:11:54.513 --> 00:11:56.882
+First, we'll embed the question and it
+
+238
+00:11:56.882 --> 00:11:59.251
+will be transformed into an embedding vector.
+
+239
+00:11:59.552 --> 00:12:04.256
+Same embedding model used during preprocessing and same size for the vector.
+
+240
+00:12:04.557 --> 00:12:09.361
+Second, search. You'll pass that query vector to ChromaDB and say,
+
+241
+00:12:09.462 --> 00:12:11.363
+find me the top k chunks
+
+242
+00:12:11.363 --> 00:12:13.566
+that are closest to this query vector.
+
+243
+00:12:13.966 --> 00:12:15.801
+By default, k equals 3. So
+
+244
+00:12:15.801 --> 00:12:17.970
+we want the three most similar chunks.
+
+245
+00:12:18.437 --> 00:12:21.440
+You can adjust this based on your use case. Third is score.
+
+246
+00:12:21.540 --> 00:12:23.642
+ChromaDB also returns distance metrics.
+
+247
+00:12:23.743 --> 00:12:26.045
+You convert the distance metrics to similarity.
+
+248
+00:12:26.345 --> 00:12:28.447
+Similarity equals 1 minus distance.
+
+249
+00:12:28.748 --> 00:12:30.549
+Higher similarity means better match.
+
+250
+00:12:30.649 --> 00:12:32.351
+This is a parameter you can
+
+251
+00:12:32.351 --> 00:12:34.320
+adjust to further fine-tune your RAG engine.
+
+252
+00:12:34.920 --> 00:12:39.024
+Fourth is filter. You'll then remove results based on similarity thresholds.
+
+253
+00:12:39.125 --> 00:12:43.028
+Then you can visualize. Finally, you'll display the chunk text,
+
+254
+00:12:43.129 --> 00:12:45.731
+IDs, scores, page numbers.
+
+255
+00:12:46.098 --> 00:12:48.200
+and types for the return results.
+
+256
+00:12:48.300 --> 00:12:50.302
+You will also use the coordinates of
+
+257
+00:12:50.302 --> 00:12:52.605
+the bounding boxes to display the grounding images.
+
+258
+00:12:52.705 --> 00:12:55.107
+This is one of my favorite features of ADE,
+
+259
+00:12:55.107 --> 00:12:59.912
+and is something that differentiates LandingAI from commodity document AI systems.
+
+260
+00:13:00.012 --> 00:13:04.617
+For every chunk that ADE extracts, you can generate a grounding image.
+
+261
+00:13:04.717 --> 00:13:06.352
+This is a PNG file showing
+
+262
+00:13:06.352 --> 00:13:08.287
+the visual crop of that specific chunk
+
+263
+00:13:08.287 --> 00:13:10.289
+from the original PDF.
+
+264
+00:13:10.589 --> 00:13:13.292
+Let me tell you why this is so crucial in practice.
+
+265
+00:13:13.759 --> 00:13:18.264
+This builds massive trust. Users aren't just blindly accepting answers
+
+266
+00:13:18.264 --> 00:13:20.966
+or getting fooled by LLM hallucinations.
+
+267
+00:13:20.966 --> 00:13:23.135
+They're verifying them. And when they verify
+
+268
+00:13:23.135 --> 00:13:25.271
+a few answers and see they're correct,
+
+269
+00:13:25.271 --> 00:13:27.973
+they trust the system for future queries.
+
+270
+00:13:27.973 --> 00:13:29.575
+This will ensure adoption.
+
+271
+00:13:29.775 --> 00:13:32.278
+Grounding images gives you that paper trail
+
+272
+00:13:32.278 --> 00:13:36.282
+and opportunities to introduce human in the loop for risk mitigation.
+
+273
+00:13:36.582 --> 00:13:39.285
+Imagine a financial analyst using your system
+
+274
+00:13:39.285 --> 00:13:41.453
+to pull data for a quarterly report.
+
+275
+00:13:41.453 --> 00:13:43.722
+Six months later, if the auditors ask
+
+276
+00:13:43.722 --> 00:13:45.624
+where did this number come from,
+
+277
+00:13:45.624 --> 00:13:48.027
+they can say it came from page 28,
+
+278
+00:13:48.027 --> 00:13:50.629
+table 3, row 5, column 6
+
+279
+00:13:50.629 --> 00:13:52.731
+of the Q3 10-K filing.
+
+280
+00:13:52.731 --> 00:13:55.734
+And here's the visual proof, which is really powerful.
+
+281
+00:13:56.235 --> 00:13:59.738
+You will finally incorporate what you've learned into a full RAG pipeline.
+
+282
+00:14:00.239 --> 00:14:03.342
+And for that, you'll be using LangChain for orchestration.
+
+283
+00:14:03.943 --> 00:14:06.545
+taking advantage of a pre-built chain
+
+284
+00:14:06.545 --> 00:14:10.616
+that combines the retrieval and generation phases of a RAG pipeline.
+
+285
+00:14:10.616 --> 00:14:14.620
+You will create a retrieval object from the ChromaDB database.
+
+286
+00:14:14.620 --> 00:14:17.623
+Retrievers are components of LangChain that fetches information
+
+287
+00:14:17.623 --> 00:14:22.294
+and slots into prompt as added context.
+
+288
+00:14:22.895 --> 00:14:25.898
+Sometimes a retriever might provide too many chunks.
+
+289
+00:14:25.898 --> 00:14:29.101
+Given a limited context window of LLMs,
+
+290
+00:14:29.101 --> 00:14:32.905
+LangChain can combine multiple chunks into a single prompt
+
+291
+00:14:32.905 --> 00:14:36.609
+or sequence many chunks over several prompts iteratively.
+
+292
+00:14:36.909 --> 00:14:40.579
+All right, let's build a real RAG system with ADE.

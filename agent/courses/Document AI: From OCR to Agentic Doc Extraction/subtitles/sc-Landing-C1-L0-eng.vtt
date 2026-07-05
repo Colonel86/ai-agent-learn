@@ -1,0 +1,286 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.001 --> 00:00:05.472
+Welcome to Document AI: From OCR to Agentic Doc Extraction,
+
+2
+00:00:05.472 --> 00:00:08.475
+built in partnership with LandingAI where I'm executive chairman.
+
+3
+00:00:08.775 --> 00:00:10.176
+A lot of data is locked
+
+4
+00:00:10.176 --> 00:00:11.778
+up in PDF files and other documents
+
+5
+00:00:11.778 --> 00:00:15.181
+on our laptops, on the web, and in company's cloud storage.
+
+6
+00:00:15.482 --> 00:00:18.785
+In this course, you'll implement document processing pipelines
+
+7
+00:00:18.785 --> 00:00:20.787
+that transform your complex documents
+
+8
+00:00:20.787 --> 00:00:24.391
+into LLM-ready markdown text and extracts information.
+
+9
+00:00:24.391 --> 00:00:26.493
+for analysis.
+
+10
+00:00:26.793 --> 00:00:30.697
+You begin by explaining traditional OCR which only extracts text
+
+11
+00:00:30.897 --> 00:00:33.900
+and then add techniques to detect document structure
+
+12
+00:00:34.100 --> 00:00:35.902
+and identify visual components
+
+13
+00:00:36.202 --> 00:00:39.606
+such as tables with complex formatting like merged cells
+
+14
+00:00:40.006 --> 00:00:43.710
+or charts with captions or forms with checkboxes.
+
+15
+00:00:44.210 --> 00:00:48.281
+You'll implement an agentic workflow that combines layout detection
+
+16
+00:00:48.281 --> 00:00:50.083
+with LLM-based reasoning.
+
+17
+00:00:50.483 --> 00:00:53.286
+Then, you'll learn to use Agentic Document Extraction,
+
+18
+00:00:53.686 --> 00:00:56.189
+or ADE, a tool designed by LandingAI
+
+19
+00:00:56.489 --> 00:00:59.092
+that automates this entire workflow for you.
+
+20
+00:00:59.392 --> 00:01:02.295
+I'm delighted that the instructors for this course are David Park,
+
+21
+00:01:02.295 --> 00:01:05.298
+who's Senior Director of Applied AI, and Andrea Kropp,
+
+22
+00:01:05.298 --> 00:01:07.100
+who is an Applied AI engineer.
+
+23
+00:01:07.500 --> 00:01:09.803
+Both have helped many developers build complex
+
+24
+00:01:09.803 --> 00:01:11.504
+document AI systems.
+
+25
+00:01:12.172 --> 00:01:15.475
+Thanks Andrew. We're excited to teach this course together.
+
+26
+00:01:15.875 --> 00:01:20.180
+Traditional OCR systems worked by segmenting documents into individual characters
+
+27
+00:01:20.180 --> 00:01:23.383
+and then classifying each character using supervised learning.
+
+28
+00:01:23.883 --> 00:01:26.186
+These systems could extract characters accurately,
+
+29
+00:01:26.486 --> 00:01:28.254
+but they lacked understanding of how
+
+30
+00:01:28.254 --> 00:01:30.290
+different parts of a document hang together,
+
+31
+00:01:30.690 --> 00:01:34.194
+such as the document structure or tables or forms,
+
+32
+00:01:34.194 --> 00:01:36.262
+or even what is the reading
+
+33
+00:01:36.262 --> 00:01:38.698
+order of different elements of a document.
+
+34
+00:01:39.299 --> 00:01:41.901
+Landing AI's ADE takes a different approach.
+
+35
+00:01:42.102 --> 00:01:45.505
+It treats each page of a document as an image
+
+36
+00:01:45.805 --> 00:01:47.807
+and breaks that image down into parts
+
+37
+00:01:48.108 --> 00:01:52.112
+and then extracts from each part separately using an agentic workflow.
+
+38
+00:01:52.312 --> 00:01:55.315
+ADE treats documents as visual objects in which
+
+39
+00:01:55.915 --> 00:01:59.519
+meaning is encoded in layout structure and spatial relationships.
+
+40
+00:02:00.019 --> 00:02:03.123
+It uses custom visual models that directly interpret
+
+41
+00:02:03.423 --> 00:02:07.527
+complex tables, graphs, images, charts, and other elements.
+
+42
+00:02:07.827 --> 00:02:10.029
+and grounds every extracted piece of text
+
+43
+00:02:10.130 --> 00:02:12.132
+to a precise location on the page.
+
+44
+00:02:12.532 --> 00:02:15.435
+On top of this, ADE uses an agentic orchestration layer
+
+45
+00:02:15.435 --> 00:02:17.737
+that decomposes complex documents
+
+46
+00:02:17.737 --> 00:02:20.540
+into smaller sections for careful examination
+
+47
+00:02:20.540 --> 00:02:23.343
+in several steps.
+
+48
+00:02:23.877 --> 00:02:27.080
+Humans don't process a document with a single glance.
+
+49
+00:02:27.480 --> 00:02:30.483
+Instead, we examine the different parts of the document
+
+50
+00:02:30.683 --> 00:02:34.787
+to pull out information piece by piece in multiple iterations.
+
+51
+00:02:35.088 --> 00:02:39.492
+ADE works the same way. For example, given a complex document, ADE
+
+52
+00:02:39.726 --> 00:02:43.730
+it might extract a table and then further extract the table structure,
+
+53
+00:02:44.030 --> 00:02:47.634
+identifying rows, columns, merged cells, and so on.
+
+54
+00:02:47.834 --> 00:02:51.538
+In this course, you'll explore traditional OCR-based processing pipelines
+
+55
+00:02:51.738 --> 00:02:55.341
+to see what they can do and also their limitations.
+
+56
+00:02:55.608 --> 00:02:59.112
+You'll also build your own agentic document workflow from scratch.
+
+57
+00:02:59.612 --> 00:03:03.416
+Then you'll learn how to use ADE to process complex documents
+
+58
+00:03:03.616 --> 00:03:06.619
+and build a pipeline to parse mixed documents
+
+59
+00:03:06.619 --> 00:03:08.821
+and extract required key-value pairs.
+
+60
+00:03:09.355 --> 00:03:13.159
+You'll also learn to integrate ADE extracted information
+
+61
+00:03:13.159 --> 00:03:15.161
+into RAG applications.
+
+62
+00:03:15.161 --> 00:03:17.864
+And then implement a cloud-based version on AWS
+
+63
+00:03:17.864 --> 00:03:20.166
+using an event-driven architecture
+
+64
+00:03:20.366 --> 00:03:23.870
+that automatically triggers ADE for document processing
+
+65
+00:03:23.870 --> 00:03:25.872
+whenever new documents appear.
+
+66
+00:03:26.239 --> 00:03:28.741
+Many people have worked to create this course.
+
+67
+00:03:29.042 --> 00:03:31.044
+I'd like to thank from LandingAI,
+
+68
+00:03:31.144 --> 00:03:33.446
+Ava Xia, and from DeepLearning.AI,
+
+69
+00:03:33.546 --> 00:03:36.249
+Hawraa Salami and Christopher Policastro.
+
+70
+00:03:36.549 --> 00:03:40.453
+In the first lesson, you start by looking at traditional OCR models.
+
+71
+00:03:40.954 --> 00:03:43.022
+Let's go to the next video and dive in.

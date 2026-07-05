@@ -1,0 +1,1250 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.900 --> 00:00:05.472
+Welcome to Lab 4, Document Understanding with Agentic Document Extraction.
+
+2
+00:00:06.172 --> 00:00:08.174
+In this lab, you're going to be using
+
+3
+00:00:08.274 --> 00:00:11.378
+the API-based version of Agentic Document Extraction
+
+4
+00:00:11.478 --> 00:00:14.180
+from LandingAI. So, let's get started.
+
+5
+00:00:14.514 --> 00:00:16.416
+All right, at the top of our
+
+6
+00:00:16.416 --> 00:00:18.318
+notebook, a couple cells to do setup.
+
+7
+00:00:18.518 --> 00:00:21.021
+Most of these should be familiar data science libraries
+
+8
+00:00:21.021 --> 00:00:23.323
+or things that we used in previous lessons.
+
+9
+00:00:23.723 --> 00:00:27.327
+New in this lesson are the imports here from LandingAI.
+
+10
+00:00:27.727 --> 00:00:31.331
+So we're going to be importing landingai_ade
+
+11
+00:00:31.331 --> 00:00:33.333
+and then importing specific
+
+12
+00:00:33.433 --> 00:00:36.236
+types that we'll use for parsing and extracting.
+
+13
+00:00:36.636 --> 00:00:39.105
+Next, you'll load the API key from the environment.
+
+14
+00:00:39.406 --> 00:00:41.908
+Note that if you'd like to create your own API key
+
+15
+00:00:41.908 --> 00:00:43.910
+to work with Agentic Document Extraction
+
+16
+00:00:43.910 --> 00:00:48.214
+outside of this lesson, there will be instructions provided in the notebook.
+
+17
+00:00:48.515 --> 00:00:51.918
+Let's initialize the client and now our setup is ready.
+
+18
+00:00:52.318 --> 00:00:55.121
+So in a continuation of the setup,
+
+19
+00:00:55.121 --> 00:00:58.124
+we're going to import a variety of helper functions.
+
+20
+00:00:58.525 --> 00:01:01.528
+You have the ability to inspect the contents of all of these.
+
+21
+00:01:01.928 --> 00:01:03.930
+It's going to keep the notebook a bit cleaner.
+
+22
+00:01:04.130 --> 00:01:06.132
+Most of these are really for the
+
+23
+00:01:06.132 --> 00:01:08.435
+purposes of drawing and displaying things on screen.
+
+24
+00:01:08.802 --> 00:01:11.304
+In this lesson there are three exercises
+
+25
+00:01:11.604 --> 00:01:14.607
+and each of them are broken into component parts.
+
+26
+00:01:15.008 --> 00:01:17.811
+So the first exercise will be extracting verifiable
+
+27
+00:01:18.311 --> 00:01:21.014
+key-value pairs from a utility bill,
+
+28
+00:01:21.314 --> 00:01:24.617
+and of course the first step is to just preview the document.
+
+29
+00:01:25.018 --> 00:01:28.121
+Here we use one of the helper functions to view the document.
+
+30
+00:01:28.555 --> 00:01:31.057
+This is a combined gas and electric bill
+
+31
+00:01:31.057 --> 00:01:33.359
+from a utility in San Diego.
+
+32
+00:01:33.460 --> 00:01:36.763
+Few things to notice, it's for a particular monthly period.
+
+33
+00:01:37.263 --> 00:01:40.767
+It does have both the gas and the electric charges separate,
+
+34
+00:01:41.067 --> 00:01:44.571
+and it also has a usage history for both of those services.
+
+35
+00:01:45.105 --> 00:01:47.907
+All right, in this section we'll be parsing the document.
+
+36
+00:01:48.608 --> 00:01:51.111
+We'll be using the document pre-trained transformer
+
+37
+00:01:51.111 --> 00:01:53.613
+that we introduced in the slide section.
+
+38
+00:01:54.314 --> 00:01:56.616
+Since we've already imported ParseResponse,
+
+39
+00:01:57.117 --> 00:02:00.620
+actually calling the API is just a matter of saying parse,
+
+40
+00:02:00.920 --> 00:02:04.624
+specifying the document path and the model type.
+
+41
+00:02:04.724 --> 00:02:07.227
+We'll be using dpt-2-latest.
+
+42
+00:02:07.827 --> 00:02:11.531
+We release updates to dpt-2 roughly once per month.
+
+43
+00:02:11.731 --> 00:02:14.134
+So your results may vary from mine.
+
+44
+00:02:14.734 --> 00:02:17.737
+After we send the utility bill to the Parse API,
+
+45
+00:02:17.837 --> 00:02:20.540
+we'll print a few details from the response.
+
+46
+00:02:21.141 --> 00:02:22.842
+All right, our parsing is complete.
+
+47
+00:02:22.942 --> 00:02:25.945
+We have a job ID we can refer back to.
+
+48
+00:02:26.246 --> 00:02:28.248
+It was indeed just one page,
+
+49
+00:02:28.348 --> 00:02:32.018
+resulted in about 6,000 characters and 24 chunks.
+
+50
+00:02:32.051 --> 00:02:35.555
+So now we can continue to work with that parse result
+
+51
+00:02:35.855 --> 00:02:38.958
+and inspect it. As you explore the output from parse,
+
+52
+00:02:39.058 --> 00:02:40.793
+you'll see that it's very easy
+
+53
+00:02:40.793 --> 00:02:42.829
+to overlay the results on the original,
+
+54
+00:02:43.029 --> 00:02:45.632
+print some of the chunks and chunk summaries,
+
+55
+00:02:45.832 --> 00:02:47.534
+and also print some of the markdown.
+
+56
+00:02:47.534 --> 00:02:49.235
+Let's go ahead and do that now.
+
+57
+00:02:49.669 --> 00:02:53.039
+All right, here is the annotated version of the document.
+
+58
+00:02:53.373 --> 00:02:55.441
+And you'll notice bounding boxes of
+
+59
+00:02:55.441 --> 00:02:57.844
+different colors for the different chunk types.
+
+60
+00:02:58.344 --> 00:03:00.446
+So logo here in light green,
+
+61
+00:03:00.747 --> 00:03:02.649
+text in the medium green,
+
+62
+00:03:03.049 --> 00:03:05.351
+and notice also that each chunk has
+
+63
+00:03:05.351 --> 00:03:08.154
+a unique identifier in addition to the type.
+
+64
+00:03:08.354 --> 00:03:11.858
+Here we see a table chunk and notably inside the table chunk,
+
+65
+00:03:11.858 --> 00:03:16.162
+there are individual table cells that have their own unique identifiers.
+
+66
+00:03:16.863 --> 00:03:20.867
+In purple, a margin chunk and of course two figure chunks.
+
+67
+00:03:21.968 --> 00:03:25.471
+In the JSON response, chunks is one of the top-level elements.
+
+68
+00:03:25.672 --> 00:03:27.273
+And here we're printing the first
+
+69
+00:03:27.273 --> 00:03:29.175
+five, so we can see the structure.
+
+70
+00:03:30.176 --> 00:03:32.979
+Recall from the original that in the top left corner
+
+71
+00:03:33.179 --> 00:03:36.349
+there is a logo, and that happens to be chunk zero.
+
+72
+00:03:36.950 --> 00:03:39.552
+So here we're looking at the identifier, the type,
+
+73
+00:03:39.752 --> 00:03:43.556
+the page and the coordinates corresponding all to chunk zero.
+
+74
+00:03:43.856 --> 00:03:46.759
+The JSON output is well structured,
+
+75
+00:03:46.759 --> 00:03:48.861
+allowing you to do simple aggregations such as this one
+
+76
+00:03:48.861 --> 00:03:51.664
+where you may count the chunks of each type.
+
+77
+00:03:52.065 --> 00:03:54.968
+Another top-level element is the markdown.
+
+78
+00:03:55.268 --> 00:03:59.072
+And here we're displaying the first 500 characters of the markdown.
+
+79
+00:03:59.472 --> 00:04:03.176
+Conveniently, the identifier is included along with the markdown content
+
+80
+00:04:03.176 --> 00:04:05.378
+for each one of these chunks.
+
+81
+00:04:05.778 --> 00:04:09.482
+In this cell, we're not looking at the top-level markdown element,
+
+82
+00:04:09.482 --> 00:04:13.553
+we're actually looking at chunks again and chunk number nine.
+
+83
+00:04:14.087 --> 00:04:16.189
+So what's important to learn here
+
+84
+00:04:16.189 --> 00:04:18.191
+is that within the chunks element,
+
+85
+00:04:18.191 --> 00:04:21.894
+each of the individual markdowns are available separately.
+
+86
+00:04:22.295 --> 00:04:24.097
+This one happens to be a table,
+
+87
+00:04:24.097 --> 00:04:26.499
+which renders nicely as HTML.
+
+88
+00:04:27.100 --> 00:04:29.202
+Recall when we looked at the overlays
+
+89
+00:04:29.202 --> 00:04:31.604
+that I drew your attention to the fact
+
+90
+00:04:31.604 --> 00:04:34.307
+that each table cell has its own identifier.
+
+91
+00:04:34.807 --> 00:04:37.310
+Here's the raw markdown for that same chunk.
+
+92
+00:04:37.777 --> 00:04:40.980
+And here you can really see each of those table identifiers.
+
+93
+00:04:41.581 --> 00:04:44.284
+This is going to be helpful later for visual grounding
+
+94
+00:04:44.584 --> 00:04:47.587
+because we can refer back to a specific table cell
+
+95
+00:04:47.587 --> 00:04:50.790
+by its identifier once we extract a value.
+
+96
+00:04:51.291 --> 00:04:55.395
+Having completed parsing, it's time to extract those key-value pairs.
+
+97
+00:04:55.762 --> 00:04:57.864
+If you remember from the slides,
+
+98
+00:04:57.864 --> 00:05:00.667
+the extraction step combines the markdown
+
+99
+00:05:00.667 --> 00:05:03.236
+from the parse step together with a schema.
+
+100
+00:05:03.536 --> 00:05:05.738
+So we'll need to define a schema
+
+101
+00:05:05.738 --> 00:05:07.740
+that corresponds to the utility bill.
+
+102
+00:05:08.241 --> 00:05:10.243
+This schema has 10 properties
+
+103
+00:05:10.543 --> 00:05:12.445
+and is defined using JSON.
+
+104
+00:05:12.845 --> 00:05:16.416
+The important things to note are that you can have nested schemas.
+
+105
+00:05:16.916 --> 00:05:21.321
+Here under account_summary, we have nested underneath the current_charges
+
+106
+00:05:21.321 --> 00:05:24.023
+and the total_amount_due.
+
+107
+00:05:24.324 --> 00:05:27.827
+Under gas_summary, notice that we can also have booleans
+
+108
+00:05:27.827 --> 00:05:30.296
+and strings and numerous
+
+109
+00:05:30.296 --> 00:05:33.232
+other types. And notice that each field has
+
+110
+00:05:33.499 --> 00:05:36.969
+a fairly robust description. The more descriptive you are,
+
+111
+00:05:37.070 --> 00:05:39.305
+the more likely you are to get what you want
+
+112
+00:05:39.539 --> 00:05:41.274
+when you go to extract these fields.
+
+113
+00:05:41.874 --> 00:05:44.010
+The last line here converts the dictionary
+
+114
+00:05:44.177 --> 00:05:47.380
+into a JSON-formatted string to use with the API.
+
+115
+00:05:47.747 --> 00:05:50.550
+Now you're ready to call the extract API
+
+116
+00:05:50.550 --> 00:05:52.352
+using ExtractResponse.
+
+117
+00:05:52.852 --> 00:05:54.954
+The JSON schema has been defined
+
+118
+00:05:55.555 --> 00:05:58.558
+and the parse_result is still available in memory.
+
+119
+00:05:58.958 --> 00:06:02.462
+Again, we'll be using the latest version of the extraction model,
+
+120
+00:06:02.462 --> 00:06:04.764
+so your results might differ slightly.
+
+121
+00:06:05.365 --> 00:06:08.468
+With the extraction complete, it's time to explore the result.
+
+122
+00:06:08.868 --> 00:06:10.970
+I'm expecting 10 total values
+
+123
+00:06:10.970 --> 00:06:14.474
+with a mixture of numerics, booleans, and strings.
+
+124
+00:06:15.174 --> 00:06:17.443
+And this appears to be exactly what I wanted.
+
+125
+00:06:17.744 --> 00:06:20.146
+At the top level account_summary,
+
+126
+00:06:20.146 --> 00:06:23.449
+current_charges are $155.15.
+
+127
+00:06:23.950 --> 00:06:26.052
+which also equals the amount due.
+
+128
+00:06:26.452 --> 00:06:30.456
+The booleans are telling us that a usage chart is available
+
+129
+00:06:30.556 --> 00:06:32.959
+and the max month is actually
+
+130
+00:06:32.959 --> 00:06:35.762
+interpreting a value from the usage chart,
+
+131
+00:06:35.762 --> 00:06:37.797
+saying that in the last 12
+
+132
+00:06:37.797 --> 00:06:40.166
+months, January was the highest gas consumption
+
+133
+00:06:40.266 --> 00:06:43.069
+and August was the highest electric consumption.
+
+134
+00:06:43.569 --> 00:06:46.072
+You can go back to the original and verify that
+
+135
+00:06:46.072 --> 00:06:48.374
+based on the peaks in the bar chart.
+
+136
+00:06:49.075 --> 00:06:52.478
+Then, in the extraction metadata, we see the references
+
+137
+00:06:52.478 --> 00:06:54.781
+for where that information was obtained.
+
+138
+00:06:55.114 --> 00:06:57.917
+This 0-a is one of the table cells
+
+139
+00:06:57.917 --> 00:06:59.619
+from chunk 9
+
+140
+00:06:59.619 --> 00:07:02.321
+and as is 0-d.
+
+141
+00:07:02.321 --> 00:07:05.124
+So these values are coming from a table.
+
+142
+00:07:05.491 --> 00:07:08.795
+Typically when you see a longer chunk reference like this,
+
+143
+00:07:08.995 --> 00:07:11.097
+it's coming from a figure, a text
+
+144
+00:07:11.097 --> 00:07:13.199
+block, or something that's not a table.
+
+145
+00:07:13.499 --> 00:07:16.202
+These two responses combined with the parse result
+
+146
+00:07:16.302 --> 00:07:18.504
+give me all the information I would need
+
+147
+00:07:18.704 --> 00:07:20.706
+to actually build a user interface
+
+148
+00:07:21.007 --> 00:07:24.310
+to display back to the user the fields that they wanted
+
+149
+00:07:24.410 --> 00:07:27.513
+and exactly the portion of the document that that came from.
+
+150
+00:07:28.047 --> 00:07:30.116
+So to wrap up exercise one,
+
+151
+00:07:30.183 --> 00:07:33.820
+you've used two APIs, parse and extract.
+
+152
+00:07:34.220 --> 00:07:36.923
+It's really parse that is analogous
+
+153
+00:07:36.989 --> 00:07:39.826
+to what we did in lessons one, two, and three.
+
+154
+00:07:40.393 --> 00:07:44.997
+But here the Agentic Document Extraction API has abstracted away
+
+155
+00:07:45.097 --> 00:07:47.700
+all of the model training, configuration,
+
+156
+00:07:47.800 --> 00:07:50.670
+and custom coding that was previously required.
+
+157
+00:07:51.070 --> 00:07:53.806
+and a single API call is all
+
+158
+00:07:53.806 --> 00:07:56.542
+that's required to understand the entire document.
+
+159
+00:07:57.043 --> 00:07:59.045
+And the output is better.
+
+160
+00:07:59.545 --> 00:08:02.248
+The quality difference will become more apparent
+
+161
+00:08:02.248 --> 00:08:05.551
+as you test more difficult documents in exercise two.
+
+162
+00:08:06.552 --> 00:08:08.955
+We're in section four, exercise two,
+
+163
+00:08:08.955 --> 00:08:12.558
+and we'll look at the agentic document extraction performance
+
+164
+00:08:12.558 --> 00:08:15.661
+on some more difficult documents. We've selected
+
+165
+00:08:15.695 --> 00:08:18.898
+six for you that are difficult in various ways.
+
+166
+00:08:19.198 --> 00:08:22.101
+But the same API using the same underlying
+
+167
+00:08:22.201 --> 00:08:25.805
+Document Pretrained Transformer can understand all of them.
+
+168
+00:08:26.305 --> 00:08:28.508
+I'll be moving through this section fairly quickly,
+
+169
+00:08:28.608 --> 00:08:31.611
+but feel free to take your time and explore these examples.
+
+170
+00:08:32.178 --> 00:08:34.180
+There's one long function here
+
+171
+00:08:34.180 --> 00:08:37.950
+which is going to call the parse API for each document
+
+172
+00:08:37.950 --> 00:08:40.152
+and print a variety of outputs.
+
+173
+00:08:40.453 --> 00:08:43.956
+That's going to allow us to quickly run all six of them
+
+174
+00:08:43.956 --> 00:08:45.558
+using this function repeatedly.
+
+175
+00:08:45.658 --> 00:08:49.262
+This section is really about looking at a wide variety of examples.
+
+176
+00:08:49.462 --> 00:08:51.764
+Feel free to substitute some of your own.
+
+177
+00:08:51.964 --> 00:08:54.166
+For each one, after I execute the cell,
+
+178
+00:08:54.467 --> 00:08:57.670
+I'll just draw your attention to one or two key differentiators.
+
+179
+00:08:58.271 --> 00:09:00.640
+Let's start with some charts and flowcharts.
+
+180
+00:09:01.040 --> 00:09:03.042
+This is what the original looks like.
+
+181
+00:09:03.276 --> 00:09:06.245
+It's an interior page of an investor presentation.
+
+182
+00:09:07.046 --> 00:09:09.649
+And ADE has found nine total chunks
+
+183
+00:09:09.849 --> 00:09:12.351
+and has correctly detected all of the figures.
+
+184
+00:09:13.419 --> 00:09:15.888
+Let's select this figure down in the lower right
+
+185
+00:09:15.888 --> 00:09:18.891
+and see if it's understanding this horizontal line
+
+186
+00:09:18.891 --> 00:09:21.794
+as the average at 4.3x
+
+187
+00:09:22.094 --> 00:09:24.897
+And indeed, there it is. Within the bar chart type
+
+188
+00:09:24.897 --> 00:09:27.700
+Average Revenue Multiple of 4.3x
+
+189
+00:09:28.234 --> 00:09:30.636
+Let's take a look at this flowchart original.
+
+190
+00:09:31.537 --> 00:09:35.141
+Here's an example of a document that a human understands intuitively,
+
+191
+00:09:35.141 --> 00:09:39.145
+but has a lot of spatial and relationship-based information
+
+192
+00:09:39.145 --> 00:09:42.548
+with the arrows and pointing at all sorts of different directions.
+
+193
+00:09:43.049 --> 00:09:46.118
+ADE detects all of this as one large figure,
+
+194
+00:09:46.519 --> 00:09:49.422
+which is correct. It is one large visual unit.
+
+195
+00:09:49.956 --> 00:09:53.459
+And let's see if we can find where Good reference
+
+196
+00:09:53.859 --> 00:09:56.562
+follows the yes to Select candidate.
+
+197
+00:09:57.163 --> 00:10:00.166
+This would be very difficult in traditional OCR
+
+198
+00:10:00.166 --> 00:10:04.470
+because Select candidate is actually higher on the page than Good reference.
+
+199
+00:10:05.037 --> 00:10:07.640
+And here it is. Good reference?
+
+200
+00:10:07.940 --> 00:10:10.643
+If yes, it proceeds to select candidate.
+
+201
+00:10:11.043 --> 00:10:13.346
+Well done. Let's look at some tables.
+
+202
+00:10:13.646 --> 00:10:16.048
+The world is full of tables, but in
+
+203
+00:10:16.048 --> 00:10:18.451
+many cases, some of the lines are missing.
+
+204
+00:10:18.451 --> 00:10:22.655
+This table has no column dividers and no row dividers,
+
+205
+00:10:22.955 --> 00:10:25.458
+and because of the large amount of blank space,
+
+206
+00:10:25.458 --> 00:10:27.927
+it's very difficult as an OCR problem.
+
+207
+00:10:28.260 --> 00:10:30.196
+In the response, you can see that
+
+208
+00:10:30.196 --> 00:10:32.431
+the entire section was detected as a table.
+
+209
+00:10:32.932 --> 00:10:34.467
+And you can see that all
+
+210
+00:10:34.467 --> 00:10:36.235
+of the blank cells have been understood
+
+211
+00:10:36.235 --> 00:10:39.238
+because of the regular array of cells that we see here.
+
+212
+00:10:39.639 --> 00:10:42.942
+Printing the markdown as HTML to the notebook
+
+213
+00:10:43.242 --> 00:10:44.944
+shows all of those blanks.
+
+214
+00:10:44.944 --> 00:10:47.046
+What about something like this?
+
+215
+00:10:47.046 --> 00:10:48.948
+You could even call this a mega table.
+
+216
+00:10:49.248 --> 00:10:51.951
+There are over a thousand individual cells here.
+
+217
+00:10:52.351 --> 00:10:54.954
+In addition to the total quantity of cells,
+
+218
+00:10:55.154 --> 00:10:57.857
+notice also that the rows have merged cells
+
+219
+00:10:58.057 --> 00:11:00.059
+and the columns have merged cells.
+
+220
+00:11:00.426 --> 00:11:02.328
+All right, we're certainly not going to
+
+221
+00:11:02.328 --> 00:11:04.230
+go through and verify every cell here,
+
+222
+00:11:04.630 --> 00:11:08.634
+but if you've ever tried to extract a mega table like this
+
+223
+00:11:08.934 --> 00:11:13.239
+with an LLM, you'll know that it's very susceptible to hallucinations.
+
+224
+00:11:13.506 --> 00:11:18.310
+The LLM simply cannot hold this many numbers in its context window.
+
+225
+00:11:18.711 --> 00:11:21.013
+And this is really where the agentic approach
+
+226
+00:11:21.013 --> 00:11:23.015
+becomes crucially important.
+
+227
+00:11:23.716 --> 00:11:26.318
+And of course, if you needed your mega table
+
+228
+00:11:26.318 --> 00:11:29.021
+actually rendered in Excel or HTML,
+
+229
+00:11:29.321 --> 00:11:31.724
+we could now quickly save this as CSV.
+
+230
+00:11:32.158 --> 00:11:36.462
+Continuing with the theme of handwriting, but taking it to another level.
+
+231
+00:11:37.063 --> 00:11:38.964
+Here's a document with handwriting.
+
+232
+00:11:39.365 --> 00:11:40.966
+It also has a checkbox.
+
+233
+00:11:40.966 --> 00:11:43.269
+It also has six or seven
+
+234
+00:11:43.269 --> 00:11:45.971
+instances of the word no being circled,
+
+235
+00:11:46.372 --> 00:11:48.974
+and it has four pre-existing conditions.
+
+236
+00:11:49.275 --> 00:11:53.245
+Asthma, circulation, eye infection, and urinary tract infection.
+
+237
+00:11:53.646 --> 00:11:55.948
+Let's take a look at how this gets parsed.
+
+238
+00:11:56.482 --> 00:11:59.285
+For this example, it's not the chunk identification
+
+239
+00:11:59.485 --> 00:12:01.487
+that is the impressive part.
+
+240
+00:12:01.987 --> 00:12:04.156
+It's the markdown itself and how
+
+241
+00:12:04.156 --> 00:12:06.692
+it detects the checkboxes and the circles.
+
+242
+00:12:07.293 --> 00:12:09.295
+So let's scroll down to that area.
+
+243
+00:12:09.662 --> 00:12:12.965
+Here's the one yes no checkbox. Do you have a Pacemaker?
+
+244
+00:12:14.200 --> 00:12:18.471
+Here we see the seven instances of No having been circled.
+
+245
+00:12:19.472 --> 00:12:22.475
+And here we see the section where the patient is instructed
+
+246
+00:12:22.475 --> 00:12:24.677
+to circle the pre-existing conditions.
+
+247
+00:12:25.177 --> 00:12:28.481
+And we do see Asthma, circulation, Eye Infection,
+
+248
+00:12:28.481 --> 00:12:30.683
+and Urinary Infection as marked.
+
+249
+00:12:31.217 --> 00:12:35.087
+This is the type of output that combined with an LLM
+
+250
+00:12:35.087 --> 00:12:37.623
+can now accurately extract medical information
+
+251
+00:12:37.623 --> 00:12:39.525
+in a very reliable way.
+
+252
+00:12:40.092 --> 00:12:42.194
+Let's push the boundaries on handwriting
+
+253
+00:12:42.194 --> 00:12:43.996
+with some integral calculus.
+
+254
+00:12:44.697 --> 00:12:47.800
+Let me draw your attention to this portion of the handwritten response.
+
+255
+00:12:48.701 --> 00:12:51.704
+This is the square root of root 2 over 2.
+
+256
+00:12:52.404 --> 00:12:54.707
+has a lot of visual information encoded here.
+
+257
+00:12:55.007 --> 00:12:57.009
+So let's look for this in the response.
+
+258
+00:12:57.543 --> 00:12:59.745
+All right, the bounding boxes look good.
+
+259
+00:13:00.546 --> 00:13:03.349
+Each of the individual questions has its own box.
+
+260
+00:13:04.150 --> 00:13:05.618
+You can already see in the
+
+261
+00:13:05.618 --> 00:13:07.353
+markdown that we're able to display functions
+
+262
+00:13:07.353 --> 00:13:11.357
+and square root symbols. And skipping down to the very end,
+
+263
+00:13:11.557 --> 00:13:15.361
+indeed we have the square root of root two over two.
+
+264
+00:13:15.861 --> 00:13:19.498
+Well done. This next example has no writing whatsoever.
+
+265
+00:13:19.498 --> 00:13:24.003
+It's the classic second page inside most IKEA instruction manuals.
+
+266
+00:13:24.503 --> 00:13:28.908
+So far we've been sending all of our documents to dpt-2-latest.
+
+267
+00:13:29.208 --> 00:13:32.211
+I'm going to send this one to dpt-1-latest.
+
+268
+00:13:32.545 --> 00:13:36.315
+This document is exclusively illustrations and figures.
+
+269
+00:13:36.682 --> 00:13:39.852
+So indeed we have three chunks that are all figures.
+
+270
+00:13:40.352 --> 00:13:42.121
+Let's focus on this middle figure
+
+271
+00:13:42.121 --> 00:13:44.156
+and take a look at the markdown.
+
+272
+00:13:44.857 --> 00:13:48.160
+All right, the final analysis here is that the figure instructs users
+
+273
+00:13:48.360 --> 00:13:51.130
+to avoid assembling or placing the object
+
+274
+00:13:51.130 --> 00:13:53.866
+directly on hard surfaces to prevent damage.
+
+275
+00:13:54.166 --> 00:13:58.370
+Recommends using a protective mat or rug underneath during assembly.
+
+276
+00:13:58.871 --> 00:14:02.575
+That is basically a picture-perfect description of that picture.
+
+277
+00:14:03.108 --> 00:14:05.711
+You can also see that the response for each figure
+
+278
+00:14:05.711 --> 00:14:09.215
+is quite a bit longer than from dpt-2.
+
+279
+00:14:09.415 --> 00:14:13.986
+For those of you analyzing things like marketing materials or magazines,
+
+280
+00:14:13.986 --> 00:14:16.388
+You're going to encounter documents such as this,
+
+281
+00:14:16.488 --> 00:14:18.791
+which are fundamentally infographics.
+
+282
+00:14:19.692 --> 00:14:22.695
+This is really putting the layout detection through its paces,
+
+283
+00:14:22.795 --> 00:14:26.699
+but the figure and text and logo and table chunks here
+
+284
+00:14:26.799 --> 00:14:28.801
+actually look pretty solid.
+
+285
+00:14:29.168 --> 00:14:31.971
+The only chunk type that we haven't seen so far
+
+286
+00:14:31.971 --> 00:14:34.273
+is the attestation type,
+
+287
+00:14:34.273 --> 00:14:37.176
+which is used for stamps and signatures.
+
+288
+00:14:37.977 --> 00:14:40.779
+This document, which is a certificate of origin,
+
+289
+00:14:40.779 --> 00:14:43.682
+actually has stamps and signatures,
+
+290
+00:14:43.682 --> 00:14:45.985
+so let's take a look at how it's parsed.
+
+291
+00:14:46.485 --> 00:14:50.389
+So here the turquoise is an attestation chunk type.
+
+292
+00:14:50.689 --> 00:14:52.791
+And these are really difficult examples.
+
+293
+00:14:53.292 --> 00:14:56.595
+Here we have curved text inside of the stamp
+
+294
+00:14:57.196 --> 00:14:59.365
+with other text in the background and
+
+295
+00:14:59.365 --> 00:15:01.500
+a separate signature off to the side.
+
+296
+00:15:01.901 --> 00:15:04.703
+Let's take a look at the parse result for this chunk.
+
+297
+00:15:05.704 --> 00:15:08.407
+So the content begins here with this attestation.
+
+298
+00:15:08.707 --> 00:15:12.711
+So we're told that it's an official company stamp and signature.
+
+299
+00:15:12.912 --> 00:15:15.314
+The signature itself is legible
+
+300
+00:15:15.314 --> 00:15:17.716
+and is provided back to us in the markdown.
+
+301
+00:15:18.417 --> 00:15:20.552
+As is the text from the
+
+302
+00:15:20.552 --> 00:15:23.022
+stamp itself. There were two of these
+
+303
+00:15:23.022 --> 00:15:26.625
+and you can see that the counterparty's signature is also legible
+
+304
+00:15:26.625 --> 00:15:28.427
+as is the second stamp.
+
+305
+00:15:28.928 --> 00:15:30.829
+That wraps up exercise two.
+
+306
+00:15:31.230 --> 00:15:35.034
+In this section, you saw how the agentic approach to document extraction
+
+307
+00:15:35.034 --> 00:15:39.738
+is able to handle complexity within a document and across documents
+
+308
+00:15:39.738 --> 00:15:43.442
+without any additional actions or inputs from the users.
+
+309
+00:15:43.943 --> 00:15:46.245
+This means that agentic document extraction
+
+310
+00:15:46.245 --> 00:15:49.415
+can be used reliably in document processing pipelines
+
+311
+00:15:49.415 --> 00:15:53.018
+that encounter such real-world complexity and variability.
+
+312
+00:15:54.019 --> 00:15:57.723
+We'll be back in a separate video to tackle exercise three.

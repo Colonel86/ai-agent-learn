@@ -1,0 +1,774 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.867 --> 00:00:03.003
+In this lab, you'll apply your experience
+
+2
+00:00:03.003 --> 00:00:06.473
+parsing and extracting information from documents for RAG.
+
+3
+00:00:06.506 --> 00:00:08.475
+By the end of the lab, you'll have implemented
+
+4
+00:00:08.508 --> 00:00:11.478
+a workflow for answering questions about a document.
+
+5
+00:00:11.945 --> 00:00:15.348
+We'll use some of the same libraries from the previous lessons,
+
+6
+00:00:15.348 --> 00:00:17.751
+including OpenAI, LangChain, and Pillow.
+
+7
+00:00:18.251 --> 00:00:20.253
+We'll use two models from OpenAI.
+
+8
+00:00:20.653 --> 00:00:23.056
+text-embedding-3-small for our embedding model
+
+9
+00:00:23.056 --> 00:00:25.625
+to convert parsed chunks into vectors.
+
+10
+00:00:25.925 --> 00:00:28.228
+and gpt-4o-mini for our language model
+
+11
+00:00:28.228 --> 00:00:30.430
+to provide answers to questions.
+
+12
+00:00:30.830 --> 00:00:33.533
+We'll use ChromaDB for vector database
+
+13
+00:00:33.733 --> 00:00:36.936
+and LangChain to connect retrieved chunks from the database
+
+14
+00:00:36.936 --> 00:00:38.938
+to our prompts for the language model.
+
+15
+00:00:39.105 --> 00:00:41.674
+We've also provided a utility to visualize
+
+16
+00:00:41.674 --> 00:00:44.611
+chunks that were used to generate the answer.
+
+17
+00:00:44.911 --> 00:00:46.312
+Let's take a look at the
+
+18
+00:00:46.312 --> 00:00:47.914
+document we're working on in this lab.
+
+19
+00:00:48.014 --> 00:00:50.116
+It's the Apple's 10K report,
+
+20
+00:00:50.116 --> 00:00:53.720
+a publicly available report that US companies must file
+
+21
+00:00:53.720 --> 00:00:56.623
+to regulatory agencies like SEC for audit.
+
+22
+00:00:56.723 --> 00:01:00.927
+It provides detailed information about their business throughout the fiscal year.
+
+23
+00:01:01.127 --> 00:01:05.298
+We've already run LandingAI ADE on the document for you.
+
+24
+00:01:05.732 --> 00:01:08.034
+can find ADE parse results,
+
+25
+00:01:08.034 --> 00:01:10.737
+.md and .json under ade_outputs
+
+26
+00:01:10.737 --> 00:01:13.239
+in the lessons folder.
+
+27
+00:01:13.540 --> 00:01:15.542
+Remember from the previous lesson
+
+28
+00:01:15.542 --> 00:01:17.744
+that parsing yields a markdown file
+
+29
+00:01:17.744 --> 00:01:19.946
+containing all the data from the document
+
+30
+00:01:19.946 --> 00:01:22.549
+along with a JSON file containing its metadata.
+
+31
+00:01:22.949 --> 00:01:24.951
+Let's load the markdown content
+
+32
+00:01:24.951 --> 00:01:26.519
+and display a preview for the
+
+33
+00:01:26.519 --> 00:01:29.322
+first page. As you've seen in the previous lab,
+
+34
+00:01:29.322 --> 00:01:31.925
+the markdown file contains snippets of HTML
+
+35
+00:01:32.025 --> 00:01:36.429
+called anchor tag, which indicate the unique identifier of each chunk.
+
+36
+00:01:36.629 --> 00:01:38.331
+We can use the ID to
+
+37
+00:01:38.331 --> 00:01:40.300
+link each chunk in the markdown file
+
+38
+00:01:40.300 --> 00:01:42.602
+to its metadata in the JSON file.
+
+39
+00:01:42.802 --> 00:01:44.671
+Now let's load the chunks and
+
+40
+00:01:44.671 --> 00:01:46.806
+examine the structure of the first chunk.
+
+41
+00:01:47.273 --> 00:01:49.476
+Each chunk has five key fields.
+
+42
+00:01:50.176 --> 00:01:52.879
+chunk_id, which is the unique identifier.
+
+43
+00:01:53.179 --> 00:01:55.582
+chunk_type, what kind of content this is,
+
+44
+00:01:55.882 --> 00:01:58.384
+text, table, figure, etc.
+
+45
+00:01:58.485 --> 00:02:00.687
+The text, which is the actual content
+
+46
+00:02:00.787 --> 00:02:02.889
+including the HTML anchor tags
+
+47
+00:02:02.989 --> 00:02:05.091
+with unique ID for that chunk.
+
+48
+00:02:05.258 --> 00:02:08.061
+bbox, bounding box coordinates for the chunk,
+
+49
+00:02:08.461 --> 00:02:11.064
+page, which page this chunk came from.
+
+50
+00:02:11.264 --> 00:02:13.066
+The bounding box is critical.
+
+51
+00:02:13.166 --> 00:02:15.135
+This is what makes LandingAI different.
+
+52
+00:02:15.235 --> 00:02:19.038
+Every chunk traces back to its exact location in the original document.
+
+53
+00:02:19.439 --> 00:02:21.241
+When we retrieve a chunk later,
+
+54
+00:02:21.341 --> 00:02:23.042
+we can show where it came from.
+
+55
+00:02:23.209 --> 00:02:25.311
+Let's set up our vector database.
+
+56
+00:02:25.612 --> 00:02:27.714
+As you can see here, we've already defined
+
+57
+00:02:27.714 --> 00:02:29.716
+where we want to store our data.
+
+58
+00:02:29.716 --> 00:02:32.719
+This path points to a folder called chroma_db
+
+59
+00:02:32.719 --> 00:02:34.721
+right here in our lessons directory.
+
+60
+00:02:35.021 --> 00:02:38.024
+And we're naming our collection ade_documents.
+
+61
+00:02:38.224 --> 00:02:41.227
+This is where we'll store all our document embeddings.
+
+62
+00:02:41.694 --> 00:02:44.697
+Next, we specify which embedding model to use.
+
+63
+00:02:44.697 --> 00:02:48.501
+Here, we're using OpenAI's text-embedding-3-small model
+
+64
+00:02:48.501 --> 00:02:50.803
+to convert text into embeddings.
+
+65
+00:02:51.204 --> 00:02:53.907
+Now, this line instantiates our ChromaDB client.
+
+66
+00:02:54.407 --> 00:02:56.709
+Notice we're using PersistentClient here,
+
+67
+00:02:56.709 --> 00:02:58.311
+which is important. This means our
+
+68
+00:02:58.311 --> 00:03:00.213
+data will be saved to our disk.
+
+69
+00:03:00.413 --> 00:03:02.715
+Finally, this line creates our collection.
+
+70
+00:03:03.216 --> 00:03:05.185
+We're using get_or_create_collection,
+
+71
+00:03:05.185 --> 00:03:06.786
+which is really convenient.
+
+72
+00:03:07.086 --> 00:03:09.589
+If this collection already exists, it will load it.
+
+73
+00:03:09.589 --> 00:03:11.591
+if not, it creates a new one.
+
+74
+00:03:11.591 --> 00:03:13.760
+And that's the setup. We're now ready
+
+75
+00:03:13.760 --> 00:03:15.895
+to start populating the database with chunks.
+
+76
+00:03:15.895 --> 00:03:19.098
+We've already loaded the chunks into the vector database for you.
+
+77
+00:03:19.098 --> 00:03:21.301
+So if you check for existing chunks,
+
+78
+00:03:21.301 --> 00:03:25.905
+you'll see that there are already 453 existing in the collection.
+
+79
+00:03:25.905 --> 00:03:27.774
+But let's say this is your first
+
+80
+00:03:27.774 --> 00:03:29.909
+time loading ADE chunks into the vector database.
+
+81
+00:03:29.909 --> 00:03:32.111
+Let's walk through the code to see how.
+
+82
+00:03:32.512 --> 00:03:34.914
+We first loop through all our loaded chunks.
+
+83
+00:03:35.215 --> 00:03:38.117
+For each chunk, we grab its unique chunk_id,
+
+84
+00:03:38.418 --> 00:03:41.120
+then check if it already exists in our collection.
+
+85
+00:03:41.521 --> 00:03:45.291
+Next, we extract the text and skip any empty chunks,
+
+86
+00:03:45.491 --> 00:03:48.895
+and then generate embeddings using OpenAI's API.
+
+87
+00:03:49.295 --> 00:03:50.897
+Now to prepare the metadata,
+
+88
+00:03:50.997 --> 00:03:54.400
+we extract the chunk type, page number, and the bounding boxes.
+
+89
+00:03:54.801 --> 00:03:57.303
+Once we add everything to our Chroma collection,
+
+90
+00:03:57.604 --> 00:03:59.706
+you have the text, the chunk_id,
+
+91
+00:04:00.106 --> 00:04:02.108
+metadata, and the embedding
+
+92
+00:04:02.208 --> 00:04:04.310
+we just generated in the collection.
+
+93
+00:04:04.711 --> 00:04:06.212
+As you can see, since the
+
+94
+00:04:06.212 --> 00:04:08.014
+chunks were already pre-loaded, we added zero
+
+95
+00:04:08.481 --> 00:04:10.483
+new chunks to the collection.
+
+96
+00:04:10.483 --> 00:04:13.486
+Now that we have data and metadata in our database,
+
+97
+00:04:13.486 --> 00:04:16.289
+we can query the vectors to retrieve relevant chunks.
+
+98
+00:04:16.289 --> 00:04:19.492
+We'll write a function called rag_query to help us with this.
+
+99
+00:04:19.492 --> 00:04:21.995
+The function takes four parameters.
+
+100
+00:04:21.995 --> 00:04:25.698
+The question, the user's input question in natural language,
+
+101
+00:04:25.698 --> 00:04:28.968
+top_k, how many results to return from the vector search,
+
+102
+00:04:28.968 --> 00:04:31.271
+default is equal to three.
+
+103
+00:04:31.271 --> 00:04:35.275
+The threshold, minimum similarity score to include in the results.
+
+104
+00:04:35.642 --> 00:04:39.045
+default is 0.25 and show_images,
+
+105
+00:04:39.545 --> 00:04:42.649
+whether to show visual grounding from the original PDF.
+
+106
+00:04:43.049 --> 00:04:46.419
+default equals True. Let's break down what the function does.
+
+107
+00:04:46.519 --> 00:04:48.121
+First, we embed the question,
+
+108
+00:04:48.421 --> 00:04:50.923
+which converts your question to a vector
+
+109
+00:04:50.923 --> 00:04:53.326
+the same embedding model we use for the chunks.
+
+110
+00:04:53.426 --> 00:04:55.995
+Second, we query ChromaDB to find the
+
+111
+00:04:55.995 --> 00:04:58.531
+top K nearest vectors to your question.
+
+112
+00:04:58.631 --> 00:05:02.635
+Third, parse results to extract documents, metadatas,
+
+113
+00:05:02.735 --> 00:05:05.738
+distances, and IDs from the response.
+
+114
+00:05:06.239 --> 00:05:08.741
+Fourth, we filter by the threshold.
+
+115
+00:05:09.142 --> 00:05:12.712
+So we only show results above the minimum similarity score.
+
+116
+00:05:13.012 --> 00:05:16.215
+And fifth, we visualize using our helper utilities,
+
+117
+00:05:16.215 --> 00:05:19.419
+we extract and highlight the chunk from the original PDF
+
+118
+00:05:19.419 --> 00:05:22.221
+to show exactly where the information came from.
+
+119
+00:05:22.488 --> 00:05:24.590
+Let's test our query function.
+
+120
+00:05:24.891 --> 00:05:27.493
+We'll ask about Apple's net sales in 2023.
+
+121
+00:05:27.694 --> 00:05:30.396
+The same question we tried with regex earlier.
+
+122
+00:05:30.697 --> 00:05:32.799
+Notice how we're saying top_k=5
+
+123
+00:05:32.999 --> 00:05:36.002
+to get more results and threshold=0.32
+
+124
+00:05:36.202 --> 00:05:38.004
+to filter out weaker matches.
+
+125
+00:05:38.304 --> 00:05:40.006
+Let's look at the five results.
+
+126
+00:05:40.306 --> 00:05:42.575
+The question was, what was Apple's net sales
+
+127
+00:05:42.608 --> 00:05:44.811
+in 2023.
+
+128
+00:05:44.811 --> 00:05:46.946
+Keep in mind, these are semantically similar
+
+129
+00:05:46.946 --> 00:05:49.115
+answers, so they may not be perfect.
+
+130
+00:05:49.182 --> 00:05:52.485
+The first response gives you a clear breakdown of net sales
+
+131
+00:05:52.585 --> 00:05:56.389
+for the previous three years by products and services.
+
+132
+00:05:56.589 --> 00:06:00.493
+Second, third, and fifth are giving you tangential information
+
+133
+00:06:00.593 --> 00:06:02.595
+about net sales in 2023
+
+134
+00:06:02.695 --> 00:06:05.098
+which doesn't directly answer the question.
+
+135
+00:06:05.198 --> 00:06:08.301
+The fourth result provides the same answer as the first one.
+
+136
+00:06:08.501 --> 00:06:10.470
+So in production, you can tweak the
+
+137
+00:06:10.470 --> 00:06:12.705
+parameters to get the answers you actually need.
+
+138
+00:06:13.005 --> 00:06:15.308
+What if you want to ask questions about a table?
+
+139
+00:06:15.508 --> 00:06:17.110
+It is common that financial data
+
+140
+00:06:17.110 --> 00:06:19.011
+is found in a lot of tables.
+
+141
+00:06:19.212 --> 00:06:21.214
+This is where hybrid search can help us.
+
+142
+00:06:21.314 --> 00:06:25.618
+First, we vectorize the question or the user input. What was
+
+143
+00:06:25.618 --> 00:06:28.020
+Apple's total revenue in 2023.
+
+144
+00:06:28.221 --> 00:06:31.124
+We'll still use semantic similarity, so we'll match total revenue
+
+145
+00:06:31.124 --> 00:06:33.126
+to net sales by meaning.
+
+146
+00:06:33.426 --> 00:06:35.728
+Second, we'll use metadata for filtering.
+
+147
+00:06:35.728 --> 00:06:38.431
+So in this case, we're only looking at chunks
+
+148
+00:06:38.431 --> 00:06:40.800
+where the chunk type is table.
+
+149
+00:06:41.100 --> 00:06:43.102
+As you can see from the result,
+
+150
+00:06:43.102 --> 00:06:45.405
+you can see the table tag in the markdown.
+
+151
+00:06:45.505 --> 00:06:48.107
+which means that we're pulling information from tables.
+
+152
+00:06:48.541 --> 00:06:52.011
+Feel free to use the helper methods to visualize this chunk.
+
+153
+00:06:52.512 --> 00:06:54.614
+And feel free to use other
+
+154
+00:06:54.614 --> 00:06:57.016
+filters like page number and chunk types.
+
+155
+00:06:57.316 --> 00:06:59.519
+Now that we can retrieve relevant chunks,
+
+156
+00:06:59.719 --> 00:07:02.722
+we can incorporate this into a full RAG pipeline.
+
+157
+00:07:03.022 --> 00:07:06.526
+We can create a retriever object from our ChromaDB database,
+
+158
+00:07:06.726 --> 00:07:10.696
+which slots into a LangChain chain. Then, we can build the
+
+159
+00:07:10.696 --> 00:07:14.100
+actual RAG chain. And we need three components.
+
+160
+00:07:14.500 --> 00:07:17.503
+First is the prompt template. We define a system prompt
+
+161
+00:07:17.603 --> 00:07:21.808
+that instructs the LLM to use the retrieved context to answer questions.
+
+162
+00:07:22.308 --> 00:07:26.813
+The context placeholder is where LangChain will inject the retrieved chunks,
+
+163
+00:07:27.180 --> 00:07:29.482
+and the input is where the user's question goes.
+
+164
+00:07:29.982 --> 00:07:32.852
+Second is the language model. We will initialize
+
+165
+00:07:32.852 --> 00:07:34.954
+the LLM, gpt-5-mini,
+
+166
+00:07:34.954 --> 00:07:38.658
+that will generate answers based on the retrieved context.
+
+167
+00:07:38.958 --> 00:07:42.962
+Third is the RAG chain. We use LangChain's create_retrieval_chain
+
+168
+00:07:42.962 --> 00:07:45.865
+to connect the retriever to our prompt and LLM.
+
+169
+00:07:46.065 --> 00:07:48.367
+This chain automatically handles the flow.
+
+170
+00:07:48.367 --> 00:07:51.671
+Take the user's question, retrieve relevant chunks,
+
+171
+00:07:51.671 --> 00:07:54.674
+then inject them into the prompt to generate an answer.
+
+172
+00:07:55.041 --> 00:07:59.045
+We could answer that question by inspecting the retrieved chunks directly.
+
+173
+00:07:59.045 --> 00:08:02.849
+But what about questions that require comparing multiple chunks of information?
+
+174
+00:08:03.049 --> 00:08:06.519
+For example, comparing total revenue across multiple years.
+
+175
+00:08:06.519 --> 00:08:11.519
+How did total revenue trend between 2022 and 2023 for iPhone sales?
+
+176
+00:08:11.824 --> 00:08:13.826
+This is where the language model can
+
+177
+00:08:13.826 --> 00:08:15.828
+reason through multiple chunks of retrieved data.
+
+178
+00:08:16.028 --> 00:08:19.131
+So beyond simple lookups, you can also use this approach to
+
+179
+00:08:19.165 --> 00:08:22.134
+look for discrepancies across multiple documents.
+
+180
+00:08:22.635 --> 00:08:25.338
+Get the latest version of an amendment in a legal document.
+
+181
+00:08:25.638 --> 00:08:27.640
+List out all versions of that amendment
+
+182
+00:08:27.840 --> 00:08:31.143
+or get a summary on a specific topic with grounded sources.
+
+183
+00:08:31.844 --> 00:08:33.946
+You can do things like analyzing research papers,
+
+184
+00:08:34.547 --> 00:08:38.651
+reports, and regulatory documents for commercializing a drug.
+
+185
+00:08:38.951 --> 00:08:43.155
+In summary, by combining embeddings, vector databases and
+
+186
+00:08:43.256 --> 00:08:47.059
+RAG, you can transform raw extracted data into accurate insights
+
+187
+00:08:47.760 --> 00:08:49.762
+from multiple documents and files,
+
+188
+00:08:50.062 --> 00:08:53.065
+delivering faster, smarter document understanding.
+
+189
+00:08:53.266 --> 00:08:54.934
+In our next lesson, we'll review
+
+190
+00:08:54.934 --> 00:08:56.869
+how to deploy ADE in the cloud,
+
+191
+00:08:57.069 --> 00:09:00.273
+scaling our RAG application through an event-driven architecture
+
+192
+00:09:00.373 --> 00:09:04.076
+that automatically triggers ADE for document processing
+
+193
+00:09:04.176 --> 00:09:07.246
+whenever new documents appear. I'll see you there.
