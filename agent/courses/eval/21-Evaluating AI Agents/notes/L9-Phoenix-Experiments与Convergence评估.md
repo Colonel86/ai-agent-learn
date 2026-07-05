@@ -1,6 +1,6 @@
 # L9：用 Phoenix Experiments 实现 Convergence 评估
 
-要计算 Convergence，需要把**多次运行**放在一起比较。Phoenix 的 **Experiments（实验）**正是为此设计——本节首次接触它，下节会用它做大规模评估。
+要计算 Convergence，需要把 **多次运行** 放在一起比较。Phoenix 的 **Experiments（实验）** 正是为此设计——本节首次接触它，下节会用它做大规模评估。
 
 ## 导入与基础
 

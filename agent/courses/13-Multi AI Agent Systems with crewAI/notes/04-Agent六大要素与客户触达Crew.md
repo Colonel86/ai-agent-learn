@@ -603,4 +603,4 @@ Markdown(result)
 
 **一句话收尾**：优秀 Agent 的六要素本质是"优秀员工特征"的工程化,设计时把自己当管理者(目标→流程→雇谁→怎么带);其中 Memory 是最大杠杆(自我批评→越跑越好),护栏要分层兜住 Fuzzy 的不确定性——这套心法适用于所有多 agent 框架,crewAI 只是把它做成了 `memory=True` 这样的一键原语。
 
-> 关联：`02-AI-Agents概览与第一个Crew实战.md`(Role-playing 起源)、`../../12-Long-Term Agentic Memory With LangGraph/notes/L1-Agent三大记忆类型与邮件助理蓝图.md`(记忆三类型的更深展开)、`05-优秀Tools三大特性与活动策划Crew.md`(Tools 要素细化)。
+> 关联：`02-AI-Agents概览与第一个Crew实战.md`(Role-playing 起源)、`../../memory/12-Long-Term Agentic Memory With LangGraph/notes/L1-Agent三大记忆类型与邮件助理蓝图.md`(记忆三类型的更深展开)、`05-优秀Tools三大特性与活动策划Crew.md`(Tools 要素细化)。

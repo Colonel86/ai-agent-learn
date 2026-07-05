@@ -404,5 +404,5 @@ A:**只 embed `observation`(触发场景)**。召回时拿当前任务去匹配�
 - context 数据结构分层(顺序选 list / 随机 key 选 map / 滑窗选 deque / 语义检索选向量库 / 关系选图):`../3.md`
 - 检索基础设施(semantic 记忆的向量召回 = RAG 检索,共用此层):`../../skills/agent-selection/3-retrieval.md`
 - 编排框架(LangGraph 的 checkpointer/Store 是记忆基础设施):`../../skills/agent-selection/2-framework/`
-- 课程回溯:`../../courses/12-Long-Term Agentic Memory With LangGraph/notes/00-总结回顾.md`(及 L2–L5 code)
+- 课程回溯:`../../courses/memory/12-Long-Term Agentic Memory With LangGraph/notes/00-总结回顾.md`(及 L2–L5 code)
 - 邻章边界:context 窗口管理 / Context Editing / Prompt Caching 降本 → 本系列 **05**(本章只引用不展开)

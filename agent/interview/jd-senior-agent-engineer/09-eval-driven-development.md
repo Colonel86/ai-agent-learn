@@ -393,7 +393,7 @@ A:
   - `01-agent-run-loop-and-orchestration.md` —— Run Loop 的"验证"环就是本章 eval 的运行时落点。
 - **面试心智模型**:
   - `../1.md` —— 横切带 B「度量·观测(评测+tracing)」+ 横切关注点 7「数据飞轮」+ 8「确定性优先」,与本章 §1.1/§1.2/§5 Q6 同源;Reflexion 把失败信号存进 episodic 也呼应"失败 case 回流"。
-- **课程回溯**:`../../courses/21-Evaluating AI Agents/notes/`、`../../courses/24-Automated Testing for LLMOps/notes/{L03-规则评估, L04-模型评分评估, L05-综合测试与幻觉检测}.md`、`../../courses/eval/agent-eval-landscape.md`。
+- **课程回溯**:`../../courses/eval/21-Evaluating AI Agents/notes/`、`../../courses/eval/24-Automated Testing for LLMOps/notes/{L03-规则评估, L04-模型评分评估, L05-综合测试与幻觉检测}.md`、`../../courses/eval/agent-eval-landscape.md`。
 - **总览**:`../../skills/agent-selection/README.md`;ADR 沉淀:`../../skills/adr-writer`(选 Promptfoo vs DeepEval、judge 模型、门槛阈值的取舍写进 ADR)。
 
 > 最后核对:2026-06。结论分级:方法论(两类×两节奏、4 层评估含 trajectory、LLM-as-Judge 四要点、数据飞轮)✅ 稳定;Promptfoo 2026-03 被 OpenAI 收购仍开源 ⚠️ 2026-06 快照(收购+整合现状均现查官网,勿当板上钉钉);DeepEval/Promptfoo 具体 API 字段名/指标类名/CLI 子命令 ⚠️ 易变,**用前现查官网**;模型型号/单价 ⚠️ 现查。

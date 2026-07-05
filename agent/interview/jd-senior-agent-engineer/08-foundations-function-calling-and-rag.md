@@ -379,6 +379,6 @@ A:function calling 吐离散结构化调用,可校验、可审计、不用沙箱
 - **可观测 / Eval(RAG Triad 的落地与埋点)**:[`../../skills/agent-selection/5-observability-eval.md`](../../skills/agent-selection/5-observability-eval.md) —— 评估深化归 06/09 章。
 - **心智模型 · L1 底层契约 / Action 范式谱**:[`../1.md`](../1.md)。
 - **context 分层与数据结构**:[`../3.md`](../3.md) —— §3 的 chunk metadata、租户隔离过滤对照。
-- 课程回溯:`courses/04`(向量库/embedding)、`courses/05`(chunking/RAG Triad)、`courses/06`(reranker/Similarity≠Relevance)、`courses/18`、`courses/RAG/RAG.md`。
+- 课程回溯:`courses/RAG/04`(向量库/embedding)、`courses/RAG/05`(chunking/RAG Triad)、`courses/RAG/06`(reranker/Similarity≠Relevance)、`courses/RAG/18`、`courses/RAG/RAG.md`。
 
 > **最后核对:2026-06**。字段名(`tool_use`/`input_schema`/`output_config`/`strict` 等)、价格、模型 id、reranker 型号、49%→74% 等具体数字均会变,**定方案前现查官网 / MTEB**。

@@ -235,7 +235,7 @@ Agent 系统:别只测最终输出,必须加 trajectory 级(路由/工具/路径
 
 ## 八、课程回溯 + 相关资产
 
-- 回溯:`courses/21-Evaluating AI Agents/notes/`、`courses/24-Automated Testing for LLMOps/notes/{L03-规则评估, L04-模型评分评估, L05-综合测试与幻觉检测}.md`、`courses/05`(RAG Triad)、`courses/eval/agent-eval-landscape.md`。
+- 回溯:`courses/eval/21-Evaluating AI Agents/notes/`、`courses/eval/24-Automated Testing for LLMOps/notes/{L03-规则评估, L04-模型评分评估, L05-综合测试与幻觉检测}.md`、`courses/RAG/05`(RAG Triad)、`courses/eval/agent-eval-landscape.md`。
 - 相关层:`agent/skills/agent-selection/3-retrieval.md`(RAG Triad)、`agent/skills/agent-selection/2-framework/`(评分卡里 D5/D6 即观测/eval 维度)。
 - 总览:`agent/skills/agent-selection/README.md`。沉淀:`agent/skills/sdd/adr-writer`。
 

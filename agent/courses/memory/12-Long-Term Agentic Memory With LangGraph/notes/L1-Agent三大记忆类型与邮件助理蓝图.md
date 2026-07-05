@@ -266,4 +266,4 @@ flowchart TB
 
 **一句话收尾**：Agent 长期记忆的本质是把"该记什么"（Semantic 事实 / Episodic 案例 / Procedural 规则）和"何时更新"（Hot Path 即时 / Background 异步）拆成两个正交决策——按场景的即时性和延迟容忍度组合，而不是无脑全上，这正是设计有记忆 agent 的取舍核心。
 
-> 关联：`../../11-AI Agents in LangGraph/notes/L05-持久化与流式输出.md`（记忆落到持久化底座）、`../../../skills/agent-selection/`（记忆选型矩阵）。
+> 关联：`../../../11-AI Agents in LangGraph/notes/L05-持久化与流式输出.md`（记忆落到持久化底座）、`../../../../skills/agent-selection/`（记忆选型矩阵）。

@@ -77,7 +77,7 @@ flowchart LR
     Q -->|"生产海量+元数据过滤"| D["Qdrant / Weaviate / Milvus"]
     Q -->|"不想运维、接受锁定"| E["Pinecone"]
 ```
-回溯:`courses/04`、`courses/专业名词解释/向量数据库-FAISS与Milvus.md`。
+回溯:`courses/RAG/04`、`courses/专业名词解释/向量数据库-FAISS与Milvus.md`。
 
 ## 三、子决策 2:Embedding 模型
 
@@ -95,7 +95,7 @@ flowchart LR
 | BGE `bge-m3` ⭐ | 本地 | 跨语言、多粒度 | 多语种基线 |
 
 > 选 embedding 看:**语言**(多语种→Qwen3-Embedding/bge-m3)、**是否出域**(不出域→本地 BGE/Qwen3)、**成本**(高频→小模型或本地)、**榜单时效**(头部每季度翻盘,定型号前**现查 MTEB**、别认死分数)。换 embedding 必须**重建索引**——属高成本变更,早定。
-回溯:`courses/04/notes/04-vectorstores-and-embeddings.md`、`courses/专业名词解释/向量相似度与归一化.md`。
+回溯:`courses/RAG/04/notes/04-vectorstores-and-embeddings.md`、`courses/专业名词解释/向量相似度与归一化.md`。
 
 ## 四、子决策 3:Chunking 策略
 
@@ -108,7 +108,7 @@ flowchart LR
 | **Late Chunking**(2026) | 先用长上下文模型整文 embed,再切块池化——保留跨 chunk 上下文 | 长文档、跨块指代/共指多 |
 
 > chunking 常被低估:**先按语义边界切,再用 token 上限兜底**;SentenceWindow 把"嵌入粒度"和"喂给 LLM 的粒度"分开。
-回溯:`courses/05`、`courses/18`。
+回溯:`courses/RAG/05`、`courses/RAG/18`。
 
 ## 五、子决策 4:Retriever 架构(三层谱)
 
@@ -119,7 +119,7 @@ flowchart LR
 | **ColBERT** | token 级向量 + late-interaction(MaxSim) | 中 | 高 | 精度与可索引折中(存储贵) |
 
 > **生产标准 = 两阶段**:Bi-Encoder 宽召回(top 50-200)→ Cross-Encoder 精排(top 8-12)。
-回溯:`courses/专业名词解释/检索器架构-BiEncoder-CrossEncoder-ColBERT.md`、`courses/06`。
+回溯:`courses/专业名词解释/检索器架构-BiEncoder-CrossEncoder-ColBERT.md`、`courses/RAG/06`。
 
 ## 六、子决策 5:进阶检索方法(按"作用阶段"分层)
 
@@ -137,7 +137,7 @@ flowchart LR
 | **⑤ 改嵌入空间** | **Embedding Adapter** | 嵌入后线性变换到任务空间(±1 标注,MSE) | 有反馈数据、想低成本提质 |
 
 > 加法优先级(性价比从高到低):**Hybrid / Reranker → HyDE / Multi-Query → 父文档 → Embedding Adapter → GraphRAG**。GraphRAG 最重,放最后(单独见七)。
-回溯:`courses/06`、`courses/18`。
+回溯:`courses/RAG/06`、`courses/RAG/18`。
 
 ---
 
@@ -242,7 +242,7 @@ flowchart TB
 
 ## 十三、课程回溯 + 相关资产
 
-- 回溯:`courses/04`、`courses/05`、`courses/06`、`courses/18`、`courses/RAG/RAG.md`、`courses/专业名词解释/{向量数据库-FAISS与Milvus, 检索器架构-BiEncoder-CrossEncoder-ColBERT, 向量相似度与归一化, 知识图谱增强检索-GraphRAG}.md`。
+- 回溯:`courses/RAG/04`、`courses/RAG/05`、`courses/RAG/06`、`courses/RAG/18`、`courses/RAG/RAG.md`、`courses/专业名词解释/{向量数据库-FAISS与Milvus, 检索器架构-BiEncoder-CrossEncoder-ColBERT, 向量相似度与归一化, 知识图谱增强检索-GraphRAG}.md`。
 - 相关层:`agent/skills/agent-selection/2-framework/`(LlamaIndex/Haystack 作为编排框架在那边)、`agent/skills/agent-selection/5-observability-eval.md`(RAG Triad 评估)、`agent/skills/agent-selection/4-tools.md`(工具检索,不同层)。
 - 总览:`agent/skills/agent-selection/README.md`。沉淀:`agent/skills/sdd/adr-writer`。
 
