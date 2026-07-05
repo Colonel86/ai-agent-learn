@@ -1,0 +1,641 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:03.399
+In this lesson, you'll learn how to create and run NAT workflows.
+
+00:00:03.798 --> 00:00:05.198
+You'll create and run a minimal workflow
+
+00:00:05.198 --> 00:00:06.799
+and you'll serve it as a REST API,
+
+00:00:07.000 --> 00:00:09.122
+showing how NAT brings production capabilities
+
+00:00:09.122 --> 00:00:11.599
+to even the most simple of workflows.
+
+00:00:11.852 --> 00:00:13.752
+Let's dive in.
+
+00:00:13.752 --> 00:00:15.902
+The NAT CLI gives you the ability to
+
+00:00:15.902 --> 00:00:18.051
+run agents quickly and serve them as APIs
+
+00:00:18.051 --> 00:00:20.551
+that can be consumed by other services.
+
+00:00:20.852 --> 00:00:22.602
+And in this lesson, we're going to
+
+00:00:22.602 --> 00:00:24.352
+build a simple but production-ready NAT agent,
+
+00:00:24.352 --> 00:00:26.078
+and we're going to use the NAT
+
+00:00:26.078 --> 00:00:28.051
+CLI to serve that agent as an API,
+
+00:00:28.352 --> 00:00:29.459
+and we're going to connect it
+
+00:00:29.459 --> 00:00:30.751
+to a UI and watch it run.
+
+00:00:31.006 --> 00:00:33.805
+At the heart of an NAT agent workflow
+
+00:00:33.805 --> 00:00:35.606
+is a configuration file.
+
+00:00:35.606 --> 00:00:37.805
+This is a simple YAML file
+
+00:00:37.805 --> 00:00:40.506
+that lets us quickly change how our agent runs.
+
+00:00:40.506 --> 00:00:43.506
+In the example on this slide, we have two properties,
+
+00:00:43.506 --> 00:00:45.206
+a workflow and LLMs.
+
+00:00:45.206 --> 00:00:49.206
+The LLMs define and configure how we connect to large language models.
+
+00:00:49.206 --> 00:00:51.305
+In this case, an NVIDIA NIM container.
+
+00:00:51.305 --> 00:00:55.006
+It could be something else like OpenAI or Gemini,
+
+00:00:55.564 --> 00:00:59.363
+and a workflow. The workflow defines what the agent does.
+
+00:01:00.064 --> 00:01:02.070
+In this case, it's a react_agent and
+
+00:01:02.070 --> 00:01:04.364
+it uses the LLM that we defined below.
+
+00:01:04.763 --> 00:01:07.063
+The configurations can be simple or they can be complex.
+
+00:01:07.364 --> 00:01:11.063
+They can contain evaluation information, observability information,
+
+00:01:11.462 --> 00:01:14.262
+They can define multiple tools for the agent to call
+
+00:01:14.561 --> 00:01:17.462
+and many other features such as retrievers or rerankers.
+
+00:01:17.762 --> 00:01:19.361
+Or they can be simple like this one,
+
+00:01:19.561 --> 00:01:21.162
+a workflow and some LLMs.
+
+00:01:21.662 --> 00:01:23.962
+To run these workflows, we use the NAT CLI.
+
+00:01:24.361 --> 00:01:27.561
+And you can see listed here several of the CLI commands.
+
+00:01:28.004 --> 00:01:31.804
+nat run will run the workflow with a simple input.
+
+00:01:32.004 --> 00:01:34.504
+When you're ready to serve it as an API server,
+
+00:01:34.504 --> 00:01:37.203
+you run nat serve against the same configuration file.
+
+00:01:37.804 --> 00:01:41.203
+If you want to run evaluations in CI/CD or just by yourself,
+
+00:01:41.203 --> 00:01:43.203
+you would run nat eval.
+
+00:01:43.504 --> 00:01:45.230
+And if you want to check and
+
+00:01:45.230 --> 00:01:47.203
+optimize your workflow, you can run nat optimize.
+
+00:01:47.501 --> 00:01:49.602
+And to check that your YAML file is valid,
+
+00:01:49.701 --> 00:01:52.001
+you can run nat validate.
+
+00:01:52.501 --> 00:01:56.001
+In this notebook, we're going to create our first NAT workflow.
+
+00:01:56.402 --> 00:01:59.302
+If you're running this notebook on your own machine,
+
+00:01:59.501 --> 00:02:01.701
+you'll want to run the contents of this cell.
+
+00:02:02.090 --> 00:02:06.391
+to install the NeMo Agent Toolkit and the LangChain dependency.
+
+00:02:06.790 --> 00:02:08.175
+In this environment, it's already set
+
+00:02:08.175 --> 00:02:09.790
+up for you and ready to go.
+
+00:02:09.991 --> 00:02:12.491
+First, we're going to create the NAT configuration.
+
+00:02:12.790 --> 00:02:15.191
+The configuration is a YAML file,
+
+00:02:15.390 --> 00:02:17.514
+and in this YAML file, we
+
+00:02:17.514 --> 00:02:19.991
+have two top-level properties: LLMs and workflow.
+
+00:02:20.556 --> 00:02:24.756
+Remember that NAT composes these together into your agentic workflow.
+
+00:02:25.156 --> 00:02:26.355
+And so the first thing we're
+
+00:02:26.355 --> 00:02:27.756
+going to look at are the LLMs.
+
+00:02:28.056 --> 00:02:30.456
+You could have multiple LLMs, and in our case, this
+
+00:02:30.456 --> 00:02:32.855
+is a simple agentic workflow, and we just have one.
+
+00:02:33.355 --> 00:02:35.056
+And I've called it climate_llm.
+
+00:02:35.421 --> 00:02:37.921
+Each LLM has to have a type.
+
+00:02:38.222 --> 00:02:40.206
+This tells the NeMo Agent Toolkit
+
+00:02:40.206 --> 00:02:42.521
+how to connect to the LLM provider.
+
+00:02:42.722 --> 00:02:44.622
+It could be OpenAI, it could be
+
+00:02:44.622 --> 00:02:46.521
+Google or any number of other providers.
+
+00:02:46.622 --> 00:02:50.722
+In our case, we've chosen nim, which is an NVIDIA inference container.
+
+00:02:51.222 --> 00:02:54.722
+And the type will determine what properties you give the LLM.
+
+00:02:54.921 --> 00:02:57.521
+For instance, it might need an OpenAI API key.
+
+00:02:57.605 --> 00:02:59.605
+In our case, we need a model_name,
+
+00:03:00.105 --> 00:03:02.406
+which is meta/llama-3.1-70b-instruct.
+
+00:03:02.806 --> 00:03:05.406
+We'll give it a base_url to tell it where to call,
+
+00:03:05.705 --> 00:03:08.806
+an api_key, and we've decided to set temperature
+
+00:03:09.760 --> 00:03:12.760
+to 0.7 and max tokens to 2048.
+
+00:03:13.661 --> 00:03:15.621
+Now we have our LLM ready to
+
+00:03:15.621 --> 00:03:17.860
+go to be wired into our agentic workflow.
+
+00:03:18.061 --> 00:03:22.183
+So let's look at the workflow. Again we have a type defined.
+
+00:03:22.484 --> 00:03:24.007
+There are many built-in types and
+
+00:03:24.007 --> 00:03:25.783
+of course you can create your own.
+
+00:03:25.883 --> 00:03:28.484
+In this case, it's a built-in type called chat_completion.
+
+00:03:28.683 --> 00:03:32.183
+This is a simple input output response to the LLM.
+
+00:03:32.787 --> 00:03:34.856
+And chat_completion needs an LLM,
+
+00:03:35.127 --> 00:03:37.366
+so we will pass it the climate_llm
+
+00:03:37.366 --> 00:03:39.926
+that we defined earlier and a system prompt.
+
+00:03:40.127 --> 00:03:42.956
+You are a knowledgeable climate science assistant.
+
+00:03:43.456 --> 00:03:45.456
+When we run this workflow, NeMo Agent Toolkit
+
+00:03:45.456 --> 00:03:47.456
+is going to look at this configuration file.
+
+00:03:47.765 --> 00:03:50.566
+It's going to load the chat_completion workflow type.
+
+00:03:50.665 --> 00:03:52.566
+It's going to create the LLM that we defined
+
+00:03:52.566 --> 00:03:54.265
+and pass it into that workflow type,
+
+00:03:54.366 --> 00:03:56.665
+and then it's going to run whatever input we have
+
+00:03:56.665 --> 00:03:59.165
+combined with the system_prompt and give us the output.
+
+00:03:59.288 --> 00:04:03.088
+Let's write this configuration file. Now we can run the workflow.
+
+00:04:03.389 --> 00:04:04.939
+There are many different ways as we'll
+
+00:04:04.939 --> 00:04:06.489
+see over the course of this course
+
+00:04:06.489 --> 00:04:08.150
+to run workflows. In this case,
+
+00:04:08.150 --> 00:04:10.088
+we're going to use the NAT CLI
+
+00:04:10.088 --> 00:04:12.389
+and we're going to use the run command.
+
+00:04:12.606 --> 00:04:14.907
+This does a simple run against a workflow.
+
+00:04:15.407 --> 00:04:17.022
+We'll pass it the configuration file
+
+00:04:17.022 --> 00:04:18.906
+that we saved in the previous cell,
+
+00:04:19.206 --> 00:04:20.906
+and we will pass an input.
+
+00:04:21.406 --> 00:04:24.206
+So we can see how the NeMo Agent Toolkit has
+
+00:04:24.406 --> 00:04:26.906
+started to run from that configuration file.
+
+00:04:27.379 --> 00:04:30.180
+And we have some output about the configuration.
+
+00:04:30.680 --> 00:04:32.295
+Number of LLMs is one, which
+
+00:04:32.295 --> 00:04:34.180
+is the one we set up earlier.
+
+00:04:34.779 --> 00:04:37.180
+And we can see the workflow result.
+
+00:04:38.379 --> 00:04:40.480
+What is the difference between weather and climate?
+
+00:04:40.480 --> 00:04:41.910
+and it's passed it to our
+
+00:04:41.910 --> 00:04:43.579
+LLM and it's returned us an answer.
+
+00:04:43.779 --> 00:04:46.579
+So that's our first NeMo Agent Toolkit run.
+
+00:04:46.903 --> 00:04:49.103
+Let's go ahead and ask a second question.
+
+00:04:50.302 --> 00:04:52.403
+In this case, we'll use the same configuration file,
+
+00:04:52.702 --> 00:04:54.549
+but the input is changed to
+
+00:04:54.549 --> 00:04:56.702
+How much has global average temperature increased
+
+00:04:56.702 --> 00:04:59.097
+since pre-industrial times? and let's run
+
+00:04:59.097 --> 00:05:01.891
+this. And we can see the output.
+
+00:05:02.791 --> 00:05:04.391
+And let's run it one more time.
+
+00:05:04.492 --> 00:05:08.192
+This time, let's give it a specific question
+
+00:05:08.192 --> 00:05:10.391
+that would benefit from real data analysis.
+
+00:05:10.869 --> 00:05:12.769
+In this case, our LLM is going
+
+00:05:12.769 --> 00:05:14.668
+to be constrained by its training data,
+
+00:05:14.769 --> 00:05:17.369
+so I don't have high expectations for the results.
+
+00:05:18.369 --> 00:05:20.769
+As we can see, the LLM tried its best.
+
+00:05:21.048 --> 00:05:24.348
+But I don't believe that these numbers are correct.
+
+00:05:24.848 --> 00:05:26.848
+Notice a limitation here.
+
+00:05:26.949 --> 00:05:28.949
+Our agent is just an LLM call,
+
+00:05:29.048 --> 00:05:31.149
+it doesn't have any access to external data,
+
+00:05:31.249 --> 00:05:34.348
+just general knowledge whatever the LLM was trained with.
+
+00:05:34.574 --> 00:05:36.855
+We see that it cites some sources,
+
+00:05:37.274 --> 00:05:39.175
+but these sources are dated
+
+00:05:39.555 --> 00:05:42.074
+and it possibly could have hallucinated too.
+
+00:05:42.774 --> 00:05:46.074
+Now that we have this NeMo Agent Toolkit configuration,
+
+00:05:46.475 --> 00:05:48.074
+let's deploy it as an API.
+
+00:05:49.250 --> 00:05:52.350
+In production, you would run nat serve
+
+00:05:52.350 --> 00:05:56.949
+in a terminal. However, this is running in a Jupyter notebook environment,
+
+00:05:57.250 --> 00:05:59.373
+and so we are going to
+
+00:05:59.373 --> 00:06:01.850
+have to run it as a subprocess.
+
+00:06:02.500 --> 00:06:06.100
+We're dealing with subprocesses because this is a Jupyter notebook,
+
+00:06:06.300 --> 00:06:09.000
+but the command that we're running is nat serve
+
+00:06:09.100 --> 00:06:11.300
+and we're passing it the configuration file.
+
+00:06:11.701 --> 00:06:14.701
+Previously we've run nat run and passed a single input.
+
+00:06:14.937 --> 00:06:18.437
+This serve is going to serve that agentic workflow
+
+00:06:18.437 --> 00:06:20.437
+as a self-contained API.
+
+00:06:20.937 --> 00:06:22.819
+And we see there our server's running in
+
+00:06:22.819 --> 00:06:24.937
+the background, so now we can test the API.
+
+00:06:25.716 --> 00:06:27.910
+In order to test the API, we're
+
+00:06:27.910 --> 00:06:30.416
+going to use a standard Python requests library.
+
+00:06:30.916 --> 00:06:34.016
+And if you're familiar with the OpenAI API
+
+00:06:34.016 --> 00:06:37.416
+chat completions endpoints, then this will be familiar to you.
+
+00:06:37.694 --> 00:06:40.595
+Our server is running on localhost on port 8000
+
+00:06:41.495 --> 00:06:46.194
+and we're going to call /v1/chat/completions.
+
+00:06:46.995 --> 00:06:49.894
+And for our input, we will pass a messages
+
+00:06:50.495 --> 00:06:53.194
+and a single message and let's ask a climate message,
+
+00:06:53.194 --> 00:06:56.694
+what causes El Niño and how does it affect global weather.
+
+00:06:57.177 --> 00:06:59.076
+and we'll tell it not to stream back results
+
+00:06:59.276 --> 00:07:01.276
+so we can get it in a self-contained JSON.
+
+00:07:01.976 --> 00:07:03.976
+And once we get a 200 status code,
+
+00:07:04.177 --> 00:07:07.677
+then we can parse the OpenAI API compatible response,
+
+00:07:08.408 --> 00:07:12.208
+choices, the first choice, the message and then the content.
+
+00:07:12.697 --> 00:07:15.497
+And if there were an error, we could print out the error.
+
+00:07:15.898 --> 00:07:17.898
+Let's run this and see our API in
+
+00:07:17.898 --> 00:07:19.898
+action. And there we get our response back,
+
+00:07:20.197 --> 00:07:23.298
+describing El Niño being a complex weather phenomenon.
+
+00:07:23.634 --> 00:07:25.283
+So we've seen how to run the
+
+00:07:25.283 --> 00:07:26.934
+NeMo Agent Toolkit with a single input.
+
+00:07:27.134 --> 00:07:29.134
+We've seen how to serve it as an API,
+
+00:07:29.434 --> 00:07:32.434
+and now we'll see how to launch a UI
+
+00:07:32.634 --> 00:07:35.434
+that we can interact with our agentic workflow
+
+00:07:35.634 --> 00:07:37.434
+using a chat interface.
+
+00:07:37.846 --> 00:07:41.446
+The NeMo Agent Toolkit API can be used by any UI.
+
+00:07:41.646 --> 00:07:46.346
+However, there is a NeMo Agent Toolkit UI that is production ready.
+
+00:07:46.745 --> 00:07:49.045
+Showing that from a Jupyter notebook can be complicated,
+
+00:07:49.045 --> 00:07:51.846
+so we have the ui_manager class here that will help us
+
+00:07:52.146 --> 00:07:53.946
+show it from the Jupyter notebook.
+
+00:07:54.389 --> 00:07:56.889
+The NeMo Agent Toolkit ships with a rich UI,
+
+00:07:57.189 --> 00:07:58.689
+but we're going to look at that
+
+00:07:58.689 --> 00:08:00.189
+more in depth in a later lesson.
+
+00:08:00.588 --> 00:08:02.588
+For now, let's just take a quick peek at the UI
+
+00:08:02.588 --> 00:08:05.889
+as it talks to the simple climate assistant that we created.
+
+00:08:06.302 --> 00:08:09.103
+This UI might be somewhat familiar to you
+
+00:08:09.103 --> 00:08:10.903
+if you've used other chatbot UIs.
+
+00:08:11.403 --> 00:08:13.202
+It allows you to create new chats,
+
+00:08:13.202 --> 00:08:14.802
+search through existing chats,
+
+00:08:14.903 --> 00:08:16.603
+connect to MCP servers,
+
+00:08:16.603 --> 00:08:18.802
+import data, export data, etc.
+
+00:08:19.103 --> 00:08:21.103
+And right now, it's connected to
+
+00:08:21.103 --> 00:08:23.702
+the simple climate assistant that we created.
+
+00:08:24.557 --> 00:08:27.557
+Let me send a prompt to our naive climate agent.
+
+00:08:29.257 --> 00:08:31.858
+What's the weather like in Florida?
+
+00:08:32.557 --> 00:08:36.057
+Since our agent isn't grounded in any real world data sets,
+
+00:08:36.258 --> 00:08:38.857
+it's just going to draw from the LLM's knowledge,
+
+00:08:38.857 --> 00:08:42.158
+and we see that it gives some general information about Florida weather.
+
+00:08:42.660 --> 00:08:44.230
+You'll notice that it gives me
+
+00:08:44.230 --> 00:08:46.061
+a follow-up so I can continue chatting.
+
+00:08:46.360 --> 00:08:48.911
+And even though our agent is simple, you can see that
+
+00:08:48.911 --> 00:08:51.461
+adding a UI on top of it gives you powerful tools
+
+00:08:51.461 --> 00:08:53.260
+to interact with an agentic workflow.
+
+00:08:53.561 --> 00:08:55.010
+Over the series of notebooks that we're
+
+00:08:55.010 --> 00:08:56.461
+going to work on in this course,
+
+00:08:56.461 --> 00:08:59.461
+we're going to build a very powerful climate and mathematical agent
+
+00:08:59.561 --> 00:09:03.160
+that can answer deep questions about climate data over several years.
+
+00:09:03.461 --> 00:09:04.961
+And with this UI, we'll be able
+
+00:09:04.961 --> 00:09:06.461
+to chat in depth about that data.
+
+00:09:07.398 --> 00:09:09.498
+All right, let's stop our server
+
+00:09:09.498 --> 00:09:11.398
+and clean things up for the next notebook.
+
+00:09:11.998 --> 00:09:15.998
+In this notebook, we have built a simple but working climate assistant
+
+00:09:15.998 --> 00:09:19.398
+that is able to answer general questions about climate data.
+
+00:09:19.679 --> 00:09:21.457
+We served it as an API and
+
+00:09:21.457 --> 00:09:23.490
+we even consumed it in a chatbot UI.
+
+00:09:24.190 --> 00:09:25.759
+It's limited, it doesn't have access
+
+00:09:25.759 --> 00:09:27.590
+to real data, but it's a beginning.
+
+00:09:27.889 --> 00:09:30.690
+Next, we're going to add tools for actual climate data analysis.

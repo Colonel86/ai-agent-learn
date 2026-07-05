@@ -1,0 +1,179 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:03.500
+Welcome to this course on Nvidia's NeMo Agent Toolkit,
+
+00:00:03.798 --> 00:00:07.099
+which will show you how to harden your agent for production.
+
+00:00:07.500 --> 00:00:09.800
+This course is built in partnership with Nvidia
+
+00:00:09.800 --> 00:00:11.500
+and is taught by Brian McBrayer,
+
+00:00:11.800 --> 00:00:15.698
+who is Solutions Architect in Generative AI at Nvidia.
+
+00:00:15.736 --> 00:00:18.335
+One problem that many of us face is
+
+00:00:18.435 --> 00:00:21.835
+how to take that demo that works maybe 60% of the time
+
+00:00:21.936 --> 00:00:23.936
+and turn into something reliable
+
+00:00:24.036 --> 00:00:26.236
+that you can safely deploy to users.
+
+00:00:26.870 --> 00:00:29.971
+Nvidia's open source NeMo Agent Toolkit
+
+00:00:30.370 --> 00:00:34.070
+or NAT gives key tools for doing so.
+
+00:00:34.970 --> 00:00:38.871
+Specifically, NAT makes it easy for you to add observability
+
+00:00:39.042 --> 00:00:41.843
+to build and repeatedly run evals
+
+00:00:41.942 --> 00:00:45.143
+and also deploy your agentic workflow.
+
+00:00:46.042 --> 00:00:48.843
+Maybe you've already built an agentic workflow
+
+00:00:48.942 --> 00:00:52.843
+in raw Python or using a framework like LangGraph or Crew AI.
+
+00:00:52.845 --> 00:00:56.045
+You can then integrate NAT to get observability
+
+00:00:56.045 --> 00:00:59.045
+to see what your agent workflow is doing.
+
+00:00:59.646 --> 00:01:03.045
+For example, if your agent occasionally calls the wrong tool,
+
+00:01:03.654 --> 00:01:05.853
+NAT will show you execution traces
+
+00:01:06.054 --> 00:01:08.453
+so you can actually see what's going on.
+
+00:01:09.153 --> 00:01:11.653
+In addition, NAT makes it easy for you to set up
+
+00:01:11.653 --> 00:01:14.153
+and run evals in a disciplined way.
+
+00:01:14.353 --> 00:01:16.200
+This is very helpful if you
+
+00:01:16.200 --> 00:01:18.353
+want to run maybe a CI/CD process
+
+00:01:18.754 --> 00:01:21.353
+or if you just want to drive a systematic process
+
+00:01:21.353 --> 00:01:23.853
+for improving your agent's performance.
+
+00:01:24.584 --> 00:01:26.685
+In this course, you will learn NAT
+
+00:01:26.885 --> 00:01:29.284
+by building an agent to analyze climate data.
+
+00:01:29.584 --> 00:01:32.185
+You'll start by registering Python functions as tools
+
+00:01:32.284 --> 00:01:33.984
+to add more functionality to your agent.
+
+00:01:34.584 --> 00:01:36.385
+Agents reason in natural language,
+
+00:01:36.584 --> 00:01:38.584
+so without the right tools, it's hard to know
+
+00:01:38.685 --> 00:01:42.484
+why they made certain decisions. You'll use OpenTelemetry tracing,
+
+00:01:43.185 --> 00:01:46.084
+visualized in Phoenix, to see exactly how your agent reasons,
+
+00:01:46.385 --> 00:01:48.885
+which tools it considers and what choices it makes.
+
+00:01:49.472 --> 00:01:51.403
+You'll also evaluate performance over time,
+
+00:01:51.802 --> 00:01:53.552
+so when you adjust a prompt or change
+
+00:01:53.552 --> 00:01:55.302
+a model, you'll know whether it actually helped.
+
+00:01:55.903 --> 00:01:58.602
+NAT works directly with frameworks you already use,
+
+00:01:58.802 --> 00:02:01.403
+LangChain, Crew AI, or your own custom code.
+
+00:02:01.926 --> 00:02:06.825
+So, finally, you'll expand the climate analyzer agent to a multi-agent workflow
+
+00:02:07.025 --> 00:02:09.825
+where specialized agents built with frameworks like LangGraph
+
+00:02:10.126 --> 00:02:12.425
+collaborate on different aspects of climate analysis.
+
+00:02:12.751 --> 00:02:15.550
+Deploying agents introduces so many complexities.
+
+00:02:16.251 --> 00:02:19.050
+You need an API endpoint, authentication, rate limiting.
+
+00:02:19.651 --> 00:02:22.651
+Suddenly you're writing infrastructure code instead of working on your agents.
+
+00:02:22.950 --> 00:02:25.750
+And all of these problems reappear anytime you want to iterate
+
+00:02:25.750 --> 00:02:28.550
+on the models you're using, or the prompts you're passing in.
+
+00:02:29.151 --> 00:02:31.503
+Through several labs in the course, you will
+
+00:02:31.503 --> 00:02:34.151
+learn how NAT makes AI agents ready for production.
+
+00:02:34.576 --> 00:02:36.977
+Many people have worked to create this course.
+
+00:02:36.977 --> 00:02:38.977
+I'd like to thank from NVIDIA,
+
+00:02:38.977 --> 00:02:43.176
+Josh Wyatt, Michael Demoret, and Bartley Richardson.
+
+00:02:43.176 --> 00:02:48.676
+And from DeepLearning.AI, Summer Rae, Esmaeil Gargari, and Brendan Brown.
+
+00:02:49.076 --> 00:02:52.977
+In the first lesson, you build your first agent in NAT,
+
+00:02:52.977 --> 00:02:54.777
+connect it to an API endpoint
+
+00:02:54.777 --> 00:02:56.877
+and see it working in real time.
+
+00:02:56.877 --> 00:02:59.477
+Let's go on to the next video to get started.

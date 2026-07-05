@@ -1,0 +1,539 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:03.270
+Next, with just a few lines of configuration,
+
+00:00:03.569 --> 00:00:05.799
+you'll add tracing and monitoring to your agent
+
+00:00:05.799 --> 00:00:08.259
+so you can spot performance issues in real time.
+
+00:00:08.490 --> 00:00:10.990
+And you can optimize your workflows with confidence.
+
+00:00:11.333 --> 00:00:12.862
+All right, let's go.
+
+00:00:13.132 --> 00:00:14.932
+This lesson is all about observability.
+
+00:00:15.333 --> 00:00:17.121
+We're going to set up a Phoenix server
+
+00:00:17.121 --> 00:00:19.132
+and we're going to watch observability data flow in.
+
+00:00:19.432 --> 00:00:21.233
+And we're going to use that
+
+00:00:21.233 --> 00:00:23.332
+to identify performance bottlenecks by analyzing traces.
+
+00:00:23.733 --> 00:00:25.832
+And we'll use that to optimize tool usage.
+
+00:00:26.405 --> 00:00:28.495
+We can even compare workflow performance
+
+00:00:28.495 --> 00:00:30.574
+before and after changing our config.
+
+00:00:31.155 --> 00:00:33.075
+And by the end of this lesson you should be able to
+
+00:00:33.075 --> 00:00:35.895
+understand NAT's unified observation stream.
+
+00:00:36.146 --> 00:00:38.246
+What is observability?
+
+00:00:38.246 --> 00:00:41.146
+Observability means understanding what's happening
+
+00:00:41.146 --> 00:00:43.646
+inside your AI workflows by examining their outputs.
+
+00:00:43.646 --> 00:00:46.945
+That's not hard to do at a simple function level.
+
+00:00:47.646 --> 00:00:49.646
+The power of NAT is that it enables it
+
+00:00:49.646 --> 00:00:51.646
+at all of your functions.
+
+00:00:51.646 --> 00:00:54.945
+whether those functions are a complicated sub-agent
+
+00:00:54.945 --> 00:00:58.146
+with its own functions that are instrumented for observability
+
+00:00:58.146 --> 00:00:59.945
+or a simple Python function.
+
+00:00:59.945 --> 00:01:01.996
+It takes all of these and sends
+
+00:01:01.996 --> 00:01:04.046
+them to whatever observability server you're using.
+
+00:01:04.646 --> 00:01:08.646
+Configuring observability is as simple as modifying your config.
+
+00:01:08.864 --> 00:01:12.265
+Here we have a general section at the top of our config
+
+00:01:12.465 --> 00:01:15.165
+and we've told it that we are going to be configuring telemetry.
+
+00:01:15.564 --> 00:01:19.064
+Specifically, tracing telemetry. And we give it a target.
+
+00:01:19.465 --> 00:01:22.064
+We name the target Phoenix and the type is phoenix.
+
+00:01:22.765 --> 00:01:24.465
+In this course, we're going to be
+
+00:01:24.465 --> 00:01:26.165
+using Phoenix, a UI written by Arize.
+
+00:01:26.527 --> 00:01:29.326
+And so we specify that it is a type phoenix,
+
+00:01:29.326 --> 00:01:31.727
+and we give it the endpoint to that Phoenix server,
+
+00:01:31.727 --> 00:01:33.546
+and we give it an optional project
+
+00:01:33.546 --> 00:01:35.626
+name so Phoenix can keep things separated out.
+
+00:01:36.027 --> 00:01:39.626
+Phoenix is a handy UI and observability server.
+
+00:01:40.066 --> 00:01:41.819
+In this image, we can see
+
+00:01:41.819 --> 00:01:43.865
+that someone has run an agentic workflow,
+
+00:01:43.965 --> 00:01:46.165
+and we can see trace data from that workflow.
+
+00:01:46.665 --> 00:01:48.844
+We can see the LLM calls, the tools the
+
+00:01:48.844 --> 00:01:51.266
+agent decided to call, and the results of those tools.
+
+00:01:51.566 --> 00:01:54.865
+We can also see the latency that this call took 26 seconds.
+
+00:01:55.159 --> 00:01:57.358
+And that's the real power of observability.
+
+00:01:58.058 --> 00:02:00.659
+The user might ask which country has the most weather stations
+
+00:02:00.659 --> 00:02:02.245
+and without observability, we wait a little
+
+00:02:02.245 --> 00:02:04.058
+while and we get the correct answer, eventually.
+
+00:02:04.659 --> 00:02:07.459
+But with observability, we see that that correct answer came
+
+00:02:07.459 --> 00:02:09.658
+with 15 tool calls and 3,000 tokens,
+
+00:02:09.859 --> 00:02:10.920
+and it took 8 seconds to
+
+00:02:10.920 --> 00:02:12.158
+get the answer back to the user.
+
+00:02:12.658 --> 00:02:14.658
+That might be something we can optimize later on.
+
+00:02:15.081 --> 00:02:18.181
+In this lesson, we're going to be looking at observability and tracing
+
+00:02:18.181 --> 00:02:20.282
+in the NeMo Agent Toolkit.
+
+00:02:20.782 --> 00:02:24.181
+NAT can emit many different types of observability data,
+
+00:02:24.181 --> 00:02:26.354
+OpenTelemetry data or otherwise.
+
+00:02:26.354 --> 00:02:27.830
+It's pluggable, so if there's a
+
+00:02:27.830 --> 00:02:29.554
+type of data that it doesn't output,
+
+00:02:29.653 --> 00:02:32.054
+you can write an adapter and plug that in.
+
+00:02:32.854 --> 00:02:36.253
+our case, we're going to be emitting OpenTelemetry data in this notebook,
+
+00:02:36.354 --> 00:02:38.061
+and we're going to be consuming
+
+00:02:38.061 --> 00:02:40.054
+it and looking at it in Phoenix,
+
+00:02:40.153 --> 00:02:43.054
+which is a UI written by Arize.
+
+00:02:43.713 --> 00:02:46.313
+Normally you would just run phoenix serve in a terminal
+
+00:02:46.313 --> 00:02:48.713
+to start Phoenix, but since it's in a notebook,
+
+00:02:48.713 --> 00:02:50.913
+we have to run some additional commands.
+
+00:02:51.514 --> 00:02:53.614
+Now we have Phoenix running in the background,
+
+00:02:53.614 --> 00:02:57.014
+ready to accept our NAT telemetry.
+
+00:02:57.586 --> 00:02:59.640
+Before we run NAT and emit data,
+
+00:02:59.640 --> 00:03:01.986
+let's take a look at the Phoenix UI.
+
+00:03:02.387 --> 00:03:04.986
+This is just some JavaScript here to give you the location
+
+00:03:04.986 --> 00:03:07.486
+of Phoenix running on your own system.
+
+00:03:07.586 --> 00:03:09.110
+So when you run it, it'll
+
+00:03:09.110 --> 00:03:10.887
+give you an open Phoenix UI button.
+
+00:03:11.187 --> 00:03:12.680
+This is the Phoenix UI and we're
+
+00:03:12.680 --> 00:03:14.387
+not going to go too deep into it.
+
+00:03:14.486 --> 00:03:17.787
+But we can see that it says no traces uploaded yet.
+
+00:03:18.064 --> 00:03:19.726
+When our NAT workflow begins to
+
+00:03:19.726 --> 00:03:21.664
+send traces, it'll send a project name,
+
+00:03:21.664 --> 00:03:25.264
+and that project name will show here along with the traces.
+
+00:03:25.264 --> 00:03:27.264
+And if we click on the project,
+
+00:03:27.264 --> 00:03:28.557
+we'll be able to see all
+
+00:03:28.557 --> 00:03:30.064
+of the traces that have flowed in.
+
+00:03:30.882 --> 00:03:34.181
+Let's install our climate_analyzer agent that we've been working on.
+
+00:03:35.020 --> 00:03:37.621
+Now that that's installed, let's look and see what it takes
+
+00:03:37.920 --> 00:03:41.920
+to flow OpenTelemetry data from NeMo Agent Toolkit into Phoenix.
+
+00:03:42.305 --> 00:03:45.705
+In our configuration file where we have configured our LLMs
+
+00:03:45.705 --> 00:03:49.104
+and our workflow and our tools, we can add another section.
+
+00:03:49.104 --> 00:03:51.205
+And this section is called general.
+
+00:03:51.805 --> 00:03:55.504
+And this is where we can put NAT configuration specific data.
+
+00:03:55.765 --> 00:03:57.765
+For instance, telemetry.
+
+00:03:57.966 --> 00:04:00.366
+And there's various types of telemetry
+
+00:04:00.566 --> 00:04:02.265
+like logging or tracing,
+
+00:04:02.265 --> 00:04:03.966
+and we are going to do tracing.
+
+00:04:04.265 --> 00:04:06.566
+So we'll have a tracing header here.
+
+00:04:06.665 --> 00:04:09.066
+And then we can define many different tracing targets.
+
+00:04:09.277 --> 00:04:12.078
+You might have multiple Phoenix servers,
+
+00:04:12.078 --> 00:04:14.078
+you might have a Prometheus server.
+
+00:04:14.078 --> 00:04:16.077
+In our case, we have one phoenix server
+
+00:04:16.077 --> 00:04:17.778
+and we're going to call it phoenix
+
+00:04:17.778 --> 00:04:19.778
+and the type is going to be phoenix.
+
+00:04:20.062 --> 00:04:24.362
+and we will give this Phoenix configuration an endpoint
+
+00:04:24.562 --> 00:04:27.562
+that points to the Phoenix server that we started earlier.
+
+00:04:27.961 --> 00:04:30.862
+And we'll give it a project name climate_analyzer_baseline.
+
+00:04:31.449 --> 00:04:34.949
+And that's all we need for our NeMo Agent Toolkit workflow
+
+00:04:35.048 --> 00:04:37.548
+to start flowing its data into Phoenix.
+
+00:04:38.348 --> 00:04:39.733
+In order to see tracing data,
+
+00:04:39.733 --> 00:04:41.348
+we need to actually run our agent.
+
+00:04:41.649 --> 00:04:44.548
+So let's set up some queries. So we have three queries here,
+
+00:04:44.848 --> 00:04:47.548
+the warming rate for Canada, the second coldest year,
+
+00:04:47.548 --> 00:04:49.949
+and which country has the most weather stations in our data?
+
+00:04:50.048 --> 00:04:51.649
+Let's run these queries.
+
+00:04:51.685 --> 00:04:54.985
+And as that's running, I'm going to switch over to Phoenix.
+
+00:04:55.785 --> 00:04:58.685
+So now we can see this project climate_analyzer_baseline,
+
+00:04:58.685 --> 00:05:00.551
+which is what we called it in
+
+00:05:00.551 --> 00:05:02.685
+our config. And we have three total traces,
+
+00:05:02.685 --> 00:05:04.985
+which corresponds to the three queries that we ran.
+
+00:05:05.444 --> 00:05:08.144
+If we click in here, we can see the trace workflows.
+
+00:05:08.845 --> 00:05:11.144
+We have three chains of thought.
+
+00:05:11.845 --> 00:05:13.868
+So at a top level, we can see
+
+00:05:13.868 --> 00:05:16.144
+some information on these, like the kind of tracing,
+
+00:05:16.845 --> 00:05:18.695
+the name of the workflow, which we could
+
+00:05:18.695 --> 00:05:20.545
+change in our config if we wanted to.
+
+00:05:21.144 --> 00:05:23.845
+The output, any annotations, the start time.
+
+00:05:24.071 --> 00:05:26.670
+how many tokens were taken and the latency.
+
+00:05:27.071 --> 00:05:29.571
+And it's pretty clear to see that one of these takes
+
+00:05:29.571 --> 00:05:32.071
+a lot longer than the other. So let's drill into that.
+
+00:05:32.870 --> 00:05:34.831
+Here we can see the thought process
+
+00:05:34.831 --> 00:05:37.071
+as the agent is working through its chain.
+
+00:05:37.870 --> 00:05:40.870
+It's making LLM calls, it's making tool calls,
+
+00:05:41.271 --> 00:05:43.571
+more LLM calls, more tool calls.
+
+00:05:43.951 --> 00:05:45.705
+it makes a lot of LLM
+
+00:05:45.705 --> 00:05:47.752
+calls and a lot of tool calls.
+
+00:05:47.851 --> 00:05:49.951
+In fact, it looks to me like it's churning.
+
+00:05:50.552 --> 00:05:53.451
+After analyzing these calls, we came to the conclusion
+
+00:05:53.552 --> 00:05:55.752
+that the agent was looking for station data,
+
+00:05:55.851 --> 00:05:57.190
+and we don't have a tool
+
+00:05:57.190 --> 00:05:58.752
+for it to specifically get station data.
+
+00:05:58.951 --> 00:06:00.552
+So it was going around and around
+
+00:06:00.552 --> 00:06:02.151
+trying to collect various bits of information
+
+00:06:02.252 --> 00:06:04.252
+from the other tools to look for stations.
+
+00:06:04.935 --> 00:06:07.036
+So let's look at our fix.
+
+00:06:07.235 --> 00:06:09.435
+This will be in a new config file
+
+00:06:09.735 --> 00:06:12.235
+and we will copy our old config file to it
+
+00:06:12.435 --> 00:06:14.735
+and in this one we'll add another function
+
+00:06:14.836 --> 00:06:16.836
+called station_statistics.
+
+00:06:17.240 --> 00:06:21.540
+and we'll register station_statistics as a new tool in our react_agent workflow.
+
+00:06:22.139 --> 00:06:23.839
+Just imagine that everything else is here.
+
+00:06:24.040 --> 00:06:26.590
+The other thing that I'll note that we've changed
+
+00:06:26.590 --> 00:06:29.139
+is the project name, so when we look at
+
+00:06:29.189 --> 00:06:31.290
+Phoenix after we run these queries again,
+
+00:06:31.290 --> 00:06:32.889
+we'll see a new project there and
+
+00:06:32.889 --> 00:06:34.490
+that just helps keep things separated out
+
+00:06:34.490 --> 00:06:36.689
+so we can see the old calls and the new calls.
+
+00:06:36.990 --> 00:06:38.889
+But this will be saved in a new config file.
+
+00:06:39.562 --> 00:06:41.461
+And let's run these queries again
+
+00:06:41.461 --> 00:06:43.031
+in our updated config file.
+
+00:06:43.512 --> 00:06:45.442
+And as those run, we can update Phoenix
+
+00:06:46.091 --> 00:06:48.732
+and we can see that they are now flowing in.
+
+00:06:49.322 --> 00:06:51.132
+All right, and let's go into our updated project.
+
+00:06:51.708 --> 00:06:54.007
+And we can see the three queries that came in,
+
+00:06:54.007 --> 00:06:55.908
+but let's look at their timing now.
+
+00:06:56.208 --> 00:06:58.507
+And we can see that they all have similar latency,
+
+00:06:58.708 --> 00:07:00.646
+which indicates that our agent was
+
+00:07:00.646 --> 00:07:02.908
+able to use the new station tool.
+
+00:07:03.250 --> 00:07:05.750
+to drastically reduce the latency in this call.
+
+00:07:06.451 --> 00:07:10.050
+Without observability, our agent would be returning the correct information.
+
+00:07:10.050 --> 00:07:11.650
+But now that we can observe it,
+
+00:07:11.650 --> 00:07:13.250
+we can reduce the amount of tokens,
+
+00:07:13.250 --> 00:07:16.350
+the amount of LLM calls, and the latency of the system.
+
+00:07:16.737 --> 00:07:19.237
+In this notebook, we have looked at observability,
+
+00:07:19.237 --> 00:07:20.944
+how important it is, even though
+
+00:07:20.944 --> 00:07:22.937
+we might be getting a correct answer,
+
+00:07:22.937 --> 00:07:25.237
+we might be getting it in an inefficient way.
+
+00:07:25.536 --> 00:07:27.937
+We've seen how we can use the NeMo Agent Toolkit
+
+00:07:27.937 --> 00:07:30.237
+to instrument our agentic workflows
+
+00:07:30.237 --> 00:07:32.737
+to flow observability into tools like Phoenix
+
+00:07:32.737 --> 00:07:35.937
+and examine a workflow and then fix inefficiencies.

@@ -1,0 +1,44 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.399
+Congratulations. You've completed the course
+
+00:00:02.399 --> 00:00:04.799
+and now have a solid foundation for creating,
+
+00:00:04.799 --> 00:00:08.800
+observing, evaluating, and deploying intelligent agent workflows
+
+00:00:08.800 --> 00:00:12.480
+using NAT. You turn Python functions into reusable tools,
+
+00:00:12.880 --> 00:00:17.179
+build agents that reason about which tools to use, analyzed real-world data,
+
+00:00:17.179 --> 00:00:20.280
+and made agent behavior visible with tracing and evaluations.
+
+00:00:20.579 --> 00:00:22.379
+You orchestrated multiple agents,
+
+00:00:22.579 --> 00:00:24.280
+evaluated agentic performance,
+
+00:00:24.280 --> 00:00:26.879
+and deployed workflows as production-ready applications
+
+00:00:26.879 --> 00:00:28.879
+with APIs and a polished interface.
+
+00:00:28.980 --> 00:00:32.880
+With these skills, you can systematically debug, measure, and improve agents,
+
+00:00:33.280 --> 00:00:36.579
+scale workflows, and combine tools and agents to solve new problems.
+
+00:00:36.979 --> 00:00:38.880
+Keep experimenting and exploring.
+
+00:00:38.979 --> 00:00:40.679
+I'm excited to see what you build.

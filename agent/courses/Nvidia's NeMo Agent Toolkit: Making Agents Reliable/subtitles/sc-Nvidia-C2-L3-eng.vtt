@@ -1,0 +1,1097 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.049
+In this video, you'll expand your NAT
+
+00:00:02.049 --> 00:00:04.099
+workflow to serve as a ReAct agent.
+
+00:00:04.299 --> 00:00:07.799
+And you'll add Python tools for analyzing NOAA climate data.
+
+00:00:08.000 --> 00:00:11.500
+You'll register your functions, define input schemas with Pydantic,
+
+00:00:11.500 --> 00:00:13.349
+and you'll add descriptions so your ReAct
+
+00:00:13.349 --> 00:00:15.198
+agent can determine which tools to use.
+
+00:00:15.500 --> 00:00:17.800
+You'll turn your agent from a simple chatbot
+
+00:00:17.800 --> 00:00:20.699
+into one that takes intelligent data-driven actions.
+
+00:00:20.710 --> 00:00:22.809
+Alright, let's code.
+
+00:00:22.910 --> 00:00:25.510
+In this lesson we're going to build on what we learned previously.
+
+00:00:25.609 --> 00:00:28.210
+This time we're going to build a climate analysis assistant.
+
+00:00:28.309 --> 00:00:30.609
+And we're going to use multiple tools with that assistant.
+
+00:00:30.968 --> 00:00:32.968
+We're going to take plain Python functions
+
+00:00:32.968 --> 00:00:35.167
+and we're going to turn them into NAT tools.
+
+00:00:35.667 --> 00:00:37.114
+And then we're going to register those
+
+00:00:37.114 --> 00:00:38.768
+tools to make them available to our agents.
+
+00:00:39.667 --> 00:00:41.868
+We'll package all that up as a Python package,
+
+00:00:42.667 --> 00:00:44.254
+and we'll also examine some other concepts
+
+00:00:44.254 --> 00:00:46.067
+such as how a ReAct agent uses tools.
+
+00:00:47.097 --> 00:00:50.286
+What is a ReAct agent? It's a common agentic pattern.
+
+00:00:50.286 --> 00:00:52.296
+It stands for reasoning and acting.
+
+00:00:52.896 --> 00:00:54.597
+And it's basically a loop.
+
+00:00:54.896 --> 00:00:57.097
+An LLM will reason about what to do next.
+
+00:00:57.097 --> 00:01:00.296
+It'll formulate one or more actions, it'll call those actions,
+
+00:01:00.296 --> 00:01:01.947
+and then it'll reason some more. And
+
+00:01:01.947 --> 00:01:03.597
+it'll continue that loop until it's finished.
+
+00:01:03.832 --> 00:01:06.033
+This ReAct Agent has access to three tools,
+
+00:01:06.233 --> 00:01:07.819
+and you'll notice that each of these
+
+00:01:07.819 --> 00:01:09.632
+tools is written in a completely different framework.
+
+00:01:10.233 --> 00:01:12.733
+When it runs, it'll decide which of these tools to use,
+
+00:01:12.933 --> 00:01:16.033
+and it'll iterate on tool use until it has a final answer.
+
+00:01:16.533 --> 00:01:18.082
+The data set we'll be working off
+
+00:01:18.082 --> 00:01:19.632
+of is real climate data from NOAA.
+
+00:01:19.933 --> 00:01:22.233
+And it includes information from multiple countries
+
+00:01:22.233 --> 00:01:25.033
+like the United States, France, Japan, Brazil.
+
+00:01:25.433 --> 00:01:27.002
+We'll introduce some plain Python functions
+
+00:01:27.002 --> 00:01:28.832
+that are able to analyze this data,
+
+00:01:28.832 --> 00:01:31.933
+and we'll see how to wire these functions into an agentic workflow.
+
+00:01:32.516 --> 00:01:36.615
+Python functions are the foundation of NAT tools.
+
+00:01:37.115 --> 00:01:40.816
+The top function is a vanilla Python function to calculate temperature statistics.
+
+00:01:41.316 --> 00:01:44.316
+It optionally takes a country and then it returns the statistics.
+
+00:01:44.650 --> 00:01:48.490
+If we want to use this as a NeMo Agent Toolkit tool,
+
+00:01:48.691 --> 00:01:50.531
+we simply register it as a function,
+
+00:01:50.850 --> 00:01:52.850
+and then we wrap it in some boilerplate,
+
+00:01:53.230 --> 00:01:56.031
+such as an async method and an async wrapper.
+
+00:01:56.471 --> 00:01:59.150
+Ultimately, it calls the calculate_statistics function,
+
+00:01:59.590 --> 00:02:01.271
+and then we yield some FunctionInfo
+
+00:02:01.450 --> 00:02:04.430
+to let the NeMo Agent Toolkit know how this function runs.
+
+00:02:04.998 --> 00:02:07.498
+It's a bit of boilerplate, but it's not too much.
+
+00:02:07.697 --> 00:02:10.298
+And now we're ready to wire it into our agentic workflow.
+
+00:02:10.798 --> 00:02:12.897
+The NeMo Agent Toolkit CLI can generate
+
+00:02:12.897 --> 00:02:15.698
+most of the boilerplate you need to wrap functions.
+
+00:02:16.092 --> 00:02:17.997
+But we're going to look at this here and
+
+00:02:17.997 --> 00:02:19.901
+then in a lot more detail on the slides.
+
+00:02:20.602 --> 00:02:23.391
+Every tool starts with a configuration class.
+
+00:02:23.891 --> 00:02:26.591
+This is the class that takes information in our
+
+00:02:26.591 --> 00:02:29.292
+YAML file and makes it available to the tool.
+
+00:02:29.730 --> 00:02:31.830
+Every tool also has an input schema.
+
+00:02:31.830 --> 00:02:35.830
+This is a Pydantic class that tells the large language model
+
+00:02:35.830 --> 00:02:38.631
+or the agentic workflow how to call the tool.
+
+00:02:39.531 --> 00:02:41.531
+And finally, we have to decorate the function
+
+00:02:41.531 --> 00:02:43.531
+with a registration decorator.
+
+00:02:43.741 --> 00:02:46.741
+and this wires the tool into the NeMo Agent Toolkit.
+
+00:02:47.241 --> 00:02:48.625
+We will look at this in
+
+00:02:48.625 --> 00:02:50.241
+a lot more depth in the notebook.
+
+00:02:50.941 --> 00:02:54.241
+To package our workflows, we just use a standard Python project,
+
+00:02:54.741 --> 00:02:56.540
+a pyproject.toml file.
+
+00:02:56.941 --> 00:02:59.540
+There's nothing NeMo Agent Toolkit specific here.
+
+00:02:59.941 --> 00:03:02.941
+We give the project a name, we specify entry points,
+
+00:03:03.241 --> 00:03:06.241
+and then we install it using pip or uv pip install.
+
+00:03:06.522 --> 00:03:08.138
+Once we have all of our
+
+00:03:08.138 --> 00:03:10.022
+tools registered in the NeMo Agent Toolkit,
+
+00:03:10.323 --> 00:03:12.323
+we simply have to create a configuration file.
+
+00:03:12.723 --> 00:03:14.107
+In this configuration file, you can
+
+00:03:14.107 --> 00:03:15.723
+see we have a list of functions,
+
+00:03:16.022 --> 00:03:18.022
+and the top one is calculate_statistics.
+
+00:03:18.022 --> 00:03:20.022
+This is the tool we were just discussing
+
+00:03:20.022 --> 00:03:22.622
+that we wrapped to make it available to the NeMo Agent Toolkit.
+
+00:03:22.900 --> 00:03:25.000
+There's a couple other tools as well.
+
+00:03:25.000 --> 00:03:27.099
+filter_by_country and create_visualization.
+
+00:03:27.400 --> 00:03:29.699
+These are similar functions that we've wrapped.
+
+00:03:30.199 --> 00:03:33.000
+You can see that our react_agent has gained some powers.
+
+00:03:33.199 --> 00:03:37.000
+It has a tool_names property, and we have passed the three functions
+
+00:03:37.000 --> 00:03:39.699
+that we have defined above to the react_agent,
+
+00:03:39.991 --> 00:03:42.790
+now is ready to reason and act using these tools.
+
+00:03:43.491 --> 00:03:46.491
+Of course, the configuration file is not just about running the agent.
+
+00:03:46.991 --> 00:03:49.991
+While it provides tools, it also provides for telemetry,
+
+00:03:50.491 --> 00:03:52.491
+such as open telemetry tracing.
+
+00:03:52.848 --> 00:03:54.753
+and running evaluations against our agent to
+
+00:03:54.753 --> 00:03:56.658
+make sure it doesn't regress over time.
+
+00:03:57.758 --> 00:04:01.359
+The NeMo Agent Toolkit project is just a standard Python project.
+
+00:04:01.848 --> 00:04:03.778
+You can use the NAT CLI to generate
+
+00:04:03.778 --> 00:04:05.949
+a lot of the code that we've looked at.
+
+00:04:06.579 --> 00:04:10.079
+For instance, this command, nat workflow create climate_assistant
+
+00:04:10.462 --> 00:04:12.763
+will create the following project structure.
+
+00:04:13.062 --> 00:04:15.362
+This is just a standard Python project
+
+00:04:15.462 --> 00:04:17.463
+that is ready to go with NAT.
+
+00:04:17.663 --> 00:04:21.062
+All right, let's add some intelligence to our agents with tools.
+
+00:04:21.122 --> 00:04:24.002
+First, let's look at some standalone climate tools.
+
+00:04:24.622 --> 00:04:28.322
+These are not agentic tools, these are just Python functions.
+
+00:04:28.692 --> 00:04:31.822
+We're going to import a series of Python functions here.
+
+00:04:32.492 --> 00:04:34.293
+that can load climate data,
+
+00:04:34.692 --> 00:04:36.793
+they can calculate climate statistics,
+
+00:04:37.093 --> 00:04:39.093
+they can filter climate data by country,
+
+00:04:39.392 --> 00:04:41.793
+find extreme years, create visualizations,
+
+00:04:42.093 --> 00:04:44.793
+and list the countries of the climate data.
+
+00:04:45.492 --> 00:04:47.793
+Let's take a look at what this climate data looks like.
+
+00:04:48.192 --> 00:04:51.093
+So we have 1210 temperature records
+
+00:04:51.492 --> 00:04:54.093
+ranging from 1950 to 2025
+
+00:04:54.793 --> 00:04:56.593
+and spanning 10 countries.
+
+00:04:57.144 --> 00:04:59.295
+And now let's look at some of the functions.
+
+00:04:59.795 --> 00:05:02.134
+So the documentation for calculate_statistics says
+
+00:05:02.134 --> 00:05:05.435
+it calculates basic statistics from temperature data.
+
+00:05:05.694 --> 00:05:08.115
+It takes a data frame with temperature data
+
+00:05:08.355 --> 00:05:10.935
+and an optional country to filter it by
+
+00:05:10.935 --> 00:05:13.014
+and it'll return a JSON string with the statistics.
+
+00:05:13.845 --> 00:05:16.144
+So let's call this function and see how it works.
+
+00:05:16.952 --> 00:05:19.052
+In this case we've called calculate_statistics
+
+00:05:19.052 --> 00:05:21.963
+and we've passed it the df, but not a country.
+
+00:05:21.963 --> 00:05:24.163
+Remember country is optional.
+
+00:05:24.163 --> 00:05:25.963
+And let's print the global statistics
+
+00:05:25.963 --> 00:05:27.862
+and we get some data output here.
+
+00:05:28.221 --> 00:05:30.822
+Now let's look at a different function, create_visualization.
+
+00:05:31.221 --> 00:05:33.622
+And this creates climate data visualizations
+
+00:05:33.622 --> 00:05:36.122
+and saves it to a file as an image.
+
+00:05:36.422 --> 00:05:38.262
+And we can see the arguments that
+
+00:05:38.262 --> 00:05:40.103
+it takes here and what it returns.
+
+00:05:40.103 --> 00:05:42.702
+Let's test this function out and see what it does.
+
+00:05:43.103 --> 00:05:44.903
+Here we see that calling create_visualization
+
+00:05:45.302 --> 00:05:48.302
+and we pass it a plot_type and a place to save
+
+00:05:48.603 --> 00:05:51.903
+will output a plot of climate visualization data.
+
+00:05:52.202 --> 00:05:54.302
+Each of these tools returns JSON.
+
+00:05:54.603 --> 00:05:56.302
+They have a single responsibility,
+
+00:05:56.403 --> 00:05:58.802
+but they are not plugged into our agentic workflow.
+
+00:05:58.827 --> 00:06:00.927
+Let's go ahead and do that.
+
+00:06:01.028 --> 00:06:03.028
+Now we're going to register a single tool
+
+00:06:03.028 --> 00:06:05.528
+into our NeMo Agent Toolkit workflow.
+
+00:06:05.827 --> 00:06:08.627
+When you register a tool with the NeMo Agent Toolkit,
+
+00:06:08.728 --> 00:06:10.927
+there are three things that you need to consider.
+
+00:06:11.194 --> 00:06:13.494
+The first is the input to the tool.
+
+00:06:14.194 --> 00:06:17.694
+So NeMo Agent Toolkit will use pydantic to let you define
+
+00:06:17.694 --> 00:06:20.694
+what the input to the function looks like.
+
+00:06:21.494 --> 00:06:23.994
+So we're going to import BaseModel and Field from pydantic,
+
+00:06:24.694 --> 00:06:26.994
+and our tool is calculating statistics,
+
+00:06:27.194 --> 00:06:31.293
+so we will call this input definition CalculateStatsInput.
+
+00:06:31.704 --> 00:06:36.204
+and calculate stats takes a country that is optional.
+
+00:06:36.603 --> 00:06:39.204
+And so in our case, we will give it a description,
+
+00:06:39.403 --> 00:06:42.803
+country name to filter by, leave empty for global statistics.
+
+00:06:43.283 --> 00:06:46.083
+And now that we have our inputs defined, we can move on.
+
+00:06:46.583 --> 00:06:48.382
+Next, we'll set up our configuration.
+
+00:06:49.283 --> 00:06:53.182
+NeMo Agent Toolkit is config based and we've seen YAML files already.
+
+00:06:53.283 --> 00:06:57.083
+How do the properties from the YAML get into our tool
+
+00:06:57.483 --> 00:06:59.783
+or our LLM or our workflow?
+
+00:07:00.458 --> 00:07:02.028
+it's through a config object.
+
+00:07:02.728 --> 00:07:05.958
+So in our case, we're going to define a CalculateStatisticsConfig.
+
+00:07:06.418 --> 00:07:08.051
+We'll give it a name, and
+
+00:07:08.051 --> 00:07:09.958
+this is going to become the type
+
+00:07:10.437 --> 00:07:12.958
+that we set in our YAML file.
+
+00:07:13.531 --> 00:07:15.411
+and we can give it a description.
+
+00:07:15.610 --> 00:07:17.730
+And in our case, we're just going to pass,
+
+00:07:18.031 --> 00:07:19.790
+which means there's no properties on this class,
+
+00:07:20.031 --> 00:07:22.550
+which means that our calculate statistics tool
+
+00:07:22.550 --> 00:07:24.331
+does not take any configuration.
+
+00:07:24.490 --> 00:07:26.032
+But if it was going to
+
+00:07:26.032 --> 00:07:27.831
+take any configuration properties from the YAML,
+
+00:07:27.831 --> 00:07:29.662
+we would define them here. And now
+
+00:07:29.662 --> 00:07:31.494
+we're going to register the tool itself.
+
+00:07:32.194 --> 00:07:35.494
+We register with a decorator, register_function,
+
+00:07:36.194 --> 00:07:38.894
+and we pass into that decorator the config_type,
+
+00:07:39.093 --> 00:07:41.293
+which is that config that we created earlier.
+
+00:07:41.697 --> 00:07:45.976
+This is a bit of boilerplate and the NAT CLI
+
+00:07:46.497 --> 00:07:49.576
+has generate commands that will generate some of it for you.
+
+00:07:49.937 --> 00:07:51.312
+We're not going to talk in
+
+00:07:51.312 --> 00:07:52.916
+detail about all the aspects of this,
+
+00:07:53.156 --> 00:07:55.576
+but we'll see here that we have a wrapper function
+
+00:07:55.776 --> 00:07:57.152
+that wraps the Python function that
+
+00:07:57.152 --> 00:07:58.757
+we're going to expose as a tool.
+
+00:07:58.976 --> 00:08:00.509
+It takes two properties that we'll
+
+00:08:00.509 --> 00:08:02.297
+talk about in greater depth later on.
+
+00:08:02.504 --> 00:08:04.904
+the configuration which will be injected in.
+
+00:08:05.305 --> 00:08:07.151
+And if we had properties on
+
+00:08:07.151 --> 00:08:09.305
+our configuration object that we defined earlier,
+
+00:08:09.605 --> 00:08:11.855
+then this would be an argument that
+
+00:08:11.855 --> 00:08:14.105
+contains those properties pulled from the YAML.
+
+00:08:14.404 --> 00:08:16.704
+And then a builder which we can use to grab
+
+00:08:16.704 --> 00:08:19.305
+other aspects of our workflow such as an LLM
+
+00:08:19.504 --> 00:08:21.166
+or a retriever or any other
+
+00:08:21.166 --> 00:08:23.105
+thing that we've defined in our YAML.
+
+00:08:23.404 --> 00:08:25.704
+In our case, we're not going to be using either of these.
+
+00:08:26.004 --> 00:08:29.004
+We are going to load our climate data as a data frame.
+
+00:08:29.213 --> 00:08:31.114
+And then as we wrap our tool,
+
+00:08:31.114 --> 00:08:33.014
+we will pass that data frame in.
+
+00:08:33.714 --> 00:08:35.560
+Here's the actual function that we're
+
+00:08:35.560 --> 00:08:37.714
+wrapping, calculate_statistics that we looked at earlier.
+
+00:08:38.413 --> 00:08:39.706
+We pass in the data frame
+
+00:08:39.706 --> 00:08:41.214
+that we loaded a few lines above.
+
+00:08:41.714 --> 00:08:43.307
+And then you see that
+
+00:08:43.307 --> 00:08:46.807
+we are also accepting a country parameter.
+
+00:08:47.607 --> 00:08:50.807
+This is optional of course, as we defined earlier,
+
+00:08:51.207 --> 00:08:54.908
+and we will pass that country in as well to calculate statistics
+
+00:08:54.908 --> 00:08:59.240
+and then we'll return the result. So we've wrapped the Python function,
+
+00:08:59.240 --> 00:09:02.340
+but we still need to describe it to the NeMo Agent Toolkit.
+
+00:09:02.639 --> 00:09:05.039
+And so what we will do from this is
+
+00:09:05.039 --> 00:09:07.340
+we will yield a FunctionInfo object.
+
+00:09:07.908 --> 00:09:11.528
+and the function that we'll pass to that FunctionInfo object
+
+00:09:11.528 --> 00:09:13.128
+is the _wrapper that we just looked at.
+
+00:09:13.618 --> 00:09:15.918
+And the input_schema that we talked about earlier
+
+00:09:16.388 --> 00:09:18.687
+that defines what the input looks like to our tool,
+
+00:09:18.955 --> 00:09:22.754
+and a description, and this description will help the agentic workflow
+
+00:09:22.754 --> 00:09:24.654
+know whether it should call this tool or not.
+
+00:09:24.855 --> 00:09:26.805
+So a bit of boilerplate code, but
+
+00:09:26.805 --> 00:09:28.754
+again, this would be generated for you.
+
+00:09:28.754 --> 00:09:30.201
+A lot of it would be generated
+
+00:09:30.201 --> 00:09:31.855
+for you by the NeMo Agent Toolkit CLI.
+
+00:09:32.686 --> 00:09:36.385
+If you wanted to see and run the full register.py file,
+
+00:09:36.385 --> 00:09:38.280
+you could run this cell here and we would
+
+00:09:38.280 --> 00:09:40.385
+be able to see what the Python file looks like.
+
+00:09:40.985 --> 00:09:43.086
+Now let's look at what the configuration looks like.
+
+00:09:43.186 --> 00:09:45.485
+We have this configuration already saved to disk,
+
+00:09:45.485 --> 00:09:46.547
+so we're going to load it
+
+00:09:46.547 --> 00:09:47.785
+into our cell and take a look.
+
+00:09:48.385 --> 00:09:50.086
+And here's the config file that we're
+
+00:09:50.086 --> 00:09:51.785
+going to use for this NAT workflow.
+
+00:09:52.056 --> 00:09:54.316
+Some of it will already be familiar to you.
+
+00:09:55.015 --> 00:09:58.115
+the climate_llm that we looked at in the previous notebook.
+
+00:09:58.515 --> 00:10:00.716
+But we have a new section and this is called functions.
+
+00:10:01.015 --> 00:10:02.188
+And these are the tools that
+
+00:10:02.188 --> 00:10:03.556
+we can make available to our agents.
+
+00:10:04.024 --> 00:10:07.124
+and the first and only function we have listed here
+
+00:10:07.224 --> 00:10:09.224
+is calculate_statistics.
+
+00:10:09.524 --> 00:10:10.908
+And we give it a type
+
+00:10:10.908 --> 00:10:12.524
+and we looked at this type earlier
+
+00:10:12.823 --> 00:10:15.823
+simple_tool_demo/calculate_statistics.
+
+00:10:15.923 --> 00:10:18.124
+This is how the NeMo Agent Toolkit
+
+00:10:18.224 --> 00:10:20.524
+knows how to find this tool in our Python functions.
+
+00:10:20.927 --> 00:10:23.726
+and we can override the description here for the tool.
+
+00:10:24.126 --> 00:10:26.927
+Our workflow is similar but different than before.
+
+00:10:27.427 --> 00:10:30.726
+So you'll recall before the type was just a simple LLM call,
+
+00:10:30.826 --> 00:10:34.226
+and now we're telling it that the workflow is a react_agent.
+
+00:10:34.802 --> 00:10:37.701
+A ReAct agent reasons and then acts in a loop,
+
+00:10:37.802 --> 00:10:41.001
+and this is a built-in agent to the NeMo Agent Toolkit.
+
+00:10:41.402 --> 00:10:43.601
+So we're going to say run a ReAct agent
+
+00:10:43.701 --> 00:10:47.201
+and the ReAct agent is going to have the following tools available.
+
+00:10:47.750 --> 00:10:51.551
+and we pull the tool from the functions listed above.
+
+00:10:51.650 --> 00:10:53.750
+So we have calculate_statistics here
+
+00:10:53.850 --> 00:10:56.951
+and we have passed that in as a tool to our react_agent.
+
+00:10:57.051 --> 00:11:01.150
+It also takes an LLM, which we defined earlier, the climate_llm.
+
+00:11:01.250 --> 00:11:03.800
+And we're going to set verbose to true, and this way
+
+00:11:03.800 --> 00:11:06.350
+we'll be able to see detailed outputs for the tool use.
+
+00:11:06.551 --> 00:11:08.212
+All right, let's go ahead and
+
+00:11:08.212 --> 00:11:10.150
+install and run our ReAct Agent workflow.
+
+00:11:10.515 --> 00:11:12.039
+So the tools that we looked
+
+00:11:12.039 --> 00:11:13.816
+at earlier do need to be installed
+
+00:11:13.816 --> 00:11:16.015
+into our virtual environment.
+
+00:11:16.015 --> 00:11:18.216
+And so I'm going to go ahead and install them here.
+
+00:11:19.316 --> 00:11:22.615
+And now that those are installed, we can run our workflow.
+
+00:11:22.878 --> 00:11:24.707
+So you're familiar with nat run.
+
+00:11:25.008 --> 00:11:27.577
+We'll pass it the config file that we looked at earlier,
+
+00:11:27.977 --> 00:11:31.477
+and an input, What is the global temperature trend per decade?
+
+00:11:32.447 --> 00:11:34.447
+And we can see it reasoning through.
+
+00:11:34.910 --> 00:11:38.311
+the agentic input, what is the global temperature trend per decade?
+
+00:11:38.410 --> 00:11:40.360
+and the agent thinks about this and
+
+00:11:40.360 --> 00:11:42.311
+decides that it's going to call calculate_statistics.
+
+00:11:43.010 --> 00:11:45.010
+So it calls calculate_statistics
+
+00:11:45.510 --> 00:11:48.311
+and it gets an error, no data found for country None.
+
+00:11:48.410 --> 00:11:49.749
+So this is probably room for
+
+00:11:49.749 --> 00:11:51.311
+us to improve our agent later on.
+
+00:11:51.711 --> 00:11:54.211
+realizes it should call with an empty string.
+
+00:11:54.610 --> 00:11:57.311
+So it calls calculate_statistics again with an empty country,
+
+00:11:57.765 --> 00:12:00.566
+and it gets back the results that we looked at earlier
+
+00:12:00.966 --> 00:12:03.265
+when we ran calculate_statistics.
+
+00:12:03.765 --> 00:12:05.765
+The agent concludes it knows the final answer
+
+00:12:05.966 --> 00:12:07.765
+and it gives us the answer here.
+
+00:12:08.052 --> 00:12:11.851
+The global temperature trend per decade is 0.241 degrees
+
+00:12:11.851 --> 00:12:13.851
+Celsius per decade.
+
+00:12:14.552 --> 00:12:16.951
+Let's uninstall our simple tool demo package,
+
+00:12:16.951 --> 00:12:20.251
+just so we'll be ready to run other packages and other notebooks.
+
+00:12:21.327 --> 00:12:23.347
+So let's talk through what we did.
+
+00:12:23.427 --> 00:12:25.947
+To register a Python function as a tool,
+
+00:12:26.327 --> 00:12:29.028
+we need a configuration class with a unique name.
+
+00:12:29.528 --> 00:12:31.327
+We need an async wrapper function.
+
+00:12:31.912 --> 00:12:35.611
+we need to yield a FunctionInfo with an LLM description
+
+00:12:35.711 --> 00:12:38.412
+and then we can reference it in our config file
+
+00:12:38.511 --> 00:12:40.412
+as package_name/tool_name.
+
+00:12:41.111 --> 00:12:43.111
+You can use NAT workflow create
+
+00:12:43.211 --> 00:12:46.097
+to create all the scaffolding you've done by hand in this notebook.
+
+00:12:46.097 --> 00:12:48.498
+And if you want more information on that,
+
+00:12:48.498 --> 00:12:51.898
+you can run NAT workflow create dash dash help.
+
+00:12:52.298 --> 00:12:54.462
+Here's a configuration file that has all of
+
+00:12:54.462 --> 00:12:56.898
+the tools that we looked at earlier registered in.
+
+00:12:57.264 --> 00:13:01.063
+So we have calculate_statistics, which we've previously seen,
+
+00:13:01.464 --> 00:13:04.063
+but now we've wired in the other tools as well.
+
+00:13:04.264 --> 00:13:06.264
+list_countries, filter_by_country,
+
+00:13:06.464 --> 00:13:09.063
+find_extreme_years, create_visualization.
+
+00:13:09.456 --> 00:13:13.056
+These are just sub properties of the functions top level property.
+
+00:13:13.456 --> 00:13:15.956
+And then we'll pass them into our ReAct agent here.
+
+00:13:16.255 --> 00:13:19.956
+Previously we just had calculate_statistics listed as a tool.
+
+00:13:20.355 --> 00:13:22.405
+But now we've listed all of the tools
+
+00:13:22.405 --> 00:13:24.456
+and made them available to our ReAct agent.
+
+00:13:24.703 --> 00:13:26.803
+We've also made two other small changes.
+
+00:13:27.203 --> 00:13:29.053
+Since we have many tools, sometimes the
+
+00:13:29.053 --> 00:13:30.903
+ReAct agent needs to iterate several times.
+
+00:13:31.303 --> 00:13:33.604
+We've told it that it can iterate up to five times.
+
+00:13:34.203 --> 00:13:36.354
+And then also, sometimes it will call
+
+00:13:36.354 --> 00:13:38.504
+a tool incorrectly and have to retry.
+
+00:13:38.803 --> 00:13:41.504
+and we've told it that it can retry up to two times.
+
+00:13:42.153 --> 00:13:44.653
+All right, now that we have all of our tools registered,
+
+00:13:44.653 --> 00:13:47.952
+we are ready to run more complicated queries against our agent.
+
+00:13:48.552 --> 00:13:50.753
+First, let's ask about global warming trends.
+
+00:13:51.153 --> 00:13:52.752
+We're going to run NAT run and
+
+00:13:52.752 --> 00:13:54.352
+we'll pass it that long configuration file
+
+00:13:54.352 --> 00:13:56.302
+we just looked at with the input of
+
+00:13:56.302 --> 00:13:58.253
+what is the global temperature trend per decade.
+
+00:13:58.913 --> 00:14:01.064
+And we can see the ReAct Agent reasoning
+
+00:14:01.064 --> 00:14:03.214
+down through the tools that we provided it,
+
+00:14:03.683 --> 00:14:05.313
+decides to call calculate_statistics
+
+00:14:05.813 --> 00:14:08.974
+and it gets us the global temperature trend per decade.
+
+00:14:09.573 --> 00:14:11.274
+Now let's ask for country analysis.
+
+00:14:11.711 --> 00:14:14.510
+In this case, we're going to ask about a specific country,
+
+00:14:15.010 --> 00:14:17.211
+specifically France's climate data.
+
+00:14:17.510 --> 00:14:20.311
+Let's see if it'll use multiple tools during this run.
+
+00:14:20.910 --> 00:14:22.811
+We can see it filtering by country.
+
+00:14:23.073 --> 00:14:25.474
+and we get the results back from the tool
+
+00:14:25.673 --> 00:14:27.673
+of specific country data.
+
+00:14:28.573 --> 00:14:30.774
+And then we see it calculating statistics,
+
+00:14:30.874 --> 00:14:33.173
+and this time it's passing a specific country,
+
+00:14:33.274 --> 00:14:35.974
+which is France, and it gets data back from that.
+
+00:14:36.403 --> 00:14:38.191
+And now we see the LLM take the
+
+00:14:38.191 --> 00:14:40.202
+provided JSON that it got from the various tools
+
+00:14:40.202 --> 00:14:41.772
+and put it together into a
+
+00:14:41.772 --> 00:14:43.602
+final answer, which it returns to us.
+
+00:14:43.903 --> 00:14:46.202
+Let's test the visualization tools next.
+
+00:14:46.403 --> 00:14:48.202
+In this case, we're going to ask for a visualization
+
+00:14:48.202 --> 00:14:50.903
+showing which countries have the highest warming trends.
+
+00:14:51.602 --> 00:14:54.903
+And we can see that it's chosen to call create_visualization.
+
+00:14:55.311 --> 00:14:56.603
+And it's let us know that
+
+00:14:56.603 --> 00:14:58.110
+it has saved that to a file
+
+00:14:58.510 --> 00:15:00.811
+and that file is ready for us to view.
+
+00:15:01.311 --> 00:15:04.110
+Let's take a look at what it rendered.
+
+00:15:04.510 --> 00:15:06.510
+And here we can see it gave us a rendering
+
+00:15:06.610 --> 00:15:08.811
+of the top five countries by warming trend.
+
+00:15:09.432 --> 00:15:12.331
+Finally, let's give it a really difficult question
+
+00:15:12.631 --> 00:15:14.293
+that's definitely going to require multiple
+
+00:15:14.293 --> 00:15:16.231
+tools and see how it handles it.
+
+00:15:16.932 --> 00:15:18.425
+In this case, we want it to
+
+00:15:18.425 --> 00:15:20.131
+compare the temperature trends of Canada and Brazil
+
+00:15:20.142 --> 00:15:22.831
+to answer the question which one is warming faster
+
+00:15:22.841 --> 00:15:25.631
+and then also create a visualization of global trends.
+
+00:15:26.073 --> 00:15:27.915
+And we can see it reasoning
+
+00:15:27.915 --> 00:15:30.063
+down through calculating the statistics per country,
+
+00:15:30.364 --> 00:15:32.264
+first for Canada, then for Brazil.
+
+00:15:32.663 --> 00:15:34.864
+We can see it having to retry a few times.
+
+00:15:35.563 --> 00:15:38.163
+But we finally get to the point where it's able to save
+
+00:15:38.354 --> 00:15:41.254
+a PNG image of the global trends
+
+00:15:42.153 --> 00:15:43.953
+and give us a final response
+
+00:15:44.254 --> 00:15:48.051
+giving us the trend per decade. And let's look at that output.
+
+00:15:48.051 --> 00:15:51.551
+And here we can see a plot of temperature over year.
+
+00:15:52.551 --> 00:15:54.201
+And now we'll do some cleanup. So
+
+00:15:54.201 --> 00:15:55.850
+let's delete the images that we've created.
+
+00:15:56.850 --> 00:15:59.250
+And let's uninstall the workflow that we created
+
+00:15:59.250 --> 00:16:02.250
+just so it doesn't conflict with later notebooks in the course.
+
+00:16:03.051 --> 00:16:05.051
+In this notebook, we've seen how we can take
+
+00:16:05.051 --> 00:16:06.850
+standalone Python functions
+
+00:16:07.051 --> 00:16:09.051
+and wrap them as tools to be used by
+
+00:16:09.051 --> 00:16:11.551
+NeMo Agent Toolkit agents.

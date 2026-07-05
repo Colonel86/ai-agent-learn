@@ -1,0 +1,332 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:03.200
+It's finally time to deploy your climate_analyzer workflow
+
+00:00:03.200 --> 00:00:05.200
+with a professional web interface.
+
+00:00:05.500 --> 00:00:09.800
+You'll learn how to serve NAT workflows as HTTP and WebSocket APIs.
+
+00:00:10.250 --> 00:00:12.381
+launch the NeMo Agent Toolkit UI
+
+00:00:12.721 --> 00:00:15.750
+and interact with agents in a polished production ready setup.
+
+00:00:16.221 --> 00:00:19.120
+Let's have some fun. Now that we've built our climate agent
+
+00:00:19.221 --> 00:00:21.521
+and we've composed it together with our calculator agent,
+
+00:00:21.620 --> 00:00:24.420
+we are ready to serve it in a production ready workflow.
+
+00:00:24.821 --> 00:00:27.803
+In this lesson, we're going to deploy our workflow as an API.
+
+00:00:27.803 --> 00:00:29.402
+and we're going to connect to the
+
+00:00:29.402 --> 00:00:31.003
+NeMo Agent Toolkit UI to that API
+
+00:00:31.003 --> 00:00:32.302
+and we're going to be able to
+
+00:00:32.302 --> 00:00:33.603
+chat with it in a human interface.
+
+00:00:34.003 --> 00:00:36.302
+We've already seen this command, nat serve.
+
+00:00:37.003 --> 00:00:40.203
+This hosts a FastAPI server and is ready to go
+
+00:00:40.203 --> 00:00:43.603
+with WebSocket support, OpenAPI docs and health checks.
+
+00:00:44.402 --> 00:00:46.082
+An API server is great. Now we
+
+00:00:46.082 --> 00:00:48.003
+can run a UI on top of that
+
+00:00:48.003 --> 00:00:50.003
+and chat with it using natural language.
+
+00:00:50.524 --> 00:00:52.823
+Okay, we built a powerful agent.
+
+00:00:53.223 --> 00:00:56.124
+We've wired in observability, we've run evals against it.
+
+00:00:56.323 --> 00:00:58.323
+Now let's put a UI on top of it so
+
+00:00:58.323 --> 00:01:00.524
+we can actually begin to use it in the real world.
+
+00:01:00.835 --> 00:01:03.636
+In this notebook, we're going to serve our agent as an API.
+
+00:01:03.835 --> 00:01:05.128
+We're going to connect the UI
+
+00:01:05.128 --> 00:01:06.635
+that we saw on the first notebook,
+
+00:01:06.835 --> 00:01:08.585
+and we're going to see what an
+
+00:01:08.585 --> 00:01:10.335
+API first architecture looks like with agents.
+
+00:01:11.036 --> 00:01:12.789
+First, let's install our climate_analyzer just
+
+00:01:12.789 --> 00:01:14.835
+to make sure it's ready to go.
+
+00:01:16.236 --> 00:01:19.835
+As we've seen in previous lessons, normally to serve an API
+
+00:01:19.936 --> 00:01:22.835
+of your agentic workflow is just NAT Serve.
+
+00:01:23.197 --> 00:01:24.597
+But since we're going to be running
+
+00:01:24.597 --> 00:01:26.197
+it in the background in a Jupyter notebook,
+
+00:01:26.197 --> 00:01:27.747
+there's a lot of extra code that goes
+
+00:01:27.747 --> 00:01:29.298
+around it to run it as a subprocess.
+
+00:01:29.498 --> 00:01:31.498
+Don't get too bogged down with that.
+
+00:01:31.498 --> 00:01:33.498
+Just focus on the fact that we're running NAT serve
+
+00:01:33.498 --> 00:01:35.697
+against our config file, like we've seen in the past.
+
+00:01:36.159 --> 00:01:38.659
+And the API server is running.
+
+00:01:39.259 --> 00:01:42.459
+Next, we're going to pull down the NeMo Agent Toolkit UI.
+
+00:01:42.759 --> 00:01:45.459
+The UI is a separate open source repo,
+
+00:01:45.759 --> 00:01:47.859
+and that's because you might have your own
+
+00:01:47.859 --> 00:01:49.959
+UI and we didn't want to cross dependencies.
+
+00:01:50.259 --> 00:01:51.735
+But you can pull it down to your system and
+
+00:01:51.735 --> 00:01:53.358
+run it, which is what we're going to do right now.
+
+00:01:53.453 --> 00:01:56.253
+The NAT repository is pulled and ready to go.
+
+00:01:56.742 --> 00:01:58.390
+So now that we've pulled the UI and
+
+00:01:58.390 --> 00:02:00.242
+we've got the dependencies installed, let's start it up.
+
+00:02:01.352 --> 00:02:04.453
+So on the command line you would run npm run dev,
+
+00:02:04.453 --> 00:02:07.052
+as this is just a standard npm project.
+
+00:02:07.253 --> 00:02:08.752
+Of course, we have to run it
+
+00:02:08.752 --> 00:02:10.252
+as a subprocess in this Jupyter notebook.
+
+00:02:10.836 --> 00:02:13.336
+So we've got it running and it is launched.
+
+00:02:13.637 --> 00:02:15.937
+And here we have some helper script
+
+00:02:15.937 --> 00:02:18.437
+that will give us the proper URL to your UI.
+
+00:02:18.736 --> 00:02:21.236
+It is running locally on port 3000
+
+00:02:21.514 --> 00:02:23.715
+but depending on where your Jupyter notebook is hosted,
+
+00:02:24.014 --> 00:02:27.215
+the URL might be different. And so this gives us that URL.
+
+00:02:27.615 --> 00:02:30.014
+All right, and let's open up this UI and check it out.
+
+00:02:30.615 --> 00:02:32.615
+And now we're ready to chat with our climate agent.
+
+00:02:33.514 --> 00:02:35.314
+Let's start with one of our suggested questions.
+
+00:02:35.514 --> 00:02:38.014
+What was Mexico's average temperature 1990 to 2000
+
+00:02:38.014 --> 00:02:39.715
+versus global?
+
+00:02:40.129 --> 00:02:41.883
+You might remember that we looked
+
+00:02:41.883 --> 00:02:43.930
+at this UI in the first notebook
+
+00:02:43.930 --> 00:02:45.280
+and it was just coming up with whatever
+
+00:02:45.280 --> 00:02:46.629
+the LLM happened to have in its training.
+
+00:02:46.629 --> 00:02:48.629
+But now our climate agent has tools
+
+00:02:48.629 --> 00:02:50.430
+that can pull from real world data.
+
+00:02:50.430 --> 00:02:52.930
+And it has access to a calculator
+
+00:02:52.930 --> 00:02:54.930
+so it can do calculations on that data.
+
+00:02:55.224 --> 00:02:57.324
+So let's see how it does with this question.
+
+00:02:57.724 --> 00:03:00.224
+So for our question, we can see the agent successfully ran
+
+00:03:00.724 --> 00:03:02.638
+and gave us the correct answer. And
+
+00:03:02.638 --> 00:03:04.824
+we can also look at the intermediate steps.
+
+00:03:05.125 --> 00:03:07.324
+For instance, we can see the chain of thought
+
+00:03:07.724 --> 00:03:10.724
+as the agent called various tools like calculate_statistics.
+
+00:03:10.919 --> 00:03:13.118
+and the data that it passed into that function
+
+00:03:13.118 --> 00:03:15.218
+and the data that it got from that function.
+
+00:03:15.318 --> 00:03:17.368
+So this is a way for us to
+
+00:03:17.368 --> 00:03:19.419
+evaluate our agents in a live chat environment
+
+00:03:19.419 --> 00:03:21.419
+and we can ask a follow-up question.
+
+00:03:21.519 --> 00:03:25.118
+What was the average temperature specifically
+
+00:03:25.438 --> 00:03:27.639
+in 2000 in Mexico?
+
+00:03:28.438 --> 00:03:30.192
+So we can chat over our
+
+00:03:30.192 --> 00:03:32.239
+data in a more realistic, human setting.
+
+00:03:32.938 --> 00:03:37.026
+Let's ask another question. This question's a little bit more complex.
+
+00:03:37.026 --> 00:03:38.947
+It asks for a complete climate
+
+00:03:38.947 --> 00:03:41.187
+analysis for France with trends and visualization.
+
+00:03:41.887 --> 00:03:45.586
+So we can see it did this complex climate analysis for France
+
+00:03:45.586 --> 00:03:48.986
+and it generated a visualization that it dropped into a repository.
+
+00:03:49.510 --> 00:03:52.411
+The UI is complex and has a lot of additional features.
+
+00:03:52.811 --> 00:03:55.311
+For instance, we can stream results in real time
+
+00:03:55.411 --> 00:03:57.211
+and watch the agent think instead of just
+
+00:03:57.211 --> 00:03:59.010
+getting the results back all in one go.
+
+00:03:59.311 --> 00:04:02.411
+And you can talk to the UI using HTTP streaming or WebSockets
+
+00:04:02.510 --> 00:04:06.311
+or standard HTTP. And this UI is just one example.
+
+00:04:06.510 --> 00:04:08.510
+Any front end can connect to your API.
+
+00:04:09.068 --> 00:04:10.515
+Now that we've taken a look at
+
+00:04:10.515 --> 00:04:12.169
+the UI and ran it against our agent,
+
+00:04:12.218 --> 00:04:14.769
+let's clean everything up so we're ready to go.
+
+00:04:15.269 --> 00:04:18.468
+And we're done. So we have built a climate analyzer.
+
+00:04:18.769 --> 00:04:21.168
+It connects to real-world data sources.
+
+00:04:21.536 --> 00:04:24.935
+It combines multiple agents, one written in LangGraph,
+
+00:04:25.036 --> 00:04:27.235
+another written in plain Python functions.
+
+00:04:27.536 --> 00:04:29.536
+We served it with a production API.
+
+00:04:29.836 --> 00:04:33.036
+We ran evaluations against it, plugged it into observability,
+
+00:04:33.336 --> 00:04:35.536
+and we put a UI in front of that API
+
+00:04:35.636 --> 00:04:37.336
+and proved that we can chat with our agent.

@@ -1,0 +1,671 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+00:00:00.000 --> 00:00:02.899
+Now it's time to explore ways you can integrate pre-existing agents
+
+00:00:02.899 --> 00:00:06.599
+you may have built with any number of frameworks as NAT tools.
+
+00:00:07.000 --> 00:00:09.000
+Compose multiple agents together
+
+00:00:09.000 --> 00:00:11.800
+and see how NAT orchestrates different frameworks
+
+00:00:11.800 --> 00:00:13.800
+to work seamlessly as a coordinated team.
+
+00:00:14.208 --> 00:00:16.408
+Let's get coding. In this lesson,
+
+00:00:16.408 --> 00:00:19.859
+we're going to take an existing powerful agent, a LangGraph agent,
+
+00:00:20.109 --> 00:00:21.859
+and we're going to expose it to
+
+00:00:21.859 --> 00:00:23.609
+our existing agent as an NAT tool.
+
+00:00:24.158 --> 00:00:25.982
+And this will show us how
+
+00:00:25.982 --> 00:00:28.109
+to extend workflow capabilities through agentic composition.
+
+00:00:28.510 --> 00:00:32.320
+We'll also see how to lift hard-coded providers such as LLMs
+
+00:00:32.320 --> 00:00:34.579
+up out of our agent into configuration,
+
+00:00:34.579 --> 00:00:37.740
+which makes it easier to experiment and iterate later on.
+
+00:00:38.549 --> 00:00:41.609
+We'll see how NAT orchestrates multiple agent frameworks together,
+
+00:00:41.909 --> 00:00:43.202
+all of this means that we'll
+
+00:00:43.202 --> 00:00:44.710
+be able to build more powerful workflows
+
+00:00:44.710 --> 00:00:46.670
+by combining existing agents.
+
+00:00:47.048 --> 00:00:49.048
+Sometimes tools just aren't enough.
+
+00:00:49.347 --> 00:00:51.347
+For instance, our current Climate Analyzer.
+
+00:00:51.347 --> 00:00:53.548
+It can retrieve temperature data.
+
+00:00:53.548 --> 00:00:56.347
+It can calculate basic statistics and it can create visualizations.
+
+00:00:56.847 --> 00:00:59.847
+But more complicated math, such as compound growth rates
+
+00:00:59.847 --> 00:01:02.847
+or multi-step calculations or complex projections,
+
+00:01:02.847 --> 00:01:04.601
+it can't do these things. But
+
+00:01:04.601 --> 00:01:06.647
+what if we had an existing agent?
+
+00:01:06.647 --> 00:01:09.548
+In fact, we do, this LangGraph calculator agent.
+
+00:01:10.093 --> 00:01:13.493
+It can handle complex calculations as we'll see in the notebook.
+
+00:01:13.894 --> 00:01:16.394
+So how do we integrate that LangGraph agent
+
+00:01:16.394 --> 00:01:18.694
+into our existing agentic workflow?
+
+00:01:19.093 --> 00:01:20.694
+We just register it as another function.
+
+00:01:21.394 --> 00:01:24.093
+So we've already seen this register_function decorator.
+
+00:01:24.236 --> 00:01:27.037
+We've already seen this boilerplate that we use to wrap a function.
+
+00:01:27.537 --> 00:01:30.736
+We've already seen most of this and it's all it takes
+
+00:01:30.736 --> 00:01:32.887
+to wrap an existing complex agent and
+
+00:01:32.887 --> 00:01:35.037
+make it available to our agentic workflow.
+
+00:01:35.313 --> 00:01:37.160
+Let's look at our configuration again
+
+00:01:37.160 --> 00:01:39.313
+now that we've integrated this separate agent.
+
+00:01:40.013 --> 00:01:42.813
+We have a new function, a calculator agent.
+
+00:01:43.213 --> 00:01:45.164
+And this calculator agent wraps the entire
+
+00:01:45.164 --> 00:01:47.114
+LangGraph agent that we looked at before.
+
+00:01:47.813 --> 00:01:50.114
+And if you look under tool_names and workflow,
+
+00:01:50.114 --> 00:01:52.813
+you'll see that we've exposed the calculator_agent as just another tool.
+
+00:01:53.114 --> 00:01:57.114
+We've also added another LLM. We have a climate_llm from before,
+
+00:01:57.114 --> 00:01:58.808
+but now we have a calculator_llm.
+
+00:01:58.808 --> 00:02:02.608
+This isn't required, we could use the same LLM for multiple tools,
+
+00:02:02.608 --> 00:02:05.108
+but in our case we wanted a new LLM definition
+
+00:02:05.108 --> 00:02:07.209
+so we can constrain the max_tokens.
+
+00:02:07.209 --> 00:02:09.138
+You might have other agents that have other
+
+00:02:09.138 --> 00:02:11.308
+properties that need to be changed such as temperature.
+
+00:02:11.467 --> 00:02:15.266
+And now we can begin to understand the power of agentic composition.
+
+00:02:15.967 --> 00:02:18.266
+In this picture, we see a workflow on the left
+
+00:02:18.467 --> 00:02:20.467
+and it has access to three tools.
+
+00:02:20.967 --> 00:02:24.266
+But the top tool and the bottom tool also have tools.
+
+00:02:24.866 --> 00:02:27.467
+These tools are actually agents themselves.
+
+00:02:27.944 --> 00:02:31.245
+and some of the tools that those agents have also contain tools.
+
+00:02:31.245 --> 00:02:33.544
+Those tools are also full agents.
+
+00:02:33.944 --> 00:02:36.250
+And instead of having a bunch of different
+
+00:02:36.250 --> 00:02:38.844
+agents running separately, now we can compose them together.
+
+00:02:38.944 --> 00:02:42.444
+Agents communicating with agents and leveraging each other's powers.
+
+00:02:42.788 --> 00:02:46.288
+What this means is we can extend an agent with another agent.
+
+00:02:46.788 --> 00:02:48.588
+Before we did the integration, for instance,
+
+00:02:48.989 --> 00:02:50.650
+we couldn't ask for mathematical calculations
+
+00:02:50.650 --> 00:02:52.588
+to be done against our climate data.
+
+00:02:52.989 --> 00:02:55.112
+But after integration, now we can
+
+00:02:55.112 --> 00:02:57.588
+combine the power of our calculator agent
+
+00:02:57.588 --> 00:02:59.588
+with the power of our climate agent. And we
+
+00:02:59.588 --> 00:03:01.588
+can get much better answers and much better analysis.
+
+00:03:02.064 --> 00:03:04.664
+And this is the power of unified orchestration.
+
+00:03:05.064 --> 00:03:07.865
+Do you have a LangGraph agent, a CrewAI agent,
+
+00:03:08.264 --> 00:03:10.365
+some custom FastAPI service?
+
+00:03:10.865 --> 00:03:13.264
+You can wrap all of these and orchestrate them
+
+00:03:13.264 --> 00:03:15.664
+by NAT's unified orchestration layer.
+
+00:03:16.064 --> 00:03:18.865
+In this lesson, we are going to be looking at
+
+00:03:18.865 --> 00:03:20.764
+integrating multiple agents together.
+
+00:03:20.772 --> 00:03:23.372
+First, let's install our climate analyzer package
+
+00:03:23.372 --> 00:03:25.272
+that we looked at in previous notebooks.
+
+00:03:25.772 --> 00:03:27.372
+All right, and now that that's installed,
+
+00:03:27.573 --> 00:03:29.573
+let's think about some limitations that our
+
+00:03:29.573 --> 00:03:32.372
+current climate analyzer agent cannot handle.
+
+00:03:33.073 --> 00:03:35.772
+So let's look at some questions that our agent can't handle yet.
+
+00:03:36.051 --> 00:03:38.123
+If we want to observe temperature data
+
+00:03:38.123 --> 00:03:40.491
+but look at the compound annual growth rate,
+
+00:03:40.951 --> 00:03:42.532
+it's not going to be able to calculate that
+
+00:03:42.532 --> 00:03:45.592
+because it's a climate agent, not a mathematical agent.
+
+00:03:46.181 --> 00:03:48.622
+If we wanted to get the weighted average of population,
+
+00:03:48.981 --> 00:03:50.921
+again, this is a mathematical question and our
+
+00:03:50.921 --> 00:03:52.861
+climate agent is going to stumble on it.
+
+00:03:53.651 --> 00:03:55.913
+And if we want to ask
+
+00:03:55.913 --> 00:03:58.551
+a question about renewable capacity, projected growth,
+
+00:03:58.551 --> 00:04:01.252
+when are we going to hit a certain amount of gigawatts?
+
+00:04:01.602 --> 00:04:03.581
+Our agent's not going to be able to handle that either.
+
+00:04:03.917 --> 00:04:05.440
+It's a great climate agent, but
+
+00:04:05.440 --> 00:04:07.217
+it doesn't know how to do math.
+
+00:04:08.007 --> 00:04:10.806
+Now we have another agent here. It's a completely separate agent.
+
+00:04:11.206 --> 00:04:14.306
+It's not at all associated with the NeMo Agent Toolkit.
+
+00:04:14.706 --> 00:04:16.906
+It is a LangGraph agent and it's a calculator.
+
+00:04:17.406 --> 00:04:19.500
+It's already built, it's battle-tested, it's ready to
+
+00:04:19.500 --> 00:04:21.593
+use, and it knows how to do math.
+
+00:04:21.593 --> 00:04:24.192
+Let's take a look at the calculator agent structure.
+
+00:04:24.593 --> 00:04:28.492
+So this is a multi-step calculator agent and it's written in LangGraph.
+
+00:04:28.793 --> 00:04:31.992
+And it has a number of mathematical tools available to it.
+
+00:04:32.093 --> 00:04:33.976
+For instance, basic math,
+
+00:04:33.976 --> 00:04:36.076
+calculating a percentage_change,
+
+00:04:37.177 --> 00:04:39.177
+calculating the compound_growth_rate,
+
+00:04:39.476 --> 00:04:41.476
+and other tools that are available.
+
+00:04:41.976 --> 00:04:45.476
+Let's set up a difficult question for this mathematical agent to calculate.
+
+00:04:45.973 --> 00:04:50.173
+We're going to go ahead and put climate data into the prompt.
+
+00:04:50.773 --> 00:04:53.773
+So we're going to put in a country's emissions.
+
+00:04:54.370 --> 00:04:56.370
+and how those emissions reduced.
+
+00:04:57.271 --> 00:04:58.821
+And then we're going to ask it
+
+00:04:58.821 --> 00:05:00.370
+to do some calculations on those emissions.
+
+00:05:01.670 --> 00:05:03.471
+And now the agent has run with that
+
+00:05:03.471 --> 00:05:05.271
+prompt and it's given us a final result.
+
+00:05:05.571 --> 00:05:07.221
+We can see its reasoning as it's
+
+00:05:07.221 --> 00:05:08.870
+calculating the emissions in the various years.
+
+00:05:09.071 --> 00:05:12.571
+And finally, it gives us calculated emissions for the year 2025.
+
+00:05:13.065 --> 00:05:14.966
+So we can see that it's able
+
+00:05:14.966 --> 00:05:16.865
+to perform a variety of mathematical functions.
+
+00:05:17.865 --> 00:05:19.865
+Let's switch back to our climate agent.
+
+00:05:20.065 --> 00:05:24.165
+We give our climate agent a question on temperature statistics in India
+
+00:05:24.365 --> 00:05:25.865
+and while it's going to be able
+
+00:05:25.865 --> 00:05:27.365
+to get the climate information for that,
+
+00:05:27.466 --> 00:05:29.216
+it's not going to be able to do the
+
+00:05:29.216 --> 00:05:30.966
+math. Let's run this workflow and watch it fail.
+
+00:05:31.404 --> 00:05:33.985
+So we can see the agent trying to solve this problem.
+
+00:05:34.504 --> 00:05:36.404
+It begins to calculate statistics for India,
+
+00:05:36.404 --> 00:05:39.884
+but we can see that it calls this function multiple times,
+
+00:05:40.105 --> 00:05:42.504
+trying to calculate statistics over various years,
+
+00:05:42.504 --> 00:05:44.805
+including years that are not on our data set.
+
+00:05:45.204 --> 00:05:48.504
+It thrashes for a while and then finally hallucinates something
+
+00:05:48.704 --> 00:05:50.704
+in an effort to give us the answer that we want.
+
+00:05:51.230 --> 00:05:53.329
+So what happened?
+
+00:05:53.329 --> 00:05:56.129
+It retrieved the temperature data correctly as we would expect it to,
+
+00:05:56.230 --> 00:05:58.230
+and it knows the values that it
+
+00:05:58.230 --> 00:06:00.230
+needs, but it can't do the math.
+
+00:06:00.329 --> 00:06:03.029
+And so it's most likely going to hallucinate answers.
+
+00:06:03.329 --> 00:06:04.870
+What we need to do is integrate
+
+00:06:04.870 --> 00:06:06.629
+the calculator agent that we looked at earlier.
+
+00:06:06.827 --> 00:06:09.177
+So how do we integrate that LangGraph
+
+00:06:09.177 --> 00:06:11.528
+Agent into our NeMo Agent Toolkit workflow?
+
+00:06:12.028 --> 00:06:14.927
+We've already seen how to integrate a simple Python function
+
+00:06:14.927 --> 00:06:18.327
+and this is no different. It's just another function.
+
+00:06:18.779 --> 00:06:21.079
+We've already seen this boilerplate code before
+
+00:06:21.079 --> 00:06:23.680
+how to take a Python function and wrap it
+
+00:06:23.680 --> 00:06:25.572
+so that it's exposed as a
+
+00:06:25.572 --> 00:06:27.779
+tool. There are just a few changes.
+
+00:06:28.279 --> 00:06:31.279
+First, when we decorate our function with this register_function,
+
+00:06:32.279 --> 00:06:35.279
+we can now say that the framework wrapper is LangChain.
+
+00:06:35.648 --> 00:06:39.747
+because our agent is a LangGraph and therefore LangChain agent.
+
+00:06:40.247 --> 00:06:43.648
+This allows the NeMo Agent Toolkit to, for instance,
+
+00:06:43.648 --> 00:06:48.247
+better integrate observability and evaluation tools into this wrapped agent.
+
+00:06:48.848 --> 00:06:51.447
+Something else that we do, we've seen the builder
+
+00:06:51.648 --> 00:06:54.447
+that was injected into the wrapping function before,
+
+00:06:54.548 --> 00:06:57.247
+but we didn't use this builder. But now we can.
+
+00:06:57.447 --> 00:06:59.447
+We can ask the builder for an LLM.
+
+00:06:59.812 --> 00:07:01.911
+And that's what we do here.
+
+00:07:02.012 --> 00:07:05.612
+Instead of hardcoding the LLM into our calculator agent,
+
+00:07:05.812 --> 00:07:08.026
+now we can control that LLM
+
+00:07:08.026 --> 00:07:10.608
+through the NeMo Agent Toolkit YAML file.
+
+00:07:10.608 --> 00:07:13.908
+So we request a specific LLM called calculator LLM
+
+00:07:14.408 --> 00:07:16.808
+and we tell it that it needs to wrap that
+
+00:07:16.808 --> 00:07:19.209
+LLM in an adapter that works with a LangChain agent.
+
+00:07:19.509 --> 00:07:22.809
+And then we're able to create our calculator agent with that LLM.
+
+00:07:23.408 --> 00:07:25.088
+All of the rest of this will
+
+00:07:25.088 --> 00:07:27.009
+be familiar to you. We have our wrapper
+
+00:07:27.021 --> 00:07:30.920
+function. Inside that wrapper function, we call the agent itself
+
+00:07:30.920 --> 00:07:33.090
+and we return the results. And
+
+00:07:33.090 --> 00:07:35.620
+then finally, we yield a FunctionInfo object
+
+00:07:36.120 --> 00:07:38.420
+that tells our NeMo Agent Toolkit
+
+00:07:38.821 --> 00:07:40.920
+workflow how to talk to this agent.
+
+00:07:41.290 --> 00:07:43.124
+Now that we've prepared our calculator agent
+
+00:07:43.124 --> 00:07:45.220
+to be used by the NeMo Agent Toolkit,
+
+00:07:45.220 --> 00:07:47.779
+let's look at what the configuration file will look like.
+
+00:07:48.019 --> 00:07:51.579
+We've already seen in our LLM section this climate LLM,
+
+00:07:51.579 --> 00:07:54.399
+and while we could reuse this for the calculator agent,
+
+00:07:54.399 --> 00:07:56.800
+let's give it its own dedicated LLM.
+
+00:07:57.235 --> 00:07:59.435
+We'll call this calculator_llm.
+
+00:07:59.735 --> 00:08:02.535
+We saw this earlier when we asked the builder for a calculator_llm.
+
+00:08:02.535 --> 00:08:04.242
+This is how it finds it.
+
+00:08:04.242 --> 00:08:06.235
+And this will also be a NIM.
+
+00:08:06.735 --> 00:08:08.735
+We'll use similar parameters to before,
+
+00:08:08.735 --> 00:08:11.735
+except let's change the max_tokens to 1024.
+
+00:08:12.259 --> 00:08:16.689
+because we should be outputting less tokens to do mathematical calculations.
+
+00:08:17.259 --> 00:08:20.158
+Our climate tools remain unchanged and they're elided here.
+
+00:08:21.059 --> 00:08:24.658
+But we will register the calculator_agent simply as a function.
+
+00:08:25.459 --> 00:08:29.358
+This is the entire calculator_agent now exposed as a simple tool.
+
+00:08:29.630 --> 00:08:31.850
+and we can take this tool and
+
+00:08:31.850 --> 00:08:34.071
+plug it into our ReAct agent workflow.
+
+00:08:34.671 --> 00:08:37.370
+Now our ReAct agent is going to have available to it
+
+00:08:37.581 --> 00:08:40.811
+all of the climate functions and the calculator agent.
+
+00:08:41.630 --> 00:08:44.130
+So what have we done to take this LangGraph agent
+
+00:08:44.211 --> 00:08:46.390
+and make it available to the NeMo Agent Toolkit?
+
+00:08:46.787 --> 00:08:48.986
+First, we've removed the LLM
+
+00:08:48.986 --> 00:08:51.586
+that was hardcoded in the LangGraph agent
+
+00:08:51.586 --> 00:08:54.586
+and we've moved it into the NAT config.
+
+00:08:54.586 --> 00:08:56.986
+That way it's not hardcoded and it's configurable.
+
+00:08:57.375 --> 00:09:01.365
+Second, we've told NeMo Agent Toolkit that it is a LangChain agent.
+
+00:09:01.875 --> 00:09:06.004
+This gives greater compatibility between NAT and the wrapped agent.
+
+00:09:07.004 --> 00:09:09.605
+As for the registration, it's just another tool to NAT.
+
+00:09:09.705 --> 00:09:12.304
+It's another Python function that is now available
+
+00:09:12.404 --> 00:09:14.605
+for any NAT agent workflow to call.
+
+00:09:15.206 --> 00:09:16.776
+Let's run the same question that
+
+00:09:16.776 --> 00:09:18.606
+we did before with the new config
+
+00:09:18.606 --> 00:09:20.907
+and see if it's able to use the mathematical agent.
+
+00:09:22.006 --> 00:09:24.407
+We can see it getting climate information from India.
+
+00:09:24.907 --> 00:09:27.307
+And now when it goes to calculate the temperature statistics,
+
+00:09:27.307 --> 00:09:30.006
+we can see that it's decided to call our calculator_agent.
+
+00:09:30.307 --> 00:09:32.907
+The calculator_agent runs and we can see its output there.
+
+00:09:34.006 --> 00:09:38.006
+And finally, it arrives at a non-hallucinated answer
+
+00:09:38.006 --> 00:09:40.106
+that the temperature in India in 2050
+
+00:09:40.106 --> 00:09:42.907
+will be approximately 25.24 degrees.
+
+00:09:43.360 --> 00:09:46.159
+And finally, let's uninstall our climate analyzer package
+
+00:09:46.159 --> 00:09:48.259
+just so we're ready to run the next notebook.
+
+00:09:48.559 --> 00:09:50.559
+So what have we done in this notebook?
+
+00:09:50.559 --> 00:09:53.860
+We added mathematical capabilities to our climate agent
+
+00:09:54.159 --> 00:09:56.432
+by pulling in another existing agent.
+
+00:09:56.432 --> 00:09:59.133
+and we saw that to the NeMo Agent Toolkit,
+
+00:09:59.232 --> 00:10:01.232
+it's just another Python function.
+
+00:10:01.932 --> 00:10:04.133
+We also saw that we can deeply integrate
+
+00:10:04.232 --> 00:10:06.332
+NAT into our existing agentic workflows
+
+00:10:06.932 --> 00:10:10.232
+to allow its config-driven development to work through all of our agents.
+
+00:10:10.633 --> 00:10:13.033
+And now our climate agent can handle complex math.
