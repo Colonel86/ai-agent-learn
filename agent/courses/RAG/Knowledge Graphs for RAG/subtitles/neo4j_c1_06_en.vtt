@@ -1,0 +1,1111 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:12.460 --> 00:00:13.089
+Let's get started.
+
+2
+00:00:14.839 --> 00:00:17.679
+Here in the notebook,
+the first step as usual,
+
+3
+00:00:17.679 --> 00:00:19.890
+is to import some packages for Python,
+
+4
+00:00:19.890 --> 00:00:24.320
+and then setting up some global
+variables that we will use in the notebook.
+
+5
+00:00:29.620 --> 00:00:31.750
+And for all the queries
+that we want to send to Neo4j,
+
+6
+00:00:31.750 --> 00:00:33.170
+we'll again use the langchain
+integration called Neo4jGraph.
+
+7
+00:00:36.439 --> 00:00:36.840
+You already have chunk nodes.
+
+8
+00:00:40.399 --> 00:00:40.880
+You'll want to create a new node
+to represent the 10k form itself.
+
+9
+00:00:46.659 --> 00:00:48.079
+This 10k form node will have a form
+label and the following properties.
+
+10
+00:00:48.100 --> 00:00:49.579
+It'll have a form ID, which is a
+unique identifier for the form.
+
+11
+00:00:49.619 --> 00:00:50.920
+It'll have a source property,
+
+12
+00:00:50.920 --> 00:00:54.560
+which will be a link back to the
+original 10k document from the SEC.
+
+13
+00:00:55.090 --> 00:00:56.399
+There's also a CIK number,
+
+14
+00:00:56.399 --> 00:01:00.329
+which is the central index key from
+the SEC and also a QSIP 6 code. Now,
+
+15
+00:01:08.000 --> 00:01:10.780
+Each of the chunks has the information
+that we need to create the form node. So,
+
+16
+00:01:13.140 --> 00:01:15.659
+And with that chunk, just
+return one of those nodes.
+
+17
+00:01:16.159 --> 00:01:16.420
+And then, we'll use this
+special notation pull specific
+
+18
+00:01:22.799 --> 00:01:24.780
+You can see that we have all the
+information that we need here.
+
+19
+00:01:25.280 --> 00:01:28.780
+When you create the form node,
+it'll be with a parameterized query.
+
+20
+00:01:29.129 --> 00:01:31.310
+And if you remember that
+parameterized query can
+
+21
+00:01:31.310 --> 00:01:33.769
+take in a dictionary as
+one of the parameters.
+
+22
+00:01:34.409 --> 00:01:34.609
+So here, we've got the perfect dictionary
+that we need for creating the form node.
+
+23
+00:01:37.930 --> 00:01:40.090
+Let's save that into
+just a Python variable.
+
+24
+00:01:42.629 --> 00:01:42.950
+Perfect.
+
+25
+00:01:43.989 --> 00:01:46.609
+We'll now use that
+dictionary to create a form node.
+
+26
+00:01:47.469 --> 00:01:49.969
+You can see down here at
+when we're calling the query,
+
+27
+00:01:49.969 --> 00:01:52.459
+we're going to pass in some
+parameters, this form info parameter,
+
+28
+00:01:52.459 --> 00:01:54.280
+and we're going to pass in the dictionary.
+
+29
+00:01:54.980 --> 00:01:57.150
+That dictionary under
+the name form info param
+
+30
+00:01:57.150 --> 00:01:59.060
+will be available inside of the query.
+
+31
+00:02:04.500 --> 00:02:08.139
+And when we create it, we'll set
+the names, the source, the SIC,
+
+32
+00:02:08.139 --> 00:02:11.229
+and also the QSOAP IDs based
+on the passed in parameter.
+
+33
+00:02:12.530 --> 00:02:15.849
+As always, we'll do some sanity checking
+to make sure that we did the right thing.
+
+34
+00:02:16.229 --> 00:02:20.020
+We'll go ahead and do a match for all
+forms and return a count to those forms.
+
+35
+00:02:20.259 --> 00:02:21.400
+We're expecting there to be only one.
+
+36
+00:02:24.159 --> 00:02:26.479
+Form count is one, just
+as we wanted. Perfect.
+
+37
+00:02:30.590 --> 00:02:34.550
+Our goal is to add relationships to
+improve the context around each chunk.
+
+38
+00:02:35.389 --> 00:02:39.159
+You will connect chunks to each other
+and to that newly created form node.
+
+39
+00:02:39.419 --> 00:02:42.560
+The result will reflect the
+original structure of the document.
+
+40
+00:02:43.039 --> 00:02:46.419
+You can start by creating a
+linked list of nodes for each section.
+
+41
+00:02:49.159 --> 00:02:52.000
+First, let's just find all the
+chunks that belong together.
+
+42
+00:02:52.479 --> 00:02:55.770
+So we'll match all the chunks
+where they come from the same form ID,
+
+43
+00:02:55.770 --> 00:02:58.590
+and we're going to pass in
+the form ID as a parameter.
+
+44
+00:02:59.750 --> 00:03:01.340
+Here, you only have one form,
+
+45
+00:03:01.340 --> 00:03:03.719
+but I'm showing you a query that will work
+
+46
+00:03:03.719 --> 00:03:05.849
+even if you had chunks
+from multiple forms.
+
+47
+00:03:06.349 --> 00:03:08.590
+The form ID is passed
+in as a query parameter.
+
+48
+00:03:09.189 --> 00:03:13.150
+It is then used in the where clause to
+check that the chunks have the same form ID.
+
+49
+00:03:13.650 --> 00:03:16.990
+Looking at the result, you can see that
+each of these come from the same form ID.
+
+50
+00:03:17.610 --> 00:03:20.610
+They have different chunk IDs and
+different sequences. So, that looks pretty good.
+
+51
+00:03:23.550 --> 00:03:26.520
+In particular, notice that
+we're returning the chunk sequence
+
+52
+00:03:26.520 --> 00:03:29.490
+ID that seems to be
+incrementing 0123 and four,
+
+53
+00:03:29.490 --> 00:03:32.099
+that looks good. We're
+going to be using that to make
+
+54
+00:03:32.099 --> 00:03:34.310
+sure that we have all the
+chunks in the right order.
+
+55
+00:03:34.719 --> 00:03:38.099
+Let's change this query to make sure
+that we actually have them all in order.
+
+56
+00:03:58.340 --> 00:04:01.500
+Okay, looking at the results, they're
+still all from the same form. That's good.
+
+57
+00:04:02.439 --> 00:04:05.520
+And if we look at the sequence
+ID to make sure it's in order,
+
+58
+00:04:05.520 --> 00:04:08.659
+we see zero and then another
+zero. Okay, so that's not good.
+
+59
+00:04:09.419 --> 00:04:10.120
+Why is that?
+
+60
+00:04:10.860 --> 00:04:13.180
+Looking more closely, we
+can see that we've got
+
+61
+00:04:13.180 --> 00:04:14.990
+chunks from different
+sections of the form.
+
+62
+00:04:15.610 --> 00:04:19.060
+Here, this is from section seven
+a and this is from section seven,
+
+63
+00:04:19.060 --> 00:04:23.050
+they both have a chunk with a
+sequence ID zero, that's not what we want.
+
+64
+00:04:23.509 --> 00:04:26.089
+We just want a sequence of
+chunks from the same section.
+
+65
+00:04:26.610 --> 00:04:26.790
+So now, let's refine
+this a little bit more.
+
+66
+00:04:37.389 --> 00:04:41.259
+We've also added a new query
+parameter called f 10k item parameter.
+
+67
+00:04:41.639 --> 00:04:44.259
+And that's the name of the section
+that we want the chunks to be from. So,
+
+68
+00:04:50.879 --> 00:04:54.750
+Okay, checking the results again,
+everything from the same form, that's good.
+
+69
+00:04:55.009 --> 00:04:58.560
+We're also from the same form
+item, item one, item one, item one,
+
+70
+00:04:58.560 --> 00:05:01.019
+and we've got the sequence
+we want 0123 incrementing.
+
+71
+00:05:03.100 --> 00:05:03.420
+Perfect.
+
+72
+00:05:13.629 --> 00:05:17.389
+So there's a new line here. And this
+here at the end, this slash slash,
+
+73
+00:05:17.389 --> 00:05:20.029
+that's just a way of having a
+comment at the end of a line.
+
+74
+00:05:38.740 --> 00:05:39.019
+Cool.
+
+75
+00:05:47.360 --> 00:05:49.040
+And in order by their sequence ID.
+
+76
+00:06:34.579 --> 00:06:37.420
+We can check the graph schema to see
+that there's a new relationship type.
+
+77
+00:06:39.120 --> 00:06:42.339
+We see that we have nodes with properties
+and the relationships are the following.
+
+78
+00:06:42.879 --> 00:06:46.129
+We have chunks that are connected by
+next relationship to other chunks.
+
+79
+00:06:47.009 --> 00:06:47.300
+Perfect.
+
+80
+00:07:01.399 --> 00:07:04.860
+Because we have avoid duplicates
+true, even if we try to do item 1 again,
+
+81
+00:07:04.860 --> 00:07:08.079
+we're not going gonna create a new linked
+list because that'll avoid the duplicates.
+
+82
+00:07:11.560 --> 00:07:14.769
+Next, you can connect the
+chunks to the form they're part of.
+
+83
+00:07:15.889 --> 00:07:19.819
+Match a chunk and a form
+where they have the same form ID,
+
+84
+00:07:19.819 --> 00:07:22.540
+then merge a new part of
+relationship between them.
+
+85
+00:07:24.759 --> 00:07:26.120
+You can see we've
+created 23 new relationships.
+
+86
+00:07:27.939 --> 00:07:30.329
+As a reminder, we're
+working with a small collection
+
+87
+00:07:30.329 --> 00:07:32.720
+of chunks here to keep the
+notebook running smoothly.
+
+88
+00:07:33.420 --> 00:07:36.810
+In the full sample 10k form,
+there are several hundred chunks.
+
+89
+00:07:40.620 --> 00:07:43.259
+You can add one more
+relationship to the graph,
+
+90
+00:07:43.259 --> 00:07:46.199
+connecting the form to the
+first chunk of each section.
+
+91
+00:07:47.060 --> 00:07:48.850
+This is similar to the previous query,
+
+92
+00:07:48.850 --> 00:07:51.399
+but also checks that the
+chunk is sequence ID 0.
+
+93
+00:07:52.240 --> 00:07:55.060
+The section relationship
+that connects the form to the
+
+94
+00:07:55.060 --> 00:07:57.879
+first chunk will also
+get an F10K item property.
+
+95
+00:07:58.319 --> 00:08:00.259
+It will take the value
+of that from the chunk.
+
+96
+00:08:01.120 --> 00:08:02.660
+You can see that
+happening in the merge here.
+
+97
+00:08:03.180 --> 00:08:06.379
+This is a kindness for humans
+looking at the knowledge graph,
+
+98
+00:08:06.379 --> 00:08:08.709
+enabling them to
+easily navigate from a form
+
+99
+00:08:08.709 --> 00:08:10.750
+to the beginning of a particular section.
+
+100
+00:08:13.300 --> 00:08:16.800
+We've got four sections. So of course,
+we created four section relationships.
+
+101
+00:08:18.800 --> 00:08:21.829
+We can now try some example
+cipher queries to explore the graph.
+
+102
+00:08:22.430 --> 00:08:26.339
+For example, you can get the first
+chunk of a section using a pattern
+
+103
+00:08:26.339 --> 00:08:29.699
+match from a form to the chunk
+connected by a section relationship.
+
+104
+00:08:30.019 --> 00:08:33.259
+You'll use the where clause to make
+sure that the form has got the form
+
+105
+00:08:33.259 --> 00:08:36.059
+ID we want and that the
+relationship is for the section we want.
+
+106
+00:08:36.220 --> 00:08:38.009
+We're going to pass those
+in as query parameters.
+
+107
+00:08:39.500 --> 00:08:40.970
+There's the chunk ID for the chunk. That
+is the first one in the section. And then,
+
+108
+00:08:48.539 --> 00:08:50.139
+With information about the first chunk,
+
+109
+00:08:50.139 --> 00:08:54.139
+you could then get the next chunk in the
+section by following the next relationship.
+
+110
+00:08:56.899 --> 00:08:58.950
+And you can see that
+this section continues
+
+111
+00:08:58.950 --> 00:09:00.750
+to talk about our
+favorite company, NetApp.
+
+112
+00:09:01.990 --> 00:09:03.769
+To sanity check the work
+that we've been doing,
+
+113
+00:09:03.769 --> 00:09:05.750
+we'll take a look and
+make sure that we actually
+
+114
+00:09:05.750 --> 00:09:07.330
+do have two chunks that are in sequence.
+
+115
+00:09:13.610 --> 00:09:15.370
+And this one is chunk 0001.
+
+116
+00:09:16.450 --> 00:09:16.750
+Perfect.
+
+117
+00:09:18.350 --> 00:09:20.279
+To find a window of chunks,
+
+118
+00:09:20.279 --> 00:09:24.470
+you can use a pattern match using the
+next relationships between three nodes.
+
+119
+00:09:25.470 --> 00:09:28.389
+You only need to specify the
+chunk ID of one of the chunks.
+
+120
+00:09:29.120 --> 00:09:32.679
+Because of the relationships, you know
+you will get all three chunks back. Here,
+
+121
+00:09:39.740 --> 00:09:42.289
+You can see that we've
+got chunks C1, C2 and C3,
+
+122
+00:09:42.289 --> 00:09:44.620
+and that they've got
+chunk IDs 000, 01, and 02.
+
+123
+00:09:47.399 --> 00:09:48.159
+This is great!
+
+124
+00:09:48.850 --> 00:09:50.860
+You're starting to see the
+advantage of having a graph.
+
+125
+00:09:51.960 --> 00:09:54.279
+Once you have a place
+to start in the graph,
+
+126
+00:09:54.279 --> 00:09:57.429
+you can easily get to connected
+information. With a RAG application,
+
+127
+00:09:57.429 --> 00:09:59.519
+you might discover a
+node using semantic search.
+
+128
+00:10:05.919 --> 00:10:08.840
+With a graph, information is
+stored in nodes and relationships.
+
+129
+00:10:09.960 --> 00:10:12.700
+There's also information in
+the structure of the graph.
+
+130
+00:10:13.799 --> 00:10:16.940
+You just matched a pattern with
+three nodes and two relationships.
+
+131
+00:10:18.080 --> 00:10:20.320
+The thing you found is called a path.
+
+132
+00:10:21.059 --> 00:10:23.600
+Paths are powerful features of a graph,
+
+133
+00:10:23.600 --> 00:10:27.580
+famous in algorithms like finding
+the shortest path between two nodes.
+
+134
+00:10:29.000 --> 00:10:31.700
+You can capture the entire
+matching path as a variable by
+
+135
+00:10:31.700 --> 00:10:34.159
+assigning it at the
+beginning of the pattern like this.
+
+136
+00:10:37.000 --> 00:10:39.629
+Paths are measured by the
+number of relationships in the path.
+
+137
+00:10:40.480 --> 00:10:43.210
+For a three-node path, we'd expect
+that the length is going to be 2.
+
+138
+00:10:44.519 --> 00:10:44.980
+Let's take a look.
+
+139
+00:10:47.070 --> 00:10:47.299
+Perfect.
+
+140
+00:10:48.399 --> 00:10:50.519
+You'll be using paths in
+the next couple of queries.
+
+141
+00:10:51.019 --> 00:10:51.860
+It's going to be a lot of fun.
+
+142
+00:10:52.960 --> 00:10:56.919
+Notice that the chunk window pattern
+is around the second chunk in the list,
+
+143
+00:10:56.919 --> 00:10:58.620
+taken from the next chunk info.
+
+144
+00:10:59.299 --> 00:11:01.340
+What happens to the
+pattern match if we look
+
+145
+00:11:01.340 --> 00:11:03.159
+for a window around
+the first chunk instead?
+
+146
+00:11:03.899 --> 00:11:04.200
+Let's see.
+
+147
+00:11:04.980 --> 00:11:07.019
+Change next chunk info into
+first chunk instead. Let's see.
+
+148
+00:11:07.039 --> 00:11:09.700
+Change next chunk info into first
+chunk info, and then let's run.
+
+149
+00:11:13.240 --> 00:11:15.639
+That's because the first
+chunk info doesn't have
+
+150
+00:11:15.649 --> 00:11:18.049
+a previous chunk as
+required by the pattern.
+
+151
+00:11:19.129 --> 00:11:22.909
+We can change the pattern to look for
+what's called a variable length path.
+
+152
+00:11:23.490 --> 00:11:27.350
+With a variable length path, you can
+specify a range of relationships to match.
+
+153
+00:11:29.990 --> 00:11:33.610
+You can see the notation here when
+we specify the relationship type.
+
+154
+00:11:34.389 --> 00:11:35.309
+It's colon relationship type. Then
+an asterisk, and then, the range.
+
+155
+00:11:48.720 --> 00:11:51.090
+By using a variable length, both in the
+beginning and at the end of this pattern,
+
+156
+00:11:51.090 --> 00:11:52.580
+we can match the boundary
+conditions of a linked list,
+
+157
+00:11:52.580 --> 00:11:54.059
+whether you're looking at
+the very first item in the
+
+158
+00:11:54.059 --> 00:11:55.539
+linked list or the very
+end of the linked list.
+
+159
+00:11:55.820 --> 00:11:59.360
+Notice when we ran the query, that
+two patterns actually were matched.
+
+160
+00:11:59.919 --> 00:12:03.509
+The first has a length of zero
+and the second has a length of one,
+
+161
+00:12:03.509 --> 00:12:05.669
+meaning that it has two
+nodes in one relationship.
+
+162
+00:12:06.409 --> 00:12:09.559
+If we're going to look for a
+window of chunks around a node,
+
+163
+00:12:09.559 --> 00:12:11.009
+we want the longest possible path.
+
+164
+00:12:11.549 --> 00:12:12.389
+Let's see how to do that.
+
+165
+00:12:15.190 --> 00:12:17.090
+This is like the query
+that we just did. But now,
+
+166
+00:12:21.750 --> 00:12:25.629
+And we're gonna look for the longest
+chunk window by ordering all those paths,
+
+167
+00:12:25.629 --> 00:12:29.230
+according to how long they are
+descending and limit that to just one,
+
+168
+00:12:29.230 --> 00:12:32.000
+that should be the longest
+path that matches the pattern.
+
+169
+00:12:34.720 --> 00:12:36.500
+As we would have hoped the lungs
+path is one. So, that looks correct.
+
+170
+00:12:38.860 --> 00:12:41.169
+This is a pretty good
+time to actually pause the
+
+171
+00:12:41.169 --> 00:12:43.019
+video and try out
+variations on this query.
+
+172
+00:12:43.799 --> 00:12:47.000
+For example, you might want to try
+looking for two chunks to either side.
+
+173
+00:12:47.500 --> 00:12:49.259
+Try different
+variations and see what you get.
+
+174
+00:12:52.639 --> 00:12:55.080
+You can now create a
+question and answer chain.
+
+175
+00:12:55.600 --> 00:12:57.750
+If you look at this cipher query here,
+
+176
+00:12:57.750 --> 00:13:00.169
+this is an extension of
+the vector search cipher.
+
+177
+00:13:00.769 --> 00:13:03.269
+What you see at the
+beginning is that there are two
+
+178
+00:13:03.269 --> 00:13:05.090
+variables that get
+passed in, node and score.
+
+179
+00:13:05.669 --> 00:13:08.509
+Those come from the vector similarity
+search itself. We're taking that. And then,
+
+180
+00:13:13.990 --> 00:13:16.539
+We're going to return
+that extra text prepended to
+
+181
+00:13:16.539 --> 00:13:19.379
+whatever the text was of
+the node or the chunk,
+
+182
+00:13:19.379 --> 00:13:22.220
+and we're going to call
+that text, return the score,
+
+183
+00:13:22.220 --> 00:13:24.490
+and then also some
+metadata about the result.
+
+184
+00:13:42.399 --> 00:13:44.240
+This is the smallest bit of Cypher that we
+
+185
+00:13:44.240 --> 00:13:45.659
+can run that will illustrate what happens.
+
+186
+00:13:46.440 --> 00:13:48.350
+Let's go ahead and build a
+langchain workflow that uses this query.
+
+187
+00:13:52.309 --> 00:13:55.159
+The new part that I'll
+highlight here is that we're
+
+188
+00:13:55.159 --> 00:13:57.159
+passing in a parameter
+called retrieval query.
+
+189
+00:13:57.639 --> 00:13:59.519
+And for that parameter,
+we're going to pass in
+
+190
+00:13:59.519 --> 00:14:01.200
+that cipher query that
+we just defined above.
+
+191
+00:14:01.960 --> 00:14:04.600
+That's what's going to do the
+extension of the vector search
+
+192
+00:14:04.600 --> 00:14:07.000
+with whatever extra bit
+of querying we want to do.
+
+193
+00:14:22.320 --> 00:14:24.460
+Okay. Well, apparently I
+know about a lot of things.
+
+194
+00:14:24.799 --> 00:14:26.779
+Not only do I know about Cypher,
+
+195
+00:14:26.779 --> 00:14:29.059
+I also know about natural
+disasters and catastrophes.
+
+196
+00:14:29.799 --> 00:14:31.179
+But we know this isn't
+the case, right? So,
+
+197
+00:14:35.019 --> 00:14:37.200
+We might be able to do a little
+bit of change to the question.
+
+198
+00:14:37.820 --> 00:14:42.159
+Maybe what single topic
+does Andreas know about?
+
+199
+00:15:03.759 --> 00:15:06.899
+Okay, you now know how
+to customize the results
+
+200
+00:15:06.899 --> 00:15:10.049
+of a vector search by
+extending it with Cypher.
+
+201
+00:15:10.350 --> 00:15:12.860
+You could use this
+capability to expand the context
+
+202
+00:15:12.860 --> 00:15:15.090
+around a chunk with
+the chunk window query.
+
+203
+00:15:15.509 --> 00:15:17.690
+Let's try this out and compare the results
+
+204
+00:15:17.690 --> 00:15:19.860
+both with the extra window and without it,
+
+205
+00:15:19.860 --> 00:15:21.759
+just the chunk that the vector finds.
+
+206
+00:15:23.840 --> 00:15:28.039
+First, create a chain that uses the
+default Cypher query included with Neo4j vector.
+
+207
+00:15:28.580 --> 00:15:29.600
+Call it windowless chain.
+
+208
+00:15:32.460 --> 00:15:35.840
+Now, create another chain that
+uses the chunk window query.
+
+209
+00:15:36.139 --> 00:15:39.809
+Your goal here is to expand the
+context with adjacent chunks,
+
+210
+00:15:39.809 --> 00:15:42.820
+which may be relevant to
+providing a complete answer.
+
+211
+00:15:43.919 --> 00:15:46.019
+To do that, use the chunk window query,
+
+212
+00:15:46.019 --> 00:15:49.179
+then pull out text from each
+chunk that is in the window.
+
+213
+00:15:50.100 --> 00:15:52.629
+Finally, all that text
+will be concatenated together
+
+214
+00:15:52.629 --> 00:15:55.159
+to provide a complete context for the LLM.
+
+215
+00:15:57.860 --> 00:16:00.559
+With that query in hand, we can
+now create another vector store.
+
+216
+00:16:01.519 --> 00:16:03.669
+Notice as we create this vector store,
+
+217
+00:16:03.669 --> 00:16:06.740
+we'll be passing it in as the
+retrieval query, right? So,
+
+218
+00:16:21.519 --> 00:16:24.230
+Okay, let's give that a
+try and compare both having
+
+219
+00:16:24.230 --> 00:16:26.399
+the chunk window and
+without the chunk window.
+
+220
+00:16:35.879 --> 00:16:37.470
+When we've run both of these chains,
+
+221
+00:16:37.470 --> 00:16:40.200
+we'll do a little extra
+formatting to kind of provide a nice,
+
+222
+00:16:49.320 --> 00:16:51.360
+That seems like a pretty
+good summary. Okay, not bad.
+
+223
+00:16:52.159 --> 00:16:53.360
+Let's try with the chunk window.
+
+224
+00:16:58.870 --> 00:17:01.879
+Okay, you can see that these
+two answers are pretty similar.
+
+225
+00:17:02.519 --> 00:17:06.829
+The one difference that I can spot
+is that with the expanded context,
+
+226
+00:17:06.829 --> 00:17:10.150
+it actually highlighted NetApp's
+Keystone, which is their premier product. So,
+
+227
+00:17:20.200 --> 00:17:23.769
+You can pause here to try out
+variations of the chunk window query.
+
+228
+00:17:24.549 --> 00:17:27.579
+Also, try asking different
+questions to see what you get.
+
+229
+00:17:28.259 --> 00:17:31.480
+When you're ready, join
+me in the next lesson,
+
+230
+00:17:31.480 --> 00:17:35.420
+where you will expand the
+context with data from an additional
+
+231
+00:17:35.420 --> 00:17:38.279
+SEC form that contains
+information about NetApp's investors.

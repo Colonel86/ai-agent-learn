@@ -1,0 +1,1115 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:01.060 --> 00:00:04.360
+In this lesson, you'll
+bring in a second SEC dataset
+
+2
+00:00:04.360 --> 00:00:07.320
+to expand the context of
+the original filing forms.
+
+3
+00:00:08.240 --> 00:00:11.689
+This second set of forms provides
+information about institutional
+
+4
+00:00:11.689 --> 00:00:15.140
+investment managers and the
+interests they hold in companies.
+
+5
+00:00:16.140 --> 00:00:18.300
+By adding this data to the graph,
+
+6
+00:00:18.300 --> 00:00:21.699
+you'll be able to ask more
+complex questions with the combined
+
+7
+00:00:21.699 --> 00:00:23.859
+datasets to help you
+understand market dynamics.
+
+8
+00:00:24.510 --> 00:00:25.000
+Let's take a look.
+
+9
+00:00:26.820 --> 00:00:30.870
+You will start in the usual
+way by importing some libraries,
+
+10
+00:00:30.870 --> 00:00:32.700
+then define some global variables,
+
+11
+00:00:32.700 --> 00:00:38.219
+and of course we need a Neo4j graph
+instance to connect to the Neo4j database.
+
+12
+00:00:41.350 --> 00:00:44.590
+SEC form 13 is filed by
+institutional investment management
+
+13
+00:00:44.590 --> 00:00:48.200
+firms to report what public
+companies they have invested in.
+
+14
+00:00:48.460 --> 00:00:50.299
+The forms are available as XML files.
+
+15
+00:00:50.920 --> 00:00:52.850
+During data preparation,
+particular fields were pulled
+
+16
+00:00:52.850 --> 00:00:56.439
+out of the XML and added
+as a row in a CSV file.
+
+17
+00:00:57.079 --> 00:01:00.759
+To begin, you can read the CSV
+file in using a CSV.dictreader,
+
+18
+00:01:00.759 --> 00:01:03.820
+which will parse each
+row and turn it into a
+
+19
+00:01:03.820 --> 00:01:06.280
+dictionary using the
+CSV header row for keys.
+
+20
+00:01:09.620 --> 00:01:11.659
+Let's take a quick look at
+what the rows look like though.
+
+21
+00:01:12.219 --> 00:01:13.189
+Maybe just the first five.
+
+22
+00:01:14.180 --> 00:01:17.420
+Okay, you can see that each of these
+firms have invested in the same company.
+
+23
+00:01:18.019 --> 00:01:21.560
+If you kind of take a look here
+at company name, there's NetApp,
+
+24
+00:01:21.560 --> 00:01:22.920
+there's company name NetApp again.
+
+25
+00:01:24.120 --> 00:01:25.590
+All of these management
+companies have different names,
+
+26
+00:01:25.590 --> 00:01:27.620
+but they're all investors in NetApp,
+there's company named NetApp again.
+
+27
+00:01:27.900 --> 00:01:31.209
+You can see that there are
+details about the firm itself,
+
+28
+00:01:31.209 --> 00:01:34.209
+things like the manager name,
+the address of the manager,
+
+29
+00:01:34.209 --> 00:01:38.549
+and also this central index key or CIK
+key. There's also about the particular,
+
+30
+00:01:38.549 --> 00:01:41.069
+you know, information about the
+investment that they've made. So,
+
+31
+00:01:43.230 --> 00:01:45.239
+You know, what was the values, the
+number of shares? That makes sense. Here,
+
+32
+00:01:45.239 --> 00:01:45.840
+the value is a monetary value. So,
+what is this reporting calendar?
+
+33
+00:01:46.560 --> 00:01:47.980
+You know, what was the values, the
+number of shares? That makes sense. Here,
+
+34
+00:01:55.950 --> 00:01:57.010
+Let's see how many rows there are.
+
+35
+00:01:57.930 --> 00:01:58.730
+We'll just check the length.
+
+36
+00:01:59.560 --> 00:02:00.099
+Okay, there's 561 rows.
+
+37
+00:02:01.980 --> 00:02:02.969
+We'll expect 561 companies to be created.
+
+38
+00:02:12.719 --> 00:02:15.120
+The management company nodes
+will have a manager label.
+
+39
+00:02:15.560 --> 00:02:18.240
+They'll be unique based on
+the central index key from
+
+40
+00:02:18.240 --> 00:02:20.919
+the SEC and they'll also
+have a manager name property.
+
+41
+00:02:21.319 --> 00:02:23.000
+The company nodes will
+have a company label.
+
+42
+00:02:23.659 --> 00:02:26.080
+They will be unique based
+on the QSIP 6 identifier.
+
+43
+00:02:26.439 --> 00:02:28.680
+The company nodes will
+also get a company name and
+
+44
+00:02:28.680 --> 00:02:30.909
+a full QSIP 6 property
+from the Form 13 data.
+
+45
+00:02:31.590 --> 00:02:33.110
+Let's start by creating the company nodes.
+
+46
+00:02:33.770 --> 00:02:36.060
+Merge in the company
+nodes with a company label
+
+47
+00:02:36.060 --> 00:02:38.090
+that is unique by the QSIP 6 identifier.
+
+48
+00:02:38.879 --> 00:02:40.810
+We see that on creation,
+we're going to set the
+
+49
+00:02:40.810 --> 00:02:42.360
+company name and then
+the QSIP number itself.
+
+50
+00:02:46.879 --> 00:02:47.620
+Quick bit of sanity checking.
+
+51
+00:02:47.639 --> 00:02:49.930
+We're going to expect that the
+company which is created is NetApp.
+
+52
+00:02:50.680 --> 00:02:52.080
+Of course NetApp is there, perfect.
+
+53
+00:02:53.439 --> 00:02:57.189
+You already have a form 10k form
+for NetApp in the knowledge graph.
+
+54
+00:02:57.409 --> 00:03:00.430
+You can match the newly
+created company node to the related
+
+55
+00:03:00.430 --> 00:03:03.719
+form 10k by finding the pair
+based on the QSIP 6 identifier.
+
+56
+00:03:11.449 --> 00:03:11.620
+And then, we're going to
+just return those two nodes.
+
+57
+00:03:14.469 --> 00:03:16.080
+You can run that match again. But now,
+
+58
+00:03:25.960 --> 00:03:29.400
+We can take those values and pull them
+over to the company node to enrich it.
+
+59
+00:03:41.560 --> 00:03:42.719
+And we'll take one more step.
+
+60
+00:03:43.639 --> 00:03:46.000
+With that same pairing from
+company to form, we're actually,
+
+61
+00:03:54.800 --> 00:03:57.129
+The investment manager nodes
+will have a manager label.
+
+62
+00:03:57.939 --> 00:03:58.750
+Let's create those next.
+
+63
+00:03:59.439 --> 00:04:01.409
+We've got a manager with a manager label.
+
+64
+00:04:02.060 --> 00:04:05.860
+We want it to be unique based on the
+manager CIK number. When we're creating that,
+
+65
+00:04:05.860 --> 00:04:08.080
+we're going to set the manager
+name and the manager address.
+
+66
+00:04:08.780 --> 00:04:12.590
+As before, we'll pass in a
+dictionary to the manager parameter.
+
+67
+00:04:12.909 --> 00:04:14.580
+That'll be the query
+parameter that is used
+
+68
+00:04:14.580 --> 00:04:16.250
+inside of this query
+to create these nodes.
+
+69
+00:04:17.170 --> 00:04:19.250
+We're going to do this first,
+just for the first form 13.
+
+70
+00:04:25.639 --> 00:04:27.670
+And there's the
+manager node. We've got the
+
+71
+00:04:27.660 --> 00:04:29.500
+name Royal Bank of Canada, their address.
+
+72
+00:04:30.540 --> 00:04:33.759
+Looks good.
+
+73
+00:04:33.759 --> 00:04:36.029
+There will be many management
+companies, up to 561, right?
+
+74
+00:04:44.420 --> 00:04:47.399
+Also, we can create a full
+text index on the manager nodes.
+
+75
+00:04:48.240 --> 00:04:51.019
+The full text index is
+useful for keyword search.
+
+76
+00:04:51.819 --> 00:04:54.579
+If you think about a
+vector index that allows
+
+77
+00:04:54.579 --> 00:04:56.730
+you doing searching
+based on similar concepts,
+
+78
+00:04:56.730 --> 00:05:00.110
+a full text index allows searching
+based on similar looking strings.
+
+79
+00:05:04.129 --> 00:05:06.670
+You can try out directly
+querying the full-text index the
+
+80
+00:05:06.670 --> 00:05:09.209
+same way that you can
+directly query the vector index.
+
+81
+00:05:11.509 --> 00:05:14.120
+That query will return a
+node and score very much
+
+82
+00:05:14.120 --> 00:05:15.939
+like what happens with the vector search.
+
+83
+00:05:16.459 --> 00:05:18.329
+If that matches, we'll find the node
+manager name. And then, also the score.
+
+84
+00:05:35.259 --> 00:05:37.009
+Just use Python to loop
+through all the rows.
+
+85
+00:05:37.579 --> 00:05:37.800
+So here, in params, we've got
+manager param set to whatever form 13 is.
+
+86
+00:05:41.420 --> 00:05:45.220
+We know that's a dictionary because
+all form 13s is a list of dictionaries.
+
+87
+00:05:48.079 --> 00:05:49.920
+Again, sanity checking is
+always a good idea. So,
+
+88
+00:05:54.910 --> 00:05:55.740
+We're expecting 561. Perfect.
+
+89
+00:06:02.019 --> 00:06:04.879
+You can now find pairs of
+manager nodes and company
+
+90
+00:06:04.879 --> 00:06:07.160
+nodes using information
+from the form 13 CSV.
+
+91
+00:06:08.500 --> 00:06:11.439
+You can see in this query
+that we're going to pass
+
+92
+00:06:11.439 --> 00:06:13.040
+in a query parameter
+called investment parameter,
+
+93
+00:06:31.600 --> 00:06:35.680
+Cool. If you remember our first row,
+it was Royal Bank of Canada. Of course,
+
+94
+00:06:35.680 --> 00:06:36.600
+they invested in NetApp.
+So, this all looks correct.
+
+95
+00:06:39.920 --> 00:06:43.500
+You can find a manager node and the
+company they invested in. That's great.
+
+96
+00:06:44.199 --> 00:06:46.050
+You can now connect those nodes together.
+
+97
+00:06:46.889 --> 00:06:48.949
+This is something you've
+done before in the course,
+
+98
+00:06:48.949 --> 00:06:50.550
+but the query will get a little long. So,
+let's go through it one line at a time.
+
+99
+00:06:59.899 --> 00:07:03.040
+And the first line we want is the
+exact same match we had before.
+
+100
+00:07:03.819 --> 00:07:04.040
+So now, we have a manager and the
+related company that they've invested in.
+
+101
+00:07:11.670 --> 00:07:16.889
+We'll emerge from that
+manager through a own
+
+102
+00:07:16.889 --> 00:07:21.459
+stock in relationship over to the company.
+
+103
+00:07:22.699 --> 00:07:25.740
+And we want the own stock in to be unique
+in case they've had multiple investments.
+
+104
+00:07:26.480 --> 00:07:29.069
+And if you recall,
+looking back at that CSV file,
+
+105
+00:07:29.069 --> 00:07:31.920
+some of the rows had a
+report calendar or quarter value.
+
+106
+00:07:32.240 --> 00:07:34.310
+Let's use that as
+unique property on the own
+
+107
+00:07:34.310 --> 00:07:35.920
+stock in relationship
+we're about to create.
+
+108
+00:07:37.879 --> 00:07:40.360
+The property will be called
+report calendar or quarter.
+
+109
+00:07:40.720 --> 00:07:42.240
+And we're going to grab
+that from the query parameter.
+
+110
+00:07:43.519 --> 00:07:43.660
+Okay.
+
+111
+00:07:44.519 --> 00:07:44.740
+And now, you've seen this before.
+
+112
+00:07:46.779 --> 00:07:48.680
+This is on create.
+
+113
+00:08:04.689 --> 00:08:05.670
+Okay, let's close that out.
+
+114
+00:08:07.290 --> 00:08:09.129
+And when we call this with KG query,
+
+115
+00:08:09.129 --> 00:08:11.879
+the parameter that's going to get
+passed in is called owns param.
+
+116
+00:08:12.040 --> 00:08:13.180
+That's what we've used throughout here.
+
+117
+00:08:13.199 --> 00:08:17.089
+And we're going to use just form 13
+for now, the first form 13. Okay,
+
+118
+00:08:17.089 --> 00:08:20.079
+before we run this, it looks
+like I've missed one thing.
+
+119
+00:08:32.039 --> 00:08:35.230
+When it's created, we want this
+to be the owns. Okay, I think,
+
+120
+00:08:38.809 --> 00:08:41.169
+Our good friend, Royal
+Bank of Canada and NetApp.
+
+121
+00:08:41.710 --> 00:08:45.759
+Awesome. Okay, we'll just run a
+quick query to sanity check again,
+
+122
+00:08:45.759 --> 00:08:48.159
+make sure that the
+relationship actually exists.
+
+123
+00:08:49.019 --> 00:08:50.840
+We'll grab the relationship
+here in the pattern. And then,
+
+124
+00:08:57.700 --> 00:08:57.840
+Cool.
+
+125
+00:09:01.659 --> 00:09:04.070
+Having done that once, you
+can now look through all
+
+126
+00:09:04.070 --> 00:09:06.490
+the rows of the CSV file
+to create an own stock,
+
+127
+00:09:10.139 --> 00:09:11.580
+Of course, that
+company will be NetApp. Now,
+
+128
+00:09:19.440 --> 00:09:21.210
+Another quick check to make
+sure that we did the right thing.
+
+129
+00:09:21.899 --> 00:09:23.850
+We're expecting that we have 561
+relationships created. Perfect.
+
+130
+00:09:28.820 --> 00:09:29.600
+We have changed the Knowledge Graph
+quite a bit from when we first started.
+
+131
+00:09:43.490 --> 00:09:45.269
+Let's take a look at the
+scheme of the Knowledge Graph
+
+132
+00:09:51.309 --> 00:09:53.730
+We can do that by refreshing
+the schema on the knowledge
+
+133
+00:09:53.730 --> 00:09:55.490
+graph and then just
+printing out that schema.
+
+134
+00:09:56.070 --> 00:09:58.789
+We'll take advantage of Textwrap here
+to try to get some good formatting.
+
+135
+00:10:00.169 --> 00:10:02.100
+Okay, first the nodes that we've
+got inside of the Knowledge Graph.
+
+136
+00:10:03.009 --> 00:10:05.690
+You can see that we've got a
+chunk node with its properties.
+
+137
+00:10:06.889 --> 00:10:10.250
+And over here, there's the
+form node properties for that.
+
+138
+00:10:11.049 --> 00:10:14.440
+There's the manager that we
+created, a company we created,
+
+139
+00:10:14.440 --> 00:10:16.440
+and all those properties. That's awesome.
+
+140
+00:10:17.299 --> 00:10:18.720
+The bottom half is relationships.
+
+141
+00:10:19.340 --> 00:10:20.750
+And we can go down to
+here, and see we've got from
+
+142
+00:10:25.299 --> 00:10:27.220
+We know that chunks have
+a next to other chunks.
+
+143
+00:10:27.299 --> 00:10:29.320
+That's the linked list of
+chunks. That's awesome.
+
+144
+00:10:30.039 --> 00:10:33.200
+And also you can go from the
+form through a section to a chunk.
+
+145
+00:10:33.220 --> 00:10:36.309
+That's how we found the
+beginning of the linked list, right?
+
+146
+00:10:37.250 --> 00:10:39.289
+Finally, we've got that
+the manager owns stock in
+
+147
+00:10:39.289 --> 00:10:41.549
+a company and that the
+company has filed a form.
+
+148
+00:10:42.409 --> 00:10:43.919
+All that together ends up being
+the Knowledge Graph we just created.
+
+149
+00:10:52.639 --> 00:10:53.879
+What I love about graphs is that
+they are awesome for exploration.
+
+150
+00:10:53.879 --> 00:10:55.120
+Let's have some fun looking
+around to see what we can find.
+
+151
+00:10:56.080 --> 00:10:59.539
+To begin, find a random
+chunk to use in later queries.
+
+152
+00:11:14.149 --> 00:11:17.299
+Cool, there's our trunk ID. Well,
+let's store that so we can use it later.
+
+153
+00:11:18.039 --> 00:11:20.220
+You can see that's a list
+with a dictionary inside.
+
+154
+00:11:21.100 --> 00:11:23.090
+So first, let's grab
+things out of the list.
+
+155
+00:11:24.210 --> 00:11:24.419
+So now, we have just
+the dictionary inside.
+
+156
+00:11:26.700 --> 00:11:28.100
+From that chunk first row,
+
+157
+00:11:28.100 --> 00:11:32.279
+we'll grab the chunk ID and store
+that in ref chunk ID for later queries.
+
+158
+00:12:00.000 --> 00:12:01.240
+We'll take one more step
+here, and in this pattern,
+
+159
+00:12:13.379 --> 00:12:14.570
+And we're gonna return the company name.
+
+160
+00:12:16.299 --> 00:12:18.009
+As you'd expect, it's
+our good friend NetApp.
+
+161
+00:12:19.559 --> 00:12:21.629
+Okay, we're gonna extend
+that yet one more step.
+
+162
+00:12:34.379 --> 00:12:37.519
+Okay, the com is the company here.
+All these variables have to match up.
+
+163
+00:12:37.679 --> 00:12:40.460
+This is one big pattern
+broke up into three sections.
+
+164
+00:12:41.159 --> 00:12:44.539
+We'll return the company name
+and account of how many managers,
+
+165
+00:12:44.539 --> 00:12:48.230
+as we'll call it the number of
+investors, invested in that company.
+
+166
+00:12:50.669 --> 00:12:54.659
+This is great validation, okay? Of
+course the company is NetApp and we know,
+
+167
+00:12:54.659 --> 00:12:56.940
+as expected, there's 561
+investors in that company.
+
+168
+00:12:57.539 --> 00:12:58.240
+We've done good work.
+
+169
+00:12:58.940 --> 00:13:01.090
+You're starting to see
+some of the fun things
+
+170
+00:13:01.090 --> 00:13:02.759
+that are possible with
+the knowledge graph.
+
+171
+00:13:09.659 --> 00:13:12.720
+That pattern you just
+created, from a chunk all
+
+172
+00:13:12.720 --> 00:13:15.440
+the way to an investor,
+is useful information.
+
+173
+00:13:16.480 --> 00:13:20.679
+You can use that information for
+expanding the context provided to an LLM.
+
+174
+00:13:21.120 --> 00:13:23.809
+For example, you can find
+investors for a company. Then,
+
+175
+00:13:30.730 --> 00:13:33.090
+You'll use the same match you had
+before, the same pattern. And then,
+
+176
+00:13:42.590 --> 00:13:46.769
+This is just concatenating strings
+together. But then here, we're taking the value.
+
+177
+00:13:47.370 --> 00:13:50.370
+And we want to have that be nicely
+formatted, we know that that represents dollars.
+
+178
+00:14:02.620 --> 00:14:04.330
+Let's save that into
+results and see if we can pull
+
+179
+00:14:04.330 --> 00:14:06.039
+out the sentences so you
+can read them a bit better.
+
+180
+00:14:10.600 --> 00:14:13.159
+Okay, looking at just the
+first sentence we created,
+
+181
+00:14:13.159 --> 00:14:16.000
+you can see that this
+fun named company owns a
+
+182
+00:14:16.000 --> 00:14:19.120
+lot of shares of NetApp
+and at a value of well,
+
+183
+00:14:19.120 --> 00:14:20.820
+gosh, quite a lot as well.
+
+184
+00:14:21.500 --> 00:14:24.330
+You see the kinds of things
+you can do with pattern matching
+
+185
+00:14:24.330 --> 00:14:26.450
+and turning the values from
+those patterns into sentences.
+
+186
+00:14:27.070 --> 00:14:29.269
+Let's put that to work
+inside of a rag workflow.
+
+187
+00:14:29.909 --> 00:14:33.450
+We'll set up two different
+langchain chains as we did before.
+
+188
+00:14:33.730 --> 00:14:35.409
+One will be just a regular
+vector lookup. And then,
+
+189
+00:14:40.259 --> 00:14:41.960
+We'll test them both
+out on some questions.
+
+190
+00:14:44.870 --> 00:14:46.789
+The first chain that
+we'll call plain chain,
+
+191
+00:14:46.789 --> 00:14:50.389
+this will be the one that doesn't have
+anything other than the strict vector search.
+
+192
+00:14:52.490 --> 00:14:52.759
+And then, we're going
+to define a cipher query
+
+193
+00:15:00.639 --> 00:15:02.210
+This pattern should look
+familiar at this point.
+
+194
+00:15:03.009 --> 00:15:05.960
+From a particular node, remember
+this will come from the vector search.
+
+195
+00:15:06.299 --> 00:15:09.279
+It'll give us a node that it found that
+is similar to the question that was asked.
+
+196
+00:15:10.019 --> 00:15:12.460
+We're going to go from that
+node, node that is part of a form.
+
+197
+00:15:13.440 --> 00:15:15.860
+From the form, we know that
+it was filed by some company.
+
+198
+00:15:16.279 --> 00:15:18.000
+There's a manager who
+owns stock in that company.
+
+199
+00:15:18.399 --> 00:15:19.700
+The arrows are pointing
+the other directions.
+
+200
+00:15:19.740 --> 00:15:21.120
+You got to read those backwards this time.
+
+201
+00:15:21.759 --> 00:15:25.700
+From the original node, we're also
+going to take the score, the manager,
+
+202
+00:15:25.700 --> 00:15:27.820
+the owns relationship,
+and then the company.
+
+203
+00:15:28.279 --> 00:15:30.960
+We're going to order all
+of that by the investment
+
+204
+00:15:30.960 --> 00:15:32.830
+shares descending and just limited to 10.
+
+205
+00:15:44.850 --> 00:15:48.019
+As in previous lessons, we'll
+create a new vector store. But now,
+
+206
+00:16:03.059 --> 00:16:06.299
+Let's start with an obvious one
+since we know this is all about NetApp.
+
+207
+00:16:07.980 --> 00:16:11.779
+Let's have a question that says, in a
+single sentence, tell me about NetApp.
+
+208
+00:16:14.070 --> 00:16:15.700
+We'll use the plain
+chain that we just defined,
+
+209
+00:16:15.700 --> 00:16:18.539
+which is the one that just does the
+vector search. We'll run that first.
+
+210
+00:16:18.929 --> 00:16:20.919
+You can see that here,
+NetApp is a global led
+
+211
+00:16:20.919 --> 00:16:22.649
+cloud company. Yeah, this all makes sense.
+
+212
+00:16:23.580 --> 00:16:25.629
+Let's try the same thing
+with the investment chain.
+
+213
+00:16:27.210 --> 00:16:30.080
+Let's see if that extra context
+changes a summary about what NetApp does.
+
+214
+00:16:33.500 --> 00:16:36.000
+So that actually looks pretty
+similar, which isn't unexpected.
+
+215
+00:16:37.100 --> 00:16:39.220
+The LLM ignored the extra
+information about investments
+
+216
+00:16:39.220 --> 00:16:41.080
+because we didn't really ask about that.
+
+217
+00:16:49.779 --> 00:16:52.250
+Again, we'll go ahead and
+start with plain chain.
+
+218
+00:16:53.450 --> 00:16:56.309
+That's only going to do the vector
+search and see what answer we get.
+
+219
+00:16:58.090 --> 00:17:01.509
+Okay, things that the investors
+are a diversified customer base.
+
+220
+00:17:02.149 --> 00:17:03.529
+Okay, just kind of
+putting things together here,
+
+221
+00:17:03.529 --> 00:17:05.609
+trying to kind of come up
+with some kind of an answer.
+
+222
+00:17:06.109 --> 00:17:06.349
+So now, we'll try that same
+question, but with the investment chain,
+
+223
+00:17:20.440 --> 00:17:23.359
+This is actually a great place to
+start tinkering around a little bit.
+
+224
+00:17:24.160 --> 00:17:25.779
+You can change a
+couple of different things.
+
+225
+00:17:25.880 --> 00:17:29.200
+You can change the sentences that
+we're creating out of the investments,
+
+226
+00:17:29.200 --> 00:17:31.420
+see how that impacts what things you get,
+
+227
+00:17:31.420 --> 00:17:34.180
+change the question that
+you're asking here at the end,
+
+228
+00:17:34.180 --> 00:17:38.059
+and see how different prompts
+actually adjust what you get out of the LLM.
+
+229
+00:17:38.819 --> 00:17:41.420
+There's a bit of an art
+still involved in getting the
+
+230
+00:17:41.420 --> 00:17:43.079
+LLM to understand the
+information you're giving it,
+
+231
+00:17:47.910 --> 00:17:50.160
+We'll explore a lot more of that in
+lesson seven. So, let's go to that next.

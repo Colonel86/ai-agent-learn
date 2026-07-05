@@ -1,0 +1,70 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.940 --> 00:00:03.620
+Congratulations on making
+it to the end of the course.
+
+2
+00:00:04.440 --> 00:00:08.380
+I hope you enjoyed building a
+Knowledge Graph powered RAG system
+
+3
+00:00:08.380 --> 00:00:11.240
+and exploring the details
+of SEC financial documents.
+
+4
+00:00:12.179 --> 00:00:14.310
+Public records like these
+are definitely more fun
+
+5
+00:00:14.310 --> 00:00:16.699
+to analyze when you can
+chat directly with them.
+
+6
+00:00:17.719 --> 00:00:22.460
+The SEC example you worked through in
+this course is representative of the kinds of
+
+7
+00:00:22.460 --> 00:00:25.940
+applications that companies are building
+with Knowledge Graphs and generative AI.
+
+8
+00:00:26.879 --> 00:00:29.420
+I hope the course has inspired you
+to build your own Knowledge Graphs.
+
+9
+00:00:30.940 --> 00:00:32.799
+If you'd like to continue your learning,
+
+10
+00:00:32.799 --> 00:00:35.439
+there are a lot of
+resources on the Neo4j website.
+
+11
+00:00:36.219 --> 00:00:39.829
+There, you can sign up for a free
+cloud-hosted Neo4j account and learn
+
+12
+00:00:39.829 --> 00:00:42.600
+about other tools that can help
+you craft your own Knowledge Graphs.
+
+13
+00:00:44.240 --> 00:00:46.289
+Thank you for sticking with
+me to the end of the course,
+
+14
+00:00:46.289 --> 00:00:47.820
+and I can't wait to see what you build.

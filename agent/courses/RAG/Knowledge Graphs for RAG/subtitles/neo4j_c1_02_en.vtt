@@ -1,0 +1,327 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:01.240 --> 00:00:03.370
+You've been introduced to
+the idea of Knowledge Graphs
+
+2
+00:00:09.619 --> 00:00:12.109
+Let's start by taking a look at
+these concepts in more detail.
+
+3
+00:00:12.609 --> 00:00:13.380
+Come on, let's dive in.
+
+4
+00:00:14.560 --> 00:00:16.339
+So, nodes are data records.
+
+5
+00:00:16.949 --> 00:00:19.179
+We're going to start
+exploring what that really means
+
+6
+00:00:19.179 --> 00:00:19.929
+inside of a Knowledge
+Graph by actually just drawing
+
+7
+00:00:30.620 --> 00:00:31.359
+That's me, of course.
+
+8
+00:00:32.219 --> 00:00:34.479
+And if you want to talk
+about this very small graph,
+
+9
+00:00:34.479 --> 00:00:36.539
+you'd be tempted to look
+at that nice, you know,
+
+10
+00:00:36.539 --> 00:00:38.390
+kind of round circle
+we've got there and talk
+
+11
+00:00:38.390 --> 00:00:40.240
+about that in like a
+Slack channel, let's say.
+
+12
+00:00:40.780 --> 00:01:04.280
+You could use parentheses around the
+person, and that would very obviously mean,
+
+13
+00:01:08.400 --> 00:01:11.819
+To make it into a full graph, of
+course, we don't want just a thing.
+
+14
+00:01:11.959 --> 00:01:13.680
+We want relationships
+between those things.
+
+15
+00:01:14.180 --> 00:01:16.400
+And these relationships
+are also data records.
+
+16
+00:01:17.099 --> 00:01:19.829
+We have a person Andreas, a person Andrew,
+
+17
+00:01:19.829 --> 00:01:24.599
+and a relationship that person Andreas
+knows the person Andrew and knows since 2024.
+
+18
+00:01:26.439 --> 00:01:30.109
+Again, in text representation, we've got
+those nice parentheses around the nodes,
+
+19
+00:01:58.560 --> 00:02:00.379
+Different terms for
+exactly the same ideas.
+
+20
+00:02:01.439 --> 00:02:02.739
+Now, as a data structure,
+
+21
+00:02:02.739 --> 00:02:06.629
+the reason that we actually use the word
+relationship instead of edge is that the
+
+22
+00:02:06.629 --> 00:02:10.000
+relationship is really a pair of nodes
+and then information about that pair.
+
+23
+00:02:14.719 --> 00:02:15.090
+So here, there's a nose
+relationship that contains Andreas
+
+24
+00:02:21.919 --> 00:02:25.990
+To expand our small graph a little bit,
+we have the idea that there's a person,
+
+25
+00:02:25.990 --> 00:02:27.509
+Andreas, who knows another person, Andrew.
+
+26
+00:02:28.150 --> 00:02:31.120
+And what do they have in
+common? They also have this course,
+
+27
+00:02:31.120 --> 00:02:32.789
+Rag with Knowledge Graphs, in common. So,
+
+28
+00:02:37.270 --> 00:02:39.509
+We know that person,
+Andreas, teaches this course.
+
+29
+00:02:48.319 --> 00:02:50.120
+Andrew also has a
+relationship to this course.
+
+30
+00:02:50.680 --> 00:02:52.219
+Andrew helped introduce this course.
+
+31
+00:02:57.580 --> 00:03:00.469
+If you look at that in the text
+representation here on the bottom,
+
+32
+00:03:00.469 --> 00:03:02.689
+this becomes a little bit
+longer of a data pattern,
+
+33
+00:03:02.689 --> 00:03:06.240
+but you can still read through this and
+it's worth taking the time to do that.
+
+34
+00:03:07.000 --> 00:03:10.900
+You can see that there's a person who
+teaches a course going from left to right.
+
+35
+00:03:11.599 --> 00:03:11.870
+But then, on the other side,
+
+36
+00:03:18.740 --> 00:03:20.400
+Putting that all together in one line,
+
+37
+00:03:20.400 --> 00:03:23.710
+you then have directions going from
+left to right, but also right to left,
+
+38
+00:03:23.710 --> 00:03:25.360
+meaning in the middle at that course.
+
+39
+00:03:26.300 --> 00:03:28.729
+A little side note here that I
+think is interesting when you're
+
+40
+00:03:28.729 --> 00:03:30.750
+thinking about how to data
+model within a knowledge grasp.
+
+41
+00:03:31.099 --> 00:03:34.030
+You could say that, you know, this
+person who's Andreas is a teacher.
+
+42
+00:03:34.550 --> 00:03:37.889
+You could say that this person
+Andrew is an introducer, I suppose.
+
+43
+00:03:38.490 --> 00:03:42.919
+But instead of that, we don't really
+need to add those extra labels to the
+
+44
+00:03:42.919 --> 00:03:46.169
+people themselves because Andreas
+is a teacher because he is teaching.
+
+45
+00:03:46.710 --> 00:03:49.370
+Andrew might be an introducer
+because he does introductions. So,
+
+46
+00:04:01.180 --> 00:04:03.900
+Okay, here's a
+completed very small graph with
+
+47
+00:04:03.900 --> 00:04:06.280
+just three nodes and
+also three relationships.
+
+48
+00:04:06.800 --> 00:04:08.659
+A person who knows another person,
+
+49
+00:04:08.659 --> 00:04:12.370
+that person has taught a class or teaches
+a class called Rag with Knowledge Graphs,
+
+50
+00:04:16.139 --> 00:04:18.300
+That is our completed graph
+for this small introduction.
+
+51
+00:04:20.060 --> 00:04:22.480
+Okay, now formally, nodes have labels.
+
+52
+00:04:23.220 --> 00:04:26.060
+We already introduced the idea that we
+have persons and we have this course.
+
+53
+00:04:26.639 --> 00:04:29.439
+In the knowledge graph, we
+call those labels of those nodes.
+
+54
+00:04:29.839 --> 00:04:32.180
+Labels are a way of grouping
+multiple nodes together. So,
+
+55
+00:04:38.839 --> 00:04:41.759
+Nodes, because they're data
+records, also have values, of course.
+
+56
+00:04:42.220 --> 00:04:43.399
+And those values are properties.
+
+57
+00:04:43.459 --> 00:04:46.220
+They are key value properties
+that are stored inside of the node.
+
+58
+00:05:05.060 --> 00:05:07.529
+Because relationships are
+data records, they have
+
+59
+00:05:07.529 --> 00:05:10.000
+a direction, a type, and also properties.
+
+60
+00:05:22.040 --> 00:05:24.879
+That this person knows
+another one since 2024,
+
+61
+00:05:24.879 --> 00:05:27.730
+the teaching
+relationship also has a year 2024,
+
+62
+00:05:27.730 --> 00:05:32.699
+and the introduction is actually for what
+section of the course is being introduced.
+
+63
+00:05:36.379 --> 00:05:36.689
+A Knowledge Graph is a database that
+stores information in nodes and relationships.
+
+64
+00:05:41.300 --> 00:05:44.420
+Both nodes and relationships can
+have properties, key value pairs,
+
+65
+00:05:44.420 --> 00:05:47.850
+and nodes can be given labels
+to help group them together.
+
+66
+00:05:48.709 --> 00:05:51.480
+Relationships always have
+a type and a direction.
+
+67
+00:06:04.660 --> 00:06:07.000
+To do this, you'll use a
+query language called Cypher.
+
+68
+00:06:07.639 --> 00:06:09.319
+Join me in the next
+lesson to try this out.

@@ -1,0 +1,481 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:01.080 --> 00:00:04.889
+RAG systems start by using vector
+representations of text to match
+
+2
+00:00:04.889 --> 00:00:08.000
+your prompt to relevant
+sections within the unstructured data.
+
+3
+00:00:09.199 --> 00:00:13.759
+So, in order to be able to find relevant
+text in a knowledge graph in the same way,
+
+4
+00:00:13.759 --> 00:00:16.800
+you'll need to create embeddings
+of the text fields in your graph.
+
+5
+00:00:17.539 --> 00:00:18.710
+Let's take a look at how to do this.
+
+6
+00:00:20.760 --> 00:00:23.850
+So, to get started, you'll import some
+packages as we did in the last notebook,
+
+7
+00:00:23.850 --> 00:00:25.079
+and we'll also set up Neo4j.
+
+8
+00:00:30.179 --> 00:00:34.039
+You'll load the same environment
+variables that we have in the previous notebook,
+
+9
+00:00:34.039 --> 00:00:37.009
+but now including a new
+variable called OpenAI API Key,
+
+10
+00:00:37.009 --> 00:00:39.679
+which we'll use for calling
+the OpenAI Embeddings model.
+
+11
+00:00:41.799 --> 00:00:44.770
+And finally, as before, we'll use
+the Neo4j Graph class for creating
+
+12
+00:00:44.770 --> 00:00:47.979
+a connection to the Knowledge
+Graph so we can send it some queries.
+
+13
+00:00:48.939 --> 00:00:52.399
+The first step for enabling vector
+search is to create a vector index.
+
+14
+00:00:54.140 --> 00:00:57.119
+Okay, in this very first line,
+we're creating a vector index,
+
+15
+00:00:57.119 --> 00:00:59.820
+we're going to give it a
+name, movie tagline embeddings.
+
+16
+00:01:00.640 --> 00:01:02.460
+And we're going to add
+that we should create
+
+17
+00:01:02.460 --> 00:01:04.079
+this index only if it
+doesn't already exist.
+
+18
+00:01:04.760 --> 00:01:07.840
+We're going to create the
+index for nodes that we're
+
+19
+00:01:07.840 --> 00:01:10.609
+going to call m that have the label movie,
+
+20
+00:01:10.609 --> 00:01:14.000
+and on those nodes for the
+tagline property of the movies.
+
+21
+00:01:14.310 --> 00:01:15.930
+We're going to create
+embeddings and store those.
+
+22
+00:01:16.510 --> 00:01:19.760
+We have some options while
+we're setting up the index as well
+
+23
+00:01:19.760 --> 00:01:22.750
+that we're passing in as this
+index config object right here.
+
+24
+00:01:23.170 --> 00:01:24.670
+There's two things of
+course that are important.
+
+25
+00:01:25.030 --> 00:01:28.189
+It's how big are the vectors themselves,
+what are the dimensions of the vectors.
+
+26
+00:01:28.609 --> 00:01:33.269
+Here it's 1536, which is the default
+size for OpenAI's embedding model.
+
+27
+00:01:33.909 --> 00:01:36.290
+And OpenAI also recommends
+using cosine similarity,
+
+28
+00:01:36.290 --> 00:01:39.340
+so we're specifying that here
+as the similarity function.
+
+29
+00:01:48.099 --> 00:01:50.530
+That cipher query is nice and
+straightforward. Looks like this.
+
+30
+00:01:51.469 --> 00:01:53.810
+We can see that there's the
+name that we specified before.
+
+31
+00:01:53.829 --> 00:01:58.200
+We can see that it's ready to go and
+that it's a vector index. So fantastic.
+
+32
+00:02:06.909 --> 00:02:10.060
+We're going to match movies
+that have the label movie,
+
+33
+00:02:10.060 --> 00:02:12.259
+and where the movie.tagline is not null.
+
+34
+00:02:15.280 --> 00:02:17.960
+In this next line, we're
+going to take the movie
+
+35
+00:02:17.960 --> 00:02:20.099
+and also calculate an
+embedding for the tagline.
+
+36
+00:02:20.520 --> 00:02:24.330
+We're going to do that by calling this
+function that's called genai.vector.encode.
+
+37
+00:02:27.180 --> 00:02:29.780
+We're passing in the parameter
+which is the value we want to encode.
+
+38
+00:02:30.219 --> 00:02:31.500
+Here that's movie.tagline.
+
+39
+00:02:32.120 --> 00:02:35.000
+We're going to specify what embedding
+model we want to use. That's OpenAI.
+
+40
+00:02:35.879 --> 00:02:37.349
+And because OpenAI requires a key,
+
+41
+00:02:37.349 --> 00:02:40.280
+we're also going to pass in a
+little bit of configuration here.
+
+42
+00:02:40.379 --> 00:02:42.419
+It says here's the token for OpenAI.
+
+43
+00:02:43.039 --> 00:02:45.199
+It's going to be this OpenAI API key. Now,
+
+44
+00:02:48.849 --> 00:02:51.490
+This value here is what
+we call a query parameter.
+
+45
+00:03:25.280 --> 00:03:25.539
+Okay.
+
+46
+00:03:28.360 --> 00:03:33.009
+This query may take a few seconds to run
+because it calls out to the OpenAI API
+
+47
+00:03:33.009 --> 00:03:36.020
+to calculate the vector
+embeddings for each movie in the dataset.
+
+48
+00:03:44.879 --> 00:03:49.020
+So let's pull out from that
+result just the tagline itself.
+
+49
+00:03:49.240 --> 00:03:49.919
+You can see what that is.
+
+50
+00:03:51.060 --> 00:03:53.270
+Since we only have one
+movie that we did the tagline,
+
+51
+00:03:53.270 --> 00:03:54.479
+it's welcome to the real world.
+
+52
+00:03:55.270 --> 00:03:55.419
+Super.
+
+53
+00:03:56.159 --> 00:03:58.319
+And let's also take a look at
+what the embedding looks like.
+
+54
+00:03:58.819 --> 00:04:00.120
+I'm not going to show
+the entire embedding.
+
+55
+00:04:00.199 --> 00:04:03.000
+We'll just get the
+first 10 values out of it.
+
+56
+00:04:04.150 --> 00:04:06.539
+Okay, great. That looks
+like a good embedding to me.
+
+57
+00:04:07.439 --> 00:04:10.430
+And for the last step in verifying
+what we've got for the embeddings,
+
+58
+00:04:10.430 --> 00:04:12.729
+we'll make sure that those
+embeddings are the right size.
+
+59
+00:04:12.750 --> 00:04:13.710
+We're expecting them to be 1536. So,
+
+60
+00:04:19.860 --> 00:04:21.319
+Great. The vector size is
+1536, just as we expected.
+
+61
+00:04:31.209 --> 00:04:31.449
+So now, we can actually
+query the database and
+
+62
+00:04:36.269 --> 00:04:39.319
+We'll start by specifying what
+the question is we want to ask
+
+63
+00:04:39.319 --> 00:04:41.620
+and find similar movies that
+might match that question.
+
+64
+00:04:44.920 --> 00:04:47.560
+Remember, we've done vector
+indexing on the taglines.
+
+65
+00:04:51.420 --> 00:04:53.870
+Here, we're going to start
+with a call towards calculating
+
+66
+00:04:53.870 --> 00:04:56.079
+and embedding using that
+same function we had before.
+
+67
+00:04:56.459 --> 00:04:59.610
+We're going to do that by
+saying, with this function call,
+
+68
+00:04:59.610 --> 00:05:03.620
+JNAI vector and code and a parameter
+for the question that will pass in.
+
+69
+00:05:04.019 --> 00:05:07.410
+We want to calculate an embedding
+using the OpenAI model and the OpenAI
+
+70
+00:05:07.410 --> 00:05:11.329
+of course needs an API key so
+we're going to pass that in as well.
+
+71
+00:05:11.730 --> 00:05:13.970
+The result of that
+function call we're going to
+
+72
+00:05:13.970 --> 00:05:15.709
+assign to something we
+call question embedding.
+
+73
+00:05:16.129 --> 00:05:18.519
+We're then going to call
+another function for actually
+
+74
+00:05:18.519 --> 00:05:20.110
+doing the vector similarity search itself.
+
+75
+00:05:26.779 --> 00:05:28.389
+That's the name of the
+index that we created earlier.
+
+76
+00:05:29.579 --> 00:05:32.970
+And this is another parameter that is
+interesting. We just wanted the top k results.
+
+77
+00:05:40.319 --> 00:05:40.480
+And then, of course, we're going to pass
+in the embedding that we just calculated.
+
+78
+00:05:50.180 --> 00:05:52.839
+Do the similarity search and
+actually give us those results.
+
+79
+00:05:53.360 --> 00:05:57.089
+Now from the results we want to be
+able to yield the nodes that we found,
+
+80
+00:05:57.089 --> 00:06:00.360
+and we will rename those as movies,
+and also what the similarity score was.
+
+81
+00:06:01.100 --> 00:06:04.800
+With that we're going to return the movie
+title, the movie tagline, and the score.
+
+82
+00:06:05.500 --> 00:06:09.180
+We're passing in some query
+parameters for the OpenAI API key itself,
+
+83
+00:06:09.180 --> 00:06:13.160
+the question that we asked that's
+going to be calculated into an embedding,
+
+84
+00:06:13.160 --> 00:06:17.759
+and here the top case is 5, so we
+only want the 5 closest embeddings.
+
+85
+00:06:21.139 --> 00:06:21.420
+Cool. So, we've got movie
+titles like Joe vs. the Volcano,
+
+86
+00:06:27.800 --> 00:06:29.730
+You can see through
+all of these tag lines,
+
+87
+00:06:29.730 --> 00:06:32.079
+that's a pretty good match
+for movies that are about laws.
+
+88
+00:06:47.920 --> 00:06:50.500
+We'll save that question and
+we'll run this query again.
+
+89
+00:06:52.459 --> 00:06:56.500
+Oh yeah, Castaway Ninja Assassin.
+That sounds like something adventurous.
+
+90
+00:06:57.180 --> 00:06:58.019
+Duel vs. the Volcano.
+Apparently, it's about love and adventure.
+
+91
+00:07:00.519 --> 00:07:02.319
+Maybe that's a good one to
+have on your Netflix list.
+
+92
+00:07:03.019 --> 00:07:06.149
+This is a good point to
+actually pause the video and try just
+
+93
+00:07:06.149 --> 00:07:08.550
+changing that question to
+explore the movie data set yourself,
+
+94
+00:07:08.550 --> 00:07:10.230
+asking for different
+movies with different qualities
+
+95
+00:07:10.230 --> 00:07:12.160
+and seeing what kind of results you get.
+
+96
+00:07:17.319 --> 00:07:21.000
+Now, in all the examples so far, you've
+been working with an existing database.
+
+97
+00:07:21.500 --> 00:07:23.709
+But to build your own RAG applications,
+
+98
+00:07:23.709 --> 00:07:28.129
+you'll need to build one up from
+scratch to represent and store your data.
+
+99
+00:07:28.600 --> 00:07:30.839
+Let's take a look at how to
+do that in the next lesson.

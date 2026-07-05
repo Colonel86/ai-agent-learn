@@ -1,0 +1,357 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:00.960 --> 00:00:03.549
+Hi and welcome to this short
+course, Knowledge Graphs for RAC,
+
+2
+00:00:07.219 --> 00:00:10.000
+I'm here with the
+instructor, Andreas Colliger,
+
+3
+00:00:10.000 --> 00:00:13.179
+a developer evangelist
+for generative AI at Neo4j.
+
+4
+00:00:13.960 --> 00:00:14.609
+Welcome, Andreas.
+
+5
+00:00:15.240 --> 00:00:20.760
+Thanks, Andrew. I'm excited to be here
+today and can't wait to show you how to use
+
+6
+00:00:20.760 --> 00:00:23.660
+Knowledge Graphs to improve your
+retrieval augmented generation applications.
+
+7
+00:00:24.179 --> 00:00:24.500
+Knowledge Graphs are a very powerful,
+
+8
+00:00:33.159 --> 00:00:33.539
+Knowledge Graphs provide a
+way to store and organize data
+
+9
+00:00:39.890 --> 00:00:43.070
+In contrast to traditional
+relational databases which
+
+10
+00:00:43.070 --> 00:00:46.710
+organize data into
+tables with rows and columns.
+
+11
+00:00:47.429 --> 00:00:47.869
+Knowledge Graphs instead
+use a graph-based structure
+
+12
+00:01:11.260 --> 00:01:14.200
+Each of these nodes or
+edges in the graph can
+
+13
+00:01:14.200 --> 00:01:15.670
+also store additional information about
+
+14
+00:01:15.670 --> 00:01:20.680
+the entity in the case of the node or
+the relationship in the case of the edge.
+
+15
+00:01:21.519 --> 00:01:24.810
+For example, a person node
+could store an individual's
+
+16
+00:01:24.810 --> 00:01:26.629
+name, email, and other details.
+
+17
+00:01:27.290 --> 00:01:29.909
+A company node could
+store data like the number
+
+18
+00:01:29.909 --> 00:01:31.939
+of employees, annual revenue, and so on.
+
+19
+00:01:32.540 --> 00:01:35.799
+And the employer-employee
+relationship between the company and the
+
+20
+00:01:35.799 --> 00:01:39.790
+person would be represented by
+an edge between these two nodes.
+
+21
+00:01:40.170 --> 00:01:43.069
+And the edge could also
+store additional information
+
+22
+00:01:43.069 --> 00:01:44.519
+about that employment relationship,
+
+23
+00:01:44.519 --> 00:01:48.140
+like the person's job
+title, start date, and so on.
+
+24
+00:01:48.500 --> 00:01:53.939
+The graph structure of nodes and
+relationships is very flexible and lets you
+
+25
+00:01:53.939 --> 00:01:58.540
+more conveniently model some parts of
+the world than relational databases.
+
+26
+00:01:59.120 --> 00:01:59.840
+That's right, Andrew.
+
+27
+00:02:00.700 --> 00:02:01.040
+Knowledge Graphs make it much easier to
+represent and search deep relationships
+
+28
+00:02:12.180 --> 00:02:14.289
+This enables much
+faster execution of queries,
+
+29
+00:02:14.289 --> 00:02:17.000
+getting you to the data
+you need more efficiently.
+
+30
+00:02:18.039 --> 00:02:20.860
+This is why web search
+engines and e-commerce
+
+31
+00:02:20.860 --> 00:02:22.969
+sites that offer product search capability
+
+32
+00:02:22.969 --> 00:02:26.840
+have found knowledge graphs a key
+technology for delivering relevant results.
+
+33
+00:02:27.580 --> 00:02:31.389
+In fact, if you search for, say,
+a celebrity on Google or Bing,
+
+34
+00:02:31.389 --> 00:02:34.330
+the results you get
+back in the cards to the
+
+35
+00:02:34.330 --> 00:02:36.379
+side are retrieved
+using a knowledge graph.
+
+36
+00:02:36.740 --> 00:02:38.129
+And when you combine a Knowledge
+Graph with an embedding model,
+
+37
+00:02:44.960 --> 00:02:47.349
+That's because you can
+take advantage of the
+
+38
+00:02:47.349 --> 00:02:49.439
+relationships and the
+metadata stored in the
+
+39
+00:02:49.439 --> 00:02:52.120
+graph to improve the
+relevance of the text you
+
+40
+00:02:52.120 --> 00:02:54.210
+retrieve and pass to the language model.
+
+41
+00:02:54.889 --> 00:02:58.099
+In a basic retrieval
+augmented generation or RAG system,
+
+42
+00:02:58.099 --> 00:03:01.310
+the documents you want
+to query or chat with
+
+43
+00:03:01.310 --> 00:03:03.810
+might be first split into smaller sections
+
+44
+00:03:03.810 --> 00:03:04.169
+or chunks which are then transformed
+into vectors using an embedding model.
+
+45
+00:03:08.900 --> 00:03:10.340
+Once in this vector form,
+
+46
+00:03:10.340 --> 00:03:13.800
+you can use a similarity function
+like cosine similarity to search through
+
+47
+00:03:13.800 --> 00:03:17.259
+the chunks of text to find the
+ones relevant to your prompt.
+
+48
+00:03:17.879 --> 00:03:21.840
+But it turns out that storing
+these text chunks in a knowledge draft
+
+49
+00:03:21.840 --> 00:03:25.199
+opens up new ways to retrieve
+relevant data from your documents.
+
+50
+00:03:26.000 --> 00:03:29.280
+Rather than just similarity
+search using text embeddings,
+
+51
+00:03:29.280 --> 00:03:31.330
+you can retrieve one chunk, then,
+
+52
+00:03:39.349 --> 00:03:43.400
+You see in this course how this
+can review connections between
+
+53
+00:03:43.400 --> 00:03:45.979
+text sources that
+similarity-based RAAC can miss.
+
+54
+00:03:46.560 --> 00:03:49.539
+In this course, you'll learn
+how to build a Knowledge Graph
+
+55
+00:04:01.060 --> 00:04:02.909
+You'll start with an
+introduction to Knowledge Graphs
+
+56
+00:04:18.990 --> 00:04:22.410
+Next, you'll build a knowledge
+graph to represent one set of SEC forms
+
+57
+00:04:22.410 --> 00:04:25.829
+and use Langchain to carry out RAG
+by retrieving text from this graph.
+
+58
+00:04:27.050 --> 00:04:29.360
+Lastly, you'll go through
+the graph creation process
+
+59
+00:04:29.360 --> 00:04:32.230
+one more time for a
+second set of SEC forms,
+
+60
+00:04:32.230 --> 00:04:34.529
+connect the two graphs
+using some linking data,
+
+61
+00:04:34.529 --> 00:04:37.699
+and see how you can use
+more complex graph queries to
+
+62
+00:04:37.699 --> 00:04:40.000
+carry out retrieval across
+multiple sets of documents.
+
+63
+00:04:40.000 --> 00:04:41.240
+All this together allows
+you to ask some really
+
+64
+00:04:41.240 --> 00:04:42.069
+interesting questions at the SEC dataset.
+
+65
+00:04:45.480 --> 00:04:48.980
+Thanks, Andreas. This sounds like a
+really exciting and timely course.
+
+66
+00:04:49.899 --> 00:04:52.600
+Many people have helped with
+the development of this course.
+
+67
+00:04:53.240 --> 00:04:56.889
+On the Neo4j side, Zachary
+Blumenfeld and from dblend.ai,
+
+68
+00:04:56.889 --> 00:05:00.939
+Tommy Nelson and Jeff Lardwig
+all contributed to this course.
+
+69
+00:05:01.759 --> 00:05:03.500
+It's really an exciting time
+to learn Knowledge Graphs.
+
+70
+00:05:08.680 --> 00:05:10.379
+This course covers a lot,
+
+71
+00:05:10.379 --> 00:05:13.790
+but you'll walk through everything
+step-by-step so that you'll understand
+
+72
+00:05:13.790 --> 00:05:16.860
+in detail how to build
+knowledge graph systems yourself.
+
+73
+00:05:17.500 --> 00:05:18.810
+After finishing this course,
+
+74
+00:05:18.810 --> 00:05:21.100
+I hope you'll be able to use Knowledge
+Graphs to help your systems better understand

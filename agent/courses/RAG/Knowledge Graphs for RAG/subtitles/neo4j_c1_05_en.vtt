@@ -1,0 +1,941 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:144533
+
+1
+00:00:01.520 --> 00:00:03.980
+In this lesson, you'll
+use what you've learned so
+
+2
+00:00:03.980 --> 00:00:05.349
+far to start building a
+Knowledge Graph of some
+
+3
+00:00:15.589 --> 00:00:19.000
+Companies are required to file many
+financial reports with the SEC each year.
+
+4
+00:00:19.039 --> 00:00:21.719
+An important form is the Form 10-K,
+
+5
+00:00:21.719 --> 00:00:25.160
+which is an annual report
+of the company's activities.
+
+6
+00:00:25.940 --> 00:00:30.000
+These forms are public records and can be
+accessed through the SEC's EDGAR database.
+
+7
+00:00:30.679 --> 00:00:31.500
+Let's take a look at one.
+
+8
+00:00:33.020 --> 00:00:33.340
+So here, we are at sec.gov and the EDGAR
+database of all these financial forms.
+
+9
+00:00:50.000 --> 00:00:50.109
+And then, filter down for
+just their annual reports.
+
+10
+00:00:57.570 --> 00:01:01.950
+As you can see there's ton of
+sections to look at, lots and lots of text,
+
+11
+00:01:01.950 --> 00:01:03.880
+lots of interesting
+information in these forms.
+
+12
+00:01:04.879 --> 00:01:07.980
+Industry trends, a technology overview.
+
+13
+00:01:08.719 --> 00:01:09.219
+This is great. So, this is the kind of
+data that we'll pull into the Knowledge Graph
+
+14
+00:01:16.120 --> 00:01:19.129
+These forms are available for
+download. And when you've downloaded them,
+
+15
+00:01:19.129 --> 00:01:20.680
+they actually come as XML files.
+
+16
+00:01:21.459 --> 00:01:21.640
+And so, before you can really
+start doing import with that,
+
+17
+00:01:41.079 --> 00:01:45.650
+And from that, we then also extracted key
+things like an identifier called a CIK,
+
+18
+00:01:45.650 --> 00:01:50.219
+which is a central index key, which is
+how companies are identified within the SEC.
+
+19
+00:01:51.500 --> 00:01:55.989
+And for the big text chunks, we
+then looked at items 1, 1A, 7, and 7A.
+
+20
+00:01:56.269 --> 00:01:59.000
+Those are the large bodies of text
+that we're going to do chat with.
+
+21
+00:01:59.739 --> 00:02:02.359
+If you want to take a look in the
+data directory of this notebook,
+
+22
+00:02:02.359 --> 00:02:04.599
+you'll see some of the resulting
+files after doing all this cleanup.
+
+23
+00:02:04.859 --> 00:02:06.000
+After doing all this work,
+
+24
+00:02:06.000 --> 00:02:08.490
+we turn them into JSON so
+that it's easy to import
+
+25
+00:02:08.490 --> 00:02:09.400
+and start creating the
+Knowledge Graph from that.
+
+26
+00:02:11.389 --> 00:02:14.289
+Okay, we're almost ready to get back
+to the notebook, but before we do,
+
+27
+00:02:14.289 --> 00:02:16.770
+let's think about what our
+plan of attack is going to be.
+
+28
+00:02:17.349 --> 00:02:19.319
+We saw that each of the
+forms have different sections
+
+29
+00:02:19.319 --> 00:02:21.289
+of text that we're going
+to split up into chunks.
+
+30
+00:02:21.840 --> 00:02:23.319
+We're going to use langchain for that,
+
+31
+00:02:23.319 --> 00:02:25.430
+and then we've got all
+of those chunks set up,
+
+32
+00:02:25.430 --> 00:02:27.759
+each of those chunks will
+become a node in the graph.
+
+33
+00:02:28.360 --> 00:02:31.439
+The node will have that original
+text plus some metadata as properties.
+
+34
+00:02:32.219 --> 00:02:34.259
+Once that's in place,
+we'll create a vector index.
+
+35
+00:02:35.080 --> 00:02:36.490
+Then in that vector index,
+
+36
+00:02:36.490 --> 00:02:40.439
+we'll calculate text embeddings to
+populate the index for each of the chunk texts.
+
+37
+00:02:40.919 --> 00:02:43.539
+Finally, with all that done, we'll
+be able to do similarity search.
+
+38
+00:02:44.539 --> 00:02:46.889
+Let's head back over to the notebook
+and we can get started with the work.
+
+39
+00:02:48.460 --> 00:02:51.479
+So to start, we'll load
+some useful Python packages,
+
+40
+00:02:51.479 --> 00:02:53.500
+including some great stuff from Langchain.
+
+41
+00:02:54.159 --> 00:02:58.349
+We'll also load some global variables
+from the environment and set some constants
+
+42
+00:02:58.349 --> 00:03:02.539
+that we want to use later on during
+the knowledge graph creation part.
+
+43
+00:03:03.500 --> 00:03:06.800
+In this lesson, you'll be
+working with a single 10k document.
+
+44
+00:03:07.500 --> 00:03:10.669
+In practice you may have
+hundreds or thousands of documents.
+
+45
+00:03:11.509 --> 00:03:15.050
+The steps you'll take here would need to
+be repeated for all of your documents.
+
+46
+00:03:15.490 --> 00:03:19.090
+Let's start by setting the file name
+and then loading just the one JSON file.
+
+47
+00:03:31.759 --> 00:03:31.800
+And then, with first file name,
+
+48
+00:03:35.840 --> 00:03:37.680
+We can take a look at that to make sure
+that it looks like a proper dictionary.
+
+49
+00:03:41.919 --> 00:03:43.159
+Okay, the type is dictionary
+in Python. That's perfect.
+
+50
+00:03:43.180 --> 00:03:44.189
+Let's take a look at the
+keys that are available.
+
+51
+00:03:44.210 --> 00:03:47.280
+I'm just going to copy over a for loop
+that will go through the dictionary,
+
+52
+00:03:47.280 --> 00:03:49.740
+printing out the keys and the
+types of values in the object.
+
+53
+00:03:50.419 --> 00:03:53.719
+You can see these are the
+familiar fields from the Form 10-K,
+
+54
+00:03:53.719 --> 00:03:56.469
+the different sections called Item
+1, Item 1A, and so on. And then,
+
+55
+00:04:08.419 --> 00:04:09.819
+Let's take a look at item one
+to see what the text is like.
+
+56
+00:04:14.199 --> 00:04:15.000
+Let's grab item one from the object.
+
+57
+00:04:15.020 --> 00:04:16.529
+And because I know
+there's a lot of text there,
+
+58
+00:04:16.529 --> 00:04:18.189
+we're just going to look
+at a little bit of it. So,
+
+59
+00:04:26.420 --> 00:04:28.000
+Because the text is so big, this is
+the whole purpose of doing chunking.
+
+60
+00:04:28.019 --> 00:04:29.720
+We're not going to take the entire
+text and store that in a single record.
+
+61
+00:04:29.740 --> 00:04:32.389
+We're going to use a text splitter
+from Langchain to actually break it down.
+
+62
+00:04:38.069 --> 00:04:41.870
+And this text splitter is set up with a
+chunk size of, you know, 2000 characters,
+
+63
+00:04:41.870 --> 00:04:44.000
+we're going to have an
+overlap of 200 characters.
+
+64
+00:04:52.980 --> 00:04:58.120
+And as before, we'll take a
+look at what the type of that is.
+
+65
+00:05:01.680 --> 00:05:02.560
+Okay, we can see that the list
+and it should be a list of strings.
+
+66
+00:05:04.720 --> 00:05:09.500
+Okay, let's also see
+how long that list is.
+
+67
+00:05:12.480 --> 00:05:13.519
+Okay, so there's 254
+chunks from the original text.
+
+68
+00:05:16.720 --> 00:05:17.959
+Finally, let's actually
+take a look at one of
+
+69
+00:05:17.959 --> 00:05:19.199
+the chunks to see what the text is there.
+
+70
+00:05:21.920 --> 00:05:23.199
+And that looks a lot like what
+we saw before, which is perfect.
+
+71
+00:05:38.129 --> 00:05:39.689
+Okay, this is kind of a big function. So,
+let's walk through it one step at a time.
+
+72
+00:05:47.540 --> 00:05:50.430
+The first thing we'll do is that
+we'll go ahead and set aside a
+
+73
+00:05:50.430 --> 00:05:52.709
+list where we'll accumulate all
+of the chunks that we create.
+
+74
+00:05:53.629 --> 00:05:53.959
+And then, we'll go
+ahead and load the file,
+
+75
+00:06:10.060 --> 00:06:13.800
+For each of those items, we're going to
+pull out the item text from the object. So,
+
+76
+00:06:16.220 --> 00:06:17.939
+With the item text,
+we'll use the text splitter
+
+77
+00:06:17.939 --> 00:06:20.040
+that you just saw to go
+ahead and chunk that up.
+
+78
+00:06:31.360 --> 00:06:31.589
+And then, for the data
+record with the metadata,
+
+79
+00:06:36.110 --> 00:06:38.699
+First, there's the text itself
+pulled straight from the chunk.
+
+80
+00:06:39.139 --> 00:06:40.680
+There's the current item
+that we're working on.
+
+81
+00:06:41.439 --> 00:06:44.110
+There's the chunk sequence ID
+that we'll be looping. And then,
+
+82
+00:06:47.439 --> 00:06:51.449
+That form ID that we just created,
+the chunk ID that we'll also go ahead,
+
+83
+00:06:59.540 --> 00:07:01.399
+All that will go into
+one data record. And then,
+
+84
+00:07:22.819 --> 00:07:25.120
+Let's take a look at the
+first record in that list.
+
+85
+00:07:28.439 --> 00:07:33.399
+You can see the original text as we
+expected and there's all the metadata as well.
+
+86
+00:07:33.939 --> 00:07:34.160
+Perfect.
+
+87
+00:07:35.459 --> 00:07:38.279
+You will use a Cypher query to
+merge the chunks into the graph.
+
+88
+00:07:38.920 --> 00:07:40.740
+Let's take a look at
+the Cypher query itself.
+
+89
+00:07:41.259 --> 00:07:42.129
+This is a merge statement, so remember
+that a merge first does a match. And then,
+
+90
+00:07:59.649 --> 00:08:02.240
+The parameter itself is called chunk
+param, and it has names that match across,
+
+91
+00:08:02.240 --> 00:08:02.430
+right? So, names will be added
+to the chunk parameter names,
+
+92
+00:08:37.860 --> 00:08:41.889
+And for passing the parameters, we have
+an extra argument, which is called params,
+
+93
+00:08:41.889 --> 00:08:44.480
+which is a dictionary
+of keys and then values.
+
+94
+00:08:44.700 --> 00:08:46.919
+The key chunk param here
+will be available inside
+
+95
+00:08:46.919 --> 00:08:49.139
+of the query as this
+dollar sign chunk param.
+
+96
+00:08:49.919 --> 00:08:52.419
+We're going to give it the
+value of from that list of chunks,
+
+97
+00:08:52.419 --> 00:08:53.960
+we're going to grab the very first chunk.
+
+98
+00:08:54.559 --> 00:08:58.169
+The very first chunk record will
+become chunk param inside of the query.
+
+99
+00:09:00.600 --> 00:09:02.960
+So fantastic. You can see
+that the result of running
+
+100
+00:09:02.960 --> 00:09:04.840
+that query is that
+we've created a new node,
+
+101
+00:09:04.840 --> 00:09:06.299
+and here's the contents of that node.
+
+102
+00:09:06.539 --> 00:09:08.740
+It's the metadata that
+we set before and then
+
+103
+00:09:08.740 --> 00:09:10.460
+there's the text that we've always seen.
+
+104
+00:09:10.980 --> 00:09:11.539
+This is perfect.
+
+105
+00:09:13.059 --> 00:09:15.179
+Before calling the helper
+function to create a Knowledge Graph,
+
+106
+00:09:27.299 --> 00:09:29.970
+Its job is to ensure that
+a particular property is
+
+107
+00:09:29.970 --> 00:09:32.370
+unique for all nodes
+that share a common label.
+
+108
+00:09:48.460 --> 00:09:49.289
+Let's go ahead and run that.
+
+109
+00:09:56.460 --> 00:09:57.750
+We'll go ahead and show all the indexes.
+
+110
+00:09:59.700 --> 00:10:03.240
+And you can see that the named index
+unique chunk is there, that it's online.
+
+111
+00:10:15.409 --> 00:10:17.210
+Let's scroll down to see the end of this.
+
+112
+00:10:17.230 --> 00:10:19.389
+Okay, great.
+
+113
+00:10:19.409 --> 00:10:20.409
+It's created 23 nodes. Perfect.
+
+114
+00:10:20.429 --> 00:10:22.970
+Just to sanity check that
+we actually have 23 nodes,
+
+115
+00:10:22.970 --> 00:10:25.000
+we'll run another sanity
+check that we actually
+
+116
+00:10:25.000 --> 00:10:26.779
+have 23 nodes, we'll run another query.
+
+117
+00:10:35.320 --> 00:10:35.669
+Let's see.
+
+118
+00:10:36.940 --> 00:10:37.429
+Fantastic.
+
+119
+00:10:46.230 --> 00:10:49.370
+The index will be called
+form10kChunks and will store embeddings
+
+120
+00:10:49.370 --> 00:10:52.840
+for nodes labeled as chunk in a
+property called text embedding.
+
+121
+00:10:53.600 --> 00:10:55.789
+The embeddings will match
+the recommended configuration
+
+122
+00:10:55.789 --> 00:10:57.679
+for the OpenAI default embeddings model.
+
+123
+00:11:04.480 --> 00:11:07.940
+We can check that that index has been
+created by looking at all of the indexes.
+
+124
+00:11:10.230 --> 00:11:13.960
+Great, we can see that we've got this
+form 10k chunks available. It's online,
+
+125
+00:11:13.960 --> 00:11:15.269
+which means it's ready to go.
+
+126
+00:11:15.899 --> 00:11:20.190
+It's a vector index and it's on the
+chunks for text embeddings, just as we asked.
+
+127
+00:11:24.000 --> 00:11:26.639
+You can now use a single query
+to match all chunks. And then,
+
+128
+00:11:33.350 --> 00:11:35.590
+This may take a minute to run
+depending on network traffic.
+
+129
+00:11:40.710 --> 00:11:42.009
+And this is now what the graph looks like.
+
+130
+00:11:42.269 --> 00:11:44.529
+We know that we've got
+chunks with text embeddings
+
+131
+00:11:44.529 --> 00:11:47.039
+as a list and we don't
+yet have any relationships.
+
+132
+00:11:57.799 --> 00:12:01.049
+This is exactly like what we
+did in the previous lesson,
+
+133
+00:12:01.049 --> 00:12:03.720
+where we called Neo4j for
+actually doing the encoding,
+
+134
+00:12:03.720 --> 00:12:06.970
+which would call back out to
+OpenAI, and using that embedding,
+
+135
+00:12:06.970 --> 00:12:09.929
+we would actually store the
+value inside of the property
+
+136
+00:12:09.929 --> 00:12:12.000
+called text embedding inside of the node.
+
+137
+00:12:13.159 --> 00:12:15.690
+You may recall that the
+form we've turned into a
+
+138
+00:12:15.690 --> 00:12:17.720
+knowledge graph is from
+a company called NetApp.
+
+139
+00:12:18.179 --> 00:12:21.019
+We picked just one form. It
+happened to be this company NetApp.
+
+140
+00:12:21.460 --> 00:12:23.580
+You can try out our new
+vector search helper function
+
+141
+00:12:23.580 --> 00:12:25.490
+to ask about NetApp and see what we get.
+
+142
+00:12:31.580 --> 00:12:31.860
+The Neo4j VectorSearchHelper
+function returns a list of results.
+
+143
+00:12:49.960 --> 00:12:52.019
+Notice that we only
+performed vector search.
+
+144
+00:12:52.559 --> 00:12:56.519
+If we want to create a chatbot that
+provides actual answers to a question,
+
+145
+00:12:56.519 --> 00:12:58.779
+we can build a RAG system using Langchain.
+
+146
+00:12:59.379 --> 00:13:00.710
+Let's take a look at how you'll do that.
+
+147
+00:13:02.039 --> 00:13:05.070
+The easiest way to start
+using Neo4j with Langchain
+
+148
+00:13:05.070 --> 00:13:07.090
+is with the Neo4j vector interface.
+
+149
+00:13:07.830 --> 00:13:09.870
+This makes Neo4j look like a vector store.
+
+150
+00:13:10.409 --> 00:13:13.470
+Under the hood, it will
+use the cipher language
+
+151
+00:13:13.470 --> 00:13:15.169
+for performing vector similarity searches.
+
+152
+00:13:15.870 --> 00:13:18.340
+The configuration
+specifies a few important things.
+
+153
+00:13:19.059 --> 00:13:22.080
+These are using the global variables
+that we said at the top of this lesson.
+
+154
+00:13:28.519 --> 00:13:29.679
+variables that we set at
+the top of this lesson.
+
+155
+00:13:29.700 --> 00:13:33.049
+We'll convert the vector store into a
+retriever using this easy call as a retriever.
+
+156
+00:13:33.070 --> 00:13:35.090
+The Langchain framework comes with lots of
+
+157
+00:13:35.090 --> 00:13:36.830
+different ways of
+having chat applications.
+
+158
+00:13:45.240 --> 00:13:47.919
+If you want to find more about the kinds
+of things that Langchain has available,
+
+159
+00:13:47.919 --> 00:13:50.419
+I totally encourage you to go out
+to their website and check it out.
+
+160
+00:13:50.519 --> 00:13:51.340
+It's pretty great. So, for this chain,
+
+161
+00:14:06.509 --> 00:14:08.820
+and it's going to be
+using the retriever that we
+
+162
+00:14:08.820 --> 00:14:10.669
+defined above which uses
+the Neo4j vector store.
+
+163
+00:14:15.370 --> 00:14:18.340
+I also have a nice helper
+function here called pretty chain,
+
+164
+00:14:18.340 --> 00:14:21.850
+which just accepts a question, it
+then calls the chain with that question,
+
+165
+00:14:21.850 --> 00:14:24.549
+and just pulls out the
+answer field itself and prints
+
+166
+00:14:24.549 --> 00:14:26.980
+that in a nice way
+formatted for the screen.
+
+167
+00:14:29.580 --> 00:14:30.830
+Okay, with all that work done,
+
+168
+00:14:30.830 --> 00:14:33.340
+we can finally get to the fun
+stuff and ask some questions.
+
+169
+00:14:34.320 --> 00:14:37.279
+Since we know we have NetApp
+here, let's go ahead and ask,
+
+170
+00:14:37.279 --> 00:14:38.519
+what is NetApp's primary business?
+
+171
+00:14:42.080 --> 00:14:44.009
+We'll use pretty chain
+to pass that question
+
+172
+00:14:44.009 --> 00:14:45.700
+in and just immediately show the response.
+
+173
+00:14:47.090 --> 00:14:47.600
+Okay.
+
+174
+00:14:48.519 --> 00:14:52.519
+We can see that NetApp's primary business
+is enterprise storage and data management,
+
+175
+00:14:52.519 --> 00:14:54.059
+cloud storage and cloud operations.
+
+176
+00:14:54.980 --> 00:14:57.590
+You can see that we have an
+actual answer to the question rather
+
+177
+00:14:57.590 --> 00:14:59.600
+than just some raw text
+that might have that answer.
+
+178
+00:14:59.980 --> 00:15:01.850
+This is exactly what you want the LLM for.
+
+179
+00:15:03.100 --> 00:15:04.610
+Let's try another
+question to see what we get.
+
+180
+00:15:05.379 --> 00:15:07.429
+Let's see if it can tell
+where NetApp has headquarters.
+
+181
+00:15:09.159 --> 00:15:11.649
+Headquartered in San Jose,
+California. That is correct.
+
+182
+00:15:30.720 --> 00:15:32.210
+Let's see what we get. Okay, I guess
+that is technically a single sentence.
+
+183
+00:15:32.230 --> 00:15:33.610
+It is a bit rambly, but good
+job following our instructions.
+
+184
+00:15:37.600 --> 00:15:41.759
+We're going to ask about a different
+company that kind of sounds similar to NetApp.
+
+185
+00:15:42.120 --> 00:15:44.190
+There's Apple, the
+computer company, right?
+
+186
+00:15:53.230 --> 00:15:53.389
+Hmm.
+
+187
+00:15:54.129 --> 00:15:56.740
+The description of Apple seems a
+lot like the description of NetApp.
+
+188
+00:15:57.200 --> 00:15:58.600
+This is classic hallucination.
+
+189
+00:15:59.659 --> 00:16:02.100
+Let's try to fix this with a
+little bit more prompt engineering.
+
+190
+00:16:12.399 --> 00:16:17.860
+ If you are unsure about the
+answer, say you don't know.
+
+191
+00:16:17.879 --> 00:16:20.909
+Okay, much better answer and
+much more honest from the LLM.
+
+192
+00:16:21.549 --> 00:16:23.389
+Perfect prompt
+engineering for the victory.
+
+193
+00:16:24.289 --> 00:16:27.970
+In this lesson, you've been
+using Neo4j as a vector store,
+
+194
+00:16:27.970 --> 00:16:30.309
+but not really as a knowledge graph.
+
+195
+00:16:30.950 --> 00:16:33.100
+Let's move on to the next lesson,
+
+196
+00:16:33.100 --> 00:16:35.549
+where you'll add
+relationships to the nodes to
+
+197
+00:16:35.549 --> 00:16:38.000
+add more graphy power
+to the chat application.
