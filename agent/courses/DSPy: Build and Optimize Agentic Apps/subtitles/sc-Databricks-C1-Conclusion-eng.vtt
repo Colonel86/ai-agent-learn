@@ -1,0 +1,64 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.967 --> 00:00:03.336
+Congratulations on completing this course.
+
+2
+00:00:03.336 --> 00:00:08.336
+In this course, you'll learn
+that DSPy is a lightweight flexible GenAI authoring
+
+3
+00:00:08.408 --> 00:00:13.179
+framework that simplifies interaction
+with LLMs and agent development.
+
+4
+00:00:13.713 --> 00:00:18.451
+It also provides automatic program
+optimization through DSPy optimizers,
+
+5
+00:00:18.752 --> 00:00:22.789
+and it has native MLflow tracing
+integration for easy development.
+
+6
+00:00:23.423 --> 00:00:27.193
+You used dspy.signature
+to define inputs and outputs,
+
+7
+00:00:27.761 --> 00:00:30.764
+and DSPy.module
+to wrap the custom logic.
+
+8
+00:00:31.164 --> 00:00:34.768
+After building the program, you'll learn
+how to prepare a small dataset
+
+9
+00:00:35.101 --> 00:00:36.469
+and a metric function
+
+10
+00:00:36.469 --> 00:00:40.340
+to use a DSPy optimizer to improve
+the quality of the AI program.
+
+11
+00:00:40.807 --> 00:00:43.543
+And then finally you used Mlflow tracing by
+
+12
+00:00:43.543 --> 00:00:46.446
+adding mlflow.dspy.autolog.
+
+13
+00:00:46.446 --> 00:00:48.948
+I'm looking forward to seeing
+what you have built on your own!
+

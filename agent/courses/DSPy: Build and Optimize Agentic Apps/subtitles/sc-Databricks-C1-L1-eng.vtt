@@ -1,0 +1,415 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.101 --> 00:00:04.337
+In this lesson, you will learn about what
+DSPy is,
+
+2
+00:00:04.671 --> 00:00:08.341
+and more importantly,
+what is special about DSPy and why
+
+3
+00:00:08.341 --> 00:00:12.078
+many developers are using DSPy
+to power their GenAI apps.
+
+4
+00:00:12.245 --> 00:00:15.115
+Let's dive. So what is DSPy?
+
+5
+00:00:15.115 --> 00:00:18.651
+At a very high level,
+DSPy is a GenAI authoring framework
+
+6
+00:00:18.651 --> 00:00:21.654
+that simplifies
+the development of GenAI applications.
+
+7
+00:00:22.122 --> 00:00:25.125
+You can use it
+to build a RAG system to agent.
+
+8
+00:00:25.392 --> 00:00:28.495
+But as a user, I would ask this
+very natural question?
+
+9
+00:00:28.862 --> 00:00:30.930
+Are we reinventing the wheel?
+
+10
+00:00:30.930 --> 00:00:33.600
+We already have
+so many options over there.
+
+11
+00:00:33.600 --> 00:00:36.503
+The answer is no. Let's explore together.
+
+12
+00:00:36.503 --> 00:00:39.305
+Before we learn
+about the specialty of the DSPy,
+
+13
+00:00:39.305 --> 00:00:43.476
+let's talk about the problems
+we're facing. Since late 2022,
+
+14
+00:00:43.543 --> 00:00:45.845
+due to the success of genAI models,
+
+15
+00:00:45.845 --> 00:00:48.715
+there came the rise of compound AI system.
+
+16
+00:00:48.715 --> 00:00:53.353
+Here you can see a question-answering
+system and also a code generator.
+
+17
+00:00:54.120 --> 00:00:57.924
+Compound AI system is a system
+that has multiple modules.
+
+18
+00:00:58.291 --> 00:01:02.095
+Each module handles a subtask,
+which can make LLM calls,
+
+19
+00:01:02.362 --> 00:01:04.697
+or could just be a regular tool calling.
+
+20
+00:01:04.697 --> 00:01:09.269
+Combining all these modules together,
+we form a big and powerful AI system
+
+21
+00:01:09.502 --> 00:01:11.471
+that can handle complex
+tasks like retrieval augmented
+
+22
+00:01:11.471 --> 00:01:12.639
+that can handle complex
+tasks like retrieval augmented
+
+23
+00:01:12.639 --> 00:01:15.975
+generation or code generator
+as you see in the picture.
+
+24
+00:01:16.476 --> 00:01:20.046
+When building a compound AI system,
+we're all facing the problem
+
+25
+00:01:20.046 --> 00:01:21.881
+from prompt engineering.
+
+26
+00:01:21.881 --> 00:01:25.952
+We do prompt engineering
+because we know that with a better prompt,
+
+27
+00:01:25.952 --> 00:01:28.955
+we'll get a better result
+from the language model.
+
+28
+00:01:29.456 --> 00:01:33.593
+But prompt engineering could be very messy
+because we are tweaking the strings
+
+29
+00:01:33.893 --> 00:01:36.896
+and we don't really know what changes
+make an actual difference.
+
+30
+00:01:37.363 --> 00:01:41.568
+In practice, that usually means
+we end up iterating over 50
+
+31
+00:01:41.568 --> 00:01:45.972
+or 100 or even more prompts,
+and each prompt could be very long,
+
+32
+00:01:46.005 --> 00:01:50.243
+like tens of thousands of words.
+Making that even worse,
+
+33
+00:01:50.243 --> 00:01:53.246
+if we switch a model,
+then we need to start over
+
+34
+00:01:53.446 --> 00:01:57.417
+because prompt engineering is heavily
+biased towards a language model.
+
+35
+00:01:57.851 --> 00:02:02.155
+As a summary prompt engineering
+is both brittle and time-consuming.
+
+36
+00:02:02.722 --> 00:02:05.725
+The other problem comes from the framework
+itself.
+
+37
+00:02:06.092 --> 00:02:10.396
+Frameworks are very powerful
+because I simplify and standardize
+
+38
+00:02:10.497 --> 00:02:14.200
+the experience of building things
+like agents or RAG and so on.
+
+39
+00:02:14.934 --> 00:02:15.969
+But there have been more
+
+40
+00:02:15.969 --> 00:02:18.972
+and more complaints
+that I don't like the use of frameworks,
+
+41
+00:02:19.205 --> 00:02:22.208
+because instead of value, I'm
+seeing more trouble.
+
+42
+00:02:22.575 --> 00:02:25.445
+One very solid concern
+is that I'm being forced
+
+43
+00:02:25.445 --> 00:02:29.449
+to learn the framework contract,
+which sometimes means unnecessary
+
+44
+00:02:29.449 --> 00:02:32.886
+overhead for me, rather than keeping me
+focused on the logics.
+
+45
+00:02:33.453 --> 00:02:37.423
+And it's really hard to migrate
+off the framework existing code
+
+46
+00:02:37.457 --> 00:02:40.093
+if I decide to switch over to another one.
+
+47
+00:02:40.093 --> 00:02:43.096
+To address both problems
+then came the DSPy.
+
+48
+00:02:43.630 --> 00:02:46.032
+Now let's answer the question what is DSPy
+
+49
+00:02:46.032 --> 00:02:48.168
+again with more details.
+
+50
+00:02:48.168 --> 00:02:53.168
+DSPy is a flexible, lightweight framework
+that simplifies
+
+51
+00:02:53.339 --> 00:02:57.944
+the interaction with LM and provides
+automatic program optimization,
+
+52
+00:02:58.244 --> 00:03:01.781
+including prompt optimization and LM
+weights finetuning
+
+53
+00:03:01.848 --> 00:03:06.686
+through the DSPy optimizer. DSPy
+also provides seamless productization
+
+54
+00:03:07.120 --> 00:03:11.758
+support like streaming async,
+and so on. We provide you
+
+55
+00:03:11.758 --> 00:03:14.761
+with the building blocks
+for AI applications in DSPy,
+
+56
+00:03:14.928 --> 00:03:17.931
+but we don't restrict
+that the way you build the applications.
+
+57
+00:03:18.031 --> 00:03:22.001
+It's both easy to migrate to DSPy
+and migrate off DSPy.
+
+58
+00:03:22.268 --> 00:03:25.104
+We have three special things inside DSPy:
+
+59
+00:03:25.104 --> 00:03:27.840
+And the first one is LM-agnostic
+
+60
+00:03:27.840 --> 00:03:32.111
+programing
+instead of LM-biased prompting. Basically
+
+61
+00:03:32.111 --> 00:03:36.015
+instead of doing
+prompt engineering, DSPy interacts with our LLM
+
+62
+00:03:36.015 --> 00:03:40.987
+by defining input fields
+and the output fields. In DSPy context,
+
+63
+00:03:41.154 --> 00:03:44.090
+you can choose how I'm and the point has a
+well engineered
+
+64
+00:03:44.090 --> 00:03:47.527
+RESTful API.
+But different from traditional APIs,
+
+65
+00:03:47.860 --> 00:03:50.863
+the input and output are defined
+at the client side.
+
+66
+00:03:50.997 --> 00:03:51.631
+Don't worry
+
+67
+00:03:51.631 --> 00:03:54.634
+if this is not fully clear yet,
+we'll cover this
+
+68
+00:03:54.667 --> 00:03:55.868
+in the next lesson.
+
+69
+00:03:55.868 --> 00:04:00.406
+The second part is seamless
+productization through both native DSPy features
+
+70
+00:04:00.707 --> 00:04:04.177
+like streaming, cache
+and also through the close integration
+
+71
+00:04:04.177 --> 00:04:05.578
+with MLflow.
+
+72
+00:04:05.578 --> 00:04:08.481
+MLflow is an ML and AI ops tool
+
+73
+00:04:08.481 --> 00:04:11.818
+that streamlines end-to-end development
+of AI applications.
+
+74
+00:04:12.118 --> 00:04:17.118
+For example, helps debugging AI programs
+by MLflow tracing, tracking development
+
+75
+00:04:17.690 --> 00:04:21.928
+MLflow experiments, and deploy
+the application with MLflow deployments.
+
+76
+00:04:22.295 --> 00:04:24.530
+We'll learn more about it in lesson three.
+
+77
+00:04:25.632 --> 00:04:27.200
+And in lesson four, you'll
+
+78
+00:04:27.200 --> 00:04:29.869
+learn about automatic program
+optimization
+
+79
+00:04:29.869 --> 00:04:32.772
+help to build your applications with DSPy.
+
+80
+00:04:32.772 --> 00:04:35.575
+You can create a DSPy optimizer
+and then apply it
+
+81
+00:04:35.575 --> 00:04:38.845
+on your program and automatically
+get quality improvements.
+
+82
+00:04:39.245 --> 00:04:41.481
+DSPy is trusted by industry.
+
+83
+00:04:41.481 --> 00:04:45.051
+We have many successful integration
+with lots of enterprise users.
+
+84
+00:04:45.451 --> 00:04:50.156
+Please check it out more at
+DSPy.ai/community/use-cases.
+
+85
+00:04:50.490 --> 00:04:52.158
+That's all about this lesson. In
+
+86
+00:04:52.158 --> 00:04:56.129
+the next lesson you'll learn
+how to build your GenAI applications in DSPy.
+
+87
+00:04:56.162 --> 00:04:56.763
+See you there.
+

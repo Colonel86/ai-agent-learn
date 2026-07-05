@@ -1,0 +1,250 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.434 --> 00:00:03.837
+Welcome to DSPy: Build and
+
+2
+00:00:03.837 --> 00:00:07.674
+Optimize Agentic Apps
+built in partnership with Databricks.
+
+3
+00:00:08.675 --> 00:00:11.277
+In this course
+you'll learn how to build and optimize
+
+4
+00:00:11.277 --> 00:00:14.280
+your genAI application using DSPy.
+
+5
+00:00:14.314 --> 00:00:16.883
+When you start building complex
+AI apps, one
+
+6
+00:00:16.883 --> 00:00:19.919
+big challenge is writing
+good prompts for an LLM.
+
+7
+00:00:20.620 --> 00:00:23.857
+I'll often try dozens of prompts tweaking
+words, changing formats,
+
+8
+00:00:23.857 --> 00:00:25.692
+hoping to get better results.
+
+9
+00:00:25.692 --> 00:00:28.862
+But this process takes a lot of time,
+and the prompts often
+
+10
+00:00:28.862 --> 00:00:31.865
+even break
+when you change the underlying LLM.
+
+11
+00:00:32.265 --> 00:00:35.335
+DSPy streamlines and optimizes
+this whole process.
+
+12
+00:00:35.668 --> 00:00:39.005
+You define what inputs your model needs
+and what outputs you return,
+
+13
+00:00:39.305 --> 00:00:42.675
+and also provide a data set of inputs
+and desired outputs.
+
+14
+00:00:43.410 --> 00:00:46.046
+DSPy can then optimize your AI programs
+
+15
+00:00:46.046 --> 00:00:49.049
+to get better performance
+with much less manual work.
+
+16
+00:00:49.816 --> 00:00:54.816
+I'm delighted to introduce the instructor Chen Qian
+who is a software engineer at Databricks,
+
+17
+00:00:54.988 --> 00:00:57.957
+and co-leads the developments of DSPy.
+
+18
+00:00:58.158 --> 00:01:00.860
+Thanks Andrew. In this course you will learn
+
+19
+00:01:00.860 --> 00:01:05.860
+how to build AI programs with DSPy.
+DSPy has two main building blocks:
+
+20
+00:01:06.199 --> 00:01:10.570
+signature and module.
+When you are trying to build a component
+
+21
+00:01:10.603 --> 00:01:14.841
+of an application
+specifying the signature tells a system
+
+22
+00:01:14.841 --> 00:01:18.311
+what inputs and outputs
+to expect from the
+
+23
+00:01:18.311 --> 00:01:21.514
+LLM component. For example, a sentiment
+
+24
+00:01:21.748 --> 00:01:26.748
+analysis program will have a syntax as an
+input and an integer representing a sentiment
+
+25
+00:01:27.287 --> 00:01:28.755
+as the output.
+
+26
+00:01:28.755 --> 00:01:32.625
+A module then uses those signatures
+to actually call a language
+
+27
+00:01:32.625 --> 00:01:34.127
+model and get results.
+
+28
+00:01:34.127 --> 00:01:39.099
+Sometimes, an app doesn't work but we are unsure why.
+
+29
+00:01:39.099 --> 00:01:43.169
+In this course you will also learn to use MLflow tracing
+
+30
+00:01:43.169 --> 00:01:48.007
+to help you see exactly what is going on, each step of the application.
+
+31
+00:01:48.007 --> 00:01:50.743
+What data was used, what tools were called
+
+32
+00:01:50.743 --> 00:01:54.414
+what the model returned and where things broke.
+
+33
+00:01:54.414 --> 00:01:59.252
+With just one line of code, you can turn on this tracing feature for your app.
+
+34
+00:01:59.252 --> 00:02:02.388
+One neat use DSPy is in optimizing agentic
+
+35
+00:02:02.388 --> 00:02:03.590
+workflows.
+
+36
+00:02:03.590 --> 00:02:06.226
+If you have a complex workflow
+that takes
+
+37
+00:02:06.226 --> 00:02:09.529
+an input and uses
+multiple steps of processing
+
+38
+00:02:09.762 --> 00:02:13.399
+to generate the outputs, maybe using an LLM
+on multiple of these steps,
+
+39
+00:02:13.933 --> 00:02:18.538
+then DSPy's optimizer can take your agents
+as well as an evaluation
+
+40
+00:02:18.538 --> 00:02:22.575
+datasets and metric, and based on that,
+automatically search for better
+
+41
+00:02:22.575 --> 00:02:27.147
+prompts for all those steps. I've seen it
+sometimes build really high-quality few-shot
+
+42
+00:02:27.147 --> 00:02:31.451
+prompts from your data
+in a way that is far better
+
+43
+00:02:31.451 --> 00:02:35.855
+than I, as a human could likely have
+achieved by hand. In this course,
+
+44
+00:02:35.855 --> 00:02:39.792
+you use these DSPy's optimizer
+to optimize prompts in a RAG app
+
+45
+00:02:39.792 --> 00:02:42.328
+that answers Wikipedia questions.
+
+46
+00:02:42.328 --> 00:02:44.764
+Many people have worked
+to create this course.
+
+47
+00:02:44.764 --> 00:02:49.764
+I'd like to thank Omar Khattab
+Cathy Yin, Krista Opsahl-Ong
+
+48
+00:02:50.570 --> 00:02:55.108
+and Tomu Hirata for Databricks.
+From DeepLearning.AI,
+
+49
+00:02:55.108 --> 00:02:59.812
+Esmaeil Gargari and Brendan Brown
+also contributed to this course.
+
+50
+00:02:59.879 --> 00:03:03.316
+The first lesson will be an introduction
+to DSPy.
+
+51
+00:03:03.316 --> 00:03:07.787
+One surprising thing about DSPy is
+how few lines of code it takes implement,
+
+52
+00:03:08.221 --> 00:03:12.525
+and that it essentially automates
+the prompt engineering process.
+
+53
+00:03:13.126 --> 00:03:15.461
+Please go on to the next
+video to see how this works.
+

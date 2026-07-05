@@ -1,0 +1,1489 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.101 --> 00:00:05.638
+In this lesson, you will learn how
+to build your AI applications with the DSPy.
+
+2
+00:00:05.939 --> 00:00:07.273
+Let's dive into the code.
+
+3
+00:00:07.273 --> 00:00:09.509
+This lesson comes with a lab.
+
+4
+00:00:09.509 --> 00:00:12.479
+And in the lab,
+you will learn these DSPy fundamentals
+
+5
+00:00:12.779 --> 00:00:17.150
+by building a simple sentiment analysis
+program with DSPy built-in modules.
+
+6
+00:00:17.584 --> 00:00:21.354
+And then you will also learn
+how to build a custom agent with DSPy
+
+7
+00:00:21.755 --> 00:00:24.824
+with a demo of building
+the "name the celebrity" game.
+
+8
+00:00:25.458 --> 00:00:28.762
+It's a very simple game
+where the player one thinks about a
+
+9
+00:00:28.762 --> 00:00:33.233
+celebrity name and player
+two starts asking yes or no question,
+
+10
+00:00:33.500 --> 00:00:36.302
+and he'll fine-tune the name or use up
+all the question
+
+11
+00:00:36.302 --> 00:00:37.070
+quotas.
+
+12
+00:00:37.070 --> 00:00:41.274
+DSPy programing has two important
+abstractions: signature
+
+13
+00:00:41.574 --> 00:00:44.477
+and the module. Signature
+is where you define
+
+14
+00:00:44.477 --> 00:00:49.416
+the input and output contract
+help your LLM calls. And DSPy module,
+
+15
+00:00:49.649 --> 00:00:53.153
+is the interface
+of talking to the LLM with custom logic.
+
+16
+00:00:53.319 --> 00:00:54.821
+Let's look at them one by one.
+
+17
+00:00:54.821 --> 00:00:58.091
+As we mentioned in lesson one,
+DSPy context
+
+18
+00:00:58.558 --> 00:01:02.462
+Interaction with LLM
+is similar to calling a RESTful API
+
+19
+00:01:02.629 --> 00:01:05.632
+that has a well-defined
+input and output format,
+
+20
+00:01:05.698 --> 00:01:08.835
+but this data format definition
+happens on client side
+
+21
+00:01:09.102 --> 00:01:12.205
+instead of the server side
+like a normal RESTful API.
+
+22
+00:01:12.539 --> 00:01:16.810
+The definition is through DSPy
+signature. In short language,
+
+23
+00:01:17.410 --> 00:01:20.380
+Signature defines the input-output fields
+
+24
+00:01:20.380 --> 00:01:24.184
+along with types
+and annotations of the LM interaction.
+
+25
+00:01:24.284 --> 00:01:27.887
+There are two ways of defining a DSPy
+signature,
+
+26
+00:01:28.288 --> 00:01:31.424
+class-based signature and stream-based
+signature.
+
+27
+00:01:31.791 --> 00:01:34.794
+The first way is class-based signature.
+
+28
+00:01:34.894 --> 00:01:38.264
+All you need to do
+is subclassing from DSPy dot signature.
+
+29
+00:01:38.765 --> 00:01:40.266
+And the mark input fields,
+
+30
+00:01:40.266 --> 00:01:43.336
+by DSPy dot input field.
+And output fields
+
+31
+00:01:43.336 --> 00:01:48.336
+by the output field. And optionally, you
+can provide type and annotation to each field.
+
+32
+00:01:49.542 --> 00:01:52.178
+There are five important parts
+of a class-based
+
+33
+00:01:52.178 --> 00:01:52.846
+signature.
+
+34
+00:01:54.514 --> 00:01:55.515
+The red box,
+
+35
+00:01:55.515 --> 00:01:58.384
+which is the doctrine of the signature
+class,
+
+36
+00:01:58.384 --> 00:02:02.555
+is a signature instruction which defines
+the purpose of the LM call.
+
+37
+00:02:03.022 --> 00:02:07.660
+Like a brief overview of your task, this
+usually only requires a few sentences,
+
+38
+00:02:07.994 --> 00:02:11.798
+but if you already have an existing prompt
+and don't want to simplify,
+
+39
+00:02:12.098 --> 00:02:15.101
+you can paste the whole prompt
+into a docstring.
+
+40
+00:02:15.835 --> 00:02:18.138
+The orange box is the field name.
+
+41
+00:02:18.138 --> 00:02:22.242
+You will use this name to carry
+input data and access the output data.
+
+42
+00:02:22.609 --> 00:02:27.080
+The blue box simply tells the program
+if there's an input field or output field.
+
+43
+00:02:28.014 --> 00:02:31.117
+And the purple box carries
+actual information about the field
+
+44
+00:02:31.584 --> 00:02:35.121
+and it's useful when the field name
+is not self-explanatory.
+
+45
+00:02:35.522 --> 00:02:38.892
+Lastly, the green box carries
+the type information,
+
+46
+00:02:39.225 --> 00:02:40.693
+which could be unimplemented
+
+47
+00:02:40.693 --> 00:02:44.230
+Python types who are behind in costume
+class or pydantic models.
+
+48
+00:02:44.697 --> 00:02:48.535
+This is mostly useful for output fields.
+If you specify the type
+
+49
+00:02:48.768 --> 00:02:52.338
+when you access the output fields,
+the value will automatically be
+
+50
+00:02:52.338 --> 00:02:53.773
+of the type you desired.
+
+51
+00:02:53.773 --> 00:02:57.243
+DSPy also supports a lighter way
+of signature definition
+
+52
+00:02:57.477 --> 00:02:59.112
+custom-based signature.
+
+53
+00:02:59.112 --> 00:03:01.981
+You just start writing in profiles
+before the arrow
+
+54
+00:03:01.981 --> 00:03:05.985
+and write output fields after the arrow
+as separate fields after the comma.
+
+55
+00:03:06.753 --> 00:03:09.756
+This is good for prototyping,
+but for general usage
+
+56
+00:03:10.056 --> 00:03:12.892
+we recommend
+go with the class-based signature
+
+57
+00:03:12.892 --> 00:03:15.895
+for flexibility
+and the more powerful support.
+
+58
+00:03:16.196 --> 00:03:21.034
+Now we have defined input-output format,
+but we still only have static information,
+
+59
+00:03:21.201 --> 00:03:25.738
+and we need to define a way to utilize
+the signature to talk to the LM.
+
+60
+00:03:26.239 --> 00:03:29.075
+And that is the purpose of DSPy module.
+
+61
+00:03:29.075 --> 00:03:32.078
+Module is a minimal building
+block of a DSPy
+
+62
+00:03:32.145 --> 00:03:35.848
+program. And in most situations,
+has signature attached.
+
+63
+00:03:36.115 --> 00:03:37.650
+The simplest the module is
+
+64
+00:03:37.650 --> 00:03:42.650
+DSPy dot predict what formats
+a user query to LLM prompt and it parses
+
+65
+00:03:42.956 --> 00:03:45.425
+the LM response according to that task
+
+66
+00:03:45.425 --> 00:03:50.196
+signature. Modules have configurable
+attributes aside from the signature.
+
+67
+00:03:50.630 --> 00:03:54.534
+For example, attribute demo carries
+a few-shot examples.
+
+68
+00:03:54.767 --> 00:03:58.871
+These modules can be customized
+for implementing custom logic,
+
+69
+00:03:59.205 --> 00:04:02.175
+and the module can consist of sub
+modules.
+
+70
+00:04:02.175 --> 00:04:05.912
+DSPy provides a list of built-in modules
+that makes it easy
+
+71
+00:04:05.912 --> 00:04:09.616
+for users to get started,
+and the most important one is DSPy
+
+72
+00:04:09.616 --> 00:04:14.087
+Predict, which simply does
+LM interaction and it is a building
+
+73
+00:04:14.087 --> 00:04:18.625
+block for all the complex modules.
+ChainOfThought is also commonly used.
+
+74
+00:04:19.125 --> 00:04:23.596
+Aside from the player response, they also
+ask for reasoning behind the answer.
+
+75
+00:04:23.796 --> 00:04:26.699
+React, stand for reasoning, and act.
+
+76
+00:04:26.699 --> 00:04:31.638
+We'll be using the next lesson, which is
+a common standard for building AI agents.
+
+77
+00:04:31.871 --> 00:04:34.874
+DSPy program of thought, similar to react,
+
+78
+00:04:34.907 --> 00:04:38.778
+but the tool calling is just a code.
+And DSPy refine,
+
+79
+00:04:39.212 --> 00:04:42.715
+with that, users
+can set a reward function and threshold.
+
+80
+00:04:43.082 --> 00:04:47.387
+If the threshold unmet that which is issue
+retries with LM feedback.
+
+81
+00:04:47.620 --> 00:04:49.856
+That's the definition of DPSy module.
+
+82
+00:04:49.856 --> 00:04:53.159
+Let's talk about usage this right now.
+To use the built-in modules,
+
+83
+00:04:53.326 --> 00:04:56.329
+simply pass
+a signature to a built-in modules
+
+84
+00:04:56.329 --> 00:04:59.198
+and you can input modules through the
+input fields.
+
+85
+00:04:59.198 --> 00:05:01.301
+Pass in the keyword argument.
+
+86
+00:05:01.301 --> 00:05:04.971
+For example, in this slide,
+you create a chain-of-thought instance
+
+87
+00:05:04.971 --> 00:05:07.974
+which has a single input
+field called question.
+
+88
+00:05:07.974 --> 00:05:10.977
+Then when you invoke the module,
+you just pass in the value
+
+89
+00:05:11.110 --> 00:05:12.378
+into the question.
+
+90
+00:05:12.378 --> 00:05:13.212
+We have a complete
+
+91
+00:05:13.212 --> 00:05:16.282
+list of built-in modules
+available in our documentation site.
+
+92
+00:05:16.516 --> 00:05:17.884
+Please read more there.
+
+93
+00:05:17.884 --> 00:05:20.887
+But more commonly, you have complex logic
+
+94
+00:05:20.887 --> 00:05:23.890
+that cannot be fully covered
+by previous modules.
+
+95
+00:05:23.890 --> 00:05:28.161
+In those cases, you will need to write
+a custom module to define customer logic.
+
+96
+00:05:28.261 --> 00:05:30.229
+This is very similar to PyTorch.
+
+97
+00:05:30.229 --> 00:05:34.434
+You subclass from the DSPy dot module
+class and implement the
+
+98
+00:05:34.434 --> 00:05:38.571
+forward method with your customer logic,
+then you'll create a module instance
+
+99
+00:05:38.571 --> 00:05:41.908
+and the instance is a callable similar
+to previous modules.
+
+100
+00:05:42.308 --> 00:05:43.810
+This is very flexible.
+
+101
+00:05:43.810 --> 00:05:46.979
+You can call any Python function
+within your added frameworks
+
+102
+00:05:47.180 --> 00:05:52.180
+LangChain or Llama Index or any tools
+like SQL or file system handler.
+
+103
+00:05:52.919 --> 00:05:56.189
+As long as that is the Python program,
+you are allowed to put that
+
+104
+00:05:56.189 --> 00:05:58.758
+in the forward
+method. That's a lot of contacts.
+
+105
+00:05:58.758 --> 00:06:02.028
+Let's do some coding to get a better sense
+of how this module
+
+106
+00:06:02.028 --> 00:06:04.030
+signature system works.
+
+107
+00:06:04.030 --> 00:06:09.030
+Let's get started with the coding. Before
+we start, when you set up the API key,
+
+108
+00:06:09.535 --> 00:06:12.672
+and don't worry, in this lab
+we have set up the key for you.
+
+109
+00:06:12.939 --> 00:06:16.476
+Simply call our helper function
+in the OpenAI API key
+
+110
+00:06:16.809 --> 00:06:18.911
+and set that as an environment variable
+
+111
+00:06:18.911 --> 00:06:20.313
+then you're good to go.
+
+112
+00:06:20.313 --> 00:06:24.283
+The first step of the DSPy
+programing is choosing your LM.
+
+113
+00:06:24.717 --> 00:06:27.987
+In this lab, I used GPT-4o-mini.
+
+114
+00:06:28.821 --> 00:06:30.189
+And to change our LM,
+
+115
+00:06:30.189 --> 00:06:31.557
+simply change the string
+
+116
+00:06:31.557 --> 00:06:35.595
+here. It is following a format
+a provider name followed by model name.
+
+117
+00:06:35.962 --> 00:06:39.298
+Provider name is like OpenAI, Anthropic.
+
+118
+00:06:39.832 --> 00:06:42.635
+And the model name is actual model
+name like GPT-4
+
+119
+00:06:42.635 --> 00:06:45.638
+for that's mini or GPT-4o.
+
+120
+00:06:45.772 --> 00:06:48.775
+Now let's start building a sentiment
+classifier
+
+121
+00:06:48.775 --> 00:06:51.444
+to see how the module signature system
+works.
+
+122
+00:06:51.444 --> 00:06:54.580
+As we mentioned in the slides,
+we recommend going with a class
+
+123
+00:06:54.580 --> 00:06:55.982
+based signature.
+
+124
+00:06:55.982 --> 00:06:58.985
+And here we subclass from the DSPy model
+signature
+
+125
+00:06:59.385 --> 00:07:02.388
+and write the task description
+in docstring.
+
+126
+00:07:02.789 --> 00:07:06.626
+And input will be a single string
+called text of type string,
+
+127
+00:07:06.859 --> 00:07:10.630
+with some actual information
+marked as DSPy input field
+
+128
+00:07:11.230 --> 00:07:15.701
+and output filled with
+DSPy sentiment of type integer marked
+
+129
+00:07:15.701 --> 00:07:18.905
+as DSPy
+a helper field some actual information
+
+130
+00:07:19.305 --> 00:07:22.141
+and restricted in the range of 0 to 10.
+
+131
+00:07:22.141 --> 00:07:26.045
+This part is called pydantic constraints,
+which is fully supported in DSPy.
+
+132
+00:07:26.546 --> 00:07:29.115
+We can also use a string based signature.
+
+133
+00:07:29.115 --> 00:07:32.084
+Just to write an input before the arrow,
+
+134
+00:07:32.118 --> 00:07:33.953
+output after the arrow.
+
+135
+00:07:33.953 --> 00:07:37.890
+You can see that this is clean for losing
+some information from cost space
+
+136
+00:07:37.890 --> 00:07:38.991
+signature.
+
+137
+00:07:38.991 --> 00:07:41.561
+Now we have the signature
+which is a stagniting
+
+138
+00:07:41.561 --> 00:07:44.564
+information about input and output.
+
+139
+00:07:44.697 --> 00:07:48.434
+When to create a module
+to actually interact with LM
+
+140
+00:07:48.968 --> 00:07:53.873
+Let's use the very basic DSPy module,
+DSPy predict which is a feed
+
+141
+00:07:53.873 --> 00:07:57.743
+the signature into the DSPy predict
+and create an instance.
+
+142
+00:07:58.177 --> 00:08:00.680
+Now it's time to invoke the instance.
+
+143
+00:08:00.680 --> 00:08:02.915
+And we only have one in fulfill text.
+
+144
+00:08:02.915 --> 00:08:05.852
+So we specify the value for a text
+
+145
+00:08:05.852 --> 00:08:07.019
+and call that.
+
+146
+00:08:07.019 --> 00:08:08.554
+And let's see the print.
+
+147
+00:08:08.554 --> 00:08:12.925
+The output is that DSPy prediction,
+which is similar to a dictionary
+
+148
+00:08:13.159 --> 00:08:17.597
+but allows both keyword accessor
+and the accessor has only one value,
+
+149
+00:08:17.864 --> 00:08:22.864
+which maps to our output file a sentiment
+of type integer in the range of 0 to 10.
+
+150
+00:08:23.202 --> 00:08:25.171
+Let's
+see how we access the sentiment field.
+
+151
+00:08:25.171 --> 00:08:28.407
+We can use both keyword
+accessor worth of accessor.
+
+152
+00:08:28.708 --> 00:08:30.243
+So I'll give you the same value.
+
+153
+00:08:30.243 --> 00:08:34.113
+Let's see how to change the LM
+behind the scene. To do that
+
+154
+00:08:34.113 --> 00:08:36.115
+simply call DSPy dot configure
+and change LM instance. Here,
+
+155
+00:08:36.115 --> 00:08:38.351
+let's change to Chat GPT 4o
+and let's feed the same input
+
+156
+00:08:38.351 --> 00:08:39.886
+Let's change that to be a GPT 4.
+
+157
+00:08:39.886 --> 00:08:44.423
+Oh and let's feed the semi input to see
+if that can generate a different value
+
+158
+00:08:44.524 --> 00:08:45.958
+okay. That gives us the same value.
+
+159
+00:08:45.958 --> 00:08:46.325
+All right.
+
+160
+00:08:46.325 --> 00:08:47.927
+That gives us the same value.
+
+161
+00:08:47.927 --> 00:08:50.363
+Now let's change
+back LLM to be 4o-mini.
+
+162
+00:08:51.998 --> 00:08:52.765
+Now a lot
+
+163
+00:08:52.765 --> 00:08:55.968
+of people may ask this question
+where is my prompt?
+
+164
+00:08:56.235 --> 00:09:00.139
+This looks a clean, but
+there is definitely some prompt somewhere
+
+165
+00:09:00.206 --> 00:09:04.377
+when we talk to the LLM.
+To answer this question, in DSPy
+
+166
+00:09:04.410 --> 00:09:08.748
+we provide an API call inspect history,
+and the N number here determines
+
+167
+00:09:08.748 --> 00:09:11.784
+how many entries you want to pull from
+the memory. Let's run that
+
+168
+00:09:13.052 --> 00:09:16.656
+It comes to output as a pretty print
+of the multi term message
+
+169
+00:09:16.956 --> 00:09:21.928
+And LM a response. The system message
+maps to the message system rules
+
+170
+00:09:21.928 --> 00:09:26.699
+message has a sequence showing information
+like the input fields, helper fields,
+
+171
+00:09:27.033 --> 00:09:31.437
+pydantic constraints, and also determines
+the input output format.
+
+172
+00:09:31.437 --> 00:09:33.205
+We talked to the LM
+
+173
+00:09:33.205 --> 00:09:36.208
+and the user message, carries
+actual user input,
+
+174
+00:09:36.342 --> 00:09:39.478
+and is formatted
+according to the format we defined above.
+
+175
+00:09:40.212 --> 00:09:42.982
+And the response action is LM response,
+
+176
+00:09:42.982 --> 00:09:46.185
+which is also formatted
+according to the format we defined.
+
+177
+00:09:46.352 --> 00:09:46.719
+Let's now
+
+178
+00:09:50.056 --> 00:09:51.991
+try a different building module.
+
+179
+00:09:51.991 --> 00:09:54.994
+We use a ChainOfThough module and see what will happen for the output.
+
+180
+00:09:55.695 --> 00:09:59.665
+You can see that addition to a sentiment
+field without the same value as before,
+
+181
+00:09:59.999 --> 00:10:02.969
+but also include
+that reasoning part in the output.
+
+182
+00:10:03.769 --> 00:10:06.539
+Let's see why we get a different output.
+
+183
+00:10:06.539 --> 00:10:10.576
+We can check the LM interaction
+history by calling the DSPy inspector
+
+184
+00:10:10.610 --> 00:10:12.612
+history.
+
+185
+00:10:12.612 --> 00:10:16.215
+And we can see that the output fields,
+in addition to a sentiment
+
+186
+00:10:16.482 --> 00:10:20.219
+include a reasoning field
+and has a specific format.
+
+187
+00:10:21.053 --> 00:10:22.855
+And the response content
+
+188
+00:10:22.855 --> 00:10:25.858
+field reasoning
+and get it parsed by the module.
+
+189
+00:10:25.958 --> 00:10:28.260
+Let's see what's happening
+behind the scene.
+
+190
+00:10:28.260 --> 00:10:32.832
+And explain by the minimal DSPy module, DSPy predict.
+
+191
+00:10:32.832 --> 00:10:36.535
+DSPy dot predict has signature
+and other information like demos
+
+192
+00:10:36.769 --> 00:10:38.537
+attached to the self.
+
+193
+00:10:38.537 --> 00:10:42.408
+When we received a user
+input in before for the method,
+
+194
+00:10:42.575 --> 00:10:45.845
+we send all the information
+to something called DSPy adapter,
+
+195
+00:10:46.245 --> 00:10:48.214
+which talks to the LLM.
+
+196
+00:10:48.214 --> 00:10:50.850
+After receiving all the information,
+including
+
+197
+00:10:50.850 --> 00:10:54.186
+signature, user queries
+and other attributes.
+
+198
+00:10:54.654 --> 00:10:57.623
+The adapter format,
+the actual prompt combining
+
+199
+00:10:57.623 --> 00:11:00.860
+all this information
+and sends the prompts to the LM.
+
+200
+00:11:01.494 --> 00:11:06.265
+The prompt tells the LM about response
+format according to an adapter type
+
+201
+00:11:06.265 --> 00:11:09.802
+we use. We want to show in the lab
+how to change the adapter
+
+202
+00:11:09.802 --> 00:11:13.939
+based on our language model,
+and normally we collect DSPy automatically
+
+203
+00:11:13.939 --> 00:11:15.341
+select that for you.
+
+204
+00:11:15.341 --> 00:11:17.276
+Let's dive deep into the prompt.
+
+205
+00:11:17.276 --> 00:11:20.012
+We can see the fills
+information are at the top.
+
+206
+00:11:21.013 --> 00:11:24.016
+Then we define the input and output
+data format,
+
+207
+00:11:24.116 --> 00:11:27.820
+where the default adapter is a section
+header followed by the value.
+
+208
+00:11:28.954 --> 00:11:31.057
+Then the user portion is formatted
+
+209
+00:11:31.057 --> 00:11:34.093
+according to its defined format
+in a user message.
+
+210
+00:11:35.027 --> 00:11:39.298
+The output format is very important
+because only if we know the data format,
+
+211
+00:11:39.699 --> 00:11:42.702
+we can extract the field's value
+automatically.
+
+212
+00:11:43.035 --> 00:11:45.438
+The upper flow is just a reverse.
+
+213
+00:11:45.438 --> 00:11:48.708
+The LM gives back a response
+in our define format.
+
+214
+00:11:49.308 --> 00:11:52.311
+Then the adapter parses it
+into the output fields
+
+215
+00:11:52.712 --> 00:11:55.715
+and send back to the module.
+
+216
+00:11:55.881 --> 00:11:59.285
+Because the response comes in the format,
+we define the prompt.
+
+217
+00:11:59.885 --> 00:12:03.122
+The adapter knows how to parse it
+into the required fields.
+
+218
+00:12:04.290 --> 00:12:09.128
+The parser result is wrapped in the
+DSPy prediction, which is similar to dict
+
+219
+00:12:09.128 --> 00:12:12.531
+but allows both the accessor
+and the key accessor.
+
+220
+00:12:12.932 --> 00:12:15.301
+To summarize in concise language,
+
+221
+00:12:15.301 --> 00:12:19.071
+DSPy combines a signature
+and the module information
+
+222
+00:12:19.238 --> 00:12:24.238
+and actually inputs into a multi-term
+prompt and parses at the LM response
+
+223
+00:12:24.810 --> 00:12:26.712
+according to the signature.
+
+224
+00:12:26.712 --> 00:12:31.712
+So the LM functions like a reservoir API with a well-defined inputs and outputs.
+
+225
+00:12:33.786 --> 00:12:35.921
+Now let's build a complex program
+
+226
+00:12:35.921 --> 00:12:38.924
+by customizing DSPy module.
+
+227
+00:12:41.293 --> 00:12:41.961
+Let's first talk about how to use a different adapter.
+
+228
+00:12:41.961 --> 00:12:46.961
+To do that simply call DSPy dot configure set adapter
+to be your favorite adapter class.
+
+229
+00:12:47.666 --> 00:12:50.770
+And here we use JSON adapter
+which is a good adapter
+
+230
+00:12:50.803 --> 00:12:54.874
+if your model supports structured output
+like GTP4o, GPT-4o-mini.
+
+231
+00:12:56.108 --> 00:12:59.345
+Say you invoke the same ChainOfThought
+instance with the same input.
+
+232
+00:12:59.745 --> 00:13:02.748
+And let's see what happens
+with a different adapter.
+
+233
+00:13:05.518 --> 00:13:08.521
+We can see that in addition
+to the original ones,
+
+234
+00:13:08.821 --> 00:13:11.490
+we ask for the outputs to be a Json format
+
+235
+00:13:11.490 --> 00:13:14.460
+instead of the section header
+followed by the value,
+
+236
+00:13:15.761 --> 00:13:19.131
+and the response
+will be formatted as a Json object,
+
+237
+00:13:20.132 --> 00:13:22.434
+and so that adapter can parse it.
+
+238
+00:13:22.434 --> 00:13:24.270
+Now let's start building the "name the
+
+239
+00:13:24.270 --> 00:13:27.339
+celebrity" game
+by customizing a DSPy module.
+
+240
+00:13:28.741 --> 00:13:31.343
+Let's recap of whatever the game is doing.
+
+241
+00:13:31.343 --> 00:13:34.413
+Player
+one is us thinking about celebrity name,
+
+242
+00:13:34.947 --> 00:13:38.150
+and the player two is the LM, starts
+asking yes
+
+243
+00:13:38.150 --> 00:13:41.654
+or no question, until you will find the name
+or use up all the quotas.
+
+244
+00:13:41.854 --> 00:13:43.856
+We give 20 for this game.
+
+245
+00:13:43.856 --> 00:13:46.859
+Now let's build a builder module
+
+246
+00:13:46.859 --> 00:13:49.862
+Before we talk about what's happening
+inside module and how we build with that,
+
+247
+00:13:50.196 --> 00:13:53.199
+let's play with that
+to get a sense of how that works.
+
+248
+00:13:54.533 --> 00:13:57.536
+I think of a celebrity name,
+and type the name.
+
+249
+00:13:57.903 --> 00:14:00.906
+Use "Lebron James"
+
+250
+00:14:00.973 --> 00:14:03.976
+And started asking a yes or no question
+and we just answer that.
+
+251
+00:14:04.877 --> 00:14:07.880
+Not an actor,
+not a musician,
+
+252
+00:14:08.147 --> 00:14:09.982
+Sports figure.
+
+253
+00:14:09.982 --> 00:14:11.750
+Possible? Yes.
+
+254
+00:14:11.750 --> 00:14:13.619
+Current player. Yes.
+
+255
+00:14:13.619 --> 00:14:16.455
+Lakers. Yes. LeBron James. Yes.
+
+256
+00:14:16.455 --> 00:14:18.357
+So okay to the answer.
+
+257
+00:14:18.357 --> 00:14:21.393
+Let's take a look
+of how we write this module.
+
+258
+00:14:24.897 --> 00:14:26.065
+So we subclass
+
+259
+00:14:26.065 --> 00:14:29.068
+from DSPy module
+and we have two submodules.
+
+260
+00:14:30.069 --> 00:14:32.471
+The first one is a question generator
+
+261
+00:14:32.471 --> 00:14:35.174
+which generates a yes or no question.
+
+262
+00:14:35.174 --> 00:14:37.977
+And it's a chain-of-thought module
+with this question
+
+263
+00:14:37.977 --> 00:14:39.411
+generator and signature.
+
+264
+00:14:39.411 --> 00:14:42.414
+Let's take a look at the signature.
+
+265
+00:14:44.183 --> 00:14:46.151
+The signature has two input fields
+
+266
+00:14:46.151 --> 00:14:49.154
+which is pass of questions
+to pass the answers.
+
+267
+00:14:49.321 --> 00:14:52.358
+It starts with an empty list
+and it has to output,
+
+268
+00:14:53.192 --> 00:14:57.863
+a new question for the yes
+or no question and guess made indicating
+
+269
+00:14:57.863 --> 00:15:01.400
+if that's a generic
+a guess or let's say direct guess
+
+270
+00:15:01.867 --> 00:15:04.503
+on the name.
+
+271
+00:15:04.503 --> 00:15:07.406
+The second submodule is a reflection
+module.
+
+272
+00:15:07.406 --> 00:15:10.643
+After we wrap up the game,
+we want to do a self-reflection
+
+273
+00:15:11.143 --> 00:15:15.080
+which takes in a character
+celebrity name and the final guesser
+
+274
+00:15:15.581 --> 00:15:18.117
+and the past question and answers.
+
+275
+00:15:18.117 --> 00:15:21.353
+An output will be a single string
+for the refraction process.
+
+276
+00:15:21.387 --> 00:15:23.856
+What's going good, what's going wrong.
+
+277
+00:15:23.856 --> 00:15:25.324
+And we define the customer logic in a
+
+278
+00:15:25.324 --> 00:15:29.295
+forward method.
+We first to get a user to enter a name,
+
+279
+00:15:30.529 --> 00:15:33.065
+and we're
+starting accumulating a question.
+
+280
+00:15:33.065 --> 00:15:36.068
+And in the for loop
+we'll keep generating a question
+
+281
+00:15:36.435 --> 00:15:39.672
+and then keep asking user for the
+ask for it and keep that in a record.
+
+282
+00:15:39.872 --> 00:15:42.875
+Until we reach the correct guess.
+Or we use up all of the quotas.
+
+283
+00:15:42.875 --> 00:15:47.346
+When the process
+has started doing a self-reflection.
+
+284
+00:15:48.347 --> 00:15:51.350
+How which maps to the log
+of this running process.
+
+285
+00:15:51.684 --> 00:15:53.986
+The demo is just a for fun!
+
+286
+00:15:53.986 --> 00:15:56.989
+But I want to explain with this demo a
+
+287
+00:15:57.022 --> 00:15:59.992
+how flexible it is to use the DSPy module.
+
+288
+00:16:00.592 --> 00:16:04.196
+Basically, you can write any Python
+function inside this forward method.
+
+289
+00:16:04.463 --> 00:16:07.433
+We don't have any restriction,
+so it's easy to migrate
+
+290
+00:16:07.433 --> 00:16:10.402
+to DSPY and a migrant off DSPy.
+
+291
+00:16:10.703 --> 00:16:12.338
+And then we can also see
+
+292
+00:16:12.338 --> 00:16:16.508
+how the signature system
+makes it easy to interact with the LM.
+
+293
+00:16:17.076 --> 00:16:19.578
+Because we have the signature system
+
+294
+00:16:19.578 --> 00:16:23.315
+has to explicitly for the output
+a new custom guess made.
+
+295
+00:16:23.649 --> 00:16:26.485
+We don't need to worry
+about parsing the fields
+
+296
+00:16:26.485 --> 00:16:29.955
+out of the LM response,
+and we don't need to worry about
+
+297
+00:16:29.955 --> 00:16:34.660
+if the guess made can indicate like indicate
+if that's a generic to answer,
+
+298
+00:16:35.160 --> 00:16:39.298
+a general question,
+or direct our name guess robustly.
+
+299
+00:16:40.032 --> 00:16:44.269
+The last thing I'll show with this lab
+is how to save and load the DSPy module.
+
+300
+00:16:45.137 --> 00:16:48.140
+DSPy can provide
+two ways of saving and loading.
+
+301
+00:16:48.407 --> 00:16:52.611
+The first way is that only saving
+only saves the internal state,
+
+302
+00:16:53.145 --> 00:16:55.948
+after DSPy module. To do that,
+
+303
+00:16:57.116 --> 00:16:57.916
+Set a path
+
+304
+00:16:57.916 --> 00:17:02.121
+to a Json file and set the flag off,
+save for program equal to false.
+
+305
+00:17:02.855 --> 00:17:06.658
+In order to load that back
+into recreate the instance.
+
+306
+00:17:07.059 --> 00:17:11.830
+Or if you have an existing instance and
+call that load on your module to load that back.
+
+307
+00:17:11.897 --> 00:17:15.934
+DSPy also support whole program
+saving through Cloud Pickle.
+
+308
+00:17:16.468 --> 00:17:20.239
+You can only worry about dependency it on
+to recreate the instance.
+
+309
+00:17:20.572 --> 00:17:23.575
+To do that, keep data directory as a path
+
+310
+00:17:23.842 --> 00:17:26.545
+and then set the same program
+equals to two.
+
+311
+00:17:26.545 --> 00:17:27.646
+Then call a save.
+
+312
+00:17:27.646 --> 00:17:31.683
+To load that back, use DSPy dot load
+and keep that same path
+
+313
+00:17:32.217 --> 00:17:37.089
+and it will be loaded as a new instance.
+After you load back a program,
+
+314
+00:17:37.656 --> 00:17:40.659
+you can call that
+just as if that's our original program.
+
+315
+00:17:41.260 --> 00:17:44.163
+And now I'll restart the game process.
+
+316
+00:17:44.163 --> 00:17:45.464
+That's all about this lesson.
+
+317
+00:17:45.464 --> 00:17:49.001
+In this lesson, you have learn
+how to program with this DSPy.
+
+318
+00:17:49.368 --> 00:17:54.368
+In the next lesson, you are using MLflow
+tracing to debug your DSPy program.
+
+319
+00:17:54.840 --> 00:17:55.374
+See you there.
+

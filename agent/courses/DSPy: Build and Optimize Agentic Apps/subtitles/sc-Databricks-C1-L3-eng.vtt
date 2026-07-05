@@ -1,0 +1,997 @@
+﻿WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:01.468 --> 00:00:03.003
+In this lesson, you will
+
+2
+00:00:03.003 --> 00:00:07.040
+learn about how to use MLflow
+tracing to help debug your DSPy program.
+
+3
+00:00:07.040 --> 00:00:08.041
+All right.
+
+4
+00:00:08.041 --> 00:00:08.908
+Let's go.
+
+5
+00:00:08.908 --> 00:00:11.911
+This lesson comes with a lab. In the Lab,
+
+6
+00:00:12.045 --> 00:00:16.349
+you are going to build a DSPy agent
+with the help of an MLflow tracing.
+
+7
+00:00:16.983 --> 00:00:18.218
+As a demo,
+
+8
+00:00:18.218 --> 00:00:21.221
+we are building an airline
+customer service agent
+
+9
+00:00:21.254 --> 00:00:24.257
+that helps users book and monitor
+the flights.
+
+10
+00:00:24.257 --> 00:00:25.892
+Let's dive in.
+
+11
+00:00:25.892 --> 00:00:29.095
+So what is tracing
+and why do you need tracing?
+
+12
+00:00:29.729 --> 00:00:33.266
+Tracing basically means
+recording the inputs and outputs
+
+13
+00:00:33.266 --> 00:00:36.269
+of the intermediate function
+inside your AI program.
+
+14
+00:00:36.703 --> 00:00:39.339
+And the capture is a hierarchical calling
+stack
+
+15
+00:00:39.339 --> 00:00:42.442
+like module A cost module B. GenAI
+
+16
+00:00:42.442 --> 00:00:45.445
+applications can be very complex
+internally
+
+17
+00:00:45.779 --> 00:00:48.648
+while only the final output is exposed.
+
+18
+00:00:48.648 --> 00:00:52.419
+So when something is going off, it's
+hard to trace back to the root cause.
+
+19
+00:00:53.053 --> 00:00:55.422
+For example, if you have built a DSPy
+
+20
+00:00:55.422 --> 00:00:58.425
+program consisting of five submodules.
+
+21
+00:00:58.658 --> 00:01:03.396
+Now, if one LM calls fails due to not
+being able to understand the prompt,
+
+22
+00:01:03.897 --> 00:01:07.901
+even though the DSPy provides
+inspect history to check LM calls,
+
+23
+00:01:08.234 --> 00:01:09.202
+it's hard to trace back.
+
+24
+00:01:09.202 --> 00:01:14.202
+Tracing provides an easy way
+for interpretability and debugging.
+
+25
+00:01:14.808 --> 00:01:19.808
+And what is MLflow?
+MLflow is an open-source AI ops package
+
+26
+00:01:20.380 --> 00:01:23.349
+that streamlines
+your GenAI app development.
+
+27
+00:01:23.650 --> 00:01:28.054
+MLflow helps with a full lifecycle
+of building GenAI applications,
+
+28
+00:01:28.455 --> 00:01:32.192
+ensuring that its face is traceable
+and reproducible.
+
+29
+00:01:32.859 --> 00:01:36.062
+Both MLFlow Server and appliance
+are fully open sourced.
+
+30
+00:01:36.362 --> 00:01:37.997
+You can easily set it up.
+
+31
+00:01:37.997 --> 00:01:41.468
+To get started by tracing a DSPy
+with MLflow.
+
+32
+00:01:42.035 --> 00:01:45.672
+You only need to add a
+one line to a program which is MLflow
+
+33
+00:01:45.772 --> 00:01:48.908
+dot DSPy dot autolog. Or simply MLflow dot autolog.
+
+34
+00:01:48.908 --> 00:01:53.146
+After that,
+your program will be automatically traced
+
+35
+00:01:53.480 --> 00:01:56.182
+and the trace will be saved
+in the MLflow server.
+
+36
+00:01:56.182 --> 00:01:59.018
+that you can access point in time
+after being generated.
+
+37
+00:01:59.018 --> 00:02:03.690
+Let's talk about what is getting traced.
+In MLflow which has four things
+
+38
+00:02:03.690 --> 00:02:06.826
+inside of the DSPy program
+which has every module call,
+
+39
+00:02:07.060 --> 00:02:10.330
+no matter if that's a top module
+or internal modules.
+
+40
+00:02:10.930 --> 00:02:14.968
+We also trace all the cost
+with the adapter from which you can see
+
+41
+00:02:14.968 --> 00:02:19.506
+how adapter formats and use query
+and the process the LLM response.
+
+42
+00:02:20.173 --> 00:02:22.509
+We also trace the calls to the LM
+
+43
+00:02:22.509 --> 00:02:26.713
+so that you can inspect the actual prompt
+and the actual LM response.
+
+44
+00:02:27.380 --> 00:02:32.285
+DSPy dot tool, which is a wrapper over
+DSPy tool calling, is also traced.
+
+45
+00:02:32.619 --> 00:02:34.354
+With MLflow tracing,
+
+46
+00:02:34.354 --> 00:02:37.457
+not only we can interpret
+the input and output
+
+47
+00:02:37.490 --> 00:02:42.228
+of some submodule of a DSPy program,
+we can also see the hierarchy
+
+48
+00:02:42.228 --> 00:02:46.566
+of these modules. Together
+with some other important information
+
+49
+00:02:46.833 --> 00:02:50.103
+like time consumption.
+When something is going wrong,
+
+50
+00:02:50.537 --> 00:02:54.641
+there might be a cross mark
+that points out to a problematic module.
+
+51
+00:02:56.042 --> 00:02:56.709
+The screenshot
+
+52
+00:02:56.709 --> 00:02:59.913
+in this slide is a real trace
+of a react module.
+
+53
+00:03:00.446 --> 00:03:02.949
+Let's map it to the components
+we traced.
+
+54
+00:03:02.949 --> 00:03:06.519
+React is our top-level module.
+which calls a few
+
+55
+00:03:06.519 --> 00:03:10.523
+some modules represented as predict,
+and we can see
+
+56
+00:03:10.523 --> 00:03:14.727
+both react and the predicts
+are getting traced. Inside a predictor
+
+57
+00:03:14.727 --> 00:03:19.727
+call the check adapter format and parse
+carries the trace for the adapter,
+
+58
+00:03:21.067 --> 00:03:25.238
+and the LM trace in the middle
+has the actual prompt
+
+59
+00:03:25.238 --> 00:03:28.675
+and a response from the LM. At the bottom,
+
+60
+00:03:28.975 --> 00:03:31.744
+we can also see the trace
+of the tool calling
+
+61
+00:03:31.744 --> 00:03:33.880
+and in this case, two according fails.
+
+62
+00:03:33.880 --> 00:03:36.883
+So there is a red mark next to that.
+
+63
+00:03:37.016 --> 00:03:41.254
+In a previous lesson we have seen
+how to use DSPy inspect history
+
+64
+00:03:41.254 --> 00:03:45.425
+DSPy to check out the actual prompt.
+With MLflow tracing,
+
+65
+00:03:45.458 --> 00:03:49.062
+now it's even easier.
+Simply click on the LM trace
+
+66
+00:03:49.362 --> 00:03:52.465
+and you can see the actual prompt
+and LM response.
+
+67
+00:03:52.699 --> 00:03:55.735
+Let's get started with coding. Similar
+to the previous lab,
+
+68
+00:03:56.069 --> 00:03:57.737
+when you set setup the DSPy key
+
+69
+00:03:57.737 --> 00:04:01.474
+and additionally
+when to set up the MLflow environment.
+
+70
+00:04:01.874 --> 00:04:03.476
+Input MLflow.
+
+71
+00:04:03.476 --> 00:04:06.479
+We need to pour that to the MLflow
+tracking UI.
+
+72
+00:04:06.679 --> 00:04:09.782
+In this lab, we have set up the MLflow
+tracking server for you
+
+73
+00:04:10.116 --> 00:04:12.051
+so you can get a tracking UI
+
+74
+00:04:12.051 --> 00:04:15.255
+set it up
+with our helper helper functions.
+
+75
+00:04:16.322 --> 00:04:19.459
+And now let's give the experiment
+an unique identifier.
+
+76
+00:04:19.492 --> 00:04:21.194
+Just call it DSPy
+
+77
+00:04:21.194 --> 00:04:24.430
+lesson three.
+And as we call the initialize,
+
+78
+00:04:24.697 --> 00:04:27.900
+can turn on the tracing feature
+a one line MLflow dot DSPy
+
+79
+00:04:27.900 --> 00:04:30.903
+autolog.
+
+80
+00:04:34.440 --> 00:04:35.375
+Then we can choose an
+
+81
+00:04:35.375 --> 00:04:38.378
+LM as we did in a previous lab.
+
+82
+00:04:38.845 --> 00:04:42.248
+Now let's get started with building
+an airline customer service
+
+83
+00:04:42.248 --> 00:04:45.385
+agent with DSPy react and use our MLflow
+
+84
+00:04:45.385 --> 00:04:48.388
+tracing to help them with the process.
+
+85
+00:04:48.454 --> 00:04:50.923
+So this agent will be able to take
+
+86
+00:04:50.923 --> 00:04:53.893
+a user request and book flights for the users,
+
+87
+00:04:53.993 --> 00:04:57.397
+and can also modify the itinerary
+for the users.
+
+88
+00:04:57.764 --> 00:05:00.633
+We first need to define the data
+in real production,
+
+89
+00:05:00.633 --> 00:05:02.602
+that will be our database schema.
+
+90
+00:05:02.602 --> 00:05:04.203
+Here we have a user profile.
+
+91
+00:05:04.203 --> 00:05:08.207
+We have flight information, itinerary
+information and customer
+
+92
+00:05:08.207 --> 00:05:09.342
+service support ticket.
+
+93
+00:05:09.342 --> 00:05:12.078
+Now we have the time and data
+and data format.
+
+94
+00:05:12.078 --> 00:05:13.579
+Let's define a few tools
+
+95
+00:05:13.579 --> 00:05:16.849
+the module will use. When you saw
+where the first are flying information
+
+96
+00:05:16.849 --> 00:05:21.087
+based on date, origin,
+destination, when the flight itinerary,
+
+97
+00:05:22.055 --> 00:05:23.923
+and the way to be able to pick the flight
+
+98
+00:05:23.923 --> 00:05:26.926
+off a few candidates.
+
+99
+00:05:26.926 --> 00:05:30.496
+And we need to be able to book
+an itinerary on behalf of the user,
+
+100
+00:05:31.130 --> 00:05:35.168
+and we need to be able to cancel itinerary
+and pull user information,
+
+101
+00:05:35.768 --> 00:05:39.572
+or resolve a customer ticket if we cannot
+resolve the issue automatically.
+
+102
+00:05:40.673 --> 00:05:43.710
+To define tools or functions
+with the DSPy contacts,
+
+103
+00:05:44.510 --> 00:05:47.980
+you need to specify a docstring
+to describe what this function can do,
+
+104
+00:05:48.314 --> 00:05:51.417
+and provide type hints for input arcs
+
+105
+00:05:51.484 --> 00:05:54.487
+so that the LM can help set the arguments.
+
+106
+00:05:54.954 --> 00:05:57.323
+Now we have the tools and data.
+
+107
+00:05:57.323 --> 00:06:00.059
+Let's define a signature so that we know
+
+108
+00:06:00.059 --> 00:06:03.162
+what are the input output
+to expect from this program.
+
+109
+00:06:03.863 --> 00:06:06.466
+The input will be a single string
+
+110
+00:06:06.466 --> 00:06:10.603
+representing the user request,
+and the output is a process result,
+
+111
+00:06:11.337 --> 00:06:15.541
+which is a message agent tells the user
+if there is a successful booking
+
+112
+00:06:15.575 --> 00:06:19.612
+that will have the confirmation number
+or like a number to a ticket
+
+113
+00:06:19.812 --> 00:06:23.816
+if we cannot resolve the issue.
+Now we have the signature and the tools
+
+114
+00:06:23.950 --> 00:06:26.886
+we can combine them into a DSPy dot react.
+
+115
+00:06:26.886 --> 00:06:28.521
+So what is react?
+
+116
+00:06:28.521 --> 00:06:31.324
+React stands for reasoning and act.
+
+117
+00:06:31.324 --> 00:06:35.728
+So basically we give the LM
+the signature, which is
+
+118
+00:06:35.728 --> 00:06:39.565
+end the goal of this program,
+along with a list of tools
+
+119
+00:06:39.599 --> 00:06:44.337
+and the LLM can decide if that wants to
+call the tools to get actual information.
+
+120
+00:06:44.404 --> 00:06:45.972
+Hence the user questions.
+
+121
+00:06:45.972 --> 00:06:49.509
+If it doesn't need actual
+information, can just answer the question.
+
+122
+00:06:49.942 --> 00:06:51.878
+Now we have built a react instance.
+
+123
+00:06:51.878 --> 00:06:52.879
+Let's say you invoke it.
+
+124
+00:06:53.913 --> 00:06:54.247
+We can
+
+125
+00:06:54.247 --> 00:06:58.684
+simply put the user request into user
+requests, can book a flight
+
+126
+00:06:58.684 --> 00:07:02.855
+from SFO to JFK on a certain date,
+which we have a fly there
+
+127
+00:07:03.256 --> 00:07:08.256
+and tell the agent the name.
+Let's run that. Cool. Now
+
+128
+00:07:08.828 --> 00:07:11.264
+we'll get back the result
+along with MLflow tracing.
+
+129
+00:07:11.264 --> 00:07:13.933
+Here is MLFlow Trace UI.
+
+130
+00:07:13.933 --> 00:07:18.004
+We can see what is being traced
+and the outputs of the trace.
+
+131
+00:07:18.371 --> 00:07:21.007
+So let's take a look
+at the attributes of the trace.
+
+132
+00:07:21.007 --> 00:07:24.844
+We capture the inputs and outputs
+along with the attributes,
+
+133
+00:07:24.844 --> 00:07:26.913
+which is the arguments to a function
+
+134
+00:07:26.913 --> 00:07:29.916
+call. In an LM that will be
+
+135
+00:07:30.383 --> 00:07:34.020
+the temperature max token
+and how other configure watch views
+
+136
+00:07:34.787 --> 00:07:38.224
+the event tab will be
+will hold the error message
+
+137
+00:07:38.291 --> 00:07:39.459
+if there is an error.
+
+138
+00:07:40.526 --> 00:07:41.494
+And then we can see that
+
+139
+00:07:41.494 --> 00:07:46.494
+the top module react is being traced
+and the input output is our end input
+
+140
+00:07:46.899 --> 00:07:50.870
+and output. Can see that
+the inputs has our user query
+
+141
+00:07:51.904 --> 00:07:56.409
+and the final output
+the file representing as our output fail
+
+142
+00:07:56.409 --> 00:08:00.580
+the process result says
+has successfully booked the flight.
+
+143
+00:08:00.813 --> 00:08:01.113
+And
+
+144
+00:08:01.113 --> 00:08:05.017
+here is a confirmation number
+and we can look into a submodule
+
+145
+00:08:05.017 --> 00:08:07.987
+to see what happens in the process.
+
+146
+00:08:08.788 --> 00:08:11.524
+So, when we talk to the LLM,
+
+147
+00:08:11.524 --> 00:08:15.761
+we'll give that a user request
+and ask a for the next
+
+148
+00:08:15.761 --> 00:08:19.699
+of thought could be a tool calling,
+could be the end of the process.
+
+149
+00:08:20.032 --> 00:08:21.567
+At the origin
+
+150
+00:08:21.567 --> 00:08:24.871
+It'll just say
+I say I want to catch a flight information
+
+151
+00:08:24.871 --> 00:08:29.308
+because I don't have any information
+right now. And it also determines
+
+152
+00:08:29.308 --> 00:08:33.880
+arguments of the function
+calling to work if they'll provide a date.
+
+153
+00:08:33.880 --> 00:08:35.047
+We want the first flight.
+
+154
+00:08:36.482 --> 00:08:37.216
+After receiving
+
+155
+00:08:37.216 --> 00:08:40.620
+that, we go ahead to call the tool
+for our flight information,
+
+156
+00:08:41.153 --> 00:08:44.156
+which has the inputs decided by the LM.
+
+157
+00:08:44.457 --> 00:08:47.260
+Has a date, origin, destination.
+
+158
+00:08:47.260 --> 00:08:50.463
+Now a list of flights
+matching the request.
+
+159
+00:08:50.696 --> 00:08:53.699
+We get two out there.
+
+160
+00:08:54.033 --> 00:08:57.937
+Then we grab all the information
+like the two candidate flights.
+
+161
+00:08:57.937 --> 00:08:58.404
+How long were
+
+162
+00:08:58.404 --> 00:09:00.339
+the tool calling information,
+
+163
+00:09:00.339 --> 00:09:03.843
+send them back to the LM
+to decide the next tool calling.
+
+164
+00:09:04.076 --> 00:09:06.345
+Or we can wrap up the process.
+
+165
+00:09:06.345 --> 00:09:09.348
+So we represent all the things
+in a trajectory field.
+
+166
+00:09:10.049 --> 00:09:14.587
+We have the lesson tool
+calling arguments and the result.
+
+167
+00:09:15.221 --> 00:09:18.357
+And the LM says okay,
+I have a bunch of flights.
+
+168
+00:09:18.357 --> 00:09:22.595
+When to pick the best of
+a flight. With the arguments has a flight
+
+169
+00:09:22.595 --> 00:09:24.664
+candidates.
+
+170
+00:09:24.664 --> 00:09:26.532
+And we call the tool to pick the flight
+
+171
+00:09:27.600 --> 00:09:29.902
+will have
+predefined logic for this pay flight.
+
+172
+00:09:29.902 --> 00:09:31.571
+We always pick the shortest flight.
+
+173
+00:09:31.571 --> 00:09:35.241
+If that's the same duration,
+we pick the cheapest one.
+
+174
+00:09:36.876 --> 00:09:39.879
+So here we'll get the flights
+information, the inputs,
+
+175
+00:09:40.212 --> 00:09:43.215
+and then we pick a flight
+path out of that.
+
+176
+00:09:44.917 --> 00:09:47.920
+And then we grab all the information
+to call the LM again.
+
+177
+00:09:48.187 --> 00:09:50.923
+The LM this time, say okay,
+
+178
+00:09:50.923 --> 00:09:53.926
+we have the flights.
+
+179
+00:09:54.193 --> 00:09:56.429
+And we can pull the user information
+
+180
+00:09:56.429 --> 00:09:59.432
+so that I can book the flight
+on behalf of the user.
+
+181
+00:10:00.866 --> 00:10:03.869
+Now I get the user information
+
+182
+00:10:04.470 --> 00:10:07.173
+and then send all the things to that
+LM again.
+
+183
+00:10:07.173 --> 00:10:10.309
+And next
+thought will be have all the information
+
+184
+00:10:10.509 --> 00:10:12.612
+I can just go ahead "book a flight".
+
+185
+00:10:12.612 --> 00:10:15.615
+Then we call book the flight.
+
+186
+00:10:15.848 --> 00:10:19.719
+And then we write things into a data,
+a database and then recall the LM.
+
+187
+00:10:20.119 --> 00:10:23.589
+And this time the LM says, okay,
+this seemed to be complete.
+
+188
+00:10:23.889 --> 00:10:27.226
+So we can call the finish
+with a dummy tool in DSPy
+
+189
+00:10:27.460 --> 00:10:30.429
+marking
+the end of the reactor tool calling.
+
+190
+00:10:32.498 --> 00:10:35.501
+And after all
+the process, we still need to find a way
+
+191
+00:10:35.601 --> 00:10:38.838
+to fulfill the process result
+which is output field.
+
+192
+00:10:39.071 --> 00:10:42.808
+So we just call a chain-of-thought,
+give that all the tool calling history
+
+193
+00:10:43.275 --> 00:10:46.278
+and the user request
+to form the final output.
+
+194
+00:10:47.113 --> 00:10:50.082
+Then after that, we wrap up the process.
+
+195
+00:10:50.116 --> 00:10:53.919
+We can see clearly with MLflow
+tracing how we interpret
+
+196
+00:10:53.919 --> 00:10:58.557
+what's happening inside a reactor module
+with a very complex multi-hop calling.
+
+197
+00:10:59.325 --> 00:11:03.496
+And if there is anything going wrong,
+we can click on that a certain module
+
+198
+00:11:03.996 --> 00:11:07.233
+and the find the input output to decide
+how we debug.
+
+199
+00:11:07.566 --> 00:11:11.570
+By the way, MLflow
+has also integrated with LangChain, Llama
+
+200
+00:11:11.570 --> 00:11:13.372
+Index and other frameworks.
+
+201
+00:11:13.372 --> 00:11:16.742
+You can get auto auto-tracing feature
+with other frameworks as well.
+
+202
+00:11:17.243 --> 00:11:19.912
+In the lab
+we set up a MLflow server for you
+
+203
+00:11:19.912 --> 00:11:23.115
+and the actual development
+you are need to do it by yourself.
+
+204
+00:11:23.549 --> 00:11:26.552
+If you don't have time to set up
+your own MLflow server,
+
+205
+00:11:26.552 --> 00:11:28.788
+or want to explore more features,
+
+206
+00:11:28.788 --> 00:11:31.724
+Databricks
+provides managed MLflow service,
+
+207
+00:11:31.724 --> 00:11:34.727
+and you can simply connect it to it
+to get started.
+
+208
+00:11:34.727 --> 00:11:38.631
+And then try now through Databricks
+Lighthouse, which provides free trial.
+
+209
+00:11:38.931 --> 00:11:39.799
+Give it a try,
+
+210
+00:11:39.799 --> 00:11:44.270
+and sign up on databricks.com
+In this lesson, you have a use the
+
+211
+00:11:44.270 --> 00:11:49.270
+MLflow tracing to build a complex react
+module for an airline customer service.
+
+212
+00:11:50.209 --> 00:11:51.444
+And next lesson,
+
+213
+00:11:51.444 --> 00:11:52.978
+you will learn how to use DSPy
+
+214
+00:11:52.978 --> 00:11:57.116
+optimizer to automate optimize
+the programs quality.
+
+215
+00:11:57.316 --> 00:11:57.850
+See you there!
+
