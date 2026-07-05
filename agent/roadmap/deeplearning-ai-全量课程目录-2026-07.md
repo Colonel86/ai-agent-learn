@@ -22,18 +22,18 @@
 | 2026-02-11 | [A2A: The Agent2Agent Protocol](https://www.deeplearning.ai/courses/a2a-the-agent2agent-protocol) | Google Cloud,IBM Research | 使用 A2A(标准化 Agent 间通信的开放协议)连接来自不同框架和团队的 Agent。 | ✅ 已学 |
 | 2026-01-28 | [Agent Skills with Anthropic](https://www.deeplearning.ai/courses/agent-skills-with-anthropic) | Anthropic | 为 Agent 配备按需调用的专家知识,实现可靠的编码、研究和数据分析工作流。 | ✅ 已学 |
 | 2026-01-14 | [Document AI: From OCR to Agentic Doc Extraction](https://www.deeplearning.ai/courses/document-ai-from-ocr-to-agentic-doc-extraction) | LandingAI | 构建能解析文档并提取信息的 Agent 系统,基于图表、表格、表单等视觉元素进行信息定位。 | ⏸️ 可选 |
-| 2025-12-17 | [Nvidia's NeMo Agent Toolkit: Making Agents Reliable](https://www.deeplearning.ai/courses/nvidia-nat-making-agents-reliable) | Nvidia | 使用 Nvidia NeMo Agent Toolkit 中的可观测性、评测与部署工具,把概念验证级的 Agent demo 转变为生产级系统。 | 🎯 需要 |
+| 2025-12-17 | [Nvidia's NeMo Agent Toolkit: Making Agents Reliable](https://www.deeplearning.ai/courses/nvidia-nat-making-agents-reliable) | Nvidia | 使用 Nvidia NeMo Agent Toolkit 中的可观测性、评测与部署工具,把概念验证级的 Agent demo 转变为生产级系统。 | ✅ 已学 |
 | 2025-12-03 | [Building Coding Agents with Tool Execution](https://www.deeplearning.ai/courses/building-coding-agents-with-tool-execution) | E2B | 构建能编写并执行代码来完成任务的 AI Agent,在保护你系统免受不可信代码影响的沙箱云环境中安全运行。 | ✅ 已学 |
-| 2025-11-19 | [Semantic Caching for AI Agents](https://www.deeplearning.ai/courses/semantic-caching-for-ai-agents) | Redis | 通过实现基于语义(而非精确文本)复用响应的语义缓存,为你的 AI Agent 提速并降低成本。 | 🎯 需要 |
+| 2025-11-19 | [Semantic Caching for AI Agents](https://www.deeplearning.ai/courses/semantic-caching-for-ai-agents) | Redis | 通过实现基于语义(而非精确文本)复用响应的语义缓存,为你的 AI Agent 提速并降低成本。 | ✅ 已学 |
 | 2025-11-11 | [Design, Develop, and Deploy Multi-Agent Systems  with CrewAI](https://www.deeplearning.ai/courses/design-develop-and-deploy-multi-agent-systems-with-crewai) | CrewAI | 构建能协作、使用工具与记忆、并可靠扩展到生产环境的实用多 Agent 系统。 | ⏸️ 可选(与已学 crewAI 课重叠) |
-| 2025-10-22 | [Governing AI Agents](https://www.deeplearning.ai/courses/governing-ai-agents) | Databricks | 将数据治理集成到你的 Agent 工作流中,确保它安全、合规、准确地处理数据。 | 🎯 需要 |
+| 2025-10-22 | [Governing AI Agents](https://www.deeplearning.ai/courses/governing-ai-agents) | Databricks | 将数据治理集成到你的 Agent 工作流中,确保它安全、合规、准确地处理数据。 | ✅ 已学 |
 | 2025-09-30 | [Agentic AI](https://www.deeplearning.ai/courses/agentic-ai) | DeepLearning.AI | 由 Andrew Ng 授课,你将构建通过迭代式多步工作流来采取行动的 Agentic AI 系统。 | ✅ 已学 |
 | 2025-09-24 | [Building and Evaluating Data Agents](https://www.deeplearning.ai/courses/building-and-evaluating-data-agents) | Snowflake | 构建、评测并改进一个能规划步骤、连接数据源并提供洞见的多 Agent 系统。 | ⏸️ 可选 |
 | 2025-09-24 | [Building Live Voice Agents with Google's ADK](https://www.deeplearning.ai/courses/building-live-voice-agents-with-googles-adk) | Google | 使用 Google 的 Agent Development Kit,构建从简单到多 Agent 播客系统的实时语音 AI Agent。 | ⏸️ 可选 |
 | 2025-09-17 | [Build AI Apps with MCP Server: Working with Box Files](https://www.deeplearning.ai/courses/build-ai-apps-with-mcp-server-working-with-box-files) | Box | 构建一个使用 Box MCP server 工具来发现 Box 文件并提取文本的 LLM 应用,并将其改造为使用 A2A 通信的多 Agent 系统。 | ⏸️ 可选(与已学 MCP 课重叠) |
 | 2025-09-10 | [Knowledge Graphs for AI Agent API Discovery](https://www.deeplearning.ai/courses/knowledge-graphs-for-ai-agent-api-discovery) | SAP | 构建知识图谱,让你的 AI Agent 能按正确顺序发现并调用正确的 API。 | ✅ 已学 |
 | 2025-08-27 | [Agentic Knowledge Graph Construction](https://www.deeplearning.ai/courses/agentic-knowledge-graph-construction) | Neo4j | 构建一个能规划、设计并构建知识图谱的多 Agent 系统。 | ⏸️ 可选 |
-| 2025-06-04 | [DSPy: Build and Optimize Agentic Apps](https://www.deeplearning.ai/courses/dspy-build-optimize-agentic-apps) | Databricks | 使用 DSPy 和 MLflow 构建、调试并优化 AI Agent。 | 🎯 需要 |
+| 2025-06-04 | [DSPy: Build and Optimize Agentic Apps](https://www.deeplearning.ai/courses/dspy-build-optimize-agentic-apps) | Databricks | 使用 DSPy 和 MLflow 构建、调试并优化 AI Agent。 | ✅ 已学 |
 | 2025-05-14 | [MCP: Build Rich-Context AI Apps with Anthropic](https://www.deeplearning.ai/courses/mcp-build-rich-context-ai-apps-with-anthropic) | Anthropic | 使用 Model Context Protocol 构建能访问工具、数据和提示词的 AI 应用。 | ✅ 已学 |
 | 2025-05-07 | [Building AI Voice Agents for Production](https://www.deeplearning.ai/courses/building-ai-voice-agents-for-production) | LiveKit,RealAvatar | 构建响应迅速、可扩展、拟人化的 AI 语音应用。 | ⏸️ 可选 |
 | 2025-04-23 | [Building Code Agents with Hugging Face smolagents](https://www.deeplearning.ai/courses/building-code-agents-with-hugging-face-smolagents) | Hugging Face | 使用 Hugging Face 的 smolagents 构建能编写并执行代码来完成复杂任务的 Agent。 | ⏸️ 可选 |
@@ -58,18 +58,18 @@
 | 2025-12-10 | [Multi-vector Image Retrieval](https://www.deeplearning.ai/courses/multi-vector-image-retrieval) | Qdrant | 构建用多个向量表示图像的高级检索系统,实现文本查询与视觉内容之间的细粒度匹配,支持精准的多模态搜索。 | ⏸️ 可选 |
 | 2025-09-30 | [Retrieval Augmented Generation (RAG)](https://www.deeplearning.ai/courses/retrieval-augmented-generation) | DeepLearning.AI | 掌握构建生产级 RAG 应用所需的基础理解与实践知识,涵盖架构、部署与评测全流程。 | 🎯 需要 |
 | 2025-07-30 | [Pydantic for LLM Workflows](https://www.deeplearning.ai/courses/pydantic-for-llm-workflows) | DeepLearning.AI | 使用 Pydantic 构建具有结构化输出与数据校验的可靠 LLM 应用。 | ✅ 已学 |
-| 2025-04-02 | [Getting Structured LLM Output](https://www.deeplearning.ai/courses/getting-structured-llm-output) | DotTxt | 学习如何生成结构化输出,为生产级 LLM 软件应用提供支持。 | 🎯 需要 |
-| 2024-11-13 | [Safe and reliable AI via guardrails](https://www.deeplearning.ai/courses/safe-and-reliable-ai-via-guardrails) | GuardrailsAI | 借助 guardrails 提供的额外控制,将你的 LLM 应用从概念验证推进到生产环境。 | 🎯 需要 |
+| 2025-04-02 | [Getting Structured LLM Output](https://www.deeplearning.ai/courses/getting-structured-llm-output) | DotTxt | 学习如何生成结构化输出,为生产级 LLM 软件应用提供支持。 | ✅ 已学 |
+| 2024-11-13 | [Safe and reliable AI via guardrails](https://www.deeplearning.ai/courses/safe-and-reliable-ai-via-guardrails) | GuardrailsAI | 借助 guardrails 提供的额外控制,将你的 LLM 应用从概念验证推进到生产环境。 | ✅ 已学 |
 | 2024-10-02 | [Retrieval Optimization: Tokenization to Vector Quantization](https://www.deeplearning.ai/courses/retrieval-optimization-from-tokenization-to-vector-quantization) | Qdrant | 为你的 LLM 应用构建更快、更相关的向量搜索。 | ⏸️ 可选 |
 | 2024-08-21 | [Building AI Applications With Haystack](https://www.deeplearning.ai/courses/building-ai-applications-with-haystack) | Haystack | 学习一个灵活的框架,用来构建各种复杂的 AI 应用。 | ✅ 已学 |
 | 2024-08-14 | [Improving Accuracy of LLM Applications](https://www.deeplearning.ai/courses/improving-accuracy-of-llm-applications) | AMD, formerly Lamini,Meta | 通过评测、提示工程和记忆调优,系统性地提升 LLM 应用的准确率。 | ⏸️ 可选 |
 | 2024-07-31 | [Embedding Models: from Architecture to Implementation](https://www.deeplearning.ai/courses/embedding-models-from-architecture-to-implementation) | Vectara | 学习如何构建嵌入模型,以及如何创建有效的语义检索系统。 | ❌ 不需要 |
 | 2024-07-10 | [Prompt Compression and Query Optimization](https://www.deeplearning.ai/courses/prompt-compression-and-query-optimization) | MongoDB | 优化你的 RAG 应用的效率、安全性、查询处理速度与成本。 | ⏸️ 可选 |
-| 2024-06-20 | [Function-calling and data extraction with LLMs](https://www.deeplearning.ai/courses/function-calling-and-data-extraction-with-llms) | Nexusflow | 学习应用 function calling 来扩展 LLM 和 Agent 应用的能力。 | 🎯 需要 |
+| 2024-06-20 | [Function-calling and data extraction with LLMs](https://www.deeplearning.ai/courses/function-calling-and-data-extraction-with-llms) | Nexusflow | 学习应用 function calling 来扩展 LLM 和 Agent 应用的能力。 | ✅ 已学 |
 | 2024-04-10 | [Preprocessing Unstructured Data for LLM Applications](https://www.deeplearning.ai/courses/preprocessing-unstructured-data-for-llm-applications) | Unstructured | 改进你的 RAG 系统以检索多样化的数据类型。学习从 PDF、PPT、HTML 等各类文档中提取并规范化内容。 | ⏸️ 可选 |
-| 2024-04-03 | [Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications) | Giskard | 学习如何通过红队测试让 LLM 应用更安全。学习识别与评估大语言模型(LLM)应用中的漏洞。 | 🎯 需要 |
+| 2024-04-03 | [Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications) | Giskard | 学习如何通过红队测试让 LLM 应用更安全。学习识别与评估大语言模型(LLM)应用中的漏洞。 | ✅ 已学 |
 | 2024-03-27 | [JavaScript RAG Web Apps with LlamaIndex](https://www.deeplearning.ai/courses/javascript-rag-web-apps-with-llamaindex) | LlamaIndex | 构建一个使用 RAG 能力与你的数据对话的全栈 Web 应用。学习用 JavaScript 构建 RAG 应用,并用智能 Agent 回答查询。 | ❌ 不需要 |
-| 2024-03-13 | [Knowledge Graphs for RAG](https://www.deeplearning.ai/courses/knowledge-graphs-rag) | Neo4j | 学习如何构建并使用知识图谱系统来改进你的检索增强生成应用。使用 Neo4j 的查询语言 Cypher 管理和检索数据。 | ⏸️ 可选 |
+| 2024-03-13 | [Knowledge Graphs for RAG](https://www.deeplearning.ai/courses/knowledge-graphs-rag) | Neo4j | 学习如何构建并使用知识图谱系统来改进你的检索增强生成应用。使用 Neo4j 的查询语言 Cypher 管理和检索数据。 | ✅ 已学 |
 | 2024-01-31 | [Building Applications with Vector Databases](https://www.deeplearning.ai/courses/building-applications-vector-databases) | Pinecone | 学习构建六个由向量数据库驱动的应用,包括语义搜索、检索增强生成(RAG)和异常检测。 | ⏸️ 可选 |
 | 2024-01-24 | [Automated Testing for LLMOps](https://www.deeplearning.ai/courses/automated-testing-llmops) | CircleCI | 学习如何创建自动化 CI 流水线,在每次变更时评测你的 LLM 应用,实现更快、更安全的开发。 | ✅ 已学 |
 | 2024-01-03 | [Advanced Retrieval for AI with Chroma](https://www.deeplearning.ai/courses/advanced-retrieval-for-ai) | Chroma | 学习高级检索技术以提升检索结果的相关性。学习识别低质量查询结果,并用 LLM 改进查询。 | ✅ 已学 |

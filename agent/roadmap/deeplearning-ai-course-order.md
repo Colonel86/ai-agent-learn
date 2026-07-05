@@ -61,7 +61,7 @@
 | 6 | Advanced Retrieval for AI with Chroma | 高级检索技巧(query expansion、reranking 等) | #6 | ✅ 已学 |
 | 18 | Building Agentic RAG with LlamaIndex | RAG + Agent 结合(让 Agent 主动调度检索)⭐ **主线框架** | #14 | ✅ 已学 |
 | 19 | Event-Driven Agentic Document Workflows with LlamaIndex | 事件驱动的文档处理 Agent(LlamaIndex 进阶)⭐ | #15 | ✅ 已学 |
-| 26 | Knowledge Graphs for RAG | 结构化知识检索——图谱 RAG 是前沿方向 | #26 | ⏸️ 可选 |
+| 26 | Knowledge Graphs for RAG | 结构化知识检索——图谱 RAG 是前沿方向 | #26 | ✅ 已学 |
 
 ### 🅱 Memory:长期记忆
 
@@ -179,18 +179,11 @@ flowchart TB
 
 > 从完整 124 门目录中筛出、与当前"资深 Agent 工程师/架构师面试"目标相关、但尚未排入上述 Phase 的课程。判定标准同上;完整 124 门分类见 `deeplearning-ai-全量课程目录-2026-07.md`。
 
-### 🎯 需要学习(8 门)
+### 🎯 需要学习(1 门)
 
 | 课程 | 合作方 | 一句话价值 |
 | --- | --- | --- |
-| [Nvidia's NeMo Agent Toolkit: Making Agents Reliable](https://www.deeplearning.ai/courses/nvidia-nat-making-agents-reliable) | Nvidia | Agent 可观测性/评测/部署工具链,概念验证转生产级 |
-| [Semantic Caching for AI Agents](https://www.deeplearning.ai/courses/semantic-caching-for-ai-agents) | Redis | 语义缓存降本提速,对口面试包 `05-context-engineering-and-caching` |
-| [Governing AI Agents](https://www.deeplearning.ai/courses/governing-ai-agents) | Databricks | Agent 数据治理与安全,对口面试包 `07-safety-guardrails` |
-| [DSPy: Build and Optimize Agentic Apps](https://www.deeplearning.ai/courses/dspy-build-optimize-agentic-apps) | Databricks | Prompt/流程自动优化,选型矩阵里的真缺口 |
-| [Building toward Computer Use with Anthropic](https://www.deeplearning.ai/courses/building-toward-computer-use-with-anthropic) | Anthropic | Anthropic 官方 Run Loop 范式,对口面试包 `01-agent-run-loop-and-orchestration` |
-| [Retrieval Augmented Generation (RAG)](https://www.deeplearning.ai/courses/retrieval-augmented-generation) | DeepLearning.AI | 2025 新版 RAG 生产级总览(架构/部署/评测全流程) |
-| [Safe and reliable AI via guardrails](https://www.deeplearning.ai/courses/safe-and-reliable-ai-via-guardrails) | GuardrailsAI | 生产护栏,直接对口 JD 职责 4「安全护栏」 |
-| [Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications) | Giskard | LLM 应用红队测试,安全性面试差异化素材 |
+| [Retrieval Augmented Generation (RAG)](https://www.deeplearning.ai/courses/retrieval-augmented-generation) | DeepLearning.AI | 2025 新版 RAG 生产级总览(架构/部署/评测全流程)。🔄 学习中:Module 1/共5 已有笔记 |
 
 ### ⏸️ 可选(18 门,时间充裕再学)
 
@@ -217,7 +210,7 @@ flowchart TB
 
 ---
 
-## ✅ 已学笔记速查(27 门,对应 `agent/courses/`)
+## ✅ 已学笔记速查(34 门,对应 `agent/courses/`)
 
 | 课程 | 笔记路径 |
 | --- | --- |
@@ -248,3 +241,10 @@ flowchart TB
 | AI Agentic Design Patterns with AutoGen(Microsoft) | `../courses/AI Agentic Design Patterns with AutoGen/` |
 | A2A: The Agent2Agent Protocol(Google Cloud,IBM) | `../courses/A2A: The Agent2Agent Protocol/` |
 | Building Coding Agents with Tool Execution(E2B) | `../courses/Building Coding Agents with Tool Execution/` |
+| Knowledge Graphs for RAG(Neo4j) | `../courses/RAG/Knowledge Graphs for RAG/` |
+| DSPy: Build and Optimize Agentic Apps(Databricks) | `../courses/DSPy: Build and Optimize Agentic Apps/` |
+| Nvidia's NeMo Agent Toolkit: Making Agents Reliable(Nvidia) | `../courses/Nvidia's NeMo Agent Toolkit: Making Agents Reliable/` |
+| Semantic Caching for AI Agents(Redis) | `../courses/Semantic Caching for AI Agents/` |
+| Governing AI Agents(Databricks) | `../courses/Governing AI Agents/` |
+| Safe and reliable AI via guardrails(GuardrailsAI) | `../courses/Safe and reliable AI via guardrails/` |
+| Red Teaming LLM Applications(Giskard) | `../courses/Red Teaming LLM Applications/` |
