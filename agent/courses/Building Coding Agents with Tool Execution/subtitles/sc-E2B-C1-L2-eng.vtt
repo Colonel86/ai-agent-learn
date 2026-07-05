@@ -1,0 +1,794 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.200 --> 00:00:04.170
+In this lesson, you will build your first coding agent from scratch.
+
+2
+00:00:04.771 --> 00:00:06.773
+You'll give it real tools to execute code,
+
+3
+00:00:07.173 --> 00:00:10.777
+read and write files and carry out multi-step reasoning loops.
+
+4
+00:00:10.977 --> 00:00:12.779
+All right, let's get coding.
+
+5
+00:00:13.380 --> 00:00:16.783
+Let's start by ignoring warnings with these two lines of code.
+
+6
+00:00:17.517 --> 00:00:19.252
+All of the keys are set
+
+7
+00:00:19.252 --> 00:00:21.321
+up for you on a DeepLearning.AI environment
+
+8
+00:00:21.521 --> 00:00:23.523
+and you don't need to worry about it.
+
+9
+00:00:23.623 --> 00:00:25.592
+Before we build our first agent,
+
+10
+00:00:25.692 --> 00:00:28.395
+let's have a look at a more complex data analysis agent
+
+11
+00:00:28.495 --> 00:00:30.296
+that you will build in the next...
+
+12
+00:00:30.363 --> 00:00:33.833
+a taste of what you will be learning in this lesson.
+
+13
+00:00:40.640 --> 00:00:44.144
+This agent is capable of running and executing code.
+
+14
+00:00:44.344 --> 00:00:48.848
+So let's briefly just try one prompt to give you
+
+15
+00:00:49.082 --> 00:00:51.384
+an idea of what we will be building.
+
+16
+00:00:51.684 --> 00:00:54.988
+So let's ask, can you create me
+
+17
+00:00:55.088 --> 00:00:57.090
+a function that draw
+
+18
+00:00:57.624 --> 00:01:01.027
+an emoji and run it.
+
+19
+00:01:03.163 --> 00:01:06.266
+On the right side, we see our context growing
+
+20
+00:01:06.966 --> 00:01:10.270
+and we are using the same color scheme as in the slides,
+
+21
+00:01:10.670 --> 00:01:12.972
+and the height is proportional to the token size.
+
+22
+00:01:13.206 --> 00:01:15.708
+Here, the agent runs some code,
+
+23
+00:01:15.708 --> 00:01:17.510
+it generates the code and runs it.
+
+24
+00:01:17.710 --> 00:01:20.113
+looks like it's uh, yeah,
+
+25
+00:01:20.113 --> 00:01:23.016
+it's making some Python code
+
+26
+00:01:23.016 --> 00:01:25.018
+with matplotlib functions.
+
+27
+00:01:25.652 --> 00:01:28.521
+but it's not really, it is not making a smiling emoji
+
+28
+00:01:28.621 --> 00:01:32.225
+but for some reason a sad one, which is kind of interesting.
+
+29
+00:01:32.425 --> 00:01:33.927
+And feel free to prompt it
+
+30
+00:01:33.927 --> 00:01:35.628
+more and play with it as well.
+
+31
+00:01:36.129 --> 00:01:38.231
+All right, back to our first coding agent.
+
+32
+00:01:38.631 --> 00:01:40.733
+The first thing we need is a language model.
+
+33
+00:01:41.234 --> 00:01:45.638
+For all of our lessons, we'll be using the OpenAI GPT models.
+
+34
+00:01:46.239 --> 00:01:49.442
+We'll call the models by using a handy LLM function.
+
+35
+00:01:50.076 --> 00:01:52.278
+taking an OpenAI client,
+
+36
+00:01:52.679 --> 00:01:54.881
+a list of messages, a system prompt,
+
+37
+00:01:55.248 --> 00:01:58.551
+and printing back the reply from the model.
+
+38
+00:02:00.854 --> 00:02:03.056
+Next, we need to give our agent tools,
+
+39
+00:02:03.556 --> 00:02:06.559
+actual function it can call to run things.
+
+40
+00:02:06.860 --> 00:02:09.262
+Here we are defining a TypedDict
+
+41
+00:02:09.562 --> 00:02:13.066
+that stores the results and errors, if any.
+
+42
+00:02:13.566 --> 00:02:15.568
+Then the function execute_code
+
+43
+00:02:15.869 --> 00:02:19.072
+runs whatever Python code is passed as a string.
+
+44
+00:02:19.405 --> 00:02:23.209
+is using the exec built-in Python function to do so,
+
+45
+00:02:23.209 --> 00:02:26.913
+and we also redirect standard output,
+
+46
+00:02:26.913 --> 00:02:30.216
+so we can capture it and return it to us.
+
+47
+00:02:30.817 --> 00:02:32.719
+Let's test it by printing Hello World.
+
+48
+00:02:32.719 --> 00:02:35.121
+And we can see we have Hello World in our
+
+49
+00:02:35.121 --> 00:02:38.324
+results key in the execution dictionary.
+
+50
+00:02:38.925 --> 00:02:41.294
+In order for the agent to run this function,
+
+51
+00:02:41.294 --> 00:02:43.596
+we need to describe it as a JSON schema.
+
+52
+00:02:44.297 --> 00:02:46.299
+Note the name is execute_code
+
+53
+00:02:46.299 --> 00:02:50.904
+and the parameters expect one property, code, as a string.
+
+54
+00:02:51.104 --> 00:02:54.607
+We can register the tool by adding to the tools dictionary.
+
+55
+00:02:54.908 --> 00:02:57.610
+Every tool we create later will go here as well.
+
+56
+00:03:04.584 --> 00:03:07.487
+Next, we define a function called execute_tool.
+
+57
+00:03:08.288 --> 00:03:12.292
+It takes the tool's name, finding the tools in a dictionary,
+
+58
+00:03:12.592 --> 00:03:16.796
+pass the arguments and return the result.
+
+59
+00:03:17.197 --> 00:03:19.365
+We also added some error handling
+
+60
+00:03:19.365 --> 00:03:22.769
+in the case the agent had an error by parsing the arguments
+
+61
+00:03:22.769 --> 00:03:25.271
+or calls a tool that does not exist.
+
+62
+00:03:26.339 --> 00:03:28.675
+Now we can create our agent function.
+
+63
+00:03:28.975 --> 00:03:31.144
+This is where the agent is going to live.
+
+64
+00:03:31.644 --> 00:03:35.748
+We are passing the OpenAI client, an user query, system prompt,
+
+65
+00:03:36.049 --> 00:03:38.952
+the tools registry, and the tools schemas.
+
+66
+00:03:39.152 --> 00:03:40.954
+Similar to what we did at the
+
+67
+00:03:40.954 --> 00:03:42.755
+beginning, we are creating the messages array.
+
+68
+00:03:43.056 --> 00:03:45.558
+We are calling the LLM function with
+
+69
+00:03:45.558 --> 00:03:48.061
+all the parameters, and we are iterating,
+
+70
+00:03:48.127 --> 00:03:51.331
+through the response. If the part.type is message,
+
+71
+00:03:51.331 --> 00:03:53.333
+it means that the model wants to speak
+
+72
+00:03:53.333 --> 00:03:55.602
+back to us, so we're just printing the part.content.
+
+73
+00:03:55.602 --> 00:03:59.005
+If the part.type is function_call, we are getting the function name,
+
+74
+00:03:59.205 --> 00:04:02.308
+do some printing and use our execute_tool function
+
+75
+00:04:02.308 --> 00:04:04.310
+to get the result from the tool.
+
+76
+00:04:05.111 --> 00:04:07.614
+We can test it by making the agent
+
+77
+00:04:07.614 --> 00:04:09.949
+generate some Python code and run it.
+
+78
+00:04:10.350 --> 00:04:12.619
+Here we have a task-specific system prompt
+
+79
+00:04:12.619 --> 00:04:15.955
+where we're telling the agent that is a Senior Python programmer,
+
+80
+00:04:16.289 --> 00:04:19.025
+and we are also explaining how to use the tools.
+
+81
+00:04:19.292 --> 00:04:21.995
+So here we're saying you must always use the execute_code
+
+82
+00:04:21.995 --> 00:04:23.997
+tool to run code.
+
+83
+00:04:23.997 --> 00:04:26.499
+Finally, we are telling how to collect user's inputs,
+
+84
+00:04:26.499 --> 00:04:28.801
+just by using the input python function.
+
+85
+00:04:28.801 --> 00:04:30.803
+Our task is straightforward.
+
+86
+00:04:30.803 --> 00:04:33.506
+We want to make a program that asks us
+
+87
+00:04:33.506 --> 00:04:36.509
+how many cups of coffee we had today,
+
+88
+00:04:36.509 --> 00:04:38.811
+and then convert it back to lines of code.
+
+89
+00:04:39.879 --> 00:04:43.483
+So, today I had a lot of coffee, actually.
+
+90
+00:04:44.050 --> 00:04:45.918
+So let's go with five. And it
+
+91
+00:04:45.918 --> 00:04:48.087
+looks like I wrote 215 lines of code
+
+92
+00:04:48.087 --> 00:04:50.790
+because caffeine equal productivity.
+
+93
+00:04:51.424 --> 00:04:53.626
+This is a full round trip.
+
+94
+00:04:54.127 --> 00:04:56.229
+The agent received the user's query,
+
+95
+00:04:56.329 --> 00:04:59.932
+reason about it, and decide which tool to call.
+
+96
+00:05:00.433 --> 00:05:03.202
+A coding agent needs to use the file system
+
+97
+00:05:03.303 --> 00:05:05.405
+to read, write, and edit files.
+
+98
+00:05:05.805 --> 00:05:09.108
+Let's implement two tools to read and write files.
+
+99
+00:05:09.409 --> 00:05:12.512
+First we need the read_file_schema. The name is read_file,
+
+100
+00:05:12.612 --> 00:05:15.114
+is taking a file_path as a string of course,
+
+101
+00:05:15.315 --> 00:05:18.518
+limit and offset. So how many characters and from where
+
+102
+00:05:18.618 --> 00:05:21.421
+the agent is allowed to read from from the file.
+
+103
+00:05:21.587 --> 00:05:24.791
+This is very important because we can have very big files
+
+104
+00:05:25.191 --> 00:05:27.694
+and giving the model the ability to pick up
+
+105
+00:05:27.994 --> 00:05:29.595
+how much characters it want to read
+
+106
+00:05:29.896 --> 00:05:31.497
+can keep the context clean.
+
+107
+00:05:31.998 --> 00:05:34.367
+The write_file_schema it's very similar.
+
+108
+00:05:34.367 --> 00:05:38.171
+We are passing a content string and a file_path as well.
+
+109
+00:05:38.171 --> 00:05:40.673
+Then we need to implement the actual function
+
+110
+00:05:40.673 --> 00:05:43.276
+will be running when the agent wants to call.
+
+111
+00:05:43.643 --> 00:05:47.747
+these two tools. Let's go ahead and implement the read_file function.
+
+112
+00:05:48.247 --> 00:05:51.150
+Notice we are creating a custom exception.
+
+113
+00:05:51.351 --> 00:05:56.351
+This is helpful because we can avoid passing long error stack traces
+
+114
+00:05:57.223 --> 00:05:59.425
+and just create a specific
+
+115
+00:05:59.992 --> 00:06:03.796
+concise error feedback back to the model.
+
+116
+00:06:04.197 --> 00:06:07.500
+For example, if the file is not there,
+
+117
+00:06:07.800 --> 00:06:09.769
+we are going to raise a new ToolError
+
+118
+00:06:09.769 --> 00:06:13.172
+telling the model exactly that the file does not exist.
+
+119
+00:06:13.573 --> 00:06:15.475
+Next, we implement the write_file function.
+
+120
+00:06:15.775 --> 00:06:18.411
+Similar, we are also doing error
+
+121
+00:06:18.411 --> 00:06:21.481
+handling in the same way as before.
+
+122
+00:06:22.081 --> 00:06:24.517
+Finally, we can update our tools
+
+123
+00:06:24.517 --> 00:06:27.387
+registry by adding these two new tools.
+
+124
+00:06:27.787 --> 00:06:31.991
+Let's give it a test by creating a working dir,
+
+125
+00:06:32.158 --> 00:06:34.060
+having a new user query in which
+
+126
+00:06:34.060 --> 00:06:35.962
+we task the agent to create a
+
+127
+00:06:36.362 --> 00:06:40.366
+blank text.txt file and telling where the working dir
+
+128
+00:06:40.666 --> 00:06:44.170
+is supposed to be. Notice that we are passing our
+
+129
+00:06:44.737 --> 00:06:46.539
+new tools_schemas
+
+130
+00:06:46.539 --> 00:06:48.541
+to the coding_agent function.
+
+131
+00:06:48.841 --> 00:06:51.210
+We can see the agent used our write_file tools
+
+132
+00:06:51.511 --> 00:06:54.514
+and it has written zero bytes to that file.
+
+133
+00:06:55.114 --> 00:06:57.216
+Let's now test our error handling.
+
+134
+00:06:58.017 --> 00:06:59.652
+We can task the agent to
+
+135
+00:06:59.652 --> 00:07:01.521
+read a file that is not there
+
+136
+00:07:01.721 --> 00:07:03.823
+and see what happens. We can
+
+137
+00:07:03.823 --> 00:07:06.259
+see it use the read_file tools again,
+
+138
+00:07:06.359 --> 00:07:10.062
+but this time we got an error as a dictionary.
+
+139
+00:07:10.263 --> 00:07:13.466
+And this time we got an error as a structured
+
+140
+00:07:13.900 --> 00:07:16.903
+dictionary. This will help the agent
+
+141
+00:07:16.903 --> 00:07:19.972
+recover and try again.
+
+142
+00:07:20.306 --> 00:07:24.744
+So let's try to task the agent with something slightly more complicated.
+
+143
+00:07:25.011 --> 00:07:27.113
+Here we want the agent to create
+
+144
+00:07:27.113 --> 00:07:29.182
+a file with file one inside it
+
+145
+00:07:29.182 --> 00:07:31.083
+and then read it back to us,
+
+146
+00:07:31.784 --> 00:07:33.786
+as we were expecting,
+
+147
+00:07:33.786 --> 00:07:36.289
+the agent is calling the write_file tool,
+
+148
+00:07:36.289 --> 00:07:39.292
+writing five bytes to file one,
+
+149
+00:07:39.292 --> 00:07:41.294
+and then the read_file tool.
+
+150
+00:07:41.294 --> 00:07:44.797
+Then we can see that the content is actually file one.
+
+151
+00:07:44.797 --> 00:07:48.301
+So far, our agent can just do one turn.
+
+152
+00:07:48.301 --> 00:07:53.272
+But a real agent should iteratively perform tasks and stop when complete.
+
+153
+00:07:53.539 --> 00:07:56.342
+We need to create a loop and exit conditions.
+
+154
+00:07:56.843 --> 00:08:00.346
+The simplest way to decide when to stop
+
+155
+00:08:00.346 --> 00:08:02.448
+is when the agent doesn't call new functions
+
+156
+00:08:02.448 --> 00:08:05.051
+or reaches the maximum step limit.
+
+157
+00:08:05.651 --> 00:08:07.353
+Let's go over the implementation.
+
+158
+00:08:07.720 --> 00:08:10.022
+We are adding a new loop
+
+159
+00:08:10.523 --> 00:08:12.625
+in the coding_agent function
+
+160
+00:08:13.326 --> 00:08:17.029
+till a parameter max_steps is reached,
+
+161
+00:08:17.129 --> 00:08:19.532
+defaults to five, and
+
+162
+00:08:19.866 --> 00:08:23.736
+if the agent doesn't want to do a new function call,
+
+163
+00:08:24.070 --> 00:08:25.938
+it means that it doesn't think
+
+164
+00:08:25.938 --> 00:08:28.074
+it need to use the available tools.
+
+165
+00:08:28.541 --> 00:08:31.110
+So we're going to label the task as completed.
+
+166
+00:08:31.577 --> 00:08:34.380
+We are also keeping a list of messages
+
+167
+00:08:34.780 --> 00:08:37.383
+and we are appending to it the initial user message,
+
+168
+00:08:37.984 --> 00:08:42.088
+every message part, and the result from the tool.
+
+169
+00:08:43.789 --> 00:08:47.693
+Let's test it out here. We want the model
+
+170
+00:08:47.693 --> 00:08:49.896
+to create a Caesar cipher function,
+
+171
+00:08:50.396 --> 00:08:51.731
+then we want it to ask
+
+172
+00:08:51.731 --> 00:08:53.299
+me for a message, for the shift.
+
+173
+00:08:53.499 --> 00:08:56.769
+Then we want to run it, print the ciphered message,
+
+174
+00:08:56.869 --> 00:08:59.272
+and save it to a secret.txt file.
+
+175
+00:08:59.472 --> 00:09:00.973
+So quite a lot of step
+
+176
+00:09:00.973 --> 00:09:02.675
+that the agent will have to do.
+
+177
+00:09:03.943 --> 00:09:07.246
+Super. I'm going to put my name, so Francesco.
+
+178
+00:09:07.947 --> 00:09:11.217
+And I'm going to shift it by three letters, the alphabet.
+
+179
+00:09:11.717 --> 00:09:13.719
+The message is this set of characters,
+
+180
+00:09:13.819 --> 00:09:15.721
+and the model is telling me that
+
+181
+00:09:15.721 --> 00:09:17.623
+it has written it to secret.txt file.
+
+182
+00:09:17.723 --> 00:09:19.926
+I don't see any write_file tool,
+
+183
+00:09:20.026 --> 00:09:22.028
+so probably it used Python to write to the file.
+
+184
+00:09:22.228 --> 00:09:24.230
+So let's cat this file
+
+185
+00:09:24.430 --> 00:09:26.232
+and see if it's really there.
+
+186
+00:09:27.533 --> 00:09:31.037
+And we can see actually the agent wrote the right
+
+187
+00:09:31.037 --> 00:09:34.040
+encrypted message to our folder.
+
+188
+00:09:35.241 --> 00:09:37.243
+Let's create a simple interface
+
+189
+00:09:37.243 --> 00:09:39.745
+to interact with our coding agent.
+
+190
+00:09:40.446 --> 00:09:42.448
+We can test it out by
+
+191
+00:09:42.515 --> 00:09:45.017
+asking the agent to create
+
+192
+00:09:45.518 --> 00:09:48.521
+an ASCII cow and print it back to us.
+
+193
+00:09:55.328 --> 00:09:59.332
+It worked and we can see our cow as ASCII art.
+
+194
+00:09:59.532 --> 00:10:02.335
+Feel free to continue the conversation with your agent.
+
+195
+00:10:02.435 --> 00:10:04.704
+The agent we just built in this
+
+196
+00:10:04.704 --> 00:10:07.340
+lab is running code locally on the notebook.
+
+197
+00:10:07.740 --> 00:10:11.344
+In the next lesson, you'll learn more about code execution environments
+
+198
+00:10:11.744 --> 00:10:15.014
+and which one is the best, depending on the use case.

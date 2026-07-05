@@ -1,0 +1,338 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.869
+Now, you will turn your agent into a data analyst
+
+2
+00:00:02.869 --> 00:00:06.673
+that can explore datasets, answer questions, and create visualizations.
+
+3
+00:00:06.973 --> 00:00:08.875
+All inside a sandbox environment.
+
+4
+00:00:09.175 --> 00:00:11.678
+Let's code. So let's start building.
+
+5
+00:00:11.678 --> 00:00:15.281
+our agent. Very quickly before we get started,
+
+6
+00:00:15.582 --> 00:00:19.586
+so let's just ignore some warnings with these two lines of code
+
+7
+00:00:19.886 --> 00:00:21.888
+and set up our environment.
+
+8
+00:00:22.088 --> 00:00:25.692
+Then, we can load the pokemon.csv dataset,
+
+9
+00:00:26.493 --> 00:00:28.695
+which is right here in the notebook
+
+10
+00:00:28.695 --> 00:00:30.864
+folder, and write it to the sandbox.
+
+11
+00:00:35.702 --> 00:00:40.240
+Now, we can use our coding_agent to ask some questions about it.
+
+12
+00:00:40.874 --> 00:00:42.909
+We are importing all the function we need
+
+13
+00:00:43.109 --> 00:00:45.211
+and we are changing slightly the system prompt.
+
+14
+00:00:45.311 --> 00:00:47.414
+In this case, we're telling to the
+
+15
+00:00:47.414 --> 00:00:49.816
+agent where the user has updated its file
+
+16
+00:00:49.816 --> 00:00:51.718
+and also that it should help us
+
+17
+00:00:51.718 --> 00:00:53.653
+understanding the data and creating interesting plots.
+
+18
+00:00:54.020 --> 00:00:58.925
+So, let's start by asking what is this data about?
+
+19
+00:01:01.227 --> 00:01:04.030
+The agent will create some pandas code,
+
+20
+00:01:04.130 --> 00:01:09.130
+run it in Python, and probably getting the head, for example,
+
+21
+00:01:09.536 --> 00:01:13.406
+looking at all the columns and then doing a summary for us.
+
+22
+00:01:13.506 --> 00:01:15.809
+So, the model is saying that this
+
+23
+00:01:15.809 --> 00:01:18.111
+appears to be a dataset about Pokémon
+
+24
+00:01:18.211 --> 00:01:20.313
+and it has a lot of attributes, as you can see.
+
+25
+00:01:20.346 --> 00:01:23.850
+weight, height, attack speed, etcetera.
+
+26
+00:01:23.850 --> 00:01:26.086
+So let's go a little deeper and
+
+27
+00:01:26.086 --> 00:01:28.354
+ask the agent to run an aggregation.
+
+28
+00:01:28.354 --> 00:01:30.924
+So, let's see the Pokémons by type.
+
+29
+00:01:30.924 --> 00:01:33.726
+we are keeping the array of messages,
+
+30
+00:01:33.726 --> 00:01:36.896
+so we are passing the previous history to this situation as well.
+
+31
+00:01:37.897 --> 00:01:40.500
+And the agent creates a markdown table
+
+32
+00:01:40.700 --> 00:01:42.702
+and we can see we have
+
+33
+00:01:42.702 --> 00:01:45.905
+the bug, dark, dragon, electric, fairy.
+
+34
+00:01:46.306 --> 00:01:48.908
+and so on. And this is a summary.
+
+35
+00:01:49.209 --> 00:01:52.812
+Let's find more insight about the Pokémon datasets.
+
+36
+00:01:53.513 --> 00:01:56.116
+But before, we made a nice
+
+37
+00:01:56.116 --> 00:01:59.119
+Gradio user interface for you to play with
+
+38
+00:01:59.519 --> 00:02:02.122
+and to just, you know, speak in a more
+
+39
+00:02:02.122 --> 00:02:03.823
+natural way with the agent.
+
+40
+00:02:04.124 --> 00:02:08.294
+we can run it by importing from the lib.ui module
+
+41
+00:02:08.294 --> 00:02:10.997
+and just run it and passing the arguments
+
+42
+00:02:10.997 --> 00:02:13.600
+we usually pass to the coding agent function.
+
+43
+00:02:13.600 --> 00:02:16.836
+On the left, We have the chat history
+
+44
+00:02:17.337 --> 00:02:20.340
+with an input to write to the model.
+
+45
+00:02:20.640 --> 00:02:23.343
+On the right part, we have the Context Stack.
+
+46
+00:02:23.576 --> 00:02:26.479
+in which we can visualize
+
+47
+00:02:26.579 --> 00:02:28.781
+our current context.
+
+48
+00:02:29.082 --> 00:02:31.384
+The height of each message
+
+49
+00:02:31.384 --> 00:02:33.887
+is proportional to the number of tokens,
+
+50
+00:02:34.287 --> 00:02:36.389
+while the color is the same color
+
+51
+00:02:36.389 --> 00:02:38.791
+we have used so far in the lesson.
+
+52
+00:02:39.092 --> 00:02:41.060
+So, blue for system prompts,
+
+53
+00:02:41.060 --> 00:02:46.060
+green for users, violet for tool calling and results,
+
+54
+00:02:46.232 --> 00:02:48.835
+and yellow for a system message.
+
+55
+00:02:49.335 --> 00:02:52.038
+Let's continue our analysis
+
+56
+00:02:52.038 --> 00:02:55.441
+and let's ask the agent uh which one
+
+57
+00:02:55.475 --> 00:02:57.977
+is the heaviest Pokémon.
+
+58
+00:02:58.478 --> 00:03:01.681
+You can see on the right side, we got new user message.
+
+59
+00:03:01.981 --> 00:03:04.984
+It's calling the execute_code tool,
+
+60
+00:03:05.285 --> 00:03:07.120
+and it's giving us a reply
+
+61
+00:03:07.120 --> 00:03:09.255
+and it looks like the heaviest Pokémons
+
+62
+00:03:09.355 --> 00:03:11.958
+are Cosmoem and Celesteela,
+
+63
+00:03:12.058 --> 00:03:14.260
+and they weigh almost one ton.
+
+64
+00:03:14.427 --> 00:03:16.796
+We can also ask the agent to generate plots.
+
+65
+00:03:17.197 --> 00:03:19.499
+Here it's actually giving me a hint.
+
+66
+00:03:19.599 --> 00:03:21.201
+It's telling me if I would like
+
+67
+00:03:21.201 --> 00:03:22.802
+to see this information as a plot.
+
+68
+00:03:23.102 --> 00:03:25.805
+Okay, so let's go ahead and ask it
+
+69
+00:03:25.905 --> 00:03:28.308
+to create a bar plot of the top
+
+70
+00:03:28.508 --> 00:03:31.010
+10 heaviest Pokémons.
+
+71
+00:03:35.481 --> 00:03:38.284
+Okay, we can see
+
+72
+00:03:39.185 --> 00:03:42.589
+Here we can see the agent run again some pandas code
+
+73
+00:03:42.689 --> 00:03:47.393
+and generated a bar plot with the top 10 heaviest Pokémons.
+
+74
+00:03:47.994 --> 00:03:51.297
+So, in this folder we actually have another CSV file.
+
+75
+00:03:51.397 --> 00:03:53.666
+It's called unknown.csv file.
+
+76
+00:03:53.666 --> 00:03:55.768
+and we don't know anything about it.
+
+77
+00:03:56.069 --> 00:03:59.372
+We can load it in a sandbox and use the interface
+
+78
+00:03:59.372 --> 00:04:01.374
+and the agent to find out more.
+
+79
+00:04:02.075 --> 00:04:03.776
+You are free to explore it
+
+80
+00:04:04.077 --> 00:04:05.778
+and use the interface.
+
+81
+00:04:05.845 --> 00:04:07.914
+to chat with it
+
+82
+00:04:07.914 --> 00:04:10.316
+and ask information about it.
+
+83
+00:04:10.817 --> 00:04:13.820
+In the next lesson, we're going to build a full-stack agent
+
+84
+00:04:14.320 --> 00:04:18.625
+capable of generating complex web applications.

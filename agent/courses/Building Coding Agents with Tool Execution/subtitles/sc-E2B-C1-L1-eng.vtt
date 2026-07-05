@@ -1,0 +1,726 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:03.203
+In this lesson, you will learn what a coding agent is,
+
+2
+00:00:03.203 --> 00:00:05.972
+how it reasons through tasks and how it uses tools
+
+3
+00:00:06.006 --> 00:00:08.775
+like code execution and file system to complete them.
+
+4
+00:00:08.808 --> 00:00:10.877
+Let's dive in.
+
+5
+00:00:10.910 --> 00:00:12.445
+This is an example of a coding
+
+6
+00:00:12.445 --> 00:00:14.180
+agent that we will build in this course.
+
+7
+00:00:14.581 --> 00:00:18.084
+Here, the agent turns your request into a working application.
+
+8
+00:00:18.284 --> 00:00:20.487
+To achieve that, it writes code files,
+
+9
+00:00:20.487 --> 00:00:23.490
+executes them, and instantly serves a web app.
+
+10
+00:00:23.490 --> 00:00:25.592
+all on its own in the cloud.
+
+11
+00:00:25.792 --> 00:00:28.995
+An AI agent can simply be defined as an LLM
+
+12
+00:00:29.029 --> 00:00:31.297
+calling Tools in a Loop with Context.
+
+13
+00:00:31.498 --> 00:00:34.000
+Tools can be code that the agent runs
+
+14
+00:00:34.300 --> 00:00:36.603
+or external services that it can call.
+
+15
+00:00:36.770 --> 00:00:39.572
+For example, working with files, searching the web,
+
+16
+00:00:39.572 --> 00:00:42.575
+or visualizing data insights.
+
+17
+00:00:42.976 --> 00:00:45.245
+The context is any input for the LLM.
+
+18
+00:00:45.545 --> 00:00:48.248
+It can be System Instructions, Tools Definitions,
+
+19
+00:00:48.248 --> 00:00:50.250
+User Message, or more.
+
+20
+00:00:50.350 --> 00:00:52.752
+The LLM, based on the context,
+
+21
+00:00:52.752 --> 00:00:54.754
+decides if and which tool to call.
+
+22
+00:00:54.954 --> 00:00:56.956
+The agent calls and runs the tool.
+
+23
+00:00:57.390 --> 00:00:59.392
+appends the results to the context
+
+24
+00:00:59.392 --> 00:01:02.095
+and repeats the loop until the task is completed.
+
+25
+00:01:02.595 --> 00:01:05.098
+An AI agent might just reason for a while,
+
+26
+00:01:05.098 --> 00:01:07.400
+browse its resources and return an answer.
+
+27
+00:01:07.801 --> 00:01:09.569
+You can ask the agents to
+
+28
+00:01:09.569 --> 00:01:11.604
+do tasks like booking flight for you
+
+29
+00:01:12.105 --> 00:01:15.508
+or doing research on a subject and writing a summary on it.
+
+30
+00:01:15.708 --> 00:01:19.813
+But then, there are agents like Gemini CLI, Claude Code or Cursor.
+
+31
+00:01:19.979 --> 00:01:22.782
+These are coding agents that write and run code
+
+32
+00:01:23.483 --> 00:01:26.486
+and related tasks like generating a long script, debugging it,
+
+33
+00:01:26.786 --> 00:01:29.489
+or editing dozens of files in a project.
+
+34
+00:01:29.989 --> 00:01:32.992
+That requires code execution in a controlled environment
+
+35
+00:01:32.992 --> 00:01:35.195
+to iterate on the code over and over.
+
+36
+00:01:36.196 --> 00:01:38.498
+Coding agents also need filesystem access.
+
+37
+00:01:38.798 --> 00:01:42.502
+And because coding is complex, most tasks need long-running sessions
+
+38
+00:01:42.502 --> 00:01:45.004
+to install dependencies, compile, run tests,
+
+39
+00:01:45.004 --> 00:01:47.006
+patch errors, and retry.
+
+40
+00:01:47.507 --> 00:01:49.809
+Finally, these agents need stronger security.
+
+41
+00:01:50.210 --> 00:01:54.013
+Untrusted code must be handled such that experiments don't break your machine
+
+42
+00:01:54.414 --> 00:01:57.417
+or malicious actors don't gain access to your system.
+
+43
+00:01:57.917 --> 00:01:59.819
+Like any other agent, your coding agent
+
+44
+00:01:59.819 --> 00:02:01.721
+will have an LLM at its core.
+
+45
+00:02:02.122 --> 00:02:04.524
+The question is, how do we pick the right one?
+
+46
+00:02:05.058 --> 00:02:07.560
+First, the model should support function calling.
+
+47
+00:02:07.861 --> 00:02:11.064
+That means that the LLM is provided with a set of tools
+
+48
+00:02:11.164 --> 00:02:13.533
+and it can decide when and how to use them.
+
+49
+00:02:13.633 --> 00:02:15.835
+Second, the context size matters.
+
+50
+00:02:15.935 --> 00:02:18.838
+Research shows that around 30k tokens of context
+
+51
+00:02:18.938 --> 00:02:22.542
+is the first point where agents can reliably handle real-world tasks.
+
+52
+00:02:22.742 --> 00:02:25.845
+It corresponds to about 40 to 50 pages of text,
+
+53
+00:02:25.945 --> 00:02:28.548
+which is like a medium-sized GitHub repo.
+
+54
+00:02:28.648 --> 00:02:32.552
+This is needed because working with larger projects like Django or PyTorch
+
+55
+00:02:32.552 --> 00:02:35.355
+will require a model to read and edit many files,
+
+56
+00:02:35.855 --> 00:02:38.158
+easily using tens of thousands of tokens.
+
+57
+00:02:38.458 --> 00:02:41.628
+Third, for the right decision, we can evaluate the LLMs,
+
+58
+00:02:41.761 --> 00:02:43.930
+ideally with coding specific benchmarks.
+
+59
+00:02:44.330 --> 00:02:46.332
+One of the most widely used is SWE-bench.
+
+60
+00:02:46.633 --> 00:02:49.636
+It tests whether a model can take a real GitHub issue,
+
+61
+00:02:49.936 --> 00:02:52.539
+generate a patch and pass the repo's unit tests.
+
+62
+00:02:52.906 --> 00:02:56.009
+Here is the leaderboard from October 2025.
+
+63
+00:02:56.209 --> 00:02:58.711
+But remember that this is just one possible metric.
+
+64
+00:02:59.112 --> 00:03:02.015
+You can evaluate models depending on your use case.
+
+65
+00:03:02.315 --> 00:03:04.317
+Context is everything the LLM sees.
+
+66
+00:03:04.517 --> 00:03:07.287
+For coding agents, context can be the system prompt,
+
+67
+00:03:07.387 --> 00:03:10.990
+the external input like a PDF or a database search result,
+
+68
+00:03:11.191 --> 00:03:14.294
+the user prompts, tools, and tool execution results.
+
+69
+00:03:14.661 --> 00:03:17.463
+and other things like current branch commit,
+
+70
+00:03:17.463 --> 00:03:20.166
+file summaries, previous patch notes,
+
+71
+00:03:20.166 --> 00:03:23.870
+dependency versions, or short-term memory facts from earlier runs.
+
+72
+00:03:23.870 --> 00:03:26.873
+Context Engineering is the art of keeping the context small
+
+73
+00:03:26.873 --> 00:03:29.676
+while providing the most relevant information to the model
+
+74
+00:03:29.676 --> 00:03:31.444
+to complete the current task.
+
+75
+00:03:31.444 --> 00:03:33.446
+We need to manage context length
+
+76
+00:03:33.446 --> 00:03:37.150
+because especially for coding agents, it can grow very quickly.
+
+77
+00:03:37.617 --> 00:03:41.621
+Every edit run debug cycle adds more text to the conversation.
+
+78
+00:03:41.921 --> 00:03:44.123
+Tool outputs can be massive,
+
+79
+00:03:44.123 --> 00:03:46.626
+especially when they return big JSONs or logs.
+
+80
+00:03:46.926 --> 00:03:49.729
+Then you can get repeated error stacks on top of that.
+
+81
+00:03:50.129 --> 00:03:52.232
+The result is what we call context rot.
+
+82
+00:03:52.365 --> 00:03:54.867
+As the token count grows,
+
+83
+00:03:54.867 --> 00:03:58.071
+the model starts paying less attention to what matters and quality drops.
+
+84
+00:03:58.571 --> 00:04:00.573
+We just saw how context can explode.
+
+85
+00:04:00.873 --> 00:04:04.877
+In coding agents, one common source of tokens is raw tool outputs.
+
+86
+00:04:05.144 --> 00:04:06.713
+The first way you can mitigate
+
+87
+00:04:06.713 --> 00:04:08.514
+that problem is by keeping tool outputs
+
+88
+00:04:08.514 --> 00:04:10.516
+small, consistent, and structured.
+
+89
+00:04:10.516 --> 00:04:13.119
+For example, we have a tool called get_weather
+
+90
+00:04:13.119 --> 00:04:15.521
+that will ping an API to get the results.
+
+91
+00:04:16.022 --> 00:04:18.124
+If we just return the response's data,
+
+92
+00:04:18.124 --> 00:04:21.327
+we might overwhelm the context with information that's not needed.
+
+93
+00:04:21.928 --> 00:04:23.529
+So you can parse the output
+
+94
+00:04:23.529 --> 00:04:25.932
+and return only the data the LLM actually needs.
+
+95
+00:04:26.299 --> 00:04:28.701
+This doesn't apply only to JSON responses.
+
+96
+00:04:29.502 --> 00:04:30.937
+Logs can grow huge too, so we
+
+97
+00:04:30.937 --> 00:04:32.405
+clip them to the last few lines
+
+98
+00:04:32.405 --> 00:04:35.208
+and drop repeated messages to keep the context small.
+
+99
+00:04:35.608 --> 00:04:38.111
+Coding agents need to scan the file system quite often.
+
+100
+00:04:38.378 --> 00:04:41.180
+For example, listing files based on some pattern.
+
+101
+00:04:41.180 --> 00:04:43.182
+But if you work on a large project,
+
+102
+00:04:43.182 --> 00:04:45.385
+a directory may contain hundreds of files.
+
+103
+00:04:45.385 --> 00:04:48.254
+And returning all of them can really flood the context.
+
+104
+00:04:48.554 --> 00:04:50.757
+One common strategy is to paginate the results
+
+105
+00:04:50.757 --> 00:04:52.425
+and give the model the ability
+
+106
+00:04:52.425 --> 00:04:54.360
+to request the next page if needed.
+
+107
+00:04:54.560 --> 00:04:57.130
+We can also filter the listing first.
+
+108
+00:04:57.330 --> 00:05:00.333
+For example, only Python files or only certain directories.
+
+109
+00:05:00.633 --> 00:05:02.735
+So the model sees just what matters.
+
+110
+00:05:03.036 --> 00:05:06.639
+Your coding agent will need specific tools to accomplish its coding tasks.
+
+111
+00:05:06.939 --> 00:05:09.242
+At least running code and accessing the file system.
+
+112
+00:05:09.542 --> 00:05:11.644
+To run the code, we should follow some rules.
+
+113
+00:05:12.312 --> 00:05:15.815
+I think code generated by an LLM should be treated as untrusted.
+
+114
+00:05:16.282 --> 00:05:17.950
+We should try to avoid running
+
+115
+00:05:17.950 --> 00:05:19.886
+the code actions directly on the host.
+
+116
+00:05:20.086 --> 00:05:22.121
+Ideally, we should go for a safer
+
+117
+00:05:22.121 --> 00:05:24.390
+environment isolated from the rest of the system.
+
+118
+00:05:24.791 --> 00:05:26.793
+We can also enforce strict limits
+
+119
+00:05:26.793 --> 00:05:29.095
+on the CPU, memory, and execution time.
+
+120
+00:05:29.495 --> 00:05:31.364
+So a runaway process can't
+
+121
+00:05:31.364 --> 00:05:35.168
+bring things down. We can also block network and filesystem access
+
+122
+00:05:35.234 --> 00:05:37.136
+unless the task explicitly needs it.
+
+123
+00:05:37.537 --> 00:05:39.706
+And finally, we keep the model on track
+
+124
+00:05:39.706 --> 00:05:41.841
+by pointing it to our chosen tech stack.
+
+125
+00:05:42.041 --> 00:05:44.043
+Otherwise, it can start hallucinating library
+
+126
+00:05:44.043 --> 00:05:46.346
+names or using tools you don't want.
+
+127
+00:05:46.846 --> 00:05:50.149
+Coding tasks require reading, editing, and writing files.
+
+128
+00:05:50.416 --> 00:05:53.019
+So the agent needs accessing the file system.
+
+129
+00:05:53.319 --> 00:05:55.588
+One good practice is to have strict permissions
+
+130
+00:05:55.588 --> 00:05:59.992
+and allowing the agent to work only inside a specific working directory.
+
+131
+00:06:00.193 --> 00:06:02.261
+To search files, we can equip the
+
+132
+00:06:02.261 --> 00:06:04.297
+agent with a regex based file search.
+
+133
+00:06:04.597 --> 00:06:07.800
+To search inside a specific file, we can use fuzzy matching.
+
+134
+00:06:08.201 --> 00:06:11.704
+That way, the agent can look for relevant content or patterns,
+
+135
+00:06:11.704 --> 00:06:14.707
+even when there isn't an exact match to the search query.
+
+136
+00:06:15.108 --> 00:06:18.211
+So an AI agent can be defined as an LLM using tools
+
+137
+00:06:18.211 --> 00:06:19.979
+to perform actions in the loop
+
+138
+00:06:19.979 --> 00:06:21.948
+and to accomplish the given task.
+
+139
+00:06:22.382 --> 00:06:26.152
+The loop is just whatever is going on between two user messages.
+
+140
+00:06:26.552 --> 00:06:28.855
+Most tasks need multiple rounds of reasoning,
+
+141
+00:06:28.855 --> 00:06:31.257
+so the model calls tools again and again.
+
+142
+00:06:31.958 --> 00:06:34.260
+Sometimes it can call the same tool repeatedly.
+
+143
+00:06:34.727 --> 00:06:36.329
+But we need to know when to stop.
+
+144
+00:06:36.829 --> 00:06:40.433
+There must be an exit condition. Agents are not perfect.
+
+145
+00:06:40.600 --> 00:06:42.568
+They can fail or might spin out
+
+146
+00:06:42.568 --> 00:06:44.537
+of control while trying to recover errors.
+
+147
+00:06:45.037 --> 00:06:47.140
+They can require evaluation of the results,
+
+148
+00:06:47.340 --> 00:06:49.642
+either by human in the loop or an LLM.
+
+149
+00:06:50.243 --> 00:06:52.945
+The longer and more complex task you assign to your agent,
+
+150
+00:06:53.546 --> 00:06:55.548
+more prone it will be to make errors.
+
+151
+00:06:55.848 --> 00:06:58.651
+Tracking errors systematically is critical
+
+152
+00:06:58.651 --> 00:07:02.155
+because your agent might get stuck trying to fix an error forever.
+
+153
+00:07:02.655 --> 00:07:05.057
+To prevent it, we can keep track of errors.
+
+154
+00:07:05.057 --> 00:07:07.660
+For example, having a maximum retry counter.
+
+155
+00:07:07.960 --> 00:07:09.328
+We can ask the user to
+
+156
+00:07:09.328 --> 00:07:10.963
+provide input and help with the errors.
+
+157
+00:07:11.164 --> 00:07:14.267
+We can also help model by clustering errors together,
+
+158
+00:07:14.267 --> 00:07:16.769
+removing the old ones while still keeping
+
+159
+00:07:16.769 --> 00:07:18.871
+the context clear.
+
+160
+00:07:18.871 --> 00:07:20.339
+You also need to choose the
+
+161
+00:07:20.339 --> 00:07:22.074
+environment where coding agents operate the best.
+
+162
+00:07:22.275 --> 00:07:25.278
+Cursor uses local execution, some agents use Docker,
+
+163
+00:07:25.278 --> 00:07:28.948
+and some like Lovable, AInauts, Perplexity use sandboxes.
+
+164
+00:07:29.449 --> 00:07:31.551
+When deciding about the right environment,
+
+165
+00:07:31.751 --> 00:07:34.754
+we should think of security, like attack surface,
+
+166
+00:07:34.954 --> 00:07:37.256
+and whether we are exposing our operating system.
+
+167
+00:07:37.657 --> 00:07:39.692
+Then there is developer experience.
+
+168
+00:07:40.092 --> 00:07:42.895
+We want to avoid code workarounds and make users happy.
+
+169
+00:07:43.196 --> 00:07:45.765
+We also want our agents to have customized environments
+
+170
+00:07:45.865 --> 00:07:49.635
+to use variety of languages, tools, and pre-installed packages.
+
+171
+00:07:50.036 --> 00:07:52.138
+There needs to be a good maintenance tool,
+
+172
+00:07:52.138 --> 00:07:54.106
+reduce any downtimes of the infrastructure
+
+173
+00:07:54.106 --> 00:07:55.808
+the agent is running on,
+
+174
+00:07:55.808 --> 00:07:58.811
+to provide reliability and good support for end users.
+
+175
+00:07:58.811 --> 00:08:02.215
+And finally, we want the environment to start fast.
+
+176
+00:08:02.748 --> 00:08:04.750
+And we need to do all this at scale
+
+177
+00:08:04.750 --> 00:08:06.752
+and be ready for our agent to serve
+
+178
+00:08:06.752 --> 00:08:08.554
+even millions of end users.
+
+179
+00:08:08.554 --> 00:08:10.156
+In the next lesson with Francesco,
+
+180
+00:08:10.156 --> 00:08:11.757
+you will apply all these concepts
+
+181
+00:08:11.757 --> 00:08:15.628
+to build your first simple coding agent. All right, see you there.

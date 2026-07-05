@@ -1,0 +1,539 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.033 --> 00:00:02.702
+Nice work completing all the video lessons.
+
+2
+00:00:02.702 --> 00:00:06.406
+Next up, I'd like to share with you
+a project in which you use what
+
+3
+00:00:06.406 --> 00:00:10.210
+you've learned to build a coding agent
+and deploy it in a sandbox.
+
+4
+00:00:10.810 --> 00:00:14.647
+You'll be able to build a data
+analysis application or a simple web
+
+5
+00:00:14.647 --> 00:00:17.851
+app, or choose something different,
+whatever moves you.
+
+6
+00:00:18.418 --> 00:00:21.554
+I hope you do this project
+because it'll be valuable practice
+
+7
+00:00:21.554 --> 00:00:24.557
+for building sandbox agents.
+
+8
+00:00:24.691 --> 00:00:28.995
+Afterwards, feel free also to upload whatever project
+you built to your own public GitHub repo.
+
+9
+00:00:29.295 --> 00:00:32.065
+If you want to show your agentic work to others,
+
+10
+00:00:32.065 --> 00:00:34.801
+which could be a very good idea
+if you're building up
+
+11
+00:00:34.801 --> 00:00:37.937
+a personal portfolio,
+maybe for future job search.
+
+12
+00:00:38.671 --> 00:00:42.742
+In this video, I'll show you how
+the project environment is set up.
+
+13
+00:00:42.776 --> 00:00:46.379
+This is a bit different
+than the other pages on DeepLearning.AI
+
+14
+00:00:46.946 --> 00:00:49.949
+So that way you have
+everything you need to start building.
+
+15
+00:00:49.983 --> 00:00:51.317
+When you open up the project.
+
+16
+00:00:51.317 --> 00:00:52.619
+You'll be in Jupyter Lab
+
+17
+00:00:52.619 --> 00:00:57.557
+where you have the project notebook
+open on the right here, and this side
+
+18
+00:00:57.557 --> 00:01:02.557
+panel where you can look at other files
+in this project and open up a chat.
+
+19
+00:01:02.896 --> 00:01:06.900
+Things can feel a little cluttered
+with this lesson sidebar open as well,
+
+20
+00:01:06.933 --> 00:01:10.203
+so I'll just go ahead and minimize
+that for now.
+
+21
+00:01:10.303 --> 00:01:13.773
+This lab environment is set up
+with Jupyter AI.
+
+22
+00:01:13.840 --> 00:01:17.811
+This is a framework
+that allows you to use AI assisted
+
+23
+00:01:17.811 --> 00:01:22.615
+coding right here in Jupiter Lab
+to open the Jupyter AI chat interface.
+
+24
+00:01:22.649 --> 00:01:26.219
+You can click over here on the chat icon
+
+25
+00:01:26.453 --> 00:01:29.489
+and click the plus up here.
+
+26
+00:01:30.623 --> 00:01:33.526
+And then you're ready to go.
+
+27
+00:01:33.526 --> 00:01:37.464
+Now I can start chatting with Jupyternaut, the chatbot.
+
+28
+00:01:37.597 --> 00:01:39.532
+This is going to be my coding assistant
+
+29
+00:01:39.532 --> 00:01:43.670
+for this project
+so I can say Hi Jupyternaut. Cool!
+
+30
+00:01:43.870 --> 00:01:46.773
+So you can chat of Jupyternaut just like
+
+31
+00:01:46.773 --> 00:01:49.742
+you would chat with Claude
+or Gemini or ChatGPT.
+
+32
+00:01:50.043 --> 00:01:51.144
+In fact, in this lab,
+
+33
+00:01:51.144 --> 00:01:55.014
+Jupyternaut is running
+one of the Open AI models on the backend.
+
+34
+00:01:55.115 --> 00:01:58.952
+In this lab environment, you use Jupyternaut
+as a coding assistant.
+
+35
+00:01:58.985 --> 00:02:03.823
+You can think of it as quite similar
+to how you use the AI chat in Cursor,
+
+36
+00:02:03.823 --> 00:02:08.061
+or Windsurf or Antigravity
+if you use any of those AI powered ideas.
+
+37
+00:02:08.161 --> 00:02:11.898
+But if not, no worries, I'll show you
+how to collaborate with Jupyternaut
+
+38
+00:02:12.298 --> 00:02:15.568
+so I can say write me a Hello World script
+
+39
+00:02:15.568 --> 00:02:19.572
+that I can run in my notebook and Jupyternaut
+generate some code.
+
+40
+00:02:19.606 --> 00:02:23.343
+And the cool thing with Jupyter AI is that I can go over here
+
+41
+00:02:23.476 --> 00:02:27.013
+to my notebook, create a new code cell,
+and then just click
+
+42
+00:02:27.013 --> 00:02:32.013
+this little icon in the chat
+that says insert below active cell.
+
+43
+00:02:32.352 --> 00:02:36.723
+And then I have a new cell with a Hello
+World script and I can run it like so.
+
+44
+00:02:37.090 --> 00:02:40.727
+There are actually a lot of cool features
+in Jupyter AI, and we have another short
+
+45
+00:02:40.727 --> 00:02:43.930
+course that we built
+with Brian Granger from Jupyter.
+
+46
+00:02:43.930 --> 00:02:47.834
+And you can check that out if you're
+interested in learning more about Jupyter AI.
+
+47
+00:02:47.834 --> 00:02:52.038
+The way you used Jupyter AI in
+this project is by providing
+
+48
+00:02:52.038 --> 00:02:53.540
+context to the chatbot,
+
+49
+00:02:53.540 --> 00:02:56.676
+to Jupyternaut about what this course is about.
+
+50
+00:02:56.676 --> 00:02:58.111
+So if you click over here
+
+51
+00:02:58.111 --> 00:03:01.915
+to view other files in the project
+and open up docs.md,
+
+52
+00:03:02.315 --> 00:03:06.886
+and I'll open up here with Markdown
+Preview, you see that this file contains
+
+53
+00:03:06.886 --> 00:03:10.423
+concise documentation for what you learned
+in the lessons of this course.
+
+54
+00:03:10.623 --> 00:03:14.294
+So here you've got all the basics
+for things like setting up your OpenAI
+
+55
+00:03:14.294 --> 00:03:18.765
+Client, creating a sandbox, and
+the coding agents give tools to your agent,
+
+56
+00:03:18.932 --> 00:03:21.668
+and then some of the common patterns
+you saw in the course.
+
+57
+00:03:21.668 --> 00:03:26.668
+And now what you get to do is use this
+documentation as context for your project.
+
+58
+00:03:26.973 --> 00:03:31.010
+So you can start by reading
+through the introduction and instructions
+
+59
+00:03:31.010 --> 00:03:34.714
+at the top of the notebook to see
+some examples of what you can build,
+
+60
+00:03:34.814 --> 00:03:37.951
+so you find examples
+you can follow along with to build up
+
+61
+00:03:37.984 --> 00:03:41.721
+the whole data analysis agents
+or the little calculator web app.
+
+62
+00:03:41.721 --> 00:03:45.692
+But you can also decide
+to build something else whatever you want.
+
+63
+00:03:45.792 --> 00:03:49.862
+The way you can do this will be in three
+steps, just like you did in the course.
+
+64
+00:03:50.163 --> 00:03:53.333
+You start by specifying the tools
+you want to give your agent.
+
+65
+00:03:53.533 --> 00:03:58.204
+Then you implement the agents loop,
+and finally you deploy your agent
+
+66
+00:03:58.238 --> 00:03:59.372
+to a sandbox.
+
+67
+00:03:59.372 --> 00:04:03.876
+And you do this by prompting Jupyternaut
+and attaching your notebook
+
+68
+00:04:03.876 --> 00:04:07.413
+and docs.md
+as context for each task.
+
+69
+00:04:07.680 --> 00:04:12.118
+And then scroll down here to where
+you're going to set up your agents tools.
+
+70
+00:04:12.318 --> 00:04:15.154
+You can find some reminder context here
+
+71
+00:04:15.154 --> 00:04:18.124
+on how you saw this
+implemented earlier in the course.
+
+72
+00:04:18.124 --> 00:04:20.760
+So you need a new tool schema
+
+73
+00:04:20.760 --> 00:04:23.763
+and then some function definitions
+for tool execution.
+
+74
+00:04:24.063 --> 00:04:28.001
+The way you're going to get
+this implemented is by using a prompt
+
+75
+00:04:28.201 --> 00:04:29.068
+in the chat.
+
+76
+00:04:29.068 --> 00:04:32.071
+Down here
+you find a couple of example prompts, one
+
+77
+00:04:32.071 --> 00:04:35.675
+for the data analysis agent
+and one for the calculate agent.
+
+78
+00:04:35.675 --> 00:04:38.911
+Or you should feel free to write your own
+for some other applications
+
+79
+00:04:38.911 --> 00:04:39.812
+you want to build.
+
+80
+00:04:39.812 --> 00:04:43.916
+Now let's take a look at this prompt
+for the data analysis agent
+
+81
+00:04:43.950 --> 00:04:45.852
+is a fairly simple prompt,
+
+82
+00:04:45.852 --> 00:04:49.222
+starting out with the statements
+that you're calling assistance,
+
+83
+00:04:49.222 --> 00:04:52.258
+and then the details of the requirements
+for what you want to build.
+
+84
+00:04:52.292 --> 00:04:55.561
+And then just a bit more context
+of the files I'm going to attach.
+
+85
+00:04:55.662 --> 00:04:58.531
+So if you use this prompt
+as a template to modify
+
+86
+00:04:58.531 --> 00:05:01.534
+for whatever variation of a two
+you'd like to create,
+
+87
+00:05:02.001 --> 00:05:05.271
+or you can just run it with this prompt
+and see how it goes.
+
+88
+00:05:05.571 --> 00:05:08.207
+Let me open up my chat here again,
+
+89
+00:05:09.309 --> 00:05:10.476
+and I'm going to
+
+90
+00:05:10.476 --> 00:05:14.514
+copy and paste this prompt into the chat.
+
+91
+00:05:14.847 --> 00:05:17.550
+And then with the paperclip icon here
+
+92
+00:05:17.550 --> 00:05:22.255
+I'm gonna attach files
+and I'll select docs.md
+
+93
+00:05:22.822 --> 00:05:25.892
+and my notebook project.ipynb
+
+94
+00:05:26.526 --> 00:05:28.795
+And then I'm going to run it.
+
+95
+00:05:28.795 --> 00:05:29.696
+Okay cool.
+
+96
+00:05:29.696 --> 00:05:32.565
+So Jupyternaut wrote me a bunch of code here.
+
+97
+00:05:32.565 --> 00:05:36.235
+And I can go over to my notebook
+and select this next cell.
+
+98
+00:05:36.769 --> 00:05:40.540
+Then click here
+where it says Replace selection.
+
+99
+00:05:40.740 --> 00:05:42.942
+And then I can run that.
+
+100
+00:05:42.942 --> 00:05:44.777
+And step one is done.
+
+101
+00:05:44.777 --> 00:05:46.346
+I've got my tools defined.
+
+102
+00:05:46.346 --> 00:05:49.115
+Now I don't want to spoil
+the whole project for you.
+
+103
+00:05:49.115 --> 00:05:51.851
+So I won't complete the second
+and third steps.
+
+104
+00:05:51.851 --> 00:05:54.887
+But if you follow a similar process
+for those steps
+
+105
+00:05:54.887 --> 00:05:58.124
+that you just saw me do here,
+then you've got to go through all three
+
+106
+00:05:58.124 --> 00:06:02.228
+steps and complete
+building this application in this project.
+
+107
+00:06:02.295 --> 00:06:06.566
+And as I said before, you can use
+these tools were provided
+
+108
+00:06:06.966 --> 00:06:11.537
+as is, or you can edit them
+to make them more to your liking.
+
+109
+00:06:11.671 --> 00:06:13.906
+Or you're also welcome
+to just stick them in
+
+110
+00:06:13.906 --> 00:06:15.608
+create something completely different.
+
+111
+00:06:16.676 --> 00:06:17.777
+Building is an
+
+112
+00:06:17.777 --> 00:06:20.780
+important part of the learning process.
+
+113
+00:06:20.847 --> 00:06:23.950
+I hope you have fun building
+with what you've learned in the course
+
+114
+00:06:24.317 --> 00:06:25.618
+and maybe off to it.
+
+115
+00:06:25.618 --> 00:06:29.389
+Also, show off what you've built
+on GitHub or to your friends.

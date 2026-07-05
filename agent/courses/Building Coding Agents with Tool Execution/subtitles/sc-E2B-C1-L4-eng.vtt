@@ -1,0 +1,654 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:127826
+
+1
+00:00:00.000 --> 00:00:02.769
+In this lesson, you will learn how to run
+
+2
+00:00:02.769 --> 00:00:05.472
+your agent's code safely in the cloud
+
+3
+00:00:05.472 --> 00:00:07.774
+using E2B sandbox environment.
+
+4
+00:00:07.974 --> 00:00:11.177
+You'll create, manage, and interact with a remote environment
+
+5
+00:00:11.177 --> 00:00:13.480
+that execute code securely.
+
+6
+00:00:14.080 --> 00:00:16.483
+All right, let's go. In this lab,
+
+7
+00:00:16.483 --> 00:00:19.486
+we'll equip our agent to write code safely
+
+8
+00:00:19.486 --> 00:00:21.788
+and scalably inside a sandbox using E2B.
+
+9
+00:00:22.288 --> 00:00:27.093
+provides a very simple and easy-to-use APIs to manage sandboxes.
+
+10
+00:00:27.794 --> 00:00:30.130
+You can create a sandbox by importing
+
+11
+00:00:30.130 --> 00:00:32.799
+the Sandbox class from the E2B Python package.
+
+12
+00:00:32.999 --> 00:00:35.101
+You can set timeout in seconds,
+
+13
+00:00:35.301 --> 00:00:37.303
+so in this case, the sandbox will be
+
+14
+00:00:37.303 --> 00:00:39.606
+alive for 1 hour, and we can run code.
+
+15
+00:00:39.939 --> 00:00:43.743
+by passing it as a string to the run_code method.
+
+16
+00:00:44.044 --> 00:00:46.046
+We're getting back an Execution object
+
+17
+00:00:46.146 --> 00:00:48.748
+and you can think about it as a notebook cell output.
+
+18
+00:00:49.149 --> 00:00:51.351
+In this case, the code is just printing hello world
+
+19
+00:00:51.651 --> 00:00:53.953
+and you can see it inside the Logs object
+
+20
+00:00:54.154 --> 00:00:56.956
+inside the Execution that we're getting from the Sandbox.
+
+21
+00:00:57.290 --> 00:01:00.193
+If you were to return a variable,
+
+22
+00:01:00.193 --> 00:01:03.963
+the results will be inside the Results array in the Execution object.
+
+23
+00:01:04.264 --> 00:01:06.766
+E2B supports multiple languages.
+
+24
+00:01:07.067 --> 00:01:09.769
+It defaults to Python, but you can always change it,
+
+25
+00:01:09.769 --> 00:01:11.471
+in this case to javascript,
+
+26
+00:01:11.471 --> 00:01:13.006
+and we can run the same
+
+27
+00:01:13.006 --> 00:01:14.774
+hello world printing that we did previously.
+
+28
+00:01:15.075 --> 00:01:18.445
+And we have it, in the logs as well.
+
+29
+00:01:18.445 --> 00:01:20.146
+We can also create a plot
+
+30
+00:01:20.146 --> 00:01:23.049
+by running Python code that use matplotlib
+
+31
+00:01:23.049 --> 00:01:24.651
+to create the plot.
+
+32
+00:01:25.185 --> 00:01:27.320
+and we get it back in the
+
+33
+00:01:27.320 --> 00:01:29.422
+execution. In order to see our plot,
+
+34
+00:01:29.722 --> 00:01:33.827
+we can import some Jupyter function and display it in the cell.
+
+35
+00:01:34.527 --> 00:01:36.529
+Sometimes it's useful to list all the sandboxes
+
+36
+00:01:37.330 --> 00:01:39.232
+you are using. In order to do so,
+
+37
+00:01:39.232 --> 00:01:41.101
+you call the .list method on the
+
+38
+00:01:41.101 --> 00:01:43.236
+Sandbox class and you get the next page.
+
+39
+00:01:43.736 --> 00:01:45.472
+Here we can see all the
+
+40
+00:01:45.472 --> 00:01:47.540
+IDs of the sandboxes that are live.
+
+41
+00:01:47.740 --> 00:01:51.211
+We can also print uh some useful fields about the sandbox,
+
+42
+00:01:51.311 --> 00:01:54.214
+like the metadata, its ID,
+
+43
+00:01:54.314 --> 00:01:55.882
+and when it was created and
+
+44
+00:01:55.882 --> 00:01:57.717
+the template that it was created from.
+
+45
+00:01:57.917 --> 00:02:01.721
+You can query sandboxes by attaching some metadata
+
+46
+00:02:01.821 --> 00:02:04.224
+upon creation.
+
+47
+00:02:04.324 --> 00:02:07.093
+In this case, we are setting the name to be find me.
+
+48
+00:02:07.093 --> 00:02:10.897
+And when we list them, we are passing a SandboxQuery,
+
+49
+00:02:10.897 --> 00:02:13.600
+imported from the e2b Python package,
+
+50
+00:02:13.600 --> 00:02:16.603
+with the same name and also getting
+
+51
+00:02:16.603 --> 00:02:18.605
+only the running ones.
+
+52
+00:02:20.006 --> 00:02:23.009
+And here we have found one sandbox with that ID.
+
+53
+00:02:23.143 --> 00:02:25.745
+E2B sandboxes have a file system.
+
+54
+00:02:26.346 --> 00:02:28.948
+We can create a directory by calling the
+
+55
+00:02:28.982 --> 00:02:30.850
+files.make_dir method.
+
+56
+00:02:30.950 --> 00:02:33.052
+Here we are creating a data directory
+
+57
+00:02:33.052 --> 00:02:35.955
+under the main user folder in the sandbox.
+
+58
+00:02:37.023 --> 00:02:39.125
+we can write some content to a file.
+
+59
+00:02:40.026 --> 00:02:42.729
+In this case, we are writing Hello from the sandbox
+
+60
+00:02:43.329 --> 00:02:46.432
+inside a hello.txt file in the directory we just created.
+
+61
+00:02:47.700 --> 00:02:50.403
+We can read back the content
+
+62
+00:02:50.703 --> 00:02:54.007
+by using the .read method. Here we have it.
+
+63
+00:02:54.107 --> 00:02:57.010
+And finally, we can remove this file.
+
+64
+00:03:00.246 --> 00:03:03.650
+Since sandboxes can die or time out during the labs.
+
+65
+00:03:03.950 --> 00:03:06.853
+We have created a useful function called create_sandbox
+
+66
+00:03:07.053 --> 00:03:10.356
+that it will create a sandbox if it doesn't exist,
+
+67
+00:03:10.857 --> 00:03:13.660
+and when you call it again, it will reconnect to it
+
+68
+00:03:13.860 --> 00:03:15.862
+if it has not died.
+
+69
+00:03:16.062 --> 00:03:18.565
+Sandboxes are general compute.
+
+70
+00:03:18.565 --> 00:03:21.568
+We can, for example, run a website in them. It's straightforward.
+
+71
+00:03:21.568 --> 00:03:24.070
+We just need to create an index.html file
+
+72
+00:03:24.070 --> 00:03:26.372
+and spawn the the server.
+
+73
+00:03:26.906 --> 00:03:29.108
+to serve that file.
+
+74
+00:03:29.108 --> 00:03:31.711
+So, first, we reconnect to the sandbox,
+
+75
+00:03:31.711 --> 00:03:35.114
+we write to index.html inside it,
+
+76
+00:03:35.114 --> 00:03:38.418
+and a very simple HTML file.
+
+77
+00:03:40.220 --> 00:03:43.723
+Then we can use the http.server Python module
+
+78
+00:03:43.723 --> 00:03:46.726
+to spawn a server on port 3000
+
+79
+00:03:46.726 --> 00:03:50.997
+and get the host of the sandbox from the same port.
+
+80
+00:03:51.197 --> 00:03:53.399
+To visualize the website,
+
+81
+00:03:53.399 --> 00:03:56.202
+we can use the IFrame class
+
+82
+00:03:56.202 --> 00:04:00.006
+in the IPython.display function in the notebook, passing the host.
+
+83
+00:04:00.006 --> 00:04:02.208
+And here we can see the website.
+
+84
+00:04:02.842 --> 00:04:07.146
+we just created from within the sandbox in the cell.
+
+85
+00:04:08.748 --> 00:04:11.351
+We now know how to use E2B sandbox.
+
+86
+00:04:11.451 --> 00:04:14.053
+So it's time to equip our agent
+
+87
+00:04:14.053 --> 00:04:16.356
+with the ability of running code in the cloud.
+
+88
+00:04:16.422 --> 00:04:19.626
+We are modifying the execute_code function
+
+89
+00:04:19.626 --> 00:04:21.628
+that we created in the previous lab.
+
+90
+00:04:21.728 --> 00:04:25.031
+and this time we are passing to the sandbox run_code
+
+91
+00:04:25.031 --> 00:04:27.033
+the code generated by the language model.
+
+92
+00:04:27.267 --> 00:04:30.770
+and we are recreating our tool registry.
+
+93
+00:04:32.071 --> 00:04:34.274
+So let's import the execute_code_schema,
+
+94
+00:04:34.274 --> 00:04:36.075
+the agent, OpenAI.
+
+95
+00:04:36.576 --> 00:04:39.078
+and create the client and the sandbox
+
+96
+00:04:39.479 --> 00:04:41.781
+in order to run our agent
+
+97
+00:04:42.081 --> 00:04:45.084
+with ability of creating code in the cloud.
+
+98
+00:04:45.285 --> 00:04:48.821
+We change a little bit the coding_agent function to have a nicer
+
+99
+00:04:48.821 --> 00:04:50.823
+output using the log function.
+
+100
+00:04:50.823 --> 00:04:52.725
+And this is why we are importing
+
+101
+00:04:52.725 --> 00:04:54.627
+it and using it in the cell.
+
+102
+00:04:55.028 --> 00:04:57.830
+So, let's try to run it and see
+
+103
+00:04:57.964 --> 00:05:00.933
+the agent connecting to the sandbox,
+
+104
+00:05:01.734 --> 00:05:03.936
+executing code on it,
+
+105
+00:05:04.037 --> 00:05:06.939
+and giving us back the reply.
+
+106
+00:05:07.140 --> 00:05:09.742
+Here, our task was to make and run a function
+
+107
+00:05:09.742 --> 00:05:11.444
+to roll a six faces dice.
+
+108
+00:05:11.744 --> 00:05:14.747
+And the agent is saying I created a function called roll_dice,
+
+109
+00:05:14.847 --> 00:05:18.151
+and we can actually see the code that it created
+
+110
+00:05:18.251 --> 00:05:20.153
+and run on the sandbox.
+
+111
+00:05:20.253 --> 00:05:22.455
+And also, it simulated rolling.
+
+112
+00:05:23.256 --> 00:05:25.258
+and the result was true.
+
+113
+00:05:25.758 --> 00:05:27.327
+Let's ask our agent to work
+
+114
+00:05:27.327 --> 00:05:29.128
+a little bit with the file system.
+
+115
+00:05:29.128 --> 00:05:32.732
+And remember, we still don't have file system tools
+
+116
+00:05:32.732 --> 00:05:34.434
+for this agent here,
+
+117
+00:05:34.434 --> 00:05:36.736
+but by executing Python code,
+
+118
+00:05:36.736 --> 00:05:39.138
+it can actually create and edit files as well.
+
+119
+00:05:39.405 --> 00:05:42.909
+So let's ask to create a file.txt with hello world inside it,
+
+120
+00:05:43.109 --> 00:05:45.311
+read it, and print it back to us its content.
+
+121
+00:05:47.814 --> 00:05:49.816
+We can see the agent running code.
+
+122
+00:05:50.983 --> 00:05:54.220
+creating the file and then printing back to us.
+
+123
+00:05:54.721 --> 00:05:58.558
+We can actually see the code here with the open Python function
+
+124
+00:05:58.758 --> 00:06:02.462
+is writing the file to the file system. By just
+
+125
+00:06:02.628 --> 00:06:05.631
+having the ability to execute Python code in the sandbox,
+
+126
+00:06:05.832 --> 00:06:07.834
+the agent is really quite powerful.
+
+127
+00:06:07.900 --> 00:06:09.902
+It can create and even remove files.
+
+128
+00:06:10.002 --> 00:06:12.004
+Let's test its abilities
+
+129
+00:06:12.105 --> 00:06:14.507
+by tasking it to create a simple snake game
+
+130
+00:06:14.607 --> 00:06:16.709
+as a web page so we can play.
+
+131
+00:06:16.876 --> 00:06:20.480
+Here, we are giving the agent a more specific query,
+
+132
+00:06:20.680 --> 00:06:22.281
+in which we tell all the
+
+133
+00:06:22.281 --> 00:06:24.183
+features we want the game to have.
+
+134
+00:06:24.384 --> 00:06:27.687
+Um, we are telling that it has to be just JS
+
+135
+00:06:27.687 --> 00:06:29.989
+and no other framework such as jQuery.
+
+136
+00:06:30.089 --> 00:06:32.692
+We want a 10x10 grid and arrow keys
+
+137
+00:06:32.692 --> 00:06:34.727
+for movement and some other features.
+
+138
+00:06:34.727 --> 00:06:38.231
+So, the agent has created the file.
+
+139
+00:06:38.531 --> 00:06:41.234
+We can now reopen it using the
+
+140
+00:06:41.234 --> 00:06:44.237
+IFrame notebook class.
+
+141
+00:06:44.537 --> 00:06:48.241
+We can now see it by running the Python HTTP server.
+
+142
+00:06:49.542 --> 00:06:52.245
+Okay, let me try to play.
+
+143
+00:06:52.645 --> 00:06:54.747
+So I can move my snake with the arrow keys,
+
+144
+00:06:54.747 --> 00:06:56.215
+I can eat a fruit, and
+
+145
+00:06:56.215 --> 00:06:57.950
+I can grow when I do so.
+
+146
+00:06:58.251 --> 00:07:00.253
+And if I hit a wall, I die.
+
+147
+00:07:00.253 --> 00:07:02.255
+and I can restart my game.
+
+148
+00:07:02.488 --> 00:07:05.291
+by pressing the restart button. Super.
+
+149
+00:07:05.391 --> 00:07:07.693
+Since the agent create an HTML file,
+
+150
+00:07:07.794 --> 00:07:09.595
+we can read it, store it,
+
+151
+00:07:09.595 --> 00:07:11.697
+and then open it in our browser.
+
+152
+00:07:11.998 --> 00:07:14.000
+Here, I'm opening the HTML file.
+
+153
+00:07:14.467 --> 00:07:17.370
+in a browser, in my computer, and I can just play
+
+154
+00:07:17.670 --> 00:07:20.072
+to the game in the same way we did on the sandbox.
+
+155
+00:07:21.674 --> 00:07:24.477
+Since we're using GPT-5 to generate this game,
+
+156
+00:07:24.744 --> 00:07:27.046
+Every game will be slightly different.
+
+157
+00:07:27.046 --> 00:07:28.815
+So you will probably get something that
+
+158
+00:07:28.815 --> 00:07:30.550
+looks similar to what I'm playing here.
+
+159
+00:07:30.750 --> 00:07:33.953
+Great. So our agent can now execute code in the sandbox,
+
+160
+00:07:33.953 --> 00:07:35.755
+secure and scalable environment.
+
+161
+00:07:35.755 --> 00:07:38.658
+In the next lab, we'll create a data analyst agent
+
+162
+00:07:38.658 --> 00:07:40.760
+to analyze uploaded CSV files.
+
+163
+00:07:41.260 --> 00:07:43.262
+All right, see you there.
