@@ -37,19 +37,12 @@ Agent Stack 的定位：Linux Foundation 开源项目（IBM Research 发起）�
 
 ## 3. Agent Stack 三层架构
 
-```
-┌──────────────────────────────────────────────────────┐
-│  顶层组件                                              │
-│  Server SDK（改造 agent 上平台） · CLI（部署/配置/管理）  │
-│  自动生成 UI 扩展 · Client SDK（自建 UI 用）             │
-├──────────────────────────────────────────────────────┤
-│  核心：Agent Stack Server                              │
-│  自托管、Helm Charts 部署、可扩缩的 agent 运行时          │
-├──────────────────────────────────────────────────────┤
-│  可选基础设施服务                                        │
-│  LLM Provider 管理 · RAG · 文件存储 · 数据层             │
-│  认证 · Secret 管理                                     │
-└──────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Top["顶层组件<br/>Server SDK（改造 agent 上平台） · CLI（部署/配置/管理）<br/>自动生成 UI 扩展 · Client SDK（自建 UI 用）"]
+    Core["核心：Agent Stack Server<br/>自托管、Helm Charts 部署、可扩缩的 agent 运行时"]
+    Infra["可选基础设施服务<br/>LLM Provider 管理 · RAG · 文件存储 · 数据层<br/>认证 · Secret 管理"]
+    Top --- Core --- Infra
 ```
 
 关键设定：**平台上部署的每个 agent 隐式就是 A2A agent**——Agent Stack SDK server 直接构建在 A2A 协议之上。平台内 agent 通信的标准化不是附加功能，而是地基。

@@ -7,24 +7,20 @@
 
 前面 L3-L5 用裸 A2A SDK 跑通了 PolicyAgent（保险问答）闭环，L6-L7 换 Google ADK 走了一遍框架集成。本课引入第三个 agent——**Healthcare Provider Agent**（按地点/专科找医生），它的价值在于一次演示三种技术的正确分层：
 
-```
-外部 A2A client（L9 用 Microsoft Agent Framework 来连）
-        │  HTTP + A2A 协议
-┌───────▼──────────────────────────────────────────┐
-│ ③ A2A 层  a2a_provider_agent.py                  │
-│    AgentCard/AgentSkill + Starlette + uvicorn    │  ← 对其他 agent 的"名片+门面"
-│    ProviderAgentExecutor（懒初始化）              │
-│  ┌────────────────────────────────────────────┐  │
-│  │ ② 框架层  agents.py :: ProviderAgent       │  │
-│  │    LangGraph create_agent + ChatOpenAI     │  │  ← 推理与工具编排
-│  │    (gpt-oss-20b-maas @ Vertex AI)          │  │
-│  │      │ MCP stdio（子进程 uv run）           │  │
-│  │  ┌───▼────────────────────────────────┐    │  │
-│  │  │ ① 工具层  mcpserver.py (FastMCP)   │    │  │  ← 数据/工具接入
-│  │  │    list_doctors ← doctors.json     │    │  │
-│  │  └────────────────────────────────────┘    │  │
-│  └────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Client["外部 A2A client（L9 用 Microsoft Agent Framework 来连）"]
+    Client -->|"HTTP + A2A 协议"| A2A
+    subgraph A2A["③ A2A 层 a2a_provider_agent.py　← 对其他 agent 的『名片+门面』"]
+        A2Ainfo["AgentCard/AgentSkill + Starlette + uvicorn<br/>ProviderAgentExecutor（懒初始化）"]
+        subgraph FW["② 框架层 agents.py :: ProviderAgent　← 推理与工具编排"]
+            FWinfo["LangGraph create_agent + ChatOpenAI<br/>(gpt-oss-20b-maas @ Vertex AI)"]
+            subgraph Tool["① 工具层 mcpserver.py (FastMCP)　← 数据/工具接入"]
+                Toolinfo["list_doctors ← doctors.json"]
+            end
+            FWinfo -->|"MCP stdio（子进程 uv run）"| Tool
+        end
+    end
 ```
 
 一句话记：**MCP 面向 LLM 暴露工具，A2A 面向其他 agent 暴露整个 agent**，LangGraph 在中间做编排。

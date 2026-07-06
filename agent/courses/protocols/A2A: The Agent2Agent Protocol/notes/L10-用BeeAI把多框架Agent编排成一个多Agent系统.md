@@ -7,22 +7,15 @@
 
 前九课攒下的三个 agent 各说各的"方言"（不同框架、不同模型），但都已包成 A2A server——**协议同一，方言无碍**（"speaking the same language, even if they have different accents"）。本课的 BeeAI 编排层把它们编成一支队伍：
 
-```
-                        User
-                          │ A2A
-                          ▼
-        ┌─────────────────────────────────────┐
-        │  Healthcare Concierge (BeeAI        │
-        │  RequirementAgent, port 9996)       │
-        └───────┬───────────┬───────────┬─────┘
-            A2A │       A2A │       A2A │
-                ▼           ▼           ▼
-        Policy Agent   Research Agent  Provider Agent
-        (Claude + 裸    (Google ADK,   (LangGraph,
-        A2A SDK, 9999)  9998)          9997)
-                │           │              │
-             Policy PDF  Google Search  FastMCP Server
-                                        (doctors.json, stdio)
+```mermaid
+flowchart TB
+    User["User"] -->|"A2A"| HC["Healthcare Concierge<br/>(BeeAI RequirementAgent, port 9996)"]
+    HC -->|"A2A"| PA["Policy Agent<br/>(Claude + 裸 A2A SDK, 9999)"]
+    HC -->|"A2A"| RA["Research Agent<br/>(Google ADK, 9998)"]
+    HC -->|"A2A"| PrA["Provider Agent<br/>(LangGraph, 9997)"]
+    PA --> D1["Policy PDF"]
+    RA --> D2["Google Search"]
+    PrA --> D3["FastMCP Server<br/>(doctors.json, stdio)"]
 ```
 
 四个 agent、四种技术栈（裸 A2A SDK / ADK / LangGraph / BeeAI）、两种协议分工（agent 间 A2A、agent 到数据 MCP），一个系统。

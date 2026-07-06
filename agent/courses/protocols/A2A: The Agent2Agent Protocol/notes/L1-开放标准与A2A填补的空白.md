@@ -13,14 +13,19 @@ AI 应用正从基础对话 chatbot 快速演进为**agentic 系统**：会推�
 
 1989 年 Tim Berners-Lee 在 CERN 提出万维网，并开发了 HTTP。在 HTTP 之前，FTP、Telnet、Gopher 等多个协议各管一摊；HTTP 后来居上，靠的是**简单 + 开放治理（openly governed）**，由此点燃了 Web 的爆发式增长。
 
-```
-1990s Web                          2025+ Agents
-─────────────                      ─────────────
-FTP / Telnet / Gopher   各管一摊    各框架私有的 agent 通信方式
-        │                                  │
-        ▼  简单 + 开放治理                  ▼  同一逻辑
-      HTTP  ──────────────────────►      A2A
-   （任何浏览器 ↔ 任何服务器）      （任何模型/语言/框架的 agent 互通）
+```mermaid
+flowchart LR
+    subgraph Web["1990s Web"]
+        FTP["FTP / Telnet / Gopher（各管一摊）"]
+        HTTP["HTTP（任何浏览器 ↔ 任何服务器）"]
+        FTP -->|"简单 + 开放治理"| HTTP
+    end
+    subgraph Agents["2025+ Agents"]
+        Priv["各框架私有的 agent 通信方式"]
+        A2A["A2A（任何模型/语言/框架的 agent 互通）"]
+        Priv -->|"同一逻辑"| A2A
+    end
+    HTTP -->|"同一逻辑"| A2A
 ```
 
 A2A 的定位就是 **"HTTP for agents"**：让来自任何模型、语言、框架的 agent 用标准化的结构与方法通信。
@@ -74,16 +79,13 @@ A2A 的定位就是 **"HTTP for agents"**：让来自任何模型、语言、框
 
 A2A 只是可能的 agent stack 中的**一环**：它作用于 **Agent orchestration 层**，与 Foundation models、存储、云基础设施、应用层等组件并列。
 
-```
-┌─────────────────────────────┐
-│  Application 层              │
-├─────────────────────────────┤
-│  Agent orchestration 层      │  ← A2A 在这里
-├─────────────────────────────┤
-│  Foundation models           │
-├─────────────────────────────┤
-│  存储 / 云基础设施            │
-└─────────────────────────────┘
+```mermaid
+flowchart TB
+    App["Application 层"]
+    Orch["Agent orchestration 层　← A2A 在这里"]
+    FM["Foundation models"]
+    Infra["存储 / 云基础设施"]
+    App --- Orch --- FM --- Infra
 ```
 
 ## 7. 本课总结

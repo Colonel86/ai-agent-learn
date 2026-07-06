@@ -37,14 +37,16 @@ healthcare_provider_agent = A2AAgent(      # 只需名字 + URL，直连配置
 
 `A2AAgent` 的机制与 ADK 的 `RemoteA2aAgent` 同一个思路：**一个包着 HTTP client 的 agent 类**——对外走 HTTP 与 A2A 兼容 agent 通信，对内把远端 agent 伪装成 Microsoft Agent Framework 的本地 agent。
 
-```
-Microsoft Agent Framework 侧              LangGraph/Google 侧
-┌─────────────────────────┐              ┌──────────────────────┐
-│ A2AAgent("Healthcare…") │   A2A 协议    │ a2a_provider_agent.py │
-│  ├ 对内：MAF 原生 agent  │ ──HTTP──────▶ │  AgentCard + Executor │
-│  └ 对内含 HTTP client   │ ◀──响应────── │  └ LangGraph + MCP    │
-└─────────────────────────┘              └──────────────────────┘
-   client 不感知对端实现                      server 不感知调用方框架
+```mermaid
+flowchart LR
+    subgraph MAF["Microsoft Agent Framework 侧（client 不感知对端实现）"]
+        A["A2AAgent('Healthcare…')<br/>├ 对内：MAF 原生 agent<br/>└ 对内含 HTTP client"]
+    end
+    subgraph LG["LangGraph/Google 侧（server 不感知调用方框架）"]
+        B["a2a_provider_agent.py<br/>AgentCard + Executor<br/>└ LangGraph + MCP"]
+    end
+    A -->|"A2A 协议 / HTTP 请求"| B
+    B -->|"响应"| A
 ```
 
 ## 3. 跨框架调用与结果

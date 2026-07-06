@@ -19,11 +19,16 @@ A2A 构建在标准 Web 协议之上，安全也直接复用 Web 安全的成熟
 
 鉴权握手流程（Agent A 调 Agent B）：
 
-```
-Agent A ──① 发现──▶ AgentCard(B)          # 读 security schema：B 要求 token
-Agent A ──② 取token──▶ Identity Provider   # 向身份提供方获取 token
-Agent A ──③ 请求 + Authorization: Bearer <token>──▶ Agent B
-Agent B ──④ 验明来者身份──▶ 应答 或 403 Forbidden
+```mermaid
+sequenceDiagram
+    participant A as Agent A
+    participant Card as AgentCard(B)
+    participant IdP as Identity Provider
+    participant B as Agent B
+    A->>Card: ① 发现（读 security schema：B 要求 token）
+    A->>IdP: ② 取 token（向身份提供方获取 token）
+    A->>B: ③ 请求 + Authorization: Bearer &lt;token&gt;
+    B-->>A: ④ 验明来者身份 → 应答 或 403 Forbidden
 ```
 
 代码层面**不用手动设 header**：凭证从 credential store 加载，**AuthInterceptor** 自动读取 server 的 AgentCard、找到要求的 scheme（如 `my_auth_scheme`）、注入正确的 header。

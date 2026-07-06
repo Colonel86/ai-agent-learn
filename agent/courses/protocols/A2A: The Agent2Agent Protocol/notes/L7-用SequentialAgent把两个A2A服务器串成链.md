@@ -73,20 +73,17 @@ root_agent = SequentialAgent(
 
 执行拓扑（notebook 附了 sequential.png，等价 ASCII）：
 
-```
-用户 prompt
-   │
-   ▼
-┌────────────────────── root_agent (SequentialAgent, 本地进程) ──────────────────────┐
-│                                                                                    │
-│  ① health_research_agent ──A2A/JSON-RPC──▶ :RESEARCH_PORT  (ADK+Gemini+搜索)       │
-│         │ 研究结果注入共享上下文                                                     │
-│         ▼                                                                          │
-│  ② policy_agent ──────────A2A/JSON-RPC──▶ :POLICY_PORT    (裸SDK+Claude+保单PDF)   │
-│                                                                                    │
-└──────────────────────────────────┬─────────────────────────────────────────────────┘
-                                   ▼
-                     合成回答：通用治疗途径 + 本保单的覆盖细节
+```mermaid
+flowchart TB
+    U["用户 prompt"] --> Root
+    subgraph Root["root_agent (SequentialAgent, 本地进程)"]
+        H["① health_research_agent"]
+        P["② policy_agent"]
+        H -->|"研究结果注入共享上下文"| P
+    end
+    H -->|"A2A/JSON-RPC"| RP[":RESEARCH_PORT (ADK+Gemini+搜索)"]
+    P -->|"A2A/JSON-RPC"| PP[":POLICY_PORT (裸SDK+Claude+保单PDF)"]
+    Root --> Out["合成回答：通用治疗途径 + 本保单的覆盖细节"]
 ```
 
 > **对比 11-design-patterns.md（Anthropic workflow 谱）**：`SequentialAgent` 就是谱系最左端 **prompt chaining** 档的框架化身——代码定控制流、线性依赖、最可预测；`LlmAgent` 派单则落在最右端 **autonomous agent** 档（模型定控制流）。课程这个二选一恰好复刻了那页的核心纪律：**workflow 优先、agent 兜底**——"研究 → 查保单"步骤天然可枚举，用 SequentialAgent 拿到确定性、可调试性、成本三赢，没必要让 LLM 每次现场决定路由。往右挪档要有"链不够用"的证据。

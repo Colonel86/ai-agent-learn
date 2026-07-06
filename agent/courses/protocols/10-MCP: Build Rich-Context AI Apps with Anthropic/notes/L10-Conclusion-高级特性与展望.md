@@ -57,11 +57,10 @@
 
 由于 client 和 server 是协议两端，**一个组件可以同时扮演两个角色**：
 
-```
-User App → LLM → Agent (Client+Server)
-                    ↓ 作为 client 连其它 server
-                Analysis Server / Coding Server / Research Server
-                    （这些 server 也可能再向上层调用别的 server）
+```mermaid
+flowchart TB
+    App["User App"] --> LLM["LLM"] --> Agent["Agent (Client+Server)"]
+    Agent -->|"作为 client 连其它 server"| Servers["Analysis Server / Coding Server / Research Server<br/>（这些 server 也可能再向上层调用别的 server）"]
 ```
 
 这就构成了**多智能体架构**：所有 agent 用同一种 MCP "语言"协作。

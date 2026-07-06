@@ -6,14 +6,11 @@
 
 ## 整体结构
 
-```
-用户输入
-  ↓
-Claude（带 tools 列表）
-  ↓ 决定调工具
-本地 Python 函数（search_papers / extract_info）
-  ↓ 返回结果
-Claude 综合结果给最终答复
+```mermaid
+flowchart TB
+    U["用户输入"] --> C["Claude（带 tools 列表）"]
+    C -->|"决定调工具"| F["本地 Python 函数（search_papers / extract_info）"]
+    F -->|"返回结果"| C2["Claude 综合结果给最终答复"]
 ```
 
 ## 两个工具函数

@@ -22,11 +22,12 @@ A2A 把 agent 工作流的复杂性**抽象成一门通用语言**：标准化�
 | **Client agent**（Agent A） | 向 remote agent 发起请求的一方；**通常是直接与最终用户交互的 agent** |
 | **Remote agent**（Agent B） | 被请求方，实际干活的 agent |
 
-```
-用户 ──► Agent A (client) ──①发现──► agent-card.json
-                │                        │
-                └────②按 card 的 URI/绑定/鉴权 发请求────► Agent B (remote)
-                ◄────③Message（快）或 Task（慢）──────────┘
+```mermaid
+flowchart LR
+    U["用户"] --> A["Agent A (client)"]
+    A -->|"①发现"| Card["agent-card.json"]
+    A -->|"②按 card 的 URI/绑定/鉴权 发请求"| B["Agent B (remote)"]
+    B -->|"③Message（快）或 Task（慢）"| A
 ```
 
 ## 3. 发现：Agent Card
@@ -84,11 +85,12 @@ Agent A 用 **`message/send`** 方法发出一个包在 SendMessageRequest 里�
 - 字段：**ID**、**context ID**（与相关 Message 对应/关联）、**Status**；
 - **Status 表示 Task 生命周期的当前状态**：
 
-```
-submitted ──► working ──► completed ✔ (终态)
-                 │   └──► failed    ✘ (终态)
-                 ▼
-          input-required        （Agent B 需要最终用户补充信息）
+```mermaid
+flowchart LR
+    S["submitted"] --> W["working"]
+    W --> C["completed ✔ (终态)"]
+    W --> F["failed ✘ (终态)"]
+    W --> I["input-required（Agent B 需要最终用户补充信息）"]
 ```
 
 异步流程：Agent A 发初始请求 → Agent B 回 **task ID + 当前 status** → Agent A 拿着 task ID **轮询 `tasks/get`** 拿更新 → 最终 `tasks/get` 返回 completed，**任务产出放在 artifacts 字段**。

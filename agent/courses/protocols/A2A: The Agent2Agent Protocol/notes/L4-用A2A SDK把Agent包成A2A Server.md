@@ -16,22 +16,14 @@
 
 请求进来后在 server 内部的流转：
 
-```
-A2A Client ──HTTP──▶ A2AStarletteApplication (Starlette/FastAPI 应用)
-                          │  同时托管 AgentCard(/.well-known/agent-card.json,L2 讲过)
-                          ▼
-                    DefaultRequestHandler (+ InMemoryTaskStore)
-                          │  解析协议消息,构造 RequestContext
-                          ▼
-                    PolicyAgentExecutor.execute(context, event_queue)
-                          │  ← 你的代码只活在这一格
-                          ▼
-                    PolicyAgent.answer_query()  (L3 原样复用,零改动)
-                          │
-                    event_queue ◀── new_agent_text_message(response)
-                          │  SDK 从队列取事件回给客户端
-                          ▼
-                    A2A Client 收到 Message
+```mermaid
+flowchart TB
+    C1["A2A Client"] -->|"HTTP"| App["A2AStarletteApplication (Starlette/FastAPI 应用)<br/>同时托管 AgentCard(/.well-known/agent-card.json, L2 讲过)"]
+    App --> RH["DefaultRequestHandler (+ InMemoryTaskStore)<br/>解析协议消息, 构造 RequestContext"]
+    RH --> Exec["PolicyAgentExecutor.execute(context, event_queue)<br/>← 你的代码只活在这一格"]
+    Exec --> Ans["PolicyAgent.answer_query()  (L3 原样复用, 零改动)"]
+    Ans -->|"new_agent_text_message(response)"| Q["event_queue<br/>SDK 从队列取事件回给客户端"]
+    Q --> C2["A2A Client 收到 Message"]
 ```
 
 ## 1. AgentExecutor：协议管道与业务逻辑的桥

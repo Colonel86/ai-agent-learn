@@ -97,16 +97,16 @@ L5 的 client 已经写了 `Task` / `Message` 两个分支（`isinstance` 判断
 
 至此系统里有两个技术栈完全不同、但对外协议一致的 agent：
 
-```
-Terminal 1                              Terminal 2
-┌─────────────────────────────┐         ┌─────────────────────────────┐
-│ InsurancePolicyCoverageAgent│         │ HealthResearchAgent          │
-│ 裸 a2a-sdk 手工五件套        │         │ ADK LlmAgent + to_a2a        │
-│ Claude Haiku (Vertex) + PDF │         │ Gemini 3 Pro + google_search │
-│ :POLICY_AGENT_PORT          │         │ :RESEARCH_AGENT_PORT         │
-└──────────────┬──────────────┘         └──────────────┬──────────────┘
-               └───────── 对外都是标准 A2A ─────────────┘
-                    （agent card + JSON-RPC + Task/Message）
+```mermaid
+flowchart TB
+    subgraph T1["Terminal 1"]
+        A["InsurancePolicyCoverageAgent<br/>裸 a2a-sdk 手工五件套<br/>Claude Haiku (Vertex) + PDF<br/>:POLICY_AGENT_PORT"]
+    end
+    subgraph T2["Terminal 2"]
+        B["HealthResearchAgent<br/>ADK LlmAgent + to_a2a<br/>Gemini 3 Pro + google_search<br/>:RESEARCH_AGENT_PORT"]
+    end
+    A --- Std["对外都是标准 A2A<br/>（agent card + JSON-RPC + Task/Message）"]
+    B --- Std
 ```
 
 > **对比 2-framework/03-framework-profiles.md 的 ADK 条目**：那里给 ADK 的定性是"单厂商官方路线"⚠️——全程 Gemini/Vertex，换省心付可移植性代价。本课恰好展示了这笔交易的两侧：**买到的省心**是 `google_search` 内置工具和 `to_a2a` 一行 A2A 化；**付出的绑定**是模型字段只认 Gemini 家族、认证走 Google Cloud。但注意 A2A 在这里起了**止损作用**——绑定被封在 server 进程内部，对外是中立协议，消费方（L5 client、L7 编排器）不感知 ADK 的存在。协议边界就是厂商绑定的隔离舱。
