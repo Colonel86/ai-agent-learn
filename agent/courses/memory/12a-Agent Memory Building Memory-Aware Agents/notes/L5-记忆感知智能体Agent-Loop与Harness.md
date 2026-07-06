@@ -6,10 +6,13 @@
 
 一个**循环迭代**的环境，LLM 在其中执行有限时间。三拍节奏：
 
-```
-START（用户输入）
-  └─► [assemble context → invoke LLM → act] × N   ← 循环
-        STOP（满足停止条件）
+```mermaid
+flowchart TB
+  S["START（用户输入）"] --> AC["assemble context"]
+  AC --> LLM["invoke LLM"]
+  LLM --> ACT["act"]
+  ACT -->|"循环 × N"| AC
+  ACT --> STOP["STOP（满足停止条件）"]
 ```
 
 - **assemble**：组装上下文（把各类记忆拼进去）

@@ -32,18 +32,19 @@ Agent 调用任何工具时可附加 **request_heartbeat** 请求，触发一次
 
 ## 4. 记忆分层全景（本课最重要的一张图）
 
-```
-┌─ Context Window 内（in-context）─────────────┐
-│ System Prompt(含记忆编辑说明)                  │
-│ Core Memory ← 永远可见、agent 可编辑、分块限长   │
-│ Recursive Summary(递归摘要)                   │
-│ External Memory Statistics(外部记忆统计)       │
-│ Chat History(近期消息)                        │
-└──────────────────────────────────────────────┘
-┌─ Context Window 外（out-of-context,无限容量）──┐
-│ Recall Memory   ← 消息历史的完整归档            │
-│ Archival Memory ← 通用数据存储(文档/事实/代码)   │
-└──────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph IN["Context Window 内（in-context）"]
+    A["System Prompt（含记忆编辑说明）"]
+    B["Core Memory ← 永远可见、agent 可编辑、分块限长"]
+    C["Recursive Summary（递归摘要）"]
+    D["External Memory Statistics（外部记忆统计）"]
+    E["Chat History（近期消息）"]
+  end
+  subgraph OUT["Context Window 外（out-of-context，无限容量）"]
+    F["Recall Memory ← 消息历史的完整归档"]
+    G["Archival Memory ← 通用数据存储（文档/事实/代码）"]
+  end
 ```
 
 ### Core Memory（核心记忆）

@@ -29,17 +29,15 @@
 
 ### 🆚 Hardcoded vs Procedural Memory
 
-```
-Before（之前几课）                    After（本课）
-─────────────────────                 ─────────────────────
-prompt_instructions = {              📦 Long-Term Memory Store
-  "ignore":  "...",                       │
-  "notify":  "...",       ──变成──►       ├─ key="triage_ignore"
-  "respond": "...",                       ├─ key="triage_notify"
-}                                          ├─ key="triage_respond"
-                                           └─ key="agent_instructions"
-                                                 ↑
-                                       LLM 可在后台自动更新它们
+```mermaid
+flowchart LR
+  H["Before（之前几课）<br/>prompt_instructions = {<br/>ignore / notify / respond<br/>}<br/>硬编码字典"]
+  subgraph A["After（本课）"]
+    S["📦 Long-Term Memory Store<br/>key=triage_ignore<br/>key=triage_notify<br/>key=triage_respond<br/>key=agent_instructions"]
+    U["LLM 可在后台自动更新它们"]
+  end
+  H -->|"变成"| S
+  U -->|"更新"| S
 ```
 
 ---
