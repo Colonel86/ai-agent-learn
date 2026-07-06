@@ -77,9 +77,10 @@ ValidationError: 详细的失败信息——"如何自制披萨"的句子、制�
 
 至此走完一个可复用的三步模式，后面每类失效模式都会重演：
 
-```
-写 validator（检查逻辑） ──▶ 包进 guard（组合+失败策略） ──▶ 经 server 提供受保护 LLM 端点
-        L4                        本课 §2                     本课 §3-4（换 base_url 接入）
+```mermaid
+flowchart LR
+    A["写 validator（检查逻辑）<br/>L4"] --> B["包进 guard（组合+失败策略）<br/>本课 §2"]
+    B --> C["经 server 提供受保护 LLM 端点<br/>本课 §3-4（换 base_url 接入）"]
 ```
 
 ## 6. 本课总结

@@ -16,15 +16,22 @@
 
 用 Unity Catalog 先要理解它的结构。**Metastore 是顶层容器**，注册数据与 AI 资产的元数据、以及治理其访问的权限。每个 metastore 暴露一个**三级命名空间**：
 
-```
-Metastore（顶层容器：元数据 + 权限）
-└── Catalog                     ← 第 1 级：容纳所有 schema
-    └── Schema（俗称 database）  ← 第 2 级：容纳所有数据对象
-        ├── Table     结构化数据（行×列）
-        ├── View      针对一或多张表的已保存查询
-        ├── Volume    非结构化数据（云对象存储：PDF/图片/视频…）
-        ├── Function  已保存的逻辑（= Agent 的工具/技能）
-        └── Model     MLflow 打包的 AI 模型（= 你的 Agent）
+```mermaid
+flowchart TB
+    M["Metastore<br/>顶层容器：元数据 + 权限"]
+    C["Catalog<br/>第 1 级：容纳所有 schema"]
+    S["Schema（俗称 database）<br/>第 2 级：容纳所有数据对象"]
+    T["Table<br/>结构化数据（行×列）"]
+    V["View<br/>针对一或多张表的已保存查询"]
+    Vol["Volume<br/>非结构化数据（云对象存储：PDF/图片/视频…）"]
+    F["Function<br/>已保存的逻辑（= Agent 的工具/技能）"]
+    Mo["Model<br/>MLflow 打包的 AI 模型（= 你的 Agent）"]
+    M --> C --> S
+    S --> T
+    S --> V
+    S --> Vol
+    S --> F
+    S --> Mo
 ```
 
 即寻址方式是 `catalog.schema.对象`。
@@ -58,15 +65,19 @@ Databricks 主要用两类 **securable objects** 存取数据：
 
 Lab 1 将以公司 **Client Care** 为背景创建并使用 Unity Catalog 对象：
 
-```
-Catalog: client_care
-└── Schema: hr_data（全公司 HR 数据库）
-    ├── Tables    ：全部 HR 数据
-    ├── View      ：analyst view —— 匿名化关键 PII
-    │              （SSN 匿名化、姓名匿名化，只留数据分析师所需信息）
-    ├── Functions ：masking 函数 + 查数据的函数
-    │              → 作为工具绑定到 Agent，让 Agent 只能经由该 view 查数据
-    └── Model     ：把构建的 Agent 注册为 MLflow model
+```mermaid
+flowchart TB
+    C["Catalog: client_care"]
+    S["Schema: hr_data（全公司 HR 数据库）"]
+    T["Tables：全部 HR 数据"]
+    V["View：analyst view —— 匿名化关键 PII<br/>（SSN 匿名化、姓名匿名化，只留数据分析师所需信息）"]
+    F["Functions：masking 函数 + 查数据的函数<br/>→ 作为工具绑定到 Agent，让 Agent 只能经由该 view 查数据"]
+    Mo["Model：把构建的 Agent 注册为 MLflow model"]
+    C --> S
+    S --> T
+    S --> V
+    S --> F
+    S --> Mo
 ```
 
 这个结构就是 L0 承诺的"特定、有意图的访问"：Agent 不直接碰表，只经过脱敏视图 + 注册过的函数。

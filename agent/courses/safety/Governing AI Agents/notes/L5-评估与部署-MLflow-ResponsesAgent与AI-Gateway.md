@@ -11,9 +11,18 @@ L4（Lab 1）把数据层治理搭完了。本课是 Lab 2 / Lab 3 的理论铺�
 
 Agent 用 **LLM 作为大脑做推理**，配一组工具和（通常）一个 system prompt 来做决策。以客服为例——用户问"能帮我退掉上一单吗？"，人类客服的流程是：查账户 → 找订单信息 → 查退货政策 → 确认商品在政策范围内 → 生成退货面单。**agent 应走同样的推理步骤**：
 
-```
-用户请求 → 推理(Reasoning) → 行动(Action：调工具) → 观察 → …循环 → 解决问题
-              └────────── ReAct 范式 ──────────┘
+```mermaid
+flowchart LR
+    U["用户请求"] --> R["推理 Reasoning"]
+    R --> A["行动 Action：调工具"]
+    A --> O["观察"]
+    O -->|"…循环"| R
+    O --> S["解决问题"]
+    subgraph ReAct["ReAct 范式"]
+        R
+        A
+        O
+    end
 ```
 
 工具可以是：文档、向量数据库、函数、API、表。只要 agent 能理解它所用的数据（通过 prompt 或工具的显式动作），就能生成正确回复、检索到数据。
@@ -104,12 +113,14 @@ agent 以 SP 凭证部署、拿到 serving endpoint 之后呢？——接 **AI G
 | **Monitoring + Payload logging** | 监控模型准确性；LLM/agent 的全部输入输出落日志，可再跑评估 |
 | **Spending insights** | 尤其针对三方/专有 LLM 的花费洞察，辅助资源优化 |
 
-```
-用户/应用 ─→ AI Gateway ─→ agent serving endpoint（SP 身份）
-                │                └─ UC 函数工具 → data_analyst_view（匿名数据）
-                ├─ content filter / PII detection
-                ├─ usage tracking → Unity Catalog
-                └─ payload logging → 持续评估
+```mermaid
+flowchart LR
+    U["用户/应用"] --> GW["AI Gateway"]
+    GW --> EP["agent serving endpoint（SP 身份）"]
+    EP --> Tool["UC 函数工具"] --> DV["data_analyst_view（匿名数据）"]
+    GW --> CF["content filter / PII detection"]
+    GW --> UT["usage tracking"] --> UC["Unity Catalog"]
+    GW --> PL["payload logging"] --> Eval["持续评估"]
 ```
 
 > **对比 memory 课 12a 的数据层治理视角**：12a 的结论是"治理落在数据层，agent 换了规则还在"；本课把同一思想推到**流量层**——Gateway 让治理（过滤、审计、成本）落在 endpoint 之上的公共通道，agent 内部实现随便换，治理面不动。数据层（L4）+ 身份层（L3）+ 流量层（L5），三层治理面正好都不在 agent 代码里。

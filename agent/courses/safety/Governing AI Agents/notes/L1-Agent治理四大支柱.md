@@ -32,15 +32,16 @@
 
 构建 Agent 系统的流水线，治理不是其中一站，而是**罩在从头到尾之上的一层**：
 
-```
-┌──────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│ 数据准备  │→│  构建 Agent   │→│  评估 Agent   │→│  部署 Agent   │
-│ 建表/视图 │  │ 绑定工具/加   │  │ LLM judge /  │  │ serving /    │
-│ /mask/   │  │ prompt/选LLM │  │ 人工标注/     │  │ lineage 追踪 │
-│ VectorDB │  │              │  │ 黄金集/tracing│  │              │
-└──────────┘  └──────────────┘  └──────────────┘  └──────────────┘
-════════════════════ 治理层（贯穿始终）═══════════════════════════
-   Lifecycle Management · Risk Management · Security · Observability
+```mermaid
+flowchart LR
+    A["数据准备<br/>建表/视图 · mask · VectorDB"] --> B["构建 Agent<br/>绑定工具/加 prompt/选 LLM"]
+    B --> C["评估 Agent<br/>LLM judge · 人工标注 · 黄金集 · tracing"]
+    C --> D["部署 Agent<br/>serving · lineage 追踪"]
+    G["治理层（贯穿始终）：Lifecycle Management · Risk Management · Security · Observability"]
+    G -.罩住全程.-> A
+    G -.罩住全程.-> B
+    G -.罩住全程.-> C
+    G -.罩住全程.-> D
 ```
 
 本课程用 **Unity Catalog + MLflow** 来落地这层治理。

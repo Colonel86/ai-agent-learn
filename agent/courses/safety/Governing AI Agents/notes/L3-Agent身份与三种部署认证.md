@@ -17,11 +17,16 @@ L2 讲了 Unity Catalog 的组件——治理四支柱（four pillars）如何�
 
 Group 的价值：授权时不必一个个给。给数据、模型等任何可授权对象开权限时，直接授给整个 group，组内的 users 和 service principals 全部继承。例如建一个 developers group，开发者需要较宽的访问面，一次授权即可，不用逐人操作。
 
-```
-Group: devs
- ├── user: alice@company.com     ┐
- ├── user: bob@company.com       ├── 对 group 授一次权，成员全部继承
- └── service principal: hr-agent ┘
+```mermaid
+flowchart LR
+    G["Group: devs"]
+    A["user: alice@company.com"]
+    B["user: bob@company.com"]
+    S["service principal: hr-agent"]
+    G --> A
+    G --> B
+    G --> S
+    G -.->|"对 group 授一次权，成员全部继承"| N["成员全部继承权限"]
 ```
 
 ## 2. 四种管理角色（Admin Roles）

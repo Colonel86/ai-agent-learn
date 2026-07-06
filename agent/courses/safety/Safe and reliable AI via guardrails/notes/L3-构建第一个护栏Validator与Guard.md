@@ -7,9 +7,12 @@
 
 L2 讲清了 AI validation 的概念和护栏在应用中的位置：**Input Guard 在用户输入 / 检索文本进入 LLM 之前检查；Output Guard 在 LLM 响应返回之后按验证规则检查**。本课从概念落到代码：写一个最简单的 validator + guard。
 
-```
-用户输入 / 检索文本 ──▶ [Input Guard] ──▶ LLM ──▶ [Output Guard] ──▶ 响应
-                        进 LLM 前拦                 出 LLM 后拦
+```mermaid
+flowchart LR
+    U["用户输入 / 检索文本"] --> IG["Input Guard<br/>进 LLM 前拦"]
+    IG --> L["LLM"]
+    L --> OG["Output Guard<br/>出 LLM 后拦"]
+    OG --> R["响应"]
 ```
 
 Setup 与前课相同：忽略 warnings、导入 OpenAI 作 LLM client、导入 RAG chatbot 与 vector database 的 helper 函数。讲师顺带强调全程用 **type hints**——保证代码对后来者可读，是推荐的 Python 实践。

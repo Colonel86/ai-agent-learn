@@ -9,12 +9,14 @@ PII = 姓名、邮箱、社保号、电话……任何敏感且能定位到个�
 
 要守的两个方向：
 
-```
-方向①（输入侧）：客户/员工/组织的私有数据
-        用户 ──✗──> 第三方 LLM provider     绝不外泄给第三方
-
-方向②（输出侧）：组织自己的数据
-        LLM 响应 ──✗──> 不该看到它的用户     绝不经由回答误发
+```mermaid
+flowchart LR
+    subgraph D1["方向①（输入侧）：客户/员工/组织的私有数据"]
+        U["用户"] -.->|"✗ 绝不外泄给第三方"| P["第三方 LLM provider"]
+    end
+    subgraph D2["方向②（输出侧）：组织自己的数据"]
+        R["LLM 响应"] -.->|"✗ 绝不经由回答误发"| W["不该看到它的用户"]
+    end
 ```
 
 ## 1. 失败复现：Hank 的电话号码进了后端存储
@@ -88,11 +90,11 @@ class PIIDetector(Validator):
 
 生产用 **Guardrails Hub 的 PII guardrail**（而非自建版），理由有二：支持**多得多的实体类型**，且支持**实时 streaming**。部署与前几课一致——OpenAI client 换 base_url 指向 guardrails server，但这次 **guard 跑在输入侧**：
 
-```
-用户消息 ──> PII Guard（输入侧）──✗ 检出 PII → 立刻抛 exception
-                    │                    （消息根本没发往第三方 LLM）
-                    ▼ 干净
-                第三方 LLM
+```mermaid
+flowchart TB
+    U["用户消息"] --> G["PII Guard（输入侧）"]
+    G -.->|"✗ 检出 PII → 立刻抛 exception<br/>（消息根本没发往第三方 LLM）"| X["拦截"]
+    G -->|"干净"| L["第三方 LLM"]
 ```
 
 用 Hank 的消息打这个 guarded chatbot：`Message history validation failed`，而且**非常快**——因为异常在请求发出去之前就抛了。检查后端日志：**只存了 system message，Hank 那条含敏感信息的消息没有落库**。这就是"在源头检测"的含义：检测 → 脱敏 → 再按组织政策决定如何处置。

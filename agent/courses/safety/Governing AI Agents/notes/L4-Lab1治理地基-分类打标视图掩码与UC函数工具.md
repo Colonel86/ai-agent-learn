@@ -7,9 +7,12 @@
 
 L3 定了路线：Manual Authentication——预建 service principal，agent 最终以它的凭证部署。本课就是 Lab 1 实操，产出五件套：
 
-```
-① HR 表 + 分类标签 → ② data_analyst_view（匿名化视图） → ③ devs group 最小权限
-→ ④ SSN 列掩码 → ⑤ 两个 UC 函数 = agent 的工具
+```mermaid
+flowchart LR
+    A["① HR 表 + 分类标签"] --> B["② data_analyst_view（匿名化视图）"]
+    B --> C["③ devs group 最小权限"]
+    C --> D["④ SSN 列掩码"]
+    D --> E["⑤ 两个 UC 函数 = agent 的工具"]
 ```
 
 ## 1. 环境准备：Free Edition + GitHub 联动

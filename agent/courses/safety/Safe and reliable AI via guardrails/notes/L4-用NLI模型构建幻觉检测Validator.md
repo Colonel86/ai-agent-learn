@@ -32,13 +32,14 @@ NLI 模型本质上是检查"**给定更高层的 context，某段文本有多 f
 
 三个类别：
 
-```
-premise（可信上下文） + hypothesis（待检陈述）
-        │
-        ▼  NLI 分类器
-├─ entailment     被前提蕴含 → 忠实 / 有据
-├─ contradiction  与前提矛盾 → 否定了来源信息 → 幻觉
-└─ neutral        中立，前提既不支持也不否定
+```mermaid
+flowchart TB
+    I["premise（可信上下文） + hypothesis（待检陈述）"]
+    C["NLI 分类器"]
+    I --> C
+    C --> E["entailment：被前提蕴含 → 忠实 / 有据"]
+    C --> Con["contradiction：与前提矛盾 → 否定了来源信息 → 幻觉"]
+    C --> N["neutral：中立，前提既不支持也不否定"]
 ```
 
 ## 3. 搭建 NLI pipeline 并试跑
@@ -66,12 +67,15 @@ nli_pipeline = pipeline("text-classification", model=NLI_MODEL)
 
 单靠 NLI 模型不够，得把它**安置在一个更大的系统里**，保证 LLM 输出和 vector database 来源都被整理成 NLI 模型能消费的格式。高层流程：
 
-```
-LLM 输出 ────切句──▶ 句子 s1..sn ─┐
-                                  ├─▶ 逐句配对 (premise=相关来源, hypothesis=句子)
-vector DB 来源 ──切分/嵌入──▶ 来源 ─┘        │
-                                            ▼ NLI 模型
-                          entailed → 非幻觉    contradiction → 否定来源 → 幻觉
+```mermaid
+flowchart LR
+    L["LLM 输出"] -->|"切句"| S["句子 s1..sn"]
+    V["vector DB 来源"] -->|"切分/嵌入"| Src["来源"]
+    S --> Pair["逐句配对<br/>(premise=相关来源, hypothesis=句子)"]
+    Src --> Pair
+    Pair --> NLI["NLI 模型"]
+    NLI --> E["entailed → 非幻觉"]
+    NLI --> C["contradiction → 否定来源 → 幻觉"]
 ```
 
 这是个"很多活动部件"的复杂 validator，课程按四步逐块搭建。

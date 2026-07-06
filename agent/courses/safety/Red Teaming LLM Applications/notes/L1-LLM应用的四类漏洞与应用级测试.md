@@ -48,9 +48,11 @@
 
 它用的是 **RAG（Retrieval Augmented Generation，检索增强生成）**：
 
-```
-用户问题 ──→ 检索相关文档 ──→ 把文档作为 context 喂给 LLM ──→ 生成回答
-             (knowledge base)                                  (response)
+```mermaid
+flowchart LR
+    Q["用户问题"] --> R["检索相关文档<br/>(knowledge base)"]
+    R --> C["把文档作为 context 喂给 LLM"]
+    C --> A["生成回答<br/>(response)"]
 ```
 
 在 notebook 里导入并初始化（口播摘录）：
