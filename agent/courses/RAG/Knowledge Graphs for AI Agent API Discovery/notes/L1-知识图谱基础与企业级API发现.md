@@ -38,23 +38,33 @@ RDF 的关键特性（也是本课选它的理由）：
 
 RDF 的原子构件是**三元组（triple）**：`subject — predicate — object`，每条 triple 就是图里一条**带标签的有向边**：
 
-```
-  subject ──predicate──▶ object
-   (SAP)  ──locatedIn──▶ (Walldorf)      # "SAP 位于 Walldorf" 这一事实
+```mermaid
+flowchart LR
+    subgraph 抽象["三元组结构"]
+      S["subject"] -->|"predicate"| O["object"]
+    end
+    subgraph 实例["示例：SAP 位于 Walldorf 这一事实"]
+      SAP["SAP"] -->|"locatedIn"| W["Walldorf"]
+    end
 ```
 
 用课上的例子从零搭一个小图谱：
 
-```
-        "1972"        "SAP"
-          ▲             ▲
-     founded │      name │
-          │             │
-  (Company)◀──a──  [SAP 节点/URI]  ──ceo──▶ [Christian Klein]
-                        │
-                 headquarters
-                        ▼
-                   [Walldorf] ──locatedIn──▶ [Germany]（推理得出）
+```mermaid
+flowchart TB
+    SAP["SAP 节点/URI"]
+    Y["1972"]
+    N["SAP（名字）"]
+    Company["Company"]
+    CEO["Christian Klein"]
+    W["Walldorf"]
+    G["Germany（推理得出）"]
+    SAP -->|"founded"| Y
+    SAP -->|"name"| N
+    SAP -->|"a"| Company
+    SAP -->|"ceo"| CEO
+    SAP -->|"headquarters"| W
+    W -->|"locatedIn"| G
 ```
 
 四个要点：
@@ -80,12 +90,14 @@ RDF 的原子构件是**三元组（triple）**：`subject — predicate — obj
 
 ## 5. 构建流程五步（Step 0–4）
 
-```
-Step 0          Step 1          Step 2           Step 3          Step 4
-定义用例/范围 ──▶ 汇聚数据    ──▶ 分析与标准化 ──▶ 数据建模     ──▶ 交付价值
-业务问题驱动     跨企业系统       统一"方言"        清洗数据 →      连通性带来
-要抽什么元数据    CSV/XML/JSON    去重/解决不一致    RDF 三元组      新连接/分析/洞察
-要建什么模型     各说各的语言     校验数据质量      s-p-o 镜像源系统关系
+```mermaid
+flowchart LR
+    S0["<b>Step 0</b><br/>定义用例/范围<br/>业务问题驱动<br/>要抽什么元数据<br/>要建什么模型"]
+    S1["<b>Step 1</b><br/>汇聚数据<br/>跨企业系统<br/>CSV/XML/JSON<br/>各说各的语言"]
+    S2["<b>Step 2</b><br/>分析与标准化<br/>统一「方言」<br/>去重/解决不一致<br/>校验数据质量"]
+    S3["<b>Step 3</b><br/>数据建模<br/>清洗数据 → RDF 三元组<br/>s-p-o 镜像源系统关系"]
+    S4["<b>Step 4</b><br/>交付价值<br/>连通性带来<br/>新连接/分析/洞察"]
+    S0 --> S1 --> S2 --> S3 --> S4
 ```
 
 - **Step 0**：先定用例、范围、图谱要回答的业务问题——由它决定抽什么元数据、建什么模型；

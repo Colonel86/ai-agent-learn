@@ -13,10 +13,17 @@ L2 结尾诊断出的问题：两个 API 子图**互不相连**——图谱只�
 
 简化的流程本体只有两个主概念：
 
-```
-Process ──(pr:start)──> Activity ──(pr:hasNext)──> Activity ──(pr:hasNext)──> …
-(name/description/version)   │ (name/description)
-                             └──(pr:entitySet)──> EntitySet   ← 挂到 API 图谱的锚点
+```mermaid
+flowchart LR
+    Process["Process<br/>(name/description/version)"]
+    A1["Activity<br/>(name/description)"]
+    A2["Activity"]
+    More["…"]
+    ES["EntitySet<br/>← 挂到 API 图谱的锚点"]
+    Process -->|"pr:start"| A1
+    A1 -->|"pr:hasNext"| A2
+    A2 -->|"pr:hasNext"| More
+    A1 -->|"pr:entitySet"| ES
 ```
 
 - **Process**：一组按特定顺序执行的 activities 的集合；有 name / description / version，并链到该流程的**起始 activity**；
@@ -108,9 +115,10 @@ SELECT DISTINCT ?activityName ?entitySetName ?serviceName
 
 查询结果把断连问题的答案摆在了桌面上：
 
-```
-Activity 'Create Purchase Requisition' → EntitySet 'PurchaseRequisition' in Service 'API_PURCHASEREQUISITION_2'
-Activity 'Create Purchase Order'       → EntitySet 'PurchaseOrder'       in Service 'API_PURCHASEORDER_2'
+```mermaid
+flowchart LR
+    A1["Activity 'Create Purchase Requisition'"] --> E1["EntitySet 'PurchaseRequisition'<br/>in Service 'API_PURCHASEREQUISITION_2'"]
+    A2["Activity 'Create Purchase Order'"] --> E2["EntitySet 'PurchaseOrder'<br/>in Service 'API_PURCHASEORDER_2'"]
 ```
 
 > **对比 4-tools.md 的工具路由**：工具编排框架（LangGraph 之类）里"先调 API-A 再调 API-B"的依赖通常**写死在编排代码/DAG 里**，加一条流程要改代码发版；本课把执行顺序建模成图谱里的 `hasNext` 边，依赖是**可查询的数据**——Agent 用一句 property path 查询就能现场推导调用顺序，新流程只是往图里添三元组。与 L2 "声明式构图" 一脉相承：把易变逻辑从代码搬进数据。
@@ -142,9 +150,18 @@ for node in G_po:
 
 图上一目了然：蓝簇（PR API）和灰簇（PO API）之间由一串**红色 activity 节点**架桥——L2 结尾的断连图，到这里连通了。
 
-```
-L2:   [PR API 子图]          [PO API 子图]        ← 两簇零边
-L3:   [PR API 子图]─(红:Create PR)→(红:…)→(红:Create PO)─[PO API 子图]
+```mermaid
+flowchart TB
+    subgraph L2["L2：两簇零边"]
+      PR2["PR API 子图"]
+      PO2["PO API 子图"]
+    end
+    subgraph L3["L3：红色 activity 节点架桥"]
+      PR3["PR API 子图"] --- R1["红：Create PR"]
+      R1 --> R2["红：…"]
+      R2 --> R3["红：Create PO"]
+      R3 --- PO3["PO API 子图"]
+    end
 ```
 
 ## 6. 整图鸟瞰：太大，塞不进 context

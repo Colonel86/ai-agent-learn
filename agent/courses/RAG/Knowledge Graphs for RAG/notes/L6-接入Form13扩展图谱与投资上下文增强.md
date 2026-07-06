@@ -96,12 +96,14 @@ for form13 in all_form13s:
 
 `refresh_schema()` 后，全图 schema 成形：
 
-```
-(Manager) ─OWNS_STOCK_IN {value, shares, quarter}→ (Company)
-                                                       │ FILED
-                                                       ▼
-(Chunk₀) ─NEXT→ (Chunk₁) ─NEXT→ …    ┌─SECTION──► (Form)
-    └────────── PART_OF ─────────────┴─────────────►  ▲
+```mermaid
+flowchart LR
+    Manager["Manager"] -->|"OWNS_STOCK_IN {value, shares, quarter}"| Company["Company"]
+    Company -->|"FILED"| Form["Form"]
+    Form -->|"SECTION"| C0["Chunk₀"]
+    C0 -->|"NEXT"| C1["Chunk₁"]
+    C1 -->|"NEXT"| More["…"]
+    C0 -->|"PART_OF"| Form
 ```
 
 ## 4. 从 Chunk 一路走到投资人

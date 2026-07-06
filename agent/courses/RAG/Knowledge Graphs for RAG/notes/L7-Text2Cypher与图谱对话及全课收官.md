@@ -17,12 +17,15 @@
 
 本课的数据已被预先扩展了一步：Manager 和 Company 的地址字符串抽成了独立的 **Address 节点**（含 city / state，以及 `location` 属性——存经纬度的 **point** 类型），并建了地理空间索引。最终 schema：
 
-```
-(Manager) ─OWNS_STOCK_IN→ (Company) ─FILED→ (Form) ─SECTION→ (Chunk) ─NEXT→ (Chunk)
-    │                         │                        ▲ PART_OF ──┘
-    └──── LOCATED_AT ──┐      └── LOCATED_AT ──┐
-                       ▼                       ▼
-                  (Address {city, state, location:point})
+```mermaid
+flowchart LR
+    Manager["Manager"] -->|"OWNS_STOCK_IN"| Company["Company"]
+    Company -->|"FILED"| Form["Form"]
+    Form -->|"SECTION"| Chunk["Chunk"]
+    Chunk -->|"NEXT"| Chunk2["Chunk"]
+    Chunk2 -->|"PART_OF"| Form
+    Manager -->|"LOCATED_AT"| Address["Address {city, state, location:point}"]
+    Company -->|"LOCATED_AT"| Address
 ```
 
 ## 1. Cypher 探索：全文入口 + 聚合统计

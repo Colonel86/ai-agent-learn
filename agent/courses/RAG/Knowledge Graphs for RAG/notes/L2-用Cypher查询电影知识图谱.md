@@ -27,15 +27,16 @@ kg = Neo4jGraph(url=NEO4J_URI, username=NEO4J_USERNAME,
 
 数据集是 Neo4j 经典的 movie graph（171 个节点、38 部电影）：
 
-```
-(:Person {name, born})                    (:Movie {title, tagline, released})
-     │                                          ▲
-     ├──[:ACTED_IN]───────────────────────────►│   演过
-     ├──[:DIRECTED]───────────────────────────►│   导演过
-     ├──[:WROTE]──────────────────────────────►│   编剧过
-     ├──[:REVIEWED]───────────────────────────►│   评论过
-     │
-     └──[:FOLLOWS]──► (:Person)   人也可以 follow 评论者
+```mermaid
+flowchart LR
+    Person["(:Person {name, born})"]
+    Movie["(:Movie {title, tagline, released})"]
+    Person2["(:Person)"]
+    Person -->|":ACTED_IN（演过）"| Movie
+    Person -->|":DIRECTED（导演过）"| Movie
+    Person -->|":WROTE（编剧过）"| Movie
+    Person -->|":REVIEWED（评论过）"| Movie
+    Person -->|":FOLLOWS（人也可以 follow 评论者）"| Person2
 ```
 
 - **Person**：属性 `name`（string）、`born`（出生年，integer）；

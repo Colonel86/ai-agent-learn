@@ -86,11 +86,16 @@ MERGE (f)-[r:SECTION {f10kItem: first.f10kItem}]->(first)  # 边上存 section �
 
 讲师说 SECTION 关系是"对看图人类的善意（a kindness for humans）"——从 Form 一跳直达任一 section 的链表头。这也是 LPG 的招牌能力：**关系可以带属性**。最终结构：
 
-```
-                 ┌────────── SECTION {f10kItem} ──────────┐
-                 │  (×4，指向各 section 链表头)             ▼
-   (Form) ◄── PART_OF ── (Chunk₀) ─NEXT→ (Chunk₁) ─NEXT→ (Chunk₂) …
-                 ▲            每个 Chunk 都有 PART_OF 回指 Form
+```mermaid
+flowchart LR
+    Form["Form"]
+    C0["Chunk₀"]
+    C1["Chunk₁"]
+    C2["Chunk₂ …"]
+    Form -->|"SECTION {f10kItem}（×4，指向各 section 链表头）"| C0
+    C0 -->|"PART_OF（每个 Chunk 都有 PART_OF 回指 Form）"| Form
+    C0 -->|"NEXT"| C1
+    C1 -->|"NEXT"| C2
 ```
 
 ## 4. Path：图的结构本身就是信息

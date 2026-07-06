@@ -7,10 +7,11 @@
 
 ColPali 向量里有大量冗余（比如整片同色背景 patch）。优化沿两个正交方向压：
 
-```
-方向一：压「每个数字」的大小   → 量化（scalar / binary）
-方向二：压「向量的个数」        → 池化（row / column / hierarchical）
-两者可叠加使用
+```mermaid
+flowchart LR
+    D1["方向一：压「每个数字」的大小"] --> Q["量化（scalar / binary）"]
+    D2["方向二：压「向量的个数」"] --> P["池化（row / column / hierarchical）"]
+    Note["两者可叠加使用"]
 ```
 
 数据集换成来自多门 DeepLearning.AI 课程的**幻灯片页**，每页约 1031 个 token 向量（一致）。

@@ -149,23 +149,18 @@ Agent 的实际执行链（verbose 输出可见）：
 
 课程收尾用 create purchase order 例串起完整数据流：
 
-```
-用户输入
-  │
-  ▼
-Agent（LangChain tool-calling loop）
-  │ ① discover_apis(user_query)
-  ▼
-Discovery Tool
-  ├─▶ 向量索引（本地 in-memory）──▶ 语义相关的 entity sets
-  └─▶ 知识图谱 ──▶ 业务流程信息 + 流程相邻的额外 entity sets + 属性/导航元数据
-  │
-  ▼ {api_specs, process_information} 返回 Agent
-Agent 决策：流程要求 PR 先于 PO
-  │ ② post_data_api(PURCHASEREQUISITION, payload)  ──▶ 新 PR…3
-  │ ③ post_data_api(PURCHASEORDER, 引用 PR…3)      ──▶ 新 PO…5
-  ▼
-结果返回用户
+```mermaid
+flowchart TB
+    U["用户输入"] --> Agent["Agent（LangChain tool-calling loop）"]
+    Agent -->|"① discover_apis(user_query)"| DT["Discovery Tool"]
+    DT --> VI["向量索引（本地 in-memory）"]
+    VI --> ES["语义相关的 entity sets"]
+    DT --> KG["知识图谱"]
+    KG --> PI["业务流程信息 + 流程相邻的额外 entity sets + 属性/导航元数据"]
+    DT -->|"{api_specs, process_information} 返回 Agent"| Dec["Agent 决策：流程要求 PR 先于 PO"]
+    Dec -->|"② post_data_api(PURCHASEREQUISITION, payload)"| PR["新 PR…3"]
+    Dec -->|"③ post_data_api(PURCHASEORDER, 引用 PR…3)"| PO["新 PO…5"]
+    Dec --> Res["结果返回用户"]
 ```
 
 > **对比 3-retrieval 的向量检索/GraphRAG**：这条流水线是典型的**两跳混合检索**——第一跳向量索引做语义召回（找到"像"的 entity sets），第二跳图遍历做**结构扩展**（沿流程边拉进"必须一起用"的 entity sets 和依赖顺序）。纯向量检索止步于第一跳，会漏掉 PR（用户 query 里根本没提"申请"二字）；这正是 GraphRAG 主张"关系不可被相似度替代"在工具发现场景的实证。

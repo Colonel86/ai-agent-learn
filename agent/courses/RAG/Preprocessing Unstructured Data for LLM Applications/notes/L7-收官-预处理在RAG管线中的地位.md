@@ -18,13 +18,17 @@
 
 整门课其实只讲一件事：**把杂乱的输入收敛成一种统一的数据结构（document element），让下游 RAG 不再关心原始格式。**
 
-```
-多源异构输入                统一抽象                下游消费
-HTML / Word ──规则解析─┐
-PPTX / MD  ──规则解析─┤
-                       ├─► document elements ──► metadata 富化 ──► chunk ──► 向量库 ──► 检索 ──► LLM
-PDF(文本) ──fast──────┤     (category/text/     (parent_id/       (by_title)
-PDF(扫描)/图片─视觉模型┘      metadata.*)         source/page…)
+```mermaid
+flowchart LR
+    HW["HTML / Word"] -->|"规则解析"| DE["document elements<br/>(category/text/metadata.*)"]
+    PM["PPTX / MD"] -->|"规则解析"| DE
+    PT["PDF(文本)"] -->|"fast"| DE
+    PS["PDF(扫描)/图片"] -->|"视觉模型"| DE
+    DE --> Meta["metadata 富化<br/>(parent_id/source/page…)"]
+    Meta --> Chunk["chunk（by_title）"]
+    Chunk --> VDB["向量库"]
+    VDB --> Ret["检索"]
+    Ret --> LLM["LLM"]
 ```
 
 三种抽取范式各就各位：**规则解析**（有内建结构）、**fast 直抽**（文本型 PDF）、**视觉模型**（DLD/Vision Transformer，扫描件与表格）。它们的产物长一个样，这就是 Unstructured 的核心价值。

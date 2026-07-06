@@ -7,14 +7,19 @@
 
 真实业务场景常有**数千个 API**。把它们全塞给 LLM 既不高效（token 上限、延迟），多数情况下也不现实——必须针对每条用户 query 把 API 选择空间缩到一个**小而相关的子集**。本课的流水线分两段：
 
-```
-── design time（离线，一次性）──────────────────────────
-  知识图谱 ──SPARQL──> 实体集+属性标签文本 ──embedding模型──> 向量 ──> FAISS 索引(落盘)
-
-── run time（在线，每条 query）────────────────────────
-  用户 query ──embed──> ① flat 检索 top-k 实体集
-                        ② 沿 pr:hasNext 流程边扩展，补入相邻 API
-                        ③ 附上"B depends on A"流程信息 ──> 交给 Agent
+```mermaid
+flowchart TB
+    subgraph DT["design time（离线，一次性）"]
+      KG["知识图谱"] -->|"SPARQL"| T["实体集+属性标签文本"]
+      T -->|"embedding 模型"| V["向量"]
+      V --> F["FAISS 索引（落盘）"]
+    end
+    subgraph RT["run time（在线，每条 query）"]
+      Q["用户 query"] -->|"embed"| S1["① flat 检索 top-k 实体集"]
+      S1 --> S2["② 沿 pr:hasNext 流程边扩展，补入相邻 API"]
+      S2 --> S3["③ 附上「B depends on A」流程信息"]
+      S3 --> Agent["交给 Agent"]
+    end
 ```
 
 新增依赖：`faiss`（IndexFlatL2/IndexFlat，相似度检索）、`tqdm`（进度条）、`langchain_openai.OpenAIEmbeddings`（`text-embedding-3-large`）；沿用 `helper.parameterize_sparql` 做 SPARQL 参数化。图谱直接 `graph.parse("odata_knowledge_graph.ttl")` 加载前几课的成果。

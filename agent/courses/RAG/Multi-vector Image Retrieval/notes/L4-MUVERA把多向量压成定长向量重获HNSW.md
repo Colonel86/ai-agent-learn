@@ -17,13 +17,14 @@ L3 把 ColPali 的显存问题基本压住了——scalar/binary quantization �
 
 核心目标：`变长的 N 个 token 向量` → `固定长度的一个向量`，且尽量保留 MaxSim 想捕捉的语义距离。
 
-```
-多向量序列 (N×128，N 可变)
-   │  ① SimHash 聚类 (LSH)        → 分进 2^K 个桶
-   │  ② 每桶取代表向量             → 恰好 2^K 个 128 维向量
-   │  ③ Random Projection 降维     → 2^K 个 (dim_proj) 维向量
-   │  ④ 按桶 ID 顺序 concat        → 一个定长向量
-   └─ 重复 R 次 (每次换随机数) 再 concat → 最终 FDE
+```mermaid
+flowchart TB
+    A["多向量序列 (N×128，N 可变)"]
+    A --> B["① SimHash 聚类 (LSH) → 分进 2^K 个桶"]
+    B --> C["② 每桶取代表向量 → 恰好 2^K 个 128 维向量"]
+    C --> D["③ Random Projection 降维 → 2^K 个 (dim_proj) 维向量"]
+    D --> E["④ 按桶 ID 顺序 concat → 一个定长向量"]
+    E --> F["重复 R 次 (每次换随机数) 再 concat → 最终 FDE"]
 ```
 
 ### ① SimHash 聚类：用随机超平面把空间切成 2^K 个桶

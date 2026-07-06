@@ -13,12 +13,16 @@
 
 四种算法可分两大思路：
 
-```
-自底向上（从字符/字节起，迭代合并）      自顶向下（从大词表起，迭代删除）
-┌──────────────┬──────────────┐        ┌──────────────┐
-│  BPE          │  WordPiece   │        │   Unigram    │
-└──────────────┴──────────────┘        └──────────────┘
-SentencePiece = 实现层封装（可用 BPE 或 Unigram 内核），额外假设"空格也是普通字符"
+```mermaid
+flowchart TB
+    subgraph BU["自底向上（从字符/字节起，迭代合并）"]
+      BPE["BPE"]
+      WP["WordPiece"]
+    end
+    subgraph TD["自顶向下（从大词表起，迭代删除）"]
+      UG["Unigram"]
+    end
+    SP["SentencePiece = 实现层封装（可用 BPE 或 Unigram 内核），额外假设「空格也是普通字符」"]
 ```
 
 ## 1. BPE（Byte-Pair Encoding）——自底向上、按频率合并

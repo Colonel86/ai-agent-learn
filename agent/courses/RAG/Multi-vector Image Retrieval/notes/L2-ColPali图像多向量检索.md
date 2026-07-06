@@ -31,23 +31,25 @@
 
 ### 3.1 纯文本 LLM 的常规流程
 
-```
-输入文本 → Tokenizer 切 token、生成 token ID 序列
-        → 模型查表得到每个 token 的 embedding（静态、每 token 固定）
-        → 过模型各层，产出「上下文化 embedding」（考虑了整个序列）
-        → 用于生成 logits → 词表上每个 token 作为下一个词的概率
+```mermaid
+flowchart TB
+    A["输入文本"] --> B["Tokenizer 切 token、生成 token ID 序列"]
+    B --> C["模型查表得到每个 token 的 embedding（静态、每 token 固定）"]
+    C --> D["过模型各层，产出「上下文化 embedding」（考虑了整个序列）"]
+    D --> E["用于生成 logits → 词表上每个 token 作为下一个词的概率"]
 ```
 
 ### 3.2 加一路视觉：图像的预处理管线
 
 视觉是完全不同的模态，不能直接转成文本，所以它有**自己的预处理管线**，目标是把图像也变成一串 embedding 喂进语言模型（和文本一样）：
 
-```
-整张图 → 额外的 transformer 先切成固定尺寸的 image patches
-      → 一张图 = 一串 patch（类比：文本 = 一串 token，而非整篇一坨）
-      → 过 Vision Transformer，每个 patch 产出一个上下文化向量（通常很高维）
-      → 投影(projection)到更低维，使图像向量与文本向量维度一致
-      → 送进同一个语言模型
+```mermaid
+flowchart TB
+    A["整张图"] --> B["额外的 transformer 先切成固定尺寸的 image patches"]
+    B --> C["一张图 = 一串 patch（类比：文本 = 一串 token，而非整篇一坨）"]
+    C --> D["过 Vision Transformer，每个 patch 产出一个上下文化向量（通常很高维）"]
+    D --> E["投影(projection)到更低维，使图像向量与文本向量维度一致"]
+    E --> F["送进同一个语言模型"]
 ```
 
 要点：VLM 就是在纯 LLM 上给图像加一段额外处理，**文本处理保持不变**。无论输入哪种模态，语言模型都产出一个 embedding。

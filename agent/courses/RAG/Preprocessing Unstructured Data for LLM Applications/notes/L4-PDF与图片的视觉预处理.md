@@ -31,11 +31,13 @@ L3（metadata & chunking）之前处理的都是**自带结构**的文档——H
 
 DLD 用一个目标检测模型在文档上**画 bounding box 并打标签**（narrative text / title / bulleted list / table …），然后把框内文字取出来。取字有两条路：
 
-```
-第一步：目标检测模型 → 在页面上画框 + 标类别
-第二步：把每个框里的文字取出——
-   ├─ 扫描件/图片：框内没有可读文本 → 跑 OCR（光学字符识别）
-   └─ 文本型 PDF：文字本就在文档里 → 用框坐标回溯原文档，直接抠出文本（无需 OCR）
+```mermaid
+flowchart TB
+    S1["第一步：目标检测模型 → 在页面上画框 + 标类别"]
+    S2["第二步：把每个框里的文字取出"]
+    S1 --> S2
+    S2 -->|"扫描件/图片：框内没有可读文本"| OCR["跑 OCR（光学字符识别）"]
+    S2 -->|"文本型 PDF：文字本就在文档里"| Back["用框坐标回溯原文档，直接抠出文本（无需 OCR）"]
 ```
 
 常用模型是 **YOLOX**（archive 有论文）。"回溯原文取字"是 DLD 的一个隐藏优势——文本型 PDF 里文字是精确的，比 OCR 更准且省一次模型调用。
@@ -46,9 +48,10 @@ DLD 用一个目标检测模型在文档上**画 bounding box 并打标签**（n
 
 Vision Transformer 把整张文档图片当输入，**一步**产出文本；OCR 不再是独立环节，模型内部就把"识字"做了。代表架构 **Donut（Document Understanding Transformer）** 可被训练成直接吐出**合法 JSON 字符串**，每个元素带 `text` 和 `category`：
 
-```
-文档图片 → Vision Transformer → 合法 JSON 字符串
-  → 解析成规范化 document elements（与其它文档类型对齐）
+```mermaid
+flowchart LR
+    A["文档图片"] --> B["Vision Transformer"] --> C["合法 JSON 字符串"]
+    C --> D["解析成规范化 document elements（与其它文档类型对齐）"]
 ```
 
 关键特性：可选地接一个**文本 prompt**（就像 LLM），因此对**非标准文档（表单等）更灵活**——抽 key-value pair 很容易，加一种新 element 类型甚至只要改 prompt，不用重训模型。代价是它是**生成式**的：会幻觉/重复，且算力开销远大于 DLD。

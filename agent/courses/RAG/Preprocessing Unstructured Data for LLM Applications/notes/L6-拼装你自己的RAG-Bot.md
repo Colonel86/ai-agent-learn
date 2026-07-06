@@ -7,9 +7,10 @@
 
 前四课造了一堆零件：多格式规范化、metadata、视觉抽取、表格结构。本课是**集成课**——目标应用是"围绕 Donut 模型文档的问答机器人"。整机流水线：
 
-```
-异构语料 → 分类型预处理 → 元数据清洗 → chunk_by_title → 向量化入库(Chroma)
-        → 检索(similarity / 带 filter) → prompt 模板 → LLM → 带来源的回答
+```mermaid
+flowchart LR
+    A["异构语料"] --> B["分类型预处理"] --> C["元数据清洗"] --> D["chunk_by_title"] --> E["向量化入库(Chroma)"]
+    E --> F["检索(similarity / 带 filter)"] --> G["prompt 模板"] --> H["LLM"] --> I["带来源的回答"]
 ```
 
 ## 1. 异构语料的分类型摄取

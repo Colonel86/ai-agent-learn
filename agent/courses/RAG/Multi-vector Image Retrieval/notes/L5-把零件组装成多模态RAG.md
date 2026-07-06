@@ -24,15 +24,16 @@ recreate_colpali_optimizations_collection(qdrant, "colpali-optimizations", muver
 
 `recreate_...` 这个 helper 一次性导入了 L3 讨论过的全部内存优化，并为原始 ColPali 多向量生成 MUVERA 表示。一个文档因此挂着**多份向量**：
 
-```
-一个 PDF 页
-  ├─ original          （原始 ColPali 多向量，MaxSim 基准）
-  ├─ scalar_quantized  （标量量化）
-  ├─ binary_quantized  （二值量化）
-  ├─ hierarchical_2x   （层次 token 池化，pool factor=2）
-  ├─ hierarchical_4x
-  ├─ row_pooled / column_pooled
-  └─ muvera_fde        （MUVERA 定长编码，可 HNSW）
+```mermaid
+flowchart LR
+    P["一个 PDF 页"]
+    P --> A["original（原始 ColPali 多向量，MaxSim 基准）"]
+    P --> B["scalar_quantized（标量量化）"]
+    P --> C["binary_quantized（二值量化）"]
+    P --> D["hierarchical_2x（层次 token 池化，pool factor=2）"]
+    P --> E["hierarchical_4x"]
+    P --> F["row_pooled / column_pooled"]
+    P --> G["muvera_fde（MUVERA 定长编码，可 HNSW）"]
 ```
 
 > **架构师视角**：把 7~8 种优化向量**同库并排存**，本质是把「选型」变成「运行期可切换的参数」而非「上线前的一次性押注」。检索时只改 `using="..."` 就能 A/B 不同优化，成本是**多份存储**换**决策的可逆性**。这跟 3-retrieval.md 的主张一致——检索策略应可插拔、可基准测试；架构师要评估的是「多存这几份向量的显存代价」是否配得上「随时能换、能量化对比」的敏捷性。

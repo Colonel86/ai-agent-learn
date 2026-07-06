@@ -35,11 +35,17 @@ services_df = pd.read_csv("ro_shared_data/services.csv",
 
 Schema（本体）定义图里允许出现的节点类型和边类型，是构图的蓝图，也是后续查询/推理/推断的依据。OData 的 Entity Data Model 直接给出了它：
 
-```
-Service ──(所属)── EntityType ──(property)── Property
-              │         │
-        EntitySet    Navigation(navigateFrom / navigateTo + multiplicity)
-        (实例容器)
+```mermaid
+flowchart TB
+    Service["Service"]
+    EntityType["EntityType"]
+    Property["Property"]
+    EntitySet["EntitySet（实例容器）"]
+    Navigation["Navigation<br/>(navigateFrom / navigateTo + multiplicity)"]
+    Service ---|"所属"| EntityType
+    EntityType ---|"property"| Property
+    Service --- EntitySet
+    EntityType --- Navigation
 ```
 
 - **Service**：入口，以机器可读形式公布自己的数据模型，让通用客户端能以良定义的方式交互；
