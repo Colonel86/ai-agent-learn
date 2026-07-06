@@ -7,11 +7,15 @@
 
 上一课(L9)从 CSV 建出 domain graph。本课处理 markdown,产出另两张子图,并把它们缝合:
 
-```
-CSV ──(L9,规则)──► Domain Graph  ┐
-                                  ├─ Entity Resolution ─► 完整连通 KG
-markdown ─(L10,graphrag)─► Lexical Graph (chunks + Document)
-                          Subject Graph (extracted entities) ┘
+```mermaid
+flowchart LR
+    CSV["CSV"] -->|"L9，规则"| DG["Domain Graph"]
+    MD["markdown"] -->|"L10，graphrag"| LG["Lexical Graph<br/>（chunks + Document）"]
+    MD -->|"L10，graphrag"| SG["Subject Graph<br/>（extracted entities）"]
+    DG --> ER["Entity Resolution"]
+    LG --> ER
+    SG --> ER
+    ER --> KG["完整连通 KG"]
 ```
 
 | 子图 | 来源 | 内容 |

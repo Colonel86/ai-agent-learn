@@ -40,12 +40,12 @@ Lambda 的计费粒度细到毫秒：函数只跑了 2ms，就只付这 2ms 的�
 
 "新文档上传就自动跑 ADE"的机制。EDA 是一种**解耦**设计模式，系统之间靠收发 **event**（"某事发生了"的通知）通信。三步：
 
-```
-① Event Producer   产生事件的组件。S3 桶——你上传文件时它发出 "file uploaded" 事件
-        │
-② Event Channel/Broker   路由事件的中间件。Amazon EventBridge——"谁该被通知什么"的通知系统
-        │
-③ Event Consumer   订阅并响应事件的服务。AWS Lambda——监听 "file uploaded"，一到就自动开跑
+```mermaid
+flowchart TB
+    A["① Event Producer 产生事件的组件<br/>S3 桶——你上传文件时它发出 &quot;file uploaded&quot; 事件"]
+    B["② Event Channel/Broker 路由事件的中间件<br/>Amazon EventBridge——&quot;谁该被通知什么&quot;的通知系统"]
+    C["③ Event Consumer 订阅并响应事件的服务<br/>AWS Lambda——监听 &quot;file uploaded&quot;，一到就自动开跑"]
+    A --> B --> C
 ```
 
 消息服务的取舍：**EventBridge** 适合需要复杂路由的事件驱动架构；**Amazon SNS**（pub-sub）+ **Amazon SQS**（队列）支持更简单的 pub-sub 与排队模式。

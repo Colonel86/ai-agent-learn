@@ -63,14 +63,18 @@ root_agent = Agent(
 
 委派"类似工具调用"，但有本质区别：**agent 知道自己在跟另一个 agent 说话，整段 conversation history 会被传过去**（而不是像工具那样只传几个参数）。开 `verbose=True` 看幕后，一次 "Hello I'm ABK" → "Thanks, bye!" 的完整轨迹：
 
-```
-[friendly_agent_team]  → action: transfer_to_agent(greeting_subagent)   # coordinator 决定委派
-[greeting_subagent]    → FunctionCall: say_hello(person_name="ABK")     # sub-agent 抽出名字、调工具
-                       ← "Hello to you, ABK"                            # final=True，事件循环终止
---- 第二条 user 消息 "Thanks, bye!" ---
-[greeting_subagent]    → transfer_to_agent(farewell_subagent)          # 当前还在 greeting 手里，它自己转交
-[farewell_subagent]    → FunctionCall: say_goodbye()                    # 无参数
-                       ← "Goodbye from Cypher!"                         # final response
+```mermaid
+sequenceDiagram
+    participant C as friendly_agent_team
+    participant G as greeting_subagent
+    participant F as farewell_subagent
+    C->>G: transfer_to_agent(greeting_subagent)｜coordinator 决定委派
+    G->>G: FunctionCall say_hello(person_name="ABK")｜sub-agent 抽出名字、调工具
+    G-->>C: "Hello to you, ABK"｜final=True，事件循环终止
+    Note over C,F: 第二条 user 消息 "Thanks, bye!"
+    G->>F: transfer_to_agent(farewell_subagent)｜当前还在 greeting 手里，它自己转交
+    F->>F: FunctionCall say_goodbye()｜无参数
+    F-->>C: "Goodbye from Cypher!"｜final response
 ```
 
 两个观察点：① `transfer_to_agent` 的返回值是 `None`，它只是移交控制权，真正干活的是接手的 sub-agent；② 第二轮时控制权还在 greeting sub-agent 手里，是它自己判断"这不归我管"再转交给 farewell——**sub-agent 之间也能互相 aware 并转交**，不必回到 root。讲师建议至少完整走读一次 verbose 输出，这是调试 agent 交互的基本功。

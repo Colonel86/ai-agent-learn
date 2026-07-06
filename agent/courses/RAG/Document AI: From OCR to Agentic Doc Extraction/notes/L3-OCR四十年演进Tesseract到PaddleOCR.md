@@ -7,11 +7,9 @@
 
 L2 用 Tesseract 撞了一堆墙，问题根子在引擎。本课把镜头拉远：OCR 的演进恰好**镜像了整个 AI 的大转向**——从「精心设计的流水线 + 手工特征（handcrafted features）」到「数据驱动、可训练、直接从样本学习的模型」。不可能覆盖每篇论文，故聚焦两个各自代表一个时代的技术：**Tesseract 与 PaddleOCR**。
 
-```
-传统 CV 时代                     深度学习时代
-Tesseract  ───────────────────►  PaddleOCR
-手工工程/多步/规则                神经网络端到端
-（不是地基，是被取代的旧路线）
+```mermaid
+flowchart LR
+    T["Tesseract<br/>传统 CV 时代<br/>手工工程/多步/规则<br/>（不是地基，是被取代的旧路线）"] -->|"演进"| P["PaddleOCR<br/>深度学习时代<br/>神经网络端到端"]
 ```
 
 ## 1. Tesseract：传统过程式 CV 的代表

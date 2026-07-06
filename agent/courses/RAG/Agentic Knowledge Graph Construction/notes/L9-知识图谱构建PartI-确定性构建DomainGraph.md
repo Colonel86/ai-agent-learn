@@ -9,9 +9,10 @@ L5-L8 的多 Agent 工作流已产出完整规格：结构化的 `construction_p
 
 讲师给了一个大框架：整个构建系统若"慷慨"地叫，可称为 **neuro-symbolic agent**——语言模型（neuro）与规则系统（symbolic）的混合。但**本课的 domain graph 构建纯属 symbolic 一侧，不含任何 LLM 调用**。
 
-```
-construction plan ──► [construct_domain_graph 工具] ──► Domain Graph (Neo4j)
-   (CSV → 节点/关系规则)        纯 Cypher，无 Agent
+```mermaid
+flowchart LR
+    CP["construction plan<br/>（CSV → 节点/关系规则）"] --> Tool["construct_domain_graph 工具<br/>纯 Cypher，无 Agent"]
+    Tool --> DG["Domain Graph（Neo4j）"]
 ```
 
 ## 1. 为什么 domain graph 不用 Agent

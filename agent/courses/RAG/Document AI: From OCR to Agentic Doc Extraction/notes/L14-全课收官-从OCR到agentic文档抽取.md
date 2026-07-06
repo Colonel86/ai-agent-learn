@@ -7,14 +7,14 @@
 
 大量数据锁在 PDF 等文档里（本地、网上、企业云存储）。这门课教你搭文档处理流水线，把复杂文档变成 **LLM-ready 的 markdown 文本**并抽取信息供分析。结语原话浓缩为一条主线：
 
-```
-convert images → text（OCR）
-        ↓  分析 layout（bounding boxes）
-        ↓  逻辑排序 recognizable chunks（reading order）
-        ↓  用 VLM 理解上下文中的文字
-        ↓  用 ADE（vision-first、agentic 的文档理解方法）处理复杂文档
-        ↓  搭 RAG 应用回答非结构化文件的问题
-        ↓  把应用搬上云、做成 event-driven
+```mermaid
+flowchart TB
+    A["convert images → text（OCR）"] --> B["分析 layout（bounding boxes）"]
+    B --> C["逻辑排序 recognizable chunks（reading order）"]
+    C --> D["用 VLM 理解上下文中的文字"]
+    D --> E["用 ADE（vision-first、agentic 的文档理解方法）处理复杂文档"]
+    E --> F["搭 RAG 应用回答非结构化文件的问题"]
+    F --> G["把应用搬上云、做成 event-driven"]
 ```
 
 一句话：**从"只会抠字的传统 OCR"，一路加能力，到"看得懂版面、排得对顺序、理解得了语境、追溯得回原页、还能上云自动跑"的 agentic 文档抽取。**

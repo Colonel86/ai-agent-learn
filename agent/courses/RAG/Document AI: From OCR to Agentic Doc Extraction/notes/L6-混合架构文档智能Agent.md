@@ -16,20 +16,12 @@ L5（David 的理论课）铺垫了本课的全部动机：文档不是自上而
 
 ## 1. 三段式管线总览
 
-```
-输入文档(经济报告 report_original.png)
-        │
- ┌──────┴───────┐
- │ ① 文本抽取    │  PaddleOCR 出文本+置信度+bbox
- │   + 阅读顺序  │  LayoutReader(LayoutLMv3) 重排序
- ├──────────────┤
- │ ② 版面检测    │  PaddleOCR LayoutDetection → text/table/chart/title 区域
- ├──────────────┤
- │ ③ Agent 编排  │  LangChain create_tool_calling_agent
- │              │  工具: AnalyzeChart / AnalyzeTable (VLM=gpt-4o-mini)
- └──────┬───────┘
-        ▼
-   连贯的回答（文本问题走 OCR 上下文，图表问题调 VLM 工具）
+```mermaid
+flowchart TB
+    I["输入文档（经济报告 report_original.png）"] --> S1["① 文本抽取 + 阅读顺序<br/>PaddleOCR 出文本+置信度+bbox<br/>LayoutReader(LayoutLMv3) 重排序"]
+    S1 --> S2["② 版面检测<br/>PaddleOCR LayoutDetection → text/table/chart/title 区域"]
+    S2 --> S3["③ Agent 编排<br/>LangChain create_tool_calling_agent<br/>工具: AnalyzeChart / AnalyzeTable (VLM=gpt-4o-mini)"]
+    S3 --> O["连贯的回答（文本问题走 OCR 上下文，图表问题调 VLM 工具）"]
 ```
 
 类比一个人类分析师读复杂报告：先扫全局结构，再对特定小节深挖。

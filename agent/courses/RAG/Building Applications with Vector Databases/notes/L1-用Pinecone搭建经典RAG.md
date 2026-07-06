@@ -7,11 +7,11 @@
 
 讲师先给出交付物形态：用户在左边提问"What was the Berlin Wall?"，系统先从 Pinecone 取回若干长文档（原始、割裂、不好读），再把这些文档拼进 OpenAI 的 prompt，返回一篇写得漂亮的成文回答。**"这就是 RAG 的一句话本质"**。路线四步：
 
-```
-① 建库：Wikipedia CSV → 向量 → upsert 进 Pinecone
-② 检索：query "Berlin Wall" → 取回 top-3 文档（长、散、割裂）
-③ 拼 prompt：三篇文档 → prompt engineering
-④ 生成：OpenAI GPT-3.5-turbo → 一篇通顺文章
+```mermaid
+flowchart TB
+    S1["① 建库：Wikipedia CSV → 向量 → upsert 进 Pinecone"] --> S2["② 检索：query &quot;Berlin Wall&quot; → 取回 top-3 文档（长、散、割裂）"]
+    S2 --> S3["③ 拼 prompt：三篇文档 → prompt engineering"]
+    S3 --> S4["④ 生成：OpenAI GPT-3.5-turbo → 一篇通顺文章"]
 ```
 
 ## 1. 数据与 Pinecone 记录模型
@@ -90,12 +90,12 @@ prompt = prompt_start + "\n\n---\n\n".join(contexts) + prompt_end
 
 三段式结构一目了然：
 
-```
-┌── prompt_start ──┐  Answer the question based on the context below.
-│                  │  Context:
-├── context ───────┤  <文档1> --- <文档2> --- <文档3>   ← 从 Pinecone 取回的证据
-├── prompt_end ────┤  Question: What is the Berlin Wall?
-└──────────────────┘  Answer:
+```mermaid
+flowchart TB
+    PS["prompt_start<br/>Answer the question based on the context below.<br/>Context:"]
+    CX["context<br/>&lt;文档1&gt; --- &lt;文档2&gt; --- &lt;文档3&gt;（从 Pinecone 取回的证据）"]
+    PE["prompt_end<br/>Question: What is the Berlin Wall?<br/>Answer:"]
+    PS --> CX --> PE
 ```
 
 > **对比课程 06 Advanced Retrieval**：本课是 RAG 最朴素的一档——单轮向量检索 + 直接拼 prompt，不做 query 改写、不做重排。讲师本人也反复说"这只是个简单例子，鼓励你自己试不同的 prompt engineering"。课程 06 的 "Similarity ≠ Relevance" 正是对这一档的补课：通用 embedding 找回的"相似"未必"相关"，要在检索前（Query Expansion）/检索后（Cross-Encoder 重排）加料。落到 `3-retrieval.md`，升级路径是"朴素 top-k → Hybrid/Reranker → HyDE/Multi-Query"——本课停在起点，知道起点在哪才知道往哪升级。

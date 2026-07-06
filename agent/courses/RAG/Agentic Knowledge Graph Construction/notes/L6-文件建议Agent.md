@@ -7,8 +7,10 @@
 
 L5 建了 User Intent Agent，本课建 File Suggestion Agent，两者是同一条子流水线上的接力：
 
-```
-User Intent Agent ──approved_user_goal──▶ File Suggestion Agent ──approved_files──▶ (L7 Schema Proposal)
+```mermaid
+flowchart LR
+    UI["User Intent Agent"] -->|"approved_user_goal"| FS["File Suggestion Agent"]
+    FS -->|"approved_files"| SP["(L7 Schema Proposal)"]
 ```
 
 - **输入**：`approved_user_goal`（来自上一环）

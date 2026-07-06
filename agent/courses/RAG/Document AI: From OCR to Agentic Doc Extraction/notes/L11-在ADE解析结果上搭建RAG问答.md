@@ -9,10 +9,10 @@ L10 讲清了 RAG 的动机：解析和抽取解决了"把文档变成干净数�
 
 三阶段 RAG（贯穿全课）：
 
-```
-① Preprocess  解析成 chunk → 向量化 → 入库
-② Retrieve    把问题向量化 → 找语义最近的 chunk
-③ Generate    把检索到的 chunk 当上下文喂给 LLM → 生成 grounded 答案
+```mermaid
+flowchart TB
+    A["① Preprocess 解析成 chunk → 向量化 → 入库"] --> B["② Retrieve 把问题向量化 → 找语义最近的 chunk"]
+    B --> C["③ Generate 把检索到的 chunk 当上下文喂给 LLM → 生成 grounded 答案"]
 ```
 
 技术栈：`OpenAI`（embedding + LLM）、`ChromaDB`（向量库）、`LangChain`（把检索结果接进 prompt）、`Pillow`（可视化 chunk）。文档是 **Apple 10-K**（美股公司必须报送 SEC 审计的年报，大量财务表格）。

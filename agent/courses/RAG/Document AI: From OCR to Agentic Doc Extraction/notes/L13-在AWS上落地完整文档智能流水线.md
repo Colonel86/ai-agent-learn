@@ -7,13 +7,13 @@
 
 数据流（L12 见过的图，这里是它的实现顺序）：
 
-```
-① 用户上传 PDF → S3 bucket 的 input 文件夹
-② S3 新文件 → 自动触发 Lambda
-③ Lambda 用 ADE 把 PDF 解析成结构化 markdown
-④ 解析产物（markdown + visual grounding 数据 + 各个 chunk）→ 写回 S3 output
-⑤ Bedrock Knowledge Base 为文档建索引，支持语义检索
-⑥ 用户向 Strands agent 提问，agent 带记忆维持上下文
+```mermaid
+flowchart TB
+    A["① 用户上传 PDF → S3 bucket 的 input 文件夹"] --> B["② S3 新文件 → 自动触发 Lambda"]
+    B --> C["③ Lambda 用 ADE 把 PDF 解析成结构化 markdown"]
+    C --> D["④ 解析产物（markdown + visual grounding 数据 + 各个 chunk）→ 写回 S3 output"]
+    D --> E["⑤ Bedrock Knowledge Base 为文档建索引，支持语义检索"]
+    E --> F["⑥ 用户向 Strands agent 提问，agent 带记忆维持上下文"]
 ```
 
 前置条件（lab 假定已存在）：带 input/output 文件夹的 S3 bucket；一个连到 S3 `output/medical_chunks` 文件夹的 Bedrock Knowledge Base。
@@ -70,13 +70,13 @@ Memory    1024 MB
 
 函数被触发后（`ade_s3_handler`）逐步：
 
-```
-① 收到 event（S3 input 上传 PDF 触发）
-② 从 event 里取出文件 key
-③ 校验：是 PDF？跳过文件夹？output 是否已存在（避免重复处理）
-④ 把 PDF 下载到 Lambda 临时目录
-⑤ 把 PDF 发给 ADE API → 拿回 markdown 文本 + chunks
-⑥ 结果写回 S3 output，三种格式：
+```mermaid
+flowchart TB
+    A["① 收到 event（S3 input 上传 PDF 触发）"] --> B["② 从 event 里取出文件 key"]
+    B --> C["③ 校验：是 PDF？跳过文件夹？output 是否已存在（避免重复处理）"]
+    C --> D["④ 把 PDF 下载到 Lambda 临时目录"]
+    D --> E["⑤ 把 PDF 发给 ADE API → 拿回 markdown 文本 + chunks"]
+    E --> F["⑥ 结果写回 S3 output，三种格式："]
 ```
 
 | 输出文件 | 内容 |

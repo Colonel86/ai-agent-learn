@@ -70,17 +70,11 @@ Reading order 完全依赖 OCR 输入质量；而**OCR 只抓文字**，漏掉�
 
 从 LLM 升到 VLM 的三个新组件（**VLM 本质仍是 LLM，只是前面加了视觉栈**）：
 
-```
-Image + Text
-   │
-   ▼
-① Vision Encoder（CLIP / SigLIP）：像素 → 视觉向量
-   │
-   ▼
-② Projector（翻译层）：视觉向量 → LLM 能处理的 token embedding
-   │
-   ▼
-③ LLM Backbone：在视觉 token 上推理 → 文本输出
+```mermaid
+flowchart TB
+    I["Image + Text"] --> A["① Vision Encoder（CLIP / SigLIP）：像素 → 视觉向量"]
+    A --> B["② Projector（翻译层）：视觉向量 → LLM 能处理的 token embedding"]
+    B --> C["③ LLM Backbone：在视觉 token 上推理 → 文本输出"]
 ```
 
 **但 VLM 不是万能解**：一次性丢给它一张视觉丰富的文档，它会——
@@ -95,28 +89,28 @@ Image + Text
 
 把 **layout detection** 与 **VLM 推理**组合：
 
-```
-Layout Analysis 提供结构地基（阅读顺序、区域及类型）
-        │  按区域类型分流处理：
-        ├── 图表/可视化 → VLM + 定向 prompt
-        ├── 表格 → VLM 或专用 Transformer（看复杂度）
-        └── 文本区 → 传统 OCR 或 VLM 抽取
+```mermaid
+flowchart TB
+    L["Layout Analysis 提供结构地基<br/>（阅读顺序、区域及类型）<br/>按区域类型分流处理："]
+    L -->|"图表/可视化"| A["VLM + 定向 prompt"]
+    L -->|"表格"| B["VLM 或专用 Transformer（看复杂度）"]
+    L -->|"文本区"| C["传统 OCR 或 VLM 抽取"]
 ```
 
 结论：**layout detection 给确定性 grounding，VLM 处理受益于视觉推理的元素**；两者由**agentic 框架**编排。
 
 L6 lab 要实现的 pipeline：
 
-```
-输入文档
-  → PaddleOCR 抽文字（+ bbox + 置信度）
-  → LayoutReader 重排阅读顺序
-  → PaddleOCR LayoutDetect 做区域检测（表/图/文本块）
-  → 把「有序 OCR 文本 + region ID + chunk 类型」作为上下文喂给 LangChain Agent
-       agent 有两个专用工具：
-         · analyze_chart：把裁剪的图表图送 VLM，抽图类型/坐标轴/数据点/趋势
-         · analyze_table：同理抽表头/行/值/注释
-  → agent 按用户问题决定哪个区域需 VLM、调哪个工具
+```mermaid
+flowchart TB
+    I["输入文档"] --> A["PaddleOCR 抽文字（+ bbox + 置信度）"]
+    A --> B["LayoutReader 重排阅读顺序"]
+    B --> C["PaddleOCR LayoutDetect 做区域检测（表/图/文本块）"]
+    C --> D["把「有序 OCR 文本 + region ID + chunk 类型」作为上下文喂给 LangChain Agent"]
+    D --> Agent["LangChain Agent（两个专用工具）"]
+    Agent --> T1["analyze_chart：把裁剪的图表图送 VLM，抽图类型/坐标轴/数据点/趋势"]
+    Agent --> T2["analyze_table：同理抽表头/行/值/注释"]
+    Agent --> E["agent 按用户问题决定哪个区域需 VLM、调哪个工具"]
 ```
 
 ## 本课总结

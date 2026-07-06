@@ -7,12 +7,13 @@
 
 前两环各是单个 LLM agent；本课这个"agent"其实内部是**一整套 agent 协作**。顶层 coordinator 只有三样工具：`refinement_loop_as_tool`（一个循环 agent 被当工具用）、`get_proposed_construction_plan`、`approve_proposed_construction_plan`。真正干活的是那个 loop：
 
-```
-schema_refinement_loop (LoopAgent, max_iterations=2)
- ├─ schema_proposal_agent   提方案：为每个文件产出 node/relationship 构建规则
- ├─ schema_critic_agent     挑刺：只读，输出 'valid' 或 'retry + 反馈清单'
- └─ CheckStatusAndEscalate  判停：看 critic 的 feedback 决定是否 escalate 退出循环
-        ↑____________________ 循环，直到 valid 或达 max_iterations ____________________|
+```mermaid
+flowchart TB
+    Loop["schema_refinement_loop（LoopAgent, max_iterations=2）"]
+    Loop --> A["schema_proposal_agent<br/>提方案：为每个文件产出 node/relationship 构建规则"]
+    A --> B["schema_critic_agent<br/>挑刺：只读，输出 'valid' 或 'retry + 反馈清单'"]
+    B --> C["CheckStatusAndEscalate<br/>判停：看 critic 的 feedback 决定是否 escalate 退出循环"]
+    C -->|"循环，直到 valid 或达 max_iterations"| A
 ```
 
 - **输入**：`approved_user_goal`、`approved_files`
@@ -83,9 +84,10 @@ critic 检查清单（hints）：唯一标识真唯一吗（composite 复合键�
 
 critic 的输出约定极简：
 
-```
-schema 没问题 → 回单个词 'valid'
-有问题       → 回 'retry' + 一份简洁 bullet list 反馈
+```mermaid
+flowchart LR
+    C{"critic 检查 schema"} -->|"没问题"| V["回单个词 'valid'"]
+    C -->|"有问题"| R["回 'retry' + 一份简洁 bullet list 反馈"]
 ```
 
 最妙的是 critic 怎么把反馈交回去——用 **`output_key`**：

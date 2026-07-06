@@ -24,17 +24,12 @@ L6 结尾的痛点是引子：PaddleOCR + LayoutReader + LayoutDetection + VLM �
 
 ADE 不是对既有方案的增量改良，而是 LandingAI 工程师首创的新路子，属于「agentic 时代」的 **Vision-First、Data-Centric** 方法。
 
-```
-        ┌─────────────────────────────────────────┐
-        │  AGENTS & APPS  ← 用户真正要的           │
-        │  Field Extraction / Document Splitting    │
-        ├─────────────────────────────────────────┤
-        │  Intelligent Agents: Parsing & Routing    │
-        │  text / tables / figures 各走各的路径      │
-        ├─────────────────────────────────────────┤
-        │  Foundation: Document-Native Vision Models │  ← 地基
-        │  训练成「像人一样看文档」                  │
-        └─────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    A["AGENTS & APPS（← 用户真正要的）<br/>Field Extraction / Document Splitting"]
+    B["Intelligent Agents: Parsing & Routing<br/>text / tables / figures 各走各的路径"]
+    C["Foundation: Document-Native Vision Models（← 地基）<br/>训练成「像人一样看文档」"]
+    C --> B --> A
 ```
 
 - **Vision-First**：把文档当**视觉对象**——意义编码在版面、结构、空间关系里，而非纯文本流。这是 LandingAI 多年视觉积累的落点。

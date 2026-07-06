@@ -23,18 +23,23 @@
 
 RAG（Retrieval-Augmented Generation）是当今几乎所有现代文档问答系统的底层架构。六步分属三阶段：
 
-```
-┌── 预处理 Preprocessing ──────────────┐
-│ ① Parse   原始文档 → 干净结构化文本    │ ← ADE 在这里；garbage-in-garbage-out
-│ ② Embed   文本 → 捕捉语义的向量        │
-│ ③ Store   向量存进向量库（相似度检索优化）│ ← ChromaDB
-├── 检索 Retrieval ────────────────────┤
-│ ④ Query   问题也 embed，搜库找 top-k   │
-│ ⑤ Retrieve 过滤掉相似度过低的，取回其余 │
-├── 生成 Generation ───────────────────┤
-│ ⑥ Generate 检索内容作上下文喂 LLM 生成  │
-│            自然语言答案 + 对应内容供验证  │
-└──────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph PRE["预处理 Preprocessing"]
+        P1["① Parse 原始文档 → 干净结构化文本（ADE 在这里；garbage-in-garbage-out）"]
+        P2["② Embed 文本 → 捕捉语义的向量"]
+        P3["③ Store 向量存进向量库（相似度检索优化，ChromaDB）"]
+        P1 --> P2 --> P3
+    end
+    subgraph RET["检索 Retrieval"]
+        R1["④ Query 问题也 embed，搜库找 top-k"]
+        R2["⑤ Retrieve 过滤掉相似度过低的，取回其余"]
+        R1 --> R2
+    end
+    subgraph GEN["生成 Generation"]
+        G1["⑥ Generate 检索内容作上下文喂 LLM 生成<br/>自然语言答案 + 对应内容供验证"]
+    end
+    PRE --> RET --> GEN
 ```
 
 第⑥步的「附带检索内容供 grounding/验证」对**重度监管组织（HRO）**——金融、医疗、生命科学——至关重要。
@@ -84,12 +89,12 @@ Lab 用 ChromaDB（本地、开源，适合学习/原型）。要点：
 
 检索一步的五个动作：
 
-```
-① Embed   问题 → 向量（同 embedding 模型、同维度）
-② Search  查 ChromaDB 取 top-k（默认 k=3）最相似 chunk
-③ Score   距离 → 相似度：similarity = 1 - distance（越高越好，可调）
-④ Filter  按相似度阈值剔除弱匹配
-⑤ Visualize  显示 chunk 文本/id/分数/页码/类型 + 用 bbox 坐标画 grounding 图
+```mermaid
+flowchart TB
+    A["① Embed 问题 → 向量（同 embedding 模型、同维度）"] --> B["② Search 查 ChromaDB 取 top-k（默认 k=3）最相似 chunk"]
+    B --> C["③ Score 距离 → 相似度：similarity = 1 - distance（越高越好，可调）"]
+    C --> D["④ Filter 按相似度阈值剔除弱匹配"]
+    D --> E["⑤ Visualize 显示 chunk 文本/id/分数/页码/类型 + 用 bbox 坐标画 grounding 图"]
 ```
 
 **Grounding 图是 David 最爱、也是 LandingAI 区别于商品化文档 AI 的地方**：每个 chunk 可生成一张 PNG——从原 PDF 裁出的视觉切片。为何在生产里至关重要：

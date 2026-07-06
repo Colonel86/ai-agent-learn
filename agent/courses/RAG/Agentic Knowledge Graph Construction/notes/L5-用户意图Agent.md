@@ -15,20 +15,17 @@
 
 这是本课最值钱的一个设计决策。agent 有两个工具，但它们**不对称**：
 
-```
-set_perceived_user_goal(kind_of_graph, description)   →  写 state["perceived_user_goal"]
-approve_perceived_user_goal()   （无业务参数）        →  把 perceived 拷进 state["approved_user_goal"]
+```mermaid
+flowchart LR
+    T1["set_perceived_user_goal(kind_of_graph, description)"] -->|"写"| S1["state[perceived_user_goal]"]
+    T2["approve_perceived_user_goal()（无业务参数）"] -->|"把 perceived 拷进"| S2["state[approved_user_goal]"]
 ```
 
 关键点（讲师"critically"强调）：**`set_perceived_user_goal` 永远无法自己设置 `approved_user_goal`**。只有 `approve_*` 能做这次拷贝，而 approve 又要求 perceived 必须已存在。于是 `approve_*` 成了一道 **guard / checkpoint**：确保"用户本人明确说了 yes"才把目标固化成已批准。
 
-```
-perceived_user_goal          approved_user_goal
-   (working memory)              (work specification)
-   ┌──────────────┐   approve    ┌──────────────┐
-   │ agent 感知的  │ ──────────▶ │ 用户批准的     │
-   │ 可反复覆盖    │  仅拷贝      │ 下游唯一可信源 │
-   └──────────────┘             └──────────────┘
+```mermaid
+flowchart LR
+    P["perceived_user_goal（working memory）<br/>agent 感知的<br/>可反复覆盖"] -->|"approve 仅拷贝"| A["approved_user_goal（work specification）<br/>用户批准的<br/>下游唯一可信源"]
 ```
 
 这个"感知/已批准"分离是**刻意的重复**：perceived 是"工作记忆"（agent 可以反复试错、覆盖），approved 是"工作规格说明"。**下游 agent 只准用 approved**。讲师补充：生产系统里 work specification 还应持久化，以支持 tracing 和 reproducibility。

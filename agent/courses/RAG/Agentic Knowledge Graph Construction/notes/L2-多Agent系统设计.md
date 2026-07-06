@@ -25,19 +25,12 @@
 
 交互有两种方式：
 
-```
-                 ┌──────────────┐
-   user ───────▶ │  Root Agent  │   主对话线程
-                 └──────┬───────┘
-             delegate   │   delegate
-          ┌─────────────┴─────────────┐
-          ▼                           ▼
-    ┌───────────┐               ┌───────────┐
-    │  Agent A  │               │  Agent B  │
-    │  (tools)  │               │  tools:   │
-    └───────────┘               │   ...     │
-                                │   p() ────┼──▶ 其实是一个 Agent
-                                └───────────┘     被当作 tool 调用
+```mermaid
+flowchart TB
+    user["user"] --> Root["Root Agent<br/>（主对话线程）"]
+    Root -->|"delegate"| A["Agent A<br/>（tools）"]
+    Root -->|"delegate"| B["Agent B<br/>tools: ..."]
+    B -->|"p() 其实是一个 Agent<br/>被当作 tool 调用"| P["p()"]
 ```
 
 1. **Agent Delegation（委派）**：主对话线程和用户跑着，每个 Agent 判断"这活我能干还是该交给别人" → root 可委派给 Agent A 或 B；
@@ -57,17 +50,11 @@
 
 ### 3.2 中层：三条工作流
 
-```
-                    ┌─────────────────────────┐
-                    │   Top-level 对话向导 Agent │
-                    └───────────┬─────────────┘
-        ┌───────────────────────┼───────────────────────┐
-        ▼                       ▼                       ▼
-┌────────────────┐   ┌──────────────────┐   ┌────────────────┐
-│ Structured Data│   │ Unstructured Data│   │  GraphRAG Agent│
-│    Agent       │   │     Agent        │   │  (用图谱答问)   │
-│ (workflow)     │   │  (workflow)      │   └────────────────┘
-└────────────────┘   └──────────────────┘
+```mermaid
+flowchart TB
+    Top["Top-level 对话向导 Agent"] --> SD["Structured Data Agent<br/>（workflow）"]
+    Top --> UD["Unstructured Data Agent<br/>（workflow）"]
+    Top --> GR["GraphRAG Agent<br/>（用图谱答问）"]
 ```
 
 - 左侧两条是 **workflow agent**：Structured Data Agent 和 Unstructured Data Agent，各自把用户从"想做什么"带到"构建出图"；

@@ -9,14 +9,21 @@ L7 处理的是**结构化数据**的 schema 提案：一个 proposer 提出 gra
 
 L8 把镜头转向**非结构化数据**（markdown 格式的产品评论）。整条 unstructured 工作流开头同样有 user intent、file suggestion 两个 Agent（本课直接模拟它们的输出，不重复搭建），焦点放在新概念：**Entity and Fact Type Proposal Agent**。
 
-```
-结构化流水线(L5-L7)                    非结构化流水线(L8)
-user intent ─► file suggestion ─►      user intent ─► file suggestion ─►
-   schema proposal(critic loop)           Entity&FactType Proposal Agent
-   └► approved_construction_plan              ├─ NER schema agent
-                                              └─ fact type extraction agent
-                                           └► approved_entity_types
-                                              approved_fact_types
+```mermaid
+flowchart TB
+    subgraph S["结构化流水线（L5-L7）"]
+        SI["user intent"] --> SF["file suggestion"]
+        SF --> SP["schema proposal（critic loop）"]
+        SP --> SC["approved_construction_plan"]
+    end
+    subgraph U["非结构化流水线（L8）"]
+        UI["user intent"] --> UF["file suggestion"]
+        UF --> UP["Entity&amp;FactType Proposal Agent"]
+        UP --> NER["NER schema agent"]
+        UP --> FACT["fact type extraction agent"]
+        NER --> UO["approved_entity_types<br/>approved_fact_types"]
+        FACT --> UO
+    end
 ```
 
 > **架构师视角**：这门课把"决定图谱长什么样"和"真正把数据搬进图谱"彻底拆开。L5-L8 全是 Agent 在**产出计划**（schema / construction plan / entity types / fact types），L9-L10 才是**工具执行计划**。Agent 只出现在需要判断力的建模环节，确定性搬运不浪费一次 LLM 调用——这是把 token 花在刀刃上的分层。

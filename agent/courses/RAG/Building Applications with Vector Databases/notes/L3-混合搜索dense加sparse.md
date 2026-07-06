@@ -7,13 +7,14 @@
 
 前几课召回只靠一种向量——dense 稠密向量（擅长语义相似）。但真实查询"dark blue French connection jeans for men"里既有语义（深蓝牛仔裤）又有必须精确命中的专名（French Connection 品牌、men 性别）。**纯语义会漏掉字面精确性，纯关键词会漏掉语义泛化**。hybrid search 就是把两者合在一次查询里。路线：
 
-```
-时尚商品 ──┬─► CLIP    → dense 向量（语义/图像）  ┐
-          └─► BM25    → sparse 向量（关键词/词频）┘ 同存 Pinecone 一行
-                              │
-   query "dark blue French connection jeans" → dense+sparse 一起查
-                              │
-        alpha 旋钮：0 ← 更靠 sparse(关键词) ┃ 更靠 dense(语义) → 1
+```mermaid
+flowchart TB
+    Item["时尚商品"] --> CLIP["CLIP → dense 向量（语义/图像）"]
+    Item --> BM25["BM25 → sparse 向量（关键词/词频）"]
+    CLIP --> Store["同存 Pinecone 一行"]
+    BM25 --> Store
+    Store --> Q["query &quot;dark blue French connection jeans&quot; → dense+sparse 一起查"]
+    Q --> Alpha["alpha 旋钮：0 ← 更靠 sparse(关键词) ┃ 更靠 dense(语义) → 1"]
 ```
 
 ## 1. 两种向量：dense(CLIP) vs sparse(BM25)
