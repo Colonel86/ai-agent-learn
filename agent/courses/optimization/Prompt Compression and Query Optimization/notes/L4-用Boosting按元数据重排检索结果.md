@@ -21,14 +21,13 @@ L4 的核心命题：
 
 boosting 在 aggregation pipeline 里由**三个连续阶段**实现，全部跑在向量检索**之后**：
 
-```
-$vectorSearch (pre-filter 检索，同 L2/L3)
-   ▼
-① review_average_stage   —— $addFields 算出 averageReviewScore + reviewCountBoost
-   ▼
-② weighting_stage        —— $addFields 用权重合成 combinedScore
-   ▼
-③ sorting_stage          —— $sort 按 combinedScore 降序重排
+```mermaid
+flowchart TB
+    V["$vectorSearch (pre-filter 检索，同 L2/L3)"]
+    S1["① review_average_stage —— $addFields 算出 averageReviewScore + reviewCountBoost"]
+    S2["② weighting_stage —— $addFields 用权重合成 combinedScore"]
+    S3["③ sorting_stage —— $sort 按 combinedScore 降序重排"]
+    V --> S1 --> S2 --> S3
 ```
 
 关键点：**阶段有先后依赖**。②要引用①算出的字段，③要引用②算出的字段——所以顺序不能乱。

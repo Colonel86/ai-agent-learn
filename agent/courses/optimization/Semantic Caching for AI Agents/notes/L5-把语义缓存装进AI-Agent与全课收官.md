@@ -37,27 +37,16 @@ Redis 内部构建的 agent：给定 data schema + 用户问题，生成 Python 
 
 本课要亲手建的 agent：LangGraph 编排 agentic RAG 认知架构 + 质量保障循环（quality assurance loop），并**按子问题粒度跨执行缓存**。
 
-```
-用户 query
-   │
-   ▼
-① decompose query ── 拆成 3~5 个子问题（更小的任务单元）
-   │
-   ▼
-② check semantic cache ── 逐个子问题查缓存：过去做过的活直接复用
-   │
-   ├─ 全部命中 ──────────────────────────────┐（条件边：跳过研究）
-   ▼ 有未命中                                  │
-③ research loop ── 用 knowledge base 工具研究未命中的子问题
-   │                                          │
-   ▼                                          │
-④ evaluate quality ── LLM judge 打分 0~1      │
-   │   （0 = 差，1 = 优；不达标带 feedback     │
-   │     回到 ③，最多迭代 2 次）               │
-   ▼                                          │
-⑤ synthesize ◀───────────────────────────────┘
-   用 LLM 把所有研究片段合成最终回答；
-   验证过的子问题答案回填缓存，供下次运行使用
+```mermaid
+flowchart TB
+    Q["用户 query"] --> D["① decompose query ── 拆成 3~5 个子问题（更小的任务单元）"]
+    D --> C["② check semantic cache ── 逐个子问题查缓存：过去做过的活直接复用"]
+    C -->|"有未命中"| R["③ research loop ── 用 knowledge base 工具研究未命中的子问题"]
+    C -->|"全部命中（条件边：跳过研究）"| S["⑤ synthesize"]
+    R --> E["④ evaluate quality ── LLM judge 打分 0~1（0=差，1=优）"]
+    E -->|"达标"| S
+    E -->|"不达标带 feedback 回到 ③，最多迭代 2 次"| R
+    S --> OUT["用 LLM 把所有研究片段合成最终回答；验证过的子问题答案回填缓存，供下次运行使用"]
 ```
 
 无缓存时这个 workflow 又贵又慢——**20~60 秒**不等，取决于问题难度。加缓存后 agent "learns over time"：跨请求降本，同时维持回答质量。

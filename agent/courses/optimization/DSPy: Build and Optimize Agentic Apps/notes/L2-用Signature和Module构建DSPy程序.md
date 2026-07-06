@@ -95,16 +95,14 @@ print(output["sentiment"])   # 键访问——两者等价
 
 幕后机制（以最小的 `dspy.Predict` 解释）：
 
-```
-用户输入 (kwargs)
-     │
-Module（Predict/CoT：自身携带 signature、demos 等属性）
-     │  forward 把全部信息交给 ↓
-Adapter ──格式化──▶ 实际 prompt（多轮消息）──▶ LM
-     ▲                                          │
-     └────── 按约定格式解析响应 ◀── LM 响应 ────┘
-     │
-Prediction（dict-like：.sentiment / ["sentiment"]）
+```mermaid
+flowchart TB
+    U["用户输入 (kwargs)"] --> M["Module（Predict/CoT：自身携带 signature、demos 等属性）"]
+    M -->|"forward 把全部信息交给"| A["Adapter"]
+    A -->|"格式化"| PR["实际 prompt（多轮消息）"]
+    PR --> LM["LM"]
+    LM -->|"LM 响应 → 按约定格式解析响应"| A
+    A --> P["Prediction（dict-like：.sentiment / ['sentiment']）"]
 ```
 
 - **Adapter** 负责把 signature + 用户查询 + 其他属性组合成实际 prompt，并告诉 LM 用什么格式回复——**正因为响应格式是我们在 prompt 里约定的，adapter 才能自动把字段值解析出来**；回程就是逆过程：解析进输出字段、包成 Prediction 还给 module；

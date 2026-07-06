@@ -34,13 +34,15 @@ L3 用 tracing 解决了"看见问题"；本课解决"自动改进"。路线：*
 
 高层流程：
 
-```
-trainset ──① bootstrapping──▶ few-shot examples 候选集 ─┐
-                                                        ├─ ③ 组合采样 → 候选程序
-程序代码+描述+few-shot+tips ──② Proposer(LLM)──▶ instruction 候选集 ─┘        │
-                                                                            ▼
-              持续保留最高分候选 ◀── ④ 在 valset 上评估：metric 对比 golden label，取平均分
-              （循环 N 个 trials，N 由用户指定）
+```mermaid
+flowchart TB
+    TS["trainset"] -->|"① bootstrapping"| FS["few-shot examples 候选集"]
+    PC["程序代码+描述+few-shot+tips"] -->|"② Proposer(LLM)"| IN["instruction 候选集"]
+    FS --> COMB["③ 组合采样 → 候选程序"]
+    IN --> COMB
+    COMB --> EVAL["④ 在 valset 上评估：metric 对比 golden label，取平均分"]
+    EVAL --> KEEP["持续保留最高分候选"]
+    EVAL -.->|"循环 N 个 trials，N 由用户指定"| COMB
 ```
 
 **① Bootstrapping 生成 few-shot 候选**：从 trainset 取数据喂给 DSPy 程序（单模块或多模块）跑一遍；若 metric 得分超过用户设定的阈值，就**裁剪该次 trace**（每个 module 的输入输出）作为该 module 的 few-shot example 候选。因为调用带非零 temperature 的随机性，**一条数据可以产出多条不同 trace**。

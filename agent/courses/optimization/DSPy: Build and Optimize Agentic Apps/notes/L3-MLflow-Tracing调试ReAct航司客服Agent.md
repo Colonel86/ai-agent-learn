@@ -136,15 +136,23 @@ ReAct 的机制：把 signature（程序目标）和工具清单交给 LM，由 
 
 MLflow Trace UI 里能看到本次调用的完整层级：
 
-```
-ReAct                          ← 顶层 module：输入 user_request，输出 process_result
- ├─ Predict（每轮循环一次）
- │   ├─ ChatAdapter.format     ← adapter：把 signature + trajectory 格式化成 prompt
- │   ├─ LM                     ← 实际 prompt 与原始响应（temperature/max_tokens 在 attributes）
- │   └─ ChatAdapter.parse      ← adapter：把 LM 响应解析回结构化字段
- ├─ Tool: fetch_flight_info    ← dspy.Tool 调用；失败会标红叉 ✗
- ├─ Tool: ...（多轮）
- └─ ChainOfThought             ← 收尾：由完整 trajectory 生成最终 process_result
+```mermaid
+flowchart TB
+    R["ReAct ← 顶层 module：输入 user_request，输出 process_result"]
+    P["Predict（每轮循环一次）"]
+    F["ChatAdapter.format ← adapter：把 signature + trajectory 格式化成 prompt"]
+    LM["LM ← 实际 prompt 与原始响应（temperature/max_tokens 在 attributes）"]
+    PA["ChatAdapter.parse ← adapter：把 LM 响应解析回结构化字段"]
+    T1["Tool: fetch_flight_info ← dspy.Tool 调用；失败会标红叉 ✗"]
+    T2["Tool: ...（多轮）"]
+    C["ChainOfThought ← 收尾：由完整 trajectory 生成最终 process_result"]
+    R --> P
+    R --> T1
+    R --> T2
+    R --> C
+    P --> F
+    P --> LM
+    P --> PA
 ```
 
 ReAct 内部是**多跳循环**：每轮 LM 输出"下一步 thought"（调某个工具 or 结束），工具结果追加进 **trajectory 字段**再喂回 LM。本次订票请求的实际轨迹：

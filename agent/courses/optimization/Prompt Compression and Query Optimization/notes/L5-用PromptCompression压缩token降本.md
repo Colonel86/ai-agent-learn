@@ -22,10 +22,10 @@ L5 的动机链条：
 
 课程演示的直觉：一段原始未压缩的 prompt 横跨三个长句，用 **LLM Lingua** 处理后压成两句两行——语义保留，措辞变瘦。规模化的效果：
 
-```
-未压缩 50,000 token ──[LLM Lingua + 几个参数]──▶ 压缩后 10,000 token
-                                                  = 5x 压缩
-压缩后的 prompt 直接喂给 LLM，拿到与未压缩时"同等质量"的输出
+```mermaid
+flowchart LR
+    A["未压缩 50,000 token"] -->|"LLM Lingua + 几个参数"| B["压缩后 10,000 token<br/>= 5x 压缩"]
+    B --> C["压缩后的 prompt 直接喂给 LLM，拿到与未压缩时同等质量的输出"]
 ```
 
 本课实测（见 §5）甚至做到 **8x**：4284 token → 512 token。
@@ -196,12 +196,14 @@ def handle_system_response(query, compressed_prompt):
 > **Prompt compression（L5，生成侧）是有损的、要花算力的重武器**：它靠小模型删词，本质是有损压缩，还引入压缩延迟。所以它的正确触发条件是——**当 context 已经裁到不能再裁（L3 做完）、召回已经准到不能再准（L2/L4 做完），prompt 依然大到 LLM token 成本成为规模化瓶颈时**，才上 compression。判断阈值就是 L5 那笔账：单次省 $0.2 看着小，乘以百万级日调用才显出价值——**低频/低量应用别上，它的延迟成本压过收益**。
 >
 > **和语义缓存的组合**：这三者构成一条完整的降本链，触发顺序是——
-> ```
-> 请求进来
->   → ① 语义缓存命中？   命中就直接返回，0 次 LLM 调用（最便宜）
->   → ② 未命中 → query optimization（L2-L4）：精准召回 + 裁字段 + 重排
->   → ③ prompt compression（L5）：把已经精简的 context 再压一道
->   → ④ 调 LLM，结果写回语义缓存
+> ```mermaid
+> flowchart TB
+>     R["请求进来"]
+>     C1["① 语义缓存命中？命中就直接返回，0 次 LLM 调用（最便宜）"]
+>     C2["② 未命中 → query optimization（L2-L4）：精准召回 + 裁字段 + 重排"]
+>     C3["③ prompt compression（L5）：把已经精简的 context 再压一道"]
+>     C4["④ 调 LLM，结果写回语义缓存"]
+>     R --> C1 --> C2 --> C3 --> C4
 > ```
 > **语义缓存省的是"调不调 LLM"（频次），compression 省的是"每次调用多贵"（单价），projection 省的是"塞多少进去"（体积）**。三者正交、可叠加。架构师的活儿不是三选一，而是按这个顺序把三道闸门都装上——但要清楚每道闸的启用阈值不同：缓存和 projection 几乎无条件开，compression 只在真有规模时才开。
 

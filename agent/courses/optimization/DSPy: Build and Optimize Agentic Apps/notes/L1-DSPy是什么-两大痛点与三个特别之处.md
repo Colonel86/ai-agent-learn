@@ -15,9 +15,13 @@
 - 每个 module 处理一个子任务——可以是 LLM 调用，也可以是普通的 tool calling；
 - 把这些 module 组合起来，形成能处理复杂任务（retrieval augmented generation、code generation……）的大系统。
 
-```
-输入 ──▶ [module 1: LLM 调用] ──▶ [module 2: 工具调用] ──▶ [module 3: LLM 调用] ──▶ 输出
-         └── 每个 module 一个子任务，组合成 compound AI system ──┘
+```mermaid
+flowchart LR
+    I["输入"] --> M1
+    subgraph CS["compound AI system（每个 module 一个子任务）"]
+        M1["module 1: LLM 调用"] --> M2["module 2: 工具调用"] --> M3["module 3: LLM 调用"]
+    end
+    M3 --> O["输出"]
 ```
 
 而只要在构建 compound AI system，就绕不开两个问题。

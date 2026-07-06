@@ -116,21 +116,16 @@ print(get_knowledge[0].keys())
 
 ## 5. 数据流全景
 
-```
-用户 query
-   │  embedding
-   ▼
-┌─────────────── aggregation pipeline ───────────────┐
-│  $vectorSearch (带 pre-filter，见 L2)               │
-│      → 返回 N 条完整文档（字段全、体积大）           │
-│  $project  ← 本课新增                                │
-│      → 仍是 N 条，但每条只剩点名字段 + score         │
-└─────────────────────────────────────────────────────┘
-   │  更小的结果集
-   ▼
-Pydantic SearchResultItem（应用层，字段已对齐）
-   ▼
-拼进 prompt → 送 LLM（gpt-3.5-turbo）
+```mermaid
+flowchart TB
+    Q["用户 query"] -->|"embedding"| P
+    subgraph P["aggregation pipeline"]
+        V["$vectorSearch (带 pre-filter，见 L2)<br/>→ 返回 N 条完整文档（字段全、体积大）"]
+        PR["$project ← 本课新增<br/>→ 仍是 N 条，但每条只剩点名字段 + score"]
+        V --> PR
+    end
+    P -->|"更小的结果集"| S["Pydantic SearchResultItem（应用层，字段已对齐）"]
+    S --> L["拼进 prompt → 送 LLM（gpt-3.5-turbo）"]
 ```
 
 对照 L2：pipeline 从"检索 + 元数据过滤"变成"检索 + 元数据过滤 + 投影裁字段"。每加一课，pipeline 就多接一节。
