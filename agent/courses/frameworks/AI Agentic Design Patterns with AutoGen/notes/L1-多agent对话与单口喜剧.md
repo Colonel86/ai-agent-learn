@@ -89,13 +89,15 @@ chat_result = joe.initiate_chat(
 
 实际效果：Cathy 讲了 math book 的笑话（"too many problems"），Joe 果然**从上一个 punchline 接着开下一个梗**（"至少现在知道 math book 为什么总那么消极"），Cathy 再顺着续（"没法从书页里减去悲伤"）并抛出新笑话——system_message 里的行为指令真实地塑造了对话走向。两轮后对话按 `max_turns` 停止。
 
-```
-joe ──initiate_chat(message, max_turns=2)──▶ cathy
- │  "I'm Joe... keep the jokes rolling"        │
- │◀── 笑话 A（punchline!）─────────────────────┤
- ├── 从 punchline 接笑话 B ───────────────────▶│
- │◀── 续 B + 新笑话 C ─────────────────────────┤
- ▼ 到达 max_turns，停
+```mermaid
+sequenceDiagram
+    participant joe
+    participant cathy
+    joe->>cathy: initiate_chat(message, max_turns=2)<br/>I'm Joe... keep the jokes rolling
+    cathy-->>joe: 笑话 A（punchline!）
+    joe->>cathy: 从 punchline 接笑话 B
+    cathy-->>joe: 续 B + 新笑话 C
+    Note over joe: 到达 max_turns，停
 ```
 
 ## 4. 检查 ChatResult：history / cost / summary

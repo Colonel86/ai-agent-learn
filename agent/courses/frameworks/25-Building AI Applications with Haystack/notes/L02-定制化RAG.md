@@ -53,8 +53,9 @@ Question: {{ query }}
 
 完整 RAG 拓扑：
 
-```
-query_embedder → retriever → prompt(documents=…, query=…) → generator
+```mermaid
+flowchart LR
+    A["query_embedder"] --> B["retriever"] --> C["prompt(documents=…, query=…)"] --> D["generator"]
 ```
 
 ```python

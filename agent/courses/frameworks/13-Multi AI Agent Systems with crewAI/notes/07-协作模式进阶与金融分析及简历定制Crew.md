@@ -99,22 +99,19 @@ flowchart TB
 
 ### 3.1 Crew Manager 自动登场
 
-```
-[Crew Manager]  ← crewAI 自动创建
-   "我来处理 AAPL 股票分析任务..."
-   ↓ 委派
-[Data Analyst]
-   "我去搜索当前股价和成交量"
-   → Google 搜索 → 发现 Yahoo Finance 链接 → scrape 网站
-   ← 返回：AAPL 收盘价、成交量等数据
-   ↑ 提交给 Manager
-[Crew Manager]
-   "好的，下一步交给 Trading Strategy"
-   ↓ 委派（携带 Data Analyst 的发现）
-[Trading Strategy]
-   → 又做了一次搜索（这里可能命中缓存）
-   → 分析后产出策略建议
-...
+```mermaid
+sequenceDiagram
+    participant M as Crew Manager
+    participant DA as Data Analyst
+    participant TS as Trading Strategy
+    Note over M: crewAI 自动创建<br/>我来处理 AAPL 股票分析任务...
+    M->>DA: 委派（↓）
+    Note over DA: 我去搜索当前股价和成交量<br/>→ Google 搜索 → 发现 Yahoo Finance 链接 → scrape 网站
+    DA-->>M: 返回（↑）：AAPL 收盘价、成交量等数据
+    Note over M: 好的，下一步交给 Trading Strategy
+    M->>TS: 委派（↓，携带 Data Analyst 的发现）
+    Note over TS: → 又做了一次搜索（可能命中缓存）<br/>→ 分析后产出策略建议
+    Note over M,TS: ……（继续）
 ```
 
 ### 3.2 关键观察点

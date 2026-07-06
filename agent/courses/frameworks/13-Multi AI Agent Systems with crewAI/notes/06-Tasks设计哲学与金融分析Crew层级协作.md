@@ -21,8 +21,9 @@
 
 之前第 4 课我们学过**管理者心智模型**：
 
-```
-目标（Goal） → 流程（Process） → 雇谁（Agents） → 角色定义（Role/Goal/Backstory）
+```mermaid
+flowchart LR
+    A["目标（Goal）"] --> B["流程（Process）"] --> C["雇谁（Agents）"] --> D["角色定义（Role/Goal/Backstory）"]
 ```
 
 ## 2. 本节的扩展：**新人入职视角**
@@ -167,14 +168,12 @@ flowchart TB
 
 ### 4.1 Venue Task 暂停等反馈
 
-```
-venue_coordinator 搜索 → 抓取 tagvenue.com → 给出选项：
-   - Main Hall at Trellis
-   - Second Floor at Dogpatch Studios
-
-⏸  等待用户反馈：
-   User: "yeah, I like these options"
-▶  继续执行
+```mermaid
+flowchart TB
+    A["venue_coordinator 搜索"] --> B["抓取 tagvenue.com"]
+    B --> C["给出选项：<br/>· Main Hall at Trellis<br/>· Second Floor at Dogpatch Studios"]
+    C --> D["⏸ 等待用户反馈<br/>User: yeah, I like these options"]
+    D --> E["▶ 继续执行"]
 ```
 
 ### 4.2 异步并行：日志里同时出现两个 Agent Executor

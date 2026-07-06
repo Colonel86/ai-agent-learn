@@ -29,11 +29,18 @@
 | 边越加越多 | 图迅速变"忙"，必须穷举每条连接 | 无需穷举路径 |
 | 漏掉一条边 | 直接 break，不工作 | agent 现场选择最合适的下一步 |
 
-```
-传统：A ──▶ B          agent：      ┌─ 展示文章（可能先做）
-      A ──▶ C ──▶ D          输入 ──┤─ 查登录态（可能后做）
-      A ──▶ 升级…                   └─ 升级（必要时）
-      （每条边都要画）              （agent 像选邮件一样选路径）
+```mermaid
+flowchart LR
+    subgraph trad["传统（每条边都要画）"]
+        TA["A"] --> TB["B"]
+        TA --> TC["C"] --> TD["D"]
+        TA --> TE["升级…"]
+    end
+    subgraph ag["agent（像选邮件一样选路径）"]
+        IN["输入"] --> A1["展示文章（可能先做）"]
+        IN --> A2["查登录态（可能后做）"]
+        IN --> A3["升级（必要时）"]
+    end
 ```
 
 由此换来四个传统自动化给不了的性质：
@@ -75,10 +82,9 @@ Zoom out 后，驱动 agentic 自动化的就两种能力：**create**（写邮�
 
 不管什么用例，都要在 agency 谱系上选一个位置：
 
-```
-低 agency ◀──────────────────────────────────────▶ 高 agency
-单次 LLM 调用          一个 agent           一个 crew（多个专职 agent 协作）
-（LLM 只是工具）                            （每一步做什么都由 agent 决定）
+```mermaid
+flowchart LR
+    A["低 agency<br/>单次 LLM 调用<br/>（LLM 只是工具）"] --- B["一个 agent"] --- C["高 agency<br/>一个 crew（多个专职 agent 协作）<br/>（每一步做什么都由 agent 决定）"]
 ```
 
 CrewAI 为此提供**两个主抽象**：
@@ -90,16 +96,11 @@ CrewAI 为此提供**两个主抽象**：
 
 ### 2.3 Flow 示范用例：员工福利对话助手
 
-```
-员工发消息（对话入口，像普通 chatbot）
-   │
-   ▼
-处理消息 ← 无需 agency：一次 LLM 调用判断
-   │        "上下文够不够直接回答？"
-   ├── 够 ──▶ 直接回复，回到对话（体感 = 普通聊天）
-   │
-   └── 需进一步分析 ──▶ 启用整个 crew：
-             查数据库/内部系统 → 校验 → 分析 → 产出答案 → 回到对话
+```mermaid
+flowchart TB
+    A["员工发消息（对话入口，像普通 chatbot）"] --> B["处理消息<br/>无需 agency：一次 LLM 调用判断<br/>上下文够不够直接回答？"]
+    B -->|"够"| C["直接回复，回到对话（体感 = 普通聊天）"]
+    B -->|"需进一步分析"| D["启用整个 crew：<br/>查数据库/内部系统 → 校验 → 分析 → 产出答案 → 回到对话"]
 ```
 
 要点：**在且仅在需要的地方 opt-in agency**（本例只在"分析"一步用 crew）。系统一旦变复杂，就长成这种结构化混排的样子——**LLMs + agents + crews 的 mix**。
@@ -124,13 +125,11 @@ CrewAI 为此提供**两个主抽象**：
 
 Joe 自认这是简化类比，但极有用：LLM 也是一个常规 AI 模型，只是**特征 = 你到目前为止输入的所有词**。
 
-```
-prompt（= 特征）──────────────▶ answer（= 预测）
-
-"give me a stock report on Tesla"
-   ↓ 改特征（≈ 改 season/temperature）
-"As an exceptional FINRA approved advisor,
- give me a stock report on Tesla"        → 预测被剧烈改变，答案不同
+```mermaid
+flowchart TB
+    P["prompt（= 特征）"] --> ANS["answer（= 预测）"]
+    Q1["give me a stock report on Tesla"] -->|"改特征（≈ 改 season/temperature）"| Q2["As an exceptional FINRA approved advisor,<br/>give me a stock report on Tesla"]
+    Q2 -->|"预测被剧烈改变，答案不同"| R["不同的 answer"]
 ```
 
 所以：**你对答案的控制力比你以为的大得多**——这就是 prompting 的本质。而系统的智能来自**海量特征输入 + 特征间复杂关联**的下一步预测能力；把特征喂好的能力，就是构建智能 agent 的能力。
@@ -152,10 +151,11 @@ prompt（= 特征）──────────────▶ answer（= 预
 
 定义：**优化每一次 API 调用喂给模型的全部输入（作为特征），以换取最优输出。** 示范用例——职位描述（job listing）crew，三个 agent：
 
-```
-职位角色输入 → Research Analyst（调研其他职位列表、相关技能、竞对要求）
-             → Writer（调研结果 + 职位规格 → 写出 job description）
-             → Editor（审校，对齐公司 style 与 culture）
+```mermaid
+flowchart LR
+    I["职位角色输入"] --> A["Research Analyst<br/>（调研其他职位列表、相关技能、竞对要求）"]
+    A --> W["Writer<br/>（调研结果 + 职位规格 → 写出 job description）"]
+    W --> E["Editor<br/>（审校，对齐公司 style 与 culture）"]
 ```
 
 进入 context engineering 的五类要素：

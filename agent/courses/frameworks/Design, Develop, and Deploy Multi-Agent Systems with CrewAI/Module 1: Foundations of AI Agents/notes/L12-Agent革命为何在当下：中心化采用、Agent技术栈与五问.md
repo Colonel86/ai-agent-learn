@@ -19,20 +19,18 @@ L1-L8 讲"怎么建"，L9-L11 讲"怎么活到生产"，L12 抬到组织与产�
 
 采用因此**失序（de-organized）**，很多公司事后补救——设专门团队、建卓越中心（centers of excellence）。而 **AI agents 的采用模式一开始就不同**：
 
-```
-LLM 时代(去年)：边缘渗透                Agent 时代(现在)：中心化采用
-┌────────────────────┐               ┌─────────────────────────────┐
-│ 部门里某人偷偷用      │               │      Enablement 团队          │
-│  ↓ 不告诉任何人       │               │  中心化部署 agents，统一管控：   │
-│ 泄漏风险/ad hoc/孤岛  │               │  · 用哪些 LLM                 │
-│  ↓ 事后补救           │               │  · 有哪些集成                  │
-│ 卓越中心亡羊补牢       │               │  · PII 过滤/去个人信息(central) │
-└────────────────────┘               │  · 用例清单与构建方式            │
-                                     └────────────┬────────────────┘
-                                                  ▼ 赋能(enable)
-                                     各部门自建 agents：
-                                     技术团队 → CrewAI 开源库(code)
-                                     非技术团队 → Crew Studio(no-code)
+```mermaid
+flowchart TB
+    subgraph llm["LLM 时代(去年)：边缘渗透"]
+        A1["部门里某人偷偷用"] -->|"不告诉任何人"| A2["泄漏风险/ad hoc/孤岛"]
+        A2 -->|"事后补救"| A3["卓越中心亡羊补牢"]
+    end
+    subgraph ag["Agent 时代(现在)：中心化采用"]
+        B1["Enablement 团队<br/>中心化部署 agents，统一管控：<br/>· 用哪些 LLM<br/>· 有哪些集成<br/>· PII 过滤/去个人信息(central)<br/>· 用例清单与构建方式"]
+        B1 -->|"赋能(enable)"| B2["各部门自建 agents"]
+        B2 --> B3["技术团队 → CrewAI 开源库(code)"]
+        B2 --> B4["非技术团队 → Crew Studio(no-code)"]
+    end
 ```
 
 > **架构师视角**：这页 slide 是"平台工程"叙事在 agent 上的复刻——enablement 团队做的事就是内部 agent 平台：模型准入、集成白名单、PII 中间件、用例治理，然后把"造 agent 的能力"下放。对架构师的启示：**你的位置在中心那格**，价值不是替每个部门写 crew，而是定标准、铺轨道、让 code 与 no-code 两条道都通。这也是"资产复用框架"的组织学版本：不让公司把同一个 agent/工具造两遍。
@@ -51,26 +49,13 @@ LLM 时代(去年)：边缘渗透                Agent 时代(现在)：中心�
 
 围绕 agent 有一整个 stack 在成形，自底向上：
 
-```
-┌──────────────────────────────────────────────┐
-│                 Agentic Apps                  │
-├──────────────────────────────────────────────┤
-│           Enterprise Connectors               │
-├──────────────────────────────────────────────┤
-│         Authentication & Scoping              │
-├──────────────────────────────────────────────┤
-│              Agent Memory                     │
-├──────────────────────────────────────────────┤
-│      Agent Orchestration  ← CrewAI 的         │
-│      (跑得可靠 + 可观测可监控)   "zone of genius" │
-├──────────────────────────────────────────────┤
-│   LLMs(多模型各有味型：GPT-4o-mini 干某些活、    │
-│         Claude Sonnet 4 干另一些活)            │
-├──────────────────────────────────────────────┤
-│   Data Management(Databricks / Snowflake /    │
-│           Redshift / BigQuery)                │
-└──────────────────────────────────────────────┘
-  ↑ 未画进图但正在冒出的层：observability、payments 等新品类
+```mermaid
+flowchart TB
+    T1["Agentic Apps"] --- T2["Enterprise Connectors"] --- T3["Authentication & Scoping"] --- T4["Agent Memory"]
+    T4 --- T5["Agent Orchestration ← CrewAI 的 zone of genius<br/>(跑得可靠 + 可观测可监控)"]
+    T5 --- T6["LLMs（多模型各有味型：GPT-4o-mini 干某些活、Claude Sonnet 4 干另一些活）"]
+    T6 --- T7["Data Management（Databricks / Snowflake / Redshift / BigQuery）"]
+    N["↑ 未画进图但正在冒出的层：observability、payments 等新品类"] -.-> T1
 ```
 
 两个课程强调的判断：agents **必然要触达企业数据**（无论哪家数仓）；**没有一个模型通吃**，每个模型有自己的 flavor 和能力，按用例配型。

@@ -15,19 +15,13 @@
 
 一端进 topic，一端出 report，中间四个 agent **sequential（顺序）**接力：
 
-```
- topic
-   │
-   ▼
-┌──────────────────┐   ┌──────────────────────┐   ┌──────────────────┐   ┌────────────────┐
-│ ① Research       │──▶│ ② Internet           │──▶│ ③ Fact Checker   │──▶│ ④ Report       │
-│   Planner        │   │   Researcher         │   │                  │   │   Writer       │
-│ 拆解 query 成    │   │ 按计划上网调研       │   │ 交叉核验 claims  │   │ 汇总成单份     │
-│ 可管理的子课题   │   │ 🔧 需要 web 工具     │   │ 最小化幻觉       │   │ 高质量报告     │
-│ （较简单 agent） │   │ 🔧 search + scrape   │   │ 🔧 同一套工具    │   │ （无工具）     │
-└──────────────────┘   └──────────────────────┘   └──────────────────┘   └────────┬───────┘
-                                                                                  ▼
-                                                                               report
+```mermaid
+flowchart LR
+    T["topic"] --> A["① Research Planner<br/>拆解 query 成可管理的子课题<br/>（较简单 agent）"]
+    A --> B["② Internet Researcher<br/>按计划上网调研<br/>🔧 需要 web 工具<br/>🔧 search + scrape"]
+    B --> C["③ Fact Checker<br/>交叉核验 claims<br/>最小化幻觉<br/>🔧 同一套工具"]
+    C --> D["④ Report Writer<br/>汇总成单份高质量报告<br/>（无工具）"]
+    D --> R["report"]
 ```
 
 - **Planner**：把任意 topic 拆成更小、更具体的研究子课题——一个较简单的 agent；

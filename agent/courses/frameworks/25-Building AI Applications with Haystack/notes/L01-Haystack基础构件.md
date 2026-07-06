@@ -7,9 +7,9 @@
 
 ## 一、三个核心抽象
 
-```
-Component  →  Pipeline  →  DocumentStore → Integrations
-原子能力       连接关系       状态/存储          集成
+```mermaid
+flowchart LR
+    A["Component<br/>原子能力"] --> B["Pipeline<br/>连接关系"] --> C["DocumentStore<br/>状态/存储"] --> D["Integrations<br/>集成"]
 ```
 
 - **Component**：单一职责的可运行单元。每个 Component 暴露一个 `run()` 方法 + 用 `@component.output_types(...)` 声明输出 schema。

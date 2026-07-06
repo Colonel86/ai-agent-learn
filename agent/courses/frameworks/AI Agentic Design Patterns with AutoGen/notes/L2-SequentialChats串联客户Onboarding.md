@@ -11,12 +11,10 @@ L1 里两个 agent 讲单口喜剧，是"一场对话"；本课升级为"**一�
 
 典型 onboarding 流程：先收集客户信息 → 再调查兴趣 → 最后基于前两步的信息做互动。据此拆成三个子任务，每个子任务一个专职 agent：
 
-```
-┌────────────────┐    ┌────────────────┐    ┌────────────────┐
-│ ① 信息收集      │ →  │ ② 兴趣调查      │ →  │ ③ 客户互动      │
-│ 姓名 / 位置     │    │ 想读什么话题    │    │ 讲趣闻/笑话/故事 │
-└────────────────┘    └────────────────┘    └────────────────┘
-        └──── 每步的产出摘要（carryover）流向下一步 ────┘
+```mermaid
+flowchart LR
+    A["① 信息收集<br/>姓名 / 位置"] -->|"产出摘要（carryover）"| B["② 兴趣调查<br/>想读什么话题"]
+    B -->|"产出摘要（carryover）"| C["③ 客户互动<br/>讲趣闻/笑话/故事"]
 ```
 
 > **架构师视角**：分解的依据不是"能不能塞进一个 prompt"，而是**每步的关注点和终止条件不同**——收集信息的 agent 被明确禁止多问（"Do not ask for other information"），互动 agent 则要放开发挥。单 agent 大 prompt 会让这些互相冲突的指令打架；拆开后每个 agent 的 system message 都短而专一，这是最朴素也最有效的"关注点分离"。
@@ -97,11 +95,13 @@ chats = [
 2. **summary_method（摘要）**：sequential 场景下任务彼此依赖，所以每场结束用 `reflection_with_llm` 让 LLM 回看对话生成摘要；`summary_args.summary_prompt` 可指定格式——第 1 场就是靠它把姓名/位置压成 `{'name': '', 'location': ''}` 的 JSON；
 3. **carryover（衔接）**：前面**所有** chat 的摘要会作为 carryover 自动拼进下一场 chat 的开场消息（以 `Context: ...` 附在 message 后）。第 3 场的互动 agent 之所以知道"Alice、New York、喜欢狗"，不是因为共享了聊天记录，而是收到了前两场的摘要。
 
-```
-chat1 ──summary──► {'name':'Alice','location':'New York'} ─┐
-chat2 ──summary──► "Alice 对狗相关话题感兴趣" ──────────────┤ carryover
-                                                           ▼
-chat3 开场消息 = "Let's find something fun to read." + Context: 前两条摘要
+```mermaid
+flowchart TB
+    C1["chat1"] -->|"summary"| S1["{'name':'Alice','location':'New York'}"]
+    C2["chat2"] -->|"summary"| S2["Alice 对狗相关话题感兴趣"]
+    S1 --> CO["carryover"]
+    S2 --> CO
+    CO --> C3["chat3 开场消息 = Let's find something fun to read.<br/>+ Context: 前两条摘要"]
 ```
 
 > **对比课程 13 crewAI 的 sequential process**：crewAI 里 Task 按序执行、上个 task 的 output 自动进下个 task 的 context——和这里"chats 列表 + carryover"是同一个抽象的两种拼法。差异在颗粒度：crewAI 传递的是**任务产物**（output 全文），AutoGen 传递的是**对话摘要**（且可用 summary_prompt 声明格式，如压成 JSON）。摘要即压缩：多步流水线越长，"每步只带结构化摘要前行"对 token 成本和信噪比越友好——这一手在哪个框架里都值得抄。

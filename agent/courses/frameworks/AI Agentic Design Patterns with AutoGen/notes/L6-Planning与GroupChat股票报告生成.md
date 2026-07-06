@@ -120,13 +120,12 @@ groupchat_result = user_proxy.initiate_chat(   # 由 user_proxy 对 manager 发�
 
 运行机制（manager 的每一轮循环）：
 
-```
-user_proxy ──task──▶ GroupChatManager
-                          │ ① broadcast：把消息广播给群里每个 agent（人人可见）
-                          │ ② select：用 LLM 看「当前会话历史 + 各 agent 的
-                          │    description/角色」，挑最合适的下一个发言者
-                          ▼
-                     被选中的 agent 发言 ──▶ 回到 ① ……直到 max_round
+```mermaid
+flowchart TB
+    U["user_proxy"] -->|"task"| M["GroupChatManager"]
+    M --> S["① broadcast：把消息广播给群里每个 agent（人人可见）<br/>② select：用 LLM 看「当前会话历史 + 各 agent 的 description/角色」，挑最合适的下一个发言者"]
+    S --> A["被选中的 agent 发言"]
+    A -->|"回到 ① ……直到 max_round"| M
 ```
 
 关键点：**发言顺序不是开发者写的，是 manager 的 LLM 每轮现场决策的**——依据是会话历史 + 各 agent 的角色描述。

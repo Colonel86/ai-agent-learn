@@ -103,15 +103,21 @@ critic.register_nested_chats(
 
 注册之后，critic 的行为被改写：**收到 writer 的消息 → 不直接回复，先把消息路由进 nested chat 走完四场评审 → 把评审结果（最后一场的产出）作为自己的回复发回给 writer**。
 
-```
-外层（和 §2 一模一样的两人对话）
-critic ──task──► writer ──博客 v1──► critic ──meta汇总意见──► writer ──终稿 v2──►
-                                      │                ▲
-              ┌───────────────────────┘（trigger=writer 命中，路由进内层）
-              ▼   内层：critic 的"内心独白"（sequential chats）
-              critic↔SEO ──► critic↔Legal ──► critic↔Ethics ──► critic↔Meta
-                 JSON评审        JSON评审         JSON评审       聚合→最终建议
-                    └────────── carryover 逐场累积 ──────────────┘
+```mermaid
+flowchart TB
+    subgraph outer["外层（和 §2 一模一样的两人对话）"]
+        A["critic"] -->|"task"| B["writer"]
+        B -->|"博客 v1"| C["critic"]
+        C -->|"meta 汇总意见"| D["writer"]
+        D -->|"终稿 v2"| E["输出终稿"]
+    end
+    C -->|"trigger=writer 命中，路由进内层"| F
+    subgraph inner["内层：critic 的内心独白（sequential chats）"]
+        F["critic↔SEO<br/>JSON 评审"] -->|"carryover 逐场累积"| G["critic↔Legal<br/>JSON 评审"]
+        G -->|"carryover 逐场累积"| H["critic↔Ethics<br/>JSON 评审"]
+        H -->|"carryover 逐场累积"| I["critic↔Meta<br/>聚合→最终建议"]
+    end
+    I -->|"聚合结果回填"| C
 ```
 
 而外层的启动代码**与 §2 逐字相同**：
