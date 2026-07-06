@@ -14,14 +14,13 @@
 
 ## 2. 架构总览
 
-```
-┌────────────────────┐   AG-UI    ┌──────────────────┐        ┌─────────────────┐
-│ LangChain Deep     │  events    │  CopilotRuntime  │        │  React 前端      │
-│ Agent (on LangGraph)│──────────▶│  (Hono TS server │◀──────▶│  <CopilotChat/>  │
-│  + CopilotKit MW   │   HTTP     │   :4002)         │  fetch │  provider :3002  │
-│  FastAPI :8002     │            │  /api/copilotkit │        │                 │
-└────────────────────┘            └──────────────────┘        └─────────────────┘
-     后端(Python)                    安全/性能/扩展的桥            用户界面(React)
+```mermaid
+flowchart LR
+    B["LangChain Deep Agent（on LangGraph）<br/>+ CopilotKit 中间件<br/>AG-UI FastAPI :8002<br/><b>后端 · Python</b>"]
+    R["CopilotRuntime<br/>Hono TS server :4002<br/>/api/copilotkit<br/><b>安全/性能/扩展的桥</b>"]
+    F["React 前端<br/>&lt;CopilotChat/&gt; provider :3002<br/><b>用户界面 · React</b>"]
+    B -->|"AG-UI events（HTTP）"| R
+    R <-->|fetch| F
 ```
 
 四块拼装：

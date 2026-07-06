@@ -17,18 +17,17 @@
 | **Context** | LLM 的任何输入 | System Instructions、Tools Definitions、User Message 等 |
 | **Loop** | LLM 依据 context 决定是否调用、调用哪个 tool → Agent 调用并运行该 tool → 结果 append 回 context → 重复，直到任务完成 | 两条 user message 之间发生的一切 |
 
-```
-        ┌───────────────────── Context ─────────────────────┐
-        │ System Instructions · Tool Definitions ·          │
-        │ User Message · Tool Results · …                   │
-        └───────────────────────┬───────────────────────────┘
-                                ▼
-                          ┌──────────┐  决定 if / which tool  ┌───────────┐
-   User Message ────────▶ │   LLM    │ ─────────────────────▶ │ 运行 Tool │
-                          └──────────┘                        └─────┬─────┘
-                                ▲        结果 append 回 Context      │
-                                └───────────────────────────────────┘
-                       循环往复，直到任务完成（→ §7 exit condition）
+```mermaid
+flowchart TB
+    Ctx["Context：System Instructions · Tool Definitions ·<br/>User Message · Tool Results · …"]
+    UM["User Message"]
+    LLM["LLM"]
+    Tool["运行 Tool"]
+    Ctx --> LLM
+    UM --> LLM
+    LLM -->|"决定 if / which tool"| Tool
+    Tool -->|"结果 append 回 Context"| LLM
+    LLM -.->|"循环往复，直到任务完成（→ §7 exit condition）"| Ctx
 ```
 
 ## 2. Coding Agent 和一般 Agent 差在哪

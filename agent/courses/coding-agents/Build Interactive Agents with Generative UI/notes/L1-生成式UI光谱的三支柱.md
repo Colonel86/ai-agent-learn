@@ -29,14 +29,12 @@ Atai 开场抛出一句挑衅：**未来几年，一切 UI 都会变成 AI**—�
 
 ## 3. AG-UI 在三角中的定位
 
-```
-        ┌─────────────┐
-        │    Agent    │
-        └──┬───┬───┬──┘
-     MCP │      │      │ A2A
-   工具/上下文  │   其他 agentic 系统
-             AG-UI
-        面向用户的应用（本课主角）
+```mermaid
+flowchart TB
+    Agent["Agent"]
+    Agent -->|MCP| T1["工具 / 上下文（第三方工具）"]
+    Agent -->|A2A| T2["其他 agentic 系统（agent ↔ agent）"]
+    Agent -->|AG-UI| T3["面向用户的应用（本课主角）"]
 ```
 
 - **MCP**：把 agent 连到第三方**工具与上下文**；
@@ -68,13 +66,10 @@ AG-UI 脱胎于 CopilotKit 与 LangChain、CrewAI 的最初合作。方向可逆
 
 开发者声明一套**乐高式 building-block 目录**，agent 按需**动态拼装**成渲染组件。底层机制：
 
-```
-agent 返回  结构化 schema（building block 的组装方式）
-          + data bindings（填进 schema 的值）
-                    │
-                    ▼
-         前端 renderers 把结构化内容
-              可视化为原生 UI 组件
+```mermaid
+flowchart TB
+    A["agent 返回：结构化 schema（building block 的组装方式）<br/>+ data bindings（填进 schema 的值）"]
+    A --> B["前端 renderers 把结构化内容<br/>可视化为原生 UI 组件"]
 ```
 
 - 适用：消费级应用的**长尾 surface**（灵活性比完美更值），以及**内部应用**（重功能与易实现、轻极致体验）。

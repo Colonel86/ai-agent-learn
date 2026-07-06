@@ -43,12 +43,14 @@
 
 四范式在"谁生成查询"这条轴上的位置：
 
-```
-LLM 现场生成 SQL/代码 ◄──────────────────────────────► 人预先写死查询
-       │                    │                    │
-  L2/L3 LangChain      L5 Code Interpreter   L4 Function Calling
-  （NL→SQL 全自动）    （NL→Python 自迭代）  （NL→选函数+填参）
-  最灵活、最难保障      灵活但不确定         最可控、最受限
+```mermaid
+flowchart LR
+    Pole1["LLM 现场生成 SQL/代码"]
+    Pole2["人预先写死查询"]
+    A["L2/L3 LangChain<br/>（NL→SQL 全自动）<br/>最灵活、最难保障"]
+    B["L5 Code Interpreter<br/>（NL→Python 自迭代）<br/>灵活但不确定"]
+    C["L4 Function Calling<br/>（NL→选函数+填参）<br/>最可控、最受限"]
+    Pole1 --- A --- B --- C --- Pole2
 ```
 
 > **对比 Building and Evaluating Data Agents（Snowflake data agent）**：本课教你**搭**数据库 agent，但几乎不碰"它答得对不对、怎么系统评估"。Snowflake 那门 data agent 课补的正是这块——把 text-to-SQL 当作可评估系统：用 golden query 集、执行结果比对（execution accuracy）、而非字符串匹配来度量。本课演示"能跑通一个阿拉斯加住院数问句"，Snowflake 视角会追问"200 个真实问句里它对几个、错在哪类"。**Demo 跑通 ≠ 生产可用**，中间隔着一整套 eval——这是本课作为入门课刻意略过、但架构师必须补上的一环（我资产里的 `5-observability-eval.md` / 面试包 `09-eval-driven-development.md`）。

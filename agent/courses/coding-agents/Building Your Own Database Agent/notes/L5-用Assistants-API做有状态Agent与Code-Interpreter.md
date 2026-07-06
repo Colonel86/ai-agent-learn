@@ -44,14 +44,13 @@ run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistan
 
 四步的关系用一张图：
 
-```
-assistant（人格+模型+工具）
-      │  作用于
-      ▼
-   thread（对话轨迹）── message ── message ── ...
-      │  在其上启动
-      ▼
-    run（一次运行，异步，需轮询状态）
+```mermaid
+flowchart TB
+    A["assistant（人格+模型+工具）"]
+    T["thread（对话轨迹）── message ── message ── ..."]
+    R["run（一次运行，异步，需轮询状态）"]
+    A -->|"作用于"| T
+    T -->|"在其上启动"| R
 ```
 
 对象归属很清楚：**message 属于 thread，run 把 assistant 作用到 thread 上**。thread / run 这些对象都是 Assistants API 特有的。

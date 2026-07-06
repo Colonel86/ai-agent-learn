@@ -99,17 +99,16 @@ second_response = client.chat.completions.create(       # 第二次调用 → �
 
 两步流程一句话：**第一次问模型"该用什么工具"，你在本地执行工具、把结果拼回消息，第二次再问模型"根据这些结果给我最终答案"。** 最终得到 "The current weather in San Francisco is 50 degrees"。返回里 `finish_reason` = `stop`（请求完成；另一种可能是命中 content safety 过滤器，如仇恨、暴力）。
 
-```
-用户问句
-   │
-   ▼
-[第一次 create(tools=…)] ──► 模型返回 tool_calls（调哪些函数+参数，非答案）
-   │
-   ▼
-本地逐个执行函数 ──► 把每个结果以 role="tool" append 回 messages
-   │
-   ▼
-[第二次 create(messages=…)] ──► 模型综合结果 → 自然语言最终答复（finish_reason=stop）
+```mermaid
+flowchart TB
+    U["用户问句"]
+    C1["第一次 create(tools=…)"]
+    R1["模型返回 tool_calls（调哪些函数+参数，非答案）"]
+    E["本地逐个执行函数"]
+    R2["把每个结果以 role=「tool」 append 回 messages"]
+    C2["第二次 create(messages=…)"]
+    R3["模型综合结果 → 自然语言最终答复（finish_reason=stop）"]
+    U --> C1 --> R1 --> E --> R2 --> C2 --> R3
 ```
 
 > **对比 07b Function-calling and data extraction with LLMs**：07b 那门课把 function calling 当作"结构化抽取"的通用范式来讲（让 LLM 吐出符合 schema 的参数）；本课是它在**数据库场景的落地**——参数 schema 不再是抽取目标，而是"查哪个州、哪一天"的查询键。同一机制，两种用途：07b 用它把非结构化文本变结构化，本课用它把自然语言变成对确定性查询函数的调用。面试包 `08-foundations-function-calling-and-rag.md` 是这条线的复习素材。

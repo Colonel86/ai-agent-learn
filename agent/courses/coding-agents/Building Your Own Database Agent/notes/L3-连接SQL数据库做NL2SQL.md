@@ -7,20 +7,17 @@
 
 L3 是 L2 的"自然演进"——目标从"问 CSV"变成"问真正的数据库"。整体架构：
 
-```
-用户问题（自然语言）
-      │
-      ▼
-  GPT-4 (Azure OpenAI)  ← baseline 模型
-      │   RAG 系统
-      ▼
-   LangChain          ← 编排：找信息 + 解释每一步怎么拿到的
-      │
-      ▼
-  SQLite 本地库        ← 开源关系型数据库的本地实例
-      │
-      ▼
-  自动生成 SQL（SELECT/FROM/WHERE...）→ 取数 → 带查询轨迹的答案
+```mermaid
+flowchart TB
+    U["用户问题（自然语言）"]
+    G["GPT-4 (Azure OpenAI)　← baseline 模型"]
+    L["LangChain　← 编排：找信息 + 解释每一步怎么拿到的"]
+    S["SQLite 本地库　← 开源关系型数据库的本地实例"]
+    Q["自动生成 SQL（SELECT/FROM/WHERE...）→ 取数 → 带查询轨迹的答案"]
+    U --> G
+    G -->|"RAG 系统"| L
+    L --> S
+    S --> Q
 ```
 
 讲师强调：**过程不变，只是把 CSV 换成 SQL 数据库**。真实应用里结果可接入 Web/移动端等任意平台，还能混合图像、data lake、数据库多源，RAG 负责从合适的源高效定位信息。

@@ -9,9 +9,10 @@ L3 用的是 **Controlled Generative UI（受控式）**：程序员为每一类
 
 L4 的 **Declarative Generative UI（声明式）** 把这个等式翻转过来：不再逐个定义组件，而是**预先声明一份组件目录**，然后让 Agent 自己把这些积木拼起来。
 
-```
-受控式(L3)：  一个交互  →  一个手写组件      （N 个交互 = N 个组件，线性膨胀）
-声明式(L4)：  一份目录  →  Agent 任意组装     （目录写一次，长尾界面全覆盖）
+```mermaid
+flowchart LR
+    A1["受控式(L3)：一个交互"] -->|"N 个交互 = N 个组件，线性膨胀"| A2["一个手写组件"]
+    B1["声明式(L4)：一份目录"] -->|"目录写一次，长尾界面全覆盖"| B2["Agent 任意组装"]
 ```
 
 ## 1. 声明式生成式 UI 的三块拼图
@@ -26,12 +27,14 @@ L4 的 **Declarative Generative UI（声明式）** 把这个等式翻转过来�
 
 **运行时流程**（Agent 一次回答的内部时序）：
 
-```
-用户提问
-  → Agent 先 emit 一个 Schema（从目录里选组件、搭结构，无数据）
-  → Agent 再 emit Data Bindings（把具体值灌进 schema）
-  → schema + bindings 一起送到前端 renderer
-  → renderer 返回目标平台（本课 React）上完整装配好的组件
+```mermaid
+flowchart TB
+    U["用户提问"]
+    S["Agent 先 emit 一个 Schema<br/>（从目录里选组件、搭结构，无数据）"]
+    D["Agent 再 emit Data Bindings<br/>（把具体值灌进 schema）"]
+    R["schema + bindings 一起送到前端 renderer"]
+    O["renderer 返回目标平台（本课 React）上完整装配好的组件"]
+    U --> S --> D --> R --> O
 ```
 
 结果：组件形态可以千变万化，但**始终被约束在你控制的那份「有界菜单」之内**。
@@ -176,9 +179,10 @@ def display_flights(flights: list[Flight]) -> str:
 
 字幕给的定位判断非常清晰：
 
-```
-航空公司的「航班卡」——最高频界面   → 受控式(L3)，要极致可预测 + 像素级控制
-「找回丢失的笔记本」「行程退款」    → 声明式(L4)，能对话交互 > 像素完美
+```mermaid
+flowchart LR
+    C1["航空公司的「航班卡」——最高频界面"] --> C2["受控式(L3)，要极致可预测 + 像素级控制"]
+    D1["「找回丢失的笔记本」「行程退款」"] --> D2["声明式(L4)，能对话交互 &gt; 像素完美"]
 ```
 
 > **架构师视角**：声明式生成 UI 的本质是**把「UI 布局」这件易变的事从代码搬进数据**——布局写在 Agent emit 的 schema 里，而非写死在 React 组件里。这与 L2 SPARQL 课「图形状写在 CONSTRUCT 模板里、不写在 Python 循环里」、与 Procedural Memory「prompt 即数据」同构：**把易变逻辑抽成数据，系统就获得不发版演化的能力**。代价是可预测性下降——所以它天然属于「长尾 + 内部工具」，把「高频 + 品牌门面」留给受控式。这不是二选一，而是**同一应用里按界面重要性分层混用**。

@@ -30,12 +30,13 @@ L3–L5 造的富 UI 都活在聊天框里。L6 冲出去，做**真正像「同
 
 **底层时序**（开发者无需操心，只管调 hook）：
 
-```
-Agent 决定调某前端工具
-  → AG-UI 识别到、暂停后端执行
-  → 把控制权交给前端、执行 handler
-  → 前端产出结果 → 回传后端
-  → agentic loop 继续
+```mermaid
+flowchart TB
+    A["Agent 决定调某前端工具"]
+    A --> B["AG-UI 识别到、暂停后端执行"]
+    B --> C["把控制权交给前端、执行 handler"]
+    C --> D["前端产出结果 → 回传后端"]
+    D --> E["agentic loop 继续"]
 ```
 
 ## 3. 原语二：共享状态同步（Shared State）
@@ -47,12 +48,15 @@ Agent 决定调某前端工具
 
 **底层机制**：
 
-```
-Agent 运行时更新自己的 state
-  → emit「state delta 事件」（增量，因常由 LLM 生成而被流式推送）
-  → 前端 state 随之同步
-前端也能 emit state delta 事件（承载用户侧的修改）
-需要时，两侧状态的冲突消解由 AG-UI middleware 处理
+```mermaid
+flowchart LR
+    Agent["Agent state"]
+    FE["前端 state"]
+    Agent -->|"emit state delta（增量·常由 LLM 生成而流式推送）"| FE
+    FE -->|"emit state delta（承载用户侧修改）"| Agent
+    MW(["AG-UI middleware<br/>需要时做冲突消解"])
+    Agent -.-> MW
+    FE -.-> MW
 ```
 
 字幕收束：这些都是**日常开发无需感知的实现细节，你只管用 `useAgent`**。

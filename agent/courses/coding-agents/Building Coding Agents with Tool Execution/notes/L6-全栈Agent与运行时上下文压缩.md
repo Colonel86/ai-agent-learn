@@ -59,17 +59,14 @@ tools = {
 }
 ```
 
-```
-模型 function_call ──> execute_tool()（本地，解析 JSON 参数、兜错误）
-                         │
-                         ▼
-                  tools 注册表的 lambda：拼出 "read_file(secure_path('...'))" 字符串
-                         │
-                         ▼
-                  sbx.run_code(...)  ← sbx_tools.py 已提前复制进沙箱并 import
-                         │
-                         ▼
-                  结构化 JSON 结果 ──> function_call_output ──> 回填 messages
+```mermaid
+flowchart TB
+    A["模型 function_call"] --> B["execute_tool()（本地，解析 JSON 参数、兜错误）"]
+    B --> C["tools 注册表的 lambda：拼出「read_file(secure_path('...'))」字符串"]
+    C --> D["sbx.run_code(...)  ← sbx_tools.py 已提前复制进沙箱并 import"]
+    D --> E["结构化 JSON 结果"]
+    E --> F["function_call_output"]
+    F --> G["回填 messages"]
 ```
 
 课程明确说不逐一实现每个工具，但**注册表是开放的**：在 `sbx_tools.py` 实现一个新函数、加进 `tools` 注册表和 `tools_schemas`，agent 立刻就能用——这就是给 agent 扩能力的全部成本。
@@ -85,14 +82,11 @@ tools = {
 3. **从最老的消息开始**取约 70% 的内容送给一个小模型总结，**最近的交互保持原样**；
 4. 用"合成 user 消息（携带快照）+ 合成 assistant 确认消息"这对消息**替换**被压缩的旧消息，loop 继续。
 
-```
-压缩前  [msg0 msg1 msg2 ... msg_k | msg_k+1 ... msg_n]
-         └────── 最老的 ~70% ─────┘  └── 最近交互，原样保留 ──┘
-                    │ gpt-5-nano + 快照系统提示词
-                    ▼
-压缩后  [user:"This is snapshot of the conversation so far:<state_snapshot>…"]
-        [assistant:"Got it. Thanks for the additional context!"]
-        [msg_k+1 ... msg_n]
+```mermaid
+flowchart TB
+    Before["压缩前：[msg0 msg1 msg2 ... msg_k | msg_k+1 ... msg_n]<br/>└ 最老的 ~70% ┘　└ 最近交互，原样保留 ┘"]
+    After["压缩后：<br/>[user：This is snapshot of the conversation so far：&lt;state_snapshot&gt;…]<br/>[assistant：Got it. Thanks for the additional context!]<br/>[msg_k+1 ... msg_n]"]
+    Before -->|"gpt-5-nano + 快照系统提示词"| After
 ```
 
 ### 3.2 快照系统提示词：给"记忆"定结构
@@ -175,13 +169,11 @@ demo.launch(share=True, height=800)
 
 `lib/ui.py` 这次加了新元素——**Browser 组件**内嵌沙箱里跑着的网站，模型每次改动都能实时看到；右侧 **AIContext 面板**用 tiktoken 逐条统计消息 token，让你亲眼看着上下文增长（这正是第 3 节压缩机制的可视化动机）。
 
-```
-┌────────────────┬──────────────────────┬────────────┐
-│ Chatbot 对话流  │ Browser              │ AIContext  │
-│ 🧠 Reasoning    │ (沙箱 3000 端口的     │ 每条消息的  │
-│ 🛠️ 工具调用+参数 │  Next.js 站点实时预览) │ token 计数  │
-│ ✅ 工具结果 JSON │                      │ 实时增长    │
-└────────────────┴──────────────────────┴────────────┘
+```mermaid
+flowchart LR
+    P1["Chatbot 对话流<br/>🧠 Reasoning<br/>🛠️ 工具调用+参数<br/>✅ 工具结果 JSON"]
+    P2["Browser<br/>（沙箱 3000 端口的<br/>Next.js 站点实时预览）"]
+    P3["AIContext<br/>每条消息的<br/>token 计数<br/>实时增长"]
 ```
 
 ### 5.3 两轮任务演示

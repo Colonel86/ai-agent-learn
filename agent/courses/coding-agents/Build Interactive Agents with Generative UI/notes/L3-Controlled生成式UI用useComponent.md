@@ -31,23 +31,19 @@
 
 每个注册组件关联 **name + description + 参数列表**，这些被转成 **tool 定义**，由 **AG-UI middleware** 注册为**前端定义的工具（frontend-defined tools）**。之后 agent 眼里它们**和任何其他 tool 一样**。完整回路：
 
-```
-① 注册组件 (name+description+参数)
-        │  转成 tool 定义
-        ▼
-② AG-UI middleware 注册为 frontend-defined tool
-        │
-        ▼
-③ agent 运行，把它当普通 tool 看见，决定何时调用来给用户展示内容
-        │  调用前端工具
-        ▼
-④ AG-UI 连接【暂停后端执行】，把执行权交给前端(handoff)
-        │
-        ▼
-⑤ CopilotKit SDK 把前端工具执行映射回它关联的 React 组件，渲染给用户
-        │  组件若在交互后返回结果
-        ▼
-⑥ 结果作为【标准 tool call result】回传给 agent 后端
+```mermaid
+flowchart TB
+    S1["① 注册组件 (name+description+参数)"]
+    S2["② AG-UI middleware 注册为 frontend-defined tool"]
+    S3["③ agent 运行，把它当普通 tool 看见，决定何时调用来给用户展示内容"]
+    S4["④ AG-UI 连接【暂停后端执行】，把执行权交给前端(handoff)"]
+    S5["⑤ CopilotKit SDK 把前端工具执行映射回它关联的 React 组件，渲染给用户"]
+    S6["⑥ 结果作为【标准 tool call result】回传给 agent 后端"]
+    S1 -->|"转成 tool 定义"| S2
+    S2 --> S3
+    S3 -->|"调用前端工具"| S4
+    S4 --> S5
+    S5 -->|"组件若在交互后返回结果"| S6
 ```
 
 > **架构师视角**：注意 ④ 的 **halt backend / handoff to frontend** 与 ⑥ 的 result 回传——这是一条完整的**前端在环（frontend-in-the-loop）**回路，等价于把"人在 UI 上的操作"编码成一次 tool call 的返回值。这正对口 `10-agent-ux.md` 的第 ④ 轴 **HITL 审批与中断恢复**：controlled 组件既能是纯展示（flight card），也能是可交互审批卡（点批准 → 结果回传 agent 续跑）。**呈现层和 HITL 环路在这里是同一套机制**，别拆成两套实现。
