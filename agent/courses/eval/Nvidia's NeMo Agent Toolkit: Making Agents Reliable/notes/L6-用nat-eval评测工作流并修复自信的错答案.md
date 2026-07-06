@@ -77,11 +77,11 @@ nat eval --config_file configs/eval_config.yml   # 按 config 对 workflow 跑�
 
 关键在下一步：查看评测输出里记录的**推理步骤**（evaluator 输出的 JSON 又大又啰嗦，notebook 里用一段解析代码整理后阅读）。真相是：
 
-```
-Q: 1980 年奥地利平均气温?
-agent 调 calculate_statistics 时 ←—— 没把 year=1980 传进去!
-→ 算成了整个气候区间 1950–2025 的平均值 (9.574°C)
-→ 却给出一个非常自信的回答
+```mermaid
+flowchart TB
+  Q["Q: 1980 年奥地利平均气温?"] --> B["agent 调 calculate_statistics 时没把 year=1980 传进去！"]
+  B --> C["算成了整个气候区间 1950–2025 的平均值 (9.574°C)"]
+  C --> D["却给出一个非常自信的回答"]
 ```
 
 讲师点题：**如果不跑 eval，这个 bug 大概率就漏过去了**——答案不是明显错的，agent 的语气还很自信。只有手里有 grounded evals，才能看穿"自信的错答案"。

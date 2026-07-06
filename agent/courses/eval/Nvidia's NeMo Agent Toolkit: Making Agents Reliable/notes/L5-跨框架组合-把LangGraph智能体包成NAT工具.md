@@ -92,13 +92,14 @@ workflow:
 
 ## 5. Agentic composition：工具可以是 agent，递归组合
 
-```
-workflow (ReAct)
- ├─ tool A（普通函数）
- ├─ tool B ══ 完整 agent（自带工具）
- │    ├─ tool B1（普通函数）
- │    └─ tool B2 ══ 又是一个完整 agent（还有自己的工具…）
- └─ tool C（普通函数）
+```mermaid
+flowchart TB
+  W["workflow (ReAct)"]
+  W --> tA["tool A（普通函数）"]
+  W --> tB["tool B ══ 完整 agent（自带工具）"]
+  W --> tC["tool C（普通函数）"]
+  tB --> tB1["tool B1（普通函数）"]
+  tB --> tB2["tool B2 ══ 又是一个完整 agent（还有自己的工具…）"]
 ```
 
 原本一堆 agent 各自独立运行，现在能组合到一起——**agent 与 agent 通信、互相借用能力**。集成前问不了"对气候数据做数学计算"；集成后气候 agent 的检索能力 × 计算器 agent 的数学能力 = 更好的答案与分析。

@@ -89,14 +89,19 @@ tru_recorder = TruGraph(
 
 Dashboard 的 **Compare** 把两版摆一起（base 在左、improved 在右），按"版本间差异最大"的 record 排序。点差异最大的那条 → 两条 trace **并排看**：
 
-```
-   base 版 trace（左）              improved 版 trace（右，更长）
-   planner → executor              planner → executor
-   → cortex research               → cortex research
-   → synthesizer                   → web research   ┐ inline eval 发现缺料
-   （plan adherence = 0，漏步）      → cortex research┘ 补的额外研究
-                                    → synthesizer
-                                    （plan adherence = 1，每步都执行且完成）
+```mermaid
+flowchart TB
+  subgraph BASE["base 版 trace"]
+    b1["planner → executor"] --> b2["cortex research"] --> b3["synthesizer"]
+    b3 --> bnote["（plan adherence = 0，漏步）"]
+  end
+  subgraph IMP["improved 版 trace（更长）"]
+    i1["planner → executor"] --> i2["cortex research"] --> i3["web research"]
+    i3 --> i4["cortex research"] --> i5["synthesizer"]
+    i5 --> inote["（plan adherence = 1，每步都执行且完成）"]
+    i3 -.->|"inline eval 发现缺料"| note1["补的额外研究"]
+    note1 -.-> i4
+  end
 ```
 
 improved 版右侧**多出的 web/cortex research 调用**，正是 **inline evaluation 发现缺口后补的**，同时对齐了 plan 里新列的 subgoal。plan adherence 从 **0 → 1**：判官解释"每步（含 replan 的每步）都执行并完成，任何偏离都明确以外部数据访问限制为由做了说明，无跳过无忽略"。

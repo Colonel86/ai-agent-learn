@@ -18,8 +18,9 @@ px_client = px.Client()
 
 ## Phoenix Experiments 的三要素
 
-```
-Dataset (test cases) -> Task (your function) -> Evaluators -> Scores
+```mermaid
+flowchart LR
+  A["Dataset (test cases)"] --> B["Task (your function)"] --> C["Evaluators"] --> D["Scores"]
 ```
 
 - **Dataset**：一组测试用例（每条有 input，可选 expected output）

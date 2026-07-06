@@ -18,14 +18,13 @@ L2 的 workflow 只是一个简单聊天机器人（`_type` 是一次 LLM call�
 
 ReAct = **Rea**soning + **Act**ing，是常见的 agentic 模式，本质是一个循环：
 
-```
-用户问题 → [Reason：LLM 思考下一步做什么]
-              ↓
-          [Act：形成并调用一个或多个 action（工具）]
-              ↓
-          [观察工具结果 → 继续 Reason]
-              ↑______循环，直到 LLM 确认"已知最终答案"______↓
-                                                     Final Answer
+```mermaid
+flowchart TB
+  Q["用户问题"] --> R["Reason：LLM 思考下一步做什么"]
+  R --> A["Act：形成并调用一个或多个 action（工具）"]
+  A --> O["观察工具结果 → 继续 Reason"]
+  O -->|"循环，直到 LLM 确认「已知最终答案」"| R
+  O --> F["Final Answer"]
 ```
 
 课程幻灯片上的 ReAct agent 挂了三个工具，**每个工具用完全不同的框架写成**——运行时 agent 自己决定用哪个、迭代到得出最终答案为止。这是 NAT 的核心卖点预告：框架无关的工具/agent 编排（L5 展开）。

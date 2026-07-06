@@ -36,17 +36,14 @@
 
 ## 3. Agent 怎么工作：Goal → Plan → Action 的迭代
 
-```
-   Goal（要达成的目标，如回答一个复杂 query）
-        │
-        ▼
-   Plan（拆解目标 → 一串子目标 / 子查询）
-        │
-        ▼
-   Action（按计划执行动作，达成各子目标）
-        │
-        └──▶ 观察结果 → 可能 update plan → 再 action ──┐
-              （planning 与 action 之间迭代，直到目标达成）
+```mermaid
+flowchart TB
+  G["Goal（要达成的目标，如回答一个复杂 query）"]
+  P["Plan（拆解目标 → 一串子目标 / 子查询）"]
+  A["Action（按计划执行动作，达成各子目标）"]
+  G --> P --> A
+  A -->|"观察结果 → 可能 update plan → 再 action"| P
+  N["（planning 与 action 之间迭代，直到目标达成）"]
 ```
 
 回到版本 ③ 的例子：

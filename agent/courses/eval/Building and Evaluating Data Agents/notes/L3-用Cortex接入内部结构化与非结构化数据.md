@@ -7,13 +7,18 @@
 
 L2 的架构只有 web 检索能力。L3 只改一件事：加一个 cortex_researcher 节点。
 
-```
-   L2 架构：planner ─ executor ─ web_researcher ─ chart/synthesizer ...
-
-   L3 架构：planner ─ executor ─┬─ web_researcher      （外部 web 数据）
-                                ├─ cortex_researcher   （★新增：内部结构化 + 非结构化）
-                                ├─ chart_generator ─ chart_summarizer
-                                └─ synthesizer
+```mermaid
+flowchart LR
+  subgraph L2["L2 架构"]
+    p2["planner"] --> e2["executor"] --> w2["web_researcher"] --> cs2["chart/synthesizer ..."]
+  end
+  subgraph L3["L3 架构"]
+    p3["planner"] --> e3["executor"]
+    e3 --> wr["web_researcher（外部 web 数据）"]
+    e3 --> cr["cortex_researcher（★新增：内部结构化 + 非结构化）"]
+    e3 --> cg["chart_generator"] --> csum["chart_summarizer"]
+    e3 --> syn["synthesizer"]
+  end
 ```
 
 加上这个 agent 后，系统能"跨所有数据推理"——回答那些需要**组合内外部数据源**的深度问题（如 L1 例子里那个"pending deals + 监管变化 + 会议记录"的三段式 query）。

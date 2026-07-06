@@ -7,17 +7,15 @@
 
 L4 的 RAG Triad 卡的是 goal completion（目标完成度）。但 agent 可能"答案凑巧对了、过程一塌糊涂"，也可能"过程严谨、就是没答对"。GPA 把 agent 拆成 **Goal / Plan / Action** 三个顶点，四条评测正好落在三角形的各条边和中心：
 
-```
-                    GOAL（用户目标）
-                    /            \
-        Plan Quality          Execution Efficiency
-     （计划是否达成目标）      （执行路径是否高效/最优）
-              /                      \
-          PLAN ────Plan Adherence──── ACTION
-       （计划）  （行动是否照计划走）  （实际动作/trace）
-
-           中心：Logical Consistency
-       （goal+plan+action 三者间有无矛盾）
+```mermaid
+flowchart TB
+  GOAL["GOAL（用户目标）"]
+  PLAN["PLAN（计划）"]
+  ACTION["ACTION（实际动作/trace）"]
+  GOAL -->|"Plan Quality（计划是否达成目标）"| PLAN
+  GOAL -->|"Execution Efficiency（执行路径是否高效/最优）"| ACTION
+  PLAN -->|"Plan Adherence（行动是否照计划走）"| ACTION
+  LC["中心：Logical Consistency<br/>（goal+plan+action 三者间有无矛盾）"]
 ```
 
 | 评测 | 落在哪 | 判什么 | 抓的失败模式 |

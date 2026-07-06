@@ -17,10 +17,9 @@ LLM-as-a-judge 永远不会 100% 准——所以 **Judge 本身也要被评估**
 
 把"被评估对象"从**智能体**换成**LLM Judge Prompt**——其余流程不变：
 
-```
-Dataset (judge 的 input + 期望 judge 标签)
-  -> Task (跑 judge prompt)
-  -> Evaluator (对比 judge 输出 vs 期望标签)
+```mermaid
+flowchart LR
+  A["Dataset（judge 的 input + 期望 judge 标签）"] --> B["Task（跑 judge prompt）"] --> C["Evaluator（对比 judge 输出 vs 期望标签）"]
 ```
 
 ### 例 1：评估 Function Calling Judge

@@ -31,18 +31,15 @@ NeMo Agent Toolkit 是**开源 Python 库**，桥接"原型 Agent"与"久经考�
 
 作为"统一接口层"（unified interface layer），NAT 提供五块能力：
 
-```
-              ┌────────────────────────────────────────────┐
-              │          NeMo Agent Toolkit (NAT)          │
-              │ ① 生产基础设施：API 部署，YAML 可配置        │
-              │ ② 统一可观测性：跨异构框架的端到端 tracing    │
-              │ ③ 系统化评估：标准化且完全可定制，覆盖任意环节 │
-              │ ④ 性能智能：找瓶颈、profiling、自动超参调优   │
-              │ ⑤ 集成支持：memory、MCP(client+server) 等插件│
-              └──────────────────┬─────────────────────────┘
-        ┌──────────┬─────────────┼─────────────┬───────────┐
-   LangChain   LangGraph      CrewAI    Semantic Kernel  自定义 Python…
-        （Day 1 的任意选择；Agent 跨框架互调也能被端到端追踪）
+```mermaid
+flowchart TB
+  NAT["NeMo Agent Toolkit (NAT)<br/>① 生产基础设施：API 部署，YAML 可配置<br/>② 统一可观测性：跨异构框架的端到端 tracing<br/>③ 系统化评估：标准化且完全可定制，覆盖任意环节<br/>④ 性能智能：找瓶颈、profiling、自动超参调优<br/>⑤ 集成支持：memory、MCP(client+server) 等插件"]
+  NAT --> F1["LangChain"]
+  NAT --> F2["LangGraph"]
+  NAT --> F3["CrewAI"]
+  NAT --> F4["Semantic Kernel"]
+  NAT --> F5["自定义 Python…"]
+  NOTE["（Day 1 的任意选择；Agent 跨框架互调也能被端到端追踪）"]
 ```
 
 ## 3. 关键差异点：config driven（配置驱动）

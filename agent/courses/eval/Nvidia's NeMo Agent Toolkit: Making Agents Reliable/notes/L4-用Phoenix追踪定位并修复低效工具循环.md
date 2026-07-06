@@ -54,14 +54,13 @@ general:                    # NAT 全局配置节（与 llms/functions/workflow 
 
 Phoenix 平时一条 `phoenix serve` 就能起（notebook 环境里要多跑几条命令让它后台运行）。UI 侧的心智模型：
 
-```
-Phoenix 首页
- └─ 项目列表（按 config 里的 project 名分隔）
-     └─ climate_analyzer_baseline
-         └─ trace 列表（一条查询 = 一条 trace）
-             ├─ 顶层信息：kind / workflow 名 / output / annotations
-             │            / start time / tokens / latency
-             └─ 点进去：完整思维链——LLM call → tool call → LLM call → …
+```mermaid
+flowchart TB
+  H["Phoenix 首页"] --> P["项目列表（按 config 里的 project 名分隔）"]
+  P --> C["climate_analyzer_baseline"]
+  C --> T["trace 列表（一条查询 = 一条 trace）"]
+  T --> TOP["顶层信息：kind / workflow 名 / output / annotations / start time / tokens / latency"]
+  T --> DETAIL["点进去：完整思维链——LLM call → tool call → LLM call → …"]
 ```
 
 示例截图里一眼能看到某次 agentic workflow 的 LLM 调用、agent 决定调的工具、工具结果，以及**这一次调用花了 26 秒**——"这就是 observability 的真正威力"。
@@ -76,9 +75,10 @@ Phoenix 首页
 
 切到 Phoenix：项目 `climate_analyzer_baseline` 下出现 **3 条 trace**，一一对应。看列表页的 latency 列——**有一条比其他两条慢得多**。钻进去看思维链：
 
-```
-LLM call → tool call → LLM call → tool call → LLM call → tool call → …
-（大量 LLM 调用 + 大量工具调用，"看起来像在空转/churning"）
+```mermaid
+flowchart LR
+  A["LLM call"] --> B["tool call"] --> C["LLM call"] --> D["tool call"] --> E["LLM call"] --> F["tool call"] --> G["…"]
+  N["（大量 LLM 调用 + 大量工具调用，「看起来像在空转/churning」）"]
 ```
 
 **诊断结论**（分析各次调用后得出）：agent 在找**气象站（station）数据**，但我们**没有给它一个专门取站点数据的工具**——于是它绕着圈子，从其他工具里东拼西凑各种信息碎片来凑站点答案。答案最后是对的，代价是海量的迭代。

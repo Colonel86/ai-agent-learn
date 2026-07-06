@@ -5,20 +5,16 @@
 
 ## 0. 目标架构
 
-```
-                    ┌─────────┐
-   user query ─▶ START ─▶ planner ─▶ executor ◀──────────────┐
-                    └─────────┘        │  ▲                   │
-                                       │  │(每个子 agent 干完   │
-                        ┌──────────────┼──┴── 回到 executor 重选)│
-                        ▼              ▼              ▼         │
-                  web_researcher  chart_generator  synthesizer─┘
-                                       │              │
-                                       ▼              ▼
-                                 chart_summarizer    END
-                                       │
-                                       ▼
-                                      END
+```mermaid
+flowchart TB
+  UQ["user query"] --> START["START"] --> planner["planner"] --> executor["executor"]
+  executor --> web_researcher["web_researcher"]
+  executor --> chart_generator["chart_generator"]
+  executor --> synthesizer["synthesizer"]
+  web_researcher -.->|"每个子 agent 干完回到 executor 重选"| executor
+  synthesizer -.->|"每个子 agent 干完回到 executor 重选"| executor
+  chart_generator --> chart_summarizer["chart_summarizer"] --> END1["END"]
+  synthesizer --> END2["END"]
 ```
 
 两种典型流程：

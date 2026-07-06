@@ -19,21 +19,11 @@ L3 结尾 agent 已经"功能齐全"，但没人知道它答得**准不准、有
 
 RAG Triad 本是给 RAG 系统设计的，但 data agent 的内核同样是**检索/研究 + 合成**，所以三指标可以直接迁移。三条边分别卡住 data agent 的三个环节：
 
-```
-                用户 query
-                    │
-        ┌───────────▼────────────┐
-        │   ① Context Relevance   │  检索到的 context 与子问题相关吗？
-        │   （评每个 research 步） │
-        └───────────┬────────────┘
-                    ▼  retrieved context
-        ┌────────────────────────┐
-        │   ② Groundedness        │  合成的回答被 context 支撑吗？（防幻觉）
-        └───────────┬────────────┘
-                    ▼  final answer
-        ┌────────────────────────┐
-        │   ③ Answer Relevance    │  最终回答切题吗？（对齐原始 query）
-        └────────────────────────┘
+```mermaid
+flowchart TB
+  Q["用户 query"] --> C1["① Context Relevance（评每个 research 步）<br/>检索到的 context 与子问题相关吗？"]
+  C1 -->|"retrieved context"| C2["② Groundedness<br/>合成的回答被 context 支撑吗？（防幻觉）"]
+  C2 -->|"final answer"| C3["③ Answer Relevance<br/>最终回答切题吗？（对齐原始 query）"]
 ```
 
 | 指标 | 两个输入 | 判什么 | 在架构里的锚点 |
