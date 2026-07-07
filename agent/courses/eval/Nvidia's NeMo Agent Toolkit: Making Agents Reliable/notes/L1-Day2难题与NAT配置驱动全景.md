@@ -65,6 +65,20 @@ NAT 与典型库的不同之处：**不把 agents / tools / workflows 硬编码�
 
 ## 5. 可观测性：telemetry 进 config，不进代码
 
+**两个术语**（数据链路的头和尾）：
+
+| 术语 | 含义 |
+|---|---|
+| **Instrumentation（埋点/插桩）** | 给软件加"测量代码"，让它运行时把内部发生的事（调了什么、花多久、多少 token）以数据形式吐出来——像给发动机装传感器。每个关键动作产出一条记录（tracing 里叫 span），L4 Phoenix 里的完整思维链就是 span 串成的 |
+| **Telemetry sink（遥测数据的汇/接收端）** | 数据发往哪个观测后端——Phoenix、Prometheus、Datadog 等。借自数据流的 source/sink（源/汇）比喻 |
+
+```mermaid
+flowchart LR
+  I["Instrumentation（埋点）<br/>在代码执行处产出数据"] --> D["OTel 标准格式数据"] --> S["Telemetry sink（汇）<br/>Phoenix / Prometheus / …"]
+```
+
+埋点管"数据怎么产出"，sink 管"数据发到哪"。NAT 的做法：instrumentation 由框架层自动注入（auto-instrumentation，包裹每个 function/LLM call 织出 span，业务代码零测量代码），sink 声明在 YAML 里（`general.telemetry.tracing` 下每个 target 就是一个 sink，可多个并挂、换后端改一行配置）——这就是"逻辑与埋点解耦"的具体含义。
+
 如何从 agentic 系统里拿到 telemetry 和性能数据？三种做法的分野：
 
 | 做法 | 问题 |
