@@ -60,15 +60,21 @@ flowchart TB
 
 先给 agent **设定目标**（对 data agent 而言，常指向最终回答的质量——是否 relevant、是否 grounded；也含沿途的子目标——检索是否取回了相关结果）。然后用一组 **LLM judge** 检查三个维度两两之间、以及三者共同的对齐度。用一个 Venn 图（Goal / Plan / Action 三个圆）来定位每个评测指标：
 
-```
-              Goal
-             /    \
-    Plan Quality   Execution Efficiency
-           /  ┌──────────┐  \
-         Plan │ Logical  │ Action
-           \  │Consistency│ /
-            \ └──────────┘/
-          Plan Adherence
+```mermaid
+flowchart TB
+  G(("Goal"))
+  P(("Plan"))
+  A(("Action"))
+  PQ["Plan Quality<br/>（G ∩ P）"]
+  EE["Execution Efficiency<br/>（G ∩ A）"]
+  PA["Plan Adherence<br/>（P ∩ A）"]
+  LC["Logical Consistency<br/>（G ∩ P ∩ A）"]
+  G --- PQ --- P
+  G --- EE --- A
+  P --- PA --- A
+  G -.- LC
+  P -.- LC
+  A -.- LC
 ```
 
 | 评测指标 | 位于 | 检查什么 |
