@@ -234,7 +234,7 @@ flowchart TB
 | Building Coding Agents with Tool Execution(E2B) | `../courses/coding-agents/Building Coding Agents with Tool Execution/` |
 | Knowledge Graphs for RAG(Neo4j) | `../courses/RAG/Knowledge Graphs for RAG/` |
 | DSPy: Build and Optimize Agentic Apps(Databricks) | `../courses/optimization/DSPy: Build and Optimize Agentic Apps/` |
-| Nvidia's NeMo Agent Toolkit: Making Agents Reliable(Nvidia) | `../courses/eval/Nvidia's NeMo Agent Toolkit: Making Agents Reliable/` |
+| Nvidia's NeMo Agent Toolkit: Making Agents Reliable(Nvidia) | `../courses/eval/Nvidia's NeMo Agent Toolkit/` |
 | Semantic Caching for AI Agents(Redis) | `../courses/optimization/Semantic Caching for AI Agents/` |
 | Governing AI Agents(Databricks) | `../courses/safety/Governing AI Agents/` |
 | Safe and reliable AI via guardrails(GuardrailsAI) | `../courses/safety/Safe and reliable AI via guardrails/` |
