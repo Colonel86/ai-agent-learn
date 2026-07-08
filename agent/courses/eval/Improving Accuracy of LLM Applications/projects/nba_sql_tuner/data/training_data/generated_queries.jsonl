@@ -1,0 +1,22 @@
+{"question": "Who is the highest paid NBA player?", "sql": "SELECT NAME, SALARY FROM nba_roster WHERE SALARY != '--' ORDER BY CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER) DESC LIMIT 1;"}
+{"question": "What is the average salary of the Los Angeles Lakers?", "sql": "SELECT AVG(CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER)) FROM nba_roster WHERE Team = 'Los Angeles Lakers' AND SALARY != '--';"}
+{"question": "What is the average salary of the Boston Celtics?", "sql": "SELECT AVG(CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER)) FROM nba_roster WHERE Team = 'Boston Celtics' AND SALARY != '--';"}
+{"question": "What is the average salary of the Golden State Warriors?", "sql": "SELECT AVG(CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER)) FROM nba_roster WHERE Team = 'Golden State Warriors' AND SALARY != '--';"}
+{"question": "How many players earn more than 20 million dollars?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE SALARY != '--' AND CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER) > 20000000;"}
+{"question": "Which team has the highest average salary?", "sql": "SELECT Team, AVG(CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER)) AS a FROM nba_roster WHERE SALARY != '--' GROUP BY Team ORDER BY a DESC LIMIT 1;"}
+{"question": "What is the median weight in the NBA?", "sql": "SELECT CAST(SUBSTR(WT, 1, INSTR(WT, ' ')) AS INTEGER) AS w FROM nba_roster ORDER BY w LIMIT 1 OFFSET (SELECT COUNT(*) FROM nba_roster) / 2;"}
+{"question": "What is the average weight of NBA players?", "sql": "SELECT AVG(CAST(SUBSTR(WT, 1, INSTR(WT, ' ')) AS INTEGER)) FROM nba_roster;"}
+{"question": "What is the median age of the Chicago Bulls?", "sql": "SELECT AGE FROM nba_roster WHERE Team = 'Chicago Bulls' ORDER BY AGE LIMIT 1 OFFSET (SELECT COUNT(*) FROM nba_roster WHERE Team = 'Chicago Bulls') / 2;"}
+{"question": "What is the average age of the Chicago Bulls?", "sql": "SELECT AVG(AGE) FROM nba_roster WHERE Team = 'Chicago Bulls';"}
+{"question": "What is the median age of the Miami Heat?", "sql": "SELECT AGE FROM nba_roster WHERE Team = 'Miami Heat' ORDER BY AGE LIMIT 1 OFFSET (SELECT COUNT(*) FROM nba_roster WHERE Team = 'Miami Heat') / 2;"}
+{"question": "What is the average age of the Miami Heat?", "sql": "SELECT AVG(AGE) FROM nba_roster WHERE Team = 'Miami Heat';"}
+{"question": "What is the median age of the Denver Nuggets?", "sql": "SELECT AGE FROM nba_roster WHERE Team = 'Denver Nuggets' ORDER BY AGE LIMIT 1 OFFSET (SELECT COUNT(*) FROM nba_roster WHERE Team = 'Denver Nuggets') / 2;"}
+{"question": "What is the average age of the Denver Nuggets?", "sql": "SELECT AVG(AGE) FROM nba_roster WHERE Team = 'Denver Nuggets';"}
+{"question": "Which college has produced the most NBA players?", "sql": "SELECT COLLEGE, COUNT(*) AS c FROM nba_roster WHERE COLLEGE != '--' GROUP BY COLLEGE ORDER BY c DESC LIMIT 1;"}
+{"question": "How many players went to Duke?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE COLLEGE = 'Duke';"}
+{"question": "How many players went to Kentucky?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE COLLEGE = 'Kentucky';"}
+{"question": "How many players went to UCLA?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE COLLEGE = 'UCLA';"}
+{"question": "How many players are on the Boston Celtics?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE Team = 'Boston Celtics';"}
+{"question": "How many players are on the New York Knicks?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE Team = 'New York Knicks';"}
+{"question": "Who is the oldest player in the NBA?", "sql": "SELECT NAME, AGE FROM nba_roster ORDER BY AGE DESC LIMIT 1;"}
+{"question": "How many centers are in the NBA?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE POS = 'C';"}

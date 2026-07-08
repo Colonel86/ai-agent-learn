@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.egg-info/
+scripts/_*.py
+data/nba_roster.db
+data/nba_roster.csv
+data/results/
+adapters/
