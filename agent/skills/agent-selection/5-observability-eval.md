@@ -109,6 +109,22 @@ flowchart LR
 
 > ⚠️ **HITL × tracing 的坑(选平台时要会处理)**:LangGraph 的 `interrupt()` 靠抛 `GraphInterrupt` + 两次 invoke 实现暂停,**naive tracing 会把一次人审切成两条断裂 trace**、把含 `interrupt()` 的节点/工具**误标 ERROR**(其实只是在等人),还会让人审耗时污染延迟、token/成本被劈成两半。治法:① 两次 invoke 带同一 `thread_id`/session,用平台的 **thread/session 分组**缝成一条逻辑 trace;② 把 `GraphInterrupt` 特判为 `paused` 而非 `ERROR`;③ 用**框架原生 tracing 集成**(它认得 checkpoint/interrupt),别手搓 OTel span——"naive" 才踩这个坑。**选平台的一个隐性加分项:看它对 LangGraph interrupt/checkpoint 的原生支持。**
 
+### 赛道边界:LLM 观测平台 ≠ 服务监控(Phoenix / Prometheus / Datadog 怎么摆)
+
+上表全是 **LLM 观测平台**(管 trace 语义:prompt/token/工具调用)。生产系统还有另外两类"telemetry sink"经常被并列提起,它们**不是同一赛道的竞品**,按两个维度错开:管什么信号 × 商业形态:
+
+| | Phoenix(代表 LLM 观测) | Prometheus | Datadog |
+|---|---|---|---|
+| 核心信号 | Trace(调用链,LLM 语义) | Metrics(时序指标) | 全家桶:metrics + logs + traces |
+| 回答的问题 | 这次回答调了哪些工具、prompt 是什么、烧了多少 token | 服务 QPS / P99 / 错误率有没有超阈值 | 以上全部,一个视窗 |
+| 商业形态 | 开源自托管 | 开源自托管(CNCF) | 商业 SaaS,数据出域,按量付费 |
+
+- **三类信号不互相替代**:agent 上生产后,"这条回答为什么错"(单请求钻取)找 LLM 观测平台;"服务还活着吗、扛得住流量吗"(聚合指标 + 报警)找 Prometheus + Grafana/Alertmanager;两边都要。
+- **可以多挂,不必二选一**:埋点走 OTel 后,同一份遥测可同时发多个 sink(NAT 的 `telemetry.tracing` 就是 target 列表)——Phoenix 给工程师调试、再发一份进公司既有 Datadog 给运维统一视窗,是常规生产配置。
+- **真正的二选一在商业维度**:数据能否出域、愿不愿为"省运维"付 SaaS 钱——敏感/预算紧 → Phoenix + Prometheus 全开源自托管;要企业级一体化和现成合规 → Datadog 类 SaaS(其 LLM Observability 子产品对标本表平台)。与框架层"自建 vs 托管"同款取舍。
+
+> 来源:NAT 课程 L4 多 sink 实践 + 生产化讨论(2026-07)。
+
 ## 三、子决策 2:Eval 框架/库
 
 | 库 | 风格 | 强项 | 适合 |

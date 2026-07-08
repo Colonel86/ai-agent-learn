@@ -1,0 +1,50 @@
+general:
+  telemetry:
+    tracing:
+      phoenix:
+        _type: phoenix
+        endpoint: http://localhost:6006/v1/traces
+        project: climate_analyzer_multi_agent
+
+llms:
+  climate_llm:
+    _type: nim
+    model_name: meta/llama-3.1-70b-instruct
+    base_url: ${NVIDIA_BASE_URL}
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0.0
+    max_tokens: 2048
+
+  calculator_llm:                # L5:计算器 agent 的专属 LLM(LLM Lifting 的落点)
+    _type: nim
+    model_name: meta/llama-3.1-70b-instruct
+    base_url: ${NVIDIA_BASE_URL}
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0.0             # 数学要一致性,压到 0
+    max_tokens: 1024             # 计算输出短,单独约束
+
+functions:
+  calculate_statistics:
+    _type: climate_analyzer/calculate_statistics
+  filter_by_country:
+    _type: climate_analyzer/filter_by_country
+  find_extreme_years:
+    _type: climate_analyzer/find_extreme_years
+  create_visualization:
+    _type: climate_analyzer/create_visualization
+  list_countries:
+    _type: climate_analyzer/list_countries
+  station_statistics:
+    _type: climate_analyzer/station_statistics
+  calculator_agent:              # 整个 LangGraph agent = 又一个普通函数
+    _type: climate_analyzer/calculator_agent
+
+workflow:
+  _type: react_agent
+  tool_names: [calculate_statistics, filter_by_country, find_extreme_years,
+               create_visualization, list_countries, station_statistics,
+               calculator_agent]
+  llm_name: climate_llm
+  verbose: true
+  max_iterations: 8              # 多 agent 委托链更长,放宽一点
+  max_retries: 2

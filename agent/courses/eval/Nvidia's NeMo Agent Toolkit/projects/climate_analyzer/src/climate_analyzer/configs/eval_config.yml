@@ -1,0 +1,69 @@
+general:
+  telemetry:
+    tracing:
+      phoenix:
+        _type: phoenix
+        endpoint: http://localhost:6006/v1/traces
+        project: climate_analyzer_eval   # 评测期间的推理过程在 Phoenix 这个项目里看
+
+llms:
+  climate_llm:
+    _type: openai                        # DeepSeek 官方 API 是 OpenAI 兼容协议
+    model_name: deepseek-v4-flash        # 旧名 deepseek-chat 2026-07-24 弃用;pro 是重推理型,不适合 react_agent
+    base_url: https://api.deepseek.com
+    api_key: ${DEEPSEEK_API_KEY}
+    temperature: 0.0
+    max_tokens: 2048
+
+  judge_llm:                             # 裁判与被评模型分开;DeepSeek 当裁判的三个前提:
+    _type: openai                        # ① 非思考模式(extra_body 关 thinking,否则拒绝强制 tool_choice)
+    model_name: deepseek-v4-flash        # ② 结构化输出走 function_calling(见 register.py 的 shim,
+    base_url: https://api.deepseek.com   #    json_schema 这个 response_format DeepSeek 不支持 → 400)
+    api_key: ${DEEPSEEK_API_KEY}         # ③ n 只支持 1(ragas 这条路径恰好只用 n=1)
+    temperature: 0.0
+    max_tokens: 1024
+    extra_body:
+      thinking:
+        type: disabled
+
+functions:
+  calculate_statistics:
+    _type: climate_analyzer/calculate_statistics
+  filter_by_country:
+    _type: climate_analyzer/filter_by_country
+  find_extreme_years:
+    _type: climate_analyzer/find_extreme_years
+  create_visualization:
+    _type: climate_analyzer/create_visualization
+  list_countries:
+    _type: climate_analyzer/list_countries
+  station_statistics:
+    _type: climate_analyzer/station_statistics
+
+workflow:
+  _type: react_agent
+  tool_names: [calculate_statistics, filter_by_country, find_extreme_years,
+               create_visualization, list_countries, station_statistics]
+  llm_name: climate_llm
+  verbose: true
+  max_iterations: 5
+  max_retries: 2
+  raise_on_parsing_failure: false   # 解析失败时把错误当答案返回,不抛异常(兜底)
+  # 实验记录(2026-07-07):曾尝试用 additional_instructions 教 agent「上下文缺失时反问」,
+  # 两个版本的指令都让原本稳定的事实用例随机吐空串/错答(评测套件抓住的回归)。
+  # 对 llama-3.1-70b + ReAct 提示词,系统指令的扰动面 > 收益,已回滚。
+  # 「反问澄清」用例保留在评测集中作为已知失败(frontier),修复方向:
+  # 换更强模型 / use_native_tool_calling / 在 UI 层带上下文(根治)。
+
+eval:
+  general:
+    max_concurrency: 1   # 默认 8;免费 API key 会被并发突刺打到 429,串行最稳
+    output_dir: ./.tmp/eval_output
+    dataset:
+      _type: json
+      file_path: data/simple_eval.json
+  evaluators:
+    answer_accuracy:
+      _type: ragas
+      metric: AnswerAccuracy
+      llm_name: judge_llm

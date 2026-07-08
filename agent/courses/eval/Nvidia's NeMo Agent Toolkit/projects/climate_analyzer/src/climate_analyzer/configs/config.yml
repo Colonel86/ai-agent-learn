@@ -1,0 +1,37 @@
+general:
+  telemetry:
+    tracing:
+      phoenix:
+        _type: phoenix
+        endpoint: http://localhost:6006/v1/traces
+        project: climate_analyzer_baseline
+
+llms:
+  climate_llm:
+    _type: nim
+    model_name: meta/llama-3.1-70b-instruct
+    base_url: ${NVIDIA_BASE_URL}
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0.7
+    max_tokens: 2048
+
+functions:
+  calculate_statistics:
+    _type: climate_analyzer/calculate_statistics
+  filter_by_country:
+    _type: climate_analyzer/filter_by_country
+  find_extreme_years:
+    _type: climate_analyzer/find_extreme_years
+  create_visualization:
+    _type: climate_analyzer/create_visualization
+  list_countries:
+    _type: climate_analyzer/list_countries
+
+workflow:
+  _type: react_agent
+  tool_names: [calculate_statistics, filter_by_country, find_extreme_years,
+               create_visualization, list_countries]
+  llm_name: climate_llm
+  verbose: true
+  max_iterations: 5      # ReAct 循环上限,防失控烧 token
+  max_retries: 2         # 工具调用失败允许重试
