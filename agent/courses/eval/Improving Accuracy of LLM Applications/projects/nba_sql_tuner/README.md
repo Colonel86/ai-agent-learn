@@ -23,7 +23,7 @@ DeepLearning.AI × Lamini 这门课的本地可跑版本。课程主线是一个
 | `data/gold-test-set.jsonl` | `gold.py` 生成 15 条并逐条校验 | 参考 SQL 直接在库上跑得出答案,自洽 |
 | L3 `GenerationPipeline`(QueryStage+ScoreStage) | `evaluate.py`(纯 Python 两段) | 有效SQL% / 正确SQL% 两个指标 |
 | L5「working backwards」数据生成+过滤 | `generate_data.py` | seed 模式(默认)/ model 模式 |
-| L5 `llm.train(...)`(派发到 Lamini) | `finetune.py`(本地 LoRA,真跑) | **两种预设:finetune / memory** |
+| L5 `llm.train(...)`(派发到 Lamini) | `finetune.py`(本地 LoRA,真跑) | 预设 finetune / memory / memory_light(受控对照) |
 | L5 加载 tuned model ID 看提升 | `backend.LLM(adapter=...)` | 加载本地训好的 LoRA |
 
 ---
@@ -49,6 +49,7 @@ python scripts/03_generate_data.py   # L5:生成 + 过滤微调数据
 python scripts/04_finetune.py both   # L5 核心:真跑 finetune + memory tuning
 python scripts/05_compare.py         # 三方对比(准确率 + loss + 硬事实并排)
 python scripts/06_plot.py            # ASCII loss 曲线 + 准确率阶梯
+python scripts/07_fairness_probe.py  # 受控实验 + 泛化探针(诚实修正,见下)
 ```
 
 ---
@@ -68,16 +69,11 @@ python scripts/06_plot.py            # ASCII loss 曲线 + 准确率阶梯
 | **准确率(本机)** | 20%(甚至低于 baseline 33%) | 67%(翻倍) |
 | 代价 | 便宜,但收益不稳、可能倒退 | 泛化下降(过拟合的另一面),训练更久 |
 
-> 这两个预设在 `finetune.py::FINETUNE / MEMORY`,可直接改超参再跑,亲手感受「多训几轮、
-> 调更多层」怎么把 loss 从平台推向 0、把准确率从 20% 推到 67%。
-
-这就是 Lamini「memory tuning(MoME)」在**行为层**的本质:把特定事实的 loss 逼到 0。
-Lamini 真实实现还有「多专家 + 路由」(把不同事实分到海量 LoRA 专家里、按需激活,
-从而**既背住事实又不牺牲泛化**),本地这一版用「单适配器激进过拟合」复现的是它**最核心的可感知效果**。
-
-> 判断依据:看 `scripts/06_plot.py` 打印的 loss 曲线——memory 那条会一路砸到接近 0,
-> finetune 那条停在半空;再看 `05_compare.py` 的硬事实并排,memory 在训练过的
-> 薪资/体重/年龄问题上给出和 gold 一致的答案,finetune 则时对时错。
+> ⚠️ **这张表把两个变量(容量 + 训练量)绑在了一起,所以不是干净的算法对比**。
+> 我最初据此说「finetune 学风格、memory 背事实」——**后来用受控实验证明这个结论是错的**:
+> memory 领先靠的是**容量**,不是「loss→0」;把 loss 训到 0 反而开始损泛化。
+> 详见下面「**这个对比公平吗**」一节(`scripts/07_fairness_probe.py`)。这两个预设在
+> `finetune.py::FINETUNE / MEMORY`,可自己改超参复现。
 
 ---
 
@@ -126,18 +122,18 @@ Lamini 真实实现还有「多专家 + 路由」(把不同事实分到海量 Lo
 (batch=1,AdamW)。梯度裁剪是**必须的**:memory 预设 rank 大、LR 高、调所有层,不裁剪会在长训练里发散
 (实测 loss 先降到 0.03、再冲到两位数、最后塌成退化的 0)。每 epoch 的平均 loss 存进 `train_summary.json`。
 
-### 4. 两种预设怎么「造」出 fine-tuning vs memory tuning 的差别
+### 4. 两种预设的差别在哪(以及它到底意味着什么)
 
 同一份 22 条数据、同一个基座,只改这几个超参(都在 `finetune.py::FINETUNE / MEMORY`):
 
-- **finetune**:低 rank(8)、少 epoch(5)、带 dropout(0.05)、只调注意力两层
-  → 欠拟合,loss 停在 **0.12 平台**,只学到 SQL 的**风格**,没把具体事实背进去。
-- **memory**:高 rank(32)、多 epoch(15)、无 dropout、调所有 7 层
-  → 激进过拟合,loss 逼到 **0.0004**,把 gold 事实**背进权重**。
+- **finetune**:低 rank(8)、少 epoch(5)、带 dropout、只调注意力两层 → loss 停在 **0.12 平台**。
+- **memory**:高 rank(32)、多 epoch(15)、无 dropout、调所有 7 层 → loss 逼到 **0.0004**。
 
-这就是 Lamini「memory tuning(MoME)」在**行为层**的本质:把特定事实的 loss 逼到 0。
-Lamini 真实实现还有「多专家 + 路由」(把不同事实分到海量 LoRA 专家、按需激活,
-从而**既背住事实又不牺牲泛化**);本地这一版用「单适配器激进过拟合」复现的是它**最核心的可感知效果**。
+**注意:这两个预设同时变了「容量」和「训练量」两个变量,所以它不是干净的算法对比。**
+我最初据此下的结论(finetune 学风格、memory 背事实)是**错的**——`07_fairness_probe.py` 的受控实验
+证明:准确率的差主要来自**容量**(rank/层数),把 loss 训到 0 几乎不涨准确率、反而开始损泛化。
+真正的 Lamini「memory tuning(MoME)」不是「训得更狠」,而是**多专家 + 路由**的架构,用来在
+「记忆 loss→0」的同时不牺牲泛化——这一层本项目**没有复现**。详见「这个对比公平吗」一节。
 
 ### 5. 训练在哪跑:强制 CPU
 
@@ -159,26 +155,79 @@ memory   ███████████████████████�
 训练 loss 曲线:
 
 ```text
-finetune  1.08 █▄▂▁▁ 0.122         停在平台 → 学到风格,没背事实
-memory    0.67 █▂▁▁▁▁▁▁▁▁▁▁▁▁▁ 0.0004  一路砸到 ~0 → 把事实背进权重
+finetune  1.08 █▄▂▁▁ 0.122         低容量(r8/2层),loss 停在平台
+memory    0.67 █▂▁▁▁▁▁▁▁▁▁▁▁▁▁ 0.0004  高容量(r32/7层),loss 一路砸到 ~0
 ```
 
-**怎么读这三个数(这才是重点):**
+(注:loss 差这么多,但准确率的差主要来自**容量**不是 loss 高低——见下节受控实验。)
 
-- **memory tuning 把准确率翻倍(33% → 67%),loss 逼到 0.0004。** 硬事实里「Chicago Bulls 平均年龄」
-  从 baseline 的 `AVG(WT)`(用错列)变成 memory 的 `AVG(AGE)` ✓ —— 事实被背进了权重。
-- **轻量 fine-tuning 不但没涨,还从 33% 掉到 20%。** 这不是 bug,是**真实且值钱的教训**:
-  少量、欠拟合的微调会「半吊子地改写模型」——丢了 few-shot 拐杖,又没学扎实,反而更差。
-  loss 停在 0.12 的平台,说明它只蹭到了风格、没背下事实。
-- **两者的差别是「种类」而非「程度」**:看 loss 曲线,finetune 停在半空、memory 砸到地板。
-  这就是课程 L4 讲的 fine-tuning vs memory tuning,也印证了课程主线——**便宜手段(轻量微调)有天花板、
-  甚至会倒退;只有把 loss 逼到 0 的 memory tuning 才真正突破。**
+**怎么读这三个数:**
 
-> 诚实边界:360M 这种小模型 + 22 条样本,memory 仍搞不定最长的那几条 SQL(嵌套 REPLACE 的薪资、
-> SUBSTR 的体重)——free generation 会因 exposure bias 在前几个 token 岔开就崩。这本身也是一课:
-> **模型容量 × 数据量决定记忆化的上限**。换成 `Qwen2.5-0.5B-Instruct` 或更大模型,这几条也能拿下。
+- **memory 把准确率翻倍(33% → 67%),finetune 反而从 33% 掉到 20%。**
+- 直觉上会说「memory 把 loss 逼到 0、把事实背进了权重,所以更强」——**但这个直觉是错的**,
+  下一节用两个受控实验证明:memory 领先靠的是**容量**,不是「loss→0」;而且把 loss 训到 0
+  其实**开始伤害泛化**。
 
-`data/results/comparison.md` 有完整的三方逐题对比和硬事实并排。
+> ⚠️ **重要修正**:我最初把 finetune/memory 的差归功于「loss 平台 vs loss→0」,这是**记错了账**。
+> 见下一节「这个对比公平吗」。`data/results/comparison.md` 是三方逐题对比,
+> `data/results/fairness_probe.md` 是修正实验。
+
+---
+
+## 这个对比公平吗?受控实验 + 泛化探针(重要修正)
+
+上面 finetune(r8/2层/5ep)和 memory(r32/7层/15ep)**容量和训练量都不同**,所以「plateau vs loss→0」
+至少一半是训练强度的差。为了搞清到底是什么在起作用,`scripts/07_fairness_probe.py` 做了两个受控实验。
+
+### A. 受控实验:容量相同,只变 epoch
+
+`memory_light` 预设和 `memory` **容量完全相同**(都 r32 / 全 7 层),只把 epoch 从 15 砍到 3:
+
+| 模型 | 配置 | final loss | 正确率(gold 15 题) |
+| --- | --- | --- | --- |
+| memory_light | r32 / 全7层 / **3** epoch | 0.0662 | **66.7%** |
+| memory | r32 / 全7层 / **15** epoch | 0.0004 | **66.7%** |
+
+**epoch 3→15 让 loss 从 0.066 砸到 0.0004,准确率却纹丝不动(都 66.7%)。**
+所以「把 loss 逼到 0」对准确率几乎没帮助——memory 比 finetune 高那一截,**真正的功臣是容量**
+(rank 32 vs 8、调全 7 层 vs 只调 q/v),不是「训到 loss→0」。
+
+### B. 泛化探针:记忆 vs 泛化(matched pairs)
+
+seen 与 unseen **逐条难度配平**——同一种查询,只差实体:seen 用训练过的队/学院,
+unseen 用 Suns/Spurs/Mavericks/Kansas/Nets(**从没进过训练**)。差就纯粹反映「记忆 vs 泛化」。
+(这是两个各 6 题、难度配平的**专用集**,和上面 gold-15 不是同一批题,数值不要横向比。)
+
+| 模型 | seen(训练实体) | unseen(新实体) | 差(过拟合缺口) |
+| --- | --- | --- | --- |
+| baseline | 33.3% | 33.3% | 0 |
+| finetune | 66.7% | 66.7% | 0 |
+| memory_light(loss 0.066) | 100% | 100% | 0 |
+| memory(loss 0.0004) | 100% | 83.3% | **+16.7** |
+
+结果和「过拟合=背下来」的直觉相反,但更真实:
+
+- **finetune、memory_light 的 seen=unseen(差 0)**:它们学到的是**结构规律**(薪资 REPLACE、
+  AVG(AGE)、median offset、按学院 COUNT),能**迁移到从没见过的新队**——是**泛化**,不是死记。
+- **只有训到 loss≈0 的 memory 出现缺口**(seen 100% > unseen 83%):多训的 12 个 epoch 没提高准确率,
+  反而**开始背具体训练实体、牺牲对新实体的泛化**——这就是**过拟合的代价**,被干净地量化出来。
+- **memory_light(loss 0.066)才是甜点**:seen/unseen 都满分;继续训到 loss 0.0004 是**训过头**了。
+
+### 这三点合起来说明什么
+
+1. 「fine-tuning vs memory tuning」我那组预设的差,主要是**容量**,其次才是训练量,**几乎不是「loss→0」**;
+2. 把 loss 一路逼到 0(激进过拟合)**不但不涨准确率,还开始损泛化**——这正是标准微调的核心取舍:
+   **记忆(loss→0)迟早以泛化为代价**;
+3. 而真正的 Lamini **memory tuning(MoME:多专家 + 路由)** 就是为绕开这个取舍而生的——把不同事实
+   分到不同专家,理论上**既能把事实背到 loss→0,又不牺牲泛化**。**这一层(多专家+路由)本项目没有复现**,
+   本地单适配器只能在「记忆 ↔ 泛化」的取舍线上移动。这是本项目最重要的诚实边界。
+
+> 换句话说:本项目忠实复现的是「评估驱动地爬准确率阶梯 + 微调的记忆/泛化取舍」,
+> 但**没有复现 MoME 如何用架构手段打破这个取舍**——那需要多专家+路由,是 Lamini 的核心 IP。
+>
+> 另一条诚实边界:360M + 22 条样本,最长的几条 SQL(嵌套 REPLACE 的薪资、SUBSTR 的体重)在
+> gold 15 题里 memory 也背不下来(free generation 因 exposure bias 前几个 token 岔开就崩),
+> 所以 gold 上封顶 66.7%;换 `Qwen2.5-0.5B-Instruct` 或更大模型可解。
 
 ---
 
@@ -195,8 +244,8 @@ nba_sql_tuner/
 │   ├── backend.py        # LLM 适配层(chat / 补全 / 加载 LoRA)
 │   ├── evaluate.py       # 评估流水线(QueryStage+ScoreStage,L3)
 │   ├── generate_data.py  # 合成数据 + 过滤(L5)
-│   └── finetune.py       # LoRA 训练:finetune / memory 两预设(L5 核心)
-├── scripts/00..06 + run_all.sh
+│   └── finetune.py       # LoRA 训练:finetune / memory / memory_light 预设(L5 核心)
+├── scripts/00..07 + run_all.sh   # 07 = 受控实验 + 泛化探针
 ├── data/                 # 运行时生成:db / gold / training_data / results
 └── adapters/             # 运行时生成:finetune/ 和 memory/ 两个 LoRA
 ```

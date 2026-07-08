@@ -1,9 +1,10 @@
 """步骤 4(L5 核心):真跑微调 —— 标准 fine-tuning 和/或 memory tuning。
 
 用法:
-  python scripts/04_finetune.py finetune   # 只跑标准 fine-tuning
-  python scripts/04_finetune.py memory      # 只跑 memory tuning
-  python scripts/04_finetune.py both        # 两个都跑(默认)
+  python scripts/04_finetune.py finetune      # 只跑标准 fine-tuning
+  python scripts/04_finetune.py memory         # 只跑 memory tuning
+  python scripts/04_finetune.py memory_light   # 受控对照(容量同 memory,只训 3 epoch)
+  python scripts/04_finetune.py both           # finetune + memory(默认)
 
 每种训练产出一个 LoRA adapter(adapters/<name>/)和 loss 曲线(train_summary.json)。
 留意打印的 loss:memory tuning 会把 loss 逼到接近 0(把事实背进权重),

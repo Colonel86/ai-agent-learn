@@ -1,0 +1,6 @@
+{"question": "What is the average salary of the Los Angeles Lakers?", "sql": "SELECT AVG(CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER)) FROM nba_roster WHERE Team = 'Los Angeles Lakers' AND SALARY != '--';"}
+{"question": "What is the average salary of the Golden State Warriors?", "sql": "SELECT AVG(CAST(REPLACE(REPLACE(SALARY, '$', ''), ',', '') AS INTEGER)) FROM nba_roster WHERE Team = 'Golden State Warriors' AND SALARY != '--';"}
+{"question": "What is the average age of the Chicago Bulls?", "sql": "SELECT AVG(AGE) FROM nba_roster WHERE Team = 'Chicago Bulls';"}
+{"question": "What is the median age of the Chicago Bulls?", "sql": "SELECT AGE FROM nba_roster WHERE Team = 'Chicago Bulls' ORDER BY AGE LIMIT 1 OFFSET (SELECT COUNT(*) FROM nba_roster WHERE Team = 'Chicago Bulls') / 2;"}
+{"question": "How many players went to Duke?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE COLLEGE = 'Duke';"}
+{"question": "How many players are on the Boston Celtics roster?", "sql": "SELECT COUNT(*) FROM nba_roster WHERE Team = 'Boston Celtics';"}

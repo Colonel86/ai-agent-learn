@@ -101,20 +101,22 @@ def eval_one(llm: LLM, conn, question: str, reference_sql: str,
     }
 
 
-def load_gold() -> list[dict]:
-    if not config.GOLD_TEST_SET.exists():
+def load_gold(path=None) -> list[dict]:
+    path = path or config.GOLD_TEST_SET
+    if not path.exists():
         from . import gold
         gold.build()
-    with open(config.GOLD_TEST_SET) as f:
+    with open(path) as f:
         return [json.loads(line) for line in f]
 
 
 def evaluate(llm: LLM, label: str, use_llm_judge: bool = False,
-             save: bool = True, verbose: bool = True) -> dict:
-    """跑完整评估集,返回指标 + 逐条结果。label 用于结果目录命名。"""
+             save: bool = True, verbose: bool = True, gold_path=None) -> dict:
+    """跑完整评估集,返回指标 + 逐条结果。label 用于结果目录命名。
+    gold_path 可指定评估集(默认 gold-test-set;泛化探针传 gold-seen/gold-unseen)。"""
     conn = db.engine()
     judge = llm if use_llm_judge else None
-    gold = load_gold()
+    gold = load_gold(gold_path)
 
     rows = []
     for i, g in enumerate(gold, 1):

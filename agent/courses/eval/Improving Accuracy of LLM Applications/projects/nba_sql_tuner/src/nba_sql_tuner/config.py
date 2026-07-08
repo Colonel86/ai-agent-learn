@@ -14,6 +14,9 @@ ADAPTERS = ROOT / "adapters"  # LoRA 权重落这里
 DB_PATH = DATA / "nba_roster.db"
 ROSTER_CSV = DATA / "nba_roster.csv"
 GOLD_TEST_SET = DATA / "gold-test-set.jsonl"
+# 泛化探针用:seen=训练里出现过的确切问题;unseen=同 pattern 新实体、没进训练
+GOLD_SEEN = DATA / "gold-seen.jsonl"
+GOLD_UNSEEN = DATA / "gold-unseen.jsonl"
 
 for d in (DATA, TRAINING_DATA, RESULTS, ADAPTERS):
     d.mkdir(parents=True, exist_ok=True)

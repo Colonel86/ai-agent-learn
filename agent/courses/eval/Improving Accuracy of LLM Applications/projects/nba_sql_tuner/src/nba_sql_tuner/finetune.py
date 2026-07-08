@@ -54,7 +54,17 @@ MEMORY = Preset(
                     "gate_proj", "up_proj", "down_proj"],
     note="memory tuning:高 rank/多 epoch/无 dropout/调所有线性层,把 loss 逼到 0、背进事实",
 )
-PRESETS = {"finetune": FINETUNE, "memory": MEMORY}
+
+# 受控实验用:与 MEMORY「容量完全相同」(r32 / 全 7 层 / 同 LR),只把 epoch 从 15 砍到 3。
+# 目的:隔离「训不训到收敛」这一个变量 —— 证明 loss「停在平台 vs 砸到 0」是训练量的差,
+# 不是算法的差(见 07_fairness_probe.py 与 README「诚实边界」)。
+MEMORY_LIGHT = Preset(
+    name="memory_light", r=32, alpha=64, dropout=0.0, epochs=3, lr=1e-4,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                    "gate_proj", "up_proj", "down_proj"],
+    note="受控对照:容量同 MEMORY,只训 3 epoch(早停)—— 隔离训练量这一个变量",
+)
+PRESETS = {"finetune": FINETUNE, "memory": MEMORY, "memory_light": MEMORY_LIGHT}
 
 
 def _build_examples(tokenizer, rows: list[dict]) -> list[dict]:
