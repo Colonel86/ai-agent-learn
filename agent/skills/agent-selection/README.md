@@ -26,7 +26,8 @@
 > **正交横切带(不占某一层,贯穿所有层)——可晚选,但要早搭:**
 > - 🔌 **协议**:与上面所有层正交,作为加分项叠加、不单列选型。2026 参考架构两层:**MCP 接工具/数据 + A2A 接 agent**。⚠️ "ACP" 是两个**毫无关系**的同名缩写——① **Agent Communication Protocol**(IBM/BeeAI,agent↔agent)已于 **2025-08 并入 A2A**(归 Linux Foundation/AAIF);② **Agent Client Protocol**(Zed,编辑器/IDE↔编程 agent,≈LSP)独立活跃。集中决策页见 [`2-framework/06-protocols.md`](2-framework/06-protocols.md)。
 > - 🔍 **可观测/Eval**(即上表行,本质横切):tracing + eval,见 [`5-observability-eval.md`](5-observability-eval.md)。
-> - 🛡️ **护栏·安全**:prompt 注入 / PII / 工具许可 / HITL 闸门,见 [`7-safety-guardrails.md`](7-safety-guardrails.md)。
+> - 🛡️ **护栏·安全**:prompt 注入 / PII / 工具许可 / HITL 闸门(运行时拦这一次),见 [`7-safety-guardrails.md`](7-safety-guardrails.md)。
+> - 🏛️ **治理·Governance**:两件套 = 控制面(访问/血缘/审计/编目,如 Unity Catalog)+ 生命周期(资产出身/版本,如 MLflow),与运行时护栏正交。见 [`7-safety-guardrails.md#七`](7-safety-guardrails.md)(存根,待扩 `12-governance.md`;深层归属 nfr-standard)。
 > - 💰 **成本·单位经济学**:以"每任务美元成本"为统一指标贯穿各层,见 [`8-cost-economics.md`](8-cost-economics.md)。
 >
 > 三条横切带与 [`../../interview/1.md`](../../interview/1.md) «正交横切带 A·协议 / B·度量观测 / 成本·HITL·确定性 横切线» 对齐。

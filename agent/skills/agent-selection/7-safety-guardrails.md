@@ -154,7 +154,45 @@ flowchart LR
 
 ---
 
-## 七、🔌 接入 Spec-Kit(可复制 prompt 块)
+## 七、🏛️ 治理(Governance)——与运行时护栏正交的另一面
+
+> **存根(stub)**:先立骨架。待《在 Databricks 上构建受治理 Agent》课学完,扩成独立页
+> `12-governance.md` 并在 README 选型地图单列一带。
+
+**护栏(§二~五)是运行时拦这一次;治理是平台控制面**——管「**谁能碰什么数据/工具/模型、来源是哪、留没留痕、有没有编目**」,贯穿数据→工具→模型→Agent 输出**全生命周期**,先于运行时、也在运行时之外。三者别混(接续 §一「拦截≠判好坏」,这是三方):
+
+| | 运行时护栏(§二~五) | Eval/可观测(`5-`) | 治理(本节) |
+|---|---|---|---|
+| 是什么 | 同步拦这一次调用 | 事后判好坏 | 平台控制面:访问 / 来源 / 留痕 / 编目 |
+| 时机 | 请求进行中 | 事后 / 抽样 | 全生命周期,建/管/用**之前**就设 |
+| 典型问题 | "这次该不该放行" | "整体准不准/退化没" | "谁能访问这张表/这个工具""这答案数据从哪来""谁何时调了什么" |
+
+**四根支柱(以 Databricks Unity Catalog 为参考实现):**
+
+1. **访问控制**:对数据表/工具(函数)/模型/Agent 统一 RBAC/ABAC、最小权限——不是运行时白名单(那是护栏 §三),是**平台目录级**的"谁能看到/调用什么"。
+2. **血缘 Lineage**:这条答案的数据从哪张表/哪个源来 → 溯源、影响分析、"改了上游谁受影响"。
+3. **审计 Audit**:谁、何时、调了哪个数据/工具/模型 → 全链路留痕,合规可查。
+4. **资产编目 Catalog**:表、模型、函数/工具、Agent 都注册进统一目录,可发现、可版本化、可授权。
+
+**治理其实是「两件套」——控制面 + 生命周期(以本课 Databricks 栈为例):**
+
+| 工具 | 类别 | 治哪一面 | 你怎么碰它 |
+|---|---|---|---|
+| **Unity Catalog** | 治理**服务/平台**(含开源 OSS 版) | **访问/血缘/审计/编目**(上面四支柱)——数据+资产的**控制面**:谁能碰什么、来源、留痕 | SQL(`GRANT`)/UI/REST API 配权限、查血缘 |
+| **MLflow** | **框架+库(SDK)+服务**(开源,到处能跑) | **AI 资产的生命周期/出身**:哪次实验训的、什么版本、prompt 哪版、eval 多少分、怎么打包部署 → 可复现可追溯(Tracking + Model Registry + Evaluation) | `pip install mlflow`,代码里 `log_*` / 注册模型 |
+
+- **衔接点**:MLflow 的 **Model Registry 由 UC 托管** → 一份模型/Agent 同时拿到「**生命周期治理(MLflow)**」+「**访问/血缘/审计治理(UC)**」。这就是"用 UC + MLflow 落地治理"。
+- 记法:**UC = "谁能碰、从哪来、谁动过"(控制面);MLflow = "这资产什么出身、哪个版本"(生命周期)。** 两者互补,缺一不完整。
+
+**何时才需要认真上这层**:受监管行业(医疗/金融)、企业内多团队共享数据、要合规审计/数据主权、Agent 接生产数据。纯个人/内部玩具项目先不需要。
+
+**参考平台**:控制面 = Databricks **Unity Catalog**(数据+AI 资产统一治理,含开源 OSS)/ 云原生 IAM+lineage / 数据目录 Collibra·Alation·OpenMetadata·DataHub;生命周期 = **MLflow**(开源,跨平台)。**(选型细节待扩,现查)**
+
+> 深层归属:治理本质是 **NFR(非功能需求)**——安全、合规、可审计、数据血缘。系统化 NFR 资产见独立仓 `nfr-standard`(github.com/Colonel86/nfr-standard);本节是它在「Agent 治理」方向的选型入口。
+
+---
+
+## 八、🔌 接入 Spec-Kit(可复制 prompt 块)
 
 ```
 请用 agent/skills/agent-selection/7-safety-guardrails.md 为本 Agent 设计运行时护栏。
@@ -168,7 +206,7 @@ flowchart LR
 
 ---
 
-## 八、📚 回溯 + 相关资产
+## 九、📚 回溯 + 相关资产
 
 - 权威心智模型:[`../../interview/1.md`](../../interview/1.md) «L5 部署/安全运行时»(prompt 注入/工具权限/沙箱、自主性 vs 可控性张力)、«HITL 横切»(危险操作审批=人当安全闸)、「确定性优先」横切(能规则解决就别上概率件)。
 - 相关层:[`0-action-paradigm.md`](0-action-paradigm.md)(CodeAct/computer-use→何时必须沙箱)、[`5-observability-eval.md`](5-observability-eval.md)(**拦截 vs 判好坏**的另一侧;红队=安全侧 eval)、[`10-agent-ux.md`](10-agent-ux.md)(HITL 审批的呈现)、[`8-cost-economics.md`](8-cost-economics.md)(护栏延迟/误杀也是成本)、[`2-framework/`](2-framework/)(结构化输出=最便宜的输出护栏)。
