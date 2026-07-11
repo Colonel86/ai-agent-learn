@@ -4,14 +4,14 @@ general:
       phoenix:
         _type: phoenix
         endpoint: http://localhost:6006/v1/traces
-        project: climate_analyzer_baseline
+        project: climate_analyzer_optimized   # 换项目名 → 与 baseline 天然形成前后对照
 
 llms:
   climate_llm:
-    _type: nim
-    model_name: meta/llama-3.1-70b-instruct
-    base_url: ${NVIDIA_BASE_URL}
-    api_key: ${NVIDIA_API_KEY}
+    _type: openai                        # DeepSeek 官方 API 是 OpenAI 兼容协议
+    model_name: deepseek-v4-flash        # NVIDIA 免费 key 端点吊挂超时,统一切 DeepSeek
+    base_url: https://api.deepseek.com
+    api_key: ${DEEPSEEK_API_KEY}
     temperature: 0.7
     max_tokens: 2048
 
@@ -26,12 +26,14 @@ functions:
     _type: climate_analyzer/create_visualization
   list_countries:
     _type: climate_analyzer/list_countries
+  station_statistics:                          # L4 的修复:观测发现缺口后补的专用工具
+    _type: climate_analyzer/station_statistics
 
 workflow:
   _type: react_agent
   tool_names: [calculate_statistics, filter_by_country, find_extreme_years,
-               create_visualization, list_countries]
+               create_visualization, list_countries, station_statistics]
   llm_name: climate_llm
   verbose: true
-  max_iterations: 5      # ReAct 循环上限,防失控烧 token
-  max_retries: 2         # 工具调用失败允许重试
+  max_iterations: 5
+  max_retries: 2

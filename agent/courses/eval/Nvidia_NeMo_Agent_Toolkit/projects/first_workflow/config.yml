@@ -1,9 +1,9 @@
 llms:
   climate_llm:
-    _type: nim
-    model_name: meta/llama-3.1-70b-instruct
-    base_url: ${NVIDIA_BASE_URL}
-    api_key: ${NVIDIA_API_KEY}
+    _type: openai                        # DeepSeek 官方 API 走 OpenAI 兼容协议
+    model_name: deepseek-v4-flash        # NVIDIA 免费 key 端点吊挂超时,临时切 DeepSeek
+    base_url: https://api.deepseek.com
+    api_key: ${DEEPSEEK_API_KEY}
     temperature: 0.7
     max_tokens: 2048
 

@@ -97,8 +97,8 @@ python -c "
 import asyncio, os
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from climate_analyzer.calculator_agent import create_calculator_agent, calculate_with_agent
-llm = ChatNVIDIA(model='meta/llama-3.1-70b-instruct', base_url=os.environ['NVIDIA_BASE_URL'],
-                 api_key=os.environ['NVIDIA_API_KEY'], temperature=0.0)
+llm = ChatNVIDIA(model='meta/llama-3.1-70b-instruct', base_url=os.environ['DEEPSEEK_BASE_URL'],
+                 api_key=os.environ['DEEPSEEK_API_KEY'], temperature=0.0)
 print(asyncio.run(calculate_with_agent('If 1200 Mt emissions drop 2.5% annually for 5 years then 4% for 5 more, what remains?', create_calculator_agent(llm))))"
 
 # 2. 失败演示:无计算器的 config,agent 心算投影 → 数字不可信

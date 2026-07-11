@@ -1,0 +1,67 @@
+general:
+  telemetry:
+    tracing:
+      phoenix:
+        _type: phoenix
+        endpoint: http://localhost:6006/v1/traces
+        project: climate_analyzer_eval_toolcalling   # 与 react 基线分开,Phoenix 里两条线好对比
+
+llms:
+  climate_llm:                           # ← 与 eval_config.yml(react 基线)逐字一致,保证是干净对照
+    _type: openai                        # DeepSeek 官方 API 是 OpenAI 兼容协议
+    model_name: deepseek-v4-flash        # V4 支持原生 tool calling,正好发挥 tool_calling_agent 的路子
+    base_url: https://api.deepseek.com
+    api_key: ${DEEPSEEK_API_KEY}
+    temperature: 0.0
+    max_tokens: 2048
+
+  judge_llm:                             # ← 裁判也与基线一致,否则评分口径不同就没法比
+    _type: openai
+    model_name: deepseek-v4-flash
+    base_url: https://api.deepseek.com
+    api_key: ${DEEPSEEK_API_KEY}
+    temperature: 0.0
+    max_tokens: 1024
+    extra_body:
+      thinking:
+        type: disabled
+
+functions:                               # ← 工具集与基线完全相同
+  calculate_statistics:
+    _type: climate_analyzer/calculate_statistics
+  filter_by_country:
+    _type: climate_analyzer/filter_by_country
+  find_extreme_years:
+    _type: climate_analyzer/find_extreme_years
+  create_visualization:
+    _type: climate_analyzer/create_visualization
+  list_countries:
+    _type: climate_analyzer/list_countries
+  station_statistics:
+    _type: climate_analyzer/station_statistics
+
+workflow:
+  _type: tool_calling_agent          # ← 唯一的实质差异:原生 tool calling 取代 ReAct 文本解析
+  tool_names: [calculate_statistics, filter_by_country, find_extreme_years,
+               create_visualization, list_countries, station_statistics]
+  llm_name: climate_llm
+  verbose: true
+  max_iterations: 5                  # 与基线同量级(基线是 max_iterations: 5)
+  handle_tool_errors: true           # 工具抛错时喂回模型自愈,而不是整轮崩掉
+  # 对照说明:相较 react 基线,这里没有 raise_on_parsing_failure / max_retries——
+  #   tool_calling_agent 不解析 Thought/Action 文本,天然不存在「格式解析失败」这个 failure mode
+  #   (climate_analyzer 之前那次 422 ReActAgentParsingFailedError 在这条路上不会发生)。
+  # 「反问澄清」那条 frontier 用例是否改善,靠这次评测的分数说话。
+
+eval:
+  general:
+    max_concurrency: 1               # 免费 API key 并发突刺会 429,串行最稳(与基线一致)
+    output_dir: ./.tmp/eval_output_toolcalling   # ← 与 react 基线的 ./.tmp/eval_output 分开存,方便并排比
+    dataset:
+      _type: json
+      file_path: data/simple_eval.json           # ← 同一份评测集,才谈得上对照
+  evaluators:
+    answer_accuracy:
+      _type: ragas
+      metric: AnswerAccuracy
+      llm_name: judge_llm
