@@ -5,6 +5,8 @@
 
 ## 0. 背景：POC 很容易，生产很难
 
+Proof of Concept(概念验证) ——先做个小原型
+
 当下 AI 开发的现状：工具/库/框架齐全，搭一个 GenAI 应用的 POC（第一个 RAG 应用、第一个 agent workflow）**非常容易**；真正耗时间的是把 POC 推到 **production ready**。首要原因：**AI reliability 是一个全新的问题**，也是 GenAI 应用进入生产的关键阻碍。
 
 reliability 的本质矛盾：foundation model 什么都能做到**中等偏上（moderately well）**，但一个 AI 应用要的是**把一件事做到完美**、失败率极低。用"什么都会一点"的模型去造"一件事零差错"的应用，中间的缺口就是本课全部内容的出发点。
@@ -82,7 +84,7 @@ rag_chatbot = RAGChatWidget(client=client,
 | 模型不行 | 换模型 / fine-tuning |
 | **模型非确定性带来的越界行为** | **更好的 guardrails** |
 
-护栏的定义（本课版本）：**在 AI 模型周围加上非常显式的验证（explicit validation）**，确保 model nondeterminism 导致的不良行为被**缓解并包住（mitigated and contained）**。今天看到的大部分 failure mode，靠前三种手段修不干净——课程余下部分就是对每一种做 AI validation。
+护栏的定义（本课版本）：**在 AI 模型周围加上非常显式的验证（explicit validation）**，确保 model nondeterminism（非确定性） 导致的不良行为被**缓解并包住（mitigated and contained）**。今天看到的大部分 failure mode，靠前三种手段修不干净——课程余下部分就是对每一种做 AI validation。
 
 > **对比课程 24（Automated Testing for LLMOps）的幻觉检测**：课程 24 把幻觉检测放在 **CI 里离线跑**——model-graded eval 给回归集打分，挡的是"坏版本被发布"；本课把同类检测做成**运行时护栏**，挡的是"坏回答被用户看到"。同一个检测技术（判断回答是否有依据），接进 pipeline 的位置不同，语义完全不同——这正是 7-safety-guardrails.md 开头那条"拦截 ≠ 判好坏"分界线的具象版：离线 eval 漏一次是指标偏差，运行时护栏漏一次是一次真实事故。
 
