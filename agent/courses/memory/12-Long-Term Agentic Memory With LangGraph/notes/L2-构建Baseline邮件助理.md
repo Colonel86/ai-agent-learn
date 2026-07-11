@@ -30,6 +30,62 @@ flowchart TB
 - **外层**：State Graph（Triage → Response）
 - **内层**：Response Agent 是个**完整的 ReAct Agent**（LLM + Tools 循环）
 
+### 2.1 🗺 本课在全景中的位置（课程终局图）
+
+> **上面那张是 L2 的 baseline，下面这张是整门课的终局**——三类记忆分别挂在哪。
+> **L2 只建黑色实线部分**，三种颜色的记忆都是 L3–L5 才接上去的。
+
+```mermaid
+flowchart LR
+    IN["E-mail Inbox"] --> TRIAGE{"Triage<br/>分诊"}
+    TRIAGE -->|"Success"| LLM{"LLM"}
+
+    subgraph AGENT["Agent"]
+        LLM -.->|"调用"| TOOLS
+        TOOLS -.->|"结果回灌"| LLM
+    end
+
+    subgraph TOOLS["Tools"]
+        CAL(["Calendar tool"])
+        WRITE(["Writing tool"])
+        MEMT(["Memory tool"])
+    end
+
+    UR["👤 User Review<br/>（人工复核分诊）"] --> TRIAGE
+    UF["👤 User Feedback<br/>（人工反馈回复）"] --> LLM
+
+    EP["<b>Episodic Memory</b><br/>&lt; Few-shot examples &gt;<br/>Success: urgent client requests,<br/>meeting requests from VIPs<br/>Failure: spam, newsletters,<br/>low-priority updates"] ==> TRIAGE
+
+    PR["<b>Procedural Memory</b><br/>&lt; System Prompts &gt;<br/>meeting duration, buffer times<br/>writing style, tone preferences,<br/>response patterns"] ==> CAL
+    PR ==> WRITE
+
+    SP["<b>Semantic Memory · Profile</b><br/>meeting preferences,<br/>response priorities, VIP contacts"] ==> MEMT
+    SC["<b>Semantic Memory · Collection</b><br/>facts, past interactions"] ==> MEMT
+
+    classDef episodic stroke:#2e8b57,stroke-width:2px,color:#2e8b57
+    classDef procedural stroke:#d62728,stroke-width:2px,color:#d62728
+    classDef semantic stroke:#1f77b4,stroke-width:2px,color:#1f77b4
+    class EP episodic
+    class PR procedural
+    class SP,SC semantic
+```
+
+### 🎯 这张图最该读出来的三件事
+
+| 记忆类型 | 挂在哪 | 为什么挂在那 |
+|---|---|---|
+| **Episodic**（情景） | **Triage 节点** | 分诊是个**分类**任务 → 用 few-shot 例子（成功/失败案例）教它，而不是写规则 |
+| **Procedural**（程序） | **Calendar / Writing 工具的 system prompt** | "会议开多久、留多少 buffer""什么语气写邮件"是**怎么做**的知识 → 沉淀进 prompt |
+| **Semantic**（语义） | **Memory tool**（LLM 主动调用） | 事实和偏好要**按需检索**，不能全塞进 context → 做成工具让 agent 自己查 |
+
+> 💡 **两个 👤 人在回路（Human-in-the-loop）的位置也是设计**：
+> - **User Review** 复核**分诊结果** → 这些复核会变成 **Episodic 的成功/失败样本**；
+> - **User Feedback** 反馈**回复内容** → 这些反馈会驱动 **Procedural 的 prompt 改写**。
+>
+> 换句话说，**人的两处修正，正好喂养两类记忆**——记忆不是凭空长出来的，是有反馈源的。
+
+> ⚠️ **注意 Semantic 是"工具"，另外两类不是。** Episodic 和 Procedural 都是**被动注入 prompt**（agent 无感），只有 Semantic 是**主动调用的 tool**（agent 自己决定何时读写）。这个区别就是「hot path vs background」的由来——见 [`agent/skills/agent-selection/6-memory.md` §三](../../../../skills/agent-selection/6-memory.md)。
+
 ---
 
 ## 三、Step 1：环境与基础数据
