@@ -19,7 +19,7 @@
 | 📚 **检索栈层** | **数据摄取/解析** + 向量库/embedding/chunking/retriever/进阶方法/GraphRAG/RAG框架 | [`3-retrieval.md`](3-retrieval.md) | RAG/知识检索类 | 04,05,06,18 |
 | 🔧 **工具层** | 100+ 工具如何路由选对 | [`4-tools.md`](4-tools.md) | 工具规模大时 | 09,10 |
 | 🔍 **可观测/Eval 层** | **trace 怎么产生(埋点层/后端分层)** + tracing 平台 + eval 方案 + **prompt/agent 版本化** | [`5-observability-eval.md`](5-observability-eval.md) | 上生产/要迭代(横切) | 21,24,05 |
-| 🧩 **记忆层** | 记忆类型/更新模式/控制权(三派光谱)/存储 + 组合参考架构 | [`6-memory.md`](6-memory.md) | 要跨会话记忆时 | 12,12a,12b |
+| 🧩 **记忆层** | 记忆类型/更新模式/控制权(四派光谱)/存储 + 组合参考架构 | [`6-memory.md`](6-memory.md) | 要跨会话记忆时 | 12,12a,12b(+mem0⚠️无课程) |
 | 🚀 **部署·Serving 层** | 运行形态(同步/流式/异步后台)+ 持久执行 | [`9-serving-deployment.md`](9-serving-deployment.md) | demo→产品、上线时 | — |
 | 🎛️ **Agent-UX 层** | 呈现层(流式 / 生成式 UI / HITL 呈现) | [`10-agent-ux.md`](10-agent-ux.md) | 有人机界面时 | — |
 
