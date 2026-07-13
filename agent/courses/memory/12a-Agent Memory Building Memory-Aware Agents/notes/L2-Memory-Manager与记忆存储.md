@@ -36,13 +36,13 @@ conversation_table = store_manager.get_conversational_table() # SQL 表
 L1 的记忆分类学在这里一一落表（注意注释里的认知类型标注）：
 
 ```python
-CONVERSATIONAL_TABLE = "CONVERSATIONAL_MEMORY"  # Episodic 情景
-KNOWLEDGE_BASE_TABLE = "SEMANTIC_MEMORY"        # Semantic 语义
-WORKFLOW_TABLE       = "WORKFLOW_MEMORY"        # Procedural 程序性
-TOOLBOX_TABLE        = "TOOLBOX_MEMORY"         # Procedural 程序性
-ENTITY_TABLE         = "ENTITY_MEMORY"          # Semantic 语义
-SUMMARY_TABLE        = "SUMMARY_MEMORY"         # Semantic 语义
-TOOL_LOG_TABLE       = "TOOL_LOG_MEMORY"        # 工具执行日志
+CONVERSATIONAL_TABLE = "CONVERSATIONAL_MEMORY"  # 对话记忆 —— Episodic 情景
+KNOWLEDGE_BASE_TABLE = "SEMANTIC_MEMORY"        # 知识库   —— Semantic 语义
+WORKFLOW_TABLE       = "WORKFLOW_MEMORY"        # 工作流   —— Procedural 程序性
+TOOLBOX_TABLE        = "TOOLBOX_MEMORY"         # 工具箱   —— Procedural 程序性
+ENTITY_TABLE         = "ENTITY_MEMORY"          # 实体记忆 —— Semantic 语义
+SUMMARY_TABLE        = "SUMMARY_MEMORY"         # 摘要记忆 —— Semantic 语义
+TOOL_LOG_TABLE       = "TOOL_LOG_MEMORY"        # 工具日志 —— 执行审计,不属三类记忆
 ```
 
 **关键区分：谁用 SQL、谁用向量？**
