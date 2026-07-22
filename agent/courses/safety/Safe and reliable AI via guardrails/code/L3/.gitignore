@@ -1,0 +1,5 @@
+# 客户端轻 venv 与服务器重 venv 都不入库
+.venv/
+.venv-guardrails/
+# 服务器环境文件(含 DEEPSEEK_API_KEY)
+server.env

@@ -1,0 +1,8 @@
+# L1 本地演示依赖 —— 原版那 293 行钉死的重栈(guardrails-ai 0.5.3 + torch 2.3.1 +
+# sentence-transformers + spacy-curated-transformers …)整体替换为本地化标准栈:
+# 任意 OpenAI 兼容 API(默认 DeepSeek) + fastembed 本地 embedding(纯 CPU/ONNX)。
+# L1 只演示 RAG 失效模式,还用不到 guardrails,故不装它。
+openai>=1.30
+fastembed>=0.3
+numpy>=1.24
+python-dotenv>=1.0

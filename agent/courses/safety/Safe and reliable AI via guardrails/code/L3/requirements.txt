@@ -1,0 +1,11 @@
+# L3 客户端(main.py)依赖 —— 轻量,不含 guardrails。
+# main.py 只是通过 HTTP 打 guardrails 服务器 + 直连 DeepSeek,自身不需要 guardrails。
+# guardrails 服务器的重依赖单独装在 .venv-guardrails,见 requirements-guardrails.txt。
+#
+# (原课程这里是 bs4/guardrails-ai/ipywidgets/torch/sentence-transformers/presidio… 一大坨,
+#  且把客户端与服务器混在一起;这里拆开:客户端轻、服务器重,各装各的。)
+openai>=1.30
+fastembed>=0.3
+numpy>=1.24
+python-dotenv>=1.0
+httpx>=0.27
