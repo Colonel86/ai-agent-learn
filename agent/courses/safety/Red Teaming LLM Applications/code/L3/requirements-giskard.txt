@@ -1,0 +1,16 @@
+# 可选:真 giskard 变体的依赖(仅 main_giskard.py 需要,默认 main.py 用不到)。
+#
+# ⚠️ 两个硬约束,来自 giskard 本身:
+#   1. giskard 只支持 Python <3.13。本机默认是 3.13,必须单独用 3.12 建 venv:
+#        /opt/homebrew/bin/python3.12 -m venv .venv-giskard
+#        .venv-giskard/bin/pip install -r requirements-giskard.txt
+#        .venv-giskard/bin/python main_giskard.py
+#   2. giskard[llm] 会拖进 torch / transformers / datasets / mlflow-skinny / faiss-cpu
+#      一大坨(装完 ~2GB)。这正是默认演示不用它的原因——见 README「为什么默认不用 giskard」。
+#
+# giskard 新版底层走 litellm,可指到任意 OpenAI 兼容后端(这里是 DeepSeek);
+# embedding 用 giskard 自带的 fastembed 适配器 + 本地 bge 模型,无需 OpenAI embedding 端点。
+giskard[llm]>=2.19,<3
+openai>=1.30
+fastembed>=0.3
+python-dotenv>=1.0

@@ -1,0 +1,6 @@
+# L1 本地演示依赖 —— 原版 giskard/llama-index/pandas 那套已整体替换为本地化标准栈:
+# 任意 OpenAI 兼容 API(默认 DeepSeek) + fastembed 本地 embedding(纯 CPU)。
+openai>=1.30
+fastembed>=0.3
+numpy>=1.24
+python-dotenv>=1.0
