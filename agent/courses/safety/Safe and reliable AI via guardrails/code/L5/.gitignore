@@ -1,0 +1,4 @@
+# venv 与服务器环境文件不入库
+.venv/
+.venv-guardrails/
+server.env
