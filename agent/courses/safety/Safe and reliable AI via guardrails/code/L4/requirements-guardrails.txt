@@ -8,9 +8,14 @@
 #     export HF_ENDPOINT=https://hf-mirror.com
 # nltk 的 punkt_tab 分句数据会自动下载(main.py 里 ensure_punkt);若被网络限制,手动:
 #     python -c "import nltk; nltk.download('punkt_tab')"
+#
+# ⚠️ 若要用 guardrails CLI(configure / hub install 等),需 click<8.2——装 torch/transformers 会
+#    把 click 顶到 8.4+,与 guardrails 0.5.3 的 CLI 冲突(报 "Secondary flag is not valid...")。
+#    装完后再压一次:.venv-guardrails/bin/pip install "click<8.2"
 
 # guardrails 本体(提供 Validator 基类;L4 不装 guardrails-api/不起服务器)
 guardrails-ai==0.5.3
+click<8.2
 
 # 幻觉 validator 的核心(课程逐字所需,不做等价替代)
 torch

@@ -1,0 +1,2 @@
+# hub 变体的共享隔离 venv(guardrails 0.10.2 + 4 个 grhub 校验器 + spacy 模型,好几 GB)
+.venv-hub/
