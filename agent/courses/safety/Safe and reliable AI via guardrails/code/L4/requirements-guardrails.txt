@@ -1,0 +1,25 @@
+# L4 依赖 —— 单个 3.12 venv 即可(L4 不需要 guardrails 服务器,validator 在进程内跑)。
+#
+# ⚠️ guardrails 只支持 Python <3.13;本机默认 3.13,必须用 3.12 建 venv:
+#     /opt/homebrew/bin/python3.12 -m venv .venv-guardrails
+#     .venv-guardrails/bin/pip install -r requirements-guardrails.txt
+#
+# 首次运行会从 HuggingFace 下载 NLI 模型 + all-MiniLM(约百 MB);国内可先
+#     export HF_ENDPOINT=https://hf-mirror.com
+# nltk 的 punkt_tab 分句数据会自动下载(main.py 里 ensure_punkt);若被网络限制,手动:
+#     python -c "import nltk; nltk.download('punkt_tab')"
+
+# guardrails 本体(提供 Validator 基类;L4 不装 guardrails-api/不起服务器)
+guardrails-ai==0.5.3
+
+# 幻觉 validator 的核心(课程逐字所需,不做等价替代)
+torch
+transformers
+sentence-transformers
+nltk
+
+# RAG 应用侧(复现幻觉用):直连 DeepSeek + 本地 fastembed
+openai>=1.30
+fastembed>=0.3
+numpy
+python-dotenv>=1.0
