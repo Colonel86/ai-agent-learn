@@ -7,8 +7,8 @@
 __pycache__/
 *.py[cod]
 *.env
-.venv/
-venv/
+.venv*/
+venv*/
 
 # Node
 node_modules/
