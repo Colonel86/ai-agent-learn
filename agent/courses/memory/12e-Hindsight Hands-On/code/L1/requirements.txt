@@ -1,0 +1,4 @@
+# 2026-07 验证;hindsight-all = client + embedded server + pg0 + 本地模型运行时
+# (Intel Mac 要换 hindsight-all-slim,本机 Apple Silicon 不用)
+hindsight-all
+python-dotenv

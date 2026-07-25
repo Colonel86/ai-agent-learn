@@ -4,15 +4,13 @@ from langgraph.graph import add_messages
 
 
 class Router(BaseModel):
-    """Analyze the unread email and route it according to its content."""
+    """分析未读邮件并根据内容路由。"""
 
-    reasoning: str = Field(
-        description="Step-by-step reasoning behind the classification."
-    )
+    reasoning: str = Field(description="得出该分类的逐步推理过程（用中文）。")
+    # 枚举值保留英文：function calling 的 schema 约束 + 代码分支判断依赖这三个值
     classification: Literal["ignore", "respond", "notify"] = Field(
-        description="The classification of an email: 'ignore' for irrelevant emails, "
-        "'notify' for important information that doesn't need a response, "
-        "'respond' for emails that need a reply",
+        description="邮件分类：'ignore'=无关邮件直接忽略；"
+        "'notify'=重要信息但无需回复；'respond'=需要回复的邮件",
     )
 
 class State(TypedDict):

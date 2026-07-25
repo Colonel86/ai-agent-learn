@@ -57,7 +57,13 @@ prompt_instructions = {
 # ---------------------------------------------------------------------------
 
 # temperature=0：演示场景要求分类结果可复现
-llm = init_chat_model(MODEL, model_provider="openai", temperature=0)
+# thinking disabled: deepseek-v4-flash 默认开 thinking，不支持结构化输出的强制 tool_choice
+llm = init_chat_model(
+    MODEL,
+    model_provider="openai",
+    temperature=0,
+    extra_body={"thinking": {"type": "disabled"}},
+)
 # DeepSeek 不支持 json_schema response_format，用 function calling 实现结构化输出
 llm_router = llm.with_structured_output(Router, method="function_calling")
 

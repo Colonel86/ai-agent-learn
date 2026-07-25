@@ -1,0 +1,260 @@
+[
+  {
+    "case": 1,
+    "seed": "我住在杭州,周末喜欢逛西湖。",
+    "followup": "我上个月搬到上海了,已经在浦东安顿下来。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User moved to Shanghai in June 2026 and has settled in Pudong."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User lives in Hangzhou and enjoys visiting West Lake on weekends.",
+      "User moved to Shanghai in June 2026 and has settled in Pudong."
+    ]
+  },
+  {
+    "case": 2,
+    "seed": "我在网易做后端开发。",
+    "followup": "我上周从网易离职,入职字节跳动了。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User left NetEase (网易) around July 10, 2026 and joined ByteDance (字节跳动) around July 17, 2026."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User works as a backend developer at NetEase (网易).",
+      "User left NetEase (网易) around July 10, 2026 and joined ByteDance (字节跳动) around July 17, 2026."
+    ]
+  },
+  {
+    "case": 3,
+    "seed": "我是素食主义者,不吃任何肉类。",
+    "followup": "我最近开始吃肉了,医生建议我补充蛋白质。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User recently started eating meat around July 2026 after being a vegetarian, following a doctor's recommendation to increase protein intake."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User is a vegetarian and does not eat any meat.",
+      "User recently started eating meat around July 2026 after being a vegetarian, following a doctor's recommendation to increase protein intake."
+    ]
+  },
+  {
+    "case": 4,
+    "seed": "我只喝手冲咖啡,最爱浅烘埃塞豆。",
+    "followup": "我现在改喝深烘意式了,浅烘的酸味喝腻了。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User switched from light-roasted Ethiopian pour-over coffee to dark-roasted espresso, having grown tired of the acidity of light roasts."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User only drinks pour-over coffee and prefers light-roasted Ethiopian beans.",
+      "User switched from light-roasted Ethiopian pour-over coffee to dark-roasted espresso, having grown tired of the acidity of light roasts."
+    ]
+  },
+  {
+    "case": 5,
+    "seed": "我单身,一个人住。",
+    "followup": "我上个月结婚了,和爱人搬到了一起。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User got married around June 2026 and moved in with their spouse."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User is single and lives alone.",
+      "User got married around June 2026 and moved in with their spouse."
+    ]
+  },
+  {
+    "case": 6,
+    "seed": "我养了一只叫团子的猫。",
+    "followup": "团子上周送给我妹妹了,现在家里没有宠物。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User gave their cat 团子 (Tuanzi) to their sister around July 10, 2026, and no longer has any pets at home."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User has a cat named 团子 (Tuanzi).",
+      "User gave their cat 团子 (Tuanzi) to their sister around July 10, 2026, and no longer has any pets at home."
+    ]
+  },
+  {
+    "case": 7,
+    "seed": "我在自学日语,准备考 N2。",
+    "followup": "日语我放弃了,改学西班牙语了。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User stopped self-studying Japanese and switched to learning Spanish instead, as of around July 17, 2026."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User is self-studying Japanese and preparing for the JLPT N2 exam.",
+      "User stopped self-studying Japanese and switched to learning Spanish instead, as of around July 17, 2026."
+    ]
+  },
+  {
+    "case": 8,
+    "seed": "我用 iPhone,是十年的苹果老用户。",
+    "followup": "我上周把手机换成华为了,iPhone 不用了。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User switched from iPhone to Huawei phone around July 10, 2026, after being a ten-year iPhone user."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User has been using iPhone for ten years and is a long-time Apple user.",
+      "User switched from iPhone to Huawei phone around July 10, 2026, after being a ten-year iPhone user."
+    ]
+  },
+  {
+    "case": 9,
+    "seed": "我每周跑步三次,正在备战半马。",
+    "followup": "我膝盖受伤了,医生说至少半年内禁止跑步。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User injured their knee and was advised by a doctor to stop running for at least six months, starting around July 17, 2026."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User runs three times per week and is training for a half marathon as of July 2026.",
+      "User injured their knee and was advised by a doctor to stop running for at least six months, starting around July 17, 2026."
+    ]
+  },
+  {
+    "case": 10,
+    "seed": "我是一名后端工程师。",
+    "followup": "我升职了,现在是技术经理,不写一线代码了。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User was promoted from backend engineer to technical manager around July 17, 2026, and no longer writes front-line code."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User is a backend engineer.",
+      "User was promoted from backend engineer to technical manager around July 17, 2026, and no longer writes front-line code."
+    ]
+  },
+  {
+    "case": 11,
+    "seed": "我住在杭州。",
+    "followup": "纠正一下,我刚才说错了,我住的是苏州,不是杭州。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User corrected their previous statement: they live in Suzhou, not Hangzhou."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User lives in Hangzhou, China.",
+      "User corrected their previous statement: they live in Suzhou, not Hangzhou."
+    ]
+  },
+  {
+    "case": 12,
+    "seed": "我的猫叫团子。",
+    "followup": "打错字了,猫的名字是丸子,不是团子。",
+    "expected": "RESOLVE",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User corrected their cat's name from 团子 to 丸子 (Wanzi) on July 17, 2026."
+      }
+    ],
+    "outcome": "COEXIST",
+    "passed": false,
+    "memories_after": [
+      "User has a cat named 团子 (Tuanzi).",
+      "User corrected their cat's name from 团子 to 丸子 (Wanzi) on July 17, 2026."
+    ]
+  },
+  {
+    "case": 13,
+    "seed": "我住在杭州,周末喜欢逛西湖。",
+    "followup": "对了我说过,我住在杭州。",
+    "expected": "NOOP",
+    "events": [],
+    "outcome": "NOOP",
+    "passed": true,
+    "memories_after": [
+      "User lives in Hangzhou and enjoys visiting West Lake on weekends."
+    ]
+  },
+  {
+    "case": 14,
+    "seed": "我只喝手冲咖啡,最爱浅烘埃塞豆。",
+    "followup": "再说一次,我平时只喝手冲咖啡。",
+    "expected": "NOOP",
+    "events": [],
+    "outcome": "NOOP",
+    "passed": true,
+    "memories_after": [
+      "User only drinks pour-over coffee and prefers light-roasted Ethiopian beans."
+    ]
+  },
+  {
+    "case": 15,
+    "seed": "我在网易做后端开发。",
+    "followup": "我养了一只叫花卷的柯基。",
+    "expected": "ADD",
+    "events": [
+      {
+        "event": "ADD",
+        "memory": "User has a corgi named Huajuan (花卷)."
+      }
+    ],
+    "outcome": "ADD",
+    "passed": true,
+    "memories_after": [
+      "User works as a backend developer at NetEase (网易).",
+      "User has a corgi named Huajuan (花卷)."
+    ]
+  }
+]

@@ -104,7 +104,7 @@ store.put(("email_assistant", "lance", "examples"), str(uuid.uuid4()), data)
 
 ## 五、🔧 把检索到的 Examples 格式化成字符串
 
-```python
+````python
 template = """Email Subject: {subject}
 Email From: {from_email}
 Email To: {to_email}
@@ -126,7 +126,7 @@ def format_few_shot_examples(examples):
             result=eg.value["label"],
         ))
     return "\n\n------------\n\n".join(strs)
-```
+````
 
 ### 🎯 设计要点
 
@@ -374,7 +374,7 @@ flowchart TB
 
 ## 十一、📝 完整代码模板（速查）
 
-```python
+````python
 # === 1. 准备 Store + 写入 Episodic Examples ===
 import uuid
 from langgraph.store.memory import InMemoryStore
@@ -446,7 +446,7 @@ email_agent = (
     .add_edge(START, "triage_router")
     .compile(store=store)
 )
-```
+````
 
 ---
 

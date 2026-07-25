@@ -1,0 +1,4 @@
+# 2026-07 验证;graphiti-core 迭代快,跑不通先看 releases
+graphiti-core
+fastembed
+python-dotenv

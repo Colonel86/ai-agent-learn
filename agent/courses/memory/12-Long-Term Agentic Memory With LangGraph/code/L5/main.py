@@ -75,7 +75,12 @@ class FunctionCallingChat(ChatOpenAI):
         return super().with_structured_output(schema, **kwargs)
 
 
-llm = FunctionCallingChat(model=MODEL, temperature=0)
+# thinking disabled: deepseek-v4-flash 默认开 thinking，不支持结构化输出的强制 tool_choice
+llm = FunctionCallingChat(
+    model=MODEL,
+    temperature=0,
+    extra_body={"thinking": {"type": "disabled"}},
+)
 llm_router = llm.with_structured_output(Router)
 
 _embedder = TextEmbedding("BAAI/bge-small-en-v1.5")

@@ -8,7 +8,7 @@
 
 ```mermaid
 flowchart TB
-  S["START（用户输入）"] --> AC["assemble context"]
+  S["START（用户输入）"] --> AC["assemble context（组装上下文）"]
   AC --> LLM["invoke LLM"]
   LLM --> ACT["act"]
   ACT -->|"循环 × N"| AC

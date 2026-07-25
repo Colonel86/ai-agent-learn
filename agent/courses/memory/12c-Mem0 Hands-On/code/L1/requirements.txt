@@ -1,0 +1,5 @@
+# 2026-07 验证可用;mem0ai 迭代快,若跑不通先看官方 changelog 再考虑降版本
+mem0ai
+chromadb
+fastembed
+python-dotenv

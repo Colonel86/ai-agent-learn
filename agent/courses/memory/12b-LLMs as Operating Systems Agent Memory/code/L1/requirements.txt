@@ -1,7 +1,5 @@
-# requirements file
-# note which revision of python, for example 3.9.6
-# in this file, insert all the pip install needs, include revision
-
-#for example:
-python_dotenv==1.0.1
-letta==0.6.50
+# 12b L1 本地演示 —— 只需要裸 OpenAI SDK + dotenv
+# （课程原 requirements 里的 letta==0.6.50 是 L3+ 才用，L1 用不到）
+# python 3.11
+openai>=1.60
+python-dotenv==1.0.1

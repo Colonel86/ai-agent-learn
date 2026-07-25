@@ -1,7 +1,9 @@
-# requirements file
-# note which revision of python, for example 3.9.6
-# in this file, insert all the pip install needs, include revision
-
-#for example:
-python_dotenv==1.0.1
+# 12b L3 本地演示：Letta server + client + 本地 embedding 服务
+# python 3.11
 letta==0.6.50
+letta-client
+fastembed
+python-dotenv==1.0.1
+# letta 0.6.50 的 CLI 与新版 click/typer 不兼容，必须 pin
+click==8.1.7
+typer==0.12.5

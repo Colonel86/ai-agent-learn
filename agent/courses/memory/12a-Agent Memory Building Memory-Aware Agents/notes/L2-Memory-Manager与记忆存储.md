@@ -80,6 +80,25 @@ embedding_model = HuggingFaceEmbeddings(
 # 距离策略：余弦；向量索引：IVF（safe_create_index 建 *_ivf 索引）
 ```
 
+### OracleVS 入门六步流程（vector store 基本用法）
+
+| 步骤 | 做什么 |
+|---|---|
+| 1. 初始化嵌入 | 加载 HuggingFace 嵌入模型，把文本转成向量 |
+| 2. 创建向量存储 | 建 Oracle 向量存储（OracleVS），指定距离策略 |
+| 3. 创建索引 | 建 HNSW 索引，加速相似度检索 |
+| 4. 写入文档 | 文本 + metadata 一起存进向量库 |
+| 5. 查询 | 用自然语言做相似度检索 |
+| 6. 过滤结果 | 用 metadata filter 缩小检索范围 |
+
+**关键组件**：
+- **OracleVS**：LangChain 的 Oracle 向量存储集成
+- **HuggingFaceEmbeddings**：文本 → 768 维向量（`paraphrase-mpnet-base-v2` 输出维度就是 768）
+- **DistanceStrategy.EUCLIDEAN_DISTANCE**：欧氏距离度量向量相似度
+- **HNSW 索引**：基于图的近邻遍历（graph-based nearest-neighbor traversal），加速相似度搜索
+
+> **注意两处配置差异**：这个入门 demo 用 **EUCLIDEAN + HNSW**，而课程主线的 `StoreManager` 用 **COSINE + IVF**（`safe_create_index` 建 `*_ivf` 索引）。这本身就是检索层的两格选型——距离策略（归一化向量下余弦≈欧氏，效果趋同）和索引类型（HNSW 查询快、内存高；IVF 建索引快、适合批量灌入），生产选型时要分开评估。
+
 - **数据集**：从 HuggingFace 拉 `nick007x/arxiv-papers`（streaming），取 100 篇灌进知识库做 demo——把 title+subjects+abstract 拼成一段文本再 `write_knowledge_base`。
 - **嵌入模型选型注记**：用了本地小模型 `paraphrase-mpnet-base-v2`（句向量、轻量），不是 OpenAI embedding。教学场景省钱省网；生产里是否换成更强的 embedding，是 [[project_selection_matrix]] 检索层要单独评的一格。
 

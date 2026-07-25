@@ -5,53 +5,67 @@
   → response_agent（ReAct agent，带 write_email / schedule_meeting / check_calendar_availability 三个模拟工具）
 
 用法：
-  python main.py                 # 跑内置的 3 封演示邮件（spam / 通知 / 需要回复）
+  python main.py                 # 跑内置的 3 封演示邮件（推销 / 通知 / 需要回复）
+  python main.py --verbose       # 额外打印完整 prompt（调试用）
   python main.py --email x.json  # 跑自定义邮件（JSON: author/to/subject/email_thread）
 """
 
 import argparse
 import json
 import os
-from typing import Literal
+import warnings
 
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
-from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import create_react_agent
-from langgraph.types import Command
+
+# langchain 内部会把 PendingDeprecationWarning 强制设为 always，
+# 这里用局部上下文压掉 langgraph 导入时的序列化器警告
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from langgraph.graph import StateGraph, START, END
+    from langgraph.prebuilt import create_react_agent
+    from langgraph.types import Command
 
 from prompts import agent_system_prompt, triage_system_prompt, triage_user_prompt
 from schemas import Router, State
 
+from typing import Literal
+
 load_dotenv()
 
 MODEL = os.getenv("MODEL", "deepseek-chat")
+VERBOSE = False  # --verbose 时打印完整 prompt
 
 # ---------------------------------------------------------------------------
-# 用户画像与规则（与课程一致）
+# 用户画像与规则（与课程一致，内容中文化）
 # ---------------------------------------------------------------------------
 
 profile = {
-    "name": "John",
-    "full_name": "John Doe",
-    "user_profile_background": "Senior software engineer leading a team of 5 developers",
+    "name": "张伟",
+    "full_name": "张伟",
+    "user_profile_background": "高级软件工程师，带一个 5 人的开发团队",
 }
 
 prompt_instructions = {
     "triage_rules": {
-        "ignore": "Marketing newsletters, spam emails, mass company announcements",
-        "notify": "Team member out sick, build system notifications, project status updates",
-        "respond": "Direct questions from team members, meeting requests, critical bug reports",
+        "ignore": "营销推广邮件、垃圾邮件、全员群发公告",
+        "notify": "团队成员请病假、构建系统通知、项目状态更新",
+        "respond": "团队成员的直接提问、会议邀请、严重 bug 报告",
     },
-    "agent_instructions": "Use these tools when appropriate to help manage John's tasks efficiently.",
+    "agent_instructions": "在合适的时机使用这些工具，帮张伟高效处理事务。",
 }
 
 # ---------------------------------------------------------------------------
 # LLM
 # ---------------------------------------------------------------------------
 
-llm = init_chat_model(MODEL, model_provider="openai")
+# thinking disabled: deepseek-v4-flash 默认开 thinking，不支持结构化输出的强制 tool_choice
+llm = init_chat_model(
+    MODEL,
+    model_provider="openai",
+    extra_body={"thinking": {"type": "disabled"}},
+)
 # DeepSeek 等兼容 API 不支持 json_schema response_format，用 function calling 实现结构化输出
 llm_router = llm.with_structured_output(Router, method="function_calling")
 
@@ -62,25 +76,22 @@ llm_router = llm.with_structured_output(Router, method="function_calling")
 
 @tool
 def write_email(to: str, subject: str, content: str) -> str:
-    """Write and send an email."""
-    return f"Email sent to {to} with subject '{subject}'"
+    """撰写并发送邮件。"""
+    return f"已发送邮件给 {to}，主题：'{subject}'"
 
 
 @tool
 def schedule_meeting(
     attendees: list[str], subject: str, duration_minutes: int, preferred_day: str
 ) -> str:
-    """Schedule a calendar meeting."""
-    return (
-        f"Meeting '{subject}' scheduled for {preferred_day} "
-        f"with {len(attendees)} attendees"
-    )
+    """安排日历会议。"""
+    return f"会议 '{subject}' 已安排在{preferred_day}，共 {len(attendees)} 人参加"
 
 
 @tool
 def check_calendar_availability(day: str) -> str:
-    """Check calendar availability for a given day."""
-    return f"Available times on {day}: 9:00 AM, 2:00 PM, 4:00 PM"
+    """查询某天的日历空闲时段。"""
+    return f"{day}的空闲时段：上午 9:00、下午 2:00、下午 4:00"
 
 
 tools = [write_email, schedule_meeting, check_calendar_availability]
@@ -88,6 +99,38 @@ tools = [write_email, schedule_meeting, check_calendar_availability]
 # ---------------------------------------------------------------------------
 # response agent（ReAct）
 # ---------------------------------------------------------------------------
+
+
+def _print_prompt_messages(prompt) -> None:
+    """把发给 LLM 的消息列表渲染成可读格式（--verbose 用）。
+
+    每轮 ReAct 调用前都会打印一次"LLM 本轮看到的完整输入"，
+    消息按 [序号|角色] 分块，工具调用的参数逐项展开。
+    """
+    print(f"\n  📝 ── Agent Prompt（本轮 {len(prompt)} 条消息）" + "─" * 30)
+    for i, m in enumerate(prompt, 1):
+        if isinstance(m, dict):
+            label, content, tool_calls = m["role"], m.get("content", ""), []
+        else:
+            label = {"human": "user", "ai": "assistant"}.get(m.type, m.type)
+            if m.type == "tool":
+                label = f"tool:{m.name}"
+            content = m.content or ""
+            tool_calls = getattr(m, "tool_calls", None) or []
+        print(f"  [{i}|{label}]")
+        for line in content.splitlines():
+            print(f"      {line}")
+        for tc in tool_calls:
+            print(f"      🛠️ 调用 {tc['name']}:")
+            for k, v in tc["args"].items():
+                v_str = str(v)
+                if "\n" in v_str:
+                    print(f"        {k}:")
+                    for line in v_str.splitlines():
+                        print(f"          {line}")
+                else:
+                    print(f"        {k}: {v_str}")
+    print("  " + "─" * 56)
 
 
 def create_prompt(state):
@@ -99,7 +142,8 @@ def create_prompt(state):
             ),
         }
     ] + state["messages"]
-    print(f"  📝 Agent Prompt: {prompt}")
+    if VERBOSE:
+        _print_prompt_messages(prompt)
     return prompt
 
 
@@ -108,6 +152,12 @@ response_agent = create_react_agent(llm, tools=tools, prompt=create_prompt)
 # ---------------------------------------------------------------------------
 # triage 节点
 # ---------------------------------------------------------------------------
+
+CLASSIFICATION_LABELS = {
+    "ignore": "🚫 IGNORE —— 直接忽略，不打扰用户",
+    "notify": "🔔 NOTIFY —— 通知用户，无需回复",
+    "respond": "📧 RESPOND —— 需要回复，转给响应 agent",
+}
 
 
 def triage_router(state: State) -> Command[Literal["response_agent", "__end__"]]:
@@ -122,40 +172,35 @@ def triage_router(state: State) -> Command[Literal["response_agent", "__end__"]]
         triage_email=prompt_instructions["triage_rules"]["respond"],
         examples=None,
     )
-    print(f"  📝 System Prompt: {system_prompt}")
     user_prompt = triage_user_prompt.format(
         author=email["author"],
         to=email["to"],
         subject=email["subject"],
         email_thread=email["email_thread"],
     )
-    print(f"  📨 User Prompt: {user_prompt}")
+    if VERBOSE:
+        print(f"  📝 System Prompt: {system_prompt}")
+        print(f"  📨 User Prompt: {user_prompt}")
+
     result = llm_router.invoke(
         [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ]
     )
-    print(f"  🧠 Reasoning: {result.reasoning}")
+    print(f"🧠 分类理由: {result.reasoning}")
+    print(f"➡️  {CLASSIFICATION_LABELS[result.classification]}")
 
     if result.classification == "respond":
-        print("  📧 Classification: RESPOND - This email requires a response")
         return Command(
             goto="response_agent",
             update={
                 "messages": [
-                    {
-                        "role": "user",
-                        "content": f"Respond to the email {email}",
-                    }
+                    {"role": "user", "content": f"请回复这封邮件 {email}"}
                 ]
             },
         )
-    if result.classification == "ignore":
-        print("  🚫 Classification: IGNORE - This email can be safely ignored")
-        return Command(goto=END)
-    if result.classification == "notify":
-        print("  🔔 Classification: NOTIFY - This email contains important information")
+    if result.classification in ("ignore", "notify"):
         return Command(goto=END)
     raise ValueError(f"Invalid classification: {result.classification}")
 
@@ -178,82 +223,130 @@ email_agent = (
 
 SAMPLE_EMAILS = [
     {
-        "author": "Marketing Team <marketing@amazingdeals.com>",
-        "to": "John Doe <john.doe@company.com>",
-        "subject": "🔥 EXCLUSIVE OFFER: Limited Time Discount on Developer Tools! 🔥",
-        "email_thread": """Dear Valued Developer,
+        "author": "市场部 <marketing@amazingdeals.com>",
+        "to": "张伟 <zhangwei@company.com>",
+        "subject": "🔥 独家优惠：开发者工具限时折扣！🔥",
+        "email_thread": """尊敬的开发者：
 
-Don't miss out on this INCREDIBLE opportunity!
+千万不要错过这个绝佳机会！
 
-🚀 For a LIMITED TIME ONLY, get 80% OFF on our Premium Developer Suite!
+🚀 仅限本周，我们的高级开发者套件全场 2 折！
 
-💰 Regular Price: $999/month
-🎉 YOUR SPECIAL PRICE: Just $199/month!
+💰 原价：¥6999/月
+🎉 您的专属价：仅需 ¥1399/月！
 
-Click here to claim your discount: https://amazingdeals.com/special-offer
+点击这里领取折扣：https://amazingdeals.com/special-offer
 
-Best regards,
-Marketing Team
+市场部 敬上
 """,
     },
     {
-        "author": "CI Bot <ci@company.com>",
-        "to": "John Doe <john.doe@company.com>",
-        "subject": "Nightly build #1024 failed on main",
-        "email_thread": """Automated notification:
+        "author": "CI 机器人 <ci@company.com>",
+        "to": "张伟 <zhangwei@company.com>",
+        "subject": "main 分支夜间构建 #1024 失败",
+        "email_thread": """自动通知：
 
-Nightly build #1024 failed during the integration test stage.
-Failed job: test-auth-service (exit code 1)
-Logs: https://ci.company.com/builds/1024
+夜间构建 #1024 在集成测试阶段失败。
+失败任务：test-auth-service（退出码 1）
+日志：https://ci.company.com/builds/1024
 
--- CI Bot
+-- CI 机器人
 """,
     },
     {
-        "author": "Alice Smith <alice.smith@company.com>",
-        "to": "John Doe <john.doe@company.com>",
-        "subject": "Quick question about API documentation",
-        "email_thread": """Hi John,
+        "author": "李娜 <lina@company.com>",
+        "to": "张伟 <zhangwei@company.com>",
+        "subject": "关于 API 文档的一个小问题",
+        "email_thread": """张伟你好，
 
-I was reviewing the API documentation for the new authentication service and noticed a few endpoints seem to be missing from the specs. Could you help clarify if this was intentional or if we should update the docs?
+我在核对新认证服务的 API 文档时，发现有几个接口似乎没写进规范。想跟你确认一下：是有意省略，还是文档需要补？
 
-Specifically, I'm looking at:
+具体是这两个：
 - /auth/refresh
 - /auth/validate
 
-Thanks!
-Alice""",
+谢谢！
+李娜""",
     },
 ]
 
+# ---------------------------------------------------------------------------
+# 人类友好的输出渲染
+# ---------------------------------------------------------------------------
 
-def run_email(email: dict) -> None:
-    print("=" * 72)
-    print(f"From:    {email['author']}")
-    print(f"Subject: {email['subject']}")
-    print("-" * 72)
-    response = email_agent.invoke({"email_input": email})
-    for m in response.get("messages", []):
-        m.pretty_print()
+
+def _box(text: str, indent: str = "      ") -> None:
+    """把邮件正文框起来打印。"""
+    print(f"{indent}┌{'─' * 60}")
+    for line in (text or "").splitlines():
+        print(f"{indent}│ {line}")
+    print(f"{indent}└{'─' * 60}")
+
+
+def _one_line(text: str, limit: int = 90) -> str:
+    flat = " ".join((text or "").split())
+    return flat[:limit] + ("…" if len(flat) > limit else "")
+
+
+def render_agent_trace(messages) -> None:
+    """把 ReAct 轨迹渲染成可读的步骤列表（代替 pretty_print 的全量 dump）。"""
+    step = 0
+    final_answer = None
+    for m in messages:
+        if m.type == "ai":
+            tool_calls = getattr(m, "tool_calls", None) or []
+            if tool_calls:
+                if m.content:
+                    print(f"   💭 {_one_line(m.content)}")
+                for tc in tool_calls:
+                    step += 1
+                    name, args = tc["name"], tc["args"]
+                    if name == "write_email":
+                        print(f"   [{step}] 🛠️  write_email → {args.get('to')}")
+                        print(f"       主题: {args.get('subject')}")
+                        _box(args.get("content", ""), indent="       ")
+                    else:
+                        brief = ", ".join(f"{k}={v}" for k, v in args.items())
+                        print(f"   [{step}] 🛠️  {name}({brief})")
+            elif m.content:
+                final_answer = m.content
+        elif m.type == "tool":
+            print(f"       ↳ {_one_line(m.content)}")
+    if final_answer:
+        print("   💬 处理总结:")
+        for line in final_answer.splitlines():
+            print(f"      {line}")
+
+
+def run_email(email: dict, index: str = "") -> None:
     print()
+    print(f"═══ 邮件{index} ".ljust(72, "═"))
+    print(f"发件人: {email['author']}")
+    print(f"主题:   {email['subject']}")
+    print("─" * 72)
+    response = email_agent.invoke({"email_input": email})
+    messages = response.get("messages", [])
+    if messages:
+        print("🤖 响应 agent 执行轨迹:")
+        render_agent_trace(messages)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="L2 baseline email assistant demo")
-    parser.add_argument(
-        "--email",
-        help="Path to a JSON file with keys: author, to, subject, email_thread",
-    )
+    global VERBOSE
+    parser = argparse.ArgumentParser(description="L2 baseline 邮件助理演示")
+    parser.add_argument("--email", help="自定义邮件 JSON 文件路径")
+    parser.add_argument("--verbose", action="store_true", help="打印完整 prompt（调试）")
     args = parser.parse_args()
+    VERBOSE = args.verbose
 
-    print(f"Model: {MODEL} @ {os.getenv('OPENAI_BASE_URL', 'https://api.openai.com/v1')}\n")
+    print(f"模型: {MODEL} @ {os.getenv('OPENAI_BASE_URL', 'https://api.openai.com/v1')}")
 
     if args.email:
         with open(args.email) as f:
             run_email(json.load(f))
     else:
-        for email in SAMPLE_EMAILS:
-            run_email(email)
+        for i, email in enumerate(SAMPLE_EMAILS, 1):
+            run_email(email, f" {i}/{len(SAMPLE_EMAILS)}")
 
 
 if __name__ == "__main__":
