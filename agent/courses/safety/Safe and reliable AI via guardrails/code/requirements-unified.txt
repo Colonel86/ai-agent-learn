@@ -1,0 +1,42 @@
+# L1-L8 统一 venv 依赖(guardrails 0.10.2 现代栈)—— 取代原各课独立 venv
+#
+# 建法:
+#   /opt/homebrew/bin/python3.12 -m venv .venv
+#   .venv/bin/pip install -r requirements-unified.txt
+# hub 校验器与 spacy 模型(需 ~/.guardrailsrc 的 token,详见 HUB.md):
+#   TOKEN=$(grep '^token=' ~/.guardrailsrc | cut -d= -f2)
+#   IDX="https://__token__:${TOKEN}@pypi.guardrailsai.com/simple"
+#   .venv/bin/pip install guardrails-grhub-detect-pii guardrails-grhub-competitor-check \
+#     guardrails-grhub-provenance-llm tryolabs-grhub-restricttotopic \
+#     --index-url "$IDX" --extra-index-url https://pypi.org/simple
+#   .venv/bin/pip install \
+#     https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl \
+#     https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl
+#
+# 原 requirements.txt / requirements-lock.txt 是课程 2024 冻结锁,仅作参照。
+
+# 护栏框架(0.10.2:全课统一,L3 服务器与 hub 变体已先行验证)
+guardrails-ai==0.10.2
+guardrails-api==0.4.3
+
+# LLM 接入与基础
+openai>=1.30
+httpx>=0.27
+python-dotenv>=1.0
+fastembed>=0.3
+numpy
+
+# L4/L5 幻觉 validator(NLI + embedding + 分句)
+torch
+transformers
+sentence-transformers
+nltk
+
+# L6 话题 validator(zero-shot)、L8 竞品 validator
+scikit-learn
+
+# L7 PII validator(Presidio + spacy)
+presidio-analyzer
+presidio-anonymizer
+spacy
+spacy-transformers

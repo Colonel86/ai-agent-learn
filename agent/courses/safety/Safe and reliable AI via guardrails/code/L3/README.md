@@ -1,5 +1,7 @@
 # L3 · Building your first guardrail —— 本地可运行版(真 guardrails)
 
+> ⚠️ **2026-07-25 环境合并**:L1-L8 已共用 `code/.venv`(guardrails 0.10.2,见 [`../README.md`](../README.md));下文中 `.venv-guardrails`/独立 venv 的搭建命令是历史记录,运行一律用 `../.venv/bin/python`,服务器用 `../.venv/bin/guardrails-api start`。
+
 对照 DeepLearning.AI《Safe and reliable AI via guardrails》L3。**严格按课程示例逻辑用真
 guardrails**(不做等价替代):自定义 `ColosseumDetector` validator → 包成 `Guard` → 跑在
 **guardrails 服务器**上 → guarded client 指向服务器,LLM 调用在进模型前被 guard 拦截。

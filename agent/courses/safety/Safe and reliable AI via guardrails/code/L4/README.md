@@ -1,5 +1,7 @@
 # L4 · Checking for hallucinations using NLI —— 本地可运行版(真 guardrails + 真 NLI 模型)
 
+> ⚠️ **2026-07-25 环境合并**:L1-L8 已共用 `code/.venv`(guardrails 0.10.2,见 [`../README.md`](../README.md));下文中 `.venv-guardrails`/独立 venv 的搭建命令是历史记录,运行一律用 `../.venv/bin/python`,服务器用 `../.venv/bin/guardrails-api start`。
+
 对照 DeepLearning.AI《Safe and reliable AI via guardrails》L4。**严格按课程示例逻辑**,不做
 等价替代:用真 guardrails 的自定义 `HallucinationValidation` validator + 真 NLI 模型
 `GuardrailsAI/finetuned_nli_provenance` + SentenceTransformer + nltk 分句,做 **provenance 型

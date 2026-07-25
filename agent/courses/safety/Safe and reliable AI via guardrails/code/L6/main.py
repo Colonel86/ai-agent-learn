@@ -72,7 +72,9 @@ def section(title: str) -> None:
 
 def server_up() -> bool:
     try:
-        return httpx.get(f"{SERVER}/guards/", timeout=3).status_code == 200
+        # guardrails-api 0.4.x 对 /guards/ 返回 307 → /guards,跟随重定向后判 200
+        return httpx.get(f"{SERVER}/guards/", timeout=3,
+                         follow_redirects=True).status_code == 200
     except Exception:
         return False
 
@@ -160,7 +162,7 @@ def main() -> None:
     if not server_up():
         section("⚠️ guardrails 服务器未启动 —— 跳过 Part 6")
         print("请先在另一个终端启动服务器(3.12 venv):")
-        print("  PYTHONPATH=. .venv-guardrails/bin/guardrails start --config config_l6.py --env server.env --port 8000")
+        print("  ../.venv/bin/guardrails-api start --config config_l6.py --env server.env --port 8000")
         print("(启动会加载 bart 分类器。)然后重跑 python main.py。")
         return
 

@@ -1,5 +1,7 @@
 # L5 · Using hallucination guard in a chatbot —— 本地可运行版(真 guardrails)
 
+> ⚠️ **2026-07-25 环境合并**:L1-L8 已共用 `code/.venv`(guardrails 0.10.2,见 [`../README.md`](../README.md));下文中 `.venv-guardrails`/独立 venv 的搭建命令是历史记录,运行一律用 `../.venv/bin/python`,服务器用 `../.venv/bin/guardrails-api start`。
+
 对照 DeepLearning.AI《Safe and reliable AI via guardrails》L5。把 L4 造的幻觉 validator **真正
 用起来**,分两部分,全程真 guardrails:
 

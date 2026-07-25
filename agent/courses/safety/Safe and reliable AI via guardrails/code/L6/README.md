@@ -1,5 +1,7 @@
 # L6 · Keeping a chatbot on topic —— 本地可运行版(真 guardrails + 本地 zero-shot 分类器)
 
+> ⚠️ **2026-07-25 环境合并**:L1-L8 已共用 `code/.venv`(guardrails 0.10.2,见 [`../README.md`](../README.md));下文中 `.venv-guardrails`/独立 venv 的搭建命令是历史记录,运行一律用 `../.venv/bin/python`,服务器用 `../.venv/bin/guardrails-api start`。
+
 对照 DeepLearning.AI《Safe and reliable AI via guardrails》L6。**严格按课程逻辑**,不做等价替代:
 自定义 `ConstrainTopic` validator(真 guardrails Validator)+ HuggingFace zero-shot 分类器
 `facebook/bart-large-mnli`,把**跑题**的输入挡在 LLM 之前。

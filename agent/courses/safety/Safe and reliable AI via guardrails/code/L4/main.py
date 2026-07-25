@@ -18,9 +18,8 @@ L4 不需要 guardrails 服务器,全程在进程内本地跑。唯一的本地�
 
 运行:
   cp .env.example .env        # 填 OPENAI_API_KEY(DeepSeek 的 key)
-  /opt/homebrew/bin/python3.12 -m venv .venv-guardrails   # guardrails 只支持 <3.13
-  .venv-guardrails/bin/pip install -r requirements-guardrails.txt
-  .venv-guardrails/bin/python main.py
+  cd .. && /opt/homebrew/bin/python3.12 -m venv .venv && .venv/bin/pip install -r requirements-unified.txt
+  cd L4 && ../.venv/bin/python main.py   # L1-L8 共用 code/.venv(guardrails 0.10.2)
 """
 
 import os

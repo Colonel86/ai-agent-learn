@@ -1,8 +1,9 @@
 # 真·Guardrails Hub 变体 —— 统一设置指南(`.venv-hub`)
 
 课程各课默认用的是**自建 validator**(本地模型 + guardrails 0.5.3),避免依赖 Guardrails Hub。
-如果你有 Hub API key,想跑**真·hub 校验器**做对照,按本文档建一个**独立的 `.venv-hub`**,四课的
-`main_hub.py` 都用它。
+如果你有 Hub API key,想跑**真·hub 校验器**做对照。**2026-07-25 起 `.venv-hub` 已并入统一的
+`code/.venv`**(L1-L8 同环境,见 `README.md`),四课的 `main_hub.py` 直接用 `../.venv/bin/python` 跑;
+下文的 `.venv-hub` 搭建步骤保留作历史记录,hub 校验器的安装命令仍有效(把路径换成 `.venv` 即可)。
 
 > 为什么单独一个 venv:hub 校验器与各课本地版的依赖(尤其 torch/transformers 版本、numpy)会互相
 > 冲突。隔离开,各跑各的,互不污染。

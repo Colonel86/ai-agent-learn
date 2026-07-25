@@ -131,7 +131,7 @@ def main() -> None:
     if not server_up():
         section("⚠️ guardrails 服务器未启动 —— 跳过 B/C")
         print("请先在另一个终端启动服务器(3.12 venv):")
-        print("  .venv-guardrails/bin/guardrails-api start --config config_l3.py --env server.env --port 8000")
+        print("  ../.venv/bin/guardrails-api start --config config_l3.py --env server.env --port 8000")
         print("然后重跑 python main.py。详见 README「运行」。")
         sys.exit(0)
 

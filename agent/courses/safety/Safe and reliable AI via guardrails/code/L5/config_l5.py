@@ -17,8 +17,12 @@
 """
 
 import os
+import sys
 
-from guardrails import Guard, OnFailAction
+# guardrails-api 0.4.x 加载 config 时不会把本目录加进 sys.path,自举以便 import helpers
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from guardrails import AsyncGuard, OnFailAction
 
 # 复用 L4/本课的 HallucinationValidation(真 guardrails Validator,逐字照课程)
 from helpers.hallucination import HallucinationValidation, ensure_punkt
@@ -32,9 +36,8 @@ ensure_punkt()
 _DATA_DIR = os.path.join(os.path.dirname(__file__), "shared_data")
 SOURCES = chunk_markdown_files(_DATA_DIR)
 
-# 说明:用同步 Guard(不是 AsyncGuard)——见 L3 README:guardrails-api 0.0.1 的非流式
-# handler 同步调用 guard 后立刻读 history,AsyncGuard 会 history=None 报 500。
-hallucination_guard = Guard(name="hallucination_guard").use(
+# 用 AsyncGuard:guardrails-api 0.4.x 对同步 Guard 会 to_dict/from_dict 序列化重建,自定义 validator 的构造参数(如 sources)不进序列化契约会丢失且每请求重载模型;AsyncGuard 直接用活实例。
+hallucination_guard = AsyncGuard(id="hallucination_guard", name="hallucination_guard").use(
     HallucinationValidation(
         embedding_model="all-MiniLM-L6-v2",
         entailment_model="GuardrailsAI/finetuned_nli_provenance",

@@ -9,17 +9,23 @@ config.py 里的 RestrictToTopic。
 topic_guard 校验**用户输入**(on="messages"):把输入按 zero-shot 分类,命中 banned 话题
 (politics / automobiles)即抛异常,off-topic 的问题在进 LLM 之前就被挡下。
 
-用同步 Guard(非 AsyncGuard),原因见 L3 说明(guardrails-api 0.0.1 同步 handler)。
+用 AsyncGuard:guardrails-api 0.4.x 对同步 Guard 会 to_dict/from_dict 序列化重建,自定义 validator 的构造参数(如 sources)不进序列化契约会丢失且每请求重载模型;AsyncGuard 直接用活实例。
 
 启动:
   PYTHONPATH=. guardrails start --config config_l6.py --env server.env --port 8000
 """
 
-from guardrails import Guard, OnFailAction
+import os
+import sys
+
+# guardrails-api 0.4.x 加载 config 时不会把本目录加进 sys.path,自举以便 import helpers
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from guardrails import AsyncGuard, OnFailAction
 
 from helpers.topic import ConstrainTopic
 
-topic_guard = Guard(name="topic_guard").use(
+topic_guard = AsyncGuard(id="topic_guard", name="topic_guard").use(
     ConstrainTopic(
         banned_topics=["politics", "automobiles"],
         on_fail=OnFailAction.EXCEPTION,

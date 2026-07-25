@@ -1,5 +1,7 @@
 # L8 · Preventing competitor mentions —— 本地可运行版(真 guardrails + 本地 NER 校验器)
 
+> ⚠️ **2026-07-25 环境合并**:L1-L8 已共用 `code/.venv`(guardrails 0.10.2,见 [`../README.md`](../README.md));下文中 `.venv-guardrails`/独立 venv 的搭建命令是历史记录,运行一律用 `../.venv/bin/python`,服务器用 `../.venv/bin/guardrails-api start`。
+
 对照 DeepLearning.AI《Safe and reliable AI via guardrails》L8。**严格按课程逻辑**,不做等价替代:
 自定义 `CheckCompetitorMentions` validator(真 guardrails Validator),**三层查竞品**——
 精确匹配 + NER(`dslim/bert-base-NER`)抽实体 + 向量相似(all-MiniLM + 余弦)。

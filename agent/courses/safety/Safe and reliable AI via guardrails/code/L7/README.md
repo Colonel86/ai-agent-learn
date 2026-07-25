@@ -1,5 +1,7 @@
 # L7 · Ensuring no PII is leaked —— 本地可运行版(真 guardrails + Microsoft Presidio)
 
+> ⚠️ **2026-07-25 环境合并**:L1-L8 已共用 `code/.venv`(guardrails 0.10.2,见 [`../README.md`](../README.md));下文中 `.venv-guardrails`/独立 venv 的搭建命令是历史记录,运行一律用 `../.venv/bin/python`,服务器用 `../.venv/bin/guardrails-api start`。
+
 对照 DeepLearning.AI《Safe and reliable AI via guardrails》L7。**严格按课程逻辑**,不做等价替代:
 用 **Microsoft Presidio**(本地开源 PII 引擎,**无需任何 key**)+ 自定义 `PIIDetector`(真 guardrails
 Validator),在**输入/输出两侧**防 PII 泄漏。
