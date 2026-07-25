@@ -9,8 +9,8 @@ L3 这一课的示例代码只用到 colosseum guard(自定义 ColosseumDetector
 **L4–L8**、且依赖 guardrails hub 上的模型(需 hub API key + 下载 spacy/PII 模型),不在 L3 的
 示例逻辑内,故此处不引入。等做到那几课时再按各自的示例补上。
 
-启动:
-  guardrails start --config config_l3.py
+启动(注意用 guardrails-api 的 CLI,`guardrails start` 封装层在 0.10.2 有 bug,见 README):
+  guardrails-api start --config config_l3.py --env server.env --port 8000
 """
 
 from typing import Any, Dict
@@ -36,21 +36,24 @@ class ColosseumDetector(Validator):
         return PassResult()
 
 
-# 说明:课程原 config.py 用的是 AsyncGuard。但 guardrails-api 0.0.1 的非流式
-# /openai/v1/chat/completions handler 是**同步**调用 `guard(**payload)` 后立刻读
-# `guard.history.last`——对 AsyncGuard 同步调用只会拿到协程、不执行、history 为 None,
-# 直接 500(这是该 pinned 版本的一个已知 bug)。改用同步 Guard 即可正常跑通;
-# ColosseumDetector 校验器、on/on_fail 语义、服务器全部保持课程原样,仅换 Guard 类型。
+# 说明:课程原 config.py 用的是 AsyncGuard。0.5.3 时代 guardrails-api 0.0.1 对 AsyncGuard
+# 同步调用会直接 500,故当时改成了同步 Guard;0.10.2 + guardrails-api 0.4.3 的 handler 已是
+# async(会把同步 Guard 转成 AsyncGuard 执行),同步 Guard 依旧可用,维持不变。
+# ColosseumDetector 校验器、on/on_fail 语义、服务器全部保持课程原样。
+
+# 注意:0.10.2 里 Guard.id 默认是随机 UUID,而 guardrails-api 0.4.x 的内存注册表和
+# /guards/{id}/openai/v1/... 路由都按 **id** 查找(不按 name 回退),启动横幅却打印
+# name 型 URL —— 不显式设 id=name 的话,按 name 访问一律 404。故这里 id 与 name 取同值。
 
 # 一个空 guard(备用)
-basic_guard = Guard(name="basic")
+basic_guard = Guard(id="basic", name="basic")
 
 # 版本 1:命中 colosseum 就抛异常(on_fail=EXCEPTION)
-colosseum_guard = Guard(name="colosseum_guard").use(
+colosseum_guard = Guard(id="colosseum_guard", name="colosseum_guard").use(
     ColosseumDetector(on_fail=OnFailAction.EXCEPTION), on="messages"
 )
 
 # 版本 2:命中则用 fix_value 优雅替换,不报错(on_fail=FIX)
-colosseum_guard_2 = Guard(name="colosseum_guard_2").use(
+colosseum_guard_2 = Guard(id="colosseum_guard_2", name="colosseum_guard_2").use(
     ColosseumDetector(on_fail=OnFailAction.FIX), on="messages"
 )

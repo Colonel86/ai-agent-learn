@@ -47,7 +47,7 @@ Databricks 主要用两类 **securable objects** 存取数据：
 
 两者都能派生**向量数据库**：表的 vector 列或 volume 配 vector index（用 Databricks Vector Search）。关键点：**这些向量库仍然继承 Unity Catalog 的全部安全与审计能力**——AI 检索应用不会成为治理飞地。
 
-> **架构师视角**：Unity Catalog 最值得抄的设计是把 **Function（工具）和 Model（Agent 本身）与数据放进同一套命名空间、同一套 ACL**。多数团队的现状是：数据权限归数仓管、工具权限散在代码里、Agent 权限没人管。三者同目录治理后，"谁能调这个工具""谁能调用这个 Agent"与"谁能读这张表"用同一套 grant/revoke 语义回答——权限模型只剩一种，审计面也只剩一个。
+> **架构师视角**：Unity Catalog 最值得抄的设计是把 **Function（工具）和 Model（Agent 本身）与数据放进同一套命名空间、同一套 ACL（ ACL = Access Control List，访问控制列表）**。多数团队的现状是：数据权限归数仓管、工具权限散在代码里、Agent 权限没人管。三者同目录治理后，"谁能调这个工具""谁能调用这个 Agent"与"谁能读这张表"用同一套 grant/revoke 语义回答——权限模型只剩一种，审计面也只剩一个。
 
 ## 4. Schema 内的数据对象全家福（Agent 视角）
 

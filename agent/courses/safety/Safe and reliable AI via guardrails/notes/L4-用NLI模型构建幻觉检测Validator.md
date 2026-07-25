@@ -174,10 +174,3 @@ def __init__(self, embedding_model=None, sources=None, entailment_model=None, **
 
 > **记忆点（引出 L5）**：validator 已经能单独跑通并抓出无据文本，但它还只是个裸类。L5 把它**包进 Guard、挂上 Guardrails Server**，接回披萨店 chatbot，让 L1 那个编造配方的 prompt 在真实应用链路里被当场拦截——并回答"什么时候裸用 validator、什么时候必须上 guard"。
 
-## 与我的资产映射
-
-- 护栏层选型：`agent/skills/agent-selection/7-safety-guardrails.md`（②输出护栏卡点的"事实幻觉"检查器；运行时拦截 vs 离线 eval 的边界）
-- 幻觉检测对照：`agent/courses/eval/24-Automated Testing for LLMOps/notes/L05-综合测试与幻觉检测.md`（LLM-as-judge 离线检测 vs 本课 NLI 运行时检测）
-- 观测/评估层：`agent/skills/agent-selection/5-observability-eval.md`（"判好坏"那一面）
-- 面试包：`agent/interview/jd-senior-agent-engineer/07-safety-guardrails.md`（幻觉护栏实现方案：NLI 分类器路线的完整细节）
-- [[project_selection_matrix]]

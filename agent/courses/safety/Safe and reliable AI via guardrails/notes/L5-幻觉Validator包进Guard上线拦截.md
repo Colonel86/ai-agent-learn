@@ -94,11 +94,3 @@ flowchart LR
 | 全链路验证 | L1 的配方幻觉 prompt 被 output guard 拦截；catch 异常做优雅降级 |
 
 > **记忆点（引出 L6）**：幻觉这条失效模式已经从检测（L4）走到上线拦截（本课），四大失效模式解决其一。L6 转向下一类——**跑题（off-topic）**：还记得 L1 里替用户免费科普福特皮卡的披萨客服吗？下一课用**零样本分类器（BART zero-shot，同样是 NLI 的特化）**构建话题护栏，把 chatbot 摁回自己的业务话题上。
-
-## 与我的资产映射
-
-- 护栏层选型：`agent/skills/agent-selection/7-safety-guardrails.md`（②输出护栏卡点的完整上线形态；guard 日志横跨"拦截/判好坏"分界线）
-- 观测评估层：`agent/skills/agent-selection/5-observability-eval.md`（护栏执行日志 = 在线免费产出的 eval 原料）
-- 基础设施化打法对照：`agent/courses/Building Coding Agents with Tool Execution/notes/L4-用E2B沙箱在云端运行Agent代码.md`（与 L3/本课同款"换端点不换代码"接入）
-- 面试包：`agent/interview/jd-senior-agent-engineer/07-safety-guardrails.md`（"裸 validator vs guard""factual but not grounded 误杀"是护栏落地题的高频考点）
-- [[project_selection_matrix]]

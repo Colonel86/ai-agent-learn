@@ -1,19 +1,24 @@
 # L3 guardrails 服务器依赖 —— 装在**单独**的 3.12 venv(.venv-guardrails)。
 #
-# ⚠️ 踩过的三个坑(都来自 0.5.3 这套旧 pin,已在此文件/启动步骤里规避):
-#   1. guardrails 只支持 Python <3.13;本机默认 3.13,必须用 3.12 建 venv。
-#   2. `guardrails start` 会自动 pip 安装 guardrails-api,但拼的版本号非法
-#      ('guardrails-api>="^0.0.0a0"'),被现代 pip 拒绝 → 必须**预装** guardrails-api。
-#   3. 新版 click(8.2+)与 guardrails 0.5.3 的 typer CLI 冲突,报
-#      "Secondary flag is not valid for non-boolean flag" → 必须钉死 click<8.2。
+# 已从课程原 pin 0.5.3 升级到 0.10.2(与 ../HUB.md 的 .venv-hub 同版本):
+#   · 0.5.3 时代的三个坑(Python<3.13 / 预装 guardrails-api==0.0.1 / 钉死 click<8.2)全部消失,
+#     0.10.2 支持 Python 3.13、click 8.2、numpy 2,依赖自洽,无需压任何版本。
+#   · guardrails-api 解析到 0.4.3(合法版本号,直接 pin 上,不再依赖启动时自动安装)。
+#
+# ⚠️ 0.10.2 + guardrails-api 0.4.3 组合的两个新坑(已在 config_l3.py / 启动命令里规避):
+#   1. `guardrails start` 封装层以编程方式调 guardrails_api 的 start 却漏传 middleware 参数,
+#      typer 的 OptionInfo 默认值漏进 os.path.abspath → TypeError 崩溃。
+#      → 改用 guardrails-api 自己的 CLI 启动(走 typer,默认值正确解析),命令见下。
+#   2. 0.10.2 里 Guard.id 默认是随机 UUID,而服务器内存注册表和 /guards/{id}/openai/v1/
+#      路由都按 **id** 查找(不按 name 回退)→ 按 name 访问一律 404。
+#      → config_l3.py 里所有 Guard 显式 id=name。
 #
 # 装法:
 #   /opt/homebrew/bin/python3.12 -m venv .venv-guardrails
 #   .venv-guardrails/bin/pip install -r requirements-guardrails.txt
 #
 # 起服务器(server.env 里放 DEEPSEEK_API_KEY,供 litellm 路由到 DeepSeek):
-#   .venv-guardrails/bin/guardrails start --config config_l3.py --env server.env --port 8000
-guardrails-ai==0.5.3
-guardrails-api==0.0.1
-click<8.2
+#   .venv-guardrails/bin/guardrails-api start --config config_l3.py --env server.env --port 8000
+guardrails-ai==0.10.2
+guardrails-api==0.4.3
 openai>=1.30

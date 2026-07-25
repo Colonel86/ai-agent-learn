@@ -7,7 +7,7 @@
 
 Proof of Concept(概念验证) ——先做个小原型
 
-当下 AI 开发的现状：工具/库/框架齐全，搭一个 GenAI 应用的 POC（第一个 RAG 应用、第一个 agent workflow）**非常容易**；真正耗时间的是把 POC 推到 **production ready**。首要原因：**AI reliability 是一个全新的问题**，也是 GenAI 应用进入生产的关键阻碍。
+当下 AI 开发的现状：工具/库/框架齐全，搭一个 GenAI 应用的 POC（第一个 RAG 应用、第一个 agent workflow）**非常容易**；真正耗时间的是把 POC 推到 **production ready**。首要原因：**AI reliability（可靠性） 是一个全新的问题**，也是 GenAI 应用进入生产的关键阻碍。
 
 reliability 的本质矛盾：foundation model 什么都能做到**中等偏上（moderately well）**，但一个 AI 应用要的是**把一件事做到完美**、失败率极低。用"什么都会一点"的模型去造"一件事零差错"的应用，中间的缺口就是本课全部内容的出发点。
 
@@ -100,11 +100,3 @@ rag_chatbot = RAGChatWidget(client=client,
 | 修法归位 | 检索/提示/模型各修各的，越界行为归 guardrails 管 |
 
 > **记忆点（引出 L2）**：四个 failure mode 都指向同一个动词——**verify**。L2 回答三个问题：guardrail 的精确定义是什么、放在调用链的哪个位置（input guard / output guard）、内部用什么技术实现（规则引擎 → 小模型 → 二次 LLM 调用）。
-
-## 与我的资产映射
-
-- 护栏层选型：`agent/skills/agent-selection/7-safety-guardrails.md`（本课四个 failure mode ≈ 该文件五段链路里①输入护栏、②输出护栏要防的具体风险清单）
-- 幻觉检测离线侧：`agent/courses/eval/24-Automated Testing for LLMOps/notes/L05-综合测试与幻觉检测.md`（同一检测、不同卡点）
-- 攻击视角的镜像课：`agent/courses/Red Teaming LLM Applications/`（本课演示的偏离用途/泄漏，正是红队要系统性找的洞）
-- 面试包：`agent/interview/jd-senior-agent-engineer/07-safety-guardrails.md`
-- [[project_selection_matrix]]

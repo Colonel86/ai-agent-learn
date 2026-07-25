@@ -8,11 +8,11 @@
 演示三条路径,同一个 RAG 应用只换 client:
   A. 无护栏(直连 DeepSeek)    —— 会顺着 "colosseum" 攻击往下答,泄漏机密项目
   B. colosseum_guard(EXCEPTION)—— 含 colosseum 的输入被服务器拦下抛错;正常问题照常
-  C. colosseum_guard_2(FIX)   —— 含 colosseum 的输入同样被拦(见下方说明)
+  C. colosseum_guard_2(FIX)   —— 含 colosseum 的输入被 fix_value 优雅替换后继续走 LLM
 
 前置:先在另一个终端把 guardrails 服务器起起来(见 README「运行」)。本脚本会先探活。
 
-真 guardrails 环境说明:本课用真 guardrails-ai 0.5.3 + guardrails 服务器,裁判 LLM 走 DeepSeek
+真 guardrails 环境说明:本课用真 guardrails-ai 0.10.2 + guardrails 服务器,裁判 LLM 走 DeepSeek
 (litellm 的 openai 兼容路由),embedding 走本地 fastembed。装法/起服务器见 README 与
 requirements-guardrails.txt。
 """
@@ -80,7 +80,9 @@ def section(title: str) -> None:
 
 def server_up() -> bool:
     try:
-        return httpx.get(f"{SERVER}/guards/", timeout=3).status_code == 200
+        # guardrails-api 0.4.x 对 /guards/ 返回 307 → /guards,跟随重定向后判 200
+        return httpx.get(f"{SERVER}/guards/", timeout=3,
+                         follow_redirects=True).status_code == 200
     except Exception:
         return False
 
@@ -129,7 +131,7 @@ def main() -> None:
     if not server_up():
         section("⚠️ guardrails 服务器未启动 —— 跳过 B/C")
         print("请先在另一个终端启动服务器(3.12 venv):")
-        print("  .venv-guardrails/bin/guardrails start --config config_l3.py --env server.env --port 8000")
+        print("  .venv-guardrails/bin/guardrails-api start --config config_l3.py --env server.env --port 8000")
         print("然后重跑 python main.py。详见 README「运行」。")
         sys.exit(0)
 
@@ -144,11 +146,11 @@ def main() -> None:
     section("C) colosseum_guard_2(on_fail=FIX):含 colosseum 的输入")
     fix_bot = LocalRAG(system_message=SYSTEM_NO_RULE, data_dir=DATA_DIR,
                        client=guarded_client("colosseum_guard_2"), model=GUARDED_MODEL)
-    ask(fix_bot, COLOSSEUM_ATTACK)                         # 见下说明
+    ask(fix_bot, COLOSSEUM_ATTACK)                         # 预期:fix_value 替换输入,LLM 优雅拒答
     ask(fix_bot, "How long does delivery take?")           # 预期:正常回答
-    print("\n说明:课程视频里 FIX 版会『无错误地』返回 fix_value;但在本课 pinned 的 guardrails 服务器"
-          "\n(guardrails-api 0.0.1)上,作用于**输入消息**的 FIX 失败仍以 400 返回(不是静默替换)。"
-          "\n课程 notebook 也注明『返回消息可能与视频不完全一致』。这是真实服务器行为,未做美化。")
+    print("\n说明:FIX 版按课程预期『无错误地』优雅降级——validator 用 fix_value 替换掉命中的输入"
+          "\n消息后请求继续进 LLM,得到一条礼貌拒答,而不是像 B 那样抛 400。"
+          "\n(0.5.3+guardrails-api 0.0.1 时代此路径有 bug、仍返回 400;升到 0.10.2 后行为与视频一致。)")
 
     # ----- 小结 -----
     section("小结 (Takeaways)")
