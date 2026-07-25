@@ -12,7 +12,7 @@ Validator),在**输入/输出两侧**防 PII 泄漏。
 
 | 环节 | 原课程 | 本地版 |
 |---|---|---|
-| 复现 PII 留存的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-chat` |
+| 复现 PII 留存的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-v4-flash` |
 | **PII 引擎 / validator** | Presidio + PIIDetector | **逐字保留**(Presidio 是本地开源,无需 key) |
 | 服务器 pii_guard | 课程 config.py(hub DetectPII) | config_l7.py(本地 PIIDetector,同样输入 refrain/输出 fix) |
 

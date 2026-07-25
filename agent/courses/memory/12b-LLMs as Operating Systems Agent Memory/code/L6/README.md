@@ -52,11 +52,11 @@ cp .env.example .env   # 填入你的 API Key
 |---|---|---|---|
 | chat/embedding/服务 | openai handle + 课程平台 server | DeepSeek `llm_config`（temperature=0）+ 本地 fastembed + `run_server.sh` | 同 L3，见 L3 README |
 | 章节顺序 | 共享记忆(§3) → group(§4) | group(③) → 共享记忆(④) | 共享记忆演示改用不带 run_first 规则的 v2 agent 更干净 |
-| outreach persona | 一句话 | 追加"先调工具再回复" + `run_first` 工具规则 | deepseek-chat 倾向口头答应而不调 draft 工具，需硬约束 |
+| outreach persona | 一句话 | 追加"先调工具再回复" + `run_first` 工具规则 | deepseek-v4-flash 倾向口头答应而不调 draft 工具，需硬约束 |
 | eval persona | 一句话 | 追加"名字是占位符只看技能""转发时附详情并要求立即起草" | deepseek 会识破 Tony Stark 是虚构人名当假简历拒掉 |
 | ②里的起草时机 | 转发那一轮 outreach 直接起草 | 转发轮只回复，另发直连消息触发强制起草 | 见下方"已知限制" |
 | 预热消息 | — | 建完 outreach_agent 先发一条 hi | deepseek 会把"首次登录"事件和跨 agent 来信混在同一轮，固定选择寒暄 |
 
-## 已知限制（letta 0.6.50 + deepseek-chat）
+## 已知限制（letta 0.6.50 + deepseek-v4-flash）
 
 跨 agent 来信的包装语硬编码了 *"make sure to use the 'send_message' at the end"*，deepseek 在 temperature=0 下会逐字服从——先 `send_message` 回复，回合即结束，永远轮不到 draft 工具；而 `run_first`（InitToolRule）在 0.6.50 只在直连消息路径生效（跨 agent 投递不传 `step_count`，且 deepseek 不在 `STRUCTURED_OUTPUT_MODELS` 里走的是 force_tool_call 分支）。所以 ② 里把"转发"与"起草"拆成两步演示，机制各自完整。

@@ -31,7 +31,7 @@ DATA_DIR = "shared_data"
 SERVER = "http://127.0.0.1:8000"
 
 # 服务器端 litellm 用 "deepseek/<model>" 路由到 DeepSeek(需服务器环境有 DEEPSEEK_API_KEY)
-GUARDED_MODEL = "deepseek/deepseek-chat"
+GUARDED_MODEL = "deepseek/deepseek-v4-flash"
 
 # 原课程的攻击 prompt:用"续写"套路诱导泄漏 Project Colosseum
 COLOSSEUM_ATTACK = (

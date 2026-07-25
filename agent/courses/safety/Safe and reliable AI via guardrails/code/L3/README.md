@@ -46,7 +46,7 @@ python main.py
 
 (main.py 会先探活服务器;没起服务器则只跑 A 段无护栏对照,并提示如何起服务器。)
 
-## 演示三条路径 & 实测(deepseek-chat + guardrails 0.10.2,2026-07)
+## 演示三条路径 & 实测(deepseek-v4-flash + guardrails 0.10.2,2026-07)
 
 | 路径 | 说明 | 实测 |
 |---|---|---|

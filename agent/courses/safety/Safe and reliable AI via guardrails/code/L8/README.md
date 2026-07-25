@@ -12,7 +12,7 @@
 
 | 环节 | 原课程 | 本地版 |
 |---|---|---|
-| 复现提竞品的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-chat` |
+| 复现提竞品的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-v4-flash` |
 | **竞品 validator** | CheckCompetitorMentions(NER+相似) | **逐字保留** |
 | 服务器 competitor_check | 课程 config.py(hub CompetitorCheck) | config_l8.py(本地 CheckCompetitorMentions) |
 

@@ -39,7 +39,7 @@ cp .env.example .env   # 填 API Key
 
 | 差异点 | notebook | 本项目 | 原因 |
 |---|---|---|---|
-| Chat 模型 | gpt-4o-mini + claude-3-5-sonnet | `.env` 的 `MODEL`（deepseek-chat） | 本地统一走 DeepSeek |
+| Chat 模型 | gpt-4o-mini + claude-3-5-sonnet | `.env` 的 `MODEL`（deepseek-v4-flash） | 本地统一走 DeepSeek |
 | Embedding | `openai:text-embedding-3-small` | fastembed `bge-small-en-v1.5`（384 维，纯 CPU） | DeepSeek 无 embedding API；本地跑不碰 MPS |
 | 结构化输出 | 默认 method | `method="function_calling"` | DeepSeek 不支持 json_schema |
 | HF 下载 | — | 默认 `HF_ENDPOINT=hf-mirror.com` | 国内直连 HuggingFace 卡死 |

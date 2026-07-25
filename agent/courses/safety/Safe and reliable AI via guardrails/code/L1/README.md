@@ -8,7 +8,7 @@ Alfredo's Pizza Cafe 的 RAG 客服机器人,演示**没有 guardrails 时**四�
 
 | 环节 | 原课程 | 本地版 |
 |---|---|---|
-| LLM | OpenAI `gpt-3.5-turbo` | 任意 OpenAI 兼容 API(默认 DeepSeek `deepseek-chat`) |
+| LLM | OpenAI `gpt-3.5-turbo` | 任意 OpenAI 兼容 API(默认 DeepSeek `deepseek-v4-flash`) |
 | embedding | `SentenceTransformer(all-MiniLM-L6-v2)`(torch) | fastembed `bge-small-en-v1.5`(纯 CPU/ONNX,避开 MPS) |
 | 交互 | ipywidgets 聊天控件(需 Jupyter,手动粘贴 prompt) | 纯脚本 `main.py`,四个失效 prompt 自动跑 + 判定 |
 | 依赖 | 293 行钉死重栈(guardrails-ai 0.5.3 + torch 2.3.1 + spacy…) | 4 个包(openai/fastembed/numpy/dotenv) |
@@ -26,7 +26,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## 四种失效模式 & 实测结果(deepseek-chat,2026-07)
+## 四种失效模式 & 实测结果(deepseek-v4-flash,2026-07)
 
 | # | 失效模式 | 攻击 prompt | DeepSeek 实测 |
 |---|---|---|---|

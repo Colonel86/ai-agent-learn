@@ -11,7 +11,7 @@
 
 | 环节 | 原课程 | 本地版 |
 |---|---|---|
-| 复现幻觉的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-chat` |
+| 复现幻觉的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-v4-flash` |
 | RAG 检索 embedding | `SentenceTransformer`(SimpleVectorDB) | fastembed `bge-small-en-v1.5` |
 | **幻觉 validator** | HallucinationValidation | **逐字保留**:all-MiniLM + NLI 模型 + nltk,一行没改 |
 | 交互 | ipywidgets 手动粘贴 | 纯脚本 `main.py` |

@@ -34,7 +34,7 @@ from typing import Literal
 
 load_dotenv()
 
-MODEL = os.getenv("MODEL", "deepseek-chat")
+MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 VERBOSE = False  # --verbose 时打印完整 prompt
 
 # ---------------------------------------------------------------------------

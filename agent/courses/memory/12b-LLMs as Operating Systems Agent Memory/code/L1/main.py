@@ -21,7 +21,7 @@ from openai import OpenAI
 
 load_dotenv()
 
-MODEL = os.getenv("MODEL", "deepseek-chat")
+MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 client = OpenAI()
 
 # DeepSeek v4 系列默认开 thinking，会拖慢演示且与 tool call 交互不稳，显式关掉

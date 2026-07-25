@@ -20,8 +20,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv(find_dotenv())
 
-# 从 .env 读 MODEL，默认 deepseek-chat（兼容 OpenAI / DeepSeek 后端）
-LLM_MODEL = os.getenv("MODEL", "deepseek-chat")
+# 从 .env 读 MODEL，默认 deepseek-v4-flash（兼容 OpenAI / DeepSeek 后端）
+LLM_MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 
 
 # ── 1. 直接调用 OpenAI（无 LangChain）────────────────────────────────────────
@@ -65,7 +65,12 @@ def demo_prompt_template():
     print("2. LangChain ChatPromptTemplate")
     print("=" * 60)
 
-    chat = ChatOpenAI(temperature=0.0, model=LLM_MODEL)
+    chat = ChatOpenAI(
+        temperature=0.0,
+        model=LLM_MODEL,
+        # deepseek-v4-flash 默认开 thinking 模式,影响结构化输出与确定性,统一关闭
+        extra_body={"thinking": {"type": "disabled"}},
+    )
 
     template_string = """Translate the text delimited by triple backticks \
 into a style that is {style}.
@@ -124,7 +129,12 @@ def demo_structured_output():
     print("3. with_structured_output - LLM 输出 → Pydantic 对象")
     print("=" * 60)
 
-    chat = ChatOpenAI(temperature=0.0, model=LLM_MODEL)
+    chat = ChatOpenAI(
+        temperature=0.0,
+        model=LLM_MODEL,
+        # deepseek-v4-flash 默认开 thinking 模式,影响结构化输出与确定性,统一关闭
+        extra_body={"thinking": {"type": "disabled"}},
+    )
 
     customer_review = """\
 This leaf blower is pretty amazing. It has four settings: \

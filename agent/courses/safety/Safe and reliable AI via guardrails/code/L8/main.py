@@ -33,7 +33,7 @@ from helpers import CheckCompetitorMentions, LocalRAG, build_competitor_guard
 
 DATA_DIR = "shared_data"
 SERVER = "http://127.0.0.1:8000"
-GUARDED_MODEL = "deepseek/deepseek-chat"
+GUARDED_MODEL = "deepseek/deepseek-v4-flash"
 COMPETITOR = "Pizza by Alfredo"
 
 SYSTEM_MESSAGE = """You are a customer support chatbot for Alfredo's Pizza Cafe.

@@ -41,7 +41,7 @@ cp .env.example .env
 
 | 差异点 | notebook | 本项目 | 原因 |
 |---|---|---|---|
-| 纠偏方向 | respond→ignore（教它忽略推销） | ignore→respond（教它询价要回） | deepseek-chat 比当年 gpt-4o-mini 强，第一步就识破推销邮件，原叙事失效；反向纠偏才能演示 few-shot 覆盖规则 |
+| 纠偏方向 | respond→ignore（教它忽略推销） | ignore→respond（教它询价要回） | deepseek-v4-flash 比当年 gpt-4o-mini 强，第一步就识破推销邮件，原叙事失效；反向纠偏才能演示 few-shot 覆盖规则 |
 | 泛化变体 | 换发件人 | 同发件人换主题措辞 | 单条示例不足以说服模型跨发件人泛化（这本身是个有价值的边界观察） |
 | temperature | 默认 | 0 | 分类结果可复现 |
 | 模型/embedding/结构化输出 | 同 L3 差异表 | 同 L3 | 同 L3 |

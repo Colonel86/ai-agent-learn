@@ -47,7 +47,7 @@ if not hasattr(_arxiv.Search, "results"):
         self, offset=offset
     )
 
-MODEL = os.getenv("MODEL", "deepseek-chat")
+MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 PG_DSN = os.getenv("PG_DSN", "postgresql://postgres:postgres@127.0.0.1:5433/postgres")
 SQLALCHEMY_URL = PG_DSN.replace("postgresql://", "postgresql+psycopg://")
 

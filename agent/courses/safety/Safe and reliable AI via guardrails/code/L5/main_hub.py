@@ -53,7 +53,7 @@ def main() -> None:
     guard = Guard().use(
         ProvenanceLLM(
             validation_method="sentence",
-            llm_callable="deepseek/deepseek-chat",
+            llm_callable="deepseek/deepseek-v4-flash",
             top_k=3,
             on_fail="exception",
         )

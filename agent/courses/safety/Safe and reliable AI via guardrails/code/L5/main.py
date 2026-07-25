@@ -37,7 +37,7 @@ from helpers import HallucinationValidation, LocalRAG, ensure_punkt
 
 DATA_DIR = "shared_data"
 SERVER = "http://127.0.0.1:8000"
-GUARDED_MODEL = "deepseek/deepseek-chat"
+GUARDED_MODEL = "deepseek/deepseek-v4-flash"
 
 SYSTEM_MESSAGE = """You are a customer support chatbot for Alfredo's Pizza Cafe. \
 Your responses should be based solely on the provided information.

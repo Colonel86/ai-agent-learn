@@ -37,7 +37,7 @@ from letta_client import Letta
 # chat 走 Letta 的 openai 兼容路径指向 DeepSeek（原生 function calling，
 # 不用 letta 0.6.50 里那条靠裸 JSON 解析的 deepseek 专用路径——很不稳）
 LLM_CONFIG = {
-    "model": os.getenv("LETTA_MODEL", "deepseek-chat"),
+    "model": os.getenv("LETTA_MODEL", "deepseek-v4-flash"),
     "model_endpoint_type": "openai",
     "model_endpoint": os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),
     "context_window": 64000,
@@ -177,7 +177,7 @@ eval_persona = (
     "Reject bad candidates with your reject tool. "
     f"Send strong candidates to agent ID {outreach_agent.id}. "
     "You must either reject or send candidates to the other agent. "
-    # 比课程 persona 多加一句：deepseek-chat 会识破 Tony Stark 是虚构人名
+    # 比课程 persona 多加一句：deepseek-v4-flash 会识破 Tony Stark 是虚构人名
     # 而当成假简历拒掉，需要声明名字只是测试占位符、只看技能
     "Candidate names are anonymized placeholders from our ATS; "
     "ignore the name entirely and judge strictly on skills. "

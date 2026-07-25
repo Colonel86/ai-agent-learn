@@ -38,7 +38,7 @@ from langmem import (
 from prompts import triage_user_prompt
 from schemas import Router, State
 
-MODEL = os.getenv("MODEL", "deepseek-chat")
+MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 USER_ID = "demo"
 
 profile = {

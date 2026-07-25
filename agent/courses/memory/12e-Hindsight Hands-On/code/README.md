@@ -26,7 +26,7 @@ cp .env.example .env   # 填 DEEPSEEK_API_KEY
 3. pg0 数据默认落在 `~/.pg0`;重置实验删 bank 即可,不用动数据目录;
 4. `HINDSIGHT_API_LLM_MAX_CONCURRENT` 默认 32,压到 8 防 DeepSeek 限流。
 
-## 实跑发现(2026-07,hindsight 0.8.4 + deepseek-chat)
+## 实跑发现(2026-07,hindsight 0.8.4 + deepseek-v4-flash)
 
 - **HF 下载被阻断的绕行**(本机 HF CDN 连 SSL 都握不上,镜像又对该 repo 308 回源):
   ① embedding 改用 `EMBEDDINGS_PROVIDER=onnx` 指向本地模型文件(`code/models/fast-bge-small-zh-v1.5`,复用 12c/12d 已下载的 fastembed 产物,BGE 系记得 POOLING=cls + 前缀留空);

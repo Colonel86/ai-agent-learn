@@ -30,7 +30,7 @@ cp .env.example .env   # 填 DEEPSEEK_API_KEY
 3. **Reranker**:默认 `OpenAIRerankerClient` 依赖 OpenAI 专属 `logit_bias` token ID(6432/7983),DeepSeek 接不了——
    L1 用 `common.py` 里的余弦相似度极简 reranker 替代,L3 换正经方案。
 
-## L1 实跑发现(2026-07,graphiti-core 0.29.2 + deepseek-chat)
+## L1 实跑发现(2026-07,graphiti-core 0.29.2 + deepseek-v4-flash)
 
 - **端到端可用**:json_object 模式下 DeepSeek 的实体/关系/时序抽取全部正常,未触发结构化输出问题;
 - **摄入耗时**:单个 episode 约 7s(mem0 的 add 约 1–2s)——图谱路线写入贵,实测坐实;

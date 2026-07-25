@@ -52,7 +52,7 @@ if not hasattr(_arxiv.Search, "results"):
         self, offset=offset
     )
 
-MODEL = os.getenv("MODEL", "deepseek-chat")
+MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 DSN = os.getenv("ORACLE_DSN", "127.0.0.1:1521/FREEPDB1")
 
 

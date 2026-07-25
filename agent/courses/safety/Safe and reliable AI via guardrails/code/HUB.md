@@ -85,7 +85,7 @@ cd L5 && ../.venv-hub/bin/python main_hub.py    # ProvenanceLLM(需 .env 里 DEE
 | L7 | DetectPII | ✅ 输入 EXCEPTION 拦、输出 FIX 打码 `<PERSON>/<PHONE_NUMBER>/<EMAIL_ADDRESS>` | 底层 Presidio,需 spacy `en_core_web_lg` |
 | L8 | CompetitorCheck | ⚠️ 能跑,但**漏了 "Pizza by Alfredo"** | NER(`en_core_web_trf`)先抽实体再比,NER 没识别到该名字就漏;**自建版有精确匹配兜底反而更稳** |
 | L6 | RestrictToTopic | ✅ 披萨问题通过、福特皮卡拦 `Invalid topics: ['automobiles']` | 0.10.x 默认要 LLM;设 `disable_llm=True` 只用本地 zero-shot(离线、免凭证) |
-| L5 | ProvenanceLLM | ✅ 有出处通过、编造句被拦 | 用 LLM 当裁判,`llm_callable="deepseek/deepseek-chat"` 接 DeepSeek;需联网下 embedding 模型 |
+| L5 | ProvenanceLLM | ✅ 有出处通过、编造句被拦 | 用 LLM 当裁判,`llm_callable="deepseek/deepseek-v4-flash"` 接 DeepSeek;需联网下 embedding 模型 |
 
 ## 对架构师的结论(hub vs 自建)
 

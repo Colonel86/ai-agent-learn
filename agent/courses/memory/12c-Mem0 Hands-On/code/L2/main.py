@@ -48,7 +48,7 @@ HERE = Path(__file__).resolve().parent
 CONFIG = {
     "llm": {
         "provider": "deepseek",
-        "config": {"model": "deepseek-chat", "temperature": 0},
+        "config": {"model": "deepseek-v4-flash", "temperature": 0},
     },
     "embedder": {
         "provider": "fastembed",

@@ -37,7 +37,7 @@ from helpers import LocalRAG, PIIDetector, anonymize_pii, build_pii_guard, detec
 
 DATA_DIR = "shared_data"
 SERVER = "http://127.0.0.1:8000"
-GUARDED_MODEL = "deepseek/deepseek-chat"
+GUARDED_MODEL = "deepseek/deepseek-v4-flash"
 
 SYSTEM_MESSAGE = """You are a customer support chatbot for Alfredo's Pizza Cafe. \
 Your responses should be based solely on the provided information.
@@ -66,7 +66,7 @@ def server_up() -> bool:
 def main() -> None:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"),
                     base_url=os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"))
-    model = os.getenv("MODEL", "deepseek-chat")
+    model = os.getenv("MODEL", "deepseek-v4-flash")
 
     # 1) 复现 PII 留存
     section("1) 复现 PII 留存 (RAG,直连 DeepSeek):姓名+电话被存进后端历史")

@@ -9,7 +9,7 @@ general:
 llms:
   climate_llm:
     _type: openai                        # DeepSeek 官方 API 是 OpenAI 兼容协议
-    model_name: deepseek-v4-flash        # 旧名 deepseek-chat 2026-07-24 弃用;pro 是重推理型,不适合 react_agent
+    model_name: deepseek-v4-flash        # 旧名 deepseek-v4-flash 2026-07-24 弃用;pro 是重推理型,不适合 react_agent
     base_url: https://api.deepseek.com
     api_key: ${DEEPSEEK_API_KEY}
     temperature: 0.0

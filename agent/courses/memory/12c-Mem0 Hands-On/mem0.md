@@ -17,7 +17,7 @@
 
 > 👉 这个决策步骤是它区别于朴素 RAG 的关键宣传点——朴素 RAG 只会往里堆。
 
-### ✅ 实测(L2,mem0ai 2.0.12 + deepseek-chat,temperature=0):宣传与现实的落差
+### ✅ 实测(L2,mem0ai 2.0.12 + deepseek-v4-flash,temperature=0):宣传与现实的落差
 
 | 实验组 | 结果 |
 |---|---|

@@ -47,5 +47,5 @@ cp .env.example .env   # 填入你的 API Key
 | chat/embedding/服务 | openai handle + 课程平台 server | DeepSeek `llm_config` + 本地 fastembed + `run_server.sh` | 同 L3，见 L3 README |
 | block_id | 手工从输出里复制粘贴 | 代码里直接取 `blocks[0].id` | 脚本化 |
 | 消息接口 | `create_stream` 流式 | `create` 非流式 | 与 L3 一致，输出更稳定 |
-| task_agent 行为 | 视频里第二条消息才开始清队列 | deepseek-chat 常在布置任务的同一轮就 push 完立刻连环 pop 清空 | 系统提示写了"最高优先级是清空队列"，deepseek-chat 执行得比 gpt-4o-mini 更激进；第二条 "Complete your tasks" 因此可能直接给结果 |
+| task_agent 行为 | 视频里第二条消息才开始清队列 | deepseek-v4-flash 常在布置任务的同一轮就 push 完立刻连环 pop 清空 | 系统提示写了"最高优先级是清空队列"，deepseek-v4-flash 执行得比 gpt-4o-mini 更激进；第二条 "Complete your tasks" 因此可能直接给结果 |
 | requirements 安装 | 一步 pip install | 必须分两步 | letta 0.6.50 与 typer 0.12.5 的声明冲突，见 requirements.txt 注释 |

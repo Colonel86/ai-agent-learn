@@ -65,7 +65,7 @@ def main(bank: str) -> None:
     server = HindsightServer(
         llm_provider="deepseek",
         llm_api_key=os.environ["DEEPSEEK_API_KEY"],
-        llm_model="deepseek-chat",
+        llm_model="deepseek-v4-flash",
     )
     server.start(timeout=600)
     try:

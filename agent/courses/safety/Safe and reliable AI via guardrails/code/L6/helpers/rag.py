@@ -54,7 +54,7 @@ class LocalRAG:
     def __init__(self, system_message: str, data_dir: str,
                  client: OpenAI | None = None, model: str | None = None):
         self.system_message = system_message
-        self.model = model or os.getenv("MODEL", "deepseek-chat")
+        self.model = model or os.getenv("MODEL", "deepseek-v4-flash")
         # client 可注入:直连 DeepSeek,或指向 guardrails 服务器的 guarded client
         self._client = client or OpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),

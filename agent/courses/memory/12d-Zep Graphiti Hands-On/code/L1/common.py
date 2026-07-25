@@ -91,8 +91,8 @@ def make_llm_client() -> OpenAIGenericClient:
         config=LLMConfig(
             api_key=os.environ["DEEPSEEK_API_KEY"],
             base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1"),
-            model="deepseek-chat",
-            small_model="deepseek-chat",  # graphiti 的简单任务走 small_model,一并指到 deepseek
+            model="deepseek-v4-flash",
+            small_model="deepseek-v4-flash",  # graphiti 的简单任务走 small_model,一并指到 deepseek
             temperature=0,
         ),
         structured_output_mode="json_object",

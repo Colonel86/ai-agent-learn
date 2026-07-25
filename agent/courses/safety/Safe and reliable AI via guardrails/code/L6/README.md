@@ -12,7 +12,7 @@
 
 | 环节 | 原课程 | 本地版 |
 |---|---|---|
-| 复现跑题的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-chat` |
+| 复现跑题的 RAG LLM | OpenAI `gpt-3.5-turbo` | DeepSeek `deepseek-v4-flash` |
 | 性能对比里的 LLM | `gpt-4o-mini` + `beta.chat.completions.parse`(结构化输出) | DeepSeek 普通 completion + 防御式 JSON 解析(DeepSeek 不支持 beta.parse,实测 400) |
 | **话题分类器 / validator** | zero-shot `bart-large-mnli` + ConstrainTopic | **逐字保留** |
 | 服务器 guard | 课程 `local_config.py`(ConstrainTopic) | 同思路 `config_l6.py` |

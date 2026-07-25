@@ -49,7 +49,7 @@ CONFIG = {
     "llm": {  # 抽取 + 消解用的 LLM(每次 add 烧 1–2 次调用的就是它)
         "provider": "deepseek",
         "config": {
-            "model": "deepseek-chat",
+            "model": "deepseek-v4-flash",
             "temperature": 0,  # 消解决策要可复现
         },
     },

@@ -30,7 +30,7 @@ AGENT_NAME = "simple_agent"
 # chat 走 Letta 的 openai 兼容路径指向 DeepSeek（原生 function calling，
 # 不用 letta 0.6.50 里那条靠裸 JSON 解析的 deepseek 专用路径——很不稳）
 LLM_CONFIG = {
-    "model": os.getenv("LETTA_MODEL", "deepseek-chat"),
+    "model": os.getenv("LETTA_MODEL", "deepseek-v4-flash"),
     "model_endpoint_type": "openai",
     "model_endpoint": os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),
     "context_window": 64000,

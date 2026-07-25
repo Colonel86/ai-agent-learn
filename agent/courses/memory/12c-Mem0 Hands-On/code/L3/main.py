@@ -44,7 +44,7 @@ HERE = Path(__file__).resolve().parent
 USER = "l3"
 
 BASE_CONFIG = {
-    "llm": {"provider": "deepseek", "config": {"model": "deepseek-chat", "temperature": 0}},
+    "llm": {"provider": "deepseek", "config": {"model": "deepseek-v4-flash", "temperature": 0}},
     "embedder": {"provider": "fastembed", "config": {"model": "BAAI/bge-small-zh-v1.5"}},
     "vector_store": {
         "provider": "chroma",
@@ -144,7 +144,7 @@ def main() -> None:
         rerank_config = dict(BASE_CONFIG)
         rerank_config["reranker"] = {
             "provider": "llm_reranker",
-            "config": {"provider": "deepseek", "model": "deepseek-chat",
+            "config": {"provider": "deepseek", "model": "deepseek-v4-flash",
                        "api_key": os.environ["DEEPSEEK_API_KEY"]},
         }
         m2 = Memory.from_config(rerank_config)

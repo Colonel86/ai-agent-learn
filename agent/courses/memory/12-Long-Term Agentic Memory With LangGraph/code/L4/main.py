@@ -36,7 +36,7 @@ from langmem import create_manage_memory_tool, create_search_memory_tool
 from prompts import triage_user_prompt
 from schemas import Router, State
 
-MODEL = os.getenv("MODEL", "deepseek-chat")
+MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 
 profile = {
     "name": "John",

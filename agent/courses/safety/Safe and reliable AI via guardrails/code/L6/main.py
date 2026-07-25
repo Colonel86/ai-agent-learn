@@ -38,7 +38,7 @@ from helpers import LocalRAG, build_topic_guard, detect_topics, get_classifier
 
 DATA_DIR = "shared_data"
 SERVER = "http://127.0.0.1:8000"
-GUARDED_MODEL = "deepseek/deepseek-chat"
+GUARDED_MODEL = "deepseek/deepseek-v4-flash"
 N_ITERS = 5  # 课程用 10 次;这里 5 次足以看出耗时量级差异
 
 SYSTEM_MESSAGE = """You are a customer support chatbot for Alfredo's Pizza Cafe. \
@@ -80,7 +80,7 @@ def server_up() -> bool:
 def main() -> None:
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"),
                     base_url=os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"))
-    model = os.getenv("MODEL", "deepseek-chat")
+    model = os.getenv("MODEL", "deepseek-v4-flash")
 
     # ------------------------------------------------------------------
     # 1) 复现跑题

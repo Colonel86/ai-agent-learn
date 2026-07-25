@@ -62,7 +62,7 @@ class LocalRAG:
 
     def __init__(self, system_message: str, data_dir: str, model: str | None = None):
         self.system_message = system_message
-        self.model = model or os.getenv("MODEL", "deepseek-chat")
+        self.model = model or os.getenv("MODEL", "deepseek-v4-flash")
         self._client = OpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url=os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),

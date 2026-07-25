@@ -40,7 +40,7 @@ cp .env.example .env   # 填入你的 API Key
 
 | 差异点 | notebook | 本项目 | 原因 |
 |---|---|---|---|
-| 模型 | `openai:gpt-4o(-mini)` | `.env` 中 `MODEL`（默认 deepseek-chat） | 本地用 DeepSeek 的 OpenAI 兼容 API |
+| 模型 | `openai:gpt-4o(-mini)` | `.env` 中 `MODEL`（默认 deepseek-v4-flash） | 本地用 DeepSeek 的 OpenAI 兼容 API |
 | 结构化输出 | 默认 method | `method="function_calling"` | DeepSeek 不支持 `json_schema` response_format |
 | 入口 | 逐 cell 执行 | `main.py` CLI | 可演示 |
 | 语言 | 全英文 | prompt/示例邮件/人物全中文化（张伟/李娜） | 中文演示更直观；分类枚举 `ignore/notify/respond` 保留英文——它是 function calling 的 schema 约束和代码分支依据 |
