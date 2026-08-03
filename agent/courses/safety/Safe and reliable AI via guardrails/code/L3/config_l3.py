@@ -13,6 +13,10 @@ L3 这一课的示例代码只用到 colosseum guard(自定义 ColosseumDetector
   guardrails-api start --config config_l3.py --env server.env --port 8000
 """
 
+import os
+
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")  # transformers.utils.metrics 会无条件注册 localhost:4318 OTLP exporter,没起 collector 就刷警告
+
 from typing import Any, Dict
 
 from guardrails import Guard, OnFailAction

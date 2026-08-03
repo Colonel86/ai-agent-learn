@@ -67,7 +67,11 @@ class LocalRAG:
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url=os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),
         )
-        self._embedder = TextEmbedding(EMBED_MODEL, cache_dir=os.getenv("FASTEMBED_CACHE_PATH"))
+        # 默认复用 ~/.cache/fastembed(其他课已下载过 bge-small),否则 fastembed 落到临时目录后重新联网下载
+        self._embedder = TextEmbedding(
+            EMBED_MODEL,
+            cache_dir=os.getenv("FASTEMBED_CACHE_PATH", os.path.expanduser("~/.cache/fastembed")),
+        )
 
         self.strings = chunk_markdown_files(data_dir)
         self.embeddings = self._embed(self.strings)

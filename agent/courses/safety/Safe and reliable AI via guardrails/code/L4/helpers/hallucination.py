@@ -31,7 +31,8 @@ from guardrails.validator_base import (
 
 def ensure_punkt() -> None:
     """确保 nltk 分句数据可用(课程假设 notebook 环境已装;这里主动补一次)。"""
-    for pkg in ("punkt_tab", "punkt"):
+    # nltk>=3.9 只需 punkt_tab;旧 punkt 在本机网络下必下载失败,不再尝试
+    for pkg in ("punkt_tab",):
         try:
             nltk.data.find(f"tokenizers/{pkg}")
             return

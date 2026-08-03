@@ -25,12 +25,15 @@ import warnings
 warnings.filterwarnings("ignore")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+# transformers.utils.metrics 在 import 时无条件注册指向 localhost:4318 的 OTLP exporter,
+# 没起 collector 就会刷 "Transient error ... 4318" 警告;必须在 import transformers 前禁用
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
 
 import json
 
 import httpx
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import NotFoundError, OpenAI
 
 load_dotenv()
 
@@ -177,6 +180,10 @@ def main() -> None:
         )
         print(f"[机器人] {resp.choices[0].message.content[:300]}")
         print("\n→ 未拦截(话题分类未越过阈值)。")
+    except NotFoundError as e:
+        # 8000 口挂的是别的 config(如 L5 的 hallucination_guard),topic_guard 不存在
+        print(f"[⚠️ 服务器上没有 topic_guard] {str(e)[:150]}")
+        print("\n→ 当前 8000 口的服务器不是本课的:请停掉后用 config_l6.py 重启(见上方命令)。")
     except Exception as e:
         print(f"[被 topic_guard 拦截] {type(e).__name__}: {str(e)[:200]}")
         print("\n→ 🛡️ 服务器端话题护栏在进 LLM 之前挡下了这条跑题输入。")

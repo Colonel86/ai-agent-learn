@@ -16,11 +16,14 @@
 """
 
 import os
+import logging
 import warnings
 
 warnings.filterwarnings("ignore")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("OTEL_SDK_DISABLED", "true")  # 关掉 guardrails 0.10.x 的 OTLP 遥测噪音
+# AnalyzerEngine 初始化会把 es/it/pl 语种 recognizer 从 en-only registry 剔除并逐条刷 WARNING,无害噪音
+logging.getLogger("presidio-analyzer").setLevel(logging.ERROR)
 
 from dotenv import load_dotenv
 

@@ -17,7 +17,10 @@
   python main.py
 """
 
+import os
 import re
+
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")  # transformers.utils.metrics 会无条件注册 localhost:4318 OTLP exporter,没起 collector 就刷警告
 
 from dotenv import load_dotenv
 

@@ -24,6 +24,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")  # transformers.utils.metrics 会无条件注册 localhost:4318 OTLP exporter,没起 collector 就刷警告
 
 import httpx
 from dotenv import load_dotenv

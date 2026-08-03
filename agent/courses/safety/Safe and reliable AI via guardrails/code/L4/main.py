@@ -29,6 +29,9 @@ warnings.filterwarnings("ignore")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 # 国内下载 HF 模型可改镜像;默认直连(镜像偶发不稳时也能回退)
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+# transformers.utils.metrics 在 import 时无条件注册指向 localhost:4318 的 OTLP exporter,
+# 没起 collector 就会刷 "Transient error ... 4318" 警告;必须在 import transformers 前禁用
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
 
 from dotenv import load_dotenv
 

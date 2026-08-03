@@ -29,6 +29,9 @@ from helpers.hallucination import HallucinationValidation, ensure_punkt
 from helpers.rag import chunk_markdown_files
 
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+# transformers.utils.metrics 在 import 时无条件注册指向 localhost:4318 的 OTLP exporter,
+# 没起 collector 就会刷 "Transient error ... 4318" 警告;必须在 import transformers 前禁用
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
 
 ensure_punkt()
 
