@@ -30,3 +30,8 @@ node_modules/
 
 # Python build artifacts
 *.egg-info/
+
+# Phoenix local server data (eval course 21)
+.phoenix/
+.phoenix-server.log
+chart_eval_tmp.png

@@ -1,0 +1,18 @@
+# 本地化栈 (2026-08 验证于 Python 3.12, uv venv)
+# 课程原版: arize-phoenix 7.0 / openai 1.54 / phoenix.evals llm_classify (0.x)
+# 全量升级到最新稳定版, API 迁移见各课 main.py 注释
+
+arize-phoenix==19.13.0            # 本地 server: python -m phoenix.server.main serve
+arize-phoenix-client==2.13.0      # Client().spans/datasets/experiments (取代 px.Client 旧接口)
+arize-phoenix-evals==3.3.0        # ClassificationEvaluator/evaluate_dataframe (取代 llm_classify)
+arize-phoenix-otel==0.16.1
+openinference-instrumentation-openai==0.1.53
+
+openai==2.52.0                    # DeepSeek 兼容 API
+duckdb==1.5.5
+pandas==3.0.5
+pyarrow==25.0.0
+pydantic==2.13.4
+matplotlib==3.11.1
+python-dotenv==1.2.2
+tqdm==4.70.0
