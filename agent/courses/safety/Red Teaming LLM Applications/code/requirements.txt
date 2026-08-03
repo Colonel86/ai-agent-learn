@@ -1,0 +1,26 @@
+# Red Teaming LLM Applications —— 本地化依赖(全部为 2026-07-31 时点的最新稳定版)
+#
+# 对照课程原版 L1/requirements.txt(2024 年初):
+#   giskard[llm]==2.7.4  →  2.19.2
+#   llama-index==0.9.44  →  llama-index-core 0.14.23(0.10 起拆包,顶层命名空间搬到 llama_index.core)
+#   openai==1.5.0        →  2.51.0
+#   pandas==2.1.4        →  3.0.5
+#   python-dotenv==1.0.0 →  1.2.2
+#
+# Python 版本:必须 3.12。giskard 和 llama-index-embeddings-fastembed 都声明 <3.13。
+#
+# 建环境:
+#   uv venv --python 3.12 .venv
+#   uv pip install --python .venv/bin/python -r requirements.txt
+
+llama-index-core==0.14.23
+llama-index-llms-openai-like==0.7.2
+llama-index-embeddings-fastembed==0.6.0
+giskard[llm]==2.19.2
+openai==2.51.0
+pandas==3.0.5
+python-dotenv==1.2.2
+
+# llama-index-embeddings-fastembed 0.6.0 的 metadata 漏声明了 fastembed 本体
+# (它只写了 llama-index-core 依赖),不显式装就会 ImportError,所以在这里补上。
+fastembed==0.8.0

@@ -1,0 +1,5 @@
+.venv/
+.env
+__pycache__/
+helpers/data/zb_index_local/
+giskard_scan*.html
