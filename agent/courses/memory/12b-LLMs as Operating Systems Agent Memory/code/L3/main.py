@@ -21,18 +21,24 @@ os.environ.setdefault("no_proxy", "localhost,127.0.0.1")
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# .env 在 code/ 根目录（全课程共享）
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
 
 from letta_client import Letta
 
 AGENT_NAME = "simple_agent"
 
-# chat 走 Letta 的 openai 兼容路径指向 DeepSeek（原生 function calling，
-# 不用 letta 0.6.50 里那条靠裸 JSON 解析的 deepseek 专用路径——很不稳）
+# letta 0.16 默认建 letta_v1_agent，不带课程要讲的 MemGPT 记忆工具循环，
+# 必须显式选经典 memgpt_agent
+AGENT_TYPE = "memgpt_agent"
+
+# chat 走 openai 兼容路径指向本地网关（gateway.py :8003），由网关转发 DeepSeek
+# 并注入 thinking=disabled：letta 对 memgpt agent 固定发 tool_choice=required，
+# DeepSeek v4 的 thinking 模式不支持（400），关 thinking 后合法
 LLM_CONFIG = {
     "model": os.getenv("LETTA_MODEL", "deepseek-v4-flash"),
     "model_endpoint_type": "openai",
-    "model_endpoint": os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),
+    "model_endpoint": "http://localhost:8003/v1",
     "context_window": 64000,
     "put_inner_thoughts_in_kwargs": True,
 }
@@ -80,12 +86,16 @@ for a in client.agents.list():
 
 agent_state = client.agents.create(
     name=AGENT_NAME,
+    agent_type=AGENT_TYPE,
     memory_blocks=[
         {"label": "human", "value": "My name is Charles", "limit": 10000},
         {"label": "persona", "value": "You are a helpful assistant and you always use emojis"},
     ],
     llm_config=LLM_CONFIG,
     embedding_config=EMBEDDING_CONFIG,
+    # 0.16 的 memgpt_agent 默认工具集换成了文件式 memory 工具，archival 两件套
+    # 不再自带；课程 ⑤ 要演示 archival_memory_insert/search，显式挂上
+    tools=["archival_memory_insert", "archival_memory_search"],
 )
 print(f"agent id: {agent_state.id}")
 print(f"model: {agent_state.llm_config.model} @ {agent_state.llm_config.model_endpoint}")
@@ -153,7 +163,7 @@ for message in response.messages:
 print("\n>>> 显式插入 passage: \"Bob loves boston terriers\"")
 client.agents.passages.create(agent_id=agent_state.id, text="Bob loves boston terriers")
 
-passages = client.agents.passages.list(agent_id=agent_state.id)
+passages = list(client.agents.passages.list(agent_id=agent_state.id))
 print(f"\narchival 现有 {len(passages)} 条 passage:")
 for p in passages:
     print(f"  - {p.text}")

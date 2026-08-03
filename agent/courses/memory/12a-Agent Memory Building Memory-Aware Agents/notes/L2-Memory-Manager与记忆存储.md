@@ -104,10 +104,11 @@ embedding_model = HuggingFaceEmbeddings(
 
 ## 7. 记忆感知智能体的四要素（本课定义）
 
-一个"memory-aware agent"需要：
+一个"memory-aware agent"（内存感知代理）需要：
 1. **系统提示层面的记忆感知**——system prompt 告诉 LLM 它有哪些记忆
-2. **记忆操作作为工具**——LLM 能主动调用读写
-3. **推理**——基于记忆做决策
-4. **上下文窗口分区（partitioning）**——不同记忆类型占不同段落
+2. **上下文窗口分区（partitioning）**——不同记忆类型占不同段落
+3. **记忆操作作为工具**——LLM 能主动调用读写
+4. **推理**——基于记忆做决策
+
 
 第 4 点在 L5 的 `AGENT_SYSTEM_PROMPT` 里体现得淋漓尽致（用 markdown 二级标题切分记忆段）。

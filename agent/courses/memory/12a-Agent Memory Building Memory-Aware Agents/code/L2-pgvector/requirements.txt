@@ -1,8 +1,0 @@
-# pgvector 版 L2 demo 依赖（对照 ../L2：去掉 oracledb/langchain-oracledb，换成 psycopg/langchain-postgres）
-psycopg[binary]
-langchain-postgres
-langchain-community
-langchain-core
-fastembed
-python-dotenv
-datasets

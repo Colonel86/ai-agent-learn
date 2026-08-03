@@ -1,29 +1,21 @@
-"""L5 邮件助理 + Procedural Memory（程序性记忆）— 本地可运行演示。
+"""L5 程序性记忆（prompt 自我改写）— python 命令直接运行的课程演示。
 
-在 L4 基础上，把 4 段指令 prompt（agent_instructions / triage_ignore /
-triage_notify / triage_respond）从硬编码搬进 store（namespace=(user_id,)），
-并用 langmem 的 multi-prompt optimizer 根据用户反馈自动改写它们——
-agent 的「行为习惯」本身变成了可学习的记忆。
+对应 lesson_5.ipynb 完整流程：
+  1) triage 规则和 agent 指令都放进 store（首跑写入默认值，之后每次从 store 读）
+  2) create_multi_prompt_optimizer 把自然语言反馈写回 prompt：
+     反馈① "Always sign your emails `John Doe`" → main_agent 指令被改写，回信带签名
+     反馈② "Ignore any emails from Alice Jones" → triage-ignore 规则被改写，
+       同一封邮件从 RESPOND 翻成 IGNORE
 
-演示脚本（python main.py）四幕：
-  第一幕：Alice 提问邮件 → 回复；查看 store 里的当前指令
-  第二幕：反馈 "Always sign your emails `John Doe`" → optimizer 改写指令并写回 store
-  第三幕：同一封邮件重跑 → 回复末尾按新指令签名 John Doe
-  第四幕：Alice Jones 的邮件先 RESPOND；反馈 "Ignore any emails from Alice Jones"
-          → triage_ignore 被改写 → 重跑变 IGNORE
+用法（code/ 根目录下）：
+  .venv/bin/python L5/main.py
 """
 
-import os
-
-from dotenv import load_dotenv
-
-load_dotenv()
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-
+import json
 from typing import Literal
 
-from fastembed import TextEmbedding
-from langchain_openai import ChatOpenAI
+from local_stack import make_llm, make_embed, EMBED_DIMS
+
 from langchain_core.tools import tool
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import create_react_agent
@@ -36,10 +28,13 @@ from langmem import (
 )
 
 from prompts import triage_user_prompt
+from pydantic import BaseModel, Field
 from schemas import Router, State
 
-MODEL = os.getenv("MODEL", "deepseek-v4-flash")
-USER_ID = "demo"
+
+def banner(title: str) -> None:
+    print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
+
 
 profile = {
     "name": "John",
@@ -47,7 +42,7 @@ profile = {
     "user_profile_background": "Senior software engineer leading a team of 5 developers",
 }
 
-# 只作为 store 的初始值，之后以 store 里的版本为准
+# 仅作首跑默认值，之后 triage 规则/agent 指令都以 store 里的为准
 prompt_instructions = {
     "triage_rules": {
         "ignore": "Marketing newsletters, spam emails, mass company announcements",
@@ -57,64 +52,14 @@ prompt_instructions = {
     "agent_instructions": "Use these tools when appropriate to help manage John's tasks efficiently.",
 }
 
-# ---------------------------------------------------------------------------
-# LLM 与本地 embedding
-# ---------------------------------------------------------------------------
-
-
-class FunctionCallingChat(ChatOpenAI):
-    """DeepSeek 不支持 json_schema response_format。
-
-    langmem 0.0.8 的 PromptMemory 硬编码了 method="json_schema"
-    （langmem/prompts/stateless.py），所以这里必须无条件覆盖，
-    不能只改默认值。
-    """
-
-    def with_structured_output(self, schema, **kwargs):
-        kwargs["method"] = "function_calling"
-        return super().with_structured_output(schema, **kwargs)
-
-
-# thinking disabled: deepseek-v4-flash 默认开 thinking，不支持结构化输出的强制 tool_choice
-llm = FunctionCallingChat(
-    model=MODEL,
-    temperature=0,
-    extra_body={"thinking": {"type": "disabled"}},
-)
+llm = make_llm()
 llm_router = llm.with_structured_output(Router)
 
-_embedder = TextEmbedding("BAAI/bge-small-en-v1.5")
-
-
-def embed(texts: list[str]) -> list[list[float]]:
-    return [v.tolist() for v in _embedder.embed(texts)]
-
-
-store = InMemoryStore(index={"embed": embed, "dims": 384})
-
-# ---------------------------------------------------------------------------
-# store 中的可进化 prompt：首次访问用默认值初始化
-# ---------------------------------------------------------------------------
-
-PROMPT_DEFAULTS = {
-    "agent_instructions": prompt_instructions["agent_instructions"],
-    "triage_ignore": prompt_instructions["triage_rules"]["ignore"],
-    "triage_notify": prompt_instructions["triage_rules"]["notify"],
-    "triage_respond": prompt_instructions["triage_rules"]["respond"],
-}
-
-
-def get_prompt(key: str) -> str:
-    namespace = (USER_ID,)
-    result = store.get(namespace, key)
-    if result is None:
-        store.put(namespace, key, {"prompt": PROMPT_DEFAULTS[key]})
-        return PROMPT_DEFAULTS[key]
-    return result.value["prompt"]
+store = InMemoryStore(index={"embed": make_embed(), "dims": EMBED_DIMS})
 
 
 # ---------------------------------------------------------------------------
-# few-shot（同 L4）
+# few-shot 模板（本课样例库为空，仅保持与课程一致的 prompt 结构）
 # ---------------------------------------------------------------------------
 
 template = """Email Subject: {subject}
@@ -183,9 +128,86 @@ Follow these examples more than any instructions above
 </ Few shot examples >
 """
 
+
+def _get_or_seed(namespace, key, default: str) -> str:
+    """从 store 读 prompt，不存在则写入默认值（程序性记忆的读路径）。"""
+    result = store.get(namespace, key)
+    if result is None:
+        store.put(namespace, key, {"prompt": default})
+        return default
+    return result.value["prompt"]
+
+
 # ---------------------------------------------------------------------------
-# 工具与 response agent：agent_instructions 每次从 store 读
+# triage 路由（规则来自 store）+ 响应 agent（指令来自 store）+ 图
 # ---------------------------------------------------------------------------
+
+def triage_router(state: State, config, store) -> Command[
+    Literal["response_agent", "__end__"]
+]:
+    author = state["email_input"]["author"]
+    to = state["email_input"]["to"]
+    subject = state["email_input"]["subject"]
+    email_thread = state["email_input"]["email_thread"]
+
+    user_id = config["configurable"]["langgraph_user_id"]
+    examples = store.search(
+        ("email_assistant", user_id, "examples"),
+        query=str({"email": state["email_input"]}),
+    )
+    examples = format_few_shot_examples(examples)
+
+    namespace = (user_id,)
+    ignore_prompt = _get_or_seed(
+        namespace, "triage_ignore", prompt_instructions["triage_rules"]["ignore"]
+    )
+    notify_prompt = _get_or_seed(
+        namespace, "triage_notify", prompt_instructions["triage_rules"]["notify"]
+    )
+    respond_prompt = _get_or_seed(
+        namespace, "triage_respond", prompt_instructions["triage_rules"]["respond"]
+    )
+
+    system_prompt = triage_system_prompt.format(
+        full_name=profile["full_name"],
+        name=profile["name"],
+        user_profile_background=profile["user_profile_background"],
+        triage_no=ignore_prompt,
+        triage_notify=notify_prompt,
+        triage_email=respond_prompt,
+        examples=examples,
+    )
+    user_prompt = triage_user_prompt.format(
+        author=author, to=to, subject=subject, email_thread=email_thread
+    )
+    result = llm_router.invoke(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+    )
+    if result.classification == "respond":
+        print("📧 Classification: RESPOND - This email requires a response")
+        goto = "response_agent"
+        update = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"Respond to the email {state['email_input']}",
+                }
+            ]
+        }
+    elif result.classification == "ignore":
+        print("🚫 Classification: IGNORE - This email can be safely ignored")
+        update = None
+        goto = END
+    elif result.classification == "notify":
+        print("🔔 Classification: NOTIFY - This email contains important information")
+        update = None
+        goto = END
+    else:
+        raise ValueError(f"Invalid classification: {result.classification}")
+    return Command(goto=goto, update=update)
 
 
 @tool
@@ -199,10 +221,7 @@ def schedule_meeting(
     attendees: list[str], subject: str, duration_minutes: int, preferred_day: str
 ) -> str:
     """Schedule a calendar meeting."""
-    return (
-        f"Meeting '{subject}' scheduled for {preferred_day} "
-        f"with {len(attendees)} attendees"
-    )
+    return f"Meeting '{subject}' scheduled for {preferred_day} with {len(attendees)} attendees"
 
 
 @tool
@@ -217,14 +236,6 @@ manage_memory_tool = create_manage_memory_tool(
 search_memory_tool = create_search_memory_tool(
     namespace=("email_assistant", "{langgraph_user_id}", "collection")
 )
-
-tools = [
-    write_email,
-    schedule_meeting,
-    check_calendar_availability,
-    manage_memory_tool,
-    search_memory_tool,
-]
 
 agent_system_prompt_memory = """
 < Role >
@@ -248,90 +259,43 @@ You have access to the following tools to help manage {name}'s communications an
 
 
 def create_prompt(state, config, store):
+    user_id = config["configurable"]["langgraph_user_id"]
+    prompt = _get_or_seed(
+        (user_id,), "agent_instructions", prompt_instructions["agent_instructions"]
+    )
     return [
         {
             "role": "system",
-            "content": agent_system_prompt_memory.format(
-                instructions=get_prompt("agent_instructions"), **profile
-            ),
+            "content": agent_system_prompt_memory.format(instructions=prompt, **profile),
         }
     ] + state["messages"]
 
 
-response_agent = create_react_agent(llm, tools=tools, prompt=create_prompt, store=store)
-
-# ---------------------------------------------------------------------------
-# triage 节点：规则从 store 读 + few-shot 检索
-# ---------------------------------------------------------------------------
-
-
-def triage_router(
-    state: State, config, store
-) -> Command[Literal["response_agent", "__end__"]]:
-    email = state["email_input"]
-
-    examples = store.search(
-        ("email_assistant", config["configurable"]["langgraph_user_id"], "examples"),
-        query=str({"email": email}),
-    )
-    examples = format_few_shot_examples(examples)
-
-    system_prompt = triage_system_prompt.format(
-        full_name=profile["full_name"],
-        name=profile["name"],
-        user_profile_background=profile["user_profile_background"],
-        triage_no=get_prompt("triage_ignore"),
-        triage_notify=get_prompt("triage_notify"),
-        triage_email=get_prompt("triage_respond"),
-        examples=examples,
-    )
-    user_prompt = triage_user_prompt.format(
-        author=email["author"],
-        to=email["to"],
-        subject=email["subject"],
-        email_thread=email["email_thread"],
-    )
-    result = llm_router.invoke(
-        [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
-    )
-
-    if result.classification == "respond":
-        print("  📧 Classification: RESPOND - This email requires a response")
-        return Command(
-            goto="response_agent",
-            update={
-                "messages": [
-                    {"role": "user", "content": f"Respond to the email {email}"}
-                ]
-            },
-        )
-    if result.classification == "ignore":
-        print("  🚫 Classification: IGNORE - This email can be safely ignored")
-        return Command(goto=END)
-    if result.classification == "notify":
-        print("  🔔 Classification: NOTIFY - This email contains important information")
-        return Command(goto=END)
-    raise ValueError(f"Invalid classification: {result.classification}")
-
-
-email_agent = (
-    StateGraph(State)
-    .add_node(triage_router)
-    .add_node("response_agent", response_agent)
-    .add_edge(START, "triage_router")
-    .compile(store=store)
+response_agent = create_react_agent(
+    make_llm(),  # 本地化：deepseek-v4-flash（原 openai:gpt-4o）
+    tools=[
+        write_email,
+        schedule_meeting,
+        check_calendar_availability,
+        manage_memory_tool,
+        search_memory_tool,
+    ],
+    prompt=create_prompt,
+    store=store,
 )
 
-# ---------------------------------------------------------------------------
-# 反馈 → optimizer 改写 prompt → 写回 store
-# ---------------------------------------------------------------------------
+email_agent = StateGraph(State)
+email_agent = email_agent.add_node(triage_router)
+email_agent = email_agent.add_node("response_agent", response_agent)
+email_agent = email_agent.add_edge(START, "triage_router")
+email_agent = email_agent.compile(store=store)
 
-optimizer = create_multi_prompt_optimizer(llm, kind="prompt_memory")
+optimizer = create_multi_prompt_optimizer(
+    make_llm(),  # 本地化：deepseek-v4-flash（原 anthropic:claude-3-5-sonnet-latest）
+    kind="prompt_memory",
+)
 
-# optimizer 里的 prompt 名 → store key
+# optimizer 可改写的 prompt 及其写回 store 的 key
 PROMPT_STORE_KEYS = {
     "main_agent": "agent_instructions",
     "triage-ignore": "triage_ignore",
@@ -340,120 +304,136 @@ PROMPT_STORE_KEYS = {
 }
 
 
-def apply_feedback(messages, feedback: str) -> None:
-    print(f'\n  💬 用户反馈: "{feedback}"')
-    prompts = [
+def current_prompts():
+    return [
         {
             "name": "main_agent",
-            "prompt": get_prompt("agent_instructions"),
+            "prompt": store.get(("lance",), "agent_instructions").value["prompt"],
             "update_instructions": "keep the instructions short and to the point",
             "when_to_update": "Update this prompt whenever there is feedback on how the agent should write emails or schedule events",
         },
         {
             "name": "triage-ignore",
-            "prompt": get_prompt("triage_ignore"),
+            "prompt": store.get(("lance",), "triage_ignore").value["prompt"],
             "update_instructions": "keep the instructions short and to the point",
             "when_to_update": "Update this prompt whenever there is feedback on which emails should be ignored",
         },
         {
             "name": "triage-notify",
-            "prompt": get_prompt("triage_notify"),
+            "prompt": store.get(("lance",), "triage_notify").value["prompt"],
             "update_instructions": "keep the instructions short and to the point",
             "when_to_update": "Update this prompt whenever there is feedback on which emails the user should be notified of",
         },
         {
             "name": "triage-respond",
-            "prompt": get_prompt("triage_respond"),
+            "prompt": store.get(("lance",), "triage_respond").value["prompt"],
             "update_instructions": "keep the instructions short and to the point",
             "when_to_update": "Update this prompt whenever there is feedback on which emails should be responded to",
         },
     ]
-    updated = optimizer.invoke(
-        {"trajectories": [(messages, feedback)], "prompts": prompts}
+
+
+class FeedbackTarget(BaseModel):
+    """Decide which single prompt a piece of user feedback should update."""
+
+    reasoning: str = Field(description="Step-by-step reasoning behind the choice.")
+    target: Literal["main_agent", "triage-ignore", "triage-notify", "triage-respond"] = Field(
+        description="The one prompt this feedback should update."
     )
-    # notebook 只回写了 main_agent、其余留作练习；这里补全全部 4 个
-    for old, new in zip(prompts, updated):
-        if new["prompt"] != old["prompt"]:
-            key = PROMPT_STORE_KEYS[old["name"]]
-            store.put((USER_ID,), key, {"prompt": new["prompt"]})
-            print(f"  ✏️  {old['name']} 已更新 → store[{key}]:")
-            print(f"      {new['prompt']}")
 
 
-# ---------------------------------------------------------------------------
-# 演示
-# ---------------------------------------------------------------------------
-
-config = {"configurable": {"langgraph_user_id": USER_ID}}
-
-ALICE_EMAIL = {
-    "author": "Alice Smith <alice.smith@company.com>",
-    "to": "John Doe <john.doe@company.com>",
-    "subject": "Quick question about API documentation",
-    "email_thread": """Hi John,
-
-I was reviewing the API documentation for the new authentication service and noticed a few endpoints seem to be missing from the specs. Could you help clarify if this was intentional or if we should update the docs?
-
-Specifically, I'm looking at:
-- /auth/refresh
-- /auth/validate
-
-Thanks!
-Alice""",
-}
-
-ALICE_JONES_EMAIL = {
-    "author": "Alice Jones <alice.jones@bar.com>",
-    "to": "John Doe <john.doe@company.com>",
-    "subject": "Quick question about API documentation",
-    "email_thread": """Hi John,
-
-Urgent issue - your service is down. Is there a reason why""",
-}
+def route_feedback(feedback: str, prompts) -> str:
+    """第一层：按各 prompt 的 when_to_update 描述，路由反馈该改哪一个 prompt。"""
+    descriptions = "\n".join(f"- {p['name']}: {p['when_to_update']}" for p in prompts)
+    result = llm.with_structured_output(FeedbackTarget).invoke(
+        [
+            {
+                "role": "system",
+                "content": (
+                    "You maintain a set of prompts for an email assistant. "
+                    "Given a piece of user feedback, decide which ONE prompt should be updated.\n\n"
+                    f"Prompts and when to update each:\n{descriptions}"
+                ),
+            },
+            {"role": "user", "content": feedback},
+        ]
+    )
+    print(f"  🎯 路由: 反馈应更新 {result.target}")
+    return result.target
 
 
-def banner(title: str) -> None:
-    print()
-    print("=" * 72)
-    print(title)
-    print("=" * 72)
+def apply_feedback(messages, feedback: str) -> None:
+    """程序性记忆更新：路由 → 定向改写 → 完整性校验，三层均与反馈内容无关。
 
-
-def run_email(email: dict):
-    print(f"\nFrom:    {email['author']}  Subject: {email['subject']}")
-    response = email_agent.invoke({"email_input": email}, config=config)
-    for m in response.get("messages", []):
-        m.pretty_print()
-    return response
-
-
-def show_instructions() -> None:
-    print("\n  🗄️  store 中当前指令:")
-    for key in PROMPT_DEFAULTS:
-        print(f"    - {key}: {get_prompt(key)}")
+    multi_prompt optimizer 让 LLM 一次性改写全部 prompt 时，偶发把规则写错
+    位置、或顺手清空别的 prompt（trajectory 每次运行不同，temperature=0 防不住）。
+    先路由出目标 prompt，再只把这一个交给 optimizer，结构上消除错位；
+    空串不写回，兜底数据完整性。
+    """
+    prompts = current_prompts()
+    target = route_feedback(feedback, prompts)
+    target_prompt = next(p for p in prompts if p["name"] == target)
+    # 空输出是结构性无效结果（长 trajectory 下偶发），重试属于契约校验而非语义预设
+    for attempt in range(1, 4):
+        updated = optimizer.invoke(
+            {"trajectories": [(messages, feedback)], "prompts": [target_prompt]}
+        )
+        new_prompt = (updated[0]["prompt"] or "").strip()
+        if new_prompt:
+            break
+        print(f"  ⚠️ optimizer 返回空 prompt（第 {attempt} 次），重试")
+    else:
+        print(f"  ❌ optimizer 连续 3 次返回空 prompt，保留原 {target}")
+        return
+    if new_prompt == target_prompt["prompt"]:
+        print(f"  ⏸ {target} 无变化")
+        return
+    store.put(("lance",), PROMPT_STORE_KEYS[target], {"prompt": new_prompt})
+    print(f"  ✏️ updated {target}:")
+    print(f"     旧: {target_prompt['prompt'][:120]}")
+    print(f"     新: {new_prompt[:120]}")
 
 
 def main() -> None:
-    print(f"Model: {MODEL} @ {os.getenv('OPENAI_BASE_URL')}")
-    print("Embedding: fastembed / BAAI/bge-small-en-v1.5 (local CPU)")
+    config = {"configurable": {"langgraph_user_id": "lance"}}
+    email_input = {
+        "author": "Alice Jones <alice.jones@bar.com>",
+        "to": "John Doe <john.doe@company.com>",
+        "subject": "Quick question about API documentation",
+        "email_thread": """Hi John,
 
-    banner("第一幕 · 基线：Alice 提问邮件 → 回复（注意签名方式）")
-    response = run_email(ALICE_EMAIL)
-    show_instructions()
+Urgent issue - your service is down. Is there a reason why""",
+    }
 
-    banner('第二幕 · 反馈进化：\"Always sign your emails `John Doe`\"')
+    banner("① 首跑：prompt 从默认值写入 store，邮件 → RESPOND 并起草回信")
+    response = email_agent.invoke({"email_input": email_input}, config=config)
+    for m in response["messages"]:
+        m.pretty_print()
+    print("\n当前 store 里的 agent_instructions:")
+    print(" ", store.get(("lance",), "agent_instructions").value["prompt"])
+
+    banner("② 反馈①: 'Always sign your emails `John Doe`' → optimizer 改写 prompt")
     apply_feedback(response["messages"], "Always sign your emails `John Doe`")
-    show_instructions()
 
-    banner("第三幕 · 同一封邮件重跑：回复应按新指令签名 John Doe")
-    run_email(ALICE_EMAIL)
+    banner("③ 同一封邮件再跑：回信应带 John Doe 签名")
+    response = email_agent.invoke({"email_input": email_input}, config=config)
+    for m in response["messages"]:
+        m.pretty_print()
 
-    banner("第四幕 · 改 triage 行为：先看 Alice Jones 邮件的默认分类")
-    response = run_email(ALICE_JONES_EMAIL)
+    banner("④ 反馈②: 'Ignore any emails from Alice Jones' → optimizer 改写 triage 规则")
     apply_feedback(response["messages"], "Ignore any emails from Alice Jones")
-    show_instructions()
-    print("\n  重跑 Alice Jones 邮件:")
-    run_email(ALICE_JONES_EMAIL)
+    print("\n当前 store 里的 triage_ignore:")
+    print(" ", store.get(("lance",), "triage_ignore").value["prompt"])
+
+    banner("⑤ 同一封邮件再跑：应从 RESPOND 翻成 IGNORE")
+    email_agent.invoke({"email_input": email_input}, config=config)
+
+    banner("最终 store 里的全部 prompt")
+    final = {
+        name: store.get(("lance",), key).value["prompt"]
+        for name, key in PROMPT_STORE_KEYS.items()
+    }
+    print(json.dumps(final, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

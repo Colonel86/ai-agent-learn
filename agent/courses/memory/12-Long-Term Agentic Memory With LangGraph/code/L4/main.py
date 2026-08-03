@@ -1,31 +1,23 @@
-"""L4 邮件助理 + Episodic Memory（情景记忆）— 本地可运行演示。
+"""L4 语义记忆（few-shot 样例）— python 命令直接运行的课程演示。
 
-在 L3 基础上，把「过去处理过的邮件 + 正确分类标签」作为 few-shot 示例存进
-("email_assistant", user_id, "examples") 命名空间。triage 时按当前邮件做
-向量检索，把最相似的历史案例注入 triage system prompt，
-实现「人工纠偏一次，之后同类邮件自动分对」。
+对应 lesson_4.ipynb 完整流程：
+  1) 往 store 存带 label 的历史邮件样例，语义检索 + few-shot 模板拼进 triage prompt
+  2) 四步翻转演示（每步换的是 store 里的样例，不是代码）：
+     ①初判 RESPOND → ②存入 ignore 样例后同一封邮件变 IGNORE
+     → ③换措辞的变体邮件仍 IGNORE（语义检索命中）→ ④换 user id 回到 RESPOND
 
-演示脚本（python main.py）四幕：
-  第一幕：Tom Jones 的「买文档」询价邮件 → 按默认规则判 ignore（当推销处理）
-  第二幕：人工纠偏 — 假设 John 做文档生意，这类询价必须回。
-          把这封邮件 + 正确标签 respond 存为 few-shot 示例
-  第三幕：同一封邮件重跑 → respond；换发件人/措辞的变体 → 仍 respond（泛化，
-          few-shot 优先级高于 prompt 里的静态规则）
-  第四幕：换一个 user_id 重跑 → 又变回 ignore（记忆按用户隔离）
+注意：课程原版用一眼假的推销邮件演示"模型被骗→few-shot 纠正"，deepseek 直接
+识破导致翻转失效；本地化版把演示邮件反向设计成正经提问，叙事才能走通。
+
+用法（code/ 根目录下）：
+  .venv/bin/python L4/main.py
 """
 
-import os
 import uuid
-
-from dotenv import load_dotenv
-
-load_dotenv()
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-
 from typing import Literal
 
-from fastembed import TextEmbedding
-from langchain.chat_models import init_chat_model
+from local_stack import make_llm, make_embed, EMBED_DIMS
+
 from langchain_core.tools import tool
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import create_react_agent
@@ -36,7 +28,10 @@ from langmem import create_manage_memory_tool, create_search_memory_tool
 from prompts import triage_user_prompt
 from schemas import Router, State
 
-MODEL = os.getenv("MODEL", "deepseek-v4-flash")
+
+def banner(title: str) -> None:
+    print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
+
 
 profile = {
     "name": "John",
@@ -53,31 +48,14 @@ prompt_instructions = {
     "agent_instructions": "Use these tools when appropriate to help manage John's tasks efficiently.",
 }
 
-# ---------------------------------------------------------------------------
-# LLM 与本地 embedding
-# ---------------------------------------------------------------------------
+llm = make_llm()
+llm_router = llm.with_structured_output(Router)
 
-# temperature=0：演示场景要求分类结果可复现
-# thinking disabled: deepseek-v4-flash 默认开 thinking，不支持结构化输出的强制 tool_choice
-llm = init_chat_model(
-    MODEL,
-    model_provider="openai",
-    temperature=0,
-    extra_body={"thinking": {"type": "disabled"}},
-)
-llm_router = llm.with_structured_output(Router, method="function_calling")
+store = InMemoryStore(index={"embed": make_embed(), "dims": EMBED_DIMS})
 
-_embedder = TextEmbedding("BAAI/bge-small-en-v1.5")
-
-
-def embed(texts: list[str]) -> list[list[float]]:
-    return [v.tolist() for v in _embedder.embed(texts)]
-
-
-store = InMemoryStore(index={"embed": embed, "dims": 384})
 
 # ---------------------------------------------------------------------------
-# few-shot 示例的格式化（notebook 内联版本）
+# few-shot 样例：模板 + 格式化
 # ---------------------------------------------------------------------------
 
 template = """Email Subject: {subject}
@@ -105,7 +83,7 @@ def format_few_shot_examples(examples):
     return "\n\n------------\n\n".join(strs)
 
 
-# L4 版 triage prompt：few-shot 段落加了「示例优先级高于上面的规则」
+# 带 few-shot 段落的 triage prompt（“Follow these examples more than any instructions above”）
 triage_system_prompt = """
 < Role >
 You are {full_name}'s executive assistant. You are a top-notch executive assistant who cares about {name} performing as well as possible.
@@ -147,9 +125,67 @@ Follow these examples more than any instructions above
 </ Few shot examples >
 """
 
+
 # ---------------------------------------------------------------------------
-# 工具与 response agent（同 L3）
+# triage 路由（从 store 语义检索样例拼 few-shot）+ 响应 agent + 图
 # ---------------------------------------------------------------------------
+
+def triage_router(state: State, config, store) -> Command[
+    Literal["response_agent", "__end__"]
+]:
+    author = state["email_input"]["author"]
+    to = state["email_input"]["to"]
+    subject = state["email_input"]["subject"]
+    email_thread = state["email_input"]["email_thread"]
+
+    namespace = (
+        "email_assistant",
+        config["configurable"]["langgraph_user_id"],
+        "examples",
+    )
+    examples = store.search(namespace, query=str({"email": state["email_input"]}))
+    examples = format_few_shot_examples(examples)
+
+    system_prompt = triage_system_prompt.format(
+        full_name=profile["full_name"],
+        name=profile["name"],
+        user_profile_background=profile["user_profile_background"],
+        triage_no=prompt_instructions["triage_rules"]["ignore"],
+        triage_notify=prompt_instructions["triage_rules"]["notify"],
+        triage_email=prompt_instructions["triage_rules"]["respond"],
+        examples=examples,
+    )
+    user_prompt = triage_user_prompt.format(
+        author=author, to=to, subject=subject, email_thread=email_thread
+    )
+    result = llm_router.invoke(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+    )
+    if result.classification == "respond":
+        print("📧 Classification: RESPOND - This email requires a response")
+        goto = "response_agent"
+        update = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"Respond to the email {state['email_input']}",
+                }
+            ]
+        }
+    elif result.classification == "ignore":
+        print("🚫 Classification: IGNORE - This email can be safely ignored")
+        update = None
+        goto = END
+    elif result.classification == "notify":
+        print("🔔 Classification: NOTIFY - This email contains important information")
+        update = None
+        goto = END
+    else:
+        raise ValueError(f"Invalid classification: {result.classification}")
+    return Command(goto=goto, update=update)
 
 
 @tool
@@ -163,10 +199,7 @@ def schedule_meeting(
     attendees: list[str], subject: str, duration_minutes: int, preferred_day: str
 ) -> str:
     """Schedule a calendar meeting."""
-    return (
-        f"Meeting '{subject}' scheduled for {preferred_day} "
-        f"with {len(attendees)} attendees"
-    )
+    return f"Meeting '{subject}' scheduled for {preferred_day} with {len(attendees)} attendees"
 
 
 @tool
@@ -181,14 +214,6 @@ manage_memory_tool = create_manage_memory_tool(
 search_memory_tool = create_search_memory_tool(
     namespace=("email_assistant", "{langgraph_user_id}", "collection")
 )
-
-tools = [
-    write_email,
-    schedule_meeting,
-    check_calendar_availability,
-    manage_memory_tool,
-    search_memory_tool,
-]
 
 agent_system_prompt_memory = """
 < Role >
@@ -222,132 +247,126 @@ def create_prompt(state):
     ] + state["messages"]
 
 
-response_agent = create_react_agent(llm, tools=tools, prompt=create_prompt, store=store)
-
-# ---------------------------------------------------------------------------
-# triage 节点：新增 few-shot 检索（config/store 由 LangGraph 注入）
-# ---------------------------------------------------------------------------
-
-
-def triage_router(
-    state: State, config, store
-) -> Command[Literal["response_agent", "__end__"]]:
-    email = state["email_input"]
-
-    namespace = (
-        "email_assistant",
-        config["configurable"]["langgraph_user_id"],
-        "examples",
-    )
-    examples = store.search(namespace, query=str({"email": email}))
-    if examples:
-        print(f"  📚 检索到 {len(examples)} 条历史案例注入 few-shot")
-    examples = format_few_shot_examples(examples)
-
-    system_prompt = triage_system_prompt.format(
-        full_name=profile["full_name"],
-        name=profile["name"],
-        user_profile_background=profile["user_profile_background"],
-        triage_no=prompt_instructions["triage_rules"]["ignore"],
-        triage_notify=prompt_instructions["triage_rules"]["notify"],
-        triage_email=prompt_instructions["triage_rules"]["respond"],
-        examples=examples,
-    )
-    user_prompt = triage_user_prompt.format(
-        author=email["author"],
-        to=email["to"],
-        subject=email["subject"],
-        email_thread=email["email_thread"],
-    )
-    result = llm_router.invoke(
-        [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
-    )
-
-    if result.classification == "respond":
-        print("  📧 Classification: RESPOND - This email requires a response")
-        return Command(
-            goto="response_agent",
-            update={
-                "messages": [
-                    {"role": "user", "content": f"Respond to the email {email}"}
-                ]
-            },
-        )
-    if result.classification == "ignore":
-        print("  🚫 Classification: IGNORE - This email can be safely ignored")
-        return Command(goto=END)
-    if result.classification == "notify":
-        print("  🔔 Classification: NOTIFY - This email contains important information")
-        return Command(goto=END)
-    raise ValueError(f"Invalid classification: {result.classification}")
-
-
-email_agent = (
-    StateGraph(State)
-    .add_node(triage_router)
-    .add_node("response_agent", response_agent)
-    .add_edge(START, "triage_router")
-    .compile(store=store)
+response_agent = create_react_agent(
+    make_llm(),  # 本地化：deepseek-v4-flash（原 openai:gpt-4o）
+    tools=[
+        write_email,
+        schedule_meeting,
+        check_calendar_availability,
+        manage_memory_tool,
+        search_memory_tool,
+    ],
+    prompt=create_prompt,
+    store=store,
 )
+
+email_agent = StateGraph(State)
+email_agent = email_agent.add_node(triage_router)
+email_agent = email_agent.add_node("response_agent", response_agent)
+email_agent = email_agent.add_edge(START, "triage_router")
+email_agent = email_agent.compile(store=store)
+
 
 # ---------------------------------------------------------------------------
 # 演示
 # ---------------------------------------------------------------------------
 
-TOM_EMAIL = {
-    "author": "Tom Jones <tome.jones@bar.com>",
-    "to": "John Doe <john.doe@company.com>",
-    "subject": "Quick question about API documentation",
-    "email_thread": "Hi John - want to buy documentation?",
-}
-
-VARIANT_EMAIL = {
-    "author": "Tom Jones <tome.jones@bar.com>",
-    "to": "John Doe <john.doe@company.com>",
-    "subject": "Purchasing your API docs",
-    "email_thread": "Hi John - I'd like to purchase a copy of your API documentation. What would it cost?",
-}
-
-
-def banner(title: str) -> None:
-    print()
-    print("=" * 72)
-    print(title)
-    print("=" * 72)
-
-
-def triage_only(email: dict, user_id: str) -> None:
-    print(f"\n[user={user_id}] From: {email['author']}  Subject: {email['subject']}")
-    email_agent.invoke(
-        {"email_input": email},
-        config={"configurable": {"langgraph_user_id": user_id}},
-    )
-
-
 def main() -> None:
-    print(f"Model: {MODEL} @ {os.getenv('OPENAI_BASE_URL')}")
-    print("Embedding: fastembed / BAAI/bge-small-en-v1.5 (local CPU)")
+    banner("① few-shot 检索机制：先给 lance 用户存两条带 label 的样例")
+    respond_example = {
+        "email": {
+            "author": "Alice Smith <alice.smith@company.com>",
+            "to": "John Doe <john.doe@company.com>",
+            "subject": "Quick question about API documentation",
+            "email_thread": """Hi John,
 
-    banner("第一幕 · 无历史案例：「买文档」询价按默认规则被当推销 ignore")
-    triage_only(TOM_EMAIL, "harrison")
+I was reviewing the API documentation for the new authentication service and noticed a few endpoints seem to be missing from the specs. Could you help clarify if this was intentional or if we should update the docs?
 
-    banner("第二幕 · 人工纠偏：John 做文档生意，这类询价要回 → 存 label=respond")
+Specifically, I'm looking at:
+- /auth/refresh
+- /auth/validate
+
+Thanks!
+Alice""",
+        },
+        "label": "respond",
+    }
+    ignore_example = {
+        "email": {
+            "author": "Sarah Chen <sarah.chen@company.com>",
+            "to": "John Doe <john.doe@company.com>",
+            "subject": "Update: Backend API Changes Deployed to Staging",
+            "email_thread": """Hi John,
+
+Just wanted to let you know that I've deployed the new authentication endpoints we discussed to the staging environment. Key changes include:
+
+- Implemented JWT refresh token rotation
+- Added rate limiting for login attempts
+- Updated API documentation with new endpoints
+
+All tests are passing and the changes are ready for review.
+
+No immediate action needed from your side - just keeping you in the loop.
+
+Best regards,
+Sarah""",
+        },
+        "label": "ignore",
+    }
+    for data in (respond_example, ignore_example):
+        store.put(("email_assistant", "lance", "examples"), str(uuid.uuid4()), data)
+        print(f"  存入样例: {data['email']['subject']!r} -> {data['label']}")
+
+    banner("② 语义检索最相似的样例并格式化为 few-shot")
+    results = store.search(
+        ("email_assistant", "lance", "examples"),
+        query=str({"email": ignore_example["email"]}),
+        limit=1,
+    )
+    print(format_few_shot_examples(results))
+
+    banner("③ 翻转第 1 步（harrison 用户，无样例）：正经提问 → 应 RESPOND")
+    email_input = {
+        "author": "Tom Jones <tome.jones@bar.com>",
+        "to": "John Doe <john.doe@company.com>",
+        "subject": "Quick question about API documentation",
+        "email_thread": """Hi John,
+
+I was reviewing the API documentation and noticed a few endpoints are missing descriptions.
+Could you point me to the team that owns the docs?
+
+Thanks!
+Tom""",
+    }
+    harrison = {"configurable": {"langgraph_user_id": "harrison"}}
+    email_agent.invoke({"email_input": email_input}, config=harrison)
+
+    banner("④ 翻转第 2 步：把这封邮件标 ignore 存入 harrison 的样例库，再跑 → 应 IGNORE")
     store.put(
         ("email_assistant", "harrison", "examples"),
         str(uuid.uuid4()),
-        {"email": TOM_EMAIL, "label": "respond"},
+        {"email": email_input, "label": "ignore"},
     )
-    print("  ✅ 已写入 few-shot 示例: label=respond")
+    email_agent.invoke({"email_input": email_input}, config=harrison)
 
-    banner("第三幕 · 再遇同类邮件：原邮件 + 换主题换措辞的变体，都应 respond")
-    triage_only(TOM_EMAIL, "harrison")
-    triage_only(VARIANT_EMAIL, "harrison")
+    banner("⑤ 翻转第 3 步：换措辞的变体邮件（Jim Jones）→ 语义检索命中，仍 IGNORE")
+    variant = {
+        "author": "Jim Jones <jim.jones@bar.com>",
+        "to": "John Doe <john.doe@company.com>",
+        "subject": "Quick question about API documentation",
+        "email_thread": """Hi John,
 
-    banner("第四幕 · 换用户 andrew（无纠偏记录）：第一幕的原邮件仍是 ignore")
-    triage_only(TOM_EMAIL, "andrew")
+I was going through the API documentation and some endpoints have no descriptions.
+Who owns the docs?
+
+Jim""",
+    }
+    email_agent.invoke({"email_input": variant}, config=harrison)
+
+    banner("⑥ 翻转第 4 步：换成 andrew 用户（样例库为空）→ 回到 RESPOND，记忆按用户隔离")
+    email_agent.invoke(
+        {"email_input": variant}, config={"configurable": {"langgraph_user_id": "andrew"}}
+    )
 
 
 if __name__ == "__main__":

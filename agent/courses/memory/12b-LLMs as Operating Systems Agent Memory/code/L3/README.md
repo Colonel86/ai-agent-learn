@@ -17,29 +17,25 @@ flowchart LR
 ## 运行
 
 ```bash
-cd L3
-uv venv --python 3.11 .venv
-uv pip install --python .venv/bin/python -r requirements.txt
-cp .env.example .env   # 填入你的 API Key
+# 环境/服务是全课程共享的，见 code/README.md（venv + .env + init_db + run_server.sh 都在 code/ 根目录）
+cd ..            # code/ 根目录
+./run_server.sh  # 终端 1：gateway :8003 + Letta server :8283
 
-# 终端 1：起两个服务（embedding :8003 + Letta server :8283）
-./run_server.sh
-
-# 终端 2：跑演示
-.venv/bin/python main.py
+cd L3 && ../.venv/bin/python main.py   # 终端 2
 ```
 
-演示五步：① 创建带 human/persona memory blocks 的 agent → ② 发消息看 reasoning/assistant 消息流与用量 → ③ 解剖 agent state（MemGPT 系统提示 + 6 个自带记忆工具 + blocks）→ ④ "我其实叫 Sarah" 触发 `core_memory_replace` 自编辑 → ⑤ archival memory 对话写入 / 显式插入 / `archival_memory_search` 语义搜索作答。
+演示五步：① 创建带 human/persona memory blocks 的 agent → ② 发消息看 reasoning/assistant 消息流与用量 → ③ 解剖 agent state（MemGPT 系统提示 + 自带记忆工具 + blocks）→ ④ "我其实叫 Sarah" 触发 `core_memory_replace` 自编辑 → ⑤ archival memory 对话写入 / 显式插入 / `archival_memory_search` 语义搜索作答。
 
-agent 状态在 `~/.letta/sqlite.db`，重启 server 也不丢；`main.py` 可重复运行（先删同名旧 agent）。
+agent 状态在 PostgreSQL（`LETTA_PG_URI`，letta 0.16 已弃用 sqlite），重启 server 也不丢；`main.py` 可重复运行（先删同名旧 agent）。
 
 ## 与课程 notebook 的差异
 
 | 差异点 | notebook | 本项目 | 原因 |
 |---|---|---|---|
 | chat 模型 | `openai/gpt-4o-mini` handle | 显式 `llm_config` → DeepSeek | 本地 DeepSeek 栈；handle 依赖 server 侧 provider 列表 |
-| endpoint 类型 | openai 官方 | `openai` 类型指向 DeepSeek base URL | letta 0.6.50 的 `deepseek` 专用路径靠裸 JSON 解析 function call，对新 DeepSeek 模型频繁解析失败（`response` UnboundLocalError 即此病）|
-| embedding | `openai/text-embedding-3-small` | 本地 fastembed 384 维（`embed_server.py`）| DeepSeek 无 embeddings API，复用课程 lab 标准栈 |
+| endpoint 类型 | openai 官方 | `openai` 类型指向本地 gateway（转发 DeepSeek 并注入 `thinking: disabled`） | letta 对 memgpt agent 固定发 `tool_choice=required`，DeepSeek v4 thinking 模式不支持（400）|
+| embedding | `openai/text-embedding-3-small` | 本地 fastembed 384 维（`gateway.py`）| DeepSeek 无 embeddings API，复用课程 lab 标准栈 |
 | Letta server | 课程平台预启动 | `run_server.sh` 自起 | 本地化 |
-| click/typer | — | pin `click==8.1.7 typer==0.12.5` | 0.6.50 CLI 与新版不兼容（"Secondary flag is not valid"）|
+| agent 类型 | 默认即 memgpt | 显式 `agent_type="memgpt_agent"` | letta 0.16 默认 letta_v1_agent，没有课程要讲的 MemGPT 记忆工具循环 |
+| archival 工具 | 自带 | 显式 `tools=["archival_memory_insert", "archival_memory_search"]` | 0.16 的 memgpt_agent 默认换成文件式 `memory` 工具 |
 | 代理 | — | `NO_PROXY=localhost,127.0.0.1` | macOS 系统代理会劫持 httpx 的 localhost 请求（503）|

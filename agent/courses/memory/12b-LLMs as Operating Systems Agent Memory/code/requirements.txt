@@ -1,7 +1,11 @@
-# requirements file
-# note which revision of python, for example 3.9.6
-# in this file, insert all the pip install needs, include revision
-
-#for example:
-python_dotenv==1.0.1
-letta==0.6.50
+# 12b LLMs as Operating Systems: Agent Memory — 全课程统一 venv（建在 code/ 根目录）
+# Python 3.13（letta server 要求 >=3.11,<3.14）
+letta==0.16.8          # Letta (MemGPT) server
+letta-client==1.12.1   # Python SDK，notebook 里 import letta_client
+openai==2.50.0
+python-dotenv==1.2.2
+fastembed==0.8.0       # 本地 embedding（embed_server.py；fastapi/uvicorn 由 letta 自带）
+# letta 0.16 server 只支持 PostgreSQL，但基础安装没带 pg 相关依赖，须手动补
+asyncpg==0.31.0
+pgvector==0.5.0
+pg8000==1.31.5

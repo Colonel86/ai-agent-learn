@@ -1,16 +1,15 @@
-"""12a·L2 Memory Manager — 本地可运行演示。
+"""12a·L2 Memory Manager — pgvector 版本地演示（Oracle 版见 ../L2/main.py）。
 
-课程主题：不同记忆类型需要不同的数据模型与检索策略，由统一的 MemoryManager 编排。
-  - Conversational（会话）→ SQL 表，按 thread_id 精确取（不是相似度！）
-  - Knowledge Base / Workflow / Toolbox / Entity / Summary → 5 个向量表，语义检索
-  - 全部落在 Oracle 26ai/23ai 的同一个库里（SQL 表 + VECTOR 列 + IVF 索引）
+对照实验的论点：课程的三层架构（Application / Memory / Infrastructure）里，
+换存储底座只动 Infrastructure 层——本文件的 ③④⑤ 步与 Oracle 版逐字相同，
+MemoryManager 的向量方法也逐字相同，改写的只有连接、DDL 和 SQL 方言（见 helper_pg.py）。
 
 本地化前提（见 README）：
-  docker run -d --name oracle-memory-lab -p 1521:1521 \
-      -e ORACLE_PASSWORD=YourPassword123 gvenzl/oracle-free:23-slim-faststart
+  docker run -d --name pg-memory-lab -p 5433:5432 \
+      -e POSTGRES_PASSWORD=postgres pgvector/pgvector:pg17
 
 演示流程（python main.py）：
-  ① 管理员建 VECTOR 用户 → ② 建 7 张记忆表 + 5 个 IVF 向量索引
+  ① 连接 PG + CREATE EXTENSION vector → ② 建 2 张 SQL 表 + 5 个向量 collection + HNSW 索引
   ③ MemoryManager 灌 arXiv 论文进 knowledge base（HF 拉不到就用内置样例）
   ④ 语义检索 knowledge base；⑤ 会话记忆写入/按 thread_id 读回 —— 对比两种检索路径
 """
@@ -22,48 +21,40 @@ from dotenv import load_dotenv
 load_dotenv()
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
-from helper import (
+from helper_pg import (
     MemoryManager,
     StoreManager,
-    connect_to_oracle,
+    connect_to_postgres,
     create_conversational_history_table,
+    create_hnsw_index,
     create_tool_log_table,
-    safe_create_index,
-    setup_oracle_database,
-    suppress_warnings,
 )
-
-suppress_warnings()
 
 from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_community.vectorstores.utils import DistanceStrategy
 
 # ---------------------------------------------------------------------------
-# ① 数据库：管理员一次性建 VECTOR 用户，然后以 VECTOR 连接
+# ① 数据库：连接 + 启用 vector 扩展（对比 Oracle 版：无需建表空间/建 VECTOR 用户）
 # ---------------------------------------------------------------------------
 
-DSN = os.getenv("ORACLE_DSN", "127.0.0.1:1521/FREEPDB1")
+PG_DSN = os.getenv("PG_DSN", "postgresql://postgres:postgres@127.0.0.1:5433/postgres")
+SQLALCHEMY_URL = PG_DSN.replace("postgresql://", "postgresql+psycopg://")
 
-if not setup_oracle_database(dsn=DSN):
+try:
+    database_connection = connect_to_postgres(PG_DSN)
+except Exception as e:
     raise SystemExit(
-        "Oracle 未就绪。先启动容器并等它初始化完成（docker logs -f oracle-memory-lab，"
-        "看到 DATABASE IS READY TO USE! 再跑）"
+        f"PostgreSQL 未就绪（{type(e).__name__}: {e}）。先启动容器：\n"
+        "  docker run -d --name pg-memory-lab -p 5433:5432 "
+        "-e POSTGRES_PASSWORD=postgres pgvector/pgvector:pg17"
     )
-
-database_connection = connect_to_oracle(
-    user="VECTOR",
-    password="VectorPwd_2025",
-    dsn=DSN,
-    program="local.memory_lab.L2",
-)
-print("Using user:", database_connection.username)
+print("Connected to:", PG_DSN.rsplit("@", 1)[-1])
 
 # ---------------------------------------------------------------------------
-# ② 七张记忆表 + 向量索引
+# ② 记忆存储：2 张 SQL 表 + 5 个向量 collection + HNSW 索引
 # ---------------------------------------------------------------------------
 
-# 课程用 HuggingFaceEmbeddings(paraphrase-mpnet-base-v2, 768 维, torch)；
-# 本地化用 fastembed(bge-small-en-v1.5, 384 维, ONNX 纯 CPU)，接口一致
+# 与 Oracle 版同款本地 embedding：fastembed(bge-small-en-v1.5, 384 维, ONNX 纯 CPU)
+EMBEDDING_DIM = 384
 embedding_model = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
 CONVERSATIONAL_TABLE = "CONVERSATIONAL_MEMORY"  # Episodic
@@ -74,14 +65,22 @@ ENTITY_TABLE = "ENTITY_MEMORY"                  # Semantic
 SUMMARY_TABLE = "SUMMARY_MEMORY"                # Semantic
 TOOL_LOG_TABLE = "TOOL_LOG_MEMORY"
 
+# 清场重建（对应 Oracle 版逐表 DROP ... PURGE）：
+# langchain_postgres 把所有 collection 存在两张共享表里，删这两张即清空全部向量记忆
+with database_connection.cursor() as cur:
+    cur.execute("DROP TABLE IF EXISTS langchain_pg_embedding, langchain_pg_collection CASCADE")
+    cur.execute(f"DROP TABLE IF EXISTS {TOOL_LOG_TABLE}")
+database_connection.commit()
+
 conversation_history_table = create_conversational_history_table(
     database_connection, CONVERSATIONAL_TABLE
 )
 tool_log_history_table = create_tool_log_table(database_connection, TOOL_LOG_TABLE)
 
 store_manager = StoreManager(
-    client=database_connection,
+    sqlalchemy_url=SQLALCHEMY_URL,
     embedding_function=embedding_model,
+    embedding_length=EMBEDDING_DIM,
     table_names={
         "knowledge_base": KNOWLEDGE_BASE_TABLE,
         "workflow": WORKFLOW_TABLE,
@@ -89,7 +88,6 @@ store_manager = StoreManager(
         "entity": ENTITY_TABLE,
         "summary": SUMMARY_TABLE,
     },
-    distance_strategy=DistanceStrategy.COSINE,
     conversational_table=conversation_history_table,
     tool_log_table=tool_log_history_table,
 )
@@ -101,11 +99,8 @@ entity_vs = store_manager.get_entity_store()
 summary_vs = store_manager.get_summary_store()
 
 print("\nCreating vector indexes...")
-safe_create_index(database_connection, knowledge_base_vs, "knowledge_base_vs_ivf")
-safe_create_index(database_connection, workflow_vs, "workflow_vs_ivf")
-safe_create_index(database_connection, toolbox_vs, "toolbox_vs_ivf")
-safe_create_index(database_connection, entity_vs, "entity_vs_ivf")
-safe_create_index(database_connection, summary_vs, "summary_vs_ivf")
+# 共享表只需一个 HNSW 索引（Oracle 版是每表一个 IVF、共 5 个）
+create_hnsw_index(database_connection)
 
 memory_manager = MemoryManager(
     conn=database_connection,
@@ -120,6 +115,7 @@ memory_manager = MemoryManager(
 
 # ---------------------------------------------------------------------------
 # ③ 灌 knowledge base：优先 HF 流式拉 arXiv 数据集，失败退回内置样例
+#    （以下 ③④⑤ 与 Oracle 版 main.py 逐字相同 —— 这正是分层架构的验证点）
 # ---------------------------------------------------------------------------
 
 SAMPLE_PAPERS = [
@@ -230,4 +226,4 @@ memory_manager.write_conversational_memory("好的，已检索到 MemGPT 和 Gen
 memory_manager.write_conversational_memory("重点看 MemGPT 的分页机制", "user", THREAD)
 print(memory_manager.read_conversational_memory(thread_id=THREAD, limit=10))
 
-print("\n✅ 演示完成。数据持久在 Oracle 容器卷里，重跑脚本会重建表。")
+print("\n✅ 演示完成。数据持久在 PG 容器卷里，重跑脚本会重建表。")

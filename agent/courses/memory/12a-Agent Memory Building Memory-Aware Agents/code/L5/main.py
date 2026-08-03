@@ -1,11 +1,14 @@
-"""12a·L5 Memory-Aware Agent — 本地可运行演示（课程终局：五种记忆全部上场）。
+"""12a·L5 Memory-Aware Agent — pgvector 版本地演示（Oracle 版见 ../L5/main.py）。
 
 课程主题：把 L2-L4 攒的全部基础设施接成一个完整 agent loop：
   循环外·前（确定性）：五段记忆装配 context + >80% 自动压实 + 语义检索 top-5 工具
   循环内（agent 触发）：LLM 决定调哪个工具；工具全量输出落 TOOL_LOG，只回传截断结果
   循环外·后（确定性）：write_workflow / write_entity / 会话写回 —— 收尾必写
 
-前提：Oracle 容器在跑（见 L2/README.md）；会联网访问 arxiv.org 拉论文。
+与 Oracle 版的差异只在基础设施段（PG 连接 + 清场 + StoreManager 签名）；
+AGENT_SYSTEM_PROMPT、agent loop、5 问序列逐字相同。
+
+前提：pgvector 容器在跑（见 L2-pgvector/README.md）；会联网访问 arxiv.org 拉论文。
 
 演示（python main.py）：同一 thread 连续 5 问 ——
   找 MemGPT 论文 → 存全文 → 问要点（吃 KB 记忆）→ 用工具压实会话 → "我第一个问题是什么"（吃摘要记忆）
@@ -19,29 +22,32 @@ from dotenv import load_dotenv
 load_dotenv()
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
-from helper import (
+from helper_pg import (
     MemoryManager,
     StoreManager,
     Toolbox,
     calculate_context_usage,
-    connect_to_oracle,
+    connect_to_postgres,
     create_conversational_history_table,
     create_tool_log_table,
     offload_to_summary,
     register_common_tools,
-    setup_oracle_database,
     suppress_warnings,
 )
 
 suppress_warnings()
 
 from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_community.vectorstores.utils import DistanceStrategy
 from openai import OpenAI
 
-# arxiv 2.x 起移除了 Search.results()，但 langchain_community 仍在调用；
-# 旧版 arxiv 1.4.8 又因 arxiv.org 强制 HTTPS 而 301 全挂 → 用新版 + 兼容 shim
+# langchain_community 的 arxiv 封装踩三个版本坑（截至 0.4.2 仍未修）：
+# Search.results()（arxiv 2.x 删）、Result.download_pdf()（arxiv 4.x 删）、
+# fitz.fitz 子模块（pymupdf 1.24+ 删）；旧版 arxiv 1.4.8 又因 arxiv.org 强制
+# HTTPS 而 301 全挂 → 统一用最新版 + 三个兼容 shim（均有 hasattr 守卫）
+import urllib.request
+
 import arxiv as _arxiv
+import fitz as _fitz
 
 if not hasattr(_arxiv.Search, "results"):
     _arxiv_client = _arxiv.Client(page_size=20, delay_seconds=3.0, num_retries=3)
@@ -49,8 +55,21 @@ if not hasattr(_arxiv.Search, "results"):
         self, offset=offset
     )
 
+if not hasattr(_arxiv.Result, "download_pdf"):
+    def _download_pdf(self, dirpath=".", filename=None):
+        filename = filename or f"{self.get_short_id().replace('/', '_')}.pdf"
+        path = os.path.join(dirpath, filename)
+        urllib.request.urlretrieve(self.pdf_url, path)
+        return path
+
+    _arxiv.Result.download_pdf = _download_pdf
+
+if not hasattr(_fitz, "fitz"):
+    _fitz.fitz = _fitz
+
 MODEL = os.getenv("MODEL", "deepseek-v4-flash")
-DSN = os.getenv("ORACLE_DSN", "127.0.0.1:1521/FREEPDB1")
+PG_DSN = os.getenv("PG_DSN", "postgresql://postgres:postgres@127.0.0.1:5433/postgres")
+SQLALCHEMY_URL = PG_DSN.replace("postgresql://", "postgresql+psycopg://")
 SHOW_CONTEXT_CHARS = 1500  # 每轮打印的 context 预览长度
 
 
@@ -84,12 +103,10 @@ client = ModelRewriteClient(MODEL)
 
 # ---- 数据库与存储（clean slate，L5 notebook 用 EUCLIDEAN）----
 
-if not setup_oracle_database(dsn=DSN):
-    raise SystemExit("Oracle 未就绪，先启动容器（见 L2/README.md）")
-
-database_connection = connect_to_oracle(
-    user="VECTOR", password="VectorPwd_2025", dsn=DSN, program="local.memory_lab.L5"
-)
+try:
+    database_connection = connect_to_postgres(PG_DSN)
+except Exception as e:
+    raise SystemExit(f"PostgreSQL 未就绪（{type(e).__name__}），先启动容器（见 L2-pgvector/README.md）")
 
 embedding_model = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
@@ -103,13 +120,9 @@ TABLES = {
     "tool_log": "TOOL_LOG_MEMORY",
 }
 
-for table in TABLES.values():
-    try:
-        with database_connection.cursor() as cur:
-            cur.execute(f"DROP TABLE {table} PURGE")
-    except Exception as e:
-        if "ORA-00942" not in str(e):
-            print(f"  ✗ {table}: {e}")
+with database_connection.cursor() as cur:
+    cur.execute("DROP TABLE IF EXISTS langchain_pg_embedding, langchain_pg_collection CASCADE")
+    cur.execute(f"DROP TABLE IF EXISTS {TABLES['tool_log']}")
 database_connection.commit()
 
 conversation_history_table = create_conversational_history_table(
@@ -118,12 +131,13 @@ conversation_history_table = create_conversational_history_table(
 tool_log_history_table = create_tool_log_table(database_connection, TABLES["tool_log"])
 
 store_manager = StoreManager(
-    client=database_connection,
+    sqlalchemy_url=SQLALCHEMY_URL,
     embedding_function=embedding_model,
+    embedding_length=384,
     table_names={k: v for k, v in TABLES.items() if k not in ("conversational", "tool_log")},
-    distance_strategy=DistanceStrategy.EUCLIDEAN_DISTANCE,
     conversational_table=conversation_history_table,
     tool_log_table=tool_log_history_table,
+    distance="euclidean",
 )
 
 memory_manager = MemoryManager(

@@ -18,13 +18,11 @@ flowchart LR
 
 ## 运行
 
+全课程共用 `code/` 根目录的一个 venv 与 `.env`（见 `code/README.md`），L1 不需要起任何服务：
+
 ```bash
 cd L1
-uv venv --python 3.11 .venv
-uv pip install --python .venv/bin/python -r requirements.txt
-cp .env.example .env   # 填入你的 API Key
-
-.venv/bin/python main.py
+../.venv/bin/python main.py
 ```
 
 ## 与课程 notebook 的差异

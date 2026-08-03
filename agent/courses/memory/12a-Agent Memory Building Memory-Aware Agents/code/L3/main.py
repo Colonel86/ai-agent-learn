@@ -1,13 +1,17 @@
-"""12a·L3 Semantic Tool Memory（Toolbox）— 本地可运行演示。
+"""12a·L3 Semantic Tool Memory（Toolbox）— pgvector 版本地演示（Oracle 版见 ../L3/main.py）。
 
 课程主题：工具定义也是记忆。工具多了不能全量塞 context（膨胀 + 选择能力退化），
-应该把工具定义存进向量表（TOOLBOX_MEMORY），按 query 语义检索 top-k 再交给 LLM。
+应该把工具定义存进向量 collection（TOOLBOX_MEMORY），按 query 语义检索 top-k 再交给 LLM。
 `read_toolbox` 本身也是一个工具——"能找工具的工具"（自举）。
 
-前提：Oracle 容器在跑（见 L2/README.md）。
+与 Oracle 版的差异只在 ① 基础设施段（PG 连接 + 共享表清场 + StoreManager 签名）；
+②③ 的工具注册与语义检索逻辑逐字相同。Toolbox 的去重查询（_tool_exists_in_db）
+已在 helper_pg.py 里从 Oracle JSON_VALUE 移植为 JSONB 查询。
+
+前提：pgvector 容器在跑（见 L2-pgvector/README.md）。
 
 演示流程（python main.py）：
-  ① 重建 7 张表 → ② 注册 4-5 个工具（LLM 增强 docstring 后向量化入库）
+  ① 重建记忆存储 → ② 注册 4-5 个工具（LLM 增强 docstring 后向量化入库）
   ③ 用三个不同措辞的自然语言 query 做语义工具检索，验证"问题→工具"的映射
 """
 
@@ -18,27 +22,29 @@ from dotenv import load_dotenv
 load_dotenv()
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
-from helper import (
+from helper_pg import (
     MemoryManager,
     StoreManager,
     Toolbox,
-    connect_to_oracle,
+    connect_to_postgres,
     create_conversational_history_table,
     create_tool_log_table,
-    safe_create_index,
-    setup_oracle_database,
     suppress_warnings,
 )
 
 suppress_warnings()
 
 from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_community.vectorstores.utils import DistanceStrategy
 from openai import OpenAI
 
-# arxiv 2.x 起移除了 Search.results()，但 langchain_community 仍在调用；
-# 旧版 arxiv 1.4.8 又因 arxiv.org 强制 HTTPS 而 301 全挂 → 用新版 + 兼容 shim
+# langchain_community 的 arxiv 封装踩三个版本坑（截至 0.4.2 仍未修）：
+# Search.results()（arxiv 2.x 删）、Result.download_pdf()（arxiv 4.x 删）、
+# fitz.fitz 子模块（pymupdf 1.24+ 删）；旧版 arxiv 1.4.8 又因 arxiv.org 强制
+# HTTPS 而 301 全挂 → 统一用最新版 + 三个兼容 shim（均有 hasattr 守卫）
+import urllib.request
+
 import arxiv as _arxiv
+import fitz as _fitz
 
 if not hasattr(_arxiv.Search, "results"):
     _arxiv_client = _arxiv.Client(page_size=20, delay_seconds=3.0, num_retries=3)
@@ -46,8 +52,21 @@ if not hasattr(_arxiv.Search, "results"):
         self, offset=offset
     )
 
+if not hasattr(_arxiv.Result, "download_pdf"):
+    def _download_pdf(self, dirpath=".", filename=None):
+        filename = filename or f"{self.get_short_id().replace('/', '_')}.pdf"
+        path = os.path.join(dirpath, filename)
+        urllib.request.urlretrieve(self.pdf_url, path)
+        return path
+
+    _arxiv.Result.download_pdf = _download_pdf
+
+if not hasattr(_fitz, "fitz"):
+    _fitz.fitz = _fitz
+
 MODEL = os.getenv("MODEL", "deepseek-v4-flash")
-DSN = os.getenv("ORACLE_DSN", "127.0.0.1:1521/FREEPDB1")
+PG_DSN = os.getenv("PG_DSN", "postgresql://postgres:postgres@127.0.0.1:5433/postgres")
+SQLALCHEMY_URL = PG_DSN.replace("postgresql://", "postgresql+psycopg://")
 
 
 # ---------------------------------------------------------------------------
@@ -82,15 +101,13 @@ class ModelRewriteClient:
 client = ModelRewriteClient(MODEL)
 
 # ---------------------------------------------------------------------------
-# ① 数据库与存储（同 L2，clean slate 重建）
+# ① 数据库与存储（同 L2-pgvector，clean slate 重建）
 # ---------------------------------------------------------------------------
 
-if not setup_oracle_database(dsn=DSN):
-    raise SystemExit("Oracle 未就绪，先启动容器（见 L2/README.md）")
-
-database_connection = connect_to_oracle(
-    user="VECTOR", password="VectorPwd_2025", dsn=DSN, program="local.memory_lab.L3"
-)
+try:
+    database_connection = connect_to_postgres(PG_DSN)
+except Exception as e:
+    raise SystemExit(f"PostgreSQL 未就绪（{type(e).__name__}），先启动容器（见 L2-pgvector/README.md）")
 
 embedding_model = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
@@ -101,18 +118,11 @@ TOOLBOX_TABLE = "TOOLBOX_MEMORY"
 ENTITY_TABLE = "ENTITY_MEMORY"
 SUMMARY_TABLE = "SUMMARY_MEMORY"
 TOOL_LOG_TABLE = "TOOL_LOG_MEMORY"
-ALL_TABLES = [
-    CONVERSATIONAL_TABLE, KNOWLEDGE_BASE_TABLE, WORKFLOW_TABLE,
-    TOOLBOX_TABLE, ENTITY_TABLE, SUMMARY_TABLE, TOOL_LOG_TABLE,
-]
 
-for table in ALL_TABLES:
-    try:
-        with database_connection.cursor() as cur:
-            cur.execute(f"DROP TABLE {table} PURGE")
-    except Exception as e:
-        if "ORA-00942" not in str(e):
-            print(f"  ✗ {table}: {e}")
+# 清场重建：向量侧删两张 langchain 共享表即清空全部 collection
+with database_connection.cursor() as cur:
+    cur.execute("DROP TABLE IF EXISTS langchain_pg_embedding, langchain_pg_collection CASCADE")
+    cur.execute(f"DROP TABLE IF EXISTS {TOOL_LOG_TABLE}")
 database_connection.commit()
 
 conversation_history_table = create_conversational_history_table(
@@ -121,8 +131,9 @@ conversation_history_table = create_conversational_history_table(
 tool_log_history_table = create_tool_log_table(database_connection, TOOL_LOG_TABLE)
 
 store_manager = StoreManager(
-    client=database_connection,
+    sqlalchemy_url=SQLALCHEMY_URL,
     embedding_function=embedding_model,
+    embedding_length=384,
     table_names={
         "knowledge_base": KNOWLEDGE_BASE_TABLE,
         "workflow": WORKFLOW_TABLE,
@@ -130,9 +141,9 @@ store_manager = StoreManager(
         "entity": ENTITY_TABLE,
         "summary": SUMMARY_TABLE,
     },
-    distance_strategy=DistanceStrategy.COSINE,
     conversational_table=conversation_history_table,
     tool_log_table=tool_log_history_table,
+    distance="cosine",
 )
 
 memory_manager = MemoryManager(
@@ -244,8 +255,8 @@ def fetch_and_save_paper_to_kb_db(
     arxiv_id: str, chunk_size: int = 1500, chunk_overlap: int = 200
 ) -> str:
     """
-    Fetch full arXiv paper text (PDF -> text) and store it into the OracleVS
-    knowledge base table as chunked records.
+    Fetch full arXiv paper text (PDF -> text) and store it into the pgvector
+    knowledge base collection as chunked records.
     """
     loader = ArxivLoader(query=arxiv_id, load_max_docs=1, doc_content_chars_max=None)
     docs = loader.load()

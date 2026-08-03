@@ -11,7 +11,7 @@
 |---|---|---|---|
 | 核心操作 | add / search | add_episode / search | **retain / recall / reflect**(反思是一等公民) |
 | 存储模型 | 事实条目 | 时序知识图谱 | 记忆库(bank):实体+关系+时序+稀疏/稠密双索引 |
-| 检索 | 语义为主 | 语义+BM25+图 | **四路并行(语义/BM25/图/时序)+ RRF + cross-encoder + token 预算**(TEMPR) |
+| 检索 | 语义为主 | 语义+BM25+图 | **四路并行(语义/BM25/图/时序)+ RRF（倒数排名融合） + cross-encoder + token 预算**(TEMPR) |
 | 独有赌注 | 最少管线改动 | bi-temporal 历史真值 | **态度即状态**:observations 带证据演化,disposition 性格参数 |
 | 工程形态 | 库 or server | 库(需 Neo4j) | **client-server**(embedded/docker),pg0 免运维 |
 

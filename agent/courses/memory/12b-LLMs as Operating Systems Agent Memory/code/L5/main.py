@@ -9,11 +9,13 @@
 前提：先在另一个终端跑 ./run_server.sh（本地 embedding 服务 + Letta server）。
 
 演示流程（python main.py）：
-  ① 创建 source → 上传 handbook.pdf → 轮询解析/嵌入 job → 看切出的 passages
-  ② 挂 source 到 agent → agent 检索 archival 回答“公司休假政策”
+  ① 创建 folder（0.6 时代叫 source）→ 上传 handbook.pdf → 轮询解析/嵌入状态
+  ② 挂 folder 到 agent → file block 进上下文 + 自动挂文件工具 →
+     agent 用 semantic_search_files 检索回答“公司休假政策”
   ③ query_birthday_db 自定义工具 → agent 查外部“数据库”答生日
 """
 
+import inspect
 import os
 import time
 
@@ -23,16 +25,22 @@ os.environ.setdefault("no_proxy", "localhost,127.0.0.1")
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# .env 在 code/ 根目录（全课程共享）
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
 
 from letta_client import Letta
 
-# chat 走 Letta 的 openai 兼容路径指向 DeepSeek（原生 function calling，
-# 不用 letta 0.6.50 里那条靠裸 JSON 解析的 deepseek 专用路径——很不稳）
+# letta 0.16 默认建 letta_v1_agent，不带课程要讲的 MemGPT 记忆工具循环，
+# 必须显式选经典 memgpt_agent
+AGENT_TYPE = "memgpt_agent"
+
+# chat 走 openai 兼容路径指向本地网关（gateway.py :8003），由网关转发 DeepSeek
+# 并注入 thinking=disabled：letta 对 memgpt agent 固定发 tool_choice=required，
+# DeepSeek v4 的 thinking 模式不支持（400），关 thinking 后合法
 LLM_CONFIG = {
     "model": os.getenv("LETTA_MODEL", "deepseek-v4-flash"),
     "model_endpoint_type": "openai",
-    "model_endpoint": os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1"),
+    "model_endpoint": "http://localhost:8003/v1",
     "context_window": 64000,
     "put_inner_thoughts_in_kwargs": True,
 }
@@ -71,52 +79,51 @@ def banner(title):
 
 client = Letta(base_url="http://localhost:8283")
 
-# 可重复运行：先删同名旧 agent 和旧 source
+# 可重复运行：先删同名旧 agent 和旧 folder（sources 在 letta 0.16 里改叫 folders）
 for a in client.agents.list():
     if a.name in {"rag_agent", "birthday_agent"}:
         client.agents.delete(agent_id=a.id)
-for s in client.sources.list():
-    if s.name == SOURCE_NAME:
-        client.sources.delete(source_id=s.id)
+for f in client.folders.list():
+    if f.name == SOURCE_NAME:
+        client.folders.delete(folder_id=f.id)
 
 # ---------------------------------------------------------------------------
-# ① Data Source：上传 PDF → 解析/切块/嵌入 job → passages
+# ① Data folder：上传 PDF → 解析/切块/嵌入 → 轮询处理状态
 # ---------------------------------------------------------------------------
 
-banner("① 创建 data source 并上传 handbook.pdf")
+banner("① 创建 data folder 并上传 handbook.pdf")
 
-source = client.sources.create(
+folder = client.folders.create(
     name=SOURCE_NAME,
     embedding_config=EMBEDDING_CONFIG,
 )
-print(f"source id: {source.id}")
-print(f"embedding: {source.embedding_config.embedding_model} (dim {source.embedding_config.embedding_dim})")
+print(f"folder id: {folder.id}")
+print(f"embedding: {folder.embedding_config.embedding_model} (dim {folder.embedding_config.embedding_dim})")
 
-job = client.sources.files.upload(
-    source_id=source.id,
+# 0.6 时代上传返回 job、用 jobs.retrieve 轮询；0.16 直接轮询文件的 processing_status
+uploaded = client.folders.files.upload(
+    folder_id=folder.id,
     file=open("handbook.pdf", "rb"),
 )
-print(f"\n上传后立即返回 job: {job.status}")
+print(f"\n上传后立即返回: {uploaded.processing_status}")
 
-while job.status != "completed":
-    job = client.jobs.retrieve(job_id=job.id)
-    print(f"  job status: {job.status}")
+file_meta = uploaded
+while file_meta.processing_status != "completed":
+    file_meta = client.folders.files.retrieve(file_meta.id, folder_id=folder.id)
+    print(f"  processing_status: {file_meta.processing_status}")
     time.sleep(1)
 
-print(f"\njob metadata（解析出多少 passage）: {job.metadata}")
-
-passages = client.sources.passages.list(source_id=source.id)
-print(f"\nsource 切出 {len(passages)} 个 passage，第一个片段：")
-print("  " + passages[0].text[:160].replace("\n", " ") + " ...")
+print(f"\n解析/嵌入完成: {file_meta.total_chunks} chunks（已嵌入 {file_meta.chunks_embedded}）")
 
 # ---------------------------------------------------------------------------
 # ② 挂 source 到 agent：archival memory + agent 自主检索（Agentic RAG）
 # ---------------------------------------------------------------------------
 
-banner("② 挂载 source → Agentic RAG 检索休假政策")
+banner("② 挂载 folder → Agentic RAG 检索休假政策")
 
 agent_state = client.agents.create(
     name="rag_agent",
+    agent_type=AGENT_TYPE,
     memory_blocks=[
         {"label": "human", "value": "My name is Sarah"},
         {"label": "persona", "value": "You are a helpful assistant"},
@@ -125,19 +132,31 @@ agent_state = client.agents.create(
     embedding_config=EMBEDDING_CONFIG,
 )
 
-client.agents.sources.attach(agent_id=agent_state.id, source_id=source.id)
+client.agents.folders.attach(agent_id=agent_state.id, folder_id=folder.id)
 
-attached = client.agents.sources.list(agent_id=agent_state.id)
-print(f"agent 已挂载 sources: {[s.name for s in attached]}")
+attached = list(client.agents.folders.list(agent_id=agent_state.id))
+print(f"agent 已挂载 folders: {[f.name for f in attached]}")
 
-agent_passages = client.agents.passages.list(agent_id=agent_state.id)
-print(f"agent 的 archival memory 现在有 {len(agent_passages)} 个 passage（即 source 的全部切块）")
+# 与课程（letta 0.6：source 切块灌进 agent 的 archival passages，用
+# archival_memory_search 检索）的关键差异：0.16 里 folder 附件不再进
+# archival，而是走「文件」新通道——文件以 file block 出现在 agent 上下文，
+# 同时自动挂上 open_files/grep_files/semantic_search_files 三个文件工具，
+# semantic_search_files 用的就是 ① 里生成的那批 embedding
+ag = client.agents.retrieve(agent_id=agent_state.id, include_relationships=["tools", "memory"])
+print(f"挂载后自动出现的文件工具: {sorted(t.name for t in ag.tools if 'file' in t.name)}")
+print(f"上下文里的 file blocks: {[b.label for b in ag.memory.file_blocks]}")
 
-print('\n>>> "Search archival for our company\'s vacation policies"')
+# 比课程原话多点名工具：deepseek 会先 open_files 且猜错文件名后就放弃，
+# 点名 semantic_search_files 才稳定走语义检索
+print('\n>>> "Use semantic_search_files to find our company\'s vacation policies"')
 response = client.agents.messages.create(
     agent_id=agent_state.id,
     messages=[
-        {"role": "user", "content": "Search archival for our company's vacation policies"}
+        {
+            "role": "user",
+            "content": "Use the semantic_search_files tool to find our company's "
+            "vacation policies in the employee handbook, then summarize them.",
+        }
     ],
 )
 for message in response.messages:
@@ -173,11 +192,13 @@ def query_birthday_db(name: str):
         return my_fake_data[name]
 
 
-birthday_tool = client.tools.upsert_from_function(func=query_birthday_db)
+# letta-client 1.x 移除了 upsert_from_function，改为直接上传函数源码
+birthday_tool = client.tools.upsert(source_code=inspect.getsource(query_birthday_db))
 print(f"已注册工具: {birthday_tool.name} (id={birthday_tool.id})")
 
 birthday_agent = client.agents.create(
     name="birthday_agent",
+    agent_type=AGENT_TYPE,
     memory_blocks=[
         {"label": "human", "value": "My name is Sarah"},
         {
@@ -201,5 +222,5 @@ response = client.agents.messages.create(
 for message in response.messages:
     print_message(message)
 
-print("\n✅ 演示完成：archival memory 可以由文档批量灌入（source→attach），")
+print("\n✅ 演示完成：外部文档可以整份灌给 agent（folder→attach→文件工具检索），")
 print("   也可以完全绕开 Letta 存储、用自定义工具直连外部系统 —— 两种外部记忆接法。")

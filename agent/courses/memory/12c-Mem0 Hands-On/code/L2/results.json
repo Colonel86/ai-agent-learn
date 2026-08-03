@@ -7,14 +7,15 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User moved to Shanghai in June 2026 and has settled in Pudong."
+        "memory": "User moved from Hangzhou to Shanghai around June 2026 and has settled in the Pudong area"
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User lives in Hangzhou and enjoys visiting West Lake on weekends.",
-      "User moved to Shanghai in June 2026 and has settled in Pudong."
+      "User lives in Hangzhou",
+      "User enjoys strolling around West Lake on weekends",
+      "User moved from Hangzhou to Shanghai around June 2026 and has settled in the Pudong area"
     ]
   },
   {
@@ -25,14 +26,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User left NetEase (网易) around July 10, 2026 and joined ByteDance (字节跳动) around July 17, 2026."
+        "memory": "User left NetEase around July 22, 2026, and joined ByteDance as a backend developer"
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User works as a backend developer at NetEase (网易).",
-      "User left NetEase (网易) around July 10, 2026 and joined ByteDance (字节跳动) around July 17, 2026."
+      "User works as a backend developer at NetEase",
+      "User left NetEase around July 22, 2026, and joined ByteDance as a backend developer"
     ]
   },
   {
@@ -43,14 +44,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User recently started eating meat around July 2026 after being a vegetarian, following a doctor's recommendation to increase protein intake."
+        "memory": "User started eating meat in late July 2026 on doctor's advice to supplement protein, changing their previous vegetarian diet."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
       "User is a vegetarian and does not eat any meat.",
-      "User recently started eating meat around July 2026 after being a vegetarian, following a doctor's recommendation to increase protein intake."
+      "User started eating meat in late July 2026 on doctor's advice to supplement protein, changing their previous vegetarian diet."
     ]
   },
   {
@@ -61,14 +62,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User switched from light-roasted Ethiopian pour-over coffee to dark-roasted espresso, having grown tired of the acidity of light roasts."
+        "memory": "User switched from pour-over light roast to dark roast espresso as of July 29, 2026, because they got tired of the sourness of light roast."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User only drinks pour-over coffee and prefers light-roasted Ethiopian beans.",
-      "User switched from light-roasted Ethiopian pour-over coffee to dark-roasted espresso, having grown tired of the acidity of light roasts."
+      "User only drinks pour-over coffee and prefers lightly roasted Ethiopian beans.",
+      "User switched from pour-over light roast to dark roast espresso as of July 29, 2026, because they got tired of the sourness of light roast."
     ]
   },
   {
@@ -79,14 +80,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User got married around June 2026 and moved in with their spouse."
+        "memory": "User got married in June 2026 and moved in with their partner."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User is single and lives alone.",
-      "User got married around June 2026 and moved in with their spouse."
+      "User is single and lives alone as of July 29, 2026",
+      "User got married in June 2026 and moved in with their partner."
     ]
   },
   {
@@ -97,14 +98,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User gave their cat 团子 (Tuanzi) to their sister around July 10, 2026, and no longer has any pets at home."
+        "memory": "User gave their cat Tuanzi to their sister around July 22, 2026, and currently has no pets at home."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User has a cat named 团子 (Tuanzi).",
-      "User gave their cat 团子 (Tuanzi) to their sister around July 10, 2026, and no longer has any pets at home."
+      "User has a cat named Tuanzi.",
+      "User gave their cat Tuanzi to their sister around July 22, 2026, and currently has no pets at home."
     ]
   },
   {
@@ -115,14 +116,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User stopped self-studying Japanese and switched to learning Spanish instead, as of around July 17, 2026."
+        "memory": "User gave up on studying Japanese and switched to learning Spanish instead."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User is self-studying Japanese and preparing for the JLPT N2 exam.",
-      "User stopped self-studying Japanese and switched to learning Spanish instead, as of around July 17, 2026."
+      "User is self-studying Japanese and preparing for the N2 (JLPT N2) exam as of July 29, 2026.",
+      "User gave up on studying Japanese and switched to learning Spanish instead."
     ]
   },
   {
@@ -133,14 +134,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User switched from iPhone to Huawei phone around July 10, 2026, after being a ten-year iPhone user."
+        "memory": "User switched from iPhone to Huawei around July 22-23, 2026 after being an Apple user for ten years."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User has been using iPhone for ten years and is a long-time Apple user.",
-      "User switched from iPhone to Huawei phone around July 10, 2026, after being a ten-year iPhone user."
+      "User uses an iPhone and has been an Apple user for ten years as of July 2026.",
+      "User switched from iPhone to Huawei around July 22-23, 2026 after being an Apple user for ten years."
     ]
   },
   {
@@ -151,14 +152,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User injured their knee and was advised by a doctor to stop running for at least six months, starting around July 17, 2026."
+        "memory": "User has a knee injury and the doctor has prohibited running for at least six months starting July 29, 2026."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User runs three times per week and is training for a half marathon as of July 2026.",
-      "User injured their knee and was advised by a doctor to stop running for at least six months, starting around July 17, 2026."
+      "User runs three times a week and is training for a half marathon as of July 29, 2026.",
+      "User has a knee injury and the doctor has prohibited running for at least six months starting July 29, 2026."
     ]
   },
   {
@@ -169,14 +170,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User was promoted from backend engineer to technical manager around July 17, 2026, and no longer writes front-line code."
+        "memory": "User was promoted to technical manager around July 29, 2026, and no longer writes production code, transitioning from a backend engineer role."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
       "User is a backend engineer.",
-      "User was promoted from backend engineer to technical manager around July 17, 2026, and no longer writes front-line code."
+      "User was promoted to technical manager around July 29, 2026, and no longer writes production code, transitioning from a backend engineer role."
     ]
   },
   {
@@ -187,14 +188,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User corrected their previous statement: they live in Suzhou, not Hangzhou."
+        "memory": "User lives in Suzhou, China, having corrected a previous statement that they lived in Hangzhou."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
       "User lives in Hangzhou, China.",
-      "User corrected their previous statement: they live in Suzhou, not Hangzhou."
+      "User lives in Suzhou, China, having corrected a previous statement that they lived in Hangzhou."
     ]
   },
   {
@@ -205,14 +206,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User corrected their cat's name from 团子 to 丸子 (Wanzi) on July 17, 2026."
+        "memory": "User's cat's name is Wanzi, correcting a previous typo where it was mistakenly called Tuanzi."
       }
     ],
     "outcome": "COEXIST",
     "passed": false,
     "memories_after": [
-      "User has a cat named 团子 (Tuanzi).",
-      "User corrected their cat's name from 团子 to 丸子 (Wanzi) on July 17, 2026."
+      "User has a cat named Tuanzi.",
+      "User's cat's name is Wanzi, correcting a previous typo where it was mistakenly called Tuanzi."
     ]
   },
   {
@@ -236,7 +237,7 @@
     "outcome": "NOOP",
     "passed": true,
     "memories_after": [
-      "User only drinks pour-over coffee and prefers light-roasted Ethiopian beans."
+      "User only drinks pour-over coffee and prefers light-roast Ethiopian beans."
     ]
   },
   {
@@ -247,14 +248,14 @@
     "events": [
       {
         "event": "ADD",
-        "memory": "User has a corgi named Huajuan (花卷)."
+        "memory": "User has a corgi named 花卷 (Hua Juan)."
       }
     ],
     "outcome": "ADD",
     "passed": true,
     "memories_after": [
-      "User works as a backend developer at NetEase (网易).",
-      "User has a corgi named Huajuan (花卷)."
+      "User works as a backend developer at NetEase.",
+      "User has a corgi named 花卷 (Hua Juan)."
     ]
   }
 ]

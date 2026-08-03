@@ -1,29 +1,19 @@
-"""L3 邮件助理 + Semantic Memory（语义记忆）— 本地可运行演示。
+"""L3 语义记忆（工具型）— python 命令直接运行的课程演示。
 
-在 L2 baseline 上新增：
-  - InMemoryStore + 本地 embedding（fastembed / bge-small-en-v1.5，纯 CPU）
-  - langmem 的 manage_memory / search_memory 两个工具，agent 自主决定何时读写记忆
-  - 记忆按 ("email_assistant", user_id, "collection") 命名空间隔离
+对应 lesson_3.ipynb 完整流程：
+  1) langmem 的 manage_memory / search_memory 工具挂到 ReAct agent 上
+  2) 对话中主动存记忆（"Jim is my friend"），下一轮靠 search_memory 回忆
+  3) triage_router → response_agent 完整图：回复邮件时把上下文写进记忆，
+     追问邮件 "Any update on my previous ask?" 靠记忆检索衔接
 
-演示脚本（python main.py）分两幕：
-  第一幕：直接对话 — 先告诉 agent "Jim is my friend"，再问 "who is jim?"，
-          看它先 manage_memory 存、后 search_memory 取
-  第二幕：邮件流程 — Alice 的提问邮件（respond + 存记忆），
-          再来一封 "Any update on my previous ask?" 追问，看它靠记忆接上下文
+用法（code/ 根目录下）：
+  .venv/bin/python L3/main.py
 """
-
-import os
-
-from dotenv import load_dotenv
-
-load_dotenv()
-# fastembed 首次下载模型走 HuggingFace，国内直连易卡死，默认走镜像
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
 from typing import Literal
 
-from fastembed import TextEmbedding
-from langchain.chat_models import init_chat_model
+from local_stack import make_llm, make_embed, EMBED_DIMS
+
 from langchain_core.tools import tool
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import create_react_agent
@@ -34,8 +24,10 @@ from langmem import create_manage_memory_tool, create_search_memory_tool
 from prompts import triage_system_prompt, triage_user_prompt
 from schemas import Router, State
 
-MODEL = os.getenv("MODEL", "deepseek-v4-flash")
-USER_ID = "demo"
+
+def banner(title: str) -> None:
+    print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
+
 
 profile = {
     "name": "John",
@@ -52,35 +44,16 @@ prompt_instructions = {
     "agent_instructions": "Use these tools when appropriate to help manage John's tasks efficiently.",
 }
 
-# ---------------------------------------------------------------------------
-# LLM 与本地 embedding
-# ---------------------------------------------------------------------------
+llm = make_llm()
+llm_router = llm.with_structured_output(Router)
 
-# temperature=0：演示场景要求分类结果可复现
-# thinking disabled: deepseek-v4-flash 默认开 thinking，不支持结构化输出的强制 tool_choice
-llm = init_chat_model(
-    MODEL,
-    model_provider="openai",
-    temperature=0,
-    extra_body={"thinking": {"type": "disabled"}},
-)
-# DeepSeek 不支持 json_schema response_format，用 function calling 实现结构化输出
-llm_router = llm.with_structured_output(Router, method="function_calling")
+# 语义记忆存储：fastembed 本地 embedding（原 openai:text-embedding-3-small）
+store = InMemoryStore(index={"embed": make_embed(), "dims": EMBED_DIMS})
 
-_embedder = TextEmbedding("BAAI/bge-small-en-v1.5")
-
-
-def embed(texts: list[str]) -> list[list[float]]:
-    return [v.tolist() for v in _embedder.embed(texts)]
-
-
-# 课程用 openai:text-embedding-3-small，本地化改用 fastembed（384 维）
-store = InMemoryStore(index={"embed": embed, "dims": 384})
 
 # ---------------------------------------------------------------------------
-# 工具：3 个业务占位工具 + 2 个 langmem 记忆工具
+# 工具：3 个模拟工具 + langmem 记忆读写工具
 # ---------------------------------------------------------------------------
-
 
 @tool
 def write_email(to: str, subject: str, content: str) -> str:
@@ -93,10 +66,7 @@ def schedule_meeting(
     attendees: list[str], subject: str, duration_minutes: int, preferred_day: str
 ) -> str:
     """Schedule a calendar meeting."""
-    return (
-        f"Meeting '{subject}' scheduled for {preferred_day} "
-        f"with {len(attendees)} attendees"
-    )
+    return f"Meeting '{subject}' scheduled for {preferred_day} with {len(attendees)} attendees"
 
 
 @tool
@@ -111,18 +81,6 @@ manage_memory_tool = create_manage_memory_tool(
 search_memory_tool = create_search_memory_tool(
     namespace=("email_assistant", "{langgraph_user_id}", "collection")
 )
-
-tools = [
-    write_email,
-    schedule_meeting,
-    check_calendar_availability,
-    manage_memory_tool,
-    search_memory_tool,
-]
-
-# ---------------------------------------------------------------------------
-# response agent（system prompt 多了记忆工具的说明，与 notebook 一致）
-# ---------------------------------------------------------------------------
 
 agent_system_prompt_memory = """
 < Role >
@@ -156,16 +114,29 @@ def create_prompt(state):
     ] + state["messages"]
 
 
-# store 传给 agent，langmem 工具运行时从上下文里拿到它
-response_agent = create_react_agent(llm, tools=tools, prompt=create_prompt, store=store)
+response_agent = create_react_agent(
+    make_llm(),  # 本地化：deepseek-v4-flash（原 anthropic:claude-3-5-sonnet-latest）
+    tools=[
+        write_email,
+        schedule_meeting,
+        check_calendar_availability,
+        manage_memory_tool,
+        search_memory_tool,
+    ],
+    prompt=create_prompt,
+    store=store,  # 确保 store 传进 agent
+)
+
 
 # ---------------------------------------------------------------------------
-# triage 节点（与 L2 相同，尚未接记忆）
+# triage 路由 + 图
 # ---------------------------------------------------------------------------
-
 
 def triage_router(state: State) -> Command[Literal["response_agent", "__end__"]]:
-    email = state["email_input"]
+    author = state["email_input"]["author"]
+    to = state["email_input"]["to"]
+    subject = state["email_input"]["subject"]
+    email_thread = state["email_input"]["email_thread"]
 
     system_prompt = triage_system_prompt.format(
         full_name=profile["full_name"],
@@ -177,10 +148,7 @@ def triage_router(state: State) -> Command[Literal["response_agent", "__end__"]]
         examples=None,
     )
     user_prompt = triage_user_prompt.format(
-        author=email["author"],
-        to=email["to"],
-        subject=email["subject"],
-        email_thread=email["email_thread"],
+        author=author, to=to, subject=subject, email_thread=email_thread
     )
     result = llm_router.invoke(
         [
@@ -188,81 +156,69 @@ def triage_router(state: State) -> Command[Literal["response_agent", "__end__"]]
             {"role": "user", "content": user_prompt},
         ]
     )
-    print(f"  🧠 Reasoning: {result.reasoning}")
-
     if result.classification == "respond":
-        print("  📧 Classification: RESPOND - This email requires a response")
-        return Command(
-            goto="response_agent",
-            update={
-                "messages": [
-                    {"role": "user", "content": f"Respond to the email {email}"}
-                ]
-            },
-        )
-    if result.classification == "ignore":
-        print("  🚫 Classification: IGNORE - This email can be safely ignored")
-        return Command(goto=END)
-    if result.classification == "notify":
-        print("  🔔 Classification: NOTIFY - This email contains important information")
-        return Command(goto=END)
-    raise ValueError(f"Invalid classification: {result.classification}")
+        print("📧 Classification: RESPOND - This email requires a response")
+        goto = "response_agent"
+        update = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"Respond to the email {state['email_input']}",
+                }
+            ]
+        }
+    elif result.classification == "ignore":
+        print("🚫 Classification: IGNORE - This email can be safely ignored")
+        update = None
+        goto = END
+    elif result.classification == "notify":
+        print("🔔 Classification: NOTIFY - This email contains important information")
+        update = None
+        goto = END
+    else:
+        raise ValueError(f"Invalid classification: {result.classification}")
+    return Command(goto=goto, update=update)
 
 
-email_agent = (
-    StateGraph(State)
-    .add_node(triage_router)
-    .add_node("response_agent", response_agent)
-    .add_edge(START, "triage_router")
-    .compile(store=store)
-)
+email_agent = StateGraph(State)
+email_agent = email_agent.add_node(triage_router)
+email_agent = email_agent.add_node("response_agent", response_agent)
+email_agent = email_agent.add_edge(START, "triage_router")
+email_agent = email_agent.compile(store=store)
+
 
 # ---------------------------------------------------------------------------
 # 演示
 # ---------------------------------------------------------------------------
 
-config = {"configurable": {"langgraph_user_id": USER_ID}}
+def main() -> None:
+    config = {"configurable": {"langgraph_user_id": "lance"}}
 
-
-def banner(title: str) -> None:
-    print()
-    print("=" * 72)
-    print(title)
-    print("=" * 72)
-
-
-def dump_store() -> None:
-    print("\n  🗄️  当前记忆库内容:")
-    items = store.search(("email_assistant", USER_ID, "collection"))
-    if not items:
-        print("    (空)")
-    for it in items:
-        print(f"    - {it.value.get('content', it.value)}")
-
-
-def chat(content: str) -> None:
-    print(f"\n>>> User: {content}")
+    banner("① 存记忆：告诉 agent 'Jim is my friend'")
     response = response_agent.invoke(
-        {"messages": [{"role": "user", "content": content}]}, config=config
+        {"messages": [{"role": "user", "content": "Jim is my friend"}]}, config=config
     )
     for m in response["messages"]:
         m.pretty_print()
 
-
-def run_email(email: dict) -> None:
-    print(f"\nFrom:    {email['author']}")
-    print(f"Subject: {email['subject']}")
-    print("-" * 72)
-    response = email_agent.invoke({"email_input": email}, config=config)
-    for m in response.get("messages", []):
+    banner("② 取记忆：问 'who is jim?'（应触发 search_memory）")
+    response = response_agent.invoke(
+        {"messages": [{"role": "user", "content": "who is jim?"}]}, config=config
+    )
+    for m in response["messages"]:
         m.pretty_print()
 
+    banner("③ store 里实际存了什么")
+    print("namespaces:", store.list_namespaces())
+    for item in store.search(("email_assistant", "lance", "collection"), query="jim"):
+        print(f"  score={item.score:.3f}  {item.value}")
 
-ALICE_EMAIL = {
-    "author": "Alice Smith <alice.smith@company.com>",
-    "to": "John Doe <john.doe@company.com>",
-    "subject": "Quick question about API documentation",
-    "email_thread": """Hi John,
+    banner("④ 完整图：同事提问邮件 → RESPOND，回复过程写入记忆")
+    email_input = {
+        "author": "Alice Smith <alice.smith@company.com>",
+        "to": "John Doe <john.doe@company.com>",
+        "subject": "Quick question about API documentation",
+        "email_thread": """Hi John,
 
 I was reviewing the API documentation for the new authentication service and noticed a few endpoints seem to be missing from the specs. Could you help clarify if this was intentional or if we should update the docs?
 
@@ -272,32 +228,23 @@ Specifically, I'm looking at:
 
 Thanks!
 Alice""",
-}
+    }
+    response = email_agent.invoke({"email_input": email_input}, config=config)
+    for m in response["messages"]:
+        m.pretty_print()
 
-FOLLOW_UP_EMAIL = {
-    "author": "Alice Smith <alice.smith@company.com>",
-    "to": "John Doe <john.doe@company.com>",
-    "subject": "Follow up",
-    "email_thread": """Hi John,
+    banner("⑤ 追问邮件 'Any update on my previous ask?' → 靠记忆衔接上下文")
+    followup = {
+        "author": "Alice Smith <alice.smith@company.com>",
+        "to": "John Doe <john.doe@company.com>",
+        "subject": "Follow up",
+        "email_thread": """Hi John,
 
 Any update on my previous ask?""",
-}
-
-
-def main() -> None:
-    print(f"Model: {MODEL} @ {os.getenv('OPENAI_BASE_URL')}")
-    print("Embedding: fastembed / BAAI/bge-small-en-v1.5 (local CPU)")
-
-    banner("第一幕 · 记忆写入与读取：agent 自主调用 manage_memory / search_memory")
-    chat("Jim is my friend")
-    chat("who is jim?")
-    dump_store()
-
-    banner("第二幕 · 邮件流程：Alice 提问 → 回复并记住；追问邮件靠记忆接上下文")
-    run_email(ALICE_EMAIL)
-    dump_store()
-    run_email(FOLLOW_UP_EMAIL)
-    dump_store()
+    }
+    response = email_agent.invoke({"email_input": followup}, config=config)
+    for m in response["messages"]:
+        m.pretty_print()
 
 
 if __name__ == "__main__":

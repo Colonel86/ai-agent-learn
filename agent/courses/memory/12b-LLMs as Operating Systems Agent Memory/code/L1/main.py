@@ -19,7 +19,8 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+# .env 在 code/ 根目录（全课程共享）
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"))
 
 MODEL = os.getenv("MODEL", "deepseek-v4-flash")
 client = OpenAI()

@@ -1,30 +1,27 @@
 # python package requirements file
+#
+# 本地化版（2026-07）：课程原版跑 Oracle 26ai；本地演示已整体替换为
+# PostgreSQL + pgvector（helper_pg.py），Oracle 不再是运行前提。
+# L2-L5 共用 code/ 根目录一个 venv：uv venv --python 3.11 .venv && uv pip install -r requirements.txt
+# 连接与模型配置见 code/.env（PG 容器 pg-memory-lab:5433，见 README）。
+#
+# 变更说明：
+# - oracledb / langchain-oracledb 已移除（课程 notebook 对照要跑 Oracle 时再装）。
+# - 课程用 langchain-huggingface + sentence-transformers 做 embedding（拉 torch ~2GB）；
+#   本地化 main.py 一律用 fastembed（ONNX 纯 CPU），故不装前两者。
+# - tavily-python 课程列了但本地演示未用到，不装。
+# - arxiv / pymupdf 用最新版 + main.py 里三个兼容 shim
+#   （Search.results / Result.download_pdf / fitz.fitz，langchain-community 0.4.2 仍未修）。
 
-# Note to our Learners: Our courses are created at a specific point in time. The models and libraries used will naturally change over time.
-# If you download and run the notebooks locally, you should create a Python virtual environment  
-# with the Python version matching the one used in the course and use this requirements.txt file to install the required Python packages.
-# Due to the wide diversity of platforms and environments, DeepLearning does not explicitly support running locally. However, if you encounter
-# issues, the course support channel is a good place to ask questions.
-
-
-# note which revision of python, for example 3.9.6
-# in this file, insert all the pip install needs, include revision
-
-#for example:
-#torch==2.0.1
-#matplotlib==3.7.2
-
-langchain-oracledb
-langchain-huggingface
-sentence-transformers
-langchain-community
-langchain-openai
-datasets
-langchain
-tavily-python
-pydantic
-oracledb
-openai
-dotenv
-arxiv
-pymupdf
+psycopg[binary]==3.3.4
+langchain-postgres==0.0.17
+langchain==1.3.14
+langchain-community==0.4.2
+langchain-openai==1.4.1
+openai==2.49.0
+fastembed==0.8.0
+python-dotenv==1.2.2
+datasets==5.0.0
+pydantic==2.13.4
+arxiv==4.0.0
+pymupdf==1.28.0
