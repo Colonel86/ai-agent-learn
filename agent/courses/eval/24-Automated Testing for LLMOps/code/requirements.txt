@@ -1,0 +1,11 @@
+# 本地化栈 (2026-08 验证于 Python 3.12, uv venv)
+# 课程原版: langchain 0.0.326 / openai 0.28 / gpt-3.5-turbo, 评估跑 CircleCI 云端
+# 本地化: langchain 1.x + DeepSeek, pytest 本地模拟 CI 评估流水线 (见 local_stack.py)
+
+langchain==1.3.14
+langchain-openai==1.4.1
+openai==2.52.0
+pytest==9.1.1
+pandas==3.0.5
+python-dotenv==1.2.2
+pyyaml==6.0.3
