@@ -282,6 +282,16 @@ cache write 比正常 input **贵**,不是无脑上就赚。⚠️ 按快照倍�
 - Prompt Caching 就是把 prefill 出的 KV-cache **跨请求持久化复用**,省的是 prefill 计算,故 read 只 0.1×。
 - 张力:缓存模型相关,**切模型全 miss**。级联想用便宜模型省单价,却丢缓存。治法:主循环固定一个模型保缓存,子任务用便宜模型就 **spawn 独立子 agent**(自带独立前缀),不在主对话里换模型;同理 mid-session 别改 tools/system。
 
+**Q9. 如何避免 context 超过限制?(2026-07 真实被问)**
+- 开场先纠正隐含前提:超限不是"撞上再处理"的异常,而是**每轮装配 context 时就要守的预算**——进感知相前先 token 计数,预算 = 窗口上限 −(输出预留 + 安全余量)。撞墙是设计失败,不是运行时事故。
+- 分层手段,按**信息损失从无到有**排序(这个排序本身就是答题框架):
+  1. **不让进来**(源头,零损失):RAG 按需检索代替全量塞入;工具结果截断/分页;**引用代替原文**(返回文件路径/记录 ID,用时再取,别把 5000 行 JSON 塞回历史);多 agent context 隔离本质也是这招。
+  2. **删掉**(低损失):Context Editing 删 stale tool_result/thinking;滑动窗口丢最老轮次。
+  3. **压缩**(有损,分两种是高频考点):Summarization 摘要**替换**原文(不可逆丢失)vs Compaction 摘要作**索引**、原文归档存储层(可逆)。
+  4. **外移**(结构性):长期事实进 memory 层,context 只留检索入口——把"记住"从 context 问题变成 retrieval 问题(接 04 章)。
+- 两个升维点:① **质量先于上限崩**——真约束是有效注意力不是物理窗口(context rot / lost-in-the-middle,见 Q5),窗口没满也该收窄;② **与 caching 打架**——清理/压缩改中段前缀 → 缓存全 miss(见 Q4),抬阈值批量清。
+- 实战弹药(12a·L4 实测):Compaction 落地——32 条消息 LLM 摘要入 SUMMARY_MEMORY 向量表,`summary_id` 回填源数据行(`WHERE summary_id IS NULL` 保幂等),context 2007→141 tokens;关键是**可逆**,`expand_summary(summary_id)` 随时取回原文。收尾金句:**"Summarization 丢信息,Compaction 搬信息"**。
+
 ---
 
 ## 6. 踩坑 / 反模式

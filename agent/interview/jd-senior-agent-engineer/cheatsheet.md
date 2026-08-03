@@ -17,6 +17,9 @@
 **🔥 最可能追问：「15x 是比谁？」**
 基线是 **chat 交互**，不是单 agent 循环 → 单 agent 工具循环已 ~4x chat → 多 agent 相对单 agent 循环约 3-4x、相对裸 chat 才 ~15x → 别让人以为「多 agent 比单 agent 循环贵 15 倍」。
 
+**🔥 追问 2（2026-07 真实被问）：「多 agent 之间如何通信？」**
+按介质四分类：共享状态（LangGraph state+Command，同进程）/ 消息信箱（AutoGen、Letta send_message，异步）/ 共享存储（黑板模式，长时程解耦）/ 跨系统协议（A2A；MCP 是 agent↔**工具**协议，主动区分）。选型一句话：同进程共享状态、异步用信箱、解耦用存储、跨组织才上协议。实战弹药：Letta 实测「信封与信同样影响行为」——包装语劫持行为/工具规则跨 agent 不触发（详见 01 §4.4+Q9）。
+
 **⚠️ 反模式**：无界 ReAct 跑到 done（绕圈、爆 token、没法 debug）；用拓扑复杂度掩盖 prompt/工具没做好。
 
 ---
@@ -80,6 +83,9 @@ function calling = 模型如何表达调工具（模型层能力）；MCP = 工�
 
 **🔥 最可能追问：「重复同前缀请求 cache_read 恒为 0，怎么排查？」**
 必有 silent invalidator 在前缀里 → 逐一审：① system 有 `datetime.now()`/uuid/user_id；② `json.dumps` 没 `sort_keys=True`；③ tools 列表顺序/集合每次变（排最前一变全废）；④ 前缀没过最小可缓存阈值；⑤ 中途切了模型 → 终极手段 diff 两次渲染出的 prompt 字节找第一个分叉点。
+
+**🔥 追问 2（2026-07 真实被问）：「如何避免 context 超过限制？」**
+开场纠偏：超限不是异常是**每轮装配时守的预算**（窗口 − 输出预留 − 余量）。手段按信息损失排序：①不让进来（RAG 按需检索、工具结果截断、**引用代替原文**）→ ②删掉（Editing、滑动窗口）→ ③压缩（Summarization 替换不可逆 vs Compaction 索引+归档可逆）→ ④外移（memory 层，context 只留检索入口）。升维：质量先于上限崩（context rot）；清理与 caching 打架（抬阈值批量清）。实战：12a·L4 压实 2007→141 tokens、summary_id 可逆展开——「Summarization 丢信息，Compaction 搬信息」（详见 05 Q9）。
 
 **⚠️ 反模式**：system 里插动态值（缓存永远 0 命中还白付 write）；Context Editing 清得太勤（每次改前缀触发 rewrite，溢价吃掉省的窗口）。
 
