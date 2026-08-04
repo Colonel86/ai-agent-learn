@@ -35,3 +35,8 @@ node_modules/
 .phoenix/
 .phoenix-server.log
 chart_eval_tmp.png
+
+# Data Agents 课: trulens/合成数据库与运行产物 (default.sqlite 为课程自带 18MB 空 schema 库, 不入库)
+agent/courses/eval/Building*and*Evaluating*Data*Agents/code/**/default.sqlite
+agent/courses/eval/Building*and*Evaluating*Data*Agents/code/**/local_demo.sqlite
+agent/courses/eval/Building*and*Evaluating*Data*Agents/code/sales_intelligence.sqlite
