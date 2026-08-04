@@ -1,0 +1,8 @@
+# 本地化栈 (2026-08 验证于 Python 3.12, uv venv)
+# 课程原版: lamini==3.0.5 (托管 Llama-3-8B 推理 + 服务端微调)
+# 本地化: 推理换 DeepSeek (openai SDK); 微调衔接 ../projects/nba_sql_tuner (本地 LoRA)
+
+openai==2.53.0
+pandas==3.0.5
+python-dotenv==1.2.2
+jsonlines==4.0.0
