@@ -13,22 +13,22 @@
 
 ## 技能
 
-- **AI Agent 编排与框架**：LangGraph、LangChain、LlamaIndex、Haystack、CrewAI、AutoGen、DSPy、Claude Agent SDK、Agentic 设计模式（Reflection / Planning / Multi-Agent 协作）、StateGraph / state machine、conditional routing、Human-in-the-Loop、persistence、multi-step reasoning
-- **工具层与协议**：Model Context Protocol (MCP)、Tool Use / Function Calling、A2A、Agent Skills、Pydantic type-safe schema、structured output、JSON Schema enforcement、constrained decoding
-- **上下文工程（RAG / 检索）**：RAG、vector retrieval、reranking、query expansion、Agentic RAG、Knowledge Graph RAG、embedding、vector store（pgvector / Chroma）、cross-encoder、语义缓存与 prompt 压缩、Document AI / 非结构化数据预处理
-- **Agent 记忆（Memory）**：Long-Term Memory（semantic / episodic / procedural）、Compound Memory、记忆框架实战（Letta / Mem0 / Zep·Graphiti / Hindsight / LangMem）、记忆生命周期（写入 / 消解 / 检索 / 遗忘）
-- **评测与可观测（LLMOps）**：LangSmith、Phoenix、RAGAS、DeepEval、LLM-as-a-Judge、轨迹评估（trajectory / convergence）、评估驱动开发（EDD）、评测数据集版本化与实验对比、OpenTelemetry / OpenInference 埋点、分布式 tracing、离线评测、CI 评测门禁（规则评估 + 模型评分）、CI/CD 中的 Agent 自动化测试、微调与数据迭代（LoRA / SFT / Memory Tuning）、Spec-Driven Development (Spec Kit)
+- **AI Agent 编排与框架**：LangGraph、LangChain、CrewAI、Agentic 设计模式（Reflection / Planning / Multi-Agent 协作）、StateGraph、conditional routing、Human-in-the-Loop、persistence（checkpointing）、multi-step reasoning
+- **工具层与协议**：Model Context Protocol (MCP)、Tool Use / Function Calling、A2A、Agent Skills、Pydantic type-safe schema
+- **上下文工程（RAG / 检索）**：RAG、vector retrieval、reranking、query expansion、Agentic RAG、Knowledge Graph RAG、embedding、vector store（pgvector / Chroma）、cross-encoder、语义缓存与 prompt 压缩
+- **Agent 记忆（Memory）**：Long-Term Memory（semantic / episodic / procedural）、记忆框架实战（Letta / Mem0 / Zep·Graphiti / Hindsight / LangMem）、记忆生命周期（写入 / 消解 / 检索 / 遗忘）
+- **评测与可观测（LLMOps）**：LangSmith、Phoenix、RAGAS、DeepEval、LLM-as-a-Judge、轨迹评估（trajectory / convergence）、评估驱动开发（EDD）、评测数据集版本化与实验对比、OpenTelemetry / OpenInference 埋点、分布式 tracing、离线评测、CI 评测门禁（规则评估 + 模型评分）、CI/CD 中的 Agent 自动化测试（GitLab CI / Jenkins、MR 自动评审）、微调与数据迭代（LoRA / SFT / Memory Tuning）、Spec-Driven Development (Spec Kit)
+- **LLM 网关与自托管基础设施**：LiteLLM 统一网关（多模型 OpenAI 兼容接入、API key 管理、限流、预算控制与成本核算、fallback / 负载均衡）、Grafana LGTM 全链路可观测栈（OpenTelemetry Collector、Prometheus、Loki / Promtail、Tempo、Blackbox 可用性探测、Grafana 统一面板）、Caddy 反向代理（自动 HTTPS）+ Keycloak IAM（SSO / OIDC / OAuth2）、基于 trace 的 LLM 调用 token 成本归因与 P99 延迟分析
 - **Agent 安全与护栏**：Guardrails AI（validators / hub）、LLM 红队测试（Giskard / prompt injection / jailbreak 评测）、运行时 guardrails 与输出过滤、Agent 权限与治理
 - **编程语言**：Python、Go、Solidity、Rust、TypeScript、JavaScript、Move、C、Objective-C
 - **区块链**：DeFi、NFT、GameFi、DAO、智能合约审计（Slither / Mythril / Echidna）、跨链协议、去中心化交易所、ERC20 / ERC721
-- **工程与平台**：GitLab CI、Jenkins、MR 自动评审、移动端架构、iOS、ReactNative、POS 嵌入式、银行交易服务端
 
 ## 工作经历
 
-### 宜信普惠信息咨询（北京）有限公司 · AI Agent 研发工程师（2025 – 至今）
+### 宜信普惠信息咨询（北京）有限公司 · AI Agent 架构师（2025 – 至今）
 
 - 基于 LangGraph 构建生产级 Agent 系统，服务于加密货币量化研究场景；主导多 Agent 编排、StateGraph 路由、Tool 集成与 Memory 子系统等核心模块。
-- 运用 state machine、conditional routing、Human-in-the-Loop、persistence 实现可靠的多步推理；设计 Tool Use / Function Calling 流程，结合 Pydantic type-safe schema 与 structured output（JSON Schema enforcement、constrained decoding）保证输出可控；通过 MCP 构建跨框架、可复用的工具层。
+- 运用 state machine、conditional routing、Human-in-the-Loop、persistence（checkpointing）实现可靠的多步推理；设计 Tool Use / Function Calling 流程，结合 Pydantic type-safe schema 与 structured output（JSON Schema enforcement、constrained decoding）保证输出可控；通过 MCP 构建跨框架、可复用的工具层。
 - 实现两层 context engineering：RAG（vector retrieval、reranking、query expansion、Agentic RAG、Knowledge Graph RAG）与 Long-Term Memory（semantic / episodic / procedural）；补齐多轮记忆与引导式提问（上下文摘要主动提取注入 + 对话跟进意图识别）。
 - 建立组件级 → 轨迹级 → 任务级的分层评估体系：工具选择 / 参数抽取用 LLM-as-a-Judge 评估，Agent 路径用收敛度（convergence）评估，端到端用带期望输出的实验数据集做回归；prompt / 架构变更先跑实验对比再合入（评估驱动开发 EDD）。
 - 集成 Claude Agent SDK 实现 GitLab / Jenkins CI/CD 上的 MR 自动评审，覆盖 8 个仓库；通过 Spec-Driven Development（Spec Kit + Claude Code）沉淀可复用的 Agent 开发模式。
