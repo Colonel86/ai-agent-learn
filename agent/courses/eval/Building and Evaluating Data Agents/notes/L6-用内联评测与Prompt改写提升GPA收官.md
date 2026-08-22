@@ -8,7 +8,7 @@
 L5 停在"知道 agent 病在哪"（Q1 的 plan adherence = 0，行动没照计划走）。本课开场给出改 GPA 的**常见手段清单**：
 
 | 手段 | 做法 | 治哪种病 |
-|---|---|---|
+| --- | --- | --- |
 | **调 planning prompt** | 给每步加显式 subgoal + pre/post condition | 计划含糊、执行不知每步该干嘛 |
 | **inline evaluation** | 运行中实时给 agent 反馈分数+解释 | 检索漏关键信息、无法当场纠偏 |
 | 调 retriever / 换模型 | 调检索参数、试不同 LLM | 检索病、生成病 |
@@ -38,6 +38,7 @@ def cortex_agents_research_node(state: State) -> Command[...]:
 ```
 
 要点：
+
 - inline eval **直接跑在** node 声明的 span attributes 上（复用 L4 埋点，不重复造轮子）；
 - 评完的 **score + explanation 追加进 state 的 messages**——这就是"反馈进 memory"的落地方式；
 - 效果：agent 做完一次 research 能"看见"自己检索得好不好，**缺料就补检索、必要就 replan**，而不是一条道走到黑。
@@ -46,7 +47,7 @@ def cortex_agents_research_node(state: State) -> Command[...]:
 
 ## 2. 招式二：改 Planning Prompt（给每步装上 pre/post condition）
 
-L5 诊断的病根是 plan adherence——executor 不知道每步到底要达成什么，就容易跑偏。对症下药：**扩展 planning prompt 的输出模板**，逼 planning LLM 给每步显式写出 **precondition / postcondition / goal 描述**：
+L5 诊断的病根是 plan adherence（计划遵循度）——executor 不知道每步到底要达成什么，就容易跑偏。对症下药：**扩展 planning prompt 的输出模板**，逼 planning LLM 给每步显式写出 **precondition / postcondition / goal 描述**：
 
 ```python
 # 概念示意（据课程讲述重构）：patch 掉原 plan prompt 的输出模板
@@ -77,7 +78,7 @@ tru_recorder = TruGraph(
 **Leaderboard 对比**（新版 vs base 版）：
 
 | 指标 | 变化 | 解读 |
-|---|---|---|
+| --- | --- | --- |
 | Answer Relevance | ↑ 提升 | 答得更切题 |
 | Groundedness | ↑ **提升明显** | 补检索让论断更有据 |
 | Context Relevance | ≈ 持平 | 检索相关性没动 |
@@ -123,7 +124,7 @@ improved 版右侧**多出的 web/cortex research 调用**，正是 **inline eva
 ### ② L1-L6 全课回顾表
 
 | 课 | 主题 | 交付物 / 核心动作 | 引入的关键概念 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | L1 | Data agent 是什么 | 定义 + 何时可信 | LLM 驱动、连数据源、query 分解→检索→分析→可视化 |
 | L2 | 搭多 agent workflow | 用 LangGraph 实现分层 agent | planner→executor→子 agent（web researcher / chart generator / chart summarizer / synthesizer） |
 | L3 | 接企业数据 | 加 cortex researcher | Snowflake Cortex Analyst（text-to-SQL）+ Cortex Search（会议纪要） |
@@ -140,6 +141,7 @@ improved 版右侧**多出的 web/cortex research 调用**，正是 **inline eva
 > **① data agent 何时值得上多 agent 架构？** 当任务需要**跨异构数据源做 query 分解 + 多步研究 + 合成**（本课：Snowflake 结构化 deal 数据 + 非结构化会议纪要 + web 新闻三源汇聚）时,单体 agent 的 prompt 塞不下也调不动,分层 planner/executor + 专职子 agent 才划算。反过来,若查询只是单表 text-to-SQL(如 Q1"top 3 deals"),多 agent 是过度设计——一个 Cortex Analyst 调用就够,多出的 planner/executor 只会拉低 execution efficiency。**判据:数据源是否异构 + 是否需要跨源合成 + 步骤是否需要动态 replan。**
 >
 > **② data agent 的评测该测什么?** 两层缺一不可,且**必须解耦成多指标**:
+>
 > - **输出层(RAG Triad)** 回答"答得对不对"——context relevance(检索准不准)、groundedness(有没有编)、answer relevance(切不切题)。三者解耦才能区分"检索病"与"生成病"。
 > - **过程层(GPA)** 回答"过程健不健康"——plan quality/adherence/efficiency/consistency。对多步 agent,过程可评估性 = 可调试性;只测输出你永远不知道错在决策链哪环。
 >
@@ -148,7 +150,7 @@ improved 版右侧**多出的 web/cortex research 调用**，正是 **inline eva
 ## 本课总结
 
 | 要点 | 一句话 |
-|---|---|
+| --- | --- |
 | Inline evaluation | 运行时评某步、把分数+解释写回 state，让 agent 当场补检索/replan |
 | 改 planning prompt | 每步加 pre/post condition + goal，executor 更懂每步目标→改善 adherence |
 | 版本化回归 | 换描述性 app_version、复用同组 query、Compare 视图并排对比 trace 与指标 |

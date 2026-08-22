@@ -64,7 +64,7 @@ expected_output: "SELECT Store_Number, SUM(Total_Sale_Value) ... ORDER BY ... LI
 ## 例：评估数据分析工具（无 ground truth）
 
 测试用例只有 `input + 检索到的数据`，**没有 expected output**——开放式分析没法预先写答案。
-评估器：**Analysis Clarity** + **Entity Correctness**（两个 LLM-as-a-judge）。
+评估器：**Analysis Clarity（回答清晰度）** + **Entity Correctness（实体正确性）**（两个 LLM-as-a-judge）。
 
 ## 评估总览：HUD（Heads-Up Display）
 
